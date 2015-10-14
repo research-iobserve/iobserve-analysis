@@ -46,7 +46,6 @@
 						<configuration>
 							<sources>
 								<source>src/gen/java</source>
-								<source>src/gen/java-factory</source>
 							</sources>
 						</configuration>
 					</execution>
