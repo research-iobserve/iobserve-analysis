@@ -1,6 +1,7 @@
 Presently, the pom.xml relies on a system library folder. This solution
 is only temporary. Unfortunately, it is necessary, as the libraries in
-the https://sdqweb.ipd.kit.edu/eclipse/palladio/core/pcm/releases/4.0.0/
+https://sdqweb.ipd.kit.edu/eclipse/palladio/core/pcm/releases/4.0.0/
+are inaccessible for Maven.
 
 Please adapt the following line in the pom.xml to your eclipse plugin
 installation.
