@@ -1,9 +1,23 @@
+/***************************************************************************
+ * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.usage.transformation;
 
 import java.util.Comparator;
 import java.util.List;
 
-import org.eclipse.uml2.uml.CallEvent;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.usage.EntryCallEventWrapper;
 import org.iobserve.analysis.usage.utils.FunctionalStream;
@@ -20,6 +34,8 @@ import org.iobserve.analysis.usage.utils.FunctionalStream;
  */
 public final class SimpleEntryCallEventTokenSequenceAnalyser
 		extends AbstractTokenSequenceAnalyser<EntryCallEventWrapper> {
+
+	private static final int SIZE_STATES = 5;
 
 	// ********************************************************************
 	// * FIELDS
@@ -52,7 +68,7 @@ public final class SimpleEntryCallEventTokenSequenceAnalyser
 	/**
 	 * The last action called from the {@link TokenSequenceAnalyser} when processing the tokens
 	 */
-	private final OnFinish<EntryCallEventWrapper> finishAction = new OnFinish<EntryCallEventWrapper>() {
+	private final IOnFinish<EntryCallEventWrapper> finishAction = new IOnFinish<EntryCallEventWrapper>() {
 		@Override
 		public void onFinish(final TokenSequenceAnalyser<EntryCallEventWrapper> lexer) {
 			// is doing nothing
@@ -60,7 +76,20 @@ public final class SimpleEntryCallEventTokenSequenceAnalyser
 		}
 	};
 
-	private static final int SIZE_STATES = 5;
+	/**
+	 * End-State to fire {@link org.eclipse.uml2.uml.CallEvent}
+	 */
+	private final AbstractEntryCallEventLexerState state0 = new AbstractEntryCallEventLexerState() {
+
+		@Override
+		public void run(final SimpleEntryCallEventTokenSequenceAnalyser lexer) {
+			final EntryCallEventWrapper token = lexer.popToken();
+
+			final ModelSystemCall<EntryCallEventWrapper> call = new ModelSystemCall<EntryCallEventWrapper>(token);
+			SimpleEntryCallEventTokenSequenceAnalyser.this.callVisitors(call);
+			SimpleEntryCallEventTokenSequenceAnalyser.this.setState(0);
+		}
+	};
 
 	// ********************************************************************
 	// * CONSTRUCTORS
@@ -116,23 +145,23 @@ public final class SimpleEntryCallEventTokenSequenceAnalyser
 					final EntryCallEventWrapper e2) {
 
 				// 1. Attempt of sort: By entry-time
-				if (e1.event.getEntryTime() > e2.event.getEntryTime()) {
+				if (e1.getEvent().getEntryTime() > e2.getEvent().getEntryTime()) {
 					return 1;
-				} else if (e1.event.getEntryTime() < e2.event.getEntryTime()) {
+				} else if (e1.getEvent().getEntryTime() < e2.getEvent().getEntryTime()) {
 					return -1;
 				}
 
 				// 2. Attempt of sort: By exit-time
-				if (e1.event.getExitTime() > e2.event.getExitTime()) {
+				if (e1.getEvent().getExitTime() > e2.getEvent().getExitTime()) {
 					return 1;
-				} else if (e1.event.getExitTime() < e2.event.getExitTime()) {
+				} else if (e1.getEvent().getExitTime() < e2.getEvent().getExitTime()) {
 					return -1;
 				}
 
 				// 3. Attempt of sort: By index of when the event was processed
-				if (e1.index > e2.index) {
+				if (e1.getIndex() > e2.getIndex()) {
 					return 1;
-				} else if (e1.index < e2.index) {
+				} else if (e1.getIndex() < e2.getIndex()) {
 					return -1;
 				}
 
@@ -168,17 +197,17 @@ public final class SimpleEntryCallEventTokenSequenceAnalyser
 	// ********************************************************************
 
 	/**
-	 * Abstract class for the {@link TokenSequenceAnalyserState} interface. This class is acting
+	 * Abstract class for the {@link ITokenSequenceAnalyserState} interface. This class is acting
 	 * as local base class for all states used. It overloads also the
-	 * {@link TokenSequenceAnalyserState#run(TokenSequenceAnalyser)} method with the specific
+	 * {@link ITokenSequenceAnalyserState#run(TokenSequenceAnalyser)} method with the specific
 	 * {@link SimpleEntryCallEventTokenSequenceAnalyser} type to facilitate the access of class
 	 * specific methods.
 	 *
 	 * @author Alessandro Giusa, alessandrogiusa@gmail.com
 	 *
 	 */
-	private abstract class EntryCallEventLexerState
-			implements TokenSequenceAnalyserState<EntryCallEventWrapper> {
+	private abstract class AbstractEntryCallEventLexerState
+			implements ITokenSequenceAnalyserState<EntryCallEventWrapper> {
 		@Override
 		public final void run(final TokenSequenceAnalyser<EntryCallEventWrapper> lexer) {
 			this.run((SimpleEntryCallEventTokenSequenceAnalyser) lexer);
@@ -190,20 +219,5 @@ public final class SimpleEntryCallEventTokenSequenceAnalyser
 		 */
 		public abstract void run(SimpleEntryCallEventTokenSequenceAnalyser lexer);
 	}
-
-	/**
-	 * End-State to fire {@link CallEvent}
-	 */
-	private final EntryCallEventLexerState state0 = new EntryCallEventLexerState() {
-
-		@Override
-		public void run(final SimpleEntryCallEventTokenSequenceAnalyser lexer) {
-			final EntryCallEventWrapper token = lexer.popToken();
-
-			final ModelSystemCall<EntryCallEventWrapper> call = new ModelSystemCall<EntryCallEventWrapper>(token);
-			SimpleEntryCallEventTokenSequenceAnalyser.this.callVisitors(call);
-			SimpleEntryCallEventTokenSequenceAnalyser.this.setState(0);
-		}
-	};
 
 }

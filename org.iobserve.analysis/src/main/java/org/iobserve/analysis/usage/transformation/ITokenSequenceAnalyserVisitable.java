@@ -15,24 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.usage.transformation;
 
-import java.util.Collections;
-import java.util.List;
+public interface ITokenSequenceAnalyserVisitable<T> {
 
-public class StartModelLoop<T> implements IModelComponent<T> {
-
-	private final List<T> items;
-
-	public StartModelLoop(final List<T> list) {
-		this.items = Collections.unmodifiableList(list);
-	}
-
-	@Override
-	public void accept(final ITokenSequenceAnalyserVisitor<T> visitor) {
-		visitor.visit(this);
-	}
-
-	public List<T> getItems() {
-		return this.items;
-	}
-
+	public abstract void accept(ITokenSequenceAnalyserVisitor<T> visitor);
 }

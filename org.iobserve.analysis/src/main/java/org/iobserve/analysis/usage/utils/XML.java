@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.usage.utils;
 
 import java.io.ByteArrayInputStream;
@@ -51,156 +66,57 @@ import org.xml.sax.helpers.DefaultHandler;
 public final class XML {
 
 	// ********************************************************************
-	// * LOCAL CLASSES
+	// * STATIC FIELDS
 	// ********************************************************************
 
-	public static class SimpleNameSpaceContext implements NamespaceContext {
-
-		private final Map<String, String> ctx = new HashMap<String, String>();
-
-		@Override
-		public String getNamespaceURI(final String prefix) {
-			final String _ns = this.ctx.get(prefix);
-			return _ns != null ? _ns : XMLConstants.NULL_NS_URI;
-		}
-
-		@Override
-		public String getPrefix(final String namespaceURI) {
-			String _prefix = null;
-			for (final String nextKey : this.ctx.keySet()) {
-				if (this.ctx.get(nextKey).equals(namespaceURI)) {
-					_prefix = nextKey;
-					break;
-				}
-			}
-			return _prefix != null ? _prefix : XMLConstants.DEFAULT_NS_PREFIX;
-		}
-
-		@Override
-		public Iterator<String> getPrefixes(final String namespaceURI) {
-			final ArrayList<String> _list = new ArrayList<String>();
-			_list.add(this.getPrefix(namespaceURI));
-			return _list.iterator();
-		}
-
-		/**
-		 * Add a new mapping to this context
-		 *
-		 * @param prefix
-		 * @param namespace
-		 */
-		public void addMapping(final String prefix, final String namespace) {
-			this.ctx.put(prefix, namespace);
-		}
-
-		/**
-		 * Remove the prefix from the context
-		 *
-		 * @param prefix
-		 */
-		public void removePrefix(final String prefix) {
-			this.ctx.remove(prefix);
-		}
-
-		/**
-		 * Remove the prefix which has this name space
-		 *
-		 * @param ns
-		 */
-		public void removeNamespace(final String ns) {
-			String _key2Rm = null;
-			for (final String nextKey : this.ctx.keySet()) {
-				if (this.ctx.get(nextKey).equals(ns)) {
-					_key2Rm = nextKey;
-					break;
-				}
-			}
-			if (_key2Rm != null) {
-				this.removePrefix(_key2Rm);
-			}
-		}
-	}
-
 	/**
-	 * Simple error handler for XML-Validation. Saves all occurring problems in
-	 * different lists.
-	 *
-	 * @author Alessandro Giusa,alessandrogiusa@gmail.com
-	 * @version 0.1 , 24.08.2014
-	 */
-	private static class SimpleErrorHandler extends DefaultHandler {
-
-		private final List<SAXParseException> warnings = new ArrayList<SAXParseException>();
-
-		private final List<SAXParseException> errors = new ArrayList<SAXParseException>();
-
-		private final List<SAXParseException> fatals = new ArrayList<SAXParseException>();
-
-		@Override
-		public void error(final SAXParseException e) throws SAXException {
-			this.errors.add(e);
-		}
-
-		@Override
-		public void fatalError(final SAXParseException e) throws SAXException {
-			this.fatals.add(e);
-		}
-
-		@Override
-		public void warning(final SAXParseException e) throws SAXException {
-			this.warnings.add(e);
-		}
-
-		public List<SAXParseException> getWarnings() {
-			return this.warnings;
-		}
-
-		public List<SAXParseException> getErrors() {
-			return this.errors;
-		}
-
-		public List<SAXParseException> getFatals() {
-			return this.fatals;
-		}
-	}
-
-	public class XMLNotification extends Throwable {
-		private static final long serialVersionUID = 1L;
-
-		public static final String SUCCESSFULLY_FINISHED = "exception.successfully.finished";
-
-		public XMLNotification(final String string) {
-			super(string);
-		}
-	}
-
-	public enum XMLOption {
-		CONTINUE, BREAK, SKIP, BREADTH_FIRST_SEARCH, DEPTH_FIRST_SEARCH;
-	}
-
-	/**
-	 *
-	 * @author AlessandroGiusa@gmail.com
+	 * Get the validation warnings during XML creation.<br>
+	 * Object is class {@link List} and values in list are class {@link SAXParseException}
 	 *
 	 */
-	public static abstract class XMLVisitor {
+	public static final String CTX_VALIDATION_WARNINGS = "ctx.validation.warnings";
 
-		protected XMLOption visitNode(final Node node) {
-			return XMLOption.CONTINUE;
-		}
+	/**
+	 * Get the validation errors during XML creation.<br>
+	 * object is class {@link List} and values in list are class {@link SAXParseException}
+	 *
+	 */
+	public static final String CTX_VALIDATION_ERRORS = "ctx.validation.errors";
 
-		protected XMLOption visitNode(final String content) {
-			return XMLOption.CONTINUE;
-		}
+	/**
+	 * Get the validation fatals during XML creation.<br>
+	 * object is class {@link List} and values in list are class {@link SAXParseException}
+	 *
+	 */
+	public static final String CTX_VALIDATION_FATALS = "ctx.validation.fatals";
 
-		protected XMLOption visitAttr(final Node node) {
-			return XMLOption.CONTINUE;
-		}
+	/** Set a {@link NamespaceContext} for all filtering actions */
+	public static final String CTX_NAMESPACE_CONTEXT = "ctx.namespace.context";
 
-		protected XMLOption visitAttr(final String content) {
-			return XMLOption.CONTINUE;
-		}
+	// ********************************************************************
+	// * VARIABLE FIELDS
+	// ********************************************************************
 
+	private Document doc;
+
+	/** context of this XML object */
+	private final Map<String, Object> context = new HashMap<String, Object>();
+
+	/** namespace context */
+	private final SimpleNameSpaceContext namespaceContext = new SimpleNameSpaceContext();
+
+	private Node lastTouched;
+
+	// ********************************************************************
+	// * CONSTRUCTOR
+	// ********************************************************************
+
+	private XML() {
+
+	}
+
+	private XML(final Document document) {
+		this.doc = document;
 	}
 
 	// ********************************************************************
@@ -211,7 +127,7 @@ public final class XML {
 	 * Create a {@link Schema} object based on the given input-stream
 	 *
 	 * @param input
-	 * @return
+	 * @return schema
 	 */
 	public static Schema createSchema(final InputStream input, final String lang) {
 		try {
@@ -255,7 +171,7 @@ public final class XML {
 
 				final DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
 				df.setNamespaceAware(true);
-				df.setValidating(true);// this is when validating with DTD
+				df.setValidating(true); // this is when validating with DTD
 				df.setSchema(_schema);
 				final DocumentBuilder docBuilder = df.newDocumentBuilder();
 				final SimpleErrorHandler seh = new SimpleErrorHandler();
@@ -446,58 +362,6 @@ public final class XML {
 	}
 
 	// ********************************************************************
-	// * STATIC FIELDS
-	// ********************************************************************
-
-	/**
-	 * Get the validation warnings during XML creation.<br>
-	 * Object is class {@link List} and values in list are class {@link SAXParseException}
-	 *
-	 */
-	public static final String CTX_VALIDATION_WARNINGS = "ctx.validation.warnings";
-
-	/**
-	 * Get the validation errors during XML creation.<br>
-	 * object is class {@link List} and values in list are class {@link SAXParseException}
-	 *
-	 */
-	public static final String CTX_VALIDATION_ERRORS = "ctx.validation.errors";
-
-	/**
-	 * Get the validation fatals during XML creation.<br>
-	 * object is class {@link List} and values in list are class {@link SAXParseException}
-	 *
-	 */
-	public static final String CTX_VALIDATION_FATALS = "ctx.validation.fatals";
-
-	/** Set a {@link NamespaceContext} for all filtering actions */
-	public static final String CTX_NAMESPACE_CONTEXT = "ctx.namespace.context";
-
-	// ********************************************************************
-	// * VARIABLE FIELDS
-	// ********************************************************************
-
-	private Document doc;
-
-	/** context of this XML object */
-	private final Map<String, Object> context = new HashMap<String, Object>();
-
-	/** namespace context */
-	private final SimpleNameSpaceContext namespaceContext = new SimpleNameSpaceContext();
-
-	private Node lastTouched;
-
-	// ********************************************************************
-	// * CONSTRUCTOR
-	// ********************************************************************
-
-	private XML() {}
-
-	private XML(final Document document) {
-		this.doc = document;
-	}
-
-	// ********************************************************************
 	// * MANIPULATE XML TREE
 	// ********************************************************************
 
@@ -629,6 +493,7 @@ public final class XML {
 	 * Search via xpath starting from root
 	 *
 	 * @param xpathExpr
+	 *            ???
 	 * @return
 	 */
 	public final NodeList search(final String xpathExpr) {
@@ -637,8 +502,7 @@ public final class XML {
 
 	public final XML filter(final String xpathExpression, final String rootNewXML) {
 		if ((xpathExpression == null) || xpathExpression.isEmpty()) {
-			throw new IllegalArgumentException("param xpathExpression is either" +
-					" null or empty");
+			throw new IllegalArgumentException("param xpathExpression is either null or empty");
 		}
 		final NodeList list = (NodeList) this.search(xpathExpression, this.doc, XPathConstants.NODESET);
 		return XML.valueOf(list, rootNewXML);
@@ -646,8 +510,7 @@ public final class XML {
 
 	public final XML filter(final String xpathExpression) {
 		if ((xpathExpression == null) || xpathExpression.isEmpty()) {
-			throw new IllegalArgumentException("param xpathExpression is either" +
-					" null or empty");
+			throw new IllegalArgumentException("param xpathExpression is either null or empty");
 		}
 		final NodeList list = (NodeList) this.search(xpathExpression, this.doc, XPathConstants.NODESET);
 		return XML.valueOf(list);
@@ -655,16 +518,14 @@ public final class XML {
 
 	public final Node getNode(final String xpathExpression) {
 		if ((xpathExpression == null) || xpathExpression.isEmpty()) {
-			throw new IllegalArgumentException("param xpathExpression is either" +
-					" null or empty");
+			throw new IllegalArgumentException("param xpathExpression is either null or empty");
 		}
 		return (Node) this.search(xpathExpression, this.doc, XPathConstants.NODE);
 	}
 
 	public final NodeList getNodes(final String xpathExpression) {
 		if ((xpathExpression == null) || xpathExpression.isEmpty()) {
-			throw new IllegalArgumentException("param xpathExpression is either" +
-					" null or empty");
+			throw new IllegalArgumentException("param xpathExpression is either null or empty");
 		}
 		return (NodeList) this.search(xpathExpression, this.doc, XPathConstants.NODESET);
 	}
@@ -736,7 +597,7 @@ public final class XML {
 	 *            starting point should be a node not a collection of node
 	 * @param visitors
 	 */
-	public final void walkXML(final XMLOption strategy, final String start, final XMLVisitor... visitors) {
+	public final void walkXML(final XMLOption strategy, final String start, final AbstractXMLVisitor... visitors) {
 		// TODO
 		/*
 		 * Eventually on very big XML files the recursive way of this method fails!
@@ -826,11 +687,12 @@ public final class XML {
 	 * @param start
 	 * @param visitors
 	 */
-	private void walkRecursivlyBreadthFirstSearch(final List<Node> visitedNodes, final Node node, final XMLVisitor... visitors) {
+	private void walkRecursivlyBreadthFirstSearch(final List<Node> visitedNodes, final Node node, final AbstractXMLVisitor... visitors) {
 		if (node != null) {
 			XMLOption option = XMLOption.CONTINUE;
-			for (final XMLVisitor visitor : visitors) {
+			for (final AbstractXMLVisitor visitor : visitors) {
 				try {
+					// TODO this is super ugly. Use if-then-else instead
 					switch (node.getNodeType()) {
 					case Node.ELEMENT_NODE:
 						option = visitor.visitNode(node);
@@ -852,8 +714,11 @@ public final class XML {
 							}
 						}
 						break;
+					default:
+						break;
 					}
-				} catch (final Exception e) {
+					// TODO check if this can be replaced by a specific exception
+				} catch (final Exception e) { // NOCS
 					e.printStackTrace();
 				}
 				switch (option) {
@@ -890,11 +755,12 @@ public final class XML {
 		}
 	}
 
-	private void walkRecursivlyDepthFirstSearch(Node start, final Node node, final XMLVisitor... visitors) throws XMLNotification {
+	private void walkRecursivlyDepthFirstSearch(Node start, final Node node, final AbstractXMLVisitor... visitors) throws XMLNotification {
 		if (node != null) {
 			XMLOption option = XMLOption.CONTINUE;
-			for (final XMLVisitor visitor : visitors) {
+			for (final AbstractXMLVisitor visitor : visitors) {
 				try {
+					// TODO this is ugly use if-then-else instead
 					switch (node.getNodeType()) {
 					case Node.ELEMENT_NODE:
 						option = visitor.visitNode(node);
@@ -915,8 +781,11 @@ public final class XML {
 							}
 						}
 						break;
+					default:
+						break;
 					}
-				} catch (final Exception e) {
+					// TODO check if this can be replaced by a specific exception
+				} catch (final Exception e) { // NOCS
 					e.printStackTrace();
 				}
 				switch (option) {
@@ -941,8 +810,9 @@ public final class XML {
 		}
 		// here there is no sibling any more
 		Node nextSibling = null;
+		// TODO this is very ugly, as a parameter passed to the method is used as a variable
 		while ((nextSibling = start.getNextSibling()) == null) {
-			start = start.getParentNode();
+			start = start.getParentNode(); // NOCS (please remove this)
 			if (start.getNodeType() == Node.DOCUMENT_NODE) {
 				throw new XMLNotification(XMLNotification.SUCCESSFULLY_FINISHED);
 			}
@@ -979,4 +849,174 @@ public final class XML {
 		}
 		return _out;
 	}
+
+	/**
+	 * Simple error handler for XML-Validation. Saves all occurring problems in
+	 * different lists.
+	 *
+	 * @author Alessandro Giusa,alessandrogiusa@gmail.com
+	 * @version 0.1 , 24.08.2014
+	 */
+	private static class SimpleErrorHandler extends DefaultHandler {
+
+		private final List<SAXParseException> warnings = new ArrayList<SAXParseException>();
+
+		private final List<SAXParseException> errors = new ArrayList<SAXParseException>();
+
+		private final List<SAXParseException> fatals = new ArrayList<SAXParseException>();
+
+		/**
+		 * dummy default constructor.
+		 */
+		public SimpleErrorHandler() {
+			super();
+		}
+
+		@Override
+		public void error(final SAXParseException e) throws SAXException {
+			this.errors.add(e);
+		}
+
+		@Override
+		public void fatalError(final SAXParseException e) throws SAXException {
+			this.fatals.add(e);
+		}
+
+		@Override
+		public void warning(final SAXParseException e) throws SAXException {
+			this.warnings.add(e);
+		}
+
+		public List<SAXParseException> getWarnings() {
+			return this.warnings;
+		}
+
+		public List<SAXParseException> getErrors() {
+			return this.errors;
+		}
+
+		public List<SAXParseException> getFatals() {
+			return this.fatals;
+		}
+	}
+
+	public class XMLNotification extends Throwable {
+		public static final String SUCCESSFULLY_FINISHED = "exception.successfully.finished";
+
+		private static final long serialVersionUID = 1L;
+
+		public XMLNotification(final String string) {
+			super(string);
+		}
+	}
+
+	public enum XMLOption {
+		CONTINUE, BREAK, SKIP, BREADTH_FIRST_SEARCH, DEPTH_FIRST_SEARCH;
+	}
+
+	// ********************************************************************
+	// * LOCAL CLASSES
+	// ********************************************************************
+
+	// TODO it might be helpful to better understand XML.java to move these classes in separate files
+	// and use a package to contain them together with the XML.java class
+	public static class SimpleNameSpaceContext implements NamespaceContext {
+
+		private final Map<String, String> ctx = new HashMap<String, String>();
+
+		/**
+		 * dummy constructor.
+		 */
+		public SimpleNameSpaceContext() {
+
+		}
+
+		@Override
+		public String getNamespaceURI(final String prefix) {
+			final String _ns = this.ctx.get(prefix);
+			return _ns != null ? _ns : XMLConstants.NULL_NS_URI;
+		}
+
+		@Override
+		public String getPrefix(final String namespaceURI) {
+			String _prefix = null;
+			for (final String nextKey : this.ctx.keySet()) {
+				if (this.ctx.get(nextKey).equals(namespaceURI)) {
+					_prefix = nextKey;
+					break;
+				}
+			}
+			return _prefix != null ? _prefix : XMLConstants.DEFAULT_NS_PREFIX;
+		}
+
+		@Override
+		public Iterator<String> getPrefixes(final String namespaceURI) {
+			final List<String> _list = new ArrayList<String>();
+			_list.add(this.getPrefix(namespaceURI));
+			return _list.iterator();
+		}
+
+		/**
+		 * Add a new mapping to this context
+		 *
+		 * @param prefix
+		 * @param namespace
+		 */
+		public void addMapping(final String prefix, final String namespace) {
+			this.ctx.put(prefix, namespace);
+		}
+
+		/**
+		 * Remove the prefix from the context
+		 *
+		 * @param prefix
+		 */
+		public void removePrefix(final String prefix) {
+			this.ctx.remove(prefix);
+		}
+
+		/**
+		 * Remove the prefix which has this name space
+		 *
+		 * @param ns
+		 */
+		public void removeNamespace(final String ns) {
+			String _key2Rm = null;
+			for (final String nextKey : this.ctx.keySet()) {
+				if (this.ctx.get(nextKey).equals(ns)) {
+					_key2Rm = nextKey;
+					break;
+				}
+			}
+			if (_key2Rm != null) {
+				this.removePrefix(_key2Rm);
+			}
+		}
+	}
+
+	/**
+	 *
+	 * @author AlessandroGiusa@gmail.com
+	 *
+	 */
+	public abstract static class AbstractXMLVisitor {
+
+		protected XMLOption visitNode(final Node node) {
+			return XMLOption.CONTINUE;
+		}
+
+		protected XMLOption visitNode(final String content) {
+			return XMLOption.CONTINUE;
+		}
+
+		protected XMLOption visitAttr(final Node node) {
+			return XMLOption.CONTINUE;
+		}
+
+		protected XMLOption visitAttr(final String content) {
+			return XMLOption.CONTINUE;
+		}
+
+	}
+
 }

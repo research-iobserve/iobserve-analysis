@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,11 @@ import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.core.registry.TraceRegistry;
 import kieker.monitoring.timer.ITimeSource;
 
+/**
+ *
+ * @author Reiner Jung
+ *
+ */
 @Interceptor
 public class TraceInterceptor {
 
@@ -36,11 +41,22 @@ public class TraceInterceptor {
 	private final IMonitoringController monitoringCtrl;
 	private final ITimeSource timeSource;
 
+	/**
+	 * Initialize trace interceptor.
+	 */
 	public TraceInterceptor() {
 		this.monitoringCtrl = MonitoringController.getInstance();
 		this.timeSource = this.monitoringCtrl.getTimeSource();
 	}
 
+	/**
+	 * Around advice configuration.
+	 *
+	 * @param context
+	 *            the invocation context of a bean call.
+	 * @return the return value of the next method in the chain
+	 * @throws Throwable
+	 */
 	@AroundInvoke
 	public Object interceptMethodCall(final InvocationContext context)
 			throws Throwable { // NOCS (IllegalThrowsCheck)

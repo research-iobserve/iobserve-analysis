@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.usage.transformation;
 
 import java.io.FileNotFoundException;
@@ -7,13 +22,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Stack;
 
-import org.eclipse.uml2.uml.CallEvent;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.usage.EntryCallEventSession;
 import org.iobserve.analysis.usage.EntryCallEventWrapper;
 import org.iobserve.analysis.usage.utils.FunctionalStream;
 import org.iobserve.analysis.usage.utils.FunctionalStream.FunctionalUnaryOperation;
-import org.iobserve.analysis.usage.utils.IdProvider;
+import org.iobserve.analysis.usage.utils.IIdProvider;
 
 /**
  * An EntryCallEventLexer uses the idea of a Lexer normally invoked as a first
@@ -34,6 +48,10 @@ public final class EntryCallEventTokenSequenceAnalyser
 	// TODO has to be removed
 	private static final String PLANT_UML_DIAGRAM_FILE = "test_resources/PlantUML.txt";
 
+	// static fields
+
+	private static final int SIZE_STATES = 5;
+
 	// ********************************************************************
 	// * FIELDS
 	// ********************************************************************
@@ -41,10 +59,10 @@ public final class EntryCallEventTokenSequenceAnalyser
 	/**
 	 * Id-Provider for all {@link EntryCallEventWrapper}
 	 */
-	private final IdProvider<EntryCallEventWrapper> tokenIdProvider = new IdProvider<EntryCallEventWrapper>() {
+	private final IIdProvider<EntryCallEventWrapper> tokenIdProvider = new IIdProvider<EntryCallEventWrapper>() {
 		@Override
 		public String getId(final EntryCallEventWrapper element) {
-			final String id = EntryCallEventTokenSequenceAnalyser.getEntryCallEventId(element.event);
+			final String id = EntryCallEventTokenSequenceAnalyser.getEntryCallEventId(element.getEvent());
 			return id;
 		}
 	};
@@ -63,7 +81,7 @@ public final class EntryCallEventTokenSequenceAnalyser
 	/**
 	 * The last action called from the {@link TokenSequenceAnalyser} when processing the tokens
 	 */
-	private final OnFinish<UsagePathElement<EntryCallEventWrapper>> finishAction = new OnFinish<UsagePathElement<EntryCallEventWrapper>>() {
+	private final IOnFinish<UsagePathElement<EntryCallEventWrapper>> finishAction = new IOnFinish<UsagePathElement<EntryCallEventWrapper>>() {
 		@Override
 		public void onFinish(final TokenSequenceAnalyser<UsagePathElement<EntryCallEventWrapper>> lexer) {
 			EntryCallEventTokenSequenceAnalyser.this.state1.run(lexer);
@@ -72,9 +90,94 @@ public final class EntryCallEventTokenSequenceAnalyser
 		}
 	};
 
-	private final UsagePath<EntryCallEventWrapper> usagePath;
+	/**
+	 *
+	 */
+	private final AbstractEntryCallEventLexerState state0 = new AbstractEntryCallEventLexerState() {
 
-	private static final int SIZE_STATES = 5;
+		@Override
+		public void run(final EntryCallEventTokenSequenceAnalyser lexer) {
+			final UsagePathElement<EntryCallEventWrapper> token = lexer.peekToken();
+
+			if (token.getPredecessors().isEmpty()) {
+				// no predecessors means this is the first token and it is
+				// not in a loop
+				lexer.setState(1);
+			} else {
+				// it has predecessors, now loop has to be tested
+				final Stack<UsagePathElement<EntryCallEventWrapper>> s = EntryCallEventTokenSequenceAnalyser.this.getStack();
+
+				if (s.isEmpty()) {
+					lexer.popToken();
+					s.push(token);
+					EntryCallEventTokenSequenceAnalyser.this.setState(2);
+				} else {
+					// TODO
+				}
+			}
+
+		}
+	};
+
+	/**
+	 *
+	 */
+	private final AbstractEntryCallEventLexerState state3 = new AbstractEntryCallEventLexerState() {
+
+		@Override
+		public void run(final EntryCallEventTokenSequenceAnalyser lexer) {
+			// TODO implementation missing
+		}
+	};
+
+	/**
+	 * End-State, Loop detected, is now extracted
+	 */
+	private final AbstractEntryCallEventLexerState state4 = new AbstractEntryCallEventLexerState() {
+
+		@Override
+		public void run(final EntryCallEventTokenSequenceAnalyser lexer) {
+			final Stack<UsagePathElement<EntryCallEventWrapper>> s = lexer.getStack();
+
+			List<UsagePathElement<EntryCallEventWrapper>> loopItems = new ArrayList<UsagePathElement<EntryCallEventWrapper>>();
+
+			UsagePathElement<EntryCallEventWrapper> item = null;
+			while (!s.isEmpty()) {
+				item = s.pop();
+				loopItems.add(item);
+			}
+
+			loopItems = EntryCallEventTokenSequenceAnalyser.this.sortElements(loopItems);
+			// TODO sorted by time problem
+			/*
+			 * sorted by index of arrival time order of each event, since the
+			 * entry- and exit-time can be same
+			 */
+
+			// send the information that
+			final StartModelLoop<UsagePathElement<EntryCallEventWrapper>> startLoop = new StartModelLoop<UsagePathElement<EntryCallEventWrapper>>(loopItems);
+			EntryCallEventTokenSequenceAnalyser.this.callVisitors(startLoop);
+
+			for (final UsagePathElement<EntryCallEventWrapper> next : loopItems) {
+				if (next.getSuccessors().size() > 1) {
+					// and the successors in loop itself
+					final ModelBranch<UsagePathElement<EntryCallEventWrapper>> branch = new ModelBranch<UsagePathElement<EntryCallEventWrapper>>(next);
+					EntryCallEventTokenSequenceAnalyser.this.callVisitors(branch);
+				} else {
+					final ModelSystemCall<UsagePathElement<EntryCallEventWrapper>> call = new ModelSystemCall<UsagePathElement<EntryCallEventWrapper>>(next);
+					EntryCallEventTokenSequenceAnalyser.this.callVisitors(call);
+				}
+			}
+
+			final EndModelLoop<UsagePathElement<EntryCallEventWrapper>> endLoop = new EndModelLoop<UsagePathElement<EntryCallEventWrapper>>(loopItems);
+			EntryCallEventTokenSequenceAnalyser.this.callVisitors(endLoop);
+
+			lexer.setState(0);
+
+		}
+	};
+
+	private final UsagePath<EntryCallEventWrapper> usagePath;
 
 	// ********************************************************************
 	// * CONSTRUCTORS
@@ -138,8 +241,8 @@ public final class EntryCallEventTokenSequenceAnalyser
 					@Override
 					public int compare(final EntryCallEventWrapper o1,
 							final EntryCallEventWrapper o2) {
-						return (o1.event.getHostname() + o1.event.getSessionId())
-								.compareTo(o2.event.getHostname() + o2.event.getSessionId());
+						return (o1.getEvent().getHostname() + o1.getEvent().getSessionId())
+								.compareTo(o2.getEvent().getHostname() + o2.getEvent().getSessionId());
 					}
 				})
 				.map(new FunctionalUnaryOperation<List<EntryCallEventWrapper>, EntryCallEventSession>() {
@@ -191,23 +294,23 @@ public final class EntryCallEventTokenSequenceAnalyser
 				final EntryCallEventWrapper e2 = o2.getUserData();
 
 				// 1. Attempt of sort: By entry-time
-				if (e1.event.getEntryTime() > e2.event.getEntryTime()) {
+				if (e1.getEvent().getEntryTime() > e2.getEvent().getEntryTime()) {
 					return 1;
-				} else if (e1.event.getEntryTime() < e2.event.getEntryTime()) {
+				} else if (e1.getEvent().getEntryTime() < e2.getEvent().getEntryTime()) {
 					return -1;
 				}
 
 				// 2. Attempt of sort: By exit-time
-				if (e1.event.getExitTime() > e2.event.getExitTime()) {
+				if (e1.getEvent().getExitTime() > e2.getEvent().getExitTime()) {
 					return 1;
-				} else if (e1.event.getExitTime() < e2.event.getExitTime()) {
+				} else if (e1.getEvent().getExitTime() < e2.getEvent().getExitTime()) {
 					return -1;
 				}
 
 				// 3. Attempt of sort: By index of when the event was processed
-				if (e1.index > e2.index) {
+				if (e1.getIndex() > e2.getIndex()) {
 					return 1;
-				} else if (e1.index < e2.index) {
+				} else if (e1.getIndex() < e2.getIndex()) {
 					return -1;
 				}
 
@@ -240,9 +343,9 @@ public final class EntryCallEventTokenSequenceAnalyser
 					final UsagePathElement<EntryCallEventWrapper> o2) {
 				final EntryCallEventWrapper e1 = o1.getUserData();
 				final EntryCallEventWrapper e2 = o2.getUserData();
-				if (e1.index > e2.index) {
+				if (e1.getIndex() > e2.getIndex()) {
 					return 1;
-				} else if (e1.index < e2.index) {
+				} else if (e1.getIndex() < e2.getIndex()) {
 					return -1;
 				}
 				return 0;
@@ -285,17 +388,17 @@ public final class EntryCallEventTokenSequenceAnalyser
 	// ********************************************************************
 
 	/**
-	 * Abstract class for the {@link TokenSequenceAnalyserState} interface. This class is acting
+	 * Abstract class for the {@link ITokenSequenceAnalyserState} interface. This class is acting
 	 * as local base class for all states used. It overloads also the
-	 * {@link TokenSequenceAnalyserState#run(TokenSequenceAnalyser)} method with the specific
+	 * {@link ITokenSequenceAnalyserState#run(TokenSequenceAnalyser)} method with the specific
 	 * {@link EntryCallEventTokenSequenceAnalyser} type to facilitate the access of class
 	 * specific methods.
 	 *
 	 * @author Alessandro Giusa, alessandrogiusa@gmail.com
 	 *
 	 */
-	private abstract class EntryCallEventLexerState
-			implements TokenSequenceAnalyserState<UsagePathElement<EntryCallEventWrapper>> {
+	private abstract class AbstractEntryCallEventLexerState
+			implements ITokenSequenceAnalyserState<UsagePathElement<EntryCallEventWrapper>> {
 		@Override
 		public final void run(final TokenSequenceAnalyser<UsagePathElement<EntryCallEventWrapper>> lexer) {
 			this.run((EntryCallEventTokenSequenceAnalyser) lexer);
@@ -309,38 +412,9 @@ public final class EntryCallEventTokenSequenceAnalyser
 	}
 
 	/**
-	 *
+	 * End-State to fire {@link org.eclipse.uml2.uml.CallEvent}
 	 */
-	private final EntryCallEventLexerState state0 = new EntryCallEventLexerState() {
-
-		@Override
-		public void run(final EntryCallEventTokenSequenceAnalyser lexer) {
-			final UsagePathElement<EntryCallEventWrapper> token = lexer.peekToken();
-
-			if (token.getPredecessors().isEmpty()) {
-				// no predecessors means this is the first token and it is
-				// not in a loop
-				lexer.setState(1);
-			} else {
-				// it has predecessors, now loop has to be tested
-				final Stack<UsagePathElement<EntryCallEventWrapper>> s = EntryCallEventTokenSequenceAnalyser.this.getStack();
-
-				if (s.isEmpty()) {
-					lexer.popToken();
-					s.push(token);
-					EntryCallEventTokenSequenceAnalyser.this.setState(2);
-				} else {
-					// TODO
-				}
-			}
-
-		}
-	};
-
-	/**
-	 * End-State to fire {@link CallEvent}
-	 */
-	private final EntryCallEventLexerState state1 = new EntryCallEventLexerState() {
+	private final AbstractEntryCallEventLexerState state1 = new AbstractEntryCallEventLexerState() {
 
 		@Override
 		public void run(final EntryCallEventTokenSequenceAnalyser lexer) {
@@ -366,7 +440,7 @@ public final class EntryCallEventTokenSequenceAnalyser
 	/**
 	 *
 	 */
-	private final EntryCallEventLexerState state2 = new EntryCallEventLexerState() {
+	private final AbstractEntryCallEventLexerState state2 = new AbstractEntryCallEventLexerState() {
 
 		@Override
 		public void run(final EntryCallEventTokenSequenceAnalyser lexer) {
@@ -390,64 +464,6 @@ public final class EntryCallEventTokenSequenceAnalyser
 				}
 
 			}
-		}
-	};
-
-	/**
-	 *
-	 */
-	private final EntryCallEventLexerState state3 = new EntryCallEventLexerState() {
-
-		@Override
-		public void run(final EntryCallEventTokenSequenceAnalyser lexer) {
-			// TODO implementation missing
-		}
-	};
-
-	/**
-	 * End-State, Loop detected, is now extracted
-	 */
-	private final EntryCallEventLexerState state4 = new EntryCallEventLexerState() {
-
-		@Override
-		public void run(final EntryCallEventTokenSequenceAnalyser lexer) {
-			final Stack<UsagePathElement<EntryCallEventWrapper>> s = lexer.getStack();
-
-			List<UsagePathElement<EntryCallEventWrapper>> loopItems = new ArrayList<UsagePathElement<EntryCallEventWrapper>>();
-
-			UsagePathElement<EntryCallEventWrapper> item = null;
-			while (!s.isEmpty()) {
-				item = s.pop();
-				loopItems.add(item);
-			}
-
-			loopItems = EntryCallEventTokenSequenceAnalyser.this.sortElements(loopItems);
-			// TODO sorted by time problem
-			/*
-			 * sorted by index of arrival time order of each event, since the
-			 * entry- and exit-time can be same
-			 */
-
-			// send the information that
-			final StartModelLoop<UsagePathElement<EntryCallEventWrapper>> startLoop = new StartModelLoop<UsagePathElement<EntryCallEventWrapper>>(loopItems);
-			EntryCallEventTokenSequenceAnalyser.this.callVisitors(startLoop);
-
-			for (final UsagePathElement<EntryCallEventWrapper> next : loopItems) {
-				if (next.getSuccessors().size() > 1) {
-					// and the successors in loop itself
-					final ModelBranch<UsagePathElement<EntryCallEventWrapper>> branch = new ModelBranch<UsagePathElement<EntryCallEventWrapper>>(next);
-					EntryCallEventTokenSequenceAnalyser.this.callVisitors(branch);
-				} else {
-					final ModelSystemCall<UsagePathElement<EntryCallEventWrapper>> call = new ModelSystemCall<UsagePathElement<EntryCallEventWrapper>>(next);
-					EntryCallEventTokenSequenceAnalyser.this.callVisitors(call);
-				}
-			}
-
-			final EndModelLoop<UsagePathElement<EntryCallEventWrapper>> endLoop = new EndModelLoop<UsagePathElement<EntryCallEventWrapper>>(loopItems);
-			EntryCallEventTokenSequenceAnalyser.this.callVisitors(endLoop);
-
-			lexer.setState(0);
-
 		}
 	};
 

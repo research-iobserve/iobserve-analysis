@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.usage.transformation;
 
 import java.util.Comparator;
@@ -14,13 +29,20 @@ import org.iobserve.analysis.usage.utils.FunctionalStream.FunctionalBinaryOperat
 import org.iobserve.analysis.usage.utils.FunctionalStream.FunctionalUnaryOperation;
 
 public final class EntryCallEventModelBuilder
-		implements TokenSequenceAnalyserVisitor<EntryCallEventWrapper>, OnFinish<EntryCallEventWrapper> {
+		implements ITokenSequenceAnalyserVisitor<EntryCallEventWrapper>, IOnFinish<EntryCallEventWrapper> {
 
 	private final TokenSequenceAnalyser<EntryCallEventWrapper> tokenAnalyser = new SimpleEntryCallEventTokenSequenceAnalyser();
 
 	private final ICorrespondence correspondence;
 	private final UsageModelProvider modelProvider;
 	private final List<EntryCallEventWrapper> entryCallEventWrappers;
+
+	// ********************************************************************
+	// * PARSING VISITOR METHODS
+	// * This methods are called from the TokenSequenceAnalyser in time ordered manner
+	// ********************************************************************
+
+	private EntryCallEvent lastEvent;
 
 	public EntryCallEventModelBuilder(final ICorrespondence refCorrespondence,
 			final UsageModelProvider refModelprovider,
@@ -72,7 +94,7 @@ public final class EntryCallEventModelBuilder
 	// ********************************************************************
 
 	@Override
-	public void onFinish(final TokenSequenceAnalyser<EntryCallEventWrapper> tokenAnalyser) {
+	public void onFinish(final TokenSequenceAnalyser<EntryCallEventWrapper> tokenSequenceAnalyser) {
 		this.modelProvider.createStop();
 		// TODO this approach is only prototype
 	}
@@ -85,8 +107,8 @@ public final class EntryCallEventModelBuilder
 					@Override
 					public int compare(final EntryCallEventWrapper o1,
 							final EntryCallEventWrapper o2) {
-						return (o1.event.getHostname() + o1.event.getSessionId())
-								.compareTo((o2.event.getHostname() + o2.event.getSessionId()));
+						return (o1.getEvent().getHostname() + o1.getEvent().getSessionId())
+								.compareTo((o2.getEvent().getHostname() + o2.getEvent().getSessionId()));
 					}
 				})
 				.map(new FunctionalUnaryOperation<List<EntryCallEventWrapper>, EntryCallEventSession>() {
@@ -145,13 +167,6 @@ public final class EntryCallEventModelBuilder
 		System.out.println("[Stop EntryCallEventModelBuilder] " + System.currentTimeMillis());
 	}
 
-	// ********************************************************************
-	// * PARSING VISITOR METHODS
-	// * This methods are called from the TokenSequenceAnalyser in time ordered manner
-	// ********************************************************************
-
-	private EntryCallEvent lastEvent;
-
 	/**
 	 * Check if the last processed event is same to the current. If yes this
 	 * event should be skipped.
@@ -188,16 +203,16 @@ public final class EntryCallEventModelBuilder
 
 	@Override
 	public void visit(final ModelSystemCall<EntryCallEventWrapper> item) {
-		final EntryCallEvent event = item.callEvent.event;
+		final EntryCallEvent event = item.getCallEvent().getEvent();
 		if (!this.checkIfLastEventSame(event)) {
 			final String classSig = event.getClassSignature();
 			final String opSig = event.getOperationSignature();
 			final String operationSig = this.correspondence.getCorrespondent(classSig, opSig);
 			if (operationSig != null) {
 				this.modelProvider.addAction(operationSig);
-			} else {
-				// TODO warning?
 			}
+			// TODO warning?
+
 		}
 		this.lastEvent = event;
 	}

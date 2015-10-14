@@ -31,7 +31,8 @@ import kieker.monitoring.timer.ITimeSource;
  * of a war file and its containing servlets, which are seen as one
  * component of an application.
  *
- * The listener produces either a {@link org.spp.iobserve.common.record.ServletDeployedEvent} or a {@link org.spp.iobserve.common.record.ServletUndeployedEvent}
+ * The listener produces either a {@link org.spp.iobserve.common.record.ServletDeployedEvent}
+ * or a {@link org.spp.iobserve.common.record.ServletUndeployedEvent}
  * record on deployment and undeployment respectively. It requires an
  * deploymentId value to identify the deployment which must be added to the
  * web.xml file.
@@ -51,6 +52,9 @@ public class DeploymentContextListener implements ServletContextListener {
 	private final IMonitoringController monitoringCtrl;
 	private final ITimeSource timeSource;
 
+	/**
+	 * initialize context listener.
+	 */
 	public DeploymentContextListener() {
 		this.monitoringCtrl = MonitoringController.getInstance();
 		this.timeSource = this.monitoringCtrl.getTimeSource();

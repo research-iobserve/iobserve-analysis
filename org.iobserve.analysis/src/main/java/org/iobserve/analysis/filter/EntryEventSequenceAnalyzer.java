@@ -35,7 +35,8 @@ import teetime.framework.AbstractConsumerStage;
 public class EntryEventSequenceAnalyzer extends AbstractConsumerStage<EntryCallEvent> {
 
 	// needs session timeout.
-
+	// TODO checkstyle thinks this is a constant. However, in reality the whole
+	// class is a singleton and should be implemented as such:
 	private static final List<EntryCallEventWrapper> entryCallEventWrappers = new ArrayList<EntryCallEventWrapper>();
 
 	private final Runtime runtime;

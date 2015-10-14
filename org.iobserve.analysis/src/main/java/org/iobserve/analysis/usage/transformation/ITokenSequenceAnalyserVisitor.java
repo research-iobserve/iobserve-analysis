@@ -15,24 +15,40 @@
  ***************************************************************************/
 package org.iobserve.analysis.usage.transformation;
 
-import java.util.Collections;
-import java.util.List;
+/**
+ *
+ * @author Alessandro
+ *
+ * @param <T>
+ */
+public interface ITokenSequenceAnalyserVisitor<T> {
 
-public class StartModelLoop<T> implements IModelComponent<T> {
+	public abstract void visit(ModelLoop<T> item);
 
-	private final List<T> items;
+	/**
+	 * Identifies that a loop has started
+	 * 
+	 * @param item
+	 */
+	public abstract void visit(StartModelLoop<T> item);
 
-	public StartModelLoop(final List<T> list) {
-		this.items = Collections.unmodifiableList(list);
-	}
+	/**
+	 * Identifies that a loop which has started before, has now ended
+	 * 
+	 * @param item
+	 */
+	public abstract void visit(EndModelLoop<T> item);
 
-	@Override
-	public void accept(final ITokenSequenceAnalyserVisitor<T> visitor) {
-		visitor.visit(this);
-	}
+	/**
+	 * Simple call of a system function
+	 * 
+	 * @param item
+	 */
+	public abstract void visit(ModelSystemCall<T> item);
 
-	public List<T> getItems() {
-		return this.items;
-	}
-
+	/**
+	 *
+	 * @param item
+	 */
+	public abstract void visit(ModelBranch<T> item); // TODO has also be encapsulated via start-end
 }

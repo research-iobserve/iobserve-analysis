@@ -56,9 +56,9 @@
     <module name="Header">
         <!--<property name="headerFile"     value=""/>-->
         <property name="charset"        value="UTF-8"/>
-        <property name="header"         value="/***************************************************************************\n * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)\n *\n * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n ***************************************************************************/\n"/>
+        <property name="header"         value="/***************************************************************************\n * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)\n *\n * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);\n * you may not use this file except in compliance with the License.\n * You may obtain a copy of the License at\n *\n *     http://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n ***************************************************************************/\n"/>
         <property name="ignoreLines"    value="2"/>
-        <property name="fileExtensions" value="java"/>
+        <property name="fileExtensions" value="java, xtend"/>
     </module>
 
     <!-- Checks the header of a source file against a header file that contains a regular expression !-->
@@ -332,7 +332,7 @@
 
         <!-- Detects inline conditionals. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
-        <module name="AvoidInlineConditionals"/>
+        <!-- module name="AvoidInlineConditionals"/ -->
 
         <!-- Checks that classes that define a covariant equals() method also override method equals(java.lang.Object). !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
@@ -342,7 +342,6 @@
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
         <module name="DeclarationOrder">
             <property name="ignoreConstructors" value="false"/>
-            <property name="ignoreMethods"      value="false"/>
             <property name="ignoreModifiers"    value="false"/>
         </module>
 
@@ -464,7 +463,7 @@
         <!-- Ensures that the setUp(), tearDown()methods are named correctly, have no arguments, !-->
         <!-- return void and are either public or protected. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
-        <module name="JUnitTestCase"/>
+        <!-- module name="JUnitTestCase"/ -->
 
         <!-- Checks that there are no "magic numbers", where a magic number is a numeric literal !-->
         <!-- that is not defined as a constant. !-->
@@ -536,7 +535,7 @@
         <!-- Ensure a class has a package declaration. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
         <module name="PackageDeclaration">
-            <property name="ignoreDirectoryName" value="false"/>
+            <!-- property name="ignoreDirectoryName" value="false"/ -->
         </module>
 
         <!-- Disallow assignment of parameters. !-->
@@ -546,12 +545,12 @@
         <!-- Checks for redundant exceptions declared in throws clause such as duplicates, !-->
         <!-- unchecked exceptions or subclasses of another declared exception. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
-        <module name="RedundantThrows">
+        <!-- module name="RedundantThrows">
             <property name="allowUnchecked"     value="true"/>
             <property name="allowSubclasses"    value="false"/>
             <property name="logLoadErrors"      value="true"/>
             <property name="suppressLoadErrors" value="false"/>
-        </module>
+        </module -->
 
         <!-- Checks that code doesn't rely on the "this." default. !-->
         <!-- See http://checkstyle.sf.net/config_coding.html !-->
@@ -1181,7 +1180,7 @@
         <!-- See http://checkstyle.sf.net/config_whitespace.html !-->
         <module name="ParenPad">
             <property name="option" value="nospace"/>
-            <property name="tokens" value="CTOR_CALL, LPAREN, METHOD_CALL, RPAREN, SUPER_CTOR_CALL"/>
+            <property name="tokens" value="CTOR_CALL, METHOD_CALL, SUPER_CTOR_CALL"/>
         </module>
 
         <!-- Checks the policy on the padding of parentheses for typecasts. !-->

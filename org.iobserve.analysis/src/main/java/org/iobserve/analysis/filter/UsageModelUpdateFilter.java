@@ -32,7 +32,7 @@ import teetime.framework.AbstractConsumerStage;
  */
 public class UsageModelUpdateFilter extends AbstractConsumerStage<List<EntryCallEvent>> {
 
-	final ICorrespondence correspondenceModel;
+	private final ICorrespondence correspondenceModel;
 
 	public UsageModelUpdateFilter(final ICorrespondence correspondenceModel) {
 		this.correspondenceModel = correspondenceModel;

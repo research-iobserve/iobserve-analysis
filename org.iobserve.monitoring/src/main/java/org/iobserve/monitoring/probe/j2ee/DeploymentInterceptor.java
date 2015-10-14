@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,11 +85,23 @@ public class DeploymentInterceptor {
 	private final IMonitoringController monitoringCtrl;
 	private final ITimeSource timeSource;
 
+	/**
+	 * Deployment interceptor initialization.
+	 */
 	public DeploymentInterceptor() {
 		this.monitoringCtrl = MonitoringController.getInstance();
 		this.timeSource = this.monitoringCtrl.getTimeSource();
 	}
 
+	/**
+	 * Trigger event when container is deployed.
+	 *
+	 * @param context
+	 *            invocation context with the container
+	 * @return result of the filter chain
+	 * @throws Exception
+	 *             on any internal error
+	 */
 	@PostConstruct
 	public Object postConstruct(final InvocationContext context) throws Exception {
 		final Object result = context.proceed();
@@ -104,6 +116,15 @@ public class DeploymentInterceptor {
 		return result;
 	}
 
+	/**
+	 * Trigger event before container is undeployed.
+	 *
+	 * @param context
+	 *            invocation context with the container
+	 * @return result of the filter chain
+	 * @throws Exception
+	 *             on any internal error
+	 */
 	@PreDestroy
 	public Object preDestroy(final InvocationContext context) throws Exception {
 		final Object result = context.proceed();

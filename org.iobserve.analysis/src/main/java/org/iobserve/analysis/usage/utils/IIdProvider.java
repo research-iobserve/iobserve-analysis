@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.usage.transformation;
+package org.iobserve.analysis.usage.utils;
 
-import java.util.Collections;
-import java.util.List;
+/**
+ * An IDProvider is just a component which is able to provide an appropriated ID
+ * for the given element.<br>
+ * The right place to use this utility component is, where ever another
+ * component has to store such elements and needs a kind of unique ID for each
+ * of those elements. Using a {@link java.util.Map} could be one example.
+ *
+ * @author Alessandro Giusa, alessandrogiusa@gmail.com
+ * @version 1.0, 23.10.2014
+ *
+ * @param <E>
+ */
+public interface IIdProvider<E> {
 
-public class StartModelLoop<T> implements IModelComponent<T> {
-
-	private final List<T> items;
-
-	public StartModelLoop(final List<T> list) {
-		this.items = Collections.unmodifiableList(list);
-	}
-
-	@Override
-	public void accept(final ITokenSequenceAnalyserVisitor<T> visitor) {
-		visitor.visit(this);
-	}
-
-	public List<T> getItems() {
-		return this.items;
-	}
+	/**
+	 * Get the ID of the given element
+	 *
+	 * @param element
+	 * @return a unique id which can be used in maps, lists, etc..
+	 */
+	public abstract String getId(E element);
 
 }

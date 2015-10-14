@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.modelprovider;
 
 import java.util.Map;
@@ -14,7 +29,7 @@ import de.uka.ipd.sdq.identifier.Identifier;
 
 /**
  * Provides common method for model loading/saving etc.
- * 
+ *
  * @author Alessandro Giusa, alessandrogiusa@gmail.com
  * @version 1.0, 20.01.2015
  * @param <T>
@@ -84,7 +99,7 @@ public abstract class AbstractModelProvider<T> {
 
 	/**
 	 * Get the loaded model
-	 * 
+	 *
 	 * @return
 	 */
 	public T getModel() {
@@ -93,7 +108,7 @@ public abstract class AbstractModelProvider<T> {
 
 	/**
 	 * Get a component of the model which implements {@link Identifier}
-	 * 
+	 *
 	 * @param id
 	 * @param list
 	 *            where to search

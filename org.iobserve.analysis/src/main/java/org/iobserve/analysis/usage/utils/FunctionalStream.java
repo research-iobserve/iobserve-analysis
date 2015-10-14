@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.usage.utils;
 
 import java.util.ArrayList;
@@ -28,6 +43,7 @@ public final class FunctionalStream<E> {
 
 	private interface LoopVisitor<E> {
 		public abstract void visit(FunctionalList<E> fl);
+
 		public abstract void visit(List<FunctionalList<E>> list);
 	}
 
@@ -72,7 +88,7 @@ public final class FunctionalStream<E> {
 
 	private final void forEachWithReplace(final LoopFunction<E> loopFunction) {
 		final List<FunctionalList<E>> newList = new ArrayList<FunctionalList<E>>();
-		LoopVisitor<E> visitor = new LoopVisitor<E>() {
+		final LoopVisitor<E> visitor = new LoopVisitor<E>() {
 			@Override
 			public void visit(final List<FunctionalList<E>> list) {
 				newList.addAll(list);
@@ -96,24 +112,24 @@ public final class FunctionalStream<E> {
 	// ********************************************************************
 
 	public final FunctionalStream<E> sort(final Comparator<E> comparator) {
-		forEachWithReplace(
-			new LoopFunction<E>() {
-				@Override
-				public void apply(final FunctionalList<E> functionalList, final LoopVisitor<E> visitor) {
-					visitor.visit(functionalList.sort(comparator));
-				}
-			});
+		this.forEachWithReplace(
+				new LoopFunction<E>() {
+					@Override
+					public void apply(final FunctionalList<E> functionalList, final LoopVisitor<E> visitor) {
+						visitor.visit(functionalList.sort(comparator));
+					}
+				});
 		return this;
 	}
 
 	public final FunctionalStream<E> divide(final Comparator<E> comparator) {
-		forEachWithReplace(
-			new LoopFunction<E>() {
-				@Override
-				public void apply(final FunctionalList<E> functionalList, final LoopVisitor<E> visitor) {
-					visitor.visit(functionalList.divide(comparator));
-				}
-			});
+		this.forEachWithReplace(
+				new LoopFunction<E>() {
+					@Override
+					public void apply(final FunctionalList<E> functionalList, final LoopVisitor<E> visitor) {
+						visitor.visit(functionalList.divide(comparator));
+					}
+				});
 		return this;
 	}
 
