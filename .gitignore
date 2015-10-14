@@ -1,0 +1,7 @@
+**/bin/**
+**/.launch/**
+**.*._trace
+**.xtendbin
+**/target/**
+org.iobserve.runtimemodel/**
+

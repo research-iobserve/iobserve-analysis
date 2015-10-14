@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ASCII"?>
+<usagemodel:UsageModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:usagemodel="http://sdq.ipd.uka.de/PalladioComponentModel/UsageModel/5.0">
+  <usageScenario_UsageModel id="_dbY4sFdBEd23wcZsd06DZg" entityName="defaultUsageScenario">
+    <scenarioBehaviour_UsageScenario id="_db-ukFdBEd23wcZsd06DZg" entityName="defaultUsageScenarioBehaviour">
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Start" id="_aprEcGBSEeSk1o0mWipN6Q" successor="_aqI-gGBSEeSk1o0mWipN6Q"/>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:EntryLevelSystemCall" id="_aqI-gGBSEeSk1o0mWipN6Q" entityName="bookSale" successor="_aqI-gWBSEeSk1o0mWipN6Q" predecessor="_aprEcGBSEeSk1o0mWipN6Q">
+        <providedRole_EntryLevelSystemCall href="file:///C:/Development/uni-ipd/CoCoME/cocomePcmModel/cocome.repository#__f6UsNCmEduC9O_qbthgAg"/>
+        <operationSignature__EntryLevelSystemCall href="file:///C:/Development/uni-ipd/CoCoME/cocomePcmModel/cocome.repository#_2NKrM1cvEeGI_ZRmqWdpYA"/>
+      </actions_ScenarioBehaviour>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Stop" id="_aqI-gWBSEeSk1o0mWipN6Q" predecessor="_aqI-gGBSEeSk1o0mWipN6Q"/>
+    </scenarioBehaviour_UsageScenario>
+    <workload_UsageScenario xsi:type="usagemodel:OpenWorkload">
+      <interArrivalTime_OpenWorkload specification="2"/>
+    </workload_UsageScenario>
+  </usageScenario_UsageModel>
+</usagemodel:UsageModel>

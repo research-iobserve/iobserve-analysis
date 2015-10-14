@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ASCII"?>
+<usagemodel:UsageModel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:usagemodel="http://sdq.ipd.uka.de/PalladioComponentModel/UsageModel/5.0">
+  <usageScenario_UsageModel>
+    <scenarioBehaviour_UsageScenario>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Start"/>
+      <actions_ScenarioBehaviour xsi:type="usagemodel:Stop"/>
+    </scenarioBehaviour_UsageScenario>
+    <workload_UsageScenario xsi:type="usagemodel:OpenWorkload"/>
+  </usageScenario_UsageModel>
+</usagemodel:UsageModel>
