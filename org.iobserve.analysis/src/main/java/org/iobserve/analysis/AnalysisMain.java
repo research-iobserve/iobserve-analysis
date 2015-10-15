@@ -29,12 +29,17 @@ import teetime.framework.AnalysisConfiguration;
  * @author Reiner Jung
  */
 public class AnalysisMain {
+
+	/** uri for the output usage model. */
 	private String outputUsageModelURI;
 
+	/** uri for the input usage model. */
 	private String inputUsageModelURI;
 
+	/** uri for the repository model. */
 	private String repositoryModelURI;
 
+	/** configuration for the analysis. */
 	private AnalysisConfiguration configuration;
 
 	/**
@@ -66,6 +71,7 @@ public class AnalysisMain {
 			}
 
 		} catch (final UnsupportedEncodingException e) {
+			// TODO please use a logger.
 			System.out.println("Logging failed " + e.getMessage());
 			e.printStackTrace();
 		} catch (final FileNotFoundException e) {

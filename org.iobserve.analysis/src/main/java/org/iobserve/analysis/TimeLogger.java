@@ -32,23 +32,34 @@ import java.io.UnsupportedEncodingException;
  */
 public final class TimeLogger {
 
+	/** bad excuse for a singleton. */
 	public static final TimeLogger INSTANCE = new TimeLogger();
 
+	/** output of the time logger. */
 	private BufferedWriter writer;
 
+	/** last present time record. */
 	private long presentTime;
 
+	/** remember a time measurement. */
 	private long pastTime;
 
-	private long rememberTime;
+	/** i don't know. !! */
+	private long rememberedTime;
 
-	private volatile boolean haveVal = false;
+	/** what? */
+	private volatile boolean haveVal;
 
 	/**
 	 *
 	 */
 	private TimeLogger() {}
 
+	/**
+	 * Return the TimeLogger singleton.
+	 *
+	 * @return
+	 */
 	public static TimeLogger getTimeLogger() {
 		return INSTANCE;
 	}
@@ -66,6 +77,7 @@ public final class TimeLogger {
 				this.writer.write(value + ";");
 			}
 		} catch (final IOException e) {
+			// TODO there is a thing called Logger, use it.
 			System.out.println("record failure.");
 		}
 	}
@@ -96,13 +108,13 @@ public final class TimeLogger {
 
 	public void rememberTime() {
 		if (!this.haveVal) {
-			this.rememberTime = System.nanoTime();
+			this.rememberedTime = System.nanoTime();
 			this.haveVal = true;
 		}
 	}
 
 	public long getRemberedTime() {
 		this.haveVal = false;
-		return this.rememberTime;
+		return this.rememberedTime;
 	}
 }

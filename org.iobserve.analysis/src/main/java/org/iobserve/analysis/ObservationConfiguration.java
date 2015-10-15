@@ -17,8 +17,6 @@ package org.iobserve.analysis;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.filter.DeploymentEventTransformation;
@@ -26,8 +24,6 @@ import org.iobserve.analysis.filter.EntryEventConstructionFilter;
 import org.iobserve.analysis.filter.EntryEventSequenceAnalyzer;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.UndeploymentEventTransformation;
-
-import kieker.common.record.IMonitoringRecord;
 
 import teetime.framework.AnalysisConfiguration;
 import teetime.framework.Stage;
@@ -45,9 +41,14 @@ import teetime.stage.io.filesystem.Dir2RecordsFilter;
  */
 public class ObservationConfiguration extends AnalysisConfiguration {
 
-	private final List<IMonitoringRecord> elementCollection = new LinkedList<IMonitoringRecord>();
+	/** registry for the pipe factory used by Teetime. */
 	private final PipeFactoryRegistry pipeFactoryRegistry = PipeFactoryRegistry.INSTANCE;
+
+	/** directory containing Kieker monitoring data. */
 	private final File directory;
+
+	// TODO fix that hack
+	/** record switch filter. Is required to be global so we can cheat and get measurements from the filter. */
 	private RecordSwitch recordSwitch;
 
 	/**
@@ -96,10 +97,6 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 
 		return files;
 
-	}
-
-	public List<IMonitoringRecord> getElementCollection() {
-		return this.elementCollection;
 	}
 
 	public RecordSwitch getRecordSwitch() {

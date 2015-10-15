@@ -634,10 +634,10 @@ public final class XML {
 
 	@Override
 	public String toString() {
-		String output = null;
 		if (this.doc == null) {
 			return "";
 		}
+		String output = null;
 		try {
 			final TransformerFactory tf = TransformerFactory.newInstance();
 			final Transformer transformer = tf.newTransformer();
@@ -648,6 +648,7 @@ public final class XML {
 					writer));
 			output = writer.getBuffer().toString();
 		} catch (final TransformerException e) {
+			output = "";
 			e.printStackTrace();
 		}
 		return output;

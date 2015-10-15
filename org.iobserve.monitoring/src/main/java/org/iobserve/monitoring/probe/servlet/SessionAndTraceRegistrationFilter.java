@@ -79,12 +79,13 @@ public class SessionAndTraceRegistrationFilter implements Filter, IMonitoringPro
 	 * Create an SessionAndTraceRegistrationFilter and initialize the filter operation signature.
 	 */
 	public SessionAndTraceRegistrationFilter() {
-
+		// nothing to be done here at the moment.
 	}
 
 	@Override
 	public void init(final FilterConfig config) throws ServletException {
-
+		// the filter does not need any initialization at the time.
+		// Just fulfilling API
 	}
 
 	/**
@@ -145,8 +146,6 @@ public class SessionAndTraceRegistrationFilter implements Filter, IMonitoringPro
 				CTRLINST.newMonitoringRecord(trace);
 			}
 
-			final long traceId = trace.getTraceId();
-
 			if ("GET".equals(method)) {
 				operationSignature = path + "(" + query.replace(';', ':') + ")";
 			} else if ("POST".equals(method)) {
@@ -155,6 +154,8 @@ public class SessionAndTraceRegistrationFilter implements Filter, IMonitoringPro
 				chain.doFilter(request, response);
 				return;
 			}
+
+			final long traceId = trace.getTraceId();
 
 			try {
 				CTRLINST.newMonitoringRecord(new BeforeOperationEvent(TIMESOURCE.getTime(), traceId, trace.getNextOrderId(),
@@ -165,13 +166,7 @@ public class SessionAndTraceRegistrationFilter implements Filter, IMonitoringPro
 			} catch (final Throwable th) { // NOPMD NOCS (catch throw is ok here)
 				CTRLINST.newMonitoringRecord(new AfterOperationFailedEvent(TIMESOURCE.getTime(), traceId, trace.getNextOrderId(),
 						operationSignature, componentSignature, th.toString()));
-				if (th instanceof IOException) {
-					throw (IOException) th;
-				} else if (th instanceof ServletException) {
-					throw (ServletException) th;
-				} else {
-					throw new ServletException(th);
-				}
+				throw new ServletException(th);
 			} finally {
 				// is this correct?
 				SESSION_REGISTRY.unsetThreadLocalSessionId();

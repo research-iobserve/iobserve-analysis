@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
@@ -33,12 +33,19 @@ import teetime.framework.OutputPort;
  */
 public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 
+	/** output port for deployment events. */
 	private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
+	/** output port for undeployment events. */
 	private final OutputPort<IUndeploymentRecord> undeploymentOutputPort = this.createOutputPort();
+	/** output port for flow events. */
 	private final OutputPort<IFlowRecord> flowOutputPort = this.createOutputPort();
 
-	private final Map<String, Integer> unknownRecords = new HashMap<String, Integer>();
+	/** internal map to collect unknown record types. */
+	private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<String, Integer>();
+
+	/** start time of the filter for monitoring purposes. Please use a monitoring framework for that. */
 	private final long startTime;
+	/** Statistics. */
 	private int recordCount;
 
 	/**
@@ -62,11 +69,13 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 			final String className = element.getClass().getCanonicalName();
 			Integer hits = this.unknownRecords.get(className);
 			if (hits == null) {
+				// TODO use a logging facility for that
 				System.out.println("What the flip! " + className);
-				this.unknownRecords.put(className, new Integer(1));
+				this.unknownRecords.put(className, Integer.valueOf(1));
 			} else {
 				hits++;
 				this.unknownRecords.put(className, hits);
+				// TODO use a logging facility for that
 				if ((hits % 100) == 0) {
 					System.out.println("Unknown record occurances " + hits + " of " + className);
 				}
