@@ -635,7 +635,7 @@
         <!-- See http://checkstyle.sf.net/config_import.html !-->
         <module name="ImportOrder">
             <property name="option"        value="under"/>
-            <property name="groups"        value="java,javax,junit,org,com,ch,de,kieker,org.spp"/>
+            <property name="groups"        value="java,javax,junit,org,com,ch,de,kieker,org.iobserve"/>
             <property name="ordered"       value="true"/>
             <property name="separated"     value="true"/>
             <property name="caseSensitive" value="true"/>

@@ -21,12 +21,12 @@ import javax.annotation.Resource;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
-import org.iobserve.common.record.EJBDeployedEvent;
-import org.iobserve.common.record.EJBUndeployedEvent;
-
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.timer.ITimeSource;
+
+import org.iobserve.common.record.EJBDeployedEvent;
+import org.iobserve.common.record.EJBUndeployedEvent;
 
 /**
  * This interceptor class is called when a EJB is deployed and undeploy. In Glassfish
@@ -79,10 +79,13 @@ public class DeploymentInterceptor {
 	// logger presently not used.
 	// private static final Log LOG = LogFactory.getLog(DeploymentInterceptor.class);
 
+	/** Configuration value for the deployment id used for monitoring. */
 	@Resource(name = "deploymentId")
 	private String deploymentId;
 
+	/** Kieker monitoring controller. */
 	private final IMonitoringController monitoringCtrl;
+	/** Kieker time source. */
 	private final ITimeSource timeSource;
 
 	/**
