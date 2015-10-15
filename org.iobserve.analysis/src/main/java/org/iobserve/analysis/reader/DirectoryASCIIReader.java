@@ -24,8 +24,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.iobserve.analysis.TimeLogger;
-
 import kieker.common.exception.MonitoringRecordException;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
@@ -34,7 +32,11 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.controlflow.OperationExecutionRecord;
 import kieker.common.util.filesystem.FSUtil;
 
+import org.iobserve.analysis.TimeLogger;
+
 import teetime.framework.AbstractProducerStage;
+
+// TODO this code should be replaced by the proper Kieker Teetime stages.
 
 /**
  * @author Reiner Jung

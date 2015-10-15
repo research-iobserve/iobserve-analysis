@@ -84,16 +84,15 @@ public class DeploymentInterceptor {
 	private String deploymentId;
 
 	/** Kieker monitoring controller. */
-	private final IMonitoringController monitoringCtrl;
+	private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
 	/** Kieker time source. */
-	private final ITimeSource timeSource;
+	private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
 
 	/**
 	 * Deployment interceptor initialization.
 	 */
 	public DeploymentInterceptor() {
-		this.monitoringCtrl = MonitoringController.getInstance();
-		this.timeSource = this.monitoringCtrl.getTimeSource();
+		// nothing to be done here
 	}
 
 	/**

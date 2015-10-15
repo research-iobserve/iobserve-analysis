@@ -63,14 +63,19 @@ import kieker.monitoring.timer.ITimeSource;
  * @author Reiner Jung
  */
 public class SessionAndTraceRegistrationFilter implements Filter, IMonitoringProbe {
+	/** constant for a property name. */
 	public static final String CONFIG_PROPERTY_NAME_LOG_FILTER_EXECUTION = "logFilterExecution";
 
+	/** Kieker monitoring controller. */
 	protected static final IMonitoringController CTRLINST = MonitoringController.getInstance();
+	/** Kieker session registry. */
 	protected static final SessionRegistry SESSION_REGISTRY = SessionRegistry.INSTANCE;
 
+	/** Kieker time source. */
 	protected static final ITimeSource TIMESOURCE = CTRLINST.getTimeSource();
+	/** Host name of the host the code is running on. */
 	protected static final String VM_NAME = CTRLINST.getHostname();
-
+	/** Kieker trace registry. */
 	private static final TraceRegistry TRACEREGISTRY = TraceRegistry.INSTANCE;
 
 	// private static final Log LOG = LogFactory.getLog(SessionAndTraceRegistrationFilter.class);
@@ -123,15 +128,13 @@ public class SessionAndTraceRegistrationFilter implements Filter, IMonitoringPro
 				path = httpRequest.getRequestURI().replace('/', '.').substring(1);
 				sessionId = httpRequest.getSession().getId();
 				query = httpRequest.getQueryString();
+				if (query == null) {
+					query = "";
+				}
 			} else {
 				method = "POST";
 				path = request.getServletContext().getContextPath().replace('/', '.').substring(1);
 				sessionId = "<no session>";
-				query = "";
-			}
-
-			// TODO ugly hack
-			if (query == null) {
 				query = "";
 			}
 

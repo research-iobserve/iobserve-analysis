@@ -36,17 +36,19 @@ import kieker.monitoring.timer.ITimeSource;
 @Interceptor
 public class TraceInterceptor {
 
+	/** Kieker trace registry. */
 	private static final TraceRegistry TRACEREGISTRY = TraceRegistry.INSTANCE;
 
-	private final IMonitoringController monitoringCtrl;
-	private final ITimeSource timeSource;
+	/** Kieker monitoring controller. */
+	private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
+	/** Kieker time source. */
+	private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
 
 	/**
 	 * Initialize trace interceptor.
 	 */
 	public TraceInterceptor() {
-		this.monitoringCtrl = MonitoringController.getInstance();
-		this.timeSource = this.monitoringCtrl.getTimeSource();
+		// nothing to be done here
 	}
 
 	/**

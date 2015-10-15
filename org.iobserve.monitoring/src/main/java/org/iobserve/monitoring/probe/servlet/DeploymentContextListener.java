@@ -19,12 +19,12 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.iobserve.common.record.ServletDeployedEvent;
-import org.iobserve.common.record.ServletUndeployedEvent;
-
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.timer.ITimeSource;
+
+import org.iobserve.common.record.ServletDeployedEvent;
+import org.iobserve.common.record.ServletUndeployedEvent;
 
 /**
  * This servlet listener allows to monitor the deployment and undeployment
@@ -47,17 +47,19 @@ import kieker.monitoring.timer.ITimeSource;
  */
 public class DeploymentContextListener implements ServletContextListener {
 
+	/** deployment id constant. */
 	private static final String DEPLOYMENT_ID = "deploymentId";
 
-	private final IMonitoringController monitoringCtrl;
-	private final ITimeSource timeSource;
+	/** Kieker monitoring controller. */
+	private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
+	/** Kieker time source. */
+	private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
 
 	/**
 	 * initialize context listener.
 	 */
 	public DeploymentContextListener() {
-		this.monitoringCtrl = MonitoringController.getInstance();
-		this.timeSource = this.monitoringCtrl.getTimeSource();
+		// nothing to be done here
 	}
 
 	@Override
