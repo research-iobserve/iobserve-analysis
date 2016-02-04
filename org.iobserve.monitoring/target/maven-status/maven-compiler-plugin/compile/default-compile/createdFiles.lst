@@ -1,0 +1,4 @@
+org\iobserve\monitoring\probe\j2ee\DeploymentInterceptor.class
+org\iobserve\monitoring\probe\j2ee\TraceInterceptor.class
+org\iobserve\monitoring\probe\servlet\DeploymentContextListener.class
+org\iobserve\monitoring\probe\servlet\SessionAndTraceRegistrationFilter.class
