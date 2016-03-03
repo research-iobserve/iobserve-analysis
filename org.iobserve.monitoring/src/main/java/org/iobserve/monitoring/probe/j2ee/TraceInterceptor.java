@@ -15,19 +15,6 @@
  ***************************************************************************/
 package org.iobserve.monitoring.probe.j2ee;
 
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
-
-import kieker.common.record.flow.trace.TraceMetadata;
-import kieker.common.record.flow.trace.operation.AfterOperationEvent;
-import kieker.common.record.flow.trace.operation.AfterOperationFailedEvent;
-import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
-import kieker.monitoring.core.controller.IMonitoringController;
-import kieker.monitoring.core.controller.MonitoringController;
-import kieker.monitoring.core.registry.TraceRegistry;
-import kieker.monitoring.timer.ITimeSource;
-
 /**
  *
  * @author Reiner Jung
@@ -60,8 +47,7 @@ public class TraceInterceptor {
 	 * @throws Throwable
 	 */
 	@AroundInvoke
-	public Object interceptMethodCall(final InvocationContext context)
-			throws Throwable { // NOCS (IllegalThrowsCheck)
+	public Object interceptMethodCall(final InvocationContext context) throws Throwable { // NOCS (IllegalThrowsCheck)
 		if (this.monitoringCtrl.isMonitoringEnabled()) {
 			final String signature = context.getMethod().toString();
 			if (this.monitoringCtrl.isProbeActivated(signature)) {
