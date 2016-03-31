@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.spp.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IDeploymentRecord;
 
 import org.iobserve.analysis.correspondence.ICorrespondence;
 
@@ -28,7 +28,7 @@ import teetime.framework.AbstractConsumerStage;
  * @author Robert Heinrich, Alessandro Giusa
  */
 public class DeploymentEventTransformation extends AbstractConsumerStage<IDeploymentRecord> {
-
+  
 	private static long executionCounter = 0;
 	
 	private final ICorrespondence correspondence;

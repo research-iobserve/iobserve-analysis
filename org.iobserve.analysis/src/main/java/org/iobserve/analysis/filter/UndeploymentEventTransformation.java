@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.spp.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.IUndeploymentRecord;
 
 import org.iobserve.analysis.correspondence.ICorrespondence;
 

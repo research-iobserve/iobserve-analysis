@@ -18,8 +18,8 @@ package org.iobserve.analysis.filter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.spp.iobserve.common.record.IDeploymentRecord;
-import org.spp.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IUndeploymentRecord;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;

@@ -20,8 +20,8 @@ import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 
-import org.spp.iobserve.common.record.EJBDeployedEvent;
-import org.spp.iobserve.common.record.EJBUndeployedEvent;
+import org.iobserve.common.record.EJBDeployedEvent;
+import org.iobserve.common.record.EJBUndeployedEvent;
 
 import teetime.framework.AbstractProducerStage;
 
