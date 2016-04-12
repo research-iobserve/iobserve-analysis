@@ -1,0 +1,1 @@
+res/test/kieker output/log.txt res/test/modells/cocome_pcm/cocome.repository res/test/modells/cocome_pcm/cocome_usagemodel res/test/modells/rac/mapping_fake.xml

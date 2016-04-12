@@ -1,0 +1,108 @@
+Installation of iObserve
+
+1. Get Palladio:
+
+- Download an appropriate version from: 
+http://www.palladio-simulator.com/tools/download/
+
+
+2. Get iObserve from:
+
+- git clone https://github.com/research-iobserve/iobserve-analysis.git
+
+3. Installing additional Plugins to Palladio:
+(always restart Eclipse when you get asked)
+
+- Open Palladio installation from 1.) Just double-click on eclipse.exe within your 
+Palladio installation from 1.)
+
+In Palladio:
+3.1 Install Maven: Help > InstallNewSoftware > Work with: 
+http://download.eclipse.org/technology/m2e/releases
+
+3.2 Install JavaEE Dev-Tools: Help > InstallNewSoftware > Work with: 
+http://download.eclipse.org/releases/luna/
+
+Check: Web,XML, Java EE and OSGi Enterprise Developement > Eclipse Java EE Developer Tools
+install.
+
+3.3 Install Glassfish runtime:
+-> Download glassfish from: https://glassfish.java.net/download.html
+and unzip it somewhere. This is the glassfish installation path
+
+3.3.1 Install Glassfish-Tools: Help > InstallNewSoftware > Work with: 
+http://download.oracle.com/otn_software/oepe/luna
+
+Check: Tools > GlassFish Tools
+install.
+
+3.3.2 Add New Sever Runtime: Window > Preferences > Server > RuntimeEnvironment > 
+GlassFish > GlassFish4
+
+ServerRoot:browse to the your glassfish installation path
+i.e. glassfish-4.1.1\glassfish4\glassfish
+
+It is the last glassfish subfolder you'll finde.
+
+
+4. Import iObserve projects
+
+4.1 Switch to Java-Perspective: Window > OpenPerspective > Java (evtl. Other > Java)
+
+- Install Egit (optional): Help > InstallNewSoftware > Work with:
+http://download.eclipse.org/egit/updates
+
+4.2 Actual import:
+
+- File > Import > General > Existing Projects into Workspace > 
+select root directory (browse and navigate to iObserve folder) > select all > Finish
+-> do not check "copy into workspace" or any other just uncheck all.
+
+
+5. Resolving dependency issues:
+
+5.1 Maven-Issues:
+
+In org.iobserve.analysis:
+
+Open pom.xml
+- Adjust the <lib.location.palladio> to your palladio installation folder/Plugins
+- Adjust the <lib.location> to path to org.iobserve.analysis/libs
+
+5.2 Missing folder issue:
+In org.iobserve.monitoring:
+
+If there is this folders are missing add them by right click on the project >
+BuildPath > NewSourceFolder
+
+Folder which have to be there:
+
+src/test/java
+src/test/resource
+src/main/resource
+src/gen/java: If this is missing add it manually by:
+	- right click on project -> New -> Source Folder > type: src/gen/java > finish
+	once this is done you should have an additional src folder with the package
+	org.iobserve.analysis.data.
+
+
+5.3 Eclipse-Libs issue:
+
+5.3.1 Create a UserLibrary
+Window > Preferences > Java > BuildPath > User Libraries > Add
+Give it a name
+Select the created library and clicke > Add External Jars
+Do not import org.palladiosimulator.* and de.uka.* stuff.
+
+5.3.2 Add the User library to org.iobserve.analysis
+Right click on the project > BuilPath > Add Libraries > User Library > Your just created library
+
+
+Congratualtions! You installed the preliminary stuff. Next is to set up iObserve it self
+
+
+
+
+
+
+
