@@ -1,0 +1,6 @@
+$0=kieker.common.record.controlflow.OperationExecutionRecord
+$1=kieker.common.record.misc.KiekerMetadataRecord
+$2=org.spp.iobserve.common.record.EJBDeployedEvent
+$3=kieker.common.record.flow.trace.TraceMetadata
+$4=kieker.common.record.flow.trace.operation.BeforeOperationEvent
+$5=kieker.common.record.flow.trace.operation.AfterOperationEvent

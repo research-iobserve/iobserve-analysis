@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="ASCII"?>
+<designdecision:DecisionSpace xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:designdecision="http://sdq.ipd.uka.de/DesignDecision/2.0">
+  <degreesOfFreedom xsi:type="designdecision:ContinuousProcessingRateDegree" lowerBoundIncluded="false" to="2.0" from="0.5">
+    <primaryChanged href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <processingresourcetype href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:ContinuousProcessingRateDegree" lowerBoundIncluded="false" to="2.0" from="0.5">
+    <primaryChanged href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <processingresourcetype href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:ContinuousProcessingRateDegree" lowerBoundIncluded="false" to="2.0" from="0.5">
+    <primaryChanged href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <processingresourcetype href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:ContinuousProcessingRateDegree" lowerBoundIncluded="false" to="2.0" from="0.5">
+    <primaryChanged href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <processingresourcetype href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:ContinuousProcessingRateDegree" lowerBoundIncluded="false" to="2.0" from="0.5">
+    <primaryChanged href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <processingresourcetype href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:ContinuousProcessingRateDegree" lowerBoundIncluded="false" to="2.0" from="0.5">
+    <primaryChanged href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+    <processingresourcetype href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AssembledComponentDegree">
+    <primaryChanged href="cocome.system#_8jo5MFc4Ed23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.repository#_-3VggNCgEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_B8esgNChEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_C7qRkNChEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_zokQE9CiEduC9O_qbthgAg"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AssembledComponentDegree">
+    <primaryChanged href="cocome.system#_WolfQFctEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.repository#_-3VggNCgEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_B8esgNChEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_C7qRkNChEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_sGEvA9CiEduC9O_qbthgAg"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AssembledComponentDegree">
+    <primaryChanged href="cocome.system#_Yy964FcnEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.repository#_-3VggNCgEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_B8esgNChEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_C7qRkNChEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_sGEvA9CiEduC9O_qbthgAg"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AssembledComponentDegree">
+    <primaryChanged href="cocome.system#_jcqnAFczEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.repository#_-3VggNCgEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_B8esgNChEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_C7qRkNChEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_sGEvA9CiEduC9O_qbthgAg"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AssembledComponentDegree">
+    <primaryChanged href="cocome.system#_nf0w4FcnEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.repository#_-3VggNCgEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_B8esgNChEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_C7qRkNChEduC9O_qbthgAg"/>
+    <classDesignOptions href="cocome.repository#_zokQE9CiEduC9O_qbthgAg"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_vvwIQFc-Ed23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_-Wg9UFc-Ed23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_DLE4gFc_Ed23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_RGit0Fc_Ed23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_ZY7awFc_Ed23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_nCZhIFc_Ed23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_tgb7kFc_Ed23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_zTCzYFc_Ed23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_67bhEFc_Ed23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_-KEAQFc_Ed23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_M9D6gFdAEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_SVleYFdAEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_WiY2AFdAEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_Z8UmQFdAEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_d0mfYFdAEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_qen68FdAEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_u-8EcFdAEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_CeraoFdBEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_FwvBQFdBEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+  <degreesOfFreedom xsi:type="designdecision:AllocationDegree">
+    <primaryChanged href="cocome.allocation#_d-oBAFfjEd26K8JlmYJ10w"/>
+    <classDesignOptions href="cocome.resourceenvironment#_mpMBEOEgEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_me5D4VcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_W6WUMOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_ZVdrwOEhEduBSuO8WivxSA"/>
+    <classDesignOptions href="cocome.resourceenvironment#_PNgBAVcdEd23wcZsd06DZg"/>
+    <classDesignOptions href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+  </degreesOfFreedom>
+</designdecision:DecisionSpace>

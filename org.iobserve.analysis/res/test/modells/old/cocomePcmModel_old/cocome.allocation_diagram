@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<notation:Diagram xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:allocation="http://sdq.ipd.uka.de/PalladioComponentModel/Allocation/5.0" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.2/notation" xsi:schemaLocation="http://sdq.ipd.uka.de/PalladioComponentModel/Allocation/5.0 http://sdq.ipd.uka.de/PalladioComponentModel/5.0#//allocation" xmi:id="_coQhACd7EeS0Tav8n_eD1g" type="allocation" measurementUnit="Pixel">
+  <styles xmi:type="notation:DiagramStyle" xmi:id="_coQhASd7EeS0Tav8n_eD1g"/>
+  <element xmi:type="allocation:Allocation" href="cocome.allocation#_pY23oFc-Ed23wcZsd06DZg"/>
+</notation:Diagram>

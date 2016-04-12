@@ -31,7 +31,7 @@ import teetime.framework.AbstractProducerStage;
  * @author Reiner Jung
  *
  */
-public class DummyReader extends AbstractProducerStage<IMonitoringRecord> {
+public class DummyReader extends AbstractProducerStage<IMonitoringRecord> {  
 
 	private static final long THREAD_ID = 0;
 	private static final String SESSION_ID = "<session id>";
