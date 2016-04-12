@@ -7,4 +7,7 @@ org.iobserve.monitoring/bin
 org.iobserve.monitoring/target
 org.iobserve.releng/bin
 org.iobserve.releng/target
+*.csv
+*.map
+*.dat
 

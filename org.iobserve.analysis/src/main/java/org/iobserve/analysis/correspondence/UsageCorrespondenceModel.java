@@ -111,7 +111,10 @@ class UsageCorrespondenceModel implements ICorrespondence {
 
 	@Override
 	public String getCorrespondent(final String classSig, final String operationSig) {
-
+		//TODO debug print, remove later
+		System.out.println(String.format("Try to get correspondence for classSig=%s, operationSig=%s",
+				classSig, operationSig));
+		
 		// assert parameters are not null
 		if ((classSig == null) || (operationSig == null)) {
 			// TODO log
