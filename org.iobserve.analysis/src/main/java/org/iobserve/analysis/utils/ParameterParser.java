@@ -65,6 +65,14 @@ public class ParameterParser {
 	}
 
 	/**
+	 * Get the number of unnamed parameter
+	 * @return
+	 */
+	public int getCountUnnamedParameter() {
+		return this.counterUnnamedParameter;
+	}
+
+	/**
 	 * Parse the given arguments
 	 * @param args arguments to parse
 	 */
@@ -102,7 +110,7 @@ public class ParameterParser {
 	 * Get the internal map of parameter
 	 * @return map of parameters
 	 */
-	Map<String, String> getParameter() {
+	Map<String, String> getParameters() {
 		return this.parameter;
 	}
 
@@ -125,6 +133,190 @@ public class ParameterParser {
 			throw new IllegalArgumentException(String.format("parameter %s already set", key));
 		}
 		this.parameter.put(key, value);
+	}
+
+	// *****************************************************************
+	// CONVENIENT GETTER
+	// *****************************************************************
+
+	/**
+	 * Get the parameter either by the name or by its position
+	 * 
+	 * @param name
+	 *            name of the parameter. Do not use dash or other, just the name
+	 * @param pos
+	 *            position like 0 or 1 or other integer.
+	 * @param required
+	 *            true if the parameter is absolute required. If true and parameter does
+	 *            not exist, the runtime exception below is thrown. If false and parameter does not
+	 *            exist <b>null</b> is returned.
+	 * @throws IllegalArgumentException
+	 *             if parameter required and not existent
+	 * @return the value of the parameter
+	 */
+	public String getParameterString(final String name, final int pos, final boolean required) {
+		final String value;
+		if (this.contains(name)) {
+			value = this.getNamedString(name);
+		} else if (this.contains(pos)) {
+			value = this.getUnnamedString(pos);
+			Terminal.printf("read argument %s from %s.slot", name, String.valueOf(pos));
+
+		} else {
+			if (required) {
+				final String errorMessage = String.format(
+						"the argument %s does not exist as "
+								+ "named argument nor in position %s.",
+								name,String.valueOf(pos));
+				throw new IllegalArgumentException(errorMessage);
+			} 
+			value = null;
+		}
+		return value;
+	}
+
+	/**
+	 * Get the parameter either by the name or by its position
+	 * 
+	 * @param name
+	 *            name of the parameter. Do not use dash or other, just the name
+	 * @param pos
+	 *            position like 0 or 1 or other integer.
+	 * @param required
+	 *            true if the parameter is absolute required. If true and parameter does
+	 *            not exist, the runtime exception below is thrown. If false and parameter does not
+	 *            exist <b>0</b> is returned.
+	 * @throws IllegalArgumentException
+	 *             if parameter required and not existent
+	 * @return the value of the parameter
+	 */
+	public int getParameterInt(final String name, final int pos, final boolean required) {
+		final int value;
+		if (this.contains(name)) {
+			value = this.getNamedInt(name);
+		} else if (this.contains(pos)) {
+			value = this.getUnnamedInt(pos);
+			Terminal.printf("read argument %s from %s.slot", name, String.valueOf(pos));
+
+		} else {
+			if (required) {
+				final String errorMessage = String.format(
+						"the argument %s does not exist as "
+								+ "named argument nor in position %s.",
+								name,String.valueOf(pos));
+				throw new IllegalArgumentException(errorMessage);
+			} 
+			value = 0;
+		}
+		return value;
+	}
+
+	/**
+	 * Get the parameter either by the name or by its position
+	 * 
+	 * @param name
+	 *            name of the parameter. Do not use dash or other, just the name
+	 * @param pos
+	 *            position like 0 or 1 or other integer.
+	 * @param required
+	 *            true if the parameter is absolute required. If true and parameter does
+	 *            not exist, the runtime exception below is thrown. If false and parameter does not
+	 *            exist <b>0</b> is returned.
+	 * @throws IllegalArgumentException
+	 *             if parameter required and not existent
+	 * @return the value of the parameter
+	 */
+	public long getParameterLong(final String name, final int pos, final boolean required) {
+		final long value;
+		if (this.contains(name)) {
+			value = this.getNamedLong(name);
+		} else if (this.contains(pos)) {
+			value = this.getUnnamedLong(pos);
+			Terminal.printf("read argument %s from %s.slot", name, String.valueOf(pos));
+
+		} else {
+			if (required) {
+				final String errorMessage = String.format(
+						"the argument %s does not exist as "
+								+ "named argument nor in position %s.",
+								name,String.valueOf(pos));
+				throw new IllegalArgumentException(errorMessage);
+			} 
+			value = 0l;
+		}
+		return value;
+	}
+
+	/**
+	 * Get the parameter either by the name or by its position
+	 * 
+	 * @param name
+	 *            name of the parameter. Do not use dash or other, just the name
+	 * @param pos
+	 *            position like 0 or 1 or other integer.
+	 * @param required
+	 *            true if the parameter is absolute required. If true and parameter does
+	 *            not exist, the runtime exception below is thrown. If false and parameter does not
+	 *            exist <b>0</b> is returned.
+	 * @throws IllegalArgumentException
+	 *             if parameter required and not existent
+	 * @return the value of the parameter
+	 */
+	public float getParameterFloat(final String name, final int pos, final boolean required) {
+		final float value;
+		if (this.contains(name)) {
+			value = this.getNamedFloat(name);
+		} else if (this.contains(pos)) {
+			value = this.getUnnamedFloat(pos);
+			Terminal.printf("read argument %s from %s.slot", name, String.valueOf(pos));
+
+		} else {
+			if (required) {
+				final String errorMessage = String.format(
+						"the argument %s does not exist as "
+								+ "named argument nor in position %s.",
+								name,String.valueOf(pos));
+				throw new IllegalArgumentException(errorMessage);
+			} 
+			value = 0f;
+		}
+		return value;
+	}
+
+	/**
+	 * Get the parameter either by the name or by its position
+	 * 
+	 * @param name
+	 *            name of the parameter. Do not use dash or other, just the name
+	 * @param pos
+	 *            position like 0 or 1 or other integer.
+	 * @param required
+	 *            true if the parameter is absolute required. If true and parameter does
+	 *            not exist, the runtime exception below is thrown. If false and parameter does not
+	 *            exist <b>0</b> is returned.
+	 * @throws IllegalArgumentException
+	 *             if parameter required and not existent
+	 * @return the value of the parameter
+	 */
+	public double getParameterDouble(final String name, final int pos, final boolean required) {
+		final double value;
+		if (this.contains(name)) {
+			value = this.getNamedDouble(name);
+		} else if (this.contains(pos)) {
+			value = this.getUnnamedDouble(pos);
+			Terminal.printf("read argument %s from %s.slot", name, String.valueOf(pos));
+
+		} else {
+			if (required) {
+				final String errorMessage = String.format(
+						"the argument %s does not exist as "
+								+ "named argument nor in position %s.",
+								name,String.valueOf(pos));
+				throw new IllegalArgumentException(errorMessage);
+			} 
+			value = 0d;
+		}
+		return value;
 	}
 
 	// ********************************************************************
