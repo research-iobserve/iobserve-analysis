@@ -10,4 +10,5 @@ org.iobserve.releng/target
 *.csv
 *.map
 *.dat
-
+*.log
+*.txt

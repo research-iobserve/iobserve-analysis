@@ -4,7 +4,10 @@
   <local-check-config name="iObserve Checkstyle" location="org.spp.iobserve.releng/cs-conf.xml" type="project" description="">
     <additional-data name="protect-config-file" value="false"/>
   </local-check-config>
-  <fileset name="all" enabled="true" check-config-name="iobserve" local="false">
+  <local-check-config name="CheckstylesUni" location="checkstyle-final01-all.xml" type="project" description="">
+    <additional-data name="protect-config-file" value="false"/>
+  </local-check-config>
+  <fileset name="all" enabled="true" check-config-name="CheckstylesUni" local="true">
     <file-match-pattern match-pattern="." include-pattern="true"/>
   </fileset>
   <filter name="DerivedFiles" enabled="true"/>
