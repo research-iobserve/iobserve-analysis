@@ -22,6 +22,7 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/EclipseStuff"/>
 	<classpathentry kind="src" path="conf"/>
 	<classpathentry kind="lib" path="libs/csvxml.jar" sourcepath="/csvparser/src"/>
+	<classpathentry kind="lib" path="libs/giusa.tooling.cmd-v1.0.jar"/>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java">
 		<attributes>
 			<attribute name="optional" value="true"/>

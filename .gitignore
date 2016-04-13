@@ -12,4 +12,3 @@ org.iobserve.releng/target
 *.dat
 *.log
 *.txt
-*.jar

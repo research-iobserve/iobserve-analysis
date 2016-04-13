@@ -15,12 +15,14 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import giusa.software.parser.parameter.MissingParameterException;
+import giusa.software.parser.parameter.ParameterParser;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import org.iobserve.analysis.utils.ParameterParser;
 import org.iobserve.analysis.utils.Terminal;
 
 import teetime.framework.Analysis;
@@ -34,13 +36,12 @@ import teetime.framework.AnalysisConfiguration;
  */
 public class AnalysisMain {
 
-	private static final int NUMBER_ARGUMENTS = 6;
-	private static final String ARG_DIR_MONITORING_DATA = "inDirMonitoringData";
-	private static final String ARG_IN_PATH_PCM_REPOSITORY_MODEL = "inPathPcmRepositoryModel";
-	private static final String ARG_IN_PATH_PCM_USAGE_MODEL = "inPathPcmUsageModel";
-	private static final String ARG_IN_PATH_PROTOCOM_MAPPING_FILE_RAC = "inPathProtocomMappingXml";
-	private static final String ARG_OUT_PATH_LOGGING_FILE = "outPathLoggingFile";
-	private static final String ARG_OUT_PATH_PCM_UPDATED_USAGE_MODEL = "outPathPcmUpdatedUsageModel";
+	public static final String ARG_DIR_MONITORING_DATA = "inDirMonitoringData";
+	public static final String ARG_IN_PATH_PCM_REPOSITORY_MODEL = "inPathPcmRepositoryModel";
+	public static final String ARG_IN_PATH_PCM_USAGE_MODEL = "inPathPcmUsageModel";
+	public static final String ARG_IN_PATH_PROTOCOM_MAPPING_FILE_RAC = "inPathProtocomMappingFile";
+	public static final String ARG_OUT_PATH_LOGGING_FILE = "outPathLoggingFile";
+	public static final String ARG_OUT_PATH_PCM_UPDATED_USAGE_MODEL = "outPathPcmUpdatedUsageModel";
 
 	/** uri for the output usage model. */
 	private String outputUsageModelURI;
@@ -183,30 +184,26 @@ public class AnalysisMain {
 		final ParameterParser paramParser = new ParameterParser();
 		paramParser.parse(args);
 
-		final String dirMonitoringData = paramParser.getParameterString(
-				AnalysisMain.ARG_DIR_MONITORING_DATA, 0, true);
-		this.repositoryModelURI = paramParser.getParameterString(
-				AnalysisMain.ARG_IN_PATH_PCM_REPOSITORY_MODEL, 1, true);
-		this.inputUsageModelURI = paramParser.getParameterString(
-				AnalysisMain.ARG_IN_PATH_PCM_USAGE_MODEL, 2, true);
-		this.mappingFileRac = paramParser.getParameterString(
-				AnalysisMain.ARG_IN_PATH_PROTOCOM_MAPPING_FILE_RAC, 3, true);
-		final String loggingPath = paramParser.getParameterString(
-				AnalysisMain.ARG_OUT_PATH_LOGGING_FILE, 4, true);
-		this.outputUsageModelURI = paramParser.getParameterString(
-				AnalysisMain.ARG_OUT_PATH_PCM_UPDATED_USAGE_MODEL, 5, true);
-
-		// create the simple logger
-		this.timeMemLogger = new SimpleTimeMemLogger(loggingPath);
-
-		// create the configuration for tee-time framework
+		final AnalysisMainParameterBean parameterbean = new AnalysisMainParameterBean();
 		try {
-			this.configuration = new ObservationConfiguration(new File(dirMonitoringData));
-		} catch (final IOException e) {
-			e.printStackTrace();
-			System.exit(1);
-		} catch (final ClassNotFoundException e) {
-			e.printStackTrace();
+			paramParser.getParameter(parameterbean);
+
+			// create the simple logger
+			this.timeMemLogger = new SimpleTimeMemLogger(parameterbean.getOutLoggingFile());
+
+			// create the configuration for tee-time framework
+			try {
+				this.configuration = new ObservationConfiguration(new File(parameterbean.getDirMonitoringData()));
+			} catch (final IOException e) {
+				e.printStackTrace();
+				System.exit(1);
+			} catch (final ClassNotFoundException e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
+
+		} catch (MissingParameterException e1) {
+			e1.printStackTrace();
 			System.exit(1);
 		}
 	}
