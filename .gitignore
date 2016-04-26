@@ -6,5 +6,9 @@
 *.dat
 *.log
 *.txt
-*SNAPSHOT*
-
+*.jar
+*.zip
+*.prefs
+*.pref
+*/output/*
+*.checkstyle
