@@ -25,6 +25,14 @@ In Palladio:
 3.1 Install Maven (1.6.X): Help > InstallNewSoftware > Work with: 
 http://download.eclipse.org/technology/m2e/releases
 
+Troubleshooting with maven related stuff:
+Just install maven as commando line tool and use it from there like so:
+mvn clean
+mvn compile
+mvn install
+
+or in just one call: mvn clean compile install
+
 3.2 Install JavaEE Dev-Tools (3.6.X): Help > InstallNewSoftware > Work with: 
 http://download.eclipse.org/releases/luna/
 
