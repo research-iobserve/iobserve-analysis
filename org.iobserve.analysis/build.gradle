@@ -1,0 +1,35 @@
+dependencies {
+	// nothing
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+        }
+    }
+    
+    resources {
+    	java {
+    		srcDir 'src/main/resources'
+    	}
+    }
+    
+    irl {
+    	java {
+    		srcDir 'src/main/irl'
+    	}
+    }
+
+    test {
+        java {
+            srcDir 'src/test/java'
+        }
+    }
+    
+   test.resources {
+    	java {
+    		srcDir 'src/test/resources'
+    	}
+    }
+}

@@ -13,5 +13,6 @@
 */output/*
 *.checkstyle
 !InstallationGuide_iObserve.txt
-
+.gradle/
+*/build/*
 

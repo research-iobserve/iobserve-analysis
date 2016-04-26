@@ -32,6 +32,7 @@ import teetime.framework.AnalysisConfiguration;
  * Main calss for starting the iObserve application
  * 
  * @author Reiner Jung
+ * @author Robert Heinrich
  * @author Alessandro Giusa alessandrogiusa@gmail.com
  */
 public class AnalysisMain {

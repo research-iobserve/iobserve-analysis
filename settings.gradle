@@ -1,0 +1,2 @@
+
+include "org.iobserve.analysis", "org.iobserve.common", "org.iobserve.monitoring"
