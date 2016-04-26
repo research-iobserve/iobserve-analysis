@@ -12,3 +12,6 @@
 *.pref
 */output/*
 *.checkstyle
+!InstallationGuide_iObserve.txt
+
+
