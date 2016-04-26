@@ -47,7 +47,7 @@ public final class UsageModelProvider {
 	private EntryLevelSystemCall lastAction;
 	private Start start;
 	private Stop stop;
-	
+
 	private final URI uriUsageModel;
 	private final URI uriRepository;
 
@@ -58,12 +58,11 @@ public final class UsageModelProvider {
 	public UsageModelProvider(final URI uriUsageModel, final URI uriRepository) {
 		this.loadRepository(uriRepository);
 		this.loadUsageModelInstance(uriUsageModel);
-		this.resetUsageModel();
-		
+
 		this.uriRepository = uriRepository;
 		this.uriUsageModel = uriUsageModel;
 	}
-	
+
 	/**
 	 * Just reload the usage model from init usage model. The repository gets not reloaded.
 	 */
@@ -71,7 +70,7 @@ public final class UsageModelProvider {
 		this.loadUsageModelInstance(this.uriUsageModel);
 		this.resetUsageModel();
 	}
-	
+
 	/**
 	 * Just reload the usage model from the given URI. The repository gets not reloaded.
 	 * @param fromUri valid URI to valid usage model
@@ -80,7 +79,7 @@ public final class UsageModelProvider {
 		this.loadUsageModelInstance(fromUri);
 		this.resetUsageModel();
 	}
-	
+
 
 	private void loadUsageModelInstance(final URI uriInstance) {
 		// Initialize the model
@@ -123,7 +122,7 @@ public final class UsageModelProvider {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+
 
 		final Object result = resource.getContents().get(0);
 		if (result instanceof Repository) {
@@ -149,7 +148,7 @@ public final class UsageModelProvider {
 		}
 	}
 
-	private void resetUsageModel() {
+	public void resetUsageModel() {
 		this.scenarioBehaviour.getActions_ScenarioBehaviour().clear();
 	}
 
@@ -236,7 +235,7 @@ public final class UsageModelProvider {
 		pcmInterarrivalTime.setOpenWorkload_PCMRandomVariable(openWorkload);
 		openWorkload.setInterArrivalTime_OpenWorkload(pcmInterarrivalTime);
 		this.scenarioBehaviour.getUsageScenario_SenarioBehaviour()
-				.setWorkload_UsageScenario(openWorkload);
+		.setWorkload_UsageScenario(openWorkload);
 	}
 
 	public void createStart() {

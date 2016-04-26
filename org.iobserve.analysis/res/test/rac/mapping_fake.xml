@@ -71,7 +71,7 @@
             		<Comment>fake correspondent</Comment>
                     <FilePath>no path</FilePath>
                     <ProjectName>no project</ProjectName>
-                    <PackageName>de.kit.ipd.cocome.cloud.serviceadapter</PackageName>
+                    <PackageName>de.kit.ipd.cocome.cloud.serviceadapter.Services</PackageName>
                     <Interfaces>
                         <Interface>org.palladiosimulator.protocom.framework.IPerformancePrototypeComponent</Interface>
                     </Interfaces>

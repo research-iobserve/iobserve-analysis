@@ -86,12 +86,17 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 				correspondenceModel);
 		final UndeploymentEventTransformation undeployment = new UndeploymentEventTransformation(
 				correspondenceModel);
-		
+
 		final TEntryCall tEntryCall = new TEntryCall();
 		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
+
+		// get the usage model provider and reset it
+		final UsageModelProvider usageModelProvider = this.getUsageModelProvider();
+		usageModelProvider.resetUsageModel();
+
 		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(
-				correspondenceModel, this.getUsageModelProvider(), this.getPcmModelSaver());
-		
+				correspondenceModel, usageModelProvider, this.getPcmModelSaver());
+
 
 		// connecting filters
 		final IPipeFactory factory = this.pipeFactoryRegistry.getPipeFactory(
@@ -102,42 +107,44 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 		factory.create(this.recordSwitch.getDeploymentOutputPort(), deployment.getInputPort());
 		factory.create(this.recordSwitch.getUndeploymentOutputPort(), undeployment.getInputPort());
 		factory.create(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
-		
+
 		factory.create(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
 		factory.create(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
 
 		return files;
 
 	}
-	
+
 	/**
 	 * Get the correspondence model
 	 * @return instance of {@link ICorrespondence}
 	 */
 	private ICorrespondence getCorrespondenceModel() {
-		final String pathMappingFile = AnalysisMain.getInstance().getMappingFileRac();
+		final String pathMappingFile = AnalysisMain.getInstance().getInputParameter().getPathProtocomMappingFile();
 		final ICorrespondence model = CorrespondeceModelFactory.INSTANCE
-		.createCorrespondenceModel(pathMappingFile,
-				CorrespondeceModelFactory.INSTANCE.DEFAULT_OPERATION_SIGNATURE_MAPPER_2);
+				.createCorrespondenceModel(pathMappingFile,
+						CorrespondeceModelFactory.INSTANCE.DEFAULT_OPERATION_SIGNATURE_MAPPER_2);
 		return model;
 	}
-	
+
 	/**
 	 * Get the Model provider for the usage model
 	 * @return instance of usage model provider
 	 */
 	private UsageModelProvider getUsageModelProvider() {
-		final URI repositoryModelURI = URI.createURI(AnalysisMain.getInstance().getRepositoryModelURI());
-		final URI inputUsageModelURI = URI.createURI(AnalysisMain.getInstance().getInputUsageModelURI());
-		return new UsageModelProvider(inputUsageModelURI, repositoryModelURI);
+		final URI repositoryModelURI = URI.createURI(AnalysisMain.getInstance().getInputParameter().getPathPcmRepositoryModel());
+		final URI inputUsageModelURI = URI.createURI(AnalysisMain.getInstance().getInputParameter().getPathPcmUsageModel());
+		final UsageModelProvider provider = new UsageModelProvider(inputUsageModelURI, repositoryModelURI);
+
+		return provider;
 	}
-	
+
 	/**
 	 * get the helper class to save PCM models
 	 * @return instance of that class
 	 */
 	private PcmModelSaver getPcmModelSaver() {
-		final URI outputUsageModelURI = URI.createURI(AnalysisMain.getInstance().getOutputUsageModelURI());
+		final URI outputUsageModelURI = URI.createURI(AnalysisMain.getInstance().getInputParameter().getOutUpdatedUsageModel());
 		return new PcmModelSaver(outputUsageModelURI);
 	}
 

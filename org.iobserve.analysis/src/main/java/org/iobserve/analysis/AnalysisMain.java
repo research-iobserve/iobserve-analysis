@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import giusa.software.parser.parameter.MissingParameterException;
-import giusa.software.parser.parameter.ParameterParser;
+import giusa.parser.parameter.MissingParameterException;
+import giusa.parser.parameter.ParameterParser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -43,17 +43,8 @@ public class AnalysisMain {
 	public static final String ARG_OUT_PATH_LOGGING_FILE = "outPathLoggingFile";
 	public static final String ARG_OUT_PATH_PCM_UPDATED_USAGE_MODEL = "outPathPcmUpdatedUsageModel";
 
-	/** uri for the output usage model. */
-	private String outputUsageModelURI;
-
-	/** uri for the input usage model. */
-	private String inputUsageModelURI;
-
-	/** uri for the repository model. */
-	private String repositoryModelURI;
-
-	/**path to the mapping file used by the rac*/
-	private String mappingFileRac;
+	/**input parameters*/
+	private AnalysisMainParameterBean inputParameter;
 
 	/** configuration for the analysis. */
 	private AnalysisConfiguration configuration;
@@ -69,20 +60,12 @@ public class AnalysisMain {
 	// GETTER
 	// *****************************************************************
 
-	public String getInputUsageModelURI() {
-		return this.inputUsageModelURI;
-	}
-
-	public String getOutputUsageModelURI() {
-		return this.outputUsageModelURI;
-	}
-
-	public String getRepositoryModelURI() {
-		return this.repositoryModelURI;
-	}
-
-	public String getMappingFileRac() {
-		return this.mappingFileRac;
+	/**
+	 * Get command line parameter.
+	 * @return bean containing them.
+	 */
+	public AnalysisMainParameterBean getInputParameter() {
+		return this.inputParameter;
 	}
 
 	// *****************************************************************
@@ -184,16 +167,17 @@ public class AnalysisMain {
 		final ParameterParser paramParser = new ParameterParser();
 		paramParser.parse(args);
 
-		final AnalysisMainParameterBean parameterbean = new AnalysisMainParameterBean();
+		this.inputParameter = new AnalysisMainParameterBean();
 		try {
-			paramParser.getParameter(parameterbean);
+			paramParser.getParameter(this.inputParameter);
+
 
 			// create the simple logger
-			this.timeMemLogger = new SimpleTimeMemLogger(parameterbean.getOutLoggingFile());
+			this.timeMemLogger = new SimpleTimeMemLogger(this.inputParameter.getOutLoggingFile());
 
 			// create the configuration for tee-time framework
 			try {
-				this.configuration = new ObservationConfiguration(new File(parameterbean.getDirMonitoringData()));
+				this.configuration = new ObservationConfiguration(new File(this.inputParameter.getDirMonitoringData()));
 			} catch (final IOException e) {
 				e.printStackTrace();
 				System.exit(1);

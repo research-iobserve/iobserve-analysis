@@ -1,7 +1,7 @@
 package org.iobserve.analysis;
 
-import giusa.software.parser.parameter.Parameter;
-import giusa.software.parser.parameter.ParameterBean;
+import giusa.parser.parameter.Parameter;
+import giusa.parser.parameter.ParameterBean;
 
 /**
  * JavaBean to hold the parameter values
