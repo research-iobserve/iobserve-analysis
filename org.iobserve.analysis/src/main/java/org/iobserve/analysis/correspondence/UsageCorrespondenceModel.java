@@ -20,7 +20,7 @@ import protocom.extension.mapping.PcmOperationSignature;
  * @author Robert Heinrich, Alessandro Giusa
  */
 class UsageCorrespondenceModel implements ICorrespondence {
-	
+
 	private interface MethodSignatureBuilder {
 		String build(PcmCorrespondentMethod method);
 	}
@@ -112,12 +112,13 @@ class UsageCorrespondenceModel implements ICorrespondence {
 	@Override
 	public String getCorrespondent(final String classSig, final String operationSig) {
 		//TODO debug print, remove later
-		System.out.println(String.format("Try to get correspondence for classSig=%s, operationSig=%s",
+		System.out.print(String.format("Try to get correspondence for classSig=%s, operationSig=%s...",
 				classSig, operationSig));
-		
+
 		// assert parameters are not null
 		if ((classSig == null) || (operationSig == null)) {
 			// TODO log
+			System.out.println("NOK");
 			return null; // or even throw exception
 		}
 
@@ -132,12 +133,14 @@ class UsageCorrespondenceModel implements ICorrespondence {
 			final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
 			if (pcmEntityCorrespondent == null) {
 				// TODO log
+				System.out.println("NOK");
 				return null; // or something else
 			}
 
 			final PcmOperationSignature pcmOperationSignature = this.getPcmOperationSignature(pcmEntityCorrespondent, operationSig);
 			if (pcmOperationSignature == null) {
 				// TODO log
+				System.out.println("NOK");
 				return null; // or something else
 			}
 
@@ -151,6 +154,9 @@ class UsageCorrespondenceModel implements ICorrespondence {
 			// put into cache for next time
 			this.cachedCorrespondents.put(requestKey, correspondent);
 		}
+
+		//TODO this can be removed later
+		System.out.println("OK");
 
 		return correspondent.getPcmOperationName(); // TODO this is because we return String but this will change into this correspondent object
 
@@ -176,7 +182,7 @@ class UsageCorrespondenceModel implements ICorrespondence {
 
 	private PcmOperationSignature getPcmOperationSignature(final PcmEntityCorrespondent pcmEntityCorrespondent,
 			final String operationSig) {
-		
+
 		PcmOperationSignature opSig = null;
 		for (final PcmCorrespondentMethod nextCorresMethod : pcmEntityCorrespondent.getMethods()) {
 
@@ -190,12 +196,12 @@ class UsageCorrespondenceModel implements ICorrespondence {
 
 		return opSig;   
 	}
-	
+
 	/**
 	 * Builds the signature out of packagname.MethodName()
 	 */
 	private final MethodSignatureBuilder mPackageNameClassNameMethodName = new MethodSignatureBuilder() {
-		
+
 		@Override
 		public String build(final PcmCorrespondentMethod method) {
 			final String packageName = method.getParent().getPackageName();
@@ -204,12 +210,12 @@ class UsageCorrespondenceModel implements ICorrespondence {
 			return packageName + "." + className + "." + methodName + "()";
 		}
 	};
-	
+
 	/**
 	 * Builds the signature like it would appear in the source code for instance void Get().
 	 */
 	private final MethodSignatureBuilder mOnlyMethodName = new MethodSignatureBuilder() {
-		
+
 		@Override
 		public String build(final PcmCorrespondentMethod method) {
 			final StringBuilder builder = new StringBuilder();
@@ -227,7 +233,7 @@ class UsageCorrespondenceModel implements ICorrespondence {
 			// TODO <exception throws signature>  is missing since this is not retrievable from protocom-generation process so far.
 
 			final String methodSig = builder.toString().trim();
-			
+
 			return methodSig;
 		}
 	};
@@ -250,7 +256,7 @@ class UsageCorrespondenceModel implements ICorrespondence {
 		}
 		return opSig;
 	}
-	
+
 	private void printAllMappings() {
 		for(String nextMappingKey:this.mapping.keySet()) {
 			System.out.println(nextMappingKey);

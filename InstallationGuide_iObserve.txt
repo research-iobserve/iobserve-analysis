@@ -31,6 +31,8 @@ mvn clean
 mvn compile
 mvn install
 
+or in just one call: mvn clean compile install
+
 3.2 Install JavaEE Dev-Tools (3.6.X): Help > InstallNewSoftware > Work with: 
 http://download.eclipse.org/releases/luna/
 
