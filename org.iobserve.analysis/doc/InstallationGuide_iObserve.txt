@@ -149,5 +149,9 @@ res/test/kieker output/log.txt res/test/modells/PCMInput/cocome.repository res/t
 
 
 
+-------------------------------------------------------------------------------------------------
+Installation Gradle-Plugin:
+SpringSource Update Site for Gradle Integration for Eclipse - http://dist.springsource.com/release/TOOLS/gradle
+
 
 
