@@ -1,0 +1,9 @@
+1. Errors from type kieker.common.exception.UnknownRecordTypeException:
+- Just mean that a type specified in the kieker.map is not known at runtime to teetime. 
+- i.e. 
+kieker.common.exception.UnknownRecordTypeException: 
+	Failed to load record type org.spp.iobserve.common.record.EJBDeployedEvent
+
+Solution: Adapt the RecordTypes, hence the RecordTypes specified in kieker.map match with those
+in your source code.
+---------------------------------------------------------------------------------------------------
