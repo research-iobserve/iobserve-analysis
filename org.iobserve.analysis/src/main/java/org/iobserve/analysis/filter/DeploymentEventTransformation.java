@@ -15,9 +15,14 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.iobserve.common.record.IDeploymentRecord;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.common.record.EJBDeployedEvent;
+import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.ServletDeployedEvent;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -25,13 +30,16 @@ import teetime.framework.AbstractConsumerStage;
  * It could be interesting to combine DeploymentEventTransformation and UndeploymentEventTransformation.
  * However, that would require two input ports. And I have not used the API for multiple input ports.
  *
- * @author Robert Heinrich, Alessandro Giusa
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
  */
 public class DeploymentEventTransformation extends AbstractConsumerStage<IDeploymentRecord> {
-  
+
 	private static long executionCounter = 0;
-	
+
 	private final ICorrespondence correspondence;
+
+	private List<DeploymentRecordProcessor> deploymentProcessors;
 
 	/**
 	 * Most likely the constructor needs an additional field for the PCM access. But this has to be discussed with Robert.
@@ -41,6 +49,11 @@ public class DeploymentEventTransformation extends AbstractConsumerStage<IDeploy
 	 */
 	public DeploymentEventTransformation(final ICorrespondence correspondence) {
 		this.correspondence = correspondence;
+
+		// add processors
+		this.deploymentProcessors = new ArrayList<>();
+		this.deploymentProcessors.add(new EJBDeployedEventProcessor());
+		this.deploymentProcessors.add(new ServletDeployedEventProcessor());
 	}
 
 	/**
@@ -51,7 +64,76 @@ public class DeploymentEventTransformation extends AbstractConsumerStage<IDeploy
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
-		// add your transformation here
+		// dispatch event to right processor
+		boolean stopDispatching = false;
+		final Iterator<DeploymentRecordProcessor> iterator = this.deploymentProcessors.iterator();
+		do {
+			stopDispatching = iterator.next().processEvent(event);
+		} while (!stopDispatching && iterator.hasNext());
 	}
+
+	// *****************************************************************
+	// PROCESS EVENT MORE SPECIFIC
+	// *****************************************************************
+	
+	/**
+	 * Abstract type of a processor for {@link IDeploymentRecord}.
+	 * 
+	 * @author Robert Heinrich
+	 * @author Alessandro Giusa
+	 *
+	 */
+	private abstract class DeploymentRecordProcessor {
+		public abstract boolean processEvent(final IDeploymentRecord record);
+	}
+
+	/**
+	 * Processor for processing {@link ServletDeployedEvent}
+	 * @author Robert Heinrich
+	 * @author Alessandro Giusa
+	 *
+	 */
+	private class ServletDeployedEventProcessor extends DeploymentRecordProcessor {
+
+		@Override
+		public boolean processEvent(final IDeploymentRecord record) {
+			if (record.getClass() != ServletDeployedEvent.class) {
+				return false;
+			}
+			
+			final ServletDeployedEvent event = (ServletDeployedEvent) record;
+			final String context = event.getContext();
+			final String deploymentId = event.getDeploymentId();
+			final String serivce = event.getSerivce();
+			final long loggingTimestamp = event.getLoggingTimestamp();
+			final long timestamp = event.getTimestamp();
+			return true;
+		}
+
+	}
+
+	/**
+	 * Processor for processing {@link EJBDeployedEvent}
+	 * @author Robert Heinrich
+	 * @author Alessandro Giusa
+	 *
+	 */
+	private class EJBDeployedEventProcessor extends DeploymentRecordProcessor {
+
+		@Override
+		public boolean processEvent(final IDeploymentRecord record) {
+			if (record.getClass() != EJBDeployedEvent.class) {
+				return false;
+			}
+			
+			final EJBDeployedEvent event = (EJBDeployedEvent) record;
+
+			System.out
+				.println("DeploymentEventTransformation.EJBDeployedEventProcessor.processEvent()");
+			return true;
+		}
+
+	}
+
 
 }
