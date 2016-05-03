@@ -15,4 +15,6 @@
 !InstallationGuide_iObserve.txt
 .gradle/
 */build/*
+!*/doc/*
+build/
 
