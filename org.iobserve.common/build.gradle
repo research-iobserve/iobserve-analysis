@@ -1,24 +1,7 @@
-
-dependencies {
-	// nothing
-}
-
 sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-        }
-    }
-    
-    gen {
-    	java {
-    		srcDir 'src/gen/java'
-    	}
-    }
-
-    test {
-        java {
-            srcDir 'src/test/java'
-        }
-    }
+	main {
+		java {
+			srcDirs = ['src/gen/java']
+		}
+	}
 }

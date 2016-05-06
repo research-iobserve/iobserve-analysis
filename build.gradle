@@ -1,58 +1,47 @@
-buildscript {
-
-    repositories {
-        mavenCentral()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
-    }
-    dependencies {
-    
-    }
-}
-
 allprojects {
 	apply plugin: "java"
     apply plugin: "eclipse"
 
     version = '1.0'
     sourceCompatibility = 1.7
+    
     ext {
         appName = "org.iobserve"
+        palladioInstall = 'C:/Users/Alessandro/Desktop/NewPalladio/Palladio.win32.win32.x86_64/plugins/'
     }
 
     repositories {
         mavenCentral()
         jcenter()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven {url "https://oss.sonatype.org/content/repositories/releases/" }
 		maven {url "https://oss.sonatype.org/content/groups/public/"}
 		maven {url "https://jitpack.io"}
     }
 }
 
 project(":org.iobserve.analysis") {
-    apply plugin: "java"
-	
-	def palladioInstall = 'C:/Users/Alessandro/Desktop/NewPalladio/Palladio.win32.win32.x86_64/plugins/'
 
     dependencies {
         compile project(":org.iobserve.monitoring")
         compile project(":org.iobserve.common")
+		
 		compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 		compile 'net.sourceforge.teetime:teetime:1.1.2'
 		compile 'net.sourceforge.teetime-stages:teetime-stages:1.1.2'
-		compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.10.1'
-		compile 'org.eclipse.emf:org.eclipse.emf.common:2.10.1'
-		compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.10.1'
-		compile 'org.eclipse.uml2:org.eclipse.uml2.uml:3.1.0.v201006071150'
 		compile 'net.kieker-monitoring:kieker:1.12'
 		
-		compile 'org.eclipse.core:runtime:3.10.0-v20140318-2214'
-		compile 'org.eclipse.ocl:ecore:3.3.0-v20130520-1222'
+		compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
+		compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
+		compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.+'
+		compile 'org.eclipse.uml2:org.eclipse.uml2.uml:3.1.+'
+		
+		compile 'org.eclipse.core:runtime:3.10.+'
+		compile 'org.eclipse:ocl:3.3.+'
+		//compile 'org.eclipse.ocl:common:1.2.0-v20140528-1458'
+		//compile 'org.eclipse.ocl:ecore:3.3.0-v20130520-1222'
 		compile 'lpg.runtime:java:2.0.17-v201004271640'
-		compile 'org.antlr:antlr-runtime:3.5.2'
-		
-		
+		//compile 'org.antlr:antlr4-runtime:4.5.3'
 		
         compile fileTree(dir: 'libs', include: '*.jar')
         compile files(palladioInstall + "de.uka.ipd.sdq.identifier_2.1.0.201511050934.jar")
@@ -67,7 +56,6 @@ project(":org.iobserve.analysis") {
 }
 
 project(":org.iobserve.monitoring") {
-    apply plugin: "java"
     dependencies {
 		compile project(":org.iobserve.common")
 		compile 'net.kieker-monitoring:kieker:1.12'
@@ -77,14 +65,8 @@ project(":org.iobserve.monitoring") {
 }
 
 project(":org.iobserve.common") {
-    apply plugin: "java"
-	
     dependencies {
 		compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 		compile 'net.kieker-monitoring:kieker:1.12'
     }
-}
-
-tasks.eclipse.doLast {
-    delete ".project"
 }

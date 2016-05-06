@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="output" path="bin"/>
-	<classpathentry kind="src" path="src/main/java"/>
-	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="src" path="src/gen/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER" exported="true"/>
 	<classpathentry sourcepath="C:/Users/Alessandro/.gradle/caches/modules-2/files-2.1/org.codehaus.mojo/exec-maven-plugin/1.2/bfdf1097b018c7c51c89131a378b0394463ff7eb/exec-maven-plugin-1.2-sources.jar" kind="lib" path="C:/Users/Alessandro/.gradle/caches/modules-2/files-2.1/org.codehaus.mojo/exec-maven-plugin/1.2/5c50f6b2d2265cff9884f4566b3063f3b7272f7e/exec-maven-plugin-1.2.jar" exported="true"/>
 	<classpathentry sourcepath="C:/Users/Alessandro/.gradle/caches/modules-2/files-2.1/net.kieker-monitoring/kieker/1.12/a64d610b08bbd39e7e06b9d26a41e23728e04553/kieker-1.12-sources.jar" kind="lib" path="C:/Users/Alessandro/.gradle/caches/modules-2/files-2.1/net.kieker-monitoring/kieker/1.12/f9d9e0c80114b1f0ed3d091ea80983058801785c/kieker-1.12.jar" exported="true"/>
