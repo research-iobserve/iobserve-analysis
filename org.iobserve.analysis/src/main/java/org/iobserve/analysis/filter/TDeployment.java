@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelprovider.AllocationModelProvider;
-import org.iobserve.analysis.modelprovider.PcmModelSaver;
+import org.iobserve.analysis.modelprovider.ModelProviderPlatform;
+import org.iobserve.analysis.modelprovider.ModelSaveStrategy;
 import org.iobserve.analysis.modelprovider.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.modelprovider.SystemModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
@@ -56,8 +56,15 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 * @param correspondence
 	 *            the correspondence model access
 	 */
-	public TDeployment(final ICorrespondence correspondence) {
-		this.correspondence = correspondence;
+	public TDeployment() {
+		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
+		
+		// get all model references
+		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
+		this.allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
+		this.systemModelProvider = modelProviderPlatform.getSystemModelProvider();
+		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
+		
 		
 		// add processors
 		this.deploymentProcessors = new ArrayList<>();
@@ -73,25 +80,6 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
-		
-		if (this.systemModelProvider == null) {
-			final URI systemModelUri = URI.createURI(AnalysisMain.getInstance().getInputParameter().getPathPcmSystemModel());
-			this.systemModelProvider = new SystemModelProvider(systemModelUri);
-		}
-		
-		if (this.resourceEnvModelProvider == null) {
-			final URI resEnvModelUri = URI.createURI(AnalysisMain.getInstance().getInputParameter().getPathPcmResEnvModel());
-			this.resourceEnvModelProvider = new ResourceEnvironmentModelProvider(resEnvModelUri);
-		}
-		
-		if (this.allocationModelProvider == null) {
-			// create model provider
-			final URI allocationModelUri = URI.createURI(AnalysisMain.getInstance().getInputParameter().getPathPcmAllocationModel());
-			this.allocationModelProvider = new AllocationModelProvider(allocationModelUri);
-			this.allocationModelProvider.resetModel();
-		}
-		
-		
 		// dispatch event to right processor
 		boolean stopDispatching = false;
 		final Iterator<DeploymentRecordProcessor> iterator = this.deploymentProcessors.iterator();
@@ -145,12 +133,7 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 			TDeployment.this.allocationModelProvider.addAllocationContext(resourceContainer, assemblyContext);
 			
 			
-			
-			
-			final PcmModelSaver modelSaver = new PcmModelSaver(URI.createURI(AnalysisMain.getInstance().getInputParameter().getOutUpdatedAllocationModel()));
-			modelSaver.save(TDeployment.this.allocationModelProvider.getModel());
-			
-			
+			TDeployment.this.allocationModelProvider.save(ModelSaveStrategy.OVERRIDE);
 			return true;
 		}
 

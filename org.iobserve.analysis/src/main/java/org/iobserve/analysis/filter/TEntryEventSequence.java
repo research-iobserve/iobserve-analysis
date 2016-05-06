@@ -25,7 +25,8 @@ import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
-import org.iobserve.analysis.modelprovider.PcmModelSaver;
+import org.iobserve.analysis.modelprovider.ModelProviderPlatform;
+import org.iobserve.analysis.modelprovider.ModelSaveStrategy;
 import org.iobserve.analysis.modelprovider.UsageModelProvider;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 
@@ -47,13 +48,11 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 
 	private final ICorrespondence correspondenceModel;
 	private final UsageModelProvider usageModelProvider;
-	private final PcmModelSaver pcmModelSaver;
 
-	public TEntryEventSequence(final ICorrespondence correspondenceModel,
-			final UsageModelProvider modelProvider, final PcmModelSaver modelSaver) {
-		this.correspondenceModel = correspondenceModel;
-		this.usageModelProvider = modelProvider;
-		this.pcmModelSaver = modelSaver;
+	public TEntryEventSequence() {
+		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
+		this.correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
+		this.usageModelProvider = modelProviderPlatform.getUsageModelProvider();
 	}
 
 	@Override
@@ -138,15 +137,11 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 			stopAction.setPredecessor(lastAction);
 			
 			// save the model to the output
-			this.pcmModelSaver.save(this.usageModelProvider.getModel());
+			this.usageModelProvider.save(ModelSaveStrategy.OVERRIDE);
 			this.counterSavedUsageModel++; //TODO just for now
 			
 			// reset the model
-			if(this.counterSavedUsageModel > 0) {
-				this.usageModelProvider.reloadModel(this.pcmModelSaver.getOutput());
-			} else {
-				this.usageModelProvider.reloadModel();
-			}
+			this.usageModelProvider.reloadModel();
 			
 		}
 	}

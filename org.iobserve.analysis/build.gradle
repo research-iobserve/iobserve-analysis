@@ -1,35 +1,31 @@
-dependencies {
-	// nothing
+ext {
+	pcm_working_dir = 'res/working_dir/pcm'
+	pcm_original_dir = 'res/original_dir/pcm'
+	palladioInstall = 'C:/Users/Alessandro/Desktop/NewPalladio/Palladio.win32.win32.x86_64/plugins/'
 }
 
 sourceSets {
-    main {
-        java {
-            srcDir 'src/main/java'
-        }
-    }
-    
-    resources {
-    	java {
-    		srcDir 'src/main/resources'
-    	}
-    }
-    
     irl {
     	java {
     		srcDir 'src/main/irl'
     	}
     }
+}
 
-    test {
-        java {
-            srcDir 'src/test/java'
-        }
-    }
-    
-   test.resources {
-    	java {
-    		srcDir 'src/test/resources'
-    	}
-    }
+task cleanPcmWorkingDir(type: Delete) {
+	delete pcm_working_dir
+}
+
+task copyPcmToWorkingDir(type: Copy) {
+	dependsOn << cleanPcmWorkingDir
+	from pcm_original_dir
+	into pcm_working_dir
+}
+
+task runAnalysis(type: JavaExec) {
+	dependsOn << compileJava
+	dependsOn << copyPcmToWorkingDir
+	classpath = sourceSets.main.runtimeClasspath
+	main = 'org.iobserve.analysis.AnalysisMain'
+	args '--dirMonitoring=res/original_dir/kieker', '--dirPcm=res/working_dir/pcm', '--dirLogging=output/logging'
 }

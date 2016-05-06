@@ -19,41 +19,31 @@ import giusa.parser.parameter.MissingParameterException;
 import giusa.parser.parameter.ParameterParser;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
-import org.iobserve.analysis.utils.Terminal;
+import org.iobserve.analysis.modelprovider.ModelProviderPlatform;
 
 import teetime.framework.Analysis;
 import teetime.framework.AnalysisConfiguration;
 
 /**
- * Main calss for starting the iObserve application
+ * Main class for starting the iObserve application
  * 
  * @author Reiner Jung
  * @author Robert Heinrich
- * @author Alessandro Giusa alessandrogiusa@gmail.com
+ * @author Alessandro Giusa, alessandrogiusa@gmail.com
  */
 public class AnalysisMain {
-
-	public static final String ARG_DIR_MONITORING_DATA = "inDirMonitoringData";
-	public static final String ARG_IN_PATH_PCM_REPOSITORY_MODEL = "inPathPcmRepositoryModel";
-	public static final String ARG_IN_PATH_PCM_USAGE_MODEL = "inPathPcmUsageModel";
-	public static final String ARG_IN_PATH_PROTOCOM_MAPPING_FILE_RAC = "inPathProtocomMappingFile";
-	public static final String ARG_OUT_PATH_LOGGING_FILE = "outPathLoggingFile";
-	public static final String ARG_OUT_PATH_PCM_UPDATED_USAGE_MODEL = "outPathPcmUpdatedUsageModel";
-	public static final String ARG_IN_PATH_ALLOCATION_MODEL = "inPathPcmAllocationModel";
-	public static final String ARG_IN_PATH_SYSTEM_MODEL = "inPathPcmSystemModel";
-	public static final String ARG_IN_PATH_RES_ENV_MODEL = "inPathPcmResEnvModel";
-	public static final String ARG_OUT_PATH_PCM_UPDATED_ALLOCATION_USAGE_MODEL = "outPathPcmUpdatedAllocationModel";
-	
 
 	/**input parameters*/
 	private AnalysisMainParameterBean inputParameter; 
 
 	/** configuration for the analysis. */
 	private AnalysisConfiguration configuration;
+	
+	private ModelProviderPlatform modelProviderPlatform;
+	
+	private SimpleTimeMemLogger timeMemLogger;
 
 	/**
 	 * Default constructor.
@@ -61,19 +51,7 @@ public class AnalysisMain {
 	private AnalysisMain() {
 		// do nothing here
 	}
-
-	// *****************************************************************
-	// GETTER
-	// *****************************************************************
-
-	/**
-	 * Get command line parameter.
-	 * @return bean containing them.
-	 */
-	public AnalysisMainParameterBean getInputParameter() {
-		return this.inputParameter;
-	}
-
+	
 	// *****************************************************************
 	// SINGLETON PART
 	// *****************************************************************
@@ -92,12 +70,53 @@ public class AnalysisMain {
 		}
 		return AnalysisMain.INSTANCE;
 	}
-
+	
 	// *****************************************************************
-	// SIMPLE LOGGER
+	// CONFIGURATION
+	// *****************************************************************
+	
+	/**
+	 * Initialization.
+	 * @param args arguments
+	 */
+	private void init(final AnalysisMainParameterBean args) {
+		System.out.println("init running");
+		this.inputParameter = args;
+		this.createLogger();
+		this.createModelProviderPlatform();
+		this.createObservationConfiguration();
+	}
+	
+	// *****************************************************************
+	// RUN
 	// *****************************************************************
 
-	private SimpleTimeMemLogger timeMemLogger;
+	private void run() {
+		Runtime.getRuntime().gc(); // initial gc call
+		final Analysis<AnalysisConfiguration> analysis = new Analysis<AnalysisConfiguration>(this.configuration);
+		analysis.executeBlocking();
+		((ObservationConfiguration) this.configuration).getRecordSwitch().outputStatistics();
+	}
+	
+	// *****************************************************************
+	// GETTER
+	// *****************************************************************
+
+	/**
+	 * Get command line parameter.
+	 * @return bean containing them.
+	 */
+	public AnalysisMainParameterBean getInputParameter() {
+		return this.inputParameter;
+	}
+	
+	/**
+	 * Get model provider platform.
+	 * @return
+	 */
+	public ModelProviderPlatform getModelProviderPlatform() {
+		return this.modelProviderPlatform;
+	}
 
 	/**
 	 * Get simple logger for timing and memory usage
@@ -113,6 +132,34 @@ public class AnalysisMain {
 	public void closeLogger() {
 		this.timeMemLogger.close();
 	}
+	
+	// *****************************************************************
+	// CREATION
+	// *****************************************************************
+	
+	/**
+	 * Creates the {@link ModelProviderPlatform}.
+	 */
+	private void createModelProviderPlatform() {
+		final String pcmDir = this.getInputParameter().getDirPcmModels();
+		this.modelProviderPlatform = new ModelProviderPlatform(pcmDir);
+	}
+	
+	private void createLogger() {
+		this.timeMemLogger = new SimpleTimeMemLogger(this.inputParameter.getDirLogging());
+	}
+	
+	private void createObservationConfiguration() {
+		try {
+			this.configuration = new ObservationConfiguration(new File(this.inputParameter.getDirMonitoringData()));
+		} catch (final IOException e) {
+			e.printStackTrace();
+			System.exit(1);
+		} catch (final ClassNotFoundException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
 
 	// *****************************************************************
 	// ACTUAL ANALYSIS MAIN STUFF
@@ -124,18 +171,23 @@ public class AnalysisMain {
 	 * @param args command line arguments.
 	 */
 	public static void main(final String[] args) {
-		final AnalysisMain application = AnalysisMain.getInstance();
+		// parse parameter
+		final ParameterParser paramParser = new ParameterParser();
+		paramParser.parse(args);
+		final AnalysisMainParameterBean params = new AnalysisMainParameterBean();
 		try {
-			application.parseArguments(args);
-			if (application.checkConfiguration()) {
-				application.run();
-			} else {
-				Terminal.println("configuration check failed!");
-				System.exit(1);
-
-			}
+			paramParser.getParameter(params);
+		} catch (MissingParameterException e1) {
+			e1.printStackTrace();
+			System.exit(1);
+		}
+		
+		// create and run application
+		final AnalysisMain application = AnalysisMain.getInstance();
+		application.init(params);
+		try {
+			application.run();
 		} catch(Exception e) {
-			application.usage();
 			e.printStackTrace();
 
 			//dispatch the exception here
@@ -143,69 +195,4 @@ public class AnalysisMain {
 			application.closeLogger();
 		}
 	}
-
-	private void run() {
-		Runtime.getRuntime().gc(); // initial gc call
-		final Analysis<AnalysisConfiguration> analysis = new Analysis<AnalysisConfiguration>(this.configuration);
-		analysis.executeBlocking();
-		((ObservationConfiguration) this.configuration).getRecordSwitch().outputStatistics();
-	}
-
-
-	private boolean checkConfiguration() {
-		return true; //TODO what does this do?
-	}
-
-	// *****************************************************************
-	// PARAMETER PARSING
-	// *****************************************************************
-
-	/**
-	 * Parse console arguments
-	 * @param args console arguments
-	 * @throws UnsupportedEncodingException
-	 * @throws FileNotFoundException
-	 */
-	private void parseArguments(final String[] args) 
-			throws UnsupportedEncodingException, FileNotFoundException {
-
-		// parse all parameters
-		final ParameterParser paramParser = new ParameterParser();
-		paramParser.parse(args);
-
-		this.inputParameter = new AnalysisMainParameterBean();
-		try {
-			paramParser.getParameter(this.inputParameter);
-
-
-			// create the simple logger
-			this.timeMemLogger = new SimpleTimeMemLogger(this.inputParameter.getOutLoggingFile());
-
-			// create the configuration for tee-time framework
-			try {
-				this.configuration = new ObservationConfiguration(new File(this.inputParameter.getDirMonitoringData()));
-			} catch (final IOException e) {
-				e.printStackTrace();
-				System.exit(1);
-			} catch (final ClassNotFoundException e) {
-				e.printStackTrace();
-				System.exit(1);
-			}
-
-		} catch (MissingParameterException e1) {
-			e1.printStackTrace();
-			System.exit(1);
-		}
-	}
-
-	private void usage() {
-		Terminal.printlnf("Usage of arguments: -%s, -%s, -%s, -%s, -%s, -%s",
-				AnalysisMain.ARG_DIR_MONITORING_DATA,
-				AnalysisMain.ARG_IN_PATH_PCM_REPOSITORY_MODEL,
-				AnalysisMain.ARG_IN_PATH_PCM_USAGE_MODEL,
-				AnalysisMain.ARG_IN_PATH_PROTOCOM_MAPPING_FILE_RAC,
-				AnalysisMain.ARG_OUT_PATH_LOGGING_FILE,
-				AnalysisMain.ARG_OUT_PATH_PCM_UPDATED_USAGE_MODEL);
-	}
-
 }

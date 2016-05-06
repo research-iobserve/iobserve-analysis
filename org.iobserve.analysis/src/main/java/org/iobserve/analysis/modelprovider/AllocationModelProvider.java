@@ -35,8 +35,8 @@ public class AllocationModelProvider extends AbstractModelProvider<Allocation> {
 	// * INITIALIZATION
 	// ********************************************************************
 
-	public AllocationModelProvider(final URI uriModelInstance) {
-		super(uriModelInstance);
+	public AllocationModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
+		super(uriModelInstance, thePlatform);
 	}
 
 	// ********************************************************************

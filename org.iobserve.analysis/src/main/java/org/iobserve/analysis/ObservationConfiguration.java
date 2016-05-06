@@ -18,17 +18,12 @@ package org.iobserve.analysis;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.correspondence.CorrespondeceModelFactory;
-import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.RecordSwitch;
+import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
 import org.iobserve.analysis.filter.TEntryEventSequence;
-import org.iobserve.analysis.filter.UndeploymentEventTransformation;
-import org.iobserve.analysis.modelprovider.PcmModelSaver;
-import org.iobserve.analysis.modelprovider.UsageModelProvider;
+import org.iobserve.analysis.filter.TUndeployment;
 
 import teetime.framework.AnalysisConfiguration;
 import teetime.framework.Stage;
@@ -73,8 +68,6 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 	}
 
 	private Stage buildAnalysis() {
-		final ICorrespondence correspondenceModel = this.getCorrespondenceModel();
-
 		// create filter
 		final InitialElementProducer<File> files = new InitialElementProducer<File>(this.directory);
 		final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
@@ -82,21 +75,11 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 		this.recordSwitch = new RecordSwitch();
 
 		
-		final TDeployment deployment = 
-				new TDeployment(correspondenceModel);
-		final UndeploymentEventTransformation undeployment = new UndeploymentEventTransformation(
-				correspondenceModel);
-
+		final TDeployment deployment = new TDeployment();
+		final TUndeployment undeployment = new TUndeployment();
 		final TEntryCall tEntryCall = new TEntryCall();
 		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
-
-		// TODO should this be here ? get the usage model provider and reset it
-		final UsageModelProvider usageModelProvider = this.getUsageModelProvider();
-		usageModelProvider.resetUsageModel();
-
-		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(
-				correspondenceModel, usageModelProvider, this.getPcmModelSaver());
-
+		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence();
 
 		// connecting filters
 		final IPipeFactory factory = this.pipeFactoryRegistry.getPipeFactory(
@@ -113,39 +96,6 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 
 		return files;
 
-	}
-
-	/**
-	 * Get the correspondence model
-	 * @return instance of {@link ICorrespondence}
-	 */
-	private ICorrespondence getCorrespondenceModel() {
-		final String pathMappingFile = AnalysisMain.getInstance().getInputParameter().getPathProtocomMappingFile();
-		final ICorrespondence model = CorrespondeceModelFactory.INSTANCE
-				.createCorrespondenceModel(pathMappingFile,
-						CorrespondeceModelFactory.INSTANCE.DEFAULT_OPERATION_SIGNATURE_MAPPER_2);
-		return model;
-	}
-
-	/**
-	 * Get the Model provider for the usage model
-	 * @return instance of usage model provider
-	 */
-	private UsageModelProvider getUsageModelProvider() {
-		final URI repositoryModelURI = URI.createURI(AnalysisMain.getInstance().getInputParameter().getPathPcmRepositoryModel());
-		final URI inputUsageModelURI = URI.createURI(AnalysisMain.getInstance().getInputParameter().getPathPcmUsageModel());
-		final UsageModelProvider provider = new UsageModelProvider(inputUsageModelURI, repositoryModelURI);
-
-		return provider;
-	}
-
-	/**
-	 * get the helper class to save PCM models
-	 * @return instance of that class
-	 */
-	private PcmModelSaver getPcmModelSaver() {
-		final URI outputUsageModelURI = URI.createURI(AnalysisMain.getInstance().getInputParameter().getOutUpdatedUsageModel());
-		return new PcmModelSaver(outputUsageModelURI);
 	}
 
 	public RecordSwitch getRecordSwitch() {

@@ -15,9 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.iobserve.common.record.IUndeploymentRecord;
-
 import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.common.record.IUndeploymentRecord;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -27,7 +26,7 @@ import teetime.framework.AbstractConsumerStage;
  *
  *
  */
-public class UndeploymentEventTransformation extends AbstractConsumerStage<IUndeploymentRecord> {
+public class TUndeployment extends AbstractConsumerStage<IUndeploymentRecord> {
 
 	private static long executionCounter = 0;
 	
@@ -38,8 +37,8 @@ public class UndeploymentEventTransformation extends AbstractConsumerStage<IUnde
 	 *
 	 * @param correspondence
 	 */
-	public UndeploymentEventTransformation(final ICorrespondence correspondence) {
-		this.correspondence = correspondence;
+	public TUndeployment() {
+		this.correspondence = null;
 	}
 
 	/**

@@ -27,8 +27,8 @@ public class SystemModelProvider extends AbstractModelProvider<System> {
 	// * INITIALIZATION
 	// ********************************************************************
 
-	public SystemModelProvider(final URI uriModelInstance) {
-		super(uriModelInstance);
+	public SystemModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
+		super(uriModelInstance, thePlatform);
 	}
 	
 	@Override

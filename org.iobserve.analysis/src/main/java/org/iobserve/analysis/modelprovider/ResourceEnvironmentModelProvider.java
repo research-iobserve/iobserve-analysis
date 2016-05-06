@@ -28,8 +28,8 @@ public class ResourceEnvironmentModelProvider extends AbstractModelProvider<Reso
 	// * INITIALIZATION
 	// ********************************************************************
 
-	public ResourceEnvironmentModelProvider(final URI uriModelInstance) {
-		super(uriModelInstance);
+	public ResourceEnvironmentModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
+		super(uriModelInstance, thePlatform);
 	}
 	
 	@Override

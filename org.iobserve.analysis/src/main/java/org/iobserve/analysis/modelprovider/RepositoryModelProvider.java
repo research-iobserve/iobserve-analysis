@@ -44,8 +44,8 @@ public class RepositoryModelProvider extends AbstractModelProvider<Repository> {
 		// does nothing
 	}
 
-	public RepositoryModelProvider(final URI uriModelInstance) {
-		super(uriModelInstance);
+	public RepositoryModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
+		super(uriModelInstance, thePlatform);
 
 		this.loadAllBasicComponents();
 		this.loadAllOperationInterfaces();

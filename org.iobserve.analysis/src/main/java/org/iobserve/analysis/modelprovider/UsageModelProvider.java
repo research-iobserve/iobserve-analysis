@@ -1,25 +1,16 @@
 package org.iobserve.analysis.modelprovider;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.repository.BasicComponent;
-import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.ProvidedRole;
-import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryComponent;
-import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
@@ -33,135 +24,56 @@ import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
-public final class UsageModelProvider {
+public final class UsageModelProvider extends AbstractModelProvider<UsageModel> {
 
 	private final UsagemodelFactory usageModelfactory = UsagemodelFactory.eINSTANCE;
 
-	private Repository repository;
 	private List<OperationInterface> operInterfaces;
 	private List<BasicComponent> basicComponents;
 
-	private UsageModel model;
 	private ScenarioBehaviour scenarioBehaviour;
 	private UsageScenario usageScenario;
 
 	private Start start;
 	private Stop stop;
 
-	private final URI uriUsageModel;
-	private final URI uriRepository;
-
 	// ********************************************************************
 	// * INITIALIZATION
 	// ********************************************************************
 
-	public UsageModelProvider(final URI uriUsageModel, final URI uriRepository) {
-		this.loadRepository(uriRepository);
-		this.loadUsageModelInstance(uriUsageModel);
-
-		this.uriRepository = uriRepository;
-		this.uriUsageModel = uriUsageModel;
+	public UsageModelProvider(final URI uriUsageModel, final ModelProviderPlatform thePlatform) {
+		super(uriUsageModel, thePlatform);
+	}
+	
+	@Override
+	public EPackage getPackage() {
+		return UsagemodelPackage.eINSTANCE;
 	}
 
 	/**
 	 * Just reload the usage model from init usage model. The repository gets not reloaded.
 	 */
 	public void reloadModel() {
-		this.loadUsageModelInstance(this.uriUsageModel);
-		this.resetUsageModel();
+		this.loadModel();
+		this.resetModel();
 	}
-
-	/**
-	 * Just reload the usage model from the given URI. The repository gets not reloaded.
-	 * @param fromUri valid URI to valid usage model
-	 */
-	public void reloadModel(final URI fromUri) {
-		this.loadUsageModelInstance(fromUri);
-		this.resetUsageModel();
-	}
-
-
-	private void loadUsageModelInstance(final URI uriInstance) {
-		// Initialize the model
-		UsagemodelPackage.eINSTANCE.eClass();
-
-		final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-		final Map<String, Object> map = reg.getExtensionToFactoryMap();
-		map.put("*", new XMIResourceFactoryImpl());
-
-		final ResourceSet resSet = new ResourceSetImpl();
-		resSet.setResourceFactoryRegistry(reg);
-
-		final Resource resource = resSet.getResource(uriInstance, true);
-
-		this.model = (UsageModel) resource.getContents().get(0);
-
-		this.usageScenario = this.model.getUsageScenario_UsageModel().get(0);
+	
+	@Override
+	protected void loadModel() {
+		super.loadModel();
+		
+		final UsageModel model = this.getModel();
+		this.usageScenario = model.getUsageScenario_UsageModel().get(0);
 		this.scenarioBehaviour = this.usageScenario.getScenarioBehaviour_UsageScenario();
-
-		// TODO what about the rest of the usage scenarios?
-		// for(UsageScenario nextUsgSce:this.model.getUsageScenario_UsageModel()){
-		// this.scenarioBehaviour = nextUsgSce.getScenarioBehaviour_UsageScenario();
-		// }
-	}
-
-	private void loadRepository(final URI repositoryUri) {
-		// Initialize the model
-		RepositoryPackage.eINSTANCE.eClass();
-
-		final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-		final Map<String, Object> map = reg.getExtensionToFactoryMap();
-		map.put("*", new XMIResourceFactoryImpl());
-
-		final ResourceSet resSet = new ResourceSetImpl();
-		resSet.setResourceFactoryRegistry(reg);
-
-		Resource resource = null;
-		try {
-			resource = resSet.getResource(repositoryUri, true);
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-
-
-		final Object result = resource.getContents().get(0);
-		if (result instanceof Repository) {
-			this.repository = (Repository) result;
-			this.basicComponents = new ArrayList<BasicComponent>();
-			this.operInterfaces = new ArrayList<OperationInterface>();
-
-			// get basic components
-			for (final RepositoryComponent nextRepoCmp : this.repository.getComponents__Repository()) {
-				if (nextRepoCmp instanceof BasicComponent) {
-					final BasicComponent basicCmp = (BasicComponent) nextRepoCmp;
-					this.basicComponents.add(basicCmp);
-				}
-			}
-
-			// get operation interfaces
-			for (final Interface nextInterface : this.repository.getInterfaces__Repository()) {
-				if (nextInterface instanceof OperationInterface) {
-					final OperationInterface opInf = (OperationInterface) nextInterface;
-					this.operInterfaces.add(opInf);
-				}
-			}
-		}
 	}
  
-	public void resetUsageModel() {
+	@Override
+	public void resetModel() {
 		this.scenarioBehaviour.getActions_ScenarioBehaviour().clear();
 	}
 
 	// ********************************************************************
-	// * GETTER / SETTER
-	// ********************************************************************
-
-	public UsageModel getModel() {
-		return this.model;
-	}
-
-	// ********************************************************************
-	// * BUSINESS METHODS
+	// * MODEL METHODS
 	// ********************************************************************
 
 	private OperationSignature getOperationSignature(final String operationSig) {
@@ -238,5 +150,4 @@ public final class UsageModelProvider {
 		this.scenarioBehaviour.getActions_ScenarioBehaviour().add(this.stop);
 		return this.stop;
 	}
-	
 }

@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -34,13 +35,15 @@ import de.uka.ipd.sdq.identifier.Identifier;
  * @version 1.0, 20.01.2015
  * @param <T>
  */
-public abstract class AbstractModelProvider<T> {
-
+public abstract class AbstractModelProvider<T extends EObject> {
+	
 	// ********************************************************************
 	// * VALUES
 	// ********************************************************************
 
 	private final URI uriModelInstance;
+	
+	private final ModelProviderPlatform platform;
 
 	// ********************************************************************
 	// * VARIABLES
@@ -52,8 +55,9 @@ public abstract class AbstractModelProvider<T> {
 	// * INITIALIZATION
 	// ********************************************************************
 
-	public AbstractModelProvider(final URI uriModelInstance) {
+	public AbstractModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
 		this.uriModelInstance = uriModelInstance;
+		this.platform = thePlatform;
 
 		// perhaps this should be called client?
 		this.loadModel();
@@ -63,6 +67,25 @@ public abstract class AbstractModelProvider<T> {
 	 * Reset the model
 	 */
 	public abstract void resetModel();
+	
+	/**
+	 * Save the internal model. This will override the existing.
+	 * @param strategy strategy how to save the model. Default {@link ModelSaveStrategy#OVERRIDE}
+	 */
+	public void save(final ModelSaveStrategy strategy) {
+		switch (strategy) {
+		case OVERRIDE:
+			new PcmModelSaver(this.uriModelInstance).save(this.getModel());
+			break;
+		case MERGE:
+			throw new UnsupportedOperationException(
+					String.format("%s save strategy does not exist yet!",
+							ModelSaveStrategy.MERGE.name()));
+		default:
+			new PcmModelSaver(this.uriModelInstance).save(this.getModel());
+			break;
+		}
+	}
 
 	/**
 	 * Get an instance of the package where this model belongs to. <br>
@@ -78,7 +101,7 @@ public abstract class AbstractModelProvider<T> {
 	public abstract EPackage getPackage();
 
 	@SuppressWarnings("unchecked")
-	private void loadModel() {
+	protected void loadModel() {
 		this.getPackage().eClass();
 
 		final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
