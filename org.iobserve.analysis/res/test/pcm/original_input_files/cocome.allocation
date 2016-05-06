@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<allocation:Allocation xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:allocation="http://sdq.ipd.uka.de/PalladioComponentModel/Allocation/5.0" id="_pY23oFc-Ed23wcZsd06DZg" entityName="defaultAllocation">
+<allocation:Allocation xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:allocation="http://palladiosimulator.org/PalladioComponentModel/Allocation/5.1" id="_pY23oFc-Ed23wcZsd06DZg" entityName="defaultAllocation">
   <targetResourceEnvironment_Allocation href="cocome.resourceenvironment#/"/>
   <system_Allocation href="cocome.system#_3Sgb8FcmEd23wcZsd06DZg"/>
   <allocationContexts_Allocation id="_vvwIQFc-Ed23wcZsd06DZg" entityName="Application.ProductDispatcher_EnterpriseServer">

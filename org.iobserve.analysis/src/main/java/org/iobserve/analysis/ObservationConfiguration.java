@@ -21,7 +21,7 @@ import java.io.IOException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.correspondence.CorrespondeceModelFactory;
 import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.filter.DeploymentEventTransformation;
+import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
@@ -82,8 +82,8 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 		this.recordSwitch = new RecordSwitch();
 
 		
-		final DeploymentEventTransformation deployment = 
-				new DeploymentEventTransformation(correspondenceModel);
+		final TDeployment deployment = 
+				new TDeployment(correspondenceModel);
 		final UndeploymentEventTransformation undeployment = new UndeploymentEventTransformation(
 				correspondenceModel);
 

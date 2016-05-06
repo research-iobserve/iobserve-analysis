@@ -41,7 +41,7 @@ import teetime.framework.AbstractConsumerStage;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class DeploymentEventTransformation extends AbstractConsumerStage<IDeploymentRecord> {
+public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 
 	private static long executionCounter = 0;
 	private final ICorrespondence correspondence;
@@ -56,7 +56,7 @@ public class DeploymentEventTransformation extends AbstractConsumerStage<IDeploy
 	 * @param correspondence
 	 *            the correspondence model access
 	 */
-	public DeploymentEventTransformation(final ICorrespondence correspondence) {
+	public TDeployment(final ICorrespondence correspondence) {
 		this.correspondence = correspondence;
 		
 		// add processors
@@ -140,12 +140,15 @@ public class DeploymentEventTransformation extends AbstractConsumerStage<IDeploy
 			final String debugContext = "Application.ProductDispatcher_EnterpriseServer";
 			final String debugResContainer = debugContext.substring(debugContext.lastIndexOf("_") + 1, debugContext.length());
 			
-			final ResourceContainer resourceContainer = DeploymentEventTransformation.this.resourceEnvModelProvider.getResourceContainerByName(debugResContainer);
-			final AssemblyContext assemblyContext = DeploymentEventTransformation.this.systemModelProvider.getAssemblyContextByName("Application.ProductDispatcher_EnterpriseServer");
-			DeploymentEventTransformation.this.allocationModelProvider.addAllocationContext(resourceContainer, assemblyContext);
+			final ResourceContainer resourceContainer = TDeployment.this.resourceEnvModelProvider.getResourceContainerByName(debugResContainer);
+			final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName("Application.ProductDispatcher_EnterpriseServer");
+			TDeployment.this.allocationModelProvider.addAllocationContext(resourceContainer, assemblyContext);
+			
+			
+			
 			
 			final PcmModelSaver modelSaver = new PcmModelSaver(URI.createURI(AnalysisMain.getInstance().getInputParameter().getOutUpdatedAllocationModel()));
-			modelSaver.save(DeploymentEventTransformation.this.allocationModelProvider.getModel());
+			modelSaver.save(TDeployment.this.allocationModelProvider.getModel());
 			
 			
 			return true;

@@ -66,7 +66,7 @@ public class AllocationModelProvider extends AbstractModelProvider<Allocation> {
 		// TODO remove allocation context
 	}
 
-	public void addAllocationContext(
+	public AllocationContext addAllocationContext(
 			final ResourceContainer resContainer,
 			final AssemblyContext asmCtx) {
 		final AllocationFactory factory = AllocationFactory.eINSTANCE;
@@ -75,6 +75,7 @@ public class AllocationModelProvider extends AbstractModelProvider<Allocation> {
 		allocationCtx.setAssemblyContext_AllocationContext(asmCtx);
 		allocationCtx.setResourceContainer_AllocationContext(resContainer);
 		this.getModel().getAllocationContexts_Allocation().add(allocationCtx);
+		return allocationCtx;
 	}
 
 	// TODO testing
