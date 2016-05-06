@@ -144,7 +144,7 @@ public class DeploymentEventTransformation extends AbstractConsumerStage<IDeploy
 			final AssemblyContext assemblyContext = DeploymentEventTransformation.this.systemModelProvider.getAssemblyContextByName("Application.ProductDispatcher_EnterpriseServer");
 			DeploymentEventTransformation.this.allocationModelProvider.addAllocationContext(resourceContainer, assemblyContext);
 			
-			final PcmModelSaver modelSaver = new PcmModelSaver(URI.createURI("output/updated_allocationmodel.allocation"));
+			final PcmModelSaver modelSaver = new PcmModelSaver(URI.createURI(AnalysisMain.getInstance().getInputParameter().getOutUpdatedAllocationModel()));
 			modelSaver.save(DeploymentEventTransformation.this.allocationModelProvider.getModel());
 			
 			

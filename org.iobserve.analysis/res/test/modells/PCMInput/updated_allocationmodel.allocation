@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<allocation:Allocation xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:allocation="http://palladiosimulator.org/PalladioComponentModel/Allocation/5.1" id="_pY23oFc-Ed23wcZsd06DZg" entityName="defaultAllocation">
+  <targetResourceEnvironment_Allocation href="cocome.resourceenvironment#/"/>
+  <system_Allocation href="cocome.system#_3Sgb8FcmEd23wcZsd06DZg"/>
+  <allocationContexts_Allocation id="_dxrisBOeEeae6_7uL094-g" entityName="Application.ProductDispatcher_EnterpriseServer">
+    <resourceContainer_AllocationContext href="res/test/modells/PCMInput/cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+    <assemblyContext_AllocationContext href="res/test/modells/PCMInput/cocome.system#_-W_gcFcoEd23wcZsd06DZg"/>
+  </allocationContexts_Allocation>
+</allocation:Allocation>

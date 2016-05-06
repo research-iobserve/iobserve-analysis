@@ -71,6 +71,7 @@ public class AllocationModelProvider extends AbstractModelProvider<Allocation> {
 			final AssemblyContext asmCtx) {
 		final AllocationFactory factory = AllocationFactory.eINSTANCE;
 		final AllocationContext allocationCtx = factory.createAllocationContext();
+		allocationCtx.setEntityName(asmCtx.getEntityName());
 		allocationCtx.setAssemblyContext_AllocationContext(asmCtx);
 		allocationCtx.setResourceContainer_AllocationContext(resContainer);
 		this.getModel().getAllocationContexts_Allocation().add(allocationCtx);

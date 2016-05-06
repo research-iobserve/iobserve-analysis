@@ -46,6 +46,7 @@ public class AnalysisMain {
 	public static final String ARG_IN_PATH_ALLOCATION_MODEL = "inPathPcmAllocationModel";
 	public static final String ARG_IN_PATH_SYSTEM_MODEL = "inPathPcmSystemModel";
 	public static final String ARG_IN_PATH_RES_ENV_MODEL = "inPathPcmResEnvModel";
+	public static final String ARG_OUT_PATH_PCM_UPDATED_ALLOCATION_USAGE_MODEL = "outPathPcmUpdatedAllocationModel";
 	
 
 	/**input parameters*/

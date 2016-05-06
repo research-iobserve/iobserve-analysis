@@ -21,51 +21,57 @@ public class AnalysisMainParameterBean implements ParameterBean {
 	private String pathPcmAllocationModel;
 	private String pathPcmSystemModel;
 	private String pathPcmResEnvModel;
+	private String outUpdatedAllocationModel;
 
 
-	@Parameter(name = AnalysisMain.ARG_DIR_MONITORING_DATA, position = 0, required = true)
+	@Parameter(name = AnalysisMain.ARG_DIR_MONITORING_DATA)
 	public String getDirMonitoringData() {
 		return this.dirMonitoringData;
 	}
 
-	@Parameter(name = AnalysisMain.ARG_IN_PATH_PCM_REPOSITORY_MODEL, position = 1, required = true)
+	@Parameter(name = AnalysisMain.ARG_IN_PATH_PCM_REPOSITORY_MODEL)
 	public String getPathPcmRepositoryModel() {
 		return this.pathPcmRepositoryModel;
 	}
 
-	@Parameter(name = AnalysisMain.ARG_IN_PATH_PCM_USAGE_MODEL, position = 2, required = true)
+	@Parameter(name = AnalysisMain.ARG_IN_PATH_PCM_USAGE_MODEL)
 	public String getPathPcmUsageModel() {
 		return this.pathPcmUsageModel;
 	}
 
-	@Parameter(name = AnalysisMain.ARG_IN_PATH_PROTOCOM_MAPPING_FILE_RAC, position = 3, required = true)
+	@Parameter(name = AnalysisMain.ARG_IN_PATH_PROTOCOM_MAPPING_FILE_RAC)
 	public String getPathProtocomMappingFile() {
 		return this.pathProtocomMappingFile;
 	}
 
-	@Parameter(name = AnalysisMain.ARG_OUT_PATH_LOGGING_FILE, position = 4, required = true)
+	@Parameter(name = AnalysisMain.ARG_OUT_PATH_LOGGING_FILE)
 	public String getOutLoggingFile() {
 		return this.outLoggingFile;
 	}
 
-	@Parameter(name = AnalysisMain.ARG_OUT_PATH_PCM_UPDATED_USAGE_MODEL, position = 5, required = true)
+	@Parameter(name = AnalysisMain.ARG_OUT_PATH_PCM_UPDATED_USAGE_MODEL)
 	public String getOutUpdatedUsageModel() {
 		return this.outUpdatedUsageModel;
 	}
 	
-	@Parameter(name = AnalysisMain.ARG_IN_PATH_ALLOCATION_MODEL, position = 6, required = true)
+	@Parameter(name = AnalysisMain.ARG_IN_PATH_ALLOCATION_MODEL)
 	public String getPathPcmAllocationModel() {
 		return this.pathPcmAllocationModel;
 	}
 	
-	@Parameter(name = AnalysisMain.ARG_IN_PATH_SYSTEM_MODEL, position = 7, required = true)
+	@Parameter(name = AnalysisMain.ARG_IN_PATH_SYSTEM_MODEL)
 	public String getPathPcmSystemModel() {
 		return this.pathPcmSystemModel;
 	}
 	
-	@Parameter(name = AnalysisMain.ARG_IN_PATH_RES_ENV_MODEL, position = 8, required = true)
+	@Parameter(name = AnalysisMain.ARG_IN_PATH_RES_ENV_MODEL)
 	public String getPathPcmResEnvModel() { 
 		return this.pathPcmResEnvModel;
+	}
+	
+	@Parameter(name = AnalysisMain.ARG_OUT_PATH_PCM_UPDATED_ALLOCATION_USAGE_MODEL)
+	public String getOutUpdatedAllocationModel() {
+		return this.outUpdatedAllocationModel;
 	}
 
 	public void setDirMonitoringData(final String dirMonitoringData) {
@@ -102,5 +108,9 @@ public class AnalysisMainParameterBean implements ParameterBean {
 	
 	public void setPathPcmResEnvModel(final String pathPcmResEnvModel) {
 		this.pathPcmResEnvModel = pathPcmResEnvModel;
+	}
+	
+	public void setOutUpdatedAllocationModel(final String outUpdatedAllocationModel) {
+		this.outUpdatedAllocationModel = outUpdatedAllocationModel;
 	}
 }
