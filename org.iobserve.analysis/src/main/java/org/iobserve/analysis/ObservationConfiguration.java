@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.eclipse.emf.common.util.URI;
-
 import org.iobserve.analysis.correspondence.CorrespondeceModelFactory;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.filter.DeploymentEventTransformation;
@@ -82,15 +81,16 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 
 		this.recordSwitch = new RecordSwitch();
 
-		final DeploymentEventTransformation deployment = new DeploymentEventTransformation(
-				correspondenceModel);
+		
+		final DeploymentEventTransformation deployment = 
+				new DeploymentEventTransformation(correspondenceModel);
 		final UndeploymentEventTransformation undeployment = new UndeploymentEventTransformation(
 				correspondenceModel);
 
 		final TEntryCall tEntryCall = new TEntryCall();
 		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
 
-		// get the usage model provider and reset it
+		// TODO should this be here ? get the usage model provider and reset it
 		final UsageModelProvider usageModelProvider = this.getUsageModelProvider();
 		usageModelProvider.resetUsageModel();
 

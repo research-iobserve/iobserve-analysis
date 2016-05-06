@@ -18,6 +18,9 @@ public class AnalysisMainParameterBean implements ParameterBean {
 	private String pathProtocomMappingFile;
 	private String outLoggingFile;
 	private String outUpdatedUsageModel;
+	private String pathPcmAllocationModel;
+	private String pathPcmSystemModel;
+	private String pathPcmResEnvModel;
 
 
 	@Parameter(name = AnalysisMain.ARG_DIR_MONITORING_DATA, position = 0, required = true)
@@ -49,6 +52,21 @@ public class AnalysisMainParameterBean implements ParameterBean {
 	public String getOutUpdatedUsageModel() {
 		return this.outUpdatedUsageModel;
 	}
+	
+	@Parameter(name = AnalysisMain.ARG_IN_PATH_ALLOCATION_MODEL, position = 6, required = true)
+	public String getPathPcmAllocationModel() {
+		return this.pathPcmAllocationModel;
+	}
+	
+	@Parameter(name = AnalysisMain.ARG_IN_PATH_SYSTEM_MODEL, position = 7, required = true)
+	public String getPathPcmSystemModel() {
+		return this.pathPcmSystemModel;
+	}
+	
+	@Parameter(name = AnalysisMain.ARG_IN_PATH_RES_ENV_MODEL, position = 8, required = true)
+	public String getPathPcmResEnvModel() { 
+		return this.pathPcmResEnvModel;
+	}
 
 	public void setDirMonitoringData(final String dirMonitoringData) {
 		this.dirMonitoringData = dirMonitoringData;
@@ -72,5 +90,17 @@ public class AnalysisMainParameterBean implements ParameterBean {
 
 	public void setOutUpdatedUsageModel(final String outUpdatedUsageModel) {
 		this.outUpdatedUsageModel = outUpdatedUsageModel;
+	}
+	
+	public void setPathPcmAllocationModel(final String pathPcmAllocationModel) {
+		this.pathPcmAllocationModel = pathPcmAllocationModel;
+	}
+	
+	public void setPathPcmSystemModel(final String pathPcmSystemModel) {
+		this.pathPcmSystemModel = pathPcmSystemModel;
+	}
+	
+	public void setPathPcmResEnvModel(final String pathPcmResEnvModel) {
+		this.pathPcmResEnvModel = pathPcmResEnvModel;
 	}
 }

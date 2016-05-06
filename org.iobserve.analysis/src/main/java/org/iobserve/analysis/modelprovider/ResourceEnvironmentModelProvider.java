@@ -30,6 +30,12 @@ public class ResourceEnvironmentModelProvider extends AbstractModelProvider<Reso
 	public ResourceEnvironmentModelProvider(final URI uriModelInstance) {
 		super(uriModelInstance);
 	}
+	
+	@Override
+	public void resetModel() {
+		// TODO Auto-generated method stub
+		
+	}
 
 	// ********************************************************************
 	// * GETTER / SETTER
@@ -43,6 +49,16 @@ public class ResourceEnvironmentModelProvider extends AbstractModelProvider<Reso
 	public ResourceContainer getResourceContainer(final String id) {
 		final ResourceEnvironment env = this.getModel();
 		return (ResourceContainer) this.getIdentifiableComponent(id, env.getResourceContainer_ResourceEnvironment());
+	}
+	
+	public ResourceContainer getResourceContainerByName(final String name) {
+		final ResourceEnvironment env = this.getModel();
+		for(final ResourceContainer nextResContainer : env.getResourceContainer_ResourceEnvironment()) {
+			if (nextResContainer.getEntityName().equals(name)) {
+				return nextResContainer;
+			}
+		}
+		return null;
 	}
 
 }

@@ -58,6 +58,11 @@ public abstract class AbstractModelProvider<T> {
 		// perhaps this should be called client?
 		this.loadModel();
 	}
+	
+	/**
+	 * Reset the model
+	 */
+	public abstract void resetModel();
 
 	/**
 	 * Get an instance of the package where this model belongs to. <br>

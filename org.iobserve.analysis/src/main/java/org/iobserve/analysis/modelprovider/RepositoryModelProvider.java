@@ -38,6 +38,11 @@ public class RepositoryModelProvider extends AbstractModelProvider<Repository> {
 	// ********************************************************************
 	// * INITIALIZATION
 	// ********************************************************************
+	
+	@Override
+	public void resetModel() {
+		// does nothing
+	}
 
 	public RepositoryModelProvider(final URI uriModelInstance) {
 		super(uriModelInstance);

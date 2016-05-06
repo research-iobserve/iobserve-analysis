@@ -43,9 +43,13 @@ public class AnalysisMain {
 	public static final String ARG_IN_PATH_PROTOCOM_MAPPING_FILE_RAC = "inPathProtocomMappingFile";
 	public static final String ARG_OUT_PATH_LOGGING_FILE = "outPathLoggingFile";
 	public static final String ARG_OUT_PATH_PCM_UPDATED_USAGE_MODEL = "outPathPcmUpdatedUsageModel";
+	public static final String ARG_IN_PATH_ALLOCATION_MODEL = "inPathPcmAllocationModel";
+	public static final String ARG_IN_PATH_SYSTEM_MODEL = "inPathPcmSystemModel";
+	public static final String ARG_IN_PATH_RES_ENV_MODEL = "inPathPcmResEnvModel";
+	
 
 	/**input parameters*/
-	private AnalysisMainParameterBean inputParameter;
+	private AnalysisMainParameterBean inputParameter; 
 
 	/** configuration for the analysis. */
 	private AnalysisConfiguration configuration;

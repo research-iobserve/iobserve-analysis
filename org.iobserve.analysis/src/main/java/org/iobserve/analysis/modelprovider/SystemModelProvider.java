@@ -30,6 +30,12 @@ public class SystemModelProvider extends AbstractModelProvider<System> {
 	public SystemModelProvider(final URI uriModelInstance) {
 		super(uriModelInstance);
 	}
+	
+	@Override
+	public void resetModel() {
+		// TODO Auto-generated method stub
+		
+	}
 
 	// ********************************************************************
 	// * GETTER / SETTER
@@ -43,5 +49,15 @@ public class SystemModelProvider extends AbstractModelProvider<System> {
 	public AssemblyContext getAssemblyContext(final String id) {
 		final System sys = this.getModel();
 		return (AssemblyContext) this.getIdentifiableComponent(id, sys.getAssemblyContexts__ComposedStructure());
+	}
+	
+	public AssemblyContext getAssemblyContextByName(final String name) {
+		final System sys = this.getModel();
+		for(final AssemblyContext nextAssemblyContext: sys.getAssemblyContexts__ComposedStructure()) {
+			if (nextAssemblyContext.getEntityName().equals(name)) {
+				return nextAssemblyContext;
+			}
+		}
+		return null;
 	}
 }

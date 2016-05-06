@@ -47,6 +47,12 @@ public class AllocationModelProvider extends AbstractModelProvider<Allocation> {
 	public EPackage getPackage() {
 		return AllocationPackage.eINSTANCE;
 	}
+	
+	@Override
+	public void resetModel() {
+		final Allocation alloction = this.getModel();
+		alloction.getAllocationContexts_Allocation().clear();
+	}
 
 	// ********************************************************************
 	// * ADD ALLOCATION CONTEXT

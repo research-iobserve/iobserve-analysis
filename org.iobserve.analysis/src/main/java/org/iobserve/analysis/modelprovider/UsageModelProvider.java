@@ -147,7 +147,7 @@ public final class UsageModelProvider {
 			}
 		}
 	}
-
+ 
 	public void resetUsageModel() {
 		this.scenarioBehaviour.getActions_ScenarioBehaviour().clear();
 	}
@@ -257,5 +257,5 @@ public final class UsageModelProvider {
 			// TODO warning?
 		}
 	}
-
+	
 }

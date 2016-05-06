@@ -58,17 +58,16 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 	@Override
 	protected void execute(final EntryCallSequenceModel model) {
 		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TEntryEventSequence.executionCounter);
 		
 		// do main task
 		this.doUpdateUsageModel(model.getUserSessions());
 		
 		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TEntryEventSequence.executionCounter);
 		
 		// count execution
-		executionCounter++;
-		
+		TEntryEventSequence.executionCounter++;
 	}
 	
 	/**
