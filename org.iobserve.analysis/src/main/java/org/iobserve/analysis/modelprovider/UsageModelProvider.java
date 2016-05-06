@@ -22,6 +22,7 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
+import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.OpenWorkload;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
@@ -44,7 +45,6 @@ public final class UsageModelProvider {
 	private ScenarioBehaviour scenarioBehaviour;
 	private UsageScenario usageScenario;
 
-	private EntryLevelSystemCall lastAction;
 	private Start start;
 	private Stop stop;
 
@@ -190,10 +190,11 @@ public final class UsageModelProvider {
 		return null;
 	}
 
-	public void addAction(final String operationSig) {
+	public AbstractUserAction addAction(final String operationSig) {
 		final OperationSignature opSig = this.getOperationSignature(operationSig);
+		EntryLevelSystemCall eSysCall = null;
 		if (opSig != null) {
-			final EntryLevelSystemCall eSysCall = this.usageModelfactory.createEntryLevelSystemCall();
+			eSysCall = this.usageModelfactory.createEntryLevelSystemCall();
 			eSysCall.setEntityName(opSig.getEntityName());
 			eSysCall.setOperationSignature__EntryLevelSystemCall(opSig);
 			final OperationInterface opInf = opSig.getInterface__OperationSignature();
@@ -212,20 +213,9 @@ public final class UsageModelProvider {
 				}
 
 			}
-
-			if (this.lastAction != null) {
-				eSysCall.setPredecessor(this.lastAction);
-				this.lastAction.setSuccessor(eSysCall);
-			} else {
-				// connect to start
-				eSysCall.setPredecessor(this.start);
-				this.start.setSuccessor(eSysCall);
-			}
 			this.scenarioBehaviour.getActions_ScenarioBehaviour().add(eSysCall);
-			this.lastAction = eSysCall;
-		} else {
-			// TODO warning?
 		}
+		return eSysCall;
 	}
 
 	public void createOpenWorkload(final long avgInterarrivalTime) {
@@ -234,28 +224,19 @@ public final class UsageModelProvider {
 		pcmInterarrivalTime.setSpecification(String.valueOf(avgInterarrivalTime));
 		pcmInterarrivalTime.setOpenWorkload_PCMRandomVariable(openWorkload);
 		openWorkload.setInterArrivalTime_OpenWorkload(pcmInterarrivalTime);
-		this.scenarioBehaviour.getUsageScenario_SenarioBehaviour()
-		.setWorkload_UsageScenario(openWorkload);
+		this.scenarioBehaviour.getUsageScenario_SenarioBehaviour().setWorkload_UsageScenario(openWorkload);
 	}
 
-	public void createStart() {
+	public AbstractUserAction createStart() {
 		this.start = this.usageModelfactory.createStart();
 		this.scenarioBehaviour.getActions_ScenarioBehaviour().add(this.start);
+		return this.start;
 	}
 
-	public void createStop() {
+	public AbstractUserAction createStop() {
 		this.stop = this.usageModelfactory.createStop();
-		if (this.lastAction != null) {
-			this.lastAction.setSuccessor(this.stop);
-			this.stop.setPredecessor(this.lastAction);
-			this.scenarioBehaviour.getActions_ScenarioBehaviour().add(this.stop);
-		} else if (this.start != null) {
-			this.start.setSuccessor(this.stop);
-			this.stop.setPredecessor(this.start);
-			this.scenarioBehaviour.getActions_ScenarioBehaviour().add(this.stop);
-		} else {
-			// TODO warning?
-		}
+		this.scenarioBehaviour.getActions_ScenarioBehaviour().add(this.stop);
+		return this.stop;
 	}
 	
 }

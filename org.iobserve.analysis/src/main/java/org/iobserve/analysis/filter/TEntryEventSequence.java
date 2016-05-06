@@ -27,6 +27,7 @@ import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.modelprovider.PcmModelSaver;
 import org.iobserve.analysis.modelprovider.UsageModelProvider;
+import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -104,13 +105,13 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 	private void doUpdateUsageModel(final List<UserSession> sessions) {
 		final long averageInterarrivalTime = this.calculateInterarrivalTime(sessions);
 		
-		boolean addedAction = false;
+		AbstractUserAction lastAction = null;
 		
 		// iterate over user sessions
 		for(final UserSession userSession:sessions) {
 			
 			// create start node
-			this.usageModelProvider.createStart();
+			lastAction = this.usageModelProvider.createStart();
 			
 			// create open-work-load for inter arrival time
 			this.usageModelProvider.createOpenWorkload(averageInterarrivalTime);
@@ -124,20 +125,21 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 				final String operationSig = this.correspondenceModel
 						.getCorrespondent(classSig, opSig);
 				if (operationSig != null) {
-					this.usageModelProvider.addAction(operationSig);
-					addedAction = true;
+					final AbstractUserAction action = this.usageModelProvider.addAction(operationSig);
+					lastAction.setSuccessor(action);
+					action.setPredecessor(lastAction);
+					lastAction = action;
 				}
 			}
 			
 			// create stop node
-			this.usageModelProvider.createStop();
+			final AbstractUserAction stopAction = this.usageModelProvider.createStop();
+			lastAction.setSuccessor(stopAction);
+			stopAction.setPredecessor(lastAction);
 			
-			if(addedAction) {
-				// save the model to the output
-				this.pcmModelSaver.save(this.usageModelProvider.getModel());
-				this.counterSavedUsageModel++; //TODO just for now
-				addedAction = false;
-			}
+			// save the model to the output
+			this.pcmModelSaver.save(this.usageModelProvider.getModel());
+			this.counterSavedUsageModel++; //TODO just for now
 			
 			// reset the model
 			if(this.counterSavedUsageModel > 0) {
