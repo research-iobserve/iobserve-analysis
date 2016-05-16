@@ -18,3 +18,5 @@
 !*/doc/*
 build/
 
+res/working_dir/
+org.iobserve.analysis/res/working_dir/
