@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.modelprovider;
+package org.iobserve.analysis.model;
 
 import java.util.Map;
 
@@ -113,11 +113,19 @@ public abstract class AbstractModelProvider<T extends EObject> {
 
 		final Resource resource = resSet.getResource(this.uriModelInstance, true);
 
-		// Alessandro Giusa
-		// if contents is empty OutOfBounds is thrown,
-		// but is is evtl. necessary since it is a general problem which should not appear?
-		// therefore it is not handled at this point
-		this.model = (T) resource.getContents().get(0);
+		if (!resource.getContents().isEmpty()) {
+			this.model = (T) resource.getContents().get(0);
+		} else {
+			System.err.printf("%s model was empty! Could not load anything!", this.getClass().getName());
+		}
+	}
+	
+	/**
+	 * Get the platform.
+	 * @return the platform
+	 */
+	protected ModelProviderPlatform getPlatform() {
+		return this.platform;
 	}
 
 	// ********************************************************************

@@ -21,7 +21,7 @@ import giusa.parser.parameter.ParameterParser;
 import java.io.File;
 import java.io.IOException;
 
-import org.iobserve.analysis.modelprovider.ModelProviderPlatform;
+import org.iobserve.analysis.model.ModelProviderPlatform;
 
 import teetime.framework.Analysis;
 import teetime.framework.AnalysisConfiguration;

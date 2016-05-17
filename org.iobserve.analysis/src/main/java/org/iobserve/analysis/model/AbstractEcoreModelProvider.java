@@ -1,19 +1,4 @@
-/***************************************************************************
- * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ***************************************************************************/
-package org.iobserve.analysis.modelprovider;
+package org.iobserve.analysis.model;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -32,32 +17,17 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
-/**
- * This class helps a model provider by providing some reflective methods like {@link #getFactory(String)} etc.
- *
- * TODO it is unclear if this class is a factory or a facade class.
- * Is it important that you can instantiate multiple helpers?
- *
- * @author Robert Heinrich, Alessandro Giusa, alessandrogiusa@gmail.com
- * @version 1.0, 20.01.2015
- */
-public class ReflectiveModelHelper {
+public abstract class AbstractEcoreModelProvider {
 
 	private EPackage ecorePackage;
-	private ResourceSet rs = new ResourceSetImpl();
 
-	/**
-	 * Default constructor.
-	 */
-	public ReflectiveModelHelper() {
-		// empty body checkstyle requirement.
-	}
+	private ResourceSet rs = new ResourceSetImpl();
 
 	// ********************************************************************
 	// * SAVE / LOAD
 	// ********************************************************************
 
-	public static final void saveModel(final EObject obj, final URI uri) {
+	public final static void saveModel(final EObject obj, final URI uri) {
 		final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
 		final Map<String, Object> map = reg.getExtensionToFactoryMap();
 		map.put("*", new XMIResourceFactoryImpl());
@@ -142,8 +112,7 @@ public class ReflectiveModelHelper {
 			final String nameClassifier, final boolean withUUID) {
 		final EClass clazz = this.getEClass(packageName, nameClassifier);
 		final EObject eObj = this.createObject(clazz);
-		// TODO do we need this uuid
-		// final String uuid = EcoreUtil.generateUUID();
+		final String uuid = EcoreUtil.generateUUID();
 		// EcoreUtil.setID(eObj, uuid);
 		EcoreUtil.resolveAll(eObj);
 		return eObj;

@@ -1,4 +1,4 @@
-package org.iobserve.analysis.modelprovider;
+package org.iobserve.analysis.model;
 
 import java.io.File;
 

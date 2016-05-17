@@ -21,11 +21,11 @@ import java.util.List;
 
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.modelprovider.AllocationModelProvider;
-import org.iobserve.analysis.modelprovider.ModelProviderPlatform;
-import org.iobserve.analysis.modelprovider.ModelSaveStrategy;
-import org.iobserve.analysis.modelprovider.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.modelprovider.SystemModelProvider;
+import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.ModelProviderPlatform;
+import org.iobserve.analysis.model.ModelSaveStrategy;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
