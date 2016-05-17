@@ -64,8 +64,16 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		return this;
 	}
 	
+	public UsageModelBuilder createUsageScenario() {
+		final UsageModel model = this.modelProvider.getModel();
+		this.usageScenario =  UsagemodelFactory.eINSTANCE.createUsageScenario();
+		model.getUsageScenario_UsageModel().add(this.usageScenario);
+		this.scenarioBehaviour = UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
+		this.usageScenario.setScenarioBehaviour_UsageScenario(this.scenarioBehaviour);
+		return this;
+	}
 	
-	public UsageModelBuilder setOpenWorkload(final long avgInterarrivalTime) {
+	public UsageModelBuilder createOpenWorkload(final long avgInterarrivalTime) {
 		final OpenWorkload openWorkload = UsagemodelFactory.eINSTANCE.createOpenWorkload();
 		final PCMRandomVariable pcmInterarrivalTime = 
 				CoreFactory.eINSTANCE.createPCMRandomVariable();
@@ -77,7 +85,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		return this;
 	}
 	
-	public UsageModelBuilder setStart() {
+	public UsageModelBuilder createStart() {
 		final Start start = UsagemodelFactory.eINSTANCE.createStart();
 		this.scenarioBehaviour.getActions_ScenarioBehaviour().add(start);
 		this.connectAbstractUserAction(start);
@@ -85,7 +93,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		return this;
 	}
 	
-	public UsageModelBuilder setStop() {
+	public UsageModelBuilder createStop() {
 		final Stop stop = UsagemodelFactory.eINSTANCE.createStop();
 		this.scenarioBehaviour.getActions_ScenarioBehaviour().add(stop);
 		this.connectAbstractUserAction(stop);
@@ -93,18 +101,20 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		return this;
 	}
 	
-	public UsageModelBuilder setAction(final String operationSignature) {
-		final OperationSignature opSig = this.modelProvider
-				.getOperationSignature(operationSignature);
+	public UsageModelBuilder createAction(final String operationSignature) {
+		final RepositoryModelProvider repositoryModelProvider = 
+				this.modelProvider.getPlatform().getRepositoryModelProvider();
+		
+		final OperationSignature opSig = repositoryModelProvider.getOperationSignature(operationSignature);
 		if (opSig != null) {
 			final EntryLevelSystemCall eSysCall = UsagemodelFactory.eINSTANCE
 					.createEntryLevelSystemCall();
 			eSysCall.setEntityName(opSig.getEntityName());
 			eSysCall.setOperationSignature__EntryLevelSystemCall(opSig);
 			final OperationInterface opInf = opSig.getInterface__OperationSignature();
-			final BasicComponent bCmp = this.modelProvider.getBasicComponent(operationSignature);
-			final OperationProvidedRole providedRole = this.modelProvider
-					.getOperationProvidedRole(opInf, bCmp);
+			final BasicComponent bCmp = repositoryModelProvider.getBasicComponent(operationSignature);
+			final OperationProvidedRole providedRole = repositoryModelProvider.getOperationProvidedRole(opInf, bCmp);
+			
 			//TODO null checks for all this modelProvider calls?
 			eSysCall.setProvidedRole_EntryLevelSystemCall(providedRole);
 			this.scenarioBehaviour.getActions_ScenarioBehaviour().add(eSysCall);

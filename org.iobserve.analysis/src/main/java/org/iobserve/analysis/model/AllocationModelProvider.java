@@ -48,11 +48,11 @@ public class AllocationModelProvider extends AbstractModelProvider<Allocation> {
 		return AllocationPackage.eINSTANCE;
 	}
 	
-	@Override
-	public void resetModel() {
-		final Allocation alloction = this.getModel();
-		alloction.getAllocationContexts_Allocation().clear();
-	}
+//	@Override
+//	public void resetModel() {
+//		final Allocation alloction = this.getModel();
+//		alloction.getAllocationContexts_Allocation().clear();
+//	}
 
 	// ********************************************************************
 	// * ADD ALLOCATION CONTEXT
@@ -66,9 +66,10 @@ public class AllocationModelProvider extends AbstractModelProvider<Allocation> {
 		// TODO remove allocation context
 	}
 
-	public AllocationContext addAllocationContext(
-			final ResourceContainer resContainer,
+	
+	public AllocationContext addAllocationContext(final ResourceContainer resContainer,
 			final AssemblyContext asmCtx) {
+		
 		final AllocationFactory factory = AllocationFactory.eINSTANCE;
 		final AllocationContext allocationCtx = factory.createAllocationContext();
 		allocationCtx.setEntityName(asmCtx.getEntityName());

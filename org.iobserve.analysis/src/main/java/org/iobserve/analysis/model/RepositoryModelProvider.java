@@ -23,7 +23,9 @@ import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.repository.OperationInterface;
+import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
@@ -38,11 +40,6 @@ public class RepositoryModelProvider extends AbstractModelProvider<Repository> {
 	// ********************************************************************
 	// * INITIALIZATION
 	// ********************************************************************
-	
-	@Override
-	public void resetModel() {
-		// does nothing
-	}
 
 	public RepositoryModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
 		super(uriModelInstance, thePlatform);
@@ -108,6 +105,21 @@ public class RepositoryModelProvider extends AbstractModelProvider<Repository> {
 					if (operationSig.equalsIgnoreCase(rdSeff.getId())) {
 						return nextBasicCmp;
 					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	public OperationProvidedRole getOperationProvidedRole(final OperationInterface operationInterface,
+			final BasicComponent basicComp) {
+		for (final ProvidedRole nextProvidedRole : basicComp.getProvidedRoles_InterfaceProvidingEntity()) {
+			if (nextProvidedRole instanceof OperationProvidedRole) {
+				final OperationProvidedRole operationProvidedRole = (OperationProvidedRole) nextProvidedRole;
+				final String idProvidedRole = operationProvidedRole.getProvidedInterface__OperationProvidedRole().getId();
+				final String idOpIf = operationInterface.getId();
+				if (idOpIf.equals(idProvidedRole)) {
+					return operationProvidedRole;
 				}
 			}
 		}

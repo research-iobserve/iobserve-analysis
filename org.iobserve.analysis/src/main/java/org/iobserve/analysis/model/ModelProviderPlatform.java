@@ -87,6 +87,10 @@ public final class ModelProviderPlatform {
 		return this.correspondenceModel;
 	}
 	
+	public RepositoryModelProvider getRepositoryModelProvider() {
+		return this.repositoryModelProvider;
+	}
+	
 	// *****************************************************************
 	// HELPER
 	// *****************************************************************

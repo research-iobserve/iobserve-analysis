@@ -28,8 +28,8 @@ import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ModelSaveStrategy;
+import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.model.UsageModelProvider;
-import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -107,16 +107,18 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 	private void doUpdateUsageModel(final List<UserSession> sessions) {
 		final long averageInterarrivalTime = this.calculateInterarrivalTime(sessions);
 		
-		AbstractUserAction lastAction = null;
-		
 		// iterate over user sessions
 		for(final UserSession userSession:sessions) {
 			
-			// create start node
-			lastAction = this.usageModelProvider.createStart();
 			
-			// create open-work-load for inter arrival time
-			this.usageModelProvider.createOpenWorkload(averageInterarrivalTime);
+			final UsageModelBuilder builder = new UsageModelBuilder(this.usageModelProvider);
+			builder
+				.loadModel()
+				.resetModel()
+				.createUsageScenario()
+				.createStart()
+				.createOpenWorkload(averageInterarrivalTime);
+			
 			
 			// iterate over all events to create the usage behavior
 			final Iterator<EntryCallEvent> iteratorEvents = userSession.iterator();
@@ -130,25 +132,16 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 				if (optionCorrespondent.isPresent()) {
 					final Correspondent correspondent = optionCorrespondent.get();
 					final String operationSig = correspondent.getPcmOperationName();
-					final AbstractUserAction action = this.usageModelProvider.addAction(operationSig);
-					lastAction.setSuccessor(action);
-					action.setPredecessor(lastAction);
-					lastAction = action;
+					builder.createAction(operationSig);
 				}
 			}
+			builder.createStop();
+			builder.build();
 			
-			// create stop node
-			final AbstractUserAction stopAction = this.usageModelProvider.createStop();
-			lastAction.setSuccessor(stopAction);
-			stopAction.setPredecessor(lastAction);
 			
 			// save the model to the output
 			this.usageModelProvider.save(ModelSaveStrategy.OVERRIDE);
 			this.counterSavedUsageModel++; //TODO just for now
-			
-			// reset the model
-			this.usageModelProvider.reloadModel();
-			
 		}
 	}
 	

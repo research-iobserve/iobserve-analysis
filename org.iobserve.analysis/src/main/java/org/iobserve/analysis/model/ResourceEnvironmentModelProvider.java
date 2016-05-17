@@ -32,11 +32,6 @@ public class ResourceEnvironmentModelProvider extends AbstractModelProvider<Reso
 		super(uriModelInstance, thePlatform);
 	}
 	
-	@Override
-	public void resetModel() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	// ********************************************************************
 	// * GETTER / SETTER

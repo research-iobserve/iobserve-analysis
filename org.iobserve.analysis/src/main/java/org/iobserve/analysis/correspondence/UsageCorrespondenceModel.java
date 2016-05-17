@@ -135,7 +135,7 @@ class UsageCorrespondenceModel implements ICorrespondence {
 			if (pcmEntityCorrespondent == null) {
 				// TODO log
 				System.out.println("NOK");
-				return null; // or something else
+				return ICorrespondence.NULL_CORRESPONDENZ; // or something else
 			}
 
 			final PcmOperationSignature pcmOperationSignature = this.getPcmOperationSignature(pcmEntityCorrespondent, operationSig);

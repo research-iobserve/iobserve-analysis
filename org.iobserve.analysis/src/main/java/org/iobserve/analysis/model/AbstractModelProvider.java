@@ -64,11 +64,6 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	}
 	
 	/**
-	 * Reset the model
-	 */
-	public abstract void resetModel();
-	
-	/**
 	 * Save the internal model. This will override the existing.
 	 * @param strategy strategy how to save the model. Default {@link ModelSaveStrategy#OVERRIDE}
 	 */
@@ -124,7 +119,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	 * Get the platform.
 	 * @return the platform
 	 */
-	protected ModelProviderPlatform getPlatform() {
+	public ModelProviderPlatform getPlatform() {
 		return this.platform;
 	}
 

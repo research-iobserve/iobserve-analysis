@@ -30,12 +30,6 @@ public class SystemModelProvider extends AbstractModelProvider<System> {
 	public SystemModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
 		super(uriModelInstance, thePlatform);
 	}
-	
-	@Override
-	public void resetModel() {
-		// TODO Auto-generated method stub
-		
-	}
 
 	// ********************************************************************
 	// * GETTER / SETTER
