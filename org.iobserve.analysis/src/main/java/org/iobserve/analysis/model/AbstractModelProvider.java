@@ -144,7 +144,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	 *            where to search
 	 * @return
 	 */
-	public Identifier getIdentifiableComponent(final String id,
+	public static Identifier getIdentifiableComponent(final String id,
 			final EList<? extends Identifier> list) {
 		for (final Identifier next : list) {
 			if (next.getId().equals(id)) {

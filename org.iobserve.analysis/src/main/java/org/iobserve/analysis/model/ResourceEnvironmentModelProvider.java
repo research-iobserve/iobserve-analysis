@@ -44,7 +44,7 @@ public class ResourceEnvironmentModelProvider extends AbstractModelProvider<Reso
 
 	public ResourceContainer getResourceContainer(final String id) {
 		final ResourceEnvironment env = this.getModel();
-		return (ResourceContainer) this.getIdentifiableComponent(id, env.getResourceContainer_ResourceEnvironment());
+		return (ResourceContainer) AbstractModelProvider.getIdentifiableComponent(id, env.getResourceContainer_ResourceEnvironment());
 	}
 	
 	public ResourceContainer getResourceContainerByName(final String name) {

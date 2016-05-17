@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ModelSaveStrategy;
@@ -117,6 +118,8 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 				return false;
 			}
 			
+			final AllocationModelBuilder builder = new AllocationModelBuilder(TDeployment.this.allocationModelProvider);
+			
 			final ServletDeployedEvent event = (ServletDeployedEvent) record;
 			final String context = event.getContext();
 			final String deploymentId = event.getDeploymentId();
@@ -130,8 +133,12 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 			
 			final ResourceContainer resourceContainer = TDeployment.this.resourceEnvModelProvider.getResourceContainerByName(debugResContainer);
 			final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName("Application.ProductDispatcher_EnterpriseServer");
-			TDeployment.this.allocationModelProvider.addAllocationContext(resourceContainer, assemblyContext);
 			
+			builder
+				.loadModel()
+				.resetModel()
+				.addAllocationContext(resourceContainer, assemblyContext)
+				.build();
 			
 			TDeployment.this.allocationModelProvider.save(ModelSaveStrategy.OVERRIDE);
 			return true;
