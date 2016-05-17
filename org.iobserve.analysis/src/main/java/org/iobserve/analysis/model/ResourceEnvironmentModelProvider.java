@@ -19,7 +19,6 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 public class ResourceEnvironmentModelProvider extends AbstractModelProvider<ResourceEnvironment> {
@@ -56,11 +55,4 @@ public class ResourceEnvironmentModelProvider extends AbstractModelProvider<Reso
 		}
 		return null;
 	}
-	
-	public ResourceContainer createResourceContainer(final String name) {
-		final ResourceContainer resContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-		resContainer.setEntityName(name);
-		return resContainer;
-	}
-
 }

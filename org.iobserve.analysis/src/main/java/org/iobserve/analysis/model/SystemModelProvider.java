@@ -42,7 +42,7 @@ public class SystemModelProvider extends AbstractModelProvider<System> {
 
 	public AssemblyContext getAssemblyContext(final String id) {
 		final System sys = this.getModel();
-		return (AssemblyContext) this.getIdentifiableComponent(id, sys.getAssemblyContexts__ComposedStructure());
+		return (AssemblyContext) AbstractModelProvider.getIdentifiableComponent(id, sys.getAssemblyContexts__ComposedStructure());
 	}
 	
 	public AssemblyContext getAssemblyContextByName(final String name) {
