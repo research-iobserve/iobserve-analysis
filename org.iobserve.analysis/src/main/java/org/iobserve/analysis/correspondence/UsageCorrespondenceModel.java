@@ -145,7 +145,7 @@ class UsageCorrespondenceModel implements ICorrespondence {
 			}
 
 			// create correspondent object
-			correspondent = Correspondent.newInstance(
+			correspondent = CorrespondentFactory.newInstance(
 					pcmEntityCorrespondent.getParent().getName(),
 					pcmEntityCorrespondent.getParent().getId(),
 					pcmOperationSignature.getName(),
