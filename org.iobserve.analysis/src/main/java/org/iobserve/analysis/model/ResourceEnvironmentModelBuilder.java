@@ -19,6 +19,11 @@ public class ResourceEnvironmentModelBuilder extends ModelBuilder<ResourceEnviro
 	//
 	// *****************************************************************
 
+	public ResourceEnvironmentModelBuilder save(final ModelSaveStrategy saveStrategy) {
+		this.modelProvider.save(saveStrategy);
+		return this;
+	}
+	
 	public ResourceEnvironmentModelBuilder loadModel() {
 		this.modelProvider.loadModel();
 		return this;
@@ -32,7 +37,7 @@ public class ResourceEnvironmentModelBuilder extends ModelBuilder<ResourceEnviro
 	}
 	
 	public ResourceEnvironmentModelBuilder createResourceContainerIfAbsent(final String name) {
-		final boolean absent = this.modelProvider.getResourceContainerByName(name) != null;
+		final boolean absent = this.modelProvider.getResourceContainerByName(name) == null;
 		if (absent) {
 			final ResourceEnvironment model = this.modelProvider.getModel();
 			final ResourceContainer resContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();

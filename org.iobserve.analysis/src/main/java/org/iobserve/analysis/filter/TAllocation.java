@@ -21,20 +21,18 @@ import java.util.List;
 
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ModelSaveStrategy;
+import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and UndeploymentEventTransformation.
@@ -43,7 +41,7 @@ import teetime.framework.AbstractConsumerStage;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
+public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 
 	private static long executionCounter = 0;
 	private final ICorrespondence correspondence;
@@ -51,6 +49,8 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	private AllocationModelProvider allocationModelProvider;
 	private SystemModelProvider systemModelProvider;
 	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
+	
+	private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
 
 	/**
 	 * Most likely the constructor needs an additional field for the PCM access. But this has to be discussed with Robert.
@@ -58,7 +58,7 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 * @param correspondence
 	 *            the correspondence model access
 	 */
-	public TDeployment() {
+	public TAllocation() {
 		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
 		
 		// get all model references
@@ -82,12 +82,22 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
-		// dispatch event to right processor
+		// dispatch event to right processor and add the server if necessary
 		boolean stopDispatching = false;
 		final Iterator<DeploymentRecordProcessor> iterator = this.deploymentProcessors.iterator();
 		do {
 			stopDispatching = iterator.next().processEvent(event);
 		} while (!stopDispatching && iterator.hasNext());
+		
+		// forward the event
+		this.deploymentOutputPort.send(event);
+	}
+	
+	/**
+	 * @return the deploymentOutputPort
+	 */
+	public final OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
+		return this.deploymentOutputPort;
 	}
 
 	// *****************************************************************
@@ -119,41 +129,19 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 				return false;
 			}
 			
-			final AllocationModelBuilder builder = new AllocationModelBuilder(TDeployment.this.allocationModelProvider);
+			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
+					TAllocation.this.resourceEnvModelProvider);
 			
 			final ServletDeployedEvent event = (ServletDeployedEvent) record;
-			final String context = event.getContext();
-			final String deploymentId = event.getDeploymentId();
+//			final String context = event.getContext();
+//			final String deploymentId = event.getDeploymentId();
 			final String serivce = event.getSerivce();
-			final long loggingTimestamp = event.getLoggingTimestamp();
-			final long timestamp = event.getTimestamp();
-			
-			//TODO debug
-//			final String debugContext = "Application.ProductDispatcher_EnterpriseServer";
-//			final String debugResContainer = debugContext.substring(debugContext.lastIndexOf("_") + 1, debugContext.length());
-//			
-//			final ResourceContainer resourceContainer = TDeployment.this.resourceEnvModelProvider.getResourceContainerByName(debugResContainer);
-//			final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName("Application.ProductDispatcher_EnterpriseServer");
-			
-			final ResourceContainer resourceContainer = TDeployment.this.resourceEnvModelProvider.getResourceContainerByName(serivce);
-			
-			final SystemModelBuilder systemBuilder = new SystemModelBuilder(TDeployment.this.systemModelProvider);
-			systemBuilder
-				.loadModel()
-				.createAssemblyContextsIfAbsent(context)
-				.build();
-			TDeployment.this.systemModelProvider.save(ModelSaveStrategy.OVERRIDE);
-			
-			final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName(context);
-			
 			
 			builder
 				.loadModel()
-				.resetModel()
-				.addAllocationContext(resourceContainer, assemblyContext)
+				.createResourceContainerIfAbsent(serivce)
 				.build();
-			
-			TDeployment.this.allocationModelProvider.save(ModelSaveStrategy.OVERRIDE);
+			TAllocation.this.resourceEnvModelProvider.save(ModelSaveStrategy.OVERRIDE);
 			return true;
 		}
 
@@ -172,8 +160,18 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 			if (record.getClass() != EJBDeployedEvent.class) {
 				return false;
 			}
+			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
+					TAllocation.this.resourceEnvModelProvider);
 			
 			final EJBDeployedEvent event = (EJBDeployedEvent) record;
+			final String context = event.getContext();
+			final String deploymentId = event.getDeploymentId();
+			
+			builder
+				.loadModel()
+				.createResourceContainerIfAbsent(context)
+				.build();
+			TAllocation.this.resourceEnvModelProvider.save(ModelSaveStrategy.OVERRIDE);
 
 			System.out
 				.println("DeploymentEventTransformation.EJBDeployedEventProcessor.processEvent()");

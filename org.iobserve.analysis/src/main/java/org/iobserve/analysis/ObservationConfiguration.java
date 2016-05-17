@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.iobserve.analysis.filter.RecordSwitch;
+import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
@@ -74,9 +75,9 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 
 		this.recordSwitch = new RecordSwitch();
 
-		
-		final TDeployment deployment = new TDeployment();
-		final TUndeployment undeployment = new TUndeployment();
+		final TAllocation tAllocation = new TAllocation();
+		final TDeployment tDeployment = new TDeployment();
+		final TUndeployment tUndeployment = new TUndeployment();
 		final TEntryCall tEntryCall = new TEntryCall();
 		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
 		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence();
@@ -87,10 +88,14 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 
 		factory.create(files.getOutputPort(), reader.getInputPort());
 		factory.create(reader.getOutputPort(), this.recordSwitch.getInputPort());
-		factory.create(this.recordSwitch.getDeploymentOutputPort(), deployment.getInputPort());
-		factory.create(this.recordSwitch.getUndeploymentOutputPort(), undeployment.getInputPort());
+		
+		// dispatch different monitoring data
+		factory.create(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
+		factory.create(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
 		factory.create(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
 
+		// 
+		factory.create(tAllocation.getDeploymentOutputPort(), tDeployment.getInputPort());
 		factory.create(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
 		factory.create(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
 
