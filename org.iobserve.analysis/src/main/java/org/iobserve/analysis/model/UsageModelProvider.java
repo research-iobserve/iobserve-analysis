@@ -76,7 +76,7 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
 	// * MODEL METHODS
 	// ********************************************************************
 
-	private OperationSignature getOperationSignature(final String operationSig) {
+	public OperationSignature getOperationSignature(final String operationSig) {
 		for (final OperationInterface nextOpInter : this.operInterfaces) {
 			for (final OperationSignature nextOpSig : nextOpInter
 					.getSignatures__OperationInterface()) {
@@ -88,7 +88,7 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
 		return null;
 	}
 
-	private BasicComponent getBasicComponent(final String operationSig) {
+	public BasicComponent getBasicComponent(final String operationSig) {
 		for (final BasicComponent nextBasicCmp : this.basicComponents) {
 			for (final ServiceEffectSpecification nextSerEffSpec : nextBasicCmp.getServiceEffectSpecifications__BasicComponent()) {
 				if (nextSerEffSpec instanceof ResourceDemandingSEFF) {
@@ -96,6 +96,21 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
 					if (operationSig.equalsIgnoreCase(rdSeff.getId())) {
 						return nextBasicCmp;
 					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	public OperationProvidedRole getOperationProvidedRole(final OperationInterface operationInterface,
+			final BasicComponent basicComp) {
+		for (final ProvidedRole nextProvidedRole : basicComp.getProvidedRoles_InterfaceProvidingEntity()) {
+			if (nextProvidedRole instanceof OperationProvidedRole) {
+				final OperationProvidedRole operationProvidedRole = (OperationProvidedRole) nextProvidedRole;
+				final String idProvidedRole = operationProvidedRole.getProvidedInterface__OperationProvidedRole().getId();
+				final String idOpIf = operationInterface.getId();
+				if (idOpIf.equals(idProvidedRole)) {
+					return operationProvidedRole;
 				}
 			}
 		}
@@ -112,8 +127,6 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
 			final OperationInterface opInf = opSig.getInterface__OperationSignature();
 			final BasicComponent bCmp = this.getBasicComponent(operationSig);
 			for (final ProvidedRole nextProvidedRole : bCmp.getProvidedRoles_InterfaceProvidingEntity()) {
-				final Object obj = nextProvidedRole.eGet(nextProvidedRole.eClass()
-						.getEStructuralFeature("providedInterface__OperationProvidedRole"), true);
 				if (nextProvidedRole instanceof OperationProvidedRole) {
 					final OperationProvidedRole operationProvidedRole = (OperationProvidedRole) nextProvidedRole;
 					final String idProvidedRole = operationProvidedRole.getProvidedInterface__OperationProvidedRole().getId();
