@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.correspondence;
 
+import com.google.common.base.Optional;
+
 /**
  * This is the interface for to query the correspondence model. Input is a pair
  * of operation and class signature which are then used to find the corresponding
@@ -22,6 +24,8 @@ package org.iobserve.analysis.correspondence;
  * element with a name and we only require Component, Interface, Method etc.).
  *
  * @author Reiner Jung
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
  *
  */
 public interface ICorrespondence {
@@ -31,20 +35,20 @@ public interface ICorrespondence {
 	// Return instance EntryLevelSystemCall
 
 	/**
-	 * If you got this return value, it means there is no correspondent mapping
-	 * object
+	 * Empty Correspondence
 	 **/
-	String NULL_CORRESPONDENZ = "NULL-CORRESPONDENZ";
+	Optional<Correspondent> NULL_CORRESPONDENZ = Optional.absent();
 
 	/**
-	 * Get the correspondent object name by passing your own reference.
+	 * Get the correspondent object which contains all the information needed to get 
+	 * the actual model object from a model provider.
 	 *
-	 * @param ref
-	 *            the object for which a correspondent mapping object name should
-	 *            be get.
-	 * @return
+	 * @param classSig class signature
+	 * @param functionSig method signature
+	 * 
+	 * @return option on a {@link Correspondent} object.
 	 */
-	public String getCorrespondent(String classSig, String operationSig);
+	public Optional<Correspondent> getCorrespondent(String classSig, String functionSig);
 
 	/**
 	 * Note: Alessandro I would recommend to defines this interface as follows. However,

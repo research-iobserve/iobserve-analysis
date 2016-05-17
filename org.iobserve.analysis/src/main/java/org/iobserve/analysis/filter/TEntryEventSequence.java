@@ -21,6 +21,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.iobserve.analysis.AnalysisMain;
+import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
@@ -31,6 +32,8 @@ import org.iobserve.analysis.model.UsageModelProvider;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 
 import teetime.framework.AbstractConsumerStage;
+
+import com.google.common.base.Optional;
 
 /**
  * Represents the TEntryEventSequence Transformation in the paper
@@ -121,9 +124,12 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 				final EntryCallEvent event = iteratorEvents.next();
 				final String classSig = event.getClassSignature();
 				final String opSig = event.getOperationSignature();
-				final String operationSig = this.correspondenceModel
+				
+				final Optional<Correspondent> optionCorrespondent = this.correspondenceModel
 						.getCorrespondent(classSig, opSig);
-				if (operationSig != null) {
+				if (optionCorrespondent.isPresent()) {
+					final Correspondent correspondent = optionCorrespondent.get();
+					final String operationSig = correspondent.getPcmOperationName();
 					final AbstractUserAction action = this.usageModelProvider.addAction(operationSig);
 					lastAction.setSuccessor(action);
 					action.setPredecessor(lastAction);

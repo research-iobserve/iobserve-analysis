@@ -14,6 +14,8 @@ import protocom.extension.mapping.PcmEntityCorrespondent;
 import protocom.extension.mapping.PcmMapping;
 import protocom.extension.mapping.PcmOperationSignature;
 
+import com.google.common.base.Optional;
+
 /**
  * Implementation of {@link ICorrespondence}
  *
@@ -110,16 +112,15 @@ class UsageCorrespondenceModel implements ICorrespondence {
 	// ********************************************************************
 
 	@Override
-	public String getCorrespondent(final String classSig, final String operationSig) {
+	public Optional<Correspondent> getCorrespondent(final String classSig, final String operationSig) {
 		//TODO debug print, remove later
 		System.out.print(String.format("Try to get correspondence for classSig=%s, operationSig=%s...",
 				classSig, operationSig));
 
 		// assert parameters are not null
 		if ((classSig == null) || (operationSig == null)) {
-			// TODO log
 			System.out.println("NOK");
-			return null; // or even throw exception
+			return ICorrespondence.NULL_CORRESPONDENZ;
 		}
 
 		// create the request key for searching in the cache
@@ -141,7 +142,7 @@ class UsageCorrespondenceModel implements ICorrespondence {
 			if (pcmOperationSignature == null) {
 				// TODO log
 				System.out.println("NOK");
-				return null; // or something else
+				return ICorrespondence.NULL_CORRESPONDENZ;
 			}
 
 			// create correspondent object
@@ -157,16 +158,7 @@ class UsageCorrespondenceModel implements ICorrespondence {
 
 		//TODO this can be removed later
 		System.out.println("OK");
-
-		return correspondent.getPcmOperationName(); // TODO this is because we return String but this will change into this correspondent object
-
-		// ********************************************************************
-		// * legacy
-		// ********************************************************************
-		// if (classSig.contains(BOOK_SALE_CLASS) && operationSig.contains(BOOK_SALE_OPERATION)) {
-		// return COCOME_BOOK_SALE_OPERATION_SIG;
-		// }
-		// public java.util.List org.cocome.tradingsystem.remote.access.DatabaseAccessBean.query(java.lang.String) throws java.lang.IllegalArgumentException
+		return Optional.of(correspondent);
 	}
 
 	/**
