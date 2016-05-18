@@ -11,6 +11,8 @@ de.uka.ipd.sdq.units
 de.uka.ipd.sdq.stoex
 de.uka.ipd.sdq.probfunction
 protocom.extension
+org.eclipse.emf.cdo
+org.eclipse.emf.cdo.common
 EOF`
 
 MVNDIR="${BINDIR}/mvn-repo"
@@ -32,7 +34,7 @@ for I in $LIST ; do
 		#	echo $ARTIFACT
 		#	echo $VERSION
 			mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file -Dfile="$P" \
-				-DgroupId=local -DartifactId=$ARTIFACT -Dpackaging=jar -Dversion=$VERSION \
+				-DgroupId=extra -DartifactId=$ARTIFACT -Dpackaging=jar -Dversion=$VERSION \
 				-DlocalRepositoryPath=mvn-repo
 
 			PROPERTIES="${PROPERTIES}<${ARTIFACT}>${VERSION}</${ARTIFACT}>"

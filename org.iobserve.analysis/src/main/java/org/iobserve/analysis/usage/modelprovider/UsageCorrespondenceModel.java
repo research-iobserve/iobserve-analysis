@@ -42,7 +42,7 @@ public class UsageCorrespondenceModel implements ICorrespondence {
 		return null;
 	}
 
-	@Override
+	// @Override
 	public NamedElement getCorrespondingNode(final IMonitoringRecord record) {
 		// TODO Auto-generated method stub
 		return null;

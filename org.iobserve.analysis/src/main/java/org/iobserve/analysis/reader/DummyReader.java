@@ -20,13 +20,8 @@ import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 
-<<<<<<< HEAD
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
-=======
-import org.spp.iobserve.common.record.EJBDeployedEvent;
-import org.spp.iobserve.common.record.EJBUndeployedEvent;
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 
 import teetime.framework.AbstractProducerStage;
 
@@ -36,11 +31,7 @@ import teetime.framework.AbstractProducerStage;
  * @author Reiner Jung
  *
  */
-<<<<<<< HEAD
 public class DummyReader extends AbstractProducerStage<IMonitoringRecord> {  
-=======
-public class DummyReader extends AbstractProducerStage<IMonitoringRecord> {
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 
 	private static final long THREAD_ID = 0;
 	private static final String SESSION_ID = "<session id>";

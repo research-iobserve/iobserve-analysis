@@ -19,7 +19,6 @@ package org.iobserve.common.record;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-<<<<<<< HEAD
 import kieker.common.record.flow.AbstractEvent;
 import kieker.common.util.registry.IRegistry;
 
@@ -31,22 +30,7 @@ import kieker.common.util.registry.IRegistry;
 public abstract class EJBDeploymentEvent extends AbstractEvent {
 	private static final long serialVersionUID = -25855649455459678L;
 
-=======
-import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
 
-import kieker.common.record.flow.AbstractEvent;
-
-/**
- * @author Generic Kieker
- * 
- * @since 1.10
- */
-public abstract class EJBDeploymentEvent extends AbstractEvent  {
-		private static final long serialVersionUID = -25855649455459678L;
-	
-	
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	/* user-defined constants */
 	/* default constants */
 	public static final String CONTEXT = "";
@@ -57,11 +41,7 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 
 	/**
 	 * Creates a new instance of this class using the given parameters.
-<<<<<<< HEAD
 	 *
-=======
-	 * 
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @param timestamp
 	 *            timestamp
 	 * @param context
@@ -71,7 +51,6 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	 */
 	public EJBDeploymentEvent(final long timestamp, final String context, final String deploymentId) {
 		super(timestamp);
-<<<<<<< HEAD
 		this.context = context == null ? "" : context;
 		this.deploymentId = deploymentId == null ? "" : deploymentId;
 	}
@@ -79,16 +58,6 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
 	 *
-=======
-		this.context = context == null?"":context;
-		this.deploymentId = deploymentId == null?"":deploymentId;
-	}
-
-	
-	/**
-	 * This constructor uses the given array to initialize the fields of this record.
-	 * 
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @param values
 	 *            The values for the record.
 	 * @param valueTypes
@@ -102,17 +71,10 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 
 	/**
 	 * This constructor converts the given array into a record.
-<<<<<<< HEAD
 	 *
 	 * @param buffer
 	 *            The bytes for the record.
 	 *
-=======
-	 * 
-	 * @param buffer
-	 *            The bytes for the record.
-	 * 
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
 	 */
@@ -124,11 +86,7 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 
 	/**
 	 * {@inheritDoc}
-<<<<<<< HEAD
 	 *
-=======
-	 * 
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
@@ -139,11 +97,7 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 
 	/**
 	 * {@inheritDoc}
-<<<<<<< HEAD
 	 *
-=======
-	 * 
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
@@ -155,17 +109,9 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	public final String getContext() {
 		return this.context;
 	}
-<<<<<<< HEAD
 
 	public final String getDeploymentId() {
 		return this.deploymentId;
 	}
 
-=======
-	
-	public final String getDeploymentId() {
-		return this.deploymentId;
-	}
-	
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 }

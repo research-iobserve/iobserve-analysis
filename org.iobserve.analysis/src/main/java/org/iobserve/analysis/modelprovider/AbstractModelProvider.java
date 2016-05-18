@@ -30,11 +30,7 @@ import de.uka.ipd.sdq.identifier.Identifier;
 /**
  * Provides common method for model loading/saving etc.
  *
-<<<<<<< HEAD
  * @author Robert Heinrich, Alessandro Giusa, alessandrogiusa@gmail.com
-=======
- * @author Alessandro Giusa, alessandrogiusa@gmail.com
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
  * @version 1.0, 20.01.2015
  * @param <T>
  */
@@ -56,10 +52,6 @@ public abstract class AbstractModelProvider<T> {
 	// * INITIALIZATION
 	// ********************************************************************
 
-<<<<<<< HEAD
-=======
-	// TODO exception handling has to be done
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	public AbstractModelProvider(final URI uriModelInstance) {
 		this.uriModelInstance = uriModelInstance;
 

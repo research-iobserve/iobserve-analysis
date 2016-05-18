@@ -73,9 +73,5 @@ public interface ICorrespondence {
 	 * @param record
 	 * @return
 	 */
-<<<<<<< HEAD
 	// public NamedElement getCorrespondingNode(IMonitoringRecord record);
-=======
-	public NamedElement getCorrespondingNode(IMonitoringRecord record);
->>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 }

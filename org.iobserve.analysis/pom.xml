@@ -33,7 +33,7 @@
 			<url>https://jitpack.io</url>
 		</repository>
 		<repository>
-			<id>local</id>
+			<id>extra</id>
 			<url>file://${mvn-repo}</url>
 		</repository>
 	</repositories>
@@ -103,70 +103,65 @@
 
 		<!-- pcm -->
 		<dependency>
-			<groupId>de.uka.ipd.sdq.identifier</groupId>
-			<artifactId>identifier</artifactId>
-			<version>2.1.0</version>
+			<groupId>extra</groupId>
+			<artifactId>de.uka.ipd.sdq.identifier</artifactId>
+			<version>${de.uka.ipd.sdq.identifier}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.palladiosimulator.pcm</groupId>
-			<artifactId>palladio</artifactId>
-			<version>4.0.0</version>
+			<groupId>extra</groupId>
+			<artifactId>org.palladiosimulator.pcm</artifactId>
+			<version>${org.palladiosimulator.pcm}</version>
 		</dependency>
 		<dependency>
-			<groupId>de.uka.ipd.sdq.units</groupId>
-			<artifactId>units</artifactId>
-			<version>2.1.0</version>
+			<groupId>extra</groupId>
+			<artifactId>de.uka.ipd.sdq.units</artifactId>
+			<version>${de.uka.ipd.sdq.units}</version>
 		</dependency>
 		<dependency>
-			<groupId>de.uka.ipd.sdq.stoex</groupId>
-			<artifactId>stoex</artifactId>
-			<version>2.2.0</version>
+			<groupId>extra</groupId>
+			<artifactId>de.uka.ipd.sdq.stoex</artifactId>
+			<version>${de.uka.ipd.sdq.stoex}</version>
 		</dependency>
 		<dependency>
-			<groupId>de.uka.ipd.sdq.probfunction</groupId>
-			<artifactId>probfunction</artifactId>
-			<version>2.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>cdo</groupId>
-			<artifactId>cdo</artifactId>
-			<version>4.4.0</version>
-		</dependency>
-		<dependency>
-			<groupId>cdo</groupId>
-			<artifactId>cdo.common</artifactId>
-			<version>4.4.0</version>
+			<groupId>extra</groupId>
+			<artifactId>de.uka.ipd.sdq.probfunction</artifactId>
+			<version>${de.uka.ipd.sdq.probfunction}</version>
 		</dependency>
 
+		<!-- <dependency> -->
+		<!-- <groupId>extra</groupId> -->
+		<!-- <artifactId>protocom.extension</artifactId> -->
+		<!-- <version>${protocom.extension}</version> -->
+		<!-- </dependency> -->
+
+		<!-- cdo -->
 		<dependency>
-			<groupId>cdo-net4j</groupId>
-			<artifactId>net4j</artifactId>
-			<version>4.4.0</version>
+			<groupId>extra</groupId>
+			<artifactId>org.eclipse.emf.cdo</artifactId>
+			<version>${org.eclipse.emf.cdo}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>extra</groupId>
+			<artifactId>org.eclipse.emf.cdo.common</artifactId>
+			<version>${org.eclipse.emf.cdo.common}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>protocom.extension</groupId>
-			<artifactId>identifier</artifactId>
-			<version>1.0</version>
-		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>cdo-net4j</groupId> -->
+		<!-- <artifactId>net4j</artifactId> -->
+		<!-- <version>4.4.0</version> -->
+		<!-- </dependency> -->
 
-		<!-- Also library from AlessandroGiusa  -->
-		<dependency>
-			<groupId>csv.xml.parsing</groupId>
-			<artifactId>identifier</artifactId>
-			<version>1.0</version>
-			<systemPath>${lib.location}/csvxml.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
 
-		<!--https://github.com/AlessandroGiusa/giusa.tooling.cmd  -->
-		<dependency>
-			<groupId>parameter.parser</groupId>
-			<artifactId>identifier</artifactId>
-			<version>1.0</version>
-			<systemPath>${lib.location}/giusa.tooling.cmd-v1.0.jar</systemPath>
-			<scope>system</scope>
-		</dependency>
 
+		<!-- Also library from AlessandroGiusa -->
+		<!-- <dependency> <groupId>csv.xml.parsing</groupId> <artifactId>identifier</artifactId> 
+			<version>1.0</version> <systemPath>${lib.location}/csvxml.jar</systemPath> 
+			<scope>system</scope> </dependency> -->
+		<!--https://github.com/AlessandroGiusa/giusa.tooling.cmd -->
+		<!-- <dependency> <groupId>parameter.parser</groupId> <artifactId>identifier</artifactId> 
+			<version>1.0</version> <systemPath>${lib.location}/giusa.tooling.cmd-v1.0.jar</systemPath> 
+			<scope>system</scope> </dependency> -->
 	</dependencies>
 </project>
