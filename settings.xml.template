@@ -1,0 +1,17 @@
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                          https://maven.apache.org/xsd/settings-1.0.0.xsd">
+
+	<profiles>
+		<profile>
+			<id>iobserve</id>
+			<properties>
+				<mvn-repo>/home/rju/Projects/iObserve/iobserve-analysis/mvn-repo/</mvn-repo>
+			</properties>
+		</profile>
+	</profiles>
+	<activeProfiles>
+		<activeProfile>iobserve</activeProfile>
+	</activeProfiles>
+</settings>

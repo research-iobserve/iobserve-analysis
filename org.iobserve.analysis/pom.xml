@@ -15,9 +15,6 @@
 	<properties>
 		<teetime-repo.url>https://oss.sonatype.org/content/groups/public/</teetime-repo.url>
 		<pcm-repo.url>https://sdqweb.ipd.kit.edu/eclipse/palladio/core/pcm/releases/4.0.0/</pcm-repo.url>
-<!--		<lib.location.palladio>C:\Users\Alessandro\Desktop\NewPalladio\Palladio.win32.win32.x86_64\plugins</lib.location.palladio> -->
-<!--		<lib.location>C:\Users\Alessandro\Desktop\NewPalladio\iobserve-analysis\org.iobserve.analysis\libs</lib.location> -->
-<!--		<lib.location>/home/rju/eclipse-mars/plugins</lib.location> -->
 	</properties>
 
 	<repositories>
@@ -34,6 +31,10 @@
 		<repository>
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
+			<id>local</id>
+			<url>file://${mvn-repo}</url>
 		</repository>
 	</repositories>
 
@@ -105,69 +106,48 @@
 			<groupId>de.uka.ipd.sdq.identifier</groupId>
 			<artifactId>identifier</artifactId>
 			<version>2.1.0</version>
-			<systemPath>${lib.location.palladio}/de.uka.ipd.sdq.identifier_2.1.0.201511050934.jar</systemPath>
-			<scope>system</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.palladiosimulator.pcm</groupId>
 			<artifactId>palladio</artifactId>
 			<version>4.0.0</version>
-			<systemPath>${lib.location.palladio}/org.palladiosimulator.pcm_4.0.0.201511051135.jar</systemPath>
-			<scope>system</scope>
 		</dependency>
-		<!-- <dependency> <groupId>de.uka.ipd.sdq.pcm</groupId> <artifactId>pcm</artifactId> 
-			<version>4.0.0</version> <systemPath>${lib.location}/de.uka.ipd.sdq.pcm.*</systemPath> 
-			<scope>system</scope> </dependency> -->
 		<dependency>
 			<groupId>de.uka.ipd.sdq.units</groupId>
 			<artifactId>units</artifactId>
 			<version>2.1.0</version>
-			<systemPath>${lib.location.palladio}/de.uka.ipd.sdq.units_2.1.0.201511050934.jar</systemPath>
-			<scope>system</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uka.ipd.sdq.stoex</groupId>
 			<artifactId>stoex</artifactId>
 			<version>2.2.0</version>
-			<systemPath>${lib.location.palladio}/de.uka.ipd.sdq.stoex_2.2.0.201511050934.jar</systemPath>
-			<scope>system</scope>
 		</dependency>
 		<dependency>
 			<groupId>de.uka.ipd.sdq.probfunction</groupId>
 			<artifactId>probfunction</artifactId>
 			<version>2.1.0</version>
-			<systemPath>${lib.location.palladio}/de.uka.ipd.sdq.probfunction_2.1.0.201511050934.jar</systemPath>
-			<scope>system</scope>
 		</dependency>
 		<dependency>
 			<groupId>cdo</groupId>
 			<artifactId>cdo</artifactId>
 			<version>4.4.0</version>
-			<systemPath>${lib.location.palladio}/org.eclipse.emf.cdo_4.3.0.v20140520-1823.jar</systemPath>
-			<scope>system</scope>
 		</dependency>
 		<dependency>
 			<groupId>cdo</groupId>
 			<artifactId>cdo.common</artifactId>
 			<version>4.4.0</version>
-			<systemPath>${lib.location.palladio}/org.eclipse.emf.cdo.common_4.3.0.v20140309-0644.jar</systemPath>
-			<scope>system</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>cdo-net4j</groupId>
 			<artifactId>net4j</artifactId>
 			<version>4.4.0</version>
-			<systemPath>${lib.location}/net4j-utils.jar</systemPath>
-			<scope>system</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>protocom.extension</groupId>
 			<artifactId>identifier</artifactId>
 			<version>1.0</version>
-			<systemPath>${lib.location}/mapping.lib.jar</systemPath>
-			<scope>system</scope>
 		</dependency>
 
 		<!-- Also library from AlessandroGiusa  -->

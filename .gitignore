@@ -16,6 +16,9 @@
 **/.launch/**
 **/*._trace
 **/**.xtendbin
-
+mvn-repo/**
+settings.xml
+**/.project
+**/.classpath
 
 
