@@ -20,7 +20,11 @@ import kieker.common.record.IMonitoringRecord;
 
 /**
  * @author Generic Kieker
+<<<<<<< HEAD
  *
+=======
+ * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
  * @since 1.10
  */
 public interface IDeallocationRecord extends IMonitoringRecord {

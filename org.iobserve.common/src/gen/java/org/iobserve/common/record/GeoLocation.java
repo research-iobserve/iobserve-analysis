@@ -20,10 +20,19 @@ import kieker.common.record.IMonitoringRecord;
 
 /**
  * @author Generic Kieker
+<<<<<<< HEAD
  *
  * @since 1.10
  */
 public interface GeoLocation extends IMonitoringRecord {
 	public short getCountryCode();
 
+=======
+ * 
+ * @since 1.10
+ */
+public interface GeoLocation extends IMonitoringRecord {
+	public short getCountryCode() ;
+		
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 }

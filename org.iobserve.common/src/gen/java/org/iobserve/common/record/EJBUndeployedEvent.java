@@ -21,33 +21,60 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 import kieker.common.util.registry.IRegistry;
+<<<<<<< HEAD
 
 /**
  * @author Generic Kieker
  *
+=======
+import kieker.common.util.Version;
+
+import org.iobserve.common.record.EJBDeploymentEvent;
+import org.iobserve.common.record.IUndeploymentRecord;
+
+/**
+ * @author Generic Kieker
+ * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
  * @since 1.10
  */
 public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploymentRecord {
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
+<<<<<<< HEAD
 			+ TYPE_SIZE_STRING // EJBDeploymentEvent.context
 			+ TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
 	;
 	private static final long serialVersionUID = 4550394952021828437L;
 
+=======
+			 + TYPE_SIZE_STRING // EJBDeploymentEvent.context
+			 + TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
+	;
+	private static final long serialVersionUID = 4550394952021828437L;
+	
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	public static final Class<?>[] TYPES = {
 		long.class, // AbstractEvent.timestamp
 		String.class, // EJBDeploymentEvent.context
 		String.class, // EJBDeploymentEvent.deploymentId
 	};
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	/* user-defined constants */
 	/* default constants */
 	/* property declarations */
 
 	/**
 	 * Creates a new instance of this class using the given parameters.
+<<<<<<< HEAD
 	 *
+=======
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @param timestamp
 	 *            timestamp
 	 * @param context
@@ -62,17 +89,28 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 	/**
 	 * This constructor converts the given array into a record.
 	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
+<<<<<<< HEAD
 	 *
+=======
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @param values
 	 *            The values for the record.
 	 */
 	public EJBUndeployedEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
 	}
+<<<<<<< HEAD
 
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
 	 *
+=======
+	
+	/**
+	 * This constructor uses the given array to initialize the fields of this record.
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @param values
 	 *            The values for the record.
 	 * @param valueTypes
@@ -84,10 +122,17 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 
 	/**
 	 * This constructor converts the given array into a record.
+<<<<<<< HEAD
 	 *
 	 * @param buffer
 	 *            The bytes for the record.
 	 *
+=======
+	 * 
+	 * @param buffer
+	 *            The bytes for the record.
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
 	 */
@@ -132,10 +177,16 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 	public int getSize() {
 		return SIZE;
 	}
+<<<<<<< HEAD
 
 	/**
 	 * {@inheritDoc}
 	 *
+=======
+	/**
+	 * {@inheritDoc}
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
@@ -146,7 +197,11 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 
 	/**
 	 * {@inheritDoc}
+<<<<<<< HEAD
 	 *
+=======
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override

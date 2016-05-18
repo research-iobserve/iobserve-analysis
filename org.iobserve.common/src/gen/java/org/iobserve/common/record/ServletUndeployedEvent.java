@@ -49,7 +49,11 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
 
 	/**
 	 * Creates a new instance of this class using the given parameters.
+<<<<<<< HEAD
 	 *
+=======
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @param timestamp
 	 *            timestamp
 	 * @param serivce
@@ -66,17 +70,28 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
 	/**
 	 * This constructor converts the given array into a record.
 	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
+<<<<<<< HEAD
 	 *
+=======
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @param values
 	 *            The values for the record.
 	 */
 	public ServletUndeployedEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
 	}
+<<<<<<< HEAD
 
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
 	 *
+=======
+	
+	/**
+	 * This constructor uses the given array to initialize the fields of this record.
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @param values
 	 *            The values for the record.
 	 * @param valueTypes
@@ -88,10 +103,17 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
 
 	/**
 	 * This constructor converts the given array into a record.
+<<<<<<< HEAD
 	 *
 	 * @param buffer
 	 *            The bytes for the record.
 	 *
+=======
+	 * 
+	 * @param buffer
+	 *            The bytes for the record.
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
 	 */
@@ -138,10 +160,16 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
 	public int getSize() {
 		return SIZE;
 	}
+<<<<<<< HEAD
 
 	/**
 	 * {@inheritDoc}
 	 *
+=======
+	/**
+	 * {@inheritDoc}
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
@@ -152,7 +180,11 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
 
 	/**
 	 * {@inheritDoc}
+<<<<<<< HEAD
 	 *
+=======
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override

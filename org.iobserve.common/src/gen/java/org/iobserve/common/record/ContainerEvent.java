@@ -22,6 +22,7 @@ import java.nio.ByteBuffer;
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.util.registry.IRegistry;
+<<<<<<< HEAD
 
 /**
  * @author Generic Kieker
@@ -31,6 +32,20 @@ import kieker.common.util.registry.IRegistry;
 public abstract class ContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {
 	private static final long serialVersionUID = 8392000994764985766L;
 
+=======
+import kieker.common.util.Version;
+
+
+/**
+ * @author Generic Kieker
+ * 
+ * @since 1.10
+ */
+public abstract class ContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {
+		private static final long serialVersionUID = 8392000994764985766L;
+	
+	
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	/* user-defined constants */
 	/* default constants */
 	public static final String URL = "";
@@ -39,17 +54,31 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 
 	/**
 	 * Creates a new instance of this class using the given parameters.
+<<<<<<< HEAD
 	 *
+=======
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @param url
 	 *            url
 	 */
 	public ContainerEvent(final String url) {
+<<<<<<< HEAD
 		this.url = url == null ? "" : url;
 	}
 
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
 	 *
+=======
+		this.url = url == null?"":url;
+	}
+
+	
+	/**
+	 * This constructor uses the given array to initialize the fields of this record.
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @param values
 	 *            The values for the record.
 	 * @param valueTypes
@@ -62,10 +91,17 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 
 	/**
 	 * This constructor converts the given array into a record.
+<<<<<<< HEAD
 	 *
 	 * @param buffer
 	 *            The bytes for the record.
 	 *
+=======
+	 * 
+	 * @param buffer
+	 *            The bytes for the record.
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
 	 */
@@ -75,7 +111,11 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 
 	/**
 	 * {@inheritDoc}
+<<<<<<< HEAD
 	 *
+=======
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
@@ -86,7 +126,11 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 
 	/**
 	 * {@inheritDoc}
+<<<<<<< HEAD
 	 *
+=======
+	 * 
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
@@ -98,5 +142,9 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	public final String getUrl() {
 		return this.url;
 	}
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 }

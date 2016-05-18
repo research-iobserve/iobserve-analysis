@@ -38,7 +38,11 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
  * TODO it is unclear if this class is a factory or a facade class.
  * Is it important that you can instantiate multiple helpers?
  *
+<<<<<<< HEAD
  * @author Robert Heinrich, Alessandro Giusa, alessandrogiusa@gmail.com
+=======
+ * @author Alessandro Giusa, alessandrogiusa@gmail.com
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
  * @version 1.0, 20.01.2015
  */
 public class ReflectiveModelHelper {

@@ -32,6 +32,11 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.controlflow.OperationExecutionRecord;
 import kieker.common.util.filesystem.FSUtil;
 
+<<<<<<< HEAD
+=======
+import org.iobserve.analysis.TimeLogger;
+
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 import teetime.framework.AbstractProducerStage;
 
 // TODO this code should be replaced by the proper Kieker Teetime stages.
@@ -64,7 +69,10 @@ public class DirectoryASCIIReader extends AbstractProducerStage<IMonitoringRecor
 		if (directory.isDirectory()) {
 			this.dataFiles = directory.listFiles(new FileFilter() {
 
+<<<<<<< HEAD
 				@Override
+=======
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 				public boolean accept(final File pathname) {
 					final String name = pathname.getName();
 					return pathname.isFile()
@@ -167,6 +175,10 @@ public class DirectoryASCIIReader extends AbstractProducerStage<IMonitoringRecor
 					final IMonitoringRecord record = AbstractMonitoringRecord.createFromStringArray(clazz,
 							Arrays.copyOfRange(values, skipValues, values.length));
 					record.setLoggingTimestamp(loggingTimestamp);
+<<<<<<< HEAD
+=======
+					TimeLogger.getTimeLogger().rememberTime();
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 					this.outputPort.send(record);
 				} catch (final MonitoringRecordException e) {
 					LOG.error("Class instantiation for record failed: " + e.getMessage());

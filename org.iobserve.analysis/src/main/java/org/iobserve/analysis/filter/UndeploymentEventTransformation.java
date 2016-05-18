@@ -15,10 +15,17 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
+<<<<<<< HEAD
 import org.iobserve.common.record.IUndeploymentRecord;
 
 import org.iobserve.analysis.correspondence.ICorrespondence;
 
+=======
+import org.iobserve.analysis.correspondence.ICorrespondence;
+
+import org.spp.iobserve.common.record.IUndeploymentRecord;
+
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 import teetime.framework.AbstractConsumerStage;
 
 /**
@@ -29,8 +36,11 @@ import teetime.framework.AbstractConsumerStage;
  */
 public class UndeploymentEventTransformation extends AbstractConsumerStage<IUndeploymentRecord> {
 
+<<<<<<< HEAD
 	private static long executionCounter = 0;
 	
+=======
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
 	private final ICorrespondence correspondence;
 
 	/**

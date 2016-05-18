@@ -97,7 +97,6 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(
 				correspondenceModel, usageModelProvider, this.getPcmModelSaver());
 
-
 		// connecting filters
 		final IPipeFactory factory = this.pipeFactoryRegistry.getPipeFactory(
 				ThreadCommunication.INTRA, PipeOrdering.ARBITRARY, false);

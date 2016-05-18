@@ -1,6 +1,6 @@
 *.class
-*/bin/*
-*/target/*
+**/bin/**
+**/target/**
 *.csv
 *.map
 *.dat
@@ -13,5 +13,9 @@
 */output/*
 *.checkstyle
 !InstallationGuide_iObserve.txt
+**/.launch/**
+**/*._trace
+**/**.xtendbin
+
 
 

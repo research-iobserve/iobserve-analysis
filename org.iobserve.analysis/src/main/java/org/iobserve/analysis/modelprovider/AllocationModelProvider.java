@@ -26,7 +26,11 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  *
+<<<<<<< HEAD
  * @author Robert Heinrich, Alessandro Giusa, alessandrogiusa@gmail.com
+=======
+ * @author Alessandro Giusa, alessandrogiusa@gmail.com
+>>>>>>> 8369799fad6bbba0ee0c594bd69ce6afef0b7b41
  * @version 1.0, 20.01.2015
  */
 public class AllocationModelProvider extends AbstractModelProvider<Allocation> {

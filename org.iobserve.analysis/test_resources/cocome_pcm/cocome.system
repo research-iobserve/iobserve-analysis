@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<system:System xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:composition="http://sdq.ipd.uka.de/PalladioComponentModel/Core/Composition/5.0" xmlns:repository="http://sdq.ipd.uka.de/PalladioComponentModel/Repository/5.0" xmlns:system="http://sdq.ipd.uka.de/PalladioComponentModel/System/5.0" id="_3Sgb8FcmEd23wcZsd06DZg" entityName="TradingSystem.Inventory">
+  <assemblyContexts__ComposedStructure id="_Yy964FcnEd23wcZsd06DZg" entityName="GUI.Reporting_EnterpriseClient">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_sGEvA9CiEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_nf0w4FcnEd23wcZsd06DZg" entityName="GUI.Store_Store_1_Client">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_zokQE9CiEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_3AwvMFcnEd23wcZsd06DZg" entityName="Application.Store_Store_1_Server">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_6tZA5dCmEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_-W_gcFcoEd23wcZsd06DZg" entityName="Application.ProductDispatcher_EnterpriseServer">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_XDTf09CiEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_FPU0wFcqEd23wcZsd06DZg" entityName="Application.Reporting_EnterpriseServer">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_URW_1dCmEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_jN79kFcqEd23wcZsd06DZg" entityName="Data.Persistence_EnterpriseServer">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_B8esgNChEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_07dvQFcqEd23wcZsd06DZg" entityName="Data.Store_EnterpriseServer">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_C7qRkNChEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_WolfQFctEd23wcZsd06DZg" entityName="GUI.Reporting_Store_2_Client">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_sGEvA9CiEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_d2D1wFcxEd23wcZsd06DZg" entityName="Data.Persistence_Store_1_Server">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_B8esgNChEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_sREGwFcxEd23wcZsd06DZg" entityName="Data.Persistence_Store_2_Server">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_B8esgNChEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_2uaPYFcxEd23wcZsd06DZg" entityName="Data.Enterprise_Store_1_Server">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_-3VggNCgEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_DtLL4FcyEd23wcZsd06DZg" entityName="Data.Enterprise_Store_2_Server">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_-3VggNCgEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_MX0AwFcyEd23wcZsd06DZg" entityName="Data.Store_Store_1_Server">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_C7qRkNChEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_XiFg0FcyEd23wcZsd06DZg" entityName="Data.Store_Store_2_Server">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_C7qRkNChEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_jcqnAFczEd23wcZsd06DZg" entityName="GUI.Reporting_Store_1_Client">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_sGEvA9CiEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_yO4eIFczEd23wcZsd06DZg" entityName="Application.Reporting_Store_1_Server">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_URW_1dCmEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_8jo5MFc4Ed23wcZsd06DZg" entityName="GUI.Store_Store_2_Client">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_zokQE9CiEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_etALMFc5Ed23wcZsd06DZg" entityName="Application.Store_Store_2_Server">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_6tZA5dCmEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_9sosIFc5Ed23wcZsd06DZg" entityName="Application.Reporting_Store_2_Server">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_URW_1dCmEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <assemblyContexts__ComposedStructure id="_LoXbYFfjEd26K8JlmYJ10w" entityName="Data.Enterprise_EnterpriseServer">
+    <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_-3VggNCgEduC9O_qbthgAg"/>
+  </assemblyContexts__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:ProvidedDelegationConnector" id="_RBRDsFcoEd23wcZsd06DZg" entityName="CashDeskConnectorIf" outerProvidedRole_ProvidedDelegationConnector="_MSQMUFcnEd23wcZsd06DZg" assemblyContext_ProvidedDelegationConnector="_3AwvMFcnEd23wcZsd06DZg">
+    <innerProvidedRole_ProvidedDelegationConnector href="cocome.repository#__f6UsNCmEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:RequiredDelegationConnector" id="_pTresFcoEd23wcZsd06DZg" entityName="SaleRegisteredEvent" outerRequiredRole_RequiredDelegationConnector="_TWiHYFcnEd23wcZsd06DZg" assemblyContext_RequiredDelegationConnector="_3AwvMFcnEd23wcZsd06DZg">
+    <innerRequiredRole_RequiredDelegationConnector href="cocome.repository#_aa6McdCwEduW_YoCCnq0vw"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:RequiredDelegationConnector" id="_ieLPYFc8Ed23wcZsd06DZg" entityName="SaleRegisteredEvent" outerRequiredRole_RequiredDelegationConnector="_l5n00Fc3Ed23wcZsd06DZg" assemblyContext_RequiredDelegationConnector="_etALMFc5Ed23wcZsd06DZg">
+    <innerRequiredRole_RequiredDelegationConnector href="cocome.repository#_aa6McdCwEduW_YoCCnq0vw"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_bq8_MFcoEd23wcZsd06DZg" entityName="StoreIf" requiringAssemblyContext_AssemblyConnector="_nf0w4FcnEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_3AwvMFcnEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_8phWYNCmEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_1a8xsdC4EduW_YoCCnq0vw"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_GBNaIFcpEd23wcZsd06DZg" entityName="StoreIf" requiringAssemblyContext_AssemblyConnector="_-W_gcFcoEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_3AwvMFcnEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_8phWYNCmEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_AXZsESDlEdyyNLPIIGbfMQ"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_RgKJsFcpEd23wcZsd06DZg" entityName="ProductDispatcherIf" requiringAssemblyContext_AssemblyConnector="_3AwvMFcnEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_-W_gcFcoEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_gMw-sNCiEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_IpnV8dItEduQ7qbNANXHPw"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_Pj400FcqEd23wcZsd06DZg" entityName="ReportingIf" requiringAssemblyContext_AssemblyConnector="_Yy964FcnEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_FPU0wFcqEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_wrdB4NCmEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_vsrnUdC4EduW_YoCCnq0vw"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_GTRIkFcrEd23wcZsd06DZg" entityName="PersistenceIf" requiringAssemblyContext_AssemblyConnector="_-W_gcFcoEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_jN79kFcqEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_bT0IMNChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_jJt4AdCiEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_J8QBcFcrEd23wcZsd06DZg" entityName="PersistenceIf" requiringAssemblyContext_AssemblyConnector="_FPU0wFcqEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_jN79kFcqEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_bT0IMNChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_lmx-EdCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_PS4H4FcrEd23wcZsd06DZg" entityName="StoreQueryIf" requiringAssemblyContext_AssemblyConnector="_3AwvMFcnEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_07dvQFcqEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_OmzqENChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_4OSEsdCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_SmvFUFcrEd23wcZsd06DZg" entityName="StoreQueryIf" requiringAssemblyContext_AssemblyConnector="_-W_gcFcoEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_07dvQFcqEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_OmzqENChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_kzNlYdCiEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_U0q8gFcrEd23wcZsd06DZg" entityName="StoreQueryIf" requiringAssemblyContext_AssemblyConnector="_FPU0wFcqEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_07dvQFcqEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_OmzqENChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_t5HAodCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_N5huUFc2Ed23wcZsd06DZg" entityName="ReportingIf" requiringAssemblyContext_AssemblyConnector="_jcqnAFczEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_yO4eIFczEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_wrdB4NCmEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_vsrnUdC4EduW_YoCCnq0vw"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_Y5hRAFc2Ed23wcZsd06DZg" entityName="StoreQueryIf" requiringAssemblyContext_AssemblyConnector="_yO4eIFczEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_MX0AwFcyEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_OmzqENChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_t5HAodCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_elsJoFc2Ed23wcZsd06DZg" entityName="EnterpriseQueryIf" requiringAssemblyContext_AssemblyConnector="_yO4eIFczEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_2uaPYFcxEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_d1Mf0NChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_b-BUEdCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_mD0vIFc2Ed23wcZsd06DZg" entityName="PersistenceIf" requiringAssemblyContext_AssemblyConnector="_yO4eIFczEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_d2D1wFcxEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_bT0IMNChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_lmx-EdCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_uJoJ4Fc8Ed23wcZsd06DZg" entityName="StoreQueryIf" requiringAssemblyContext_AssemblyConnector="_etALMFc5Ed23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_XiFg0FcyEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_OmzqENChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_4OSEsdCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_xlz84Fc8Ed23wcZsd06DZg" entityName="PersistenceIf" requiringAssemblyContext_AssemblyConnector="_etALMFc5Ed23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_sREGwFcxEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_bT0IMNChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_0k7YYdCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_0CLRoFc8Ed23wcZsd06DZg" entityName="PersistenceIf" requiringAssemblyContext_AssemblyConnector="_9sosIFc5Ed23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_sREGwFcxEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_bT0IMNChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_lmx-EdCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_2B01MFc8Ed23wcZsd06DZg" entityName="EnterspriseQueryIf" requiringAssemblyContext_AssemblyConnector="_9sosIFc5Ed23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_DtLL4FcyEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_d1Mf0NChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_b-BUEdCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_4oBbYFc8Ed23wcZsd06DZg" entityName="StoreQueryIf" requiringAssemblyContext_AssemblyConnector="_9sosIFc5Ed23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_XiFg0FcyEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_OmzqENChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_t5HAodCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_jnyGUFc9Ed23wcZsd06DZg" entityName="ReportingIf" requiringAssemblyContext_AssemblyConnector="_WolfQFctEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_9sosIFc5Ed23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_wrdB4NCmEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_vsrnUdC4EduW_YoCCnq0vw"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_mCz-UFc9Ed23wcZsd06DZg" entityName="StoreIf" requiringAssemblyContext_AssemblyConnector="_8jo5MFc4Ed23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_etALMFc5Ed23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_8phWYNCmEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_1a8xsdC4EduW_YoCCnq0vw"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_yPSiQFc9Ed23wcZsd06DZg" entityName="ProductDispatcherIf" requiringAssemblyContext_AssemblyConnector="_etALMFc5Ed23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_-W_gcFcoEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_gMw-sNCiEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_IpnV8dItEduQ7qbNANXHPw"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_6ety0FfiEd26K8JlmYJ10w" entityName="PersistenceIf" requiringAssemblyContext_AssemblyConnector="_3AwvMFcnEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_d2D1wFcxEd23wcZsd06DZg">
+    <providedRole_AssemblyConnector href="cocome.repository#_bT0IMNChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_0k7YYdCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_S_0xIFfjEd26K8JlmYJ10w" entityName="EnterpriseQueryIf" requiringAssemblyContext_AssemblyConnector="_FPU0wFcqEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_LoXbYFfjEd26K8JlmYJ10w">
+    <providedRole_AssemblyConnector href="cocome.repository#_d1Mf0NChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_b-BUEdCnEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <connectors__ComposedStructure xsi:type="composition:AssemblyConnector" id="_U9sMAFfjEd26K8JlmYJ10w" entityName="EnterpriseQueryIf" requiringAssemblyContext_AssemblyConnector="_-W_gcFcoEd23wcZsd06DZg" providingAssemblyContext_AssemblyConnector="_LoXbYFfjEd26K8JlmYJ10w">
+    <providedRole_AssemblyConnector href="cocome.repository#_d1Mf0NChEduC9O_qbthgAg"/>
+    <requiredRole_AssemblyConnector href="cocome.repository#_h-Kq4dCiEduC9O_qbthgAg"/>
+  </connectors__ComposedStructure>
+  <providedRoles_InterfaceProvidingEntity xsi:type="repository:OperationProvidedRole" id="_MSQMUFcnEd23wcZsd06DZg" entityName="CashDeskConnectorIf_Store_1">
+    <providedInterface__OperationProvidedRole href="cocome.repository#_WoD42tCjEduC9O_qbthgAg"/>
+  </providedRoles_InterfaceProvidingEntity>
+  <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_TWiHYFcnEd23wcZsd06DZg" entityName="SaleRegisteredEvent_Store_1">
+    <requiredInterface__OperationRequiredRole href="cocome.repository#_RQoSZNCpEduC9O_qbthgAg"/>
+  </requiredRoles_InterfaceRequiringEntity>
+  <requiredRoles_InterfaceRequiringEntity xsi:type="repository:OperationRequiredRole" id="_l5n00Fc3Ed23wcZsd06DZg" entityName="SaleRegisteredEvent_Store_2">
+    <requiredInterface__OperationRequiredRole href="cocome.repository#_RQoSZNCpEduC9O_qbthgAg"/>
+  </requiredRoles_InterfaceRequiringEntity>
+</system:System>

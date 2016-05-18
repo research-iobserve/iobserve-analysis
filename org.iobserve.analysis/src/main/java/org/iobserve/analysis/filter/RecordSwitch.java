@@ -88,6 +88,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 				}
 			}
 		}
+
 		
 		// logging execution time and memory
 		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + executionCounter);
