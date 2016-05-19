@@ -27,9 +27,14 @@ import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.model.ModelProviderPlatform;
-import org.iobserve.analysis.model.ModelSaveStrategy;
 import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.model.UsageModelProvider;
+import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
+import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
+import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
+import org.palladiosimulator.pcm.usagemodel.Start;
+import org.palladiosimulator.pcm.usagemodel.Stop;
+import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -110,22 +115,27 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 		// iterate over user sessions
 		for(final UserSession userSession:sessions) {
 			
-			
-			final UsageModelBuilder builder = new UsageModelBuilder(this.usageModelProvider);
-			builder
-				.loadModel()
-				.resetModel()
-				.createUsageScenario()
-				.createStart()
-				.createOpenWorkload(averageInterarrivalTime);
-			
+			// example 
 //			Branch b1 = builder.createBranch();
 //			
 //			Action a1 = builder.createAction(b1);
 //			Action a2 = builder.createAction(b1)
 //			Action a3 = builder.createAction(a1)
 			
+			final UsageModelBuilder builder = new UsageModelBuilder(this.usageModelProvider);
 			
+			// like re-load
+			builder.loadModel().resetModel();
+			
+			final UsageScenario usageScenario = builder.createUsageScenario();
+			final ScenarioBehaviour scenarioBehaviour = builder.createScenarioBehaviour(usageScenario);
+			
+			builder.createOpenWorkload(averageInterarrivalTime, usageScenario);
+			
+			final Start start = builder.createStart();
+			builder.addAbstractUserAction(scenarioBehaviour, start);
+			
+			AbstractUserAction lastAction = start;
 			
 			// iterate over all events to create the usage behavior
 			final Iterator<EntryCallEvent> iteratorEvents = userSession.iterator();
@@ -139,15 +149,17 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 				if (optionCorrespondent.isPresent()) {
 					final Correspondent correspondent = optionCorrespondent.get();
 					final String operationSig = correspondent.getPcmOperationName();
-					builder.createAction(operationSig);
+					final EntryLevelSystemCall eSysCall = builder.createEntryLevelSystemCall(operationSig);
+					builder.connect(lastAction, eSysCall);
+					builder.addAbstractUserAction(scenarioBehaviour, eSysCall);
+					lastAction = eSysCall;
 				}
 			}
-			builder.createStop();
-//			builder.build();
 			
-			
-			// save the model to the output
-			this.usageModelProvider.save(ModelSaveStrategy.OVERRIDE);
+			final Stop stop = builder.createStop();
+			builder.connect(lastAction, stop);
+			builder.addAbstractUserAction(scenarioBehaviour, stop);
+			builder.build();
 			this.counterSavedUsageModel++; //TODO just for now
 		}
 	}

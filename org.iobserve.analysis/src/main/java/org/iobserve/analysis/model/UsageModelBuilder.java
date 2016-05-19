@@ -175,4 +175,14 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		predecessor.setSuccessor(successor);
 	}
 	
+	/**
+	 * Add the given action to the given scenario behaviour.
+	 * @param scenarioBehaviour scenarioBehaviour
+	 * @param action action
+	 */
+	public void addAbstractUserAction(final ScenarioBehaviour scenarioBehaviour,
+			final AbstractUserAction action) {
+		scenarioBehaviour.getActions_ScenarioBehaviour().add(action);
+	}
+	
 }
