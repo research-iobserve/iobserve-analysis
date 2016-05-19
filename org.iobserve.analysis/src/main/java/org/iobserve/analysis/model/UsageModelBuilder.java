@@ -15,35 +15,41 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
-import org.palladiosimulator.pcm.usagemodel.Workload;
+import org.palladiosimulator.pcm.usagemodel.UserData;
 
+/**
+ * UsageModelBuilder is able to build a {@link UsageModel}.
+ * @author Robert Heinrich
+ * @author Alessandro
+ *
+ */
 public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageModel> {
-	
-	private ScenarioBehaviour scenarioBehaviour;
-	private UsageScenario usageScenario;
-	private Workload workload;
-	private AbstractUserAction action;
 
+	/**
+	 * Create a usage model builder.
+	 * @param modelProvider model provider
+	 */
 	public UsageModelBuilder(final UsageModelProvider modelProvider) {
 		super(modelProvider);
-	}
-	
-	private void connectAbstractUserAction(final AbstractUserAction newAction) {
-		if (this.action != null) {
-			this.action.setSuccessor(newAction);
-			newAction.setPredecessor(this.action);
-		}
 	}
 	
 	// *****************************************************************
 	//
 	// *****************************************************************
 	
+	/**
+	 * Load the model from file.
+	 * @return builder to pipeline more commands
+	 */
 	public UsageModelBuilder loadModel() {
 		this.modelProvider.loadModel();
 		return this;
 	}
 	
+	/**
+	 * Reset the model. This will delete all {@link UsageScenario} and {@link UserData} instances.
+	 * @return builder to pipeline more commands
+	 */
 	public UsageModelBuilder resetModel() {
 		final UsageModel model = this.modelProvider.getModel();
 		model.getUsageScenario_UsageModel().clear();
@@ -51,59 +57,95 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		return this;
 	}
 	
-	public UsageModelBuilder setUsageScenario(final int index) {
+	/**
+	 * Create an {@link UsageScenario}. The scenario is added to the model.
+	 * @return created usage scenario
+	 */
+	public UsageScenario createUsageScenario() {
 		final UsageModel model = this.modelProvider.getModel();
-		this.usageScenario = model.getUsageScenario_UsageModel().get(index);
-		this.workload = this.usageScenario.getWorkload_UsageScenario();
-		this.scenarioBehaviour = this.usageScenario.getScenarioBehaviour_UsageScenario();
-		return this;
+		final UsageScenario usageScenario =  UsagemodelFactory.eINSTANCE.createUsageScenario();
+		model.getUsageScenario_UsageModel().add(usageScenario);
+		return usageScenario;
 	}
 	
-	public UsageModelBuilder createUsageScenario() {
-		final UsageModel model = this.modelProvider.getModel();
-		this.usageScenario =  UsagemodelFactory.eINSTANCE.createUsageScenario();
-		model.getUsageScenario_UsageModel().add(this.usageScenario);
-		this.scenarioBehaviour = UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
-		this.usageScenario.setScenarioBehaviour_UsageScenario(this.scenarioBehaviour);
-		return this;
+	/**
+	 * Create a {@link ScenarioBehaviour}. The behavior is just created not added to the model.
+	 * @return the behavior
+	 */
+	public ScenarioBehaviour createScenarioBehaviour() {
+		final ScenarioBehaviour scenarioBehaviour = UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
+		return scenarioBehaviour;
 	}
 	
-	public UsageModelBuilder createOpenWorkload(final long avgInterarrivalTime) {
+	/**
+	 * Create a {@link ScenarioBehaviour} and add it to the given {@link UsageScenario}.
+	 * @param usageScenario usage scenario
+	 * @return the scenario behavior
+	 */
+	public ScenarioBehaviour createScenarioBehaviour(final UsageScenario usageScenario) {
+		final ScenarioBehaviour scenarioBehaviour = UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
+		usageScenario.setScenarioBehaviour_UsageScenario(scenarioBehaviour);
+		return scenarioBehaviour;
+	}
+	
+	/**
+	 * Create an {@link OpenWorkload}. It will just be created with the given interarrival time.
+	 * It is not been added anywhere.
+	 * @param avgInterarrivalTime the interarrival time
+	 * @return brand new instance of {@link OpenWorkload}
+	 */
+	public OpenWorkload createOpenWorkload(final long avgInterarrivalTime) {
 		final OpenWorkload openWorkload = UsagemodelFactory.eINSTANCE.createOpenWorkload();
 		final PCMRandomVariable pcmInterarrivalTime = 
 				CoreFactory.eINSTANCE.createPCMRandomVariable();
 		pcmInterarrivalTime.setSpecification(String.valueOf(avgInterarrivalTime));
 		pcmInterarrivalTime.setOpenWorkload_PCMRandomVariable(openWorkload);
 		openWorkload.setInterArrivalTime_OpenWorkload(pcmInterarrivalTime);
-		this.scenarioBehaviour.getUsageScenario_SenarioBehaviour()
-			.setWorkload_UsageScenario(openWorkload);
-		return this;
+		return openWorkload;
 	}
 	
-	public UsageModelBuilder createStart() {
+	/**
+	 * Create an {@link OpenWorkload} and add it to the given {@link UsageScenario}.
+	 * @param avgInterarrivalTime the interarrival time
+	 * @param usageScenario usage scenario the workload should be added to
+	 * @return brand new instance of {@link OpenWorkload}
+	 */
+	public OpenWorkload createOpenWorkload(final long avgInterarrivalTime,
+			final UsageScenario usageScenario) {
+		final OpenWorkload openWorkload = UsagemodelFactory.eINSTANCE.createOpenWorkload();
+		final PCMRandomVariable pcmInterarrivalTime = 
+				CoreFactory.eINSTANCE.createPCMRandomVariable();
+		pcmInterarrivalTime.setSpecification(String.valueOf(avgInterarrivalTime));
+		pcmInterarrivalTime.setOpenWorkload_PCMRandomVariable(openWorkload);
+		openWorkload.setInterArrivalTime_OpenWorkload(pcmInterarrivalTime);
+		usageScenario.setWorkload_UsageScenario(openWorkload);
+		return openWorkload;
+	}
+	
+	
+	public Start createStart() {
 		final Start start = UsagemodelFactory.eINSTANCE.createStart();
-		this.scenarioBehaviour.getActions_ScenarioBehaviour().add(start);
-		this.connectAbstractUserAction(start);
-		this.action = start;
-		return this;
+		return start;
 	}
 	
-	public UsageModelBuilder createStop() {
+	public Stop createStop() {
 		final Stop stop = UsagemodelFactory.eINSTANCE.createStop();
-		this.scenarioBehaviour.getActions_ScenarioBehaviour().add(stop);
-		this.connectAbstractUserAction(stop);
-		this.action = stop;
-		return this;
+		return stop;
 	}
 	
-	public UsageModelBuilder createAction(final String operationSignature) {
+	/**
+	 * Create an EntryLevelSystemCall with the given operation signature.
+	 * @param operationSignature operation signature of the EntryLevelSystemCall
+	 * @return null, if the creation failed, the instance if not.
+	 */
+	public EntryLevelSystemCall createEntryLevelSystemCall(final String operationSignature) {
 		final RepositoryModelProvider repositoryModelProvider = 
 				this.modelProvider.getPlatform().getRepositoryModelProvider();
 		
 		final OperationSignature opSig = repositoryModelProvider.getOperationSignature(operationSignature);
+		final EntryLevelSystemCall eSysCall;
 		if (opSig != null) {
-			final EntryLevelSystemCall eSysCall = UsagemodelFactory.eINSTANCE
-					.createEntryLevelSystemCall();
+			eSysCall = UsagemodelFactory.eINSTANCE.createEntryLevelSystemCall();
 			eSysCall.setEntityName(opSig.getEntityName());
 			eSysCall.setOperationSignature__EntryLevelSystemCall(opSig);
 			final OperationInterface opInf = opSig.getInterface__OperationSignature();
@@ -112,14 +154,25 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 			
 			//TODO null checks for all this modelProvider calls?
 			eSysCall.setProvidedRole_EntryLevelSystemCall(providedRole);
-			this.scenarioBehaviour.getActions_ScenarioBehaviour().add(eSysCall);
-			this.connectAbstractUserAction(eSysCall);
-			this.action = eSysCall;
 		} else {
+			eSysCall = null;
 			System.err.printf("%s operation signature was null?", operationSignature);
 		}
-		return this;
+		return eSysCall;
 	}
 	
-
+	// *****************************************************************
+	//
+	// *****************************************************************
+	
+	/**
+	 * Connect actions.
+	 * @param predecessor predecessor of successor
+	 * @param successor successor of predecessor
+	 */
+	public void connect(final AbstractUserAction predecessor, final AbstractUserAction successor) {
+		successor.setPredecessor(predecessor);
+		predecessor.setSuccessor(successor);
+	}
+	
 }
