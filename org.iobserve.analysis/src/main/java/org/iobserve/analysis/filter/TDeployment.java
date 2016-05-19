@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.iobserve.analysis.AnalysisMain;
+import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
@@ -33,6 +34,8 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
+
+import com.google.common.base.Optional;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and UndeploymentEventTransformation.
@@ -117,8 +120,6 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 				return false;
 			}
 			
-			final AllocationModelBuilder builder = new AllocationModelBuilder(TDeployment.this.allocationModelProvider);
-			
 			final ServletDeployedEvent event = (ServletDeployedEvent) record;
 			final String context = event.getContext();
 			final String deploymentId = event.getDeploymentId();
@@ -126,23 +127,34 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 			final long loggingTimestamp = event.getLoggingTimestamp();
 			final long timestamp = event.getTimestamp();
 			
-			//TODO debug
-//			final String debugContext = "Application.ProductDispatcher_EnterpriseServer";
-//			final String debugResContainer = debugContext.substring(debugContext.lastIndexOf("_") + 1, debugContext.length());
-//			
-//			final ResourceContainer resourceContainer = TDeployment.this.resourceEnvModelProvider.getResourceContainerByName(debugResContainer);
-//			final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName("Application.ProductDispatcher_EnterpriseServer");
-			
-			final ResourceContainer resourceContainer = TDeployment.this.resourceEnvModelProvider.getResourceContainerByName(serivce);
-			final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName(context);
-			
-//			de.kit.ipd.cocome.cloud.serviceadapter.Services.BookSale
-			
-			builder
-				.loadModel()
-				.resetModel()
-				.addAllocationContext(resourceContainer, assemblyContext)
-				.build();
+			final Optional<Correspondent> optionCorrespondent = TDeployment.this.correspondence.getCorrespondent(context);
+			if (optionCorrespondent.isPresent()) {
+				// get the model entity name
+				final Correspondent correspondent = optionCorrespondent.get();
+				final String entityName = correspondent.getPcmEntityName();
+				
+				// build the assembly context name
+				final String resourceCtxName = "server-name-missinge-here";
+				final String asmContextName = entityName + "_" + resourceCtxName;
+				
+				// get the model parts by name
+				final ResourceContainer resourceContainer = TDeployment.this.resourceEnvModelProvider.getResourceContainerByName(resourceCtxName);
+				final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName(asmContextName);
+				
+				if (resourceContainer == null || assemblyContext == null) {
+					System.out.printf("ResourceContainer=%s or AssemblyContext=%s is null?!",
+							String.valueOf(resourceContainer), String.valueOf(assemblyContext));
+				} else {
+					// build new model
+					final AllocationModelBuilder builder = new AllocationModelBuilder(TDeployment.this.allocationModelProvider);
+					builder
+						.loadModel()
+						.resetModel()
+						.addAllocationContext(resourceContainer, assemblyContext)
+						.build();
+				}
+			}
+
 			return true;
 		}
 
@@ -163,6 +175,39 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 			}
 			
 			final EJBDeployedEvent event = (EJBDeployedEvent) record;
+			
+			final String context = event.getContext();
+			final String deploymentId = event.getDeploymentId();
+			final long loggingTimestamp = event.getLoggingTimestamp();
+			final long timestamp = event.getTimestamp();
+			
+			final Optional<Correspondent> optionCorrespondent = TDeployment.this.correspondence.getCorrespondent(context);
+			if (optionCorrespondent.isPresent()) {
+				// get the model entity name
+				final Correspondent correspondent = optionCorrespondent.get();
+				final String entityName = correspondent.getPcmEntityName();
+				
+				// build the assembly context name
+				final String resourceCtxName = "server-name-missinge-here";
+				final String asmContextName = entityName + "_" + resourceCtxName;
+				
+				// get the model parts by name
+				final ResourceContainer resourceContainer = TDeployment.this.resourceEnvModelProvider.getResourceContainerByName(resourceCtxName);
+				final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName(asmContextName);
+				
+				if (resourceContainer == null || assemblyContext == null) {
+					System.out.printf("ResourceContainer=%s or AssemblyContext=%s is null?!",
+							String.valueOf(resourceContainer), String.valueOf(assemblyContext));
+				} else {
+					// build new model
+					final AllocationModelBuilder builder = new AllocationModelBuilder(TDeployment.this.allocationModelProvider);
+					builder
+						.loadModel()
+						.resetModel()
+						.addAllocationContext(resourceContainer, assemblyContext)
+						.build();
+				}
+			}
 
 			System.out
 				.println("DeploymentEventTransformation.EJBDeployedEventProcessor.processEvent()");
