@@ -23,7 +23,6 @@ import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ModelProviderPlatform;
-import org.iobserve.analysis.model.ModelSaveStrategy;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelBuilder;
@@ -130,19 +129,18 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 				return false;
 			}
 			
-			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
-					TAllocation.this.resourceEnvModelProvider);
-			
+			// extract data from event
 			final ServletDeployedEvent event = (ServletDeployedEvent) record;
 			final String context = event.getContext();
-			final String deploymentId = event.getDeploymentId();
 			final String serivce = event.getSerivce();
 			
+			// create resource container
+			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
+					TAllocation.this.resourceEnvModelProvider);
 			builder
 				.loadModel()
 				.createResourceContainerIfAbsent(serivce)
 				.build();
-			TAllocation.this.resourceEnvModelProvider.save(ModelSaveStrategy.OVERRIDE);
 			
 			// create assembly context
 			final SystemModelBuilder systemBuilder = new SystemModelBuilder(TAllocation.this.systemModelProvider);
@@ -150,7 +148,6 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 				.loadModel()
 				.createAssemblyContextsIfAbsent(context)
 				.build();
-			TAllocation.this.systemModelProvider.save(ModelSaveStrategy.OVERRIDE);
 			
 			
 			return true;
@@ -171,18 +168,26 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 			if (record.getClass() != EJBDeployedEvent.class) {
 				return false;
 			}
-			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
-					TAllocation.this.resourceEnvModelProvider);
+			
 			
 			final EJBDeployedEvent event = (EJBDeployedEvent) record;
 			final String context = event.getContext();
 			final String deploymentId = event.getDeploymentId();
 			
+			// create 
+			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
+					TAllocation.this.resourceEnvModelProvider);
 			builder
 				.loadModel()
 				.createResourceContainerIfAbsent(context)
 				.build();
-			TAllocation.this.resourceEnvModelProvider.save(ModelSaveStrategy.OVERRIDE);
+			
+			// create assembly context
+			final SystemModelBuilder systemBuilder = new SystemModelBuilder(TAllocation.this.systemModelProvider);
+			systemBuilder
+				.loadModel()
+				.createAssemblyContextsIfAbsent(context)
+				.build();
 
 			System.out
 				.println("DeploymentEventTransformation.EJBDeployedEventProcessor.processEvent()");

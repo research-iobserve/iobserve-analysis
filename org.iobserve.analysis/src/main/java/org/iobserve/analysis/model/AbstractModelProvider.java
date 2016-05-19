@@ -42,8 +42,8 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	// ********************************************************************
 
 	private final URI uriModelInstance;
-	
 	private final ModelProviderPlatform platform;
+	private ModelSaveStrategy saveStrategy = ModelSaveStrategy.OVERRIDE;
 
 	// ********************************************************************
 	// * VARIABLES
@@ -64,6 +64,14 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	}
 	
 	/**
+	 * Set the save strategy which is used to save the model, when {@link #save()} is called.
+	 * @param saveStrategy save strategy
+	 */
+	public void setSaveStrategy(final ModelSaveStrategy saveStrategy) {
+		this.saveStrategy = saveStrategy;
+	}
+	
+	/**
 	 * Save the internal model. This will override the existing.
 	 * @param strategy strategy how to save the model. Default {@link ModelSaveStrategy#OVERRIDE}
 	 */
@@ -80,6 +88,15 @@ public abstract class AbstractModelProvider<T extends EObject> {
 			new PcmModelSaver(this.uriModelInstance).save(this.getModel());
 			break;
 		}
+	}
+	
+	/**
+	 * Save the model with the defined {@link ModelSaveStrategy} 
+	 * by {@link #setSaveStrategy(ModelSaveStrategy)}.
+	 * default = {@link ModelSaveStrategy#OVERRIDE}.
+	 */
+	public void save() {
+		this.save(this.saveStrategy);
 	}
 
 	/**

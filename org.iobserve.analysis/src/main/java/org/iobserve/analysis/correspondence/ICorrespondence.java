@@ -49,6 +49,15 @@ public interface ICorrespondence {
 	 * @return option on a {@link Correspondent} object.
 	 */
 	public Optional<Correspondent> getCorrespondent(String classSig, String functionSig);
+	
+	/**
+	 * Get the correspondent model component based on the class signature.
+	 * 
+	 * @param classSig
+	 *            full qualified java class name.
+	 * @return option of a correspondent in model
+	 */
+	public Optional<Correspondent> getCorrespondent(String classSig);
 
 	/**
 	 * Note: Alessandro I would recommend to defines this interface as follows. However,

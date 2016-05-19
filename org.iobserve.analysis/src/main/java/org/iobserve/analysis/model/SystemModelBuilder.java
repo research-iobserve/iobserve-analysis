@@ -8,11 +8,6 @@ public class SystemModelBuilder extends ModelBuilder<SystemModelProvider, org.pa
 	public SystemModelBuilder(final SystemModelProvider modelToStartWith) {
 		super(modelToStartWith);
 	}
-
-	@Override
-	public org.palladiosimulator.pcm.system.System build() {
-		return this.modelProvider.getModel();
-	}
 	
 	// *****************************************************************
 	//

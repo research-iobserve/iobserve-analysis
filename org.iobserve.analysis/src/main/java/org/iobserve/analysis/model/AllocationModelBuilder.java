@@ -11,11 +11,6 @@ public class AllocationModelBuilder extends ModelBuilder<AllocationModelProvider
 	public AllocationModelBuilder(final AllocationModelProvider modelToStartWith) {
 		super(modelToStartWith);
 	}
-
-	@Override
-	public Allocation build() {
-		return this.modelProvider.getModel();
-	}
 	
 	// *****************************************************************
 	//

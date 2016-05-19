@@ -24,7 +24,6 @@ import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ModelProviderPlatform;
-import org.iobserve.analysis.model.ModelSaveStrategy;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
@@ -144,8 +143,6 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 				.resetModel()
 				.addAllocationContext(resourceContainer, assemblyContext)
 				.build();
-			
-			TDeployment.this.allocationModelProvider.save(ModelSaveStrategy.OVERRIDE);
 			return true;
 		}
 

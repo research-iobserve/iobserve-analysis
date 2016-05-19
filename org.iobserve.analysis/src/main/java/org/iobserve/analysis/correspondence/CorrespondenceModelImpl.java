@@ -160,6 +160,49 @@ class CorrespondenceModelImpl implements ICorrespondence {
 		System.out.println("OK");
 		return Optional.of(correspondent);
 	}
+	
+	@Override
+	public Optional<Correspondent> getCorrespondent(final String classSig) {
+		//TODO debug print, remove later
+		System.out.print(String.format("Try to get correspondence for classSig=%s ...",
+				classSig));
+
+		// assert parameters are not null
+		if (classSig == null) {
+			System.out.println("NOK");
+			return ICorrespondence.NULL_CORRESPONDENZ;
+		}
+
+		// create the request key for searching in the cache
+		final String requestKey = classSig.trim().replaceAll(" ", "");
+
+		// try to get the correspondent from the cache
+		Correspondent correspondent = this.cachedCorrespondents.get(requestKey);
+
+		// in case the correspondent is not available it has to be mapped
+		if (correspondent == null) {
+			final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
+			if (pcmEntityCorrespondent == null) {
+				// TODO log
+				System.out.println("NOK");
+				return ICorrespondence.NULL_CORRESPONDENZ; // or something else
+			}
+
+			// create correspondent object
+			correspondent = CorrespondentFactory.newInstance(
+					pcmEntityCorrespondent.getParent().getName(),
+					pcmEntityCorrespondent.getParent().getId(),
+					null,
+					null);
+
+			// put into cache for next time
+			this.cachedCorrespondents.put(requestKey, correspondent);
+		}
+
+		//TODO this can be removed later
+		System.out.println("OK");
+		return Optional.of(correspondent);
+	}
 
 	/**
 	 * Get the {@link PcmEntity} based on the qualified class name

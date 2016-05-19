@@ -27,11 +27,6 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	public UsageModelBuilder(final UsageModelProvider modelProvider) {
 		super(modelProvider);
 	}
-
-	@Override
-	public UsageModel build() {
-		return this.modelProvider.getModel();
-	}
 	
 	private void connectAbstractUserAction(final AbstractUserAction newAction) {
 		if (this.action != null) {

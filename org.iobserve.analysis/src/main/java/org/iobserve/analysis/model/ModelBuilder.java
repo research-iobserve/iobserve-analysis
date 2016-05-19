@@ -12,7 +12,6 @@ import org.eclipse.emf.ecore.EObject;
  * @author Alessandro Giusa
  * @param <T>
  *
- * @param <T>
  */
 public abstract class ModelBuilder<E extends AbstractModelProvider<T>, T extends EObject> {
 	
@@ -27,8 +26,10 @@ public abstract class ModelBuilder<E extends AbstractModelProvider<T>, T extends
 	}
 	
 	/**
-	 * Will build the model.
-	 * @return new model
+	 * Will build and save the model using the model provider.
+	 * @see AbstractModelProvider#save()
 	 */
-	public abstract T build();
+	public void build() {
+		this.modelProvider.save();
+	}
 }

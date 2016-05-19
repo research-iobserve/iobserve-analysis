@@ -9,11 +9,6 @@ public class ResourceEnvironmentModelBuilder extends ModelBuilder<ResourceEnviro
 	public ResourceEnvironmentModelBuilder(final ResourceEnvironmentModelProvider modelToStartWith) {
 		super(modelToStartWith);
 	}
-
-	@Override
-	public ResourceEnvironment build() {
-		return this.modelProvider.getModel();
-	}
 	
 	// *****************************************************************
 	//
