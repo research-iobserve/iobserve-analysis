@@ -44,7 +44,7 @@ public final class CorrespondeceModelFactory {
 	public ICorrespondence createCorrespondenceModel(final String pathMappingFile,
 			final BinarySelector<PcmCorrespondentMethod, PcmOperationSignature> mapper) {
 		final PcmMapping mapping = this.getMapping(pathMappingFile);
-		final UsageCorrespondenceModel rac = new UsageCorrespondenceModel(mapping, mapper);
+		final CorrespondenceModelImpl rac = new CorrespondenceModelImpl(mapping, mapper);
 		rac.initMapping();
 		return rac;
 	}

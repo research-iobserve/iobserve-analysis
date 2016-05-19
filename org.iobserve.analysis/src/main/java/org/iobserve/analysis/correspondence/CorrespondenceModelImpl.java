@@ -21,7 +21,7 @@ import com.google.common.base.Optional;
  *
  * @author Robert Heinrich, Alessandro Giusa
  */
-class UsageCorrespondenceModel implements ICorrespondence {
+class CorrespondenceModelImpl implements ICorrespondence {
 
 	private interface MethodSignatureBuilder {
 		String build(PcmCorrespondentMethod method);
@@ -56,13 +56,13 @@ class UsageCorrespondenceModel implements ICorrespondence {
 	// * INITIALIZATION
 	// ********************************************************************
 
-	public UsageCorrespondenceModel(final PcmMapping mapping, 
+	public CorrespondenceModelImpl(final PcmMapping mapping, 
 			final BinarySelector<PcmCorrespondentMethod, PcmOperationSignature> mapper) {
 		this.rawMapping = mapping;
 		this.opSigMapper = mapper;
 	}
 
-	public UsageCorrespondenceModel(final InputStream mappingFile, 
+	public CorrespondenceModelImpl(final InputStream mappingFile, 
 			final BinarySelector<PcmCorrespondentMethod, PcmOperationSignature> mapper) {
 		this.rawMapping = JAXB.unmarshal(mappingFile, PcmMapping.class);
 		this.opSigMapper = mapper;
