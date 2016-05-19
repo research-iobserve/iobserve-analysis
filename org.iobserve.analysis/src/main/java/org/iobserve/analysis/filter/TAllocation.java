@@ -21,7 +21,6 @@ import java.util.List;
 
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -46,7 +45,6 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 	private static long executionCounter = 0;
 	private final ICorrespondence correspondence;
 	private List<DeploymentRecordProcessor> deploymentProcessors;
-	private AllocationModelProvider allocationModelProvider;
 	private SystemModelProvider systemModelProvider;
 	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
 	
@@ -63,7 +61,6 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 		
 		// get all model references
 		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
-		this.allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
 		this.systemModelProvider = modelProviderPlatform.getSystemModelProvider();
 		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
 		
@@ -149,7 +146,6 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 				.createAssemblyContextsIfAbsent(context)
 				.build();
 			
-			
 			return true;
 		}
 
@@ -169,12 +165,12 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 				return false;
 			}
 			
-			
+			// extract data from event
 			final EJBDeployedEvent event = (EJBDeployedEvent) record;
 			final String context = event.getContext();
 			final String deploymentId = event.getDeploymentId();
 			
-			// create 
+			// create resource container
 			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
 					TAllocation.this.resourceEnvModelProvider);
 			builder
@@ -186,7 +182,7 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 			final SystemModelBuilder systemBuilder = new SystemModelBuilder(TAllocation.this.systemModelProvider);
 			systemBuilder
 				.loadModel()
-				.createAssemblyContextsIfAbsent(context)
+				.createAssemblyContextsIfAbsent(deploymentId)
 				.build();
 
 			System.out
