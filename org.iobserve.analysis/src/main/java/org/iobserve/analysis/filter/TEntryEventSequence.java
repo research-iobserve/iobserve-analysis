@@ -119,6 +119,13 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 				.createStart()
 				.createOpenWorkload(averageInterarrivalTime);
 			
+//			Branch b1 = builder.createBranch();
+//			
+//			Action a1 = builder.createAction(b1);
+//			Action a2 = builder.createAction(b1)
+//			Action a3 = builder.createAction(a1)
+			
+			
 			
 			// iterate over all events to create the usage behavior
 			final Iterator<EntryCallEvent> iteratorEvents = userSession.iterator();
@@ -136,7 +143,7 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 				}
 			}
 			builder.createStop();
-			builder.build();
+//			builder.build();
 			
 			
 			// save the model to the output

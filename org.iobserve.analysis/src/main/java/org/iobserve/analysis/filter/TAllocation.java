@@ -26,6 +26,7 @@ import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ModelSaveStrategy;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
@@ -133,8 +134,8 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 					TAllocation.this.resourceEnvModelProvider);
 			
 			final ServletDeployedEvent event = (ServletDeployedEvent) record;
-//			final String context = event.getContext();
-//			final String deploymentId = event.getDeploymentId();
+			final String context = event.getContext();
+			final String deploymentId = event.getDeploymentId();
 			final String serivce = event.getSerivce();
 			
 			builder
@@ -142,6 +143,16 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 				.createResourceContainerIfAbsent(serivce)
 				.build();
 			TAllocation.this.resourceEnvModelProvider.save(ModelSaveStrategy.OVERRIDE);
+			
+			// create assembly context
+			final SystemModelBuilder systemBuilder = new SystemModelBuilder(TAllocation.this.systemModelProvider);
+			systemBuilder
+				.loadModel()
+				.createAssemblyContextsIfAbsent(context)
+				.build();
+			TAllocation.this.systemModelProvider.save(ModelSaveStrategy.OVERRIDE);
+			
+			
 			return true;
 		}
 

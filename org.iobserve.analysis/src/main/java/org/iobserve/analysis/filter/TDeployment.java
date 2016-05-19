@@ -26,7 +26,6 @@ import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ModelSaveStrategy;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
@@ -136,16 +135,9 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 //			final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName("Application.ProductDispatcher_EnterpriseServer");
 			
 			final ResourceContainer resourceContainer = TDeployment.this.resourceEnvModelProvider.getResourceContainerByName(serivce);
-			
-			final SystemModelBuilder systemBuilder = new SystemModelBuilder(TDeployment.this.systemModelProvider);
-			systemBuilder
-				.loadModel()
-				.createAssemblyContextsIfAbsent(context)
-				.build();
-			TDeployment.this.systemModelProvider.save(ModelSaveStrategy.OVERRIDE);
-			
 			final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName(context);
 			
+//			de.kit.ipd.cocome.cloud.serviceadapter.Services.BookSale
 			
 			builder
 				.loadModel()
