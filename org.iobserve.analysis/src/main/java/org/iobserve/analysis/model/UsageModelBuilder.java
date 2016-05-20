@@ -205,6 +205,12 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		return branch;
 	}
 	
+	/**
+	 * Create branch with the given name and add it to the given branch transition.
+	 * @param name name of the branch
+	 * @param parent parent to add branch to
+	 * @return created branch instance
+	 */
 	public Branch createBranch(final String name, final BranchTransition parent) {
 		final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
 		branch.setEntityName(name);
