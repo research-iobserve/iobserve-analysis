@@ -1,5 +1,6 @@
 package org.iobserve.analysis.model;
 
+import org.iobserve.analysis.correspondence.Correspondent;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.repository.BasicComponent;
@@ -196,6 +197,15 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 					operationSignature,String.valueOf(opSig), String.valueOf(bCmp));
 		}
 		return eSysCall;
+	}
+	
+	/**
+	 * Create an EntryLevelSystemCall with the given correspondent.
+	 * @param correspondent correspondent containing operation signature
+	 * @return null, if the creation failed, the instance if not.
+	 */
+	public EntryLevelSystemCall createEntryLevelSystemCall(final Correspondent correspondent) {
+		return this.createEntryLevelSystemCall(correspondent.getPcmOperationName());
 	}
 	
 	// *****************************************************************

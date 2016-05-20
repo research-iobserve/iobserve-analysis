@@ -31,7 +31,6 @@ import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
-import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
 import org.palladiosimulator.pcm.usagemodel.Start;
 import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
@@ -115,25 +114,17 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 		// iterate over user sessions
 		for(final UserSession userSession:sessions) {
 			
-			// example 
-//			Branch b1 = builder.createBranch();
-//			
-//			Action a1 = builder.createAction(b1);
-//			Action a2 = builder.createAction(b1)
-//			Action a3 = builder.createAction(a1)
-			
+			// create simple usage model builder
 			final UsageModelBuilder builder = new UsageModelBuilder(this.usageModelProvider);
 			
 			// like re-load
 			builder.loadModel().resetModel();
 			
-			final UsageScenario usageScenario = builder.createUsageScenario();
-			final ScenarioBehaviour scenarioBehaviour = builder.createScenarioBehaviour(usageScenario);
-			
+			final UsageScenario usageScenario = builder.createUsageScenario("MyTestScenario");
 			builder.createOpenWorkload(averageInterarrivalTime, usageScenario);
 			
 			final Start start = builder.createStart();
-			builder.addAbstractUserAction(scenarioBehaviour, start);
+			builder.addUserAction(usageScenario, start);
 			
 			AbstractUserAction lastAction = start;
 			
@@ -148,17 +139,17 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 						.getCorrespondent(classSig, opSig);
 				if (optionCorrespondent.isPresent()) {
 					final Correspondent correspondent = optionCorrespondent.get();
-					final String operationSig = correspondent.getPcmOperationName();
-					final EntryLevelSystemCall eSysCall = builder.createEntryLevelSystemCall(operationSig);
+					final EntryLevelSystemCall eSysCall = builder.createEntryLevelSystemCall(correspondent);
 					builder.connect(lastAction, eSysCall);
-					builder.addAbstractUserAction(scenarioBehaviour, eSysCall);
+					builder.addUserAction(usageScenario, eSysCall);
 					lastAction = eSysCall;
 				}
 			}
 			
 			final Stop stop = builder.createStop();
 			builder.connect(lastAction, stop);
-			builder.addAbstractUserAction(scenarioBehaviour, stop);
+			builder.addUserAction(usageScenario, stop);
+			
 			builder.build();
 			this.counterSavedUsageModel++; //TODO just for now
 		}
