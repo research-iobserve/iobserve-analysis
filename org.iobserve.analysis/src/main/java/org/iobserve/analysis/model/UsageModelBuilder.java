@@ -180,20 +180,21 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 				this.modelProvider.getPlatform().getRepositoryModelProvider();
 		
 		final OperationSignature opSig = repositoryModelProvider.getOperationSignature(operationSignature);
+		final BasicComponent bCmp = repositoryModelProvider.getBasicComponent(operationSignature);
 		final EntryLevelSystemCall eSysCall;
-		if (opSig != null) {
+		if (opSig != null && bCmp != null) {
 			eSysCall = UsagemodelFactory.eINSTANCE.createEntryLevelSystemCall();
 			eSysCall.setEntityName(opSig.getEntityName());
 			eSysCall.setOperationSignature__EntryLevelSystemCall(opSig);
-			final OperationInterface opInf = opSig.getInterface__OperationSignature();
-			final BasicComponent bCmp = repositoryModelProvider.getBasicComponent(operationSignature);
-			final OperationProvidedRole providedRole = repositoryModelProvider.getOperationProvidedRole(opInf, bCmp);
 			
-			//TODO null checks for all this modelProvider calls?
+			final OperationInterface opInf = opSig.getInterface__OperationSignature();
+			final OperationProvidedRole providedRole = repositoryModelProvider.getOperationProvidedRole(opInf, bCmp);
 			eSysCall.setProvidedRole_EntryLevelSystemCall(providedRole);
+			
 		} else {
 			eSysCall = null;
-			System.err.printf("%s operation signature was null?", operationSignature);
+			System.err.printf("%s caused Nullpointer since OperationSignature=% or BasicComponent=%s is null?!",
+					operationSignature,String.valueOf(opSig), String.valueOf(bCmp));
 		}
 		return eSysCall;
 	}
