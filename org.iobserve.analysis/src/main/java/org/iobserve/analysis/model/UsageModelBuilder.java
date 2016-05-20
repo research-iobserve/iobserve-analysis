@@ -134,20 +134,40 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	
 	/**
 	 * Create a start node.
+	 * @param name of start node
 	 * @return start node
 	 */
-	public Start createStart() {
+	public Start createStart(final String name) {
 		final Start start = UsagemodelFactory.eINSTANCE.createStart();
+		start.setEntityName(name);
 		return start;
 	}
 	
 	/**
+	 * Create a start node without name. (Recommended to use {@link #createStart(String)}).
+	 * @return start node
+	 */
+	public Start createStart() {
+		return this.createStart("start-with-no-name");
+	}
+	
+	/**
 	 * Create a stop node.
+	 * @param name name of stop node
+	 * @return stop node.
+	 */
+	public Stop createStop(final String name) {
+		final Stop stop = UsagemodelFactory.eINSTANCE.createStop();
+		stop.setEntityName(name);
+		return stop;
+	}
+	
+	/**
+	 * Create a stop node without name. (Recommended to use {@link #createStop(String)}).
 	 * @return stop node.
 	 */
 	public Stop createStop() {
-		final Stop stop = UsagemodelFactory.eINSTANCE.createStop();
-		return stop;
+		return this.createStop("stop-with-no-name");
 	}
 	
 	/**
@@ -296,13 +316,32 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	}
 	
 	/**
-	 * Add the given action to the given scenario behaviour.
-	 * @param scenarioBehaviour scenarioBehaviour
-	 * @param action action
+	 * Add the given actions to the given {@link ScenarioBehaviour}.
+	 * @param parent parent
+	 * @param actions actions to add
 	 */
-	public void addAbstractUserAction(final ScenarioBehaviour scenarioBehaviour,
-			final AbstractUserAction action) {
-		scenarioBehaviour.getActions_ScenarioBehaviour().add(action);
+	public void addUserAction(final ScenarioBehaviour parent, final AbstractUserAction...actions) {
+		for (final AbstractUserAction nextUserAction : actions) {
+			parent.getActions_ScenarioBehaviour().add(nextUserAction);
+		}
+	}
+	
+	/**
+	 * Add the given actions to the given {@link BranchTransition}.
+	 * @param parent parent
+	 * @param actions actions to add
+	 */
+	public void addUserAction(final BranchTransition parent, final AbstractUserAction...actions) {
+		this.addUserAction(parent.getBranchedBehaviour_BranchTransition(), actions);
+	}
+	
+	/**
+	 * Add the given actions to the given {@link Loop}.
+	 * @param parent parent
+	 * @param actions actions to add
+	 */
+	public void addUserAction(final Loop parent, final AbstractUserAction...actions) {
+		this.addUserAction(parent.getBodyBehaviour_Loop(), actions);
 	}
 	
 }
