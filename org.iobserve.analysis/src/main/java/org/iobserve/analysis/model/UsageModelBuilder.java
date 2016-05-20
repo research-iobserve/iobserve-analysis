@@ -190,7 +190,6 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 			final OperationInterface opInf = opSig.getInterface__OperationSignature();
 			final OperationProvidedRole providedRole = repositoryModelProvider.getOperationProvidedRole(opInf, bCmp);
 			eSysCall.setProvidedRole_EntryLevelSystemCall(providedRole);
-			
 		} else {
 			eSysCall = null;
 			System.err.printf("%s caused Nullpointer since OperationSignature=% or BasicComponent=%s is null?!",
