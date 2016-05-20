@@ -9,6 +9,7 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.Branch;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
+import org.palladiosimulator.pcm.usagemodel.ClosedWorkload;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Loop;
 import org.palladiosimulator.pcm.usagemodel.OpenWorkload;
@@ -89,38 +90,47 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	}
 	
 	/**
-	 * Create an {@link OpenWorkload}. It will just be created with the given interarrival time.
-	 * It is not been added anywhere.
+	 * Create an {@link OpenWorkload} and add it to the given {@link UsageScenario}.
 	 * @param avgInterarrivalTime the interarrival time
+	 * @param parent usage scenario the workload should be added to
 	 * @return brand new instance of {@link OpenWorkload}
 	 */
-	public OpenWorkload createOpenWorkload(final long avgInterarrivalTime) {
+	public OpenWorkload createOpenWorkload(final long avgInterarrivalTime,
+			final UsageScenario parent) {
 		final OpenWorkload openWorkload = UsagemodelFactory.eINSTANCE.createOpenWorkload();
+		parent.setWorkload_UsageScenario(openWorkload);
+		
+		// create varaibles
 		final PCMRandomVariable pcmInterarrivalTime = 
 				CoreFactory.eINSTANCE.createPCMRandomVariable();
 		pcmInterarrivalTime.setSpecification(String.valueOf(avgInterarrivalTime));
 		pcmInterarrivalTime.setOpenWorkload_PCMRandomVariable(openWorkload);
 		openWorkload.setInterArrivalTime_OpenWorkload(pcmInterarrivalTime);
+		
 		return openWorkload;
 	}
 	
 	/**
 	 * Create an {@link OpenWorkload} and add it to the given {@link UsageScenario}.
 	 * @param avgInterarrivalTime the interarrival time
-	 * @param usageScenario usage scenario the workload should be added to
+	 * @param parent usage scenario the workload should be added to
 	 * @return brand new instance of {@link OpenWorkload}
 	 */
-	public OpenWorkload createOpenWorkload(final long avgInterarrivalTime,
-			final UsageScenario usageScenario) {
-		final OpenWorkload openWorkload = UsagemodelFactory.eINSTANCE.createOpenWorkload();
-		final PCMRandomVariable pcmInterarrivalTime = 
+	public ClosedWorkload createClosedWorkload(final int population, final double thinkTime,
+			final UsageScenario parent) {
+		final ClosedWorkload closedWorkload = UsagemodelFactory.eINSTANCE.createClosedWorkload();
+		parent.setWorkload_UsageScenario(closedWorkload);
+		
+		// create variables
+		final PCMRandomVariable pcmThinkTime = 
 				CoreFactory.eINSTANCE.createPCMRandomVariable();
-		pcmInterarrivalTime.setSpecification(String.valueOf(avgInterarrivalTime));
-		pcmInterarrivalTime.setOpenWorkload_PCMRandomVariable(openWorkload);
-		openWorkload.setInterArrivalTime_OpenWorkload(pcmInterarrivalTime);
-		usageScenario.setWorkload_UsageScenario(openWorkload);
-		return openWorkload;
+		pcmThinkTime.setSpecification(String.valueOf(thinkTime));
+		pcmThinkTime.setClosedWorkload_PCMRandomVariable(closedWorkload);
+		closedWorkload.setPopulation(population);
+		closedWorkload.setThinkTime_ClosedWorkload(pcmThinkTime);
+		return closedWorkload;
 	}
+	
 	
 	/**
 	 * Create a start node.
