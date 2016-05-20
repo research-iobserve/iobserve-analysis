@@ -327,6 +327,15 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	}
 	
 	/**
+	 * Add the given actions to the given {@link UsageScenario}.
+	 * @param parent parent
+	 * @param actions actions to add
+	 */
+	public void addUserAction(final UsageScenario parent, final AbstractUserAction...actions) {
+		this.addUserAction(parent.getScenarioBehaviour_UsageScenario(), actions);
+	}
+	
+	/**
 	 * Add the given actions to the given {@link BranchTransition}.
 	 * @param parent parent
 	 * @param actions actions to add
