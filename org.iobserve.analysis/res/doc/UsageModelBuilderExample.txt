@@ -1,0 +1,33 @@
+final UsageModelBuilder builder = new UsageModelBuilder(this.usageModelProvider);
+
+// like re-load
+builder.loadModel().resetModel();
+
+final UsageScenario usageScenario = builder.createUsageScenario("MyTestScenario");
+final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
+builder.createOpenWorkload(averageInterarrivalTime, usageScenario);
+
+// test
+
+final Branch branch1 = builder.createBranch("test", scenarioBehaviour);
+final BranchTransition branchTransition1 = builder.createBranchTransition(branch1);
+branchTransition1.setBranchProbability(50);
+
+// test loop
+final Loop loop1 = builder.createLoop("testLoop", scenarioBehaviour);
+
+
+final Loop loopInLoop = builder.createLoop("LoopInLoop", loop1);
+
+final UsageScenario usageScenario2 = builder.createUsageScenario("Oha");
+builder.createClosedWorkload(25, 25.5, usageScenario2);
+
+
+final Start start1 = builder.createStart();
+final Stop stop1 = builder.createStop();
+final EntryLevelSystemCall eSysCall1 = builder.createEntryLevelSystemCall("bookSale");
+
+builder.connect(start1, eSysCall1);
+builder.connect(eSysCall1, stop1);
+
+builder.addUserAction(branchTransition1, start1, stop1, eSysCall1);
