@@ -198,11 +198,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	 * @return created branch instance
 	 */
 	public Branch createBranch(final String name, final Loop parent) {
-		final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
-		branch.setEntityName(name);
-		branch.setScenarioBehaviour_AbstractUserAction(parent.getBodyBehaviour_Loop());
-		parent.getBodyBehaviour_Loop().getActions_ScenarioBehaviour().add(branch);
-		return branch;
+		return this.createBranch(name, parent.getBodyBehaviour_Loop());
 	}
 	
 	/**
@@ -212,11 +208,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	 * @return created branch instance
 	 */
 	public Branch createBranch(final String name, final BranchTransition parent) {
-		final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
-		branch.setEntityName(name);
-		branch.setScenarioBehaviour_AbstractUserAction(parent.getBranchedBehaviour_BranchTransition());
-		parent.getBranchedBehaviour_BranchTransition().getActions_ScenarioBehaviour().add(branch);
-		return branch;
+		return this.createBranch(name, parent.getBranchedBehaviour_BranchTransition());
 	}
 	
 	/**
@@ -262,6 +254,26 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		final ScenarioBehaviour bodyScenarioBehaviour = this.createScenarioBehaviour();
 		loop.setBodyBehaviour_Loop(bodyScenarioBehaviour);
 		return loop;
+	}
+	
+	/**
+	 * Create a loop within the given loop.
+	 * @param name name of the loop
+	 * @param parent parent loop
+	 * @return created loop
+	 */
+	public Loop createLoop(final String name, final Loop parent) {
+		return this.createLoop(name, parent.getBodyBehaviour_Loop());
+	}
+	
+	/**
+	 * Create a loop within the given branch transition.
+	 * @param name name of loop
+	 * @param parent parent branch transition
+	 * @return created loop
+	 */
+	public Loop createLoop(final String name, final BranchTransition parent) {
+		return this.createLoop(name, parent.getBranchedBehaviour_BranchTransition());
 	}
 	
 	// *****************************************************************
