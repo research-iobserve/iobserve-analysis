@@ -41,7 +41,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	// *****************************************************************
 	
 	/**
-	 * Load the model from file.
+	 * Load the model from file using the model provider.
 	 * @return builder to pipeline more commands
 	 */
 	public UsageModelBuilder loadModel() {
@@ -61,14 +61,21 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	}
 	
 	/**
-	 * Create an {@link UsageScenario}. The scenario is added to the model.
+	 * Create an {@link UsageScenario} and create a body {@link ScenarioBehaviour} for it.
+	 * Get the {@link ScenarioBehaviour} by {@link UsageScenario#getScenarioBehaviour_UsageScenario()}
 	 * @return created usage scenario
 	 */
-	public UsageScenario createUsageScenario() {
+	public UsageScenario createUsageScenario(final String name) {
+		// create the usage scenario
 		final UsageModel model = this.modelProvider.getModel();
 		final UsageScenario usageScenario =  UsagemodelFactory.eINSTANCE.createUsageScenario();
+		usageScenario.setEntityName(name);
 		usageScenario.setUsageModel_UsageScenario(model);
 		model.getUsageScenario_UsageModel().add(usageScenario);
+		
+		// create a scenario behavior
+		final ScenarioBehaviour scenarioBehaviour = this.createScenarioBehaviour();
+		usageScenario.setScenarioBehaviour_UsageScenario(scenarioBehaviour);
 		return usageScenario;
 	}
 	
@@ -78,18 +85,6 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	 */
 	public ScenarioBehaviour createScenarioBehaviour() {
 		final ScenarioBehaviour scenarioBehaviour = UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
-		return scenarioBehaviour;
-	}
-	
-	/**
-	 * Create a {@link ScenarioBehaviour} and add it to the given {@link UsageScenario}.
-	 * @param usageScenario usage scenario
-	 * @return the scenario behavior
-	 */
-	public ScenarioBehaviour createScenarioBehaviour(final UsageScenario usageScenario) {
-		final ScenarioBehaviour scenarioBehaviour = UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
-		scenarioBehaviour.setUsageScenario_SenarioBehaviour(usageScenario);
-		usageScenario.setScenarioBehaviour_UsageScenario(scenarioBehaviour);
 		return scenarioBehaviour;
 	}
 	
