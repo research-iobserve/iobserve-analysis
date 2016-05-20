@@ -178,16 +178,38 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	// *****************************************************************
 	
 	/**
-	 * Create a branch with the given name and add it to the given scenario.
+	 * Create branch with the given name and add it to the given scenario behavior.
 	 * @param name name of the branch
-	 * @param scenariobehavior scenario behavior instance
+	 * @param parent parent to add branch to
 	 * @return created branch instance
 	 */
-	public Branch createBranch(final String name, final ScenarioBehaviour parentScenarioBehaviour) {
+	public Branch createBranch(final String name, final ScenarioBehaviour parent) {
 		final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
 		branch.setEntityName(name);
-		branch.setScenarioBehaviour_AbstractUserAction(parentScenarioBehaviour);
-		parentScenarioBehaviour.getActions_ScenarioBehaviour().add(branch);
+		branch.setScenarioBehaviour_AbstractUserAction(parent);
+		parent.getActions_ScenarioBehaviour().add(branch);
+		return branch;
+	}
+	
+	/**
+	 * Create branch with the given name and add it to the given loop.
+	 * @param name name of the branch
+	 * @param parent parent to add branch to
+	 * @return created branch instance
+	 */
+	public Branch createBranch(final String name, final Loop parent) {
+		final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
+		branch.setEntityName(name);
+		branch.setScenarioBehaviour_AbstractUserAction(parent.getBodyBehaviour_Loop());
+		parent.getBodyBehaviour_Loop().getActions_ScenarioBehaviour().add(branch);
+		return branch;
+	}
+	
+	public Branch createBranch(final String name, final BranchTransition parent) {
+		final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
+		branch.setEntityName(name);
+		branch.setScenarioBehaviour_AbstractUserAction(parent.getBranchedBehaviour_BranchTransition());
+		parent.getBranchedBehaviour_BranchTransition().getActions_ScenarioBehaviour().add(branch);
 		return branch;
 	}
 	
