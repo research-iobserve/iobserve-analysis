@@ -31,7 +31,7 @@ import teetime.framework.AnalysisConfiguration;
  * 
  * @author Reiner Jung
  * @author Robert Heinrich
- * @author Alessandro Giusa, alessandrogiusa@gmail.com
+ * @author Alessandro Giusa
  */
 public class AnalysisMain {
 

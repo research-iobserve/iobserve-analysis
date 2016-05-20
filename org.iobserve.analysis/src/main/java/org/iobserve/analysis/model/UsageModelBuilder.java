@@ -7,7 +7,10 @@ import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
+import org.palladiosimulator.pcm.usagemodel.Branch;
+import org.palladiosimulator.pcm.usagemodel.BranchTransition;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
+import org.palladiosimulator.pcm.usagemodel.Loop;
 import org.palladiosimulator.pcm.usagemodel.OpenWorkload;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
 import org.palladiosimulator.pcm.usagemodel.Start;
@@ -122,12 +125,19 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		return openWorkload;
 	}
 	
-	
+	/**
+	 * Create a start node.
+	 * @return start node
+	 */
 	public Start createStart() {
 		final Start start = UsagemodelFactory.eINSTANCE.createStart();
 		return start;
 	}
 	
+	/**
+	 * Create a stop node.
+	 * @return stop node.
+	 */
 	public Stop createStop() {
 		final Stop stop = UsagemodelFactory.eINSTANCE.createStop();
 		return stop;
@@ -159,6 +169,153 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 			System.err.printf("%s operation signature was null?", operationSignature);
 		}
 		return eSysCall;
+	}
+	
+	// *****************************************************************
+	// BRANCHING
+	// *****************************************************************
+	
+	/**
+	 * Create a branch. The branch is not added to any other model part.
+	 * @return created branch instance
+	 */
+	public Branch createBranch() {
+		final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
+		return branch;
+	}
+	
+	/**
+	 * Create a branch with the given name. The branch is not added to any other model part.
+	 * @param name name for the branch
+	 * @return created branch instance
+	 */
+	public Branch createBranch(final String name) {
+		final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
+		branch.setEntityName(name);
+		return branch;
+	}
+	
+	/**
+	 * Create a branch and add it to the given scenario behavior.
+	 * @param name name of the branch
+	 * @param scenariobehavior scenario behavior instance
+	 * @return created branch instance
+	 */
+	public Branch createBranch(final String name, final ScenarioBehaviour scenarioBehaviour) {
+		final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
+		branch.setEntityName(name);
+		scenarioBehaviour.getActions_ScenarioBehaviour().add(branch);
+		return branch;
+	}
+	
+	/**
+	 * Create a branch and add it to the given loop.
+	 * @param name name of the branch
+	 * @param loop loop to add branch to
+	 * @return created branch instance
+	 */
+	public Branch createBranch(final String name, final Loop loop) {
+		final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
+		branch.setEntityName(name);
+		loop.getBodyBehaviour_Loop().getActions_ScenarioBehaviour().add(branch);
+		return branch;
+	}
+	
+	/**
+	 * Create branch and add it to the branch transition.
+	 * @param name name of the branch
+	 * @param branchTransition branch transition
+	 * @return created branch instance
+	 */
+	public Branch createBranch(final String name, final BranchTransition branchTransition) {
+		final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
+		branch.setEntityName(name);
+		branchTransition.getBranchedBehaviour_BranchTransition()
+			.getActions_ScenarioBehaviour().add(branch);
+		return branch;
+	}
+	
+	/**
+	 * Create bare branch transition
+	 * @return created branch transition
+	 */
+	public BranchTransition createBranchTransition() {
+		final BranchTransition bt = UsagemodelFactory.eINSTANCE.createBranchTransition();
+		return bt;
+	}
+	
+	/**
+	 * Create bare branch transition and set the probability
+	 * @param probability probability
+	 * @return created branch transition
+	 */
+	public BranchTransition createBranchTransition(final double probability) {
+		final BranchTransition bt = UsagemodelFactory.eINSTANCE.createBranchTransition();
+		bt.setBranchProbability(probability);
+		return bt;
+	}
+	
+	/**
+	 * Create bare branch transition and set the probability
+	 * @param branch branch to add transition to
+	 * @return created branch transition
+	 */
+	public BranchTransition createBranchTransition(final Branch branch) {
+		final BranchTransition bt = UsagemodelFactory.eINSTANCE.createBranchTransition();
+		branch.getBranchTransitions_Branch().add(bt);
+		return bt;
+	}
+	
+	// *****************************************************************
+	// LOOPING
+	// *****************************************************************
+	
+	/**
+	 * Create a loop.
+	 * @return created loop instance
+	 */
+	public Loop createLoop() {
+		final Loop loop = UsagemodelFactory.eINSTANCE.createLoop();
+		return loop;
+	}
+	
+	
+	/**
+	 * Create a loop.
+	 * @param name name of the loop
+	 * @return created loop instance
+	 */
+	public Loop createLoop(final String name) {
+		final Loop loop = UsagemodelFactory.eINSTANCE.createLoop();
+		loop.setEntityName(name);
+		return loop;
+	}
+	
+	/**
+	 * Create a loop and add it to the parent loop.
+	 * @param name name of the loop
+	 * @param parentLoop parent loop
+	 * @return created loop instance
+	 */
+	public Loop createLoop(final String name, final Loop parentLoop) {
+		final Loop loop = UsagemodelFactory.eINSTANCE.createLoop();
+		loop.setEntityName(name);
+		parentLoop.getBodyBehaviour_Loop().getActions_ScenarioBehaviour().add(loop);
+		return loop;
+	}
+	
+	/**
+	 * Create a loop and add it to the branch transition.
+	 * @param name name of the loop
+	 * @param branchTransition branchTransition
+	 * @return created loop instance
+	 */
+	public Loop createLoop(final String name, final BranchTransition branchTransition) {
+		final Loop loop = UsagemodelFactory.eINSTANCE.createLoop();
+		loop.setEntityName(name);
+		branchTransition.getBranchedBehaviour_BranchTransition()
+			.getActions_ScenarioBehaviour().add(loop);
+		return loop;
 	}
 	
 	// *****************************************************************
