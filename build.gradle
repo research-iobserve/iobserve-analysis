@@ -17,6 +17,9 @@ allprojects {
         maven {url "https://oss.sonatype.org/content/repositories/releases/" }
 		maven {url "https://oss.sonatype.org/content/groups/public/"}
 		maven {url "https://jitpack.io"}
+		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo.p2"}
+		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo"}
+		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}
     }
 }
 
@@ -43,7 +46,16 @@ project(":org.iobserve.analysis") {
 		compile 'lpg.runtime:java:2.0.17-v201004271640'
 		compile 'org.antlr:antlr-runtime:3.5.2'
 		
+		
+		//compile group: 'org.eclipselabs', name: 'cdo.p2', version: '4.4.0'
+		//compile group: 'org.eclipselabs', name: 'cdo', version: '4.4.0', ext: 'pom'
+		//compile group: 'org.eclipselabs', name: 'cdo-maven', version: '4.4.0', ext: 'pom'
+		
+		
         compile fileTree(dir: 'libs', include: '*.jar')
+        compile fileTree(dir: 'pcm/libs', include: '*.jar')
+        
+        /*
         compile files(palladioInstall + "de.uka.ipd.sdq.identifier_2.1.0.201511050934.jar")
         compile files(palladioInstall + "org.palladiosimulator.pcm_4.0.0.201511051135.jar")
         
@@ -51,7 +63,7 @@ project(":org.iobserve.analysis") {
         compile files(palladioInstall + "de.uka.ipd.sdq.stoex_2.2.0.201511050934.jar")
         compile files(palladioInstall + "de.uka.ipd.sdq.probfunction_2.1.0.201511050934.jar")
         compile files(palladioInstall + "org.eclipse.emf.cdo_4.3.0.v20140520-1823.jar")
-        compile files(palladioInstall + "org.eclipse.emf.cdo.common_4.3.0.v20140309-0644.jar")
+        compile files(palladioInstall + "org.eclipse.emf.cdo.common_4.3.0.v20140309-0644.jar")*/
     }
 }
 

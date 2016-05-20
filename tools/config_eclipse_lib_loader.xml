@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<configuration>
+	<baseUrl>https://sdqweb.ipd.kit.edu/eclipse/palladiosimulator/releases/latest/</baseUrl>
+	<contentJar>content.jar</contentJar>
+	<contentFile>content.xml</contentFile>
+	<pluginUrl>aggregate/plugins/</pluginUrl>
+	<outputDir>pcm/libs/</outputDir>
+	<libraryExtension>.jar</libraryExtension>
+	<versionSeparator>_</versionSeparator>
+	<requiredArtifacts>osgi.bundle</requiredArtifacts>
+
+	<libraries>
+		<library>org\.palladiosimulator\.</library>
+		<library>de\.uka\.ipd\.sdq\.</library>
+	</libraries>
+</configuration>
+
+
