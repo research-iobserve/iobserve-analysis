@@ -23,6 +23,7 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -114,10 +115,9 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 			// create resource container
 			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
 					TAllocation.this.resourceEnvModelProvider);
-			builder
-				.loadModel()
-				.createResourceContainer(serverName)
-				.build();
+			builder.loadModel();
+			final ResourceContainer resContainer = builder.createResourceContainer(serverName);
+			builder.build();
 		}
 	}
 }

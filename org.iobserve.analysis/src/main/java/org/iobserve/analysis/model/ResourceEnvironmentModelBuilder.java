@@ -38,12 +38,12 @@ public class ResourceEnvironmentModelBuilder extends ModelBuilder<ResourceEnviro
 	 * @param name name of the new container
 	 * @return builder
 	 */
-	public ResourceEnvironmentModelBuilder createResourceContainer(final String name) {
+	public ResourceContainer createResourceContainer(final String name) {
 		final ResourceEnvironment model = this.modelProvider.getModel();
 		final ResourceContainer resContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
 		resContainer.setEntityName(name);
 		model.getResourceContainer_ResourceEnvironment().add(resContainer);
-		return this;
+		return resContainer;
 	}
 
 }
