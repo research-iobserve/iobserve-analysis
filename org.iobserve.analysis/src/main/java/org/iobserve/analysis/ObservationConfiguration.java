@@ -24,6 +24,7 @@ import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
 import org.iobserve.analysis.filter.TEntryEventSequence;
+import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 
 import teetime.framework.AnalysisConfiguration;
@@ -81,6 +82,7 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 		final TEntryCall tEntryCall = new TEntryCall();
 		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
 		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence();
+		final TNetworkLink tNetworkLink = new TNetworkLink();
 
 		// connecting filters
 		final IPipeFactory factory = this.pipeFactoryRegistry.getPipeFactory(
@@ -93,6 +95,7 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 		factory.create(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
 		factory.create(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
 		factory.create(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
+		factory.create(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
 		// 
 		factory.create(tAllocation.getDeploymentOutputPort(), tDeployment.getInputPort());

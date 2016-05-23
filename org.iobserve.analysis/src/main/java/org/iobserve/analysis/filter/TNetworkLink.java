@@ -15,8 +15,10 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
+import kieker.common.record.flow.trace.TraceMetadata;
+
+import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.common.record.IUndeploymentRecord;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -24,7 +26,7 @@ import teetime.framework.AbstractConsumerStage;
  * This transformation does the linking of R
  *
  */
-public class TNetworkLink extends AbstractConsumerStage<IUndeploymentRecord> {
+public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
 	private static long executionCounter = 0;
 	
@@ -43,8 +45,12 @@ public class TNetworkLink extends AbstractConsumerStage<IUndeploymentRecord> {
 	 * This method is triggered for every undeployment event
 	 */
 	@Override
-	protected void execute(final IUndeploymentRecord event) {
+	protected void execute(final TraceMetadata event) {
+		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TNetworkLink.executionCounter); //TODO testing logger
 		// add your transformation here
+		System.out.println("TNetworkLink.execute()");
+		
+		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TNetworkLink.executionCounter); //TODO testing logger
 	}
 
 }
