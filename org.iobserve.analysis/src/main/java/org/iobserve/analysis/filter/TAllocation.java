@@ -15,16 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
@@ -43,10 +38,7 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 
 	private static long executionCounter = 0;
 	private final ICorrespondence correspondence;
-	private List<DeploymentRecordProcessor> deploymentProcessors;
-	private SystemModelProvider systemModelProvider;
 	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
-	
 	private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
 
 	/**
@@ -60,14 +52,14 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 		
 		// get all model references
 		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
-		this.systemModelProvider = modelProviderPlatform.getSystemModelProvider();
 		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
-		
-		
-		// add processors
-		this.deploymentProcessors = new ArrayList<>();
-		this.deploymentProcessors.add(new EJBDeployedEventProcessor());
-		this.deploymentProcessors.add(new ServletDeployedEventProcessor());
+	}
+	
+	/**
+	 * @return the deploymentOutputPort
+	 */
+	public final OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
+		return this.deploymentOutputPort;
 	}
 
 	/**
@@ -78,101 +70,50 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
-		// dispatch event to right processor and add the server if necessary
-		boolean stopDispatching = false;
-		final Iterator<DeploymentRecordProcessor> iterator = this.deploymentProcessors.iterator();
-		do {
-			stopDispatching = iterator.next().processEvent(event);
-		} while (!stopDispatching && iterator.hasNext());
+		if (event instanceof ServletDeployedEvent) {
+			this.process((ServletDeployedEvent)event);
+		
+		} else if (event instanceof EJBDeployedEvent) {
+			this.process((EJBDeployedEvent)event);
+		}
 		
 		// forward the event
 		this.deploymentOutputPort.send(event);
 	}
 	
 	/**
-	 * @return the deploymentOutputPort
+	 * Process the given {@link ServletDeployedEvent} event. And 
+	 * call {@link #updateModel(String)} to create a new server if necessary.
+	 * @param event event to process
 	 */
-	public final OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
-		return this.deploymentOutputPort;
+	private void process(final ServletDeployedEvent event) {
+		final String context = event.getContext();
+		final String serivce = event.getSerivce();
+		this.updateModel(serivce);
 	}
-
-	// *****************************************************************
-	// PROCESS EVENT MORE SPECIFIC
-	// *****************************************************************
 	
 	/**
-	 * Abstract type of a processor for {@link IDeploymentRecord}.
-	 * 
-	 * @author Robert Heinrich
-	 * @author Alessandro Giusa
-	 *
+	 * Process the given {@link EJBDeployedEvent} event. And 
+	 * call {@link #updateModel(String)} to create a new server if necessary.
+	 * @param event event to process
 	 */
-	private abstract class DeploymentRecordProcessor {
-		public abstract boolean processEvent(final IDeploymentRecord record);
+	private void process(final EJBDeployedEvent event) {
+		final String context = event.getContext();
+		final String deploymentId = event.getDeploymentId();
+		this.updateModel(context);
 	}
-
+	
 	/**
-	 * Processor for processing {@link ServletDeployedEvent}
-	 * @author Robert Heinrich
-	 * @author Alessandro Giusa
-	 *
+	 * Update the allocation model with the given server-name if necessary.
+	 * @param serverName server name
 	 */
-	private class ServletDeployedEventProcessor extends DeploymentRecordProcessor {
-
-		@Override
-		public boolean processEvent(final IDeploymentRecord record) {
-			if (record.getClass() != ServletDeployedEvent.class) {
-				return false;
-			}
-			
-			// extract data from event
-			final ServletDeployedEvent event = (ServletDeployedEvent) record;
-			final String context = event.getContext();
-			final String serivce = event.getSerivce();
-			
-			// create resource container
-			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
-					TAllocation.this.resourceEnvModelProvider);
-			builder
-				.loadModel()
-				.createResourceContainerIfAbsent(serivce)
-				.build();
-			
-			return true;
-		}
-
+	private void updateModel(final String serverName) {
+		// create resource container
+		final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
+				TAllocation.this.resourceEnvModelProvider);
+		builder
+			.loadModel()
+			.createResourceContainerIfAbsent(serverName)
+			.build();
 	}
-
-	/**
-	 * Processor for processing {@link EJBDeployedEvent}
-	 * @author Robert Heinrich
-	 * @author Alessandro Giusa
-	 *
-	 */
-	private class EJBDeployedEventProcessor extends DeploymentRecordProcessor {
-
-		@Override
-		public boolean processEvent(final IDeploymentRecord record) {
-			if (record.getClass() != EJBDeployedEvent.class) {
-				return false;
-			}
-			
-			// extract data from event
-			final EJBDeployedEvent event = (EJBDeployedEvent) record;
-			final String context = event.getContext();
-			final String deploymentId = event.getDeploymentId();
-			
-			// create resource container
-			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
-					TAllocation.this.resourceEnvModelProvider);
-			builder
-				.loadModel()
-				.createResourceContainerIfAbsent(context)
-				.build();
-			return true;
-		}
-
-	}
-
-
 }
