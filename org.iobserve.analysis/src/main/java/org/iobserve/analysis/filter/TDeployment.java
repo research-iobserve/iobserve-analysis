@@ -94,16 +94,13 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 * @param event event to process
 	 */
 	private void process(final ServletDeployedEvent event) {
-		final String context = event.getContext();
-		final String deploymentId = event.getDeploymentId();
 		final String serivce = event.getSerivce();
-		final long loggingTimestamp = event.getLoggingTimestamp();
-		final long timestamp = event.getTimestamp();
+		final String context = event.getContext();
 		
 		final Optional<Correspondent> optionCorrespondent = this.correspondence.getCorrespondent(context);
 		if (optionCorrespondent.isPresent()) {
 			final Correspondent correspondent = optionCorrespondent.get();
-			this.updateModel(serivce, correspondent, event.getLoggingTimestamp());
+			this.updateModel(serivce, correspondent);
 		}
 	}
 	
@@ -112,15 +109,13 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 * @param event event to process
 	 */
 	private void process(final EJBDeployedEvent event) {
+		final String service = event.getSerivce();
 		final String context = event.getContext();
-		final String deploymentId = event.getDeploymentId();
-		final long loggingTimestamp = event.getLoggingTimestamp();
-		final long timestamp = event.getTimestamp();
 		
 		final Optional<Correspondent> optionCorrespondent = this.correspondence.getCorrespondent(context);
 		if (optionCorrespondent.isPresent()) {
 			final Correspondent correspondent = optionCorrespondent.get();
-			this.updateModel("missing-server-name", correspondent, event.getLoggingTimestamp());
+			this.updateModel(service, correspondent);
 		}
 	}
 	
@@ -128,7 +123,7 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 * Update the system- and allocation-model by the given correspondent.
 	 * @param correspondent correspondent
 	 */
-	private void updateModel(final String serverName, final Correspondent correspondent, final long timeStamp) {
+	private void updateModel(final String serverName, final Correspondent correspondent) {
 		// get the model entity name
 		final String entityName = correspondent.getPcmEntityName();
 		
@@ -166,9 +161,5 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 			.resetModel()
 			.addAllocationContext(resourceContainer, assemblyContext)
 			.build();
-		
-		// TODO debugging
-		System.out.printf("TDeployment for resContainer %s and asmContext %s at %d",
-				serverName, asmContextName, Long.valueOf(timeStamp));
 	}
 }

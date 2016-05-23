@@ -23,7 +23,6 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -97,9 +96,8 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 	 * @param event event to process
 	 */
 	private void process(final ServletDeployedEvent event) {
-		final String context = event.getContext();
 		final String serivce = event.getSerivce();
-		this.updateModel(serivce, event.getLoggingTimestamp());
+		this.updateModel(serivce);
 	}
 	
 	/**
@@ -108,16 +106,15 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 	 * @param event event to process
 	 */
 	private void process(final EJBDeployedEvent event) {
-		final String context = event.getContext();
-		final String deploymentId = event.getDeploymentId();
-		this.updateModel(context, event.getLoggingTimestamp());
+		final String service = event.getSerivce();
+		this.updateModel(service);
 	}
 	
 	/**
 	 * Update the allocation model with the given server-name if necessary.
 	 * @param serverName server name
 	 */
-	private void updateModel(final String serverName, final long timeStamp) {
+	private void updateModel(final String serverName) {
 		final boolean absent = this.resourceEnvModelProvider
 				.getResourceContainerByName(serverName) == null;
 		if (absent) {
@@ -125,11 +122,7 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
 					TAllocation.this.resourceEnvModelProvider);
 			builder.loadModel();
-			final ResourceContainer resContainer = builder.createResourceContainer(serverName);
-			//TODO debugging
-			System.out.printf("TAllocation resContainer=% at time stamp %d",
-					resContainer.getEntityName(), Long.valueOf(timeStamp));
-			
+			builder.createResourceContainer(serverName);
 			builder.build();
 		}
 	}
