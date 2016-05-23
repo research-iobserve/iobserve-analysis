@@ -32,7 +32,7 @@ project(":org.iobserve.analysis") {
 		compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 		compile 'net.sourceforge.teetime:teetime:1.1.2'
 		compile 'net.sourceforge.teetime-stages:teetime-stages:1.1.2'
-		compile 'net.kieker-monitoring:kieker:1.12'
+		compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
 		
 		compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
 		compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
@@ -79,6 +79,6 @@ project(":org.iobserve.monitoring") {
 project(":org.iobserve.common") {
     dependencies {
 		compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
-		compile 'net.kieker-monitoring:kieker:1.12'
+		compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
     }
 }

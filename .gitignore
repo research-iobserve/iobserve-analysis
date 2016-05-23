@@ -11,4 +11,7 @@ org.iobserve.analysis/pcm/
 *.checkstyle
 teetime.log
 main.log
+settings.xml
+mvn-repo/
+**/.settings/**
 

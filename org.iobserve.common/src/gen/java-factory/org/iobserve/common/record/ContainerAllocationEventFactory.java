@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2016 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
-package org.iobserve.analysis.data;
+package org.iobserve.common.record;
 
 import java.nio.ByteBuffer;
 
@@ -22,23 +21,23 @@ import kieker.common.record.factory.IRecordFactory;
 import kieker.common.util.registry.IRegistry;
 
 /**
- * @author Reiner Jung
+ * @author Generic Kieker
  * 
- * @since 1.0
+ * @since 1.13
  */
-public final class EntryCallEventFactory implements IRecordFactory<EntryCallEvent> {
+public final class ContainerAllocationEventFactory implements IRecordFactory<ContainerAllocationEvent> {
 	
 	@Override
-	public EntryCallEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new EntryCallEvent(buffer, stringRegistry);
+	public ContainerAllocationEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
+		return new ContainerAllocationEvent(buffer, stringRegistry);
 	}
 	
 	@Override
-	public EntryCallEvent create(final Object[] values) {
-		return new EntryCallEvent(values);
+	public ContainerAllocationEvent create(final Object[] values) {
+		return new ContainerAllocationEvent(values);
 	}
 	
 	public int getRecordSizeInBytes() {
-		return EntryCallEvent.SIZE;
+		return ContainerAllocationEvent.SIZE;
 	}
 }

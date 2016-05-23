@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2016 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
@@ -21,29 +20,33 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 import kieker.common.util.registry.IRegistry;
+import kieker.common.util.Version;
+
+import org.iobserve.common.record.ContainerEvent;
+import org.iobserve.common.record.IDeallocationRecord;
 
 /**
  * @author Generic Kieker
- *
- * @since 1.10
+ * 
+ * @since 1.13
  */
 public class ContainerDeallocationEvent extends ContainerEvent implements IDeallocationRecord {
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_STRING // ContainerEvent.url
 	;
-	private static final long serialVersionUID = -8614068644544628672L;
-
+	private static final long serialVersionUID = 4775916963006881196L;
+	
 	public static final Class<?>[] TYPES = {
 		String.class, // ContainerEvent.url
 	};
-
+	
 	/* user-defined constants */
 	/* default constants */
 	/* property declarations */
 
 	/**
 	 * Creates a new instance of this class using the given parameters.
-	 *
+	 * 
 	 * @param url
 	 *            url
 	 */
@@ -54,17 +57,17 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	/**
 	 * This constructor converts the given array into a record.
 	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
-	 *
+	 * 
 	 * @param values
 	 *            The values for the record.
 	 */
 	public ContainerDeallocationEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
 	}
-
+	
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
-	 *
+	 * 
 	 * @param values
 	 *            The values for the record.
 	 * @param valueTypes
@@ -76,10 +79,10 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 
 	/**
 	 * This constructor converts the given array into a record.
-	 *
+	 * 
 	 * @param buffer
 	 *            The bytes for the record.
-	 *
+	 * 
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
 	 */
@@ -95,6 +98,14 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 		return new Object[] {
 			this.getUrl()
 		};
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
+		stringRegistry.get(this.getUrl());
 	}
 
 	/**
@@ -120,10 +131,9 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	public int getSize() {
 		return SIZE;
 	}
-
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
@@ -134,13 +144,28 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
 	@Deprecated
 	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) return false;
+		if (obj == this) return true;
+		if (obj.getClass() != this.getClass()) return false;
+		
+		final ContainerDeallocationEvent castedRecord = (ContainerDeallocationEvent) obj;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
+		if (!this.getUrl().equals(castedRecord.getUrl())) return false;
+		return true;
 	}
 
 }

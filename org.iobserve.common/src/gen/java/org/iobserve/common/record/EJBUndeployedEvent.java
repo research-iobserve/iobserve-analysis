@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2016 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
@@ -21,58 +20,66 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 import kieker.common.util.registry.IRegistry;
+import kieker.common.util.Version;
+
+import org.iobserve.common.record.EJBDeploymentEvent;
+import org.iobserve.common.record.IUndeploymentRecord;
 
 /**
  * @author Generic Kieker
- *
- * @since 1.10
+ * 
+ * @since 1.13
  */
 public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploymentRecord {
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
-			+ TYPE_SIZE_STRING // EJBDeploymentEvent.context
-			+ TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
+			 + TYPE_SIZE_STRING // EJBDeploymentEvent.serivce
+			 + TYPE_SIZE_STRING // EJBDeploymentEvent.context
+			 + TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
 	;
-	private static final long serialVersionUID = 4550394952021828437L;
-
+	private static final long serialVersionUID = 918721494471850423L;
+	
 	public static final Class<?>[] TYPES = {
 		long.class, // AbstractEvent.timestamp
+		String.class, // EJBDeploymentEvent.serivce
 		String.class, // EJBDeploymentEvent.context
 		String.class, // EJBDeploymentEvent.deploymentId
 	};
-
+	
 	/* user-defined constants */
 	/* default constants */
 	/* property declarations */
 
 	/**
 	 * Creates a new instance of this class using the given parameters.
-	 *
+	 * 
 	 * @param timestamp
 	 *            timestamp
+	 * @param serivce
+	 *            serivce
 	 * @param context
 	 *            context
 	 * @param deploymentId
 	 *            deploymentId
 	 */
-	public EJBUndeployedEvent(final long timestamp, final String context, final String deploymentId) {
-		super(timestamp, context, deploymentId);
+	public EJBUndeployedEvent(final long timestamp, final String serivce, final String context, final String deploymentId) {
+		super(timestamp, serivce, context, deploymentId);
 	}
 
 	/**
 	 * This constructor converts the given array into a record.
 	 * It is recommended to use the array which is the result of a call to {@link #toArray()}.
-	 *
+	 * 
 	 * @param values
 	 *            The values for the record.
 	 */
 	public EJBUndeployedEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
 	}
-
+	
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
-	 *
+	 * 
 	 * @param values
 	 *            The values for the record.
 	 * @param valueTypes
@@ -84,10 +91,10 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 
 	/**
 	 * This constructor converts the given array into a record.
-	 *
+	 * 
 	 * @param buffer
 	 *            The bytes for the record.
-	 *
+	 * 
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
 	 */
@@ -102,6 +109,7 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTimestamp(),
+			this.getSerivce(),
 			this.getContext(),
 			this.getDeploymentId()
 		};
@@ -111,8 +119,19 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
+		stringRegistry.get(this.getSerivce());
+		stringRegistry.get(this.getContext());
+		stringRegistry.get(this.getDeploymentId());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
 		buffer.putLong(this.getTimestamp());
+		buffer.putInt(stringRegistry.get(this.getSerivce()));
 		buffer.putInt(stringRegistry.get(this.getContext()));
 		buffer.putInt(stringRegistry.get(this.getDeploymentId()));
 	}
@@ -132,10 +151,9 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 	public int getSize() {
 		return SIZE;
 	}
-
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
@@ -146,13 +164,31 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 
 	/**
 	 * {@inheritDoc}
-	 *
+	 * 
 	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
 	 */
 	@Override
 	@Deprecated
 	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) return false;
+		if (obj == this) return true;
+		if (obj.getClass() != this.getClass()) return false;
+		
+		final EJBUndeployedEvent castedRecord = (EJBUndeployedEvent) obj;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
+		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
+		if (!this.getSerivce().equals(castedRecord.getSerivce())) return false;
+		if (!this.getContext().equals(castedRecord.getContext())) return false;
+		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
+		return true;
 	}
 
 }
