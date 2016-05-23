@@ -64,7 +64,8 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 	 */
 	@Override
 	protected void execute(final IFlowRecord event) {
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + executionCounter); //TODO testing logger
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.before(this, this.getId() + TEntryCall.executionCounter); //TODO testing logger
 		
 		if (event instanceof TraceMetadata) {
 			final TraceMetadata metaData = (TraceMetadata) event;
@@ -92,8 +93,9 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 				/** check whether it matches an before operation event. */
 				if (beforeOperationEvent.getClassSignature().equals(afterOperationEvent.getClassSignature())
 						&& beforeOperationEvent.getOperationSignature().equals(afterOperationEvent.getOperationSignature())) {
+					
 					this.outputPort.send(new EntryCallEvent(
-							/* added by Alessandro Giusa, see EntryCallEvent class for more information*/
+							TEntryCall./* added by Alessandro Giusa, see EntryCallEvent class for more information*/
 							executionCounter, 
 							beforeOperationEvent.getTimestamp(),
 							afterOperationEvent.getTimestamp(),
@@ -104,13 +106,14 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 				}
 			}
 		} else {
-			LOG.warn("Unsuppored flow event type " + event.getClass().getCanonicalName());
+			TEntryCall.LOG.warn("Unsuppored flow event type " + event.getClass().getCanonicalName());
 		}
 		
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + executionCounter); //TODO testing logger
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.after(this, this.getId() + TEntryCall.executionCounter); //TODO testing logger
 		
 		// count execution
-		executionCounter++;
+		TEntryCall.executionCounter++;
 	}
 
 	public OutputPort<EntryCallEvent> getOutputPort() {

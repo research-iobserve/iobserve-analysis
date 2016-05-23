@@ -65,7 +65,8 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 	@Override
 	protected void execute(final IMonitoringRecord element) {
 		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + RecordSwitch.executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.before(this, this.getId() + RecordSwitch.executionCounter);
 		
 		this.recordCount++;
 		if (element instanceof IDeploymentRecord) {
@@ -98,7 +99,8 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 		}
 		
 		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + RecordSwitch.executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.after(this, this.getId() + RecordSwitch.executionCounter);
 		
 		// count execution
 		RecordSwitch.executionCounter++;

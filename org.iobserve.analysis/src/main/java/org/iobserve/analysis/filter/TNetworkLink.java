@@ -46,11 +46,14 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 	 */
 	@Override
 	protected void execute(final TraceMetadata event) {
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TNetworkLink.executionCounter); //TODO testing logger
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.before(this, this.getId() + TNetworkLink.executionCounter); //TODO testing logger
 		// add your transformation here
 		System.out.println("TNetworkLink.execute()");
 		
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TNetworkLink.executionCounter); //TODO testing logger
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.after(this, this.getId() + TNetworkLink.executionCounter); //TODO testing logger
+		TNetworkLink.executionCounter++;
 	}
 
 }

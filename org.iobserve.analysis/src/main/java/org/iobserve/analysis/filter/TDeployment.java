@@ -73,12 +73,20 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.before(this, this.getId() + TDeployment.executionCounter); //TODO testing logger
+		
 		if (event instanceof ServletDeployedEvent) {
 			this.process((ServletDeployedEvent)event);
 		
 		} else if (event instanceof EJBDeployedEvent) {
 			this.process((EJBDeployedEvent)event);
 		}
+		
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.after(this, this.getId() + TDeployment.executionCounter); //TODO testing logger
+		
+		TDeployment.executionCounter++;
 	}
 	
 	/**
@@ -95,7 +103,7 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 		final Optional<Correspondent> optionCorrespondent = this.correspondence.getCorrespondent(context);
 		if (optionCorrespondent.isPresent()) {
 			final Correspondent correspondent = optionCorrespondent.get();
-			this.updateModel(correspondent);
+			this.updateModel(serivce, correspondent, event.getLoggingTimestamp());
 		}
 	}
 	
@@ -112,7 +120,7 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 		final Optional<Correspondent> optionCorrespondent = this.correspondence.getCorrespondent(context);
 		if (optionCorrespondent.isPresent()) {
 			final Correspondent correspondent = optionCorrespondent.get();
-			this.updateModel(correspondent);
+			this.updateModel("missing-server-name", correspondent, event.getLoggingTimestamp());
 		}
 	}
 	
@@ -120,16 +128,15 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 * Update the system- and allocation-model by the given correspondent.
 	 * @param correspondent correspondent
 	 */
-	private void updateModel(final Correspondent correspondent) {
+	private void updateModel(final String serverName, final Correspondent correspondent, final long timeStamp) {
 		// get the model entity name
 		final String entityName = correspondent.getPcmEntityName();
 		
 		// build the assembly context name
-		final String resourceCtxName = "server-name-missinge-here";
-		final String asmContextName = entityName + "_" + resourceCtxName;
+		final String asmContextName = entityName + "_" + serverName;
 		
 		// get the model parts by name
-		final ResourceContainer resourceContainer = this.resourceEnvModelProvider.getResourceContainerByName(resourceCtxName);
+		final ResourceContainer resourceContainer = this.resourceEnvModelProvider.getResourceContainerByName(serverName);
 		
 		// this can not happen since TAllocation should have created the resource container already.
 		if (resourceContainer == null) {
@@ -159,5 +166,9 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 			.resetModel()
 			.addAllocationContext(resourceContainer, assemblyContext)
 			.build();
+		
+		// TODO debugging
+		System.out.printf("TDeployment for resContainer %s and asmContext %s at %d",
+				serverName, asmContextName, Long.valueOf(timeStamp));
 	}
 }

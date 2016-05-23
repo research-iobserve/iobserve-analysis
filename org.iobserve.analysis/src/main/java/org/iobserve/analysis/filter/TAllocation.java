@@ -71,6 +71,10 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.before(this, this.getId() + TAllocation.executionCounter); //TODO testing logger
+		
+		
 		if (event instanceof ServletDeployedEvent) {
 			this.process((ServletDeployedEvent)event);
 		
@@ -80,6 +84,11 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 		
 		// forward the event
 		this.deploymentOutputPort.send(event);
+		
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.after(this, this.getId() + TAllocation.executionCounter); //TODO testing logger
+		
+		TAllocation.executionCounter++;
 	}
 	
 	/**
@@ -90,7 +99,7 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 	private void process(final ServletDeployedEvent event) {
 		final String context = event.getContext();
 		final String serivce = event.getSerivce();
-		this.updateModel(serivce);
+		this.updateModel(serivce, event.getLoggingTimestamp());
 	}
 	
 	/**
@@ -101,14 +110,14 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 	private void process(final EJBDeployedEvent event) {
 		final String context = event.getContext();
 		final String deploymentId = event.getDeploymentId();
-		this.updateModel(context);
+		this.updateModel(context, event.getLoggingTimestamp());
 	}
 	
 	/**
 	 * Update the allocation model with the given server-name if necessary.
 	 * @param serverName server name
 	 */
-	private void updateModel(final String serverName) {
+	private void updateModel(final String serverName, final long timeStamp) {
 		final boolean absent = this.resourceEnvModelProvider
 				.getResourceContainerByName(serverName) == null;
 		if (absent) {
@@ -117,6 +126,10 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 					TAllocation.this.resourceEnvModelProvider);
 			builder.loadModel();
 			final ResourceContainer resContainer = builder.createResourceContainer(serverName);
+			//TODO debugging
+			System.out.printf("TAllocation resContainer=% at time stamp %d",
+					resContainer.getEntityName(), Long.valueOf(timeStamp));
+			
 			builder.build();
 		}
 	}
