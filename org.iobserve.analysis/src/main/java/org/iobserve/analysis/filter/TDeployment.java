@@ -15,10 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
@@ -26,6 +22,7 @@ import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
@@ -48,7 +45,6 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 
 	private static long executionCounter = 0;
 	private final ICorrespondence correspondence;
-	private List<DeploymentRecordProcessor> deploymentProcessors;
 	private AllocationModelProvider allocationModelProvider;
 	private SystemModelProvider systemModelProvider;
 	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
@@ -67,12 +63,6 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 		this.allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
 		this.systemModelProvider = modelProviderPlatform.getSystemModelProvider();
 		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
-		
-		
-		// add processors
-		this.deploymentProcessors = new ArrayList<>();
-		this.deploymentProcessors.add(new EJBDeployedEventProcessor());
-		this.deploymentProcessors.add(new ServletDeployedEventProcessor());
 	}
 
 	/**
@@ -83,138 +73,91 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
-		// dispatch event to right processor
-		boolean stopDispatching = false;
-		final Iterator<DeploymentRecordProcessor> iterator = this.deploymentProcessors.iterator();
-		do {
-			stopDispatching = iterator.next().processEvent(event);
-		} while (!stopDispatching && iterator.hasNext());
+		if (event instanceof ServletDeployedEvent) {
+			this.process((ServletDeployedEvent)event);
+		
+		} else if (event instanceof EJBDeployedEvent) {
+			this.process((EJBDeployedEvent)event);
+		}
 	}
-
-	// *****************************************************************
-	// PROCESS EVENT MORE SPECIFIC
-	// *****************************************************************
 	
 	/**
-	 * Abstract type of a processor for {@link IDeploymentRecord}.
-	 * 
-	 * @author Robert Heinrich
-	 * @author Alessandro Giusa
-	 *
+	 * Process the given {@link ServletDeployedEvent} event.
+	 * @param event event to process
 	 */
-	private abstract class DeploymentRecordProcessor {
-		public abstract boolean processEvent(final IDeploymentRecord record);
-	}
-
-	/**
-	 * Processor for processing {@link ServletDeployedEvent}
-	 * @author Robert Heinrich
-	 * @author Alessandro Giusa
-	 *
-	 */
-	private class ServletDeployedEventProcessor extends DeploymentRecordProcessor {
-
-		@Override
-		public boolean processEvent(final IDeploymentRecord record) {
-			if (record.getClass() != ServletDeployedEvent.class) {
-				return false;
-			}
-			
-			final ServletDeployedEvent event = (ServletDeployedEvent) record;
-			final String context = event.getContext();
-			final String deploymentId = event.getDeploymentId();
-			final String serivce = event.getSerivce();
-			final long loggingTimestamp = event.getLoggingTimestamp();
-			final long timestamp = event.getTimestamp();
-			
-			final Optional<Correspondent> optionCorrespondent = TDeployment.this.correspondence.getCorrespondent(context);
-			if (optionCorrespondent.isPresent()) {
-				// get the model entity name
-				final Correspondent correspondent = optionCorrespondent.get();
-				final String entityName = correspondent.getPcmEntityName();
-				
-				// build the assembly context name
-				final String resourceCtxName = "server-name-missinge-here";
-				final String asmContextName = entityName + "_" + resourceCtxName;
-				
-				// get the model parts by name
-				final ResourceContainer resourceContainer = TDeployment.this.resourceEnvModelProvider.getResourceContainerByName(resourceCtxName);
-				final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName(asmContextName);
-				
-				if (resourceContainer == null || assemblyContext == null) {
-					System.out.printf("ResourceContainer=%s or AssemblyContext=%s is null?!",
-							String.valueOf(resourceContainer), String.valueOf(assemblyContext));
-				} else {
-					// build new model
-					final AllocationModelBuilder builder = new AllocationModelBuilder(TDeployment.this.allocationModelProvider);
-					builder
-						.loadModel()
-						.resetModel()
-						.addAllocationContext(resourceContainer, assemblyContext)
-						.build();
-				}
-			}
-
-			return true;
+	private void process(final ServletDeployedEvent event) {
+		final String context = event.getContext();
+		final String deploymentId = event.getDeploymentId();
+		final String serivce = event.getSerivce();
+		final long loggingTimestamp = event.getLoggingTimestamp();
+		final long timestamp = event.getTimestamp();
+		
+		final Optional<Correspondent> optionCorrespondent = this.correspondence.getCorrespondent(context);
+		if (optionCorrespondent.isPresent()) {
+			final Correspondent correspondent = optionCorrespondent.get();
+			this.updateModel(correspondent);
 		}
-
 	}
-
+	
 	/**
-	 * Processor for processing {@link EJBDeployedEvent}
-	 * @author Robert Heinrich
-	 * @author Alessandro Giusa
-	 *
+	 * Process the given {@link EJBDeployedEvent} event.
+	 * @param event event to process
 	 */
-	private class EJBDeployedEventProcessor extends DeploymentRecordProcessor {
-
-		@Override
-		public boolean processEvent(final IDeploymentRecord record) {
-			if (record.getClass() != EJBDeployedEvent.class) {
-				return false;
-			}
-			
-			final EJBDeployedEvent event = (EJBDeployedEvent) record;
-			
-			final String context = event.getContext();
-			final String deploymentId = event.getDeploymentId();
-			final long loggingTimestamp = event.getLoggingTimestamp();
-			final long timestamp = event.getTimestamp();
-			
-			final Optional<Correspondent> optionCorrespondent = TDeployment.this.correspondence.getCorrespondent(context);
-			if (optionCorrespondent.isPresent()) {
-				// get the model entity name
-				final Correspondent correspondent = optionCorrespondent.get();
-				final String entityName = correspondent.getPcmEntityName();
-				
-				// build the assembly context name
-				final String resourceCtxName = "server-name-missinge-here";
-				final String asmContextName = entityName + "_" + resourceCtxName;
-				
-				// get the model parts by name
-				final ResourceContainer resourceContainer = TDeployment.this.resourceEnvModelProvider.getResourceContainerByName(resourceCtxName);
-				final AssemblyContext assemblyContext = TDeployment.this.systemModelProvider.getAssemblyContextByName(asmContextName);
-				
-				if (resourceContainer == null || assemblyContext == null) {
-					System.out.printf("ResourceContainer=%s or AssemblyContext=%s is null?!",
-							String.valueOf(resourceContainer), String.valueOf(assemblyContext));
-				} else {
-					// build new model
-					final AllocationModelBuilder builder = new AllocationModelBuilder(TDeployment.this.allocationModelProvider);
-					builder
-						.loadModel()
-						.resetModel()
-						.addAllocationContext(resourceContainer, assemblyContext)
-						.build();
-				}
-			}
-
-			System.out
-				.println("DeploymentEventTransformation.EJBDeployedEventProcessor.processEvent()");
-			return true;
+	private void process(final EJBDeployedEvent event) {
+		final String context = event.getContext();
+		final String deploymentId = event.getDeploymentId();
+		final long loggingTimestamp = event.getLoggingTimestamp();
+		final long timestamp = event.getTimestamp();
+		
+		final Optional<Correspondent> optionCorrespondent = this.correspondence.getCorrespondent(context);
+		if (optionCorrespondent.isPresent()) {
+			final Correspondent correspondent = optionCorrespondent.get();
+			this.updateModel(correspondent);
 		}
-
 	}
-
-
+	
+	/**
+	 * Update the system- and allocation-model by the given correspondent.
+	 * @param correspondent correspondent
+	 */
+	private void updateModel(final Correspondent correspondent) {
+		// get the model entity name
+		final String entityName = correspondent.getPcmEntityName();
+		
+		// build the assembly context name
+		final String resourceCtxName = "server-name-missinge-here";
+		final String asmContextName = entityName + "_" + resourceCtxName;
+		
+		// get the model parts by name
+		final ResourceContainer resourceContainer = this.resourceEnvModelProvider.getResourceContainerByName(resourceCtxName);
+		
+		// this can not happen since TAllocation should have created the resource container already.
+		if (resourceContainer == null) {
+			System.out.println("ResourceContainer is null in TDeployment?!");
+			return;
+		}
+		
+		
+		// get the assembly context. Create it if necessary
+		AssemblyContext assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName);
+		
+		// in case the assembly context is null, TDeployment should create it
+		if (assemblyContext == null) {
+			// create assembly context
+			final SystemModelBuilder systemBuilder = new SystemModelBuilder(this.systemModelProvider);
+			systemBuilder
+				.loadModel()
+				.createAssemblyContextsIfAbsent(asmContextName)
+				.build();
+			assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName);
+		}
+		
+		// update the allocation model
+		final AllocationModelBuilder builder = new AllocationModelBuilder(this.allocationModelProvider);
+		builder
+			.loadModel()
+			.resetModel()
+			.addAllocationContext(resourceContainer, assemblyContext)
+			.build();
+	}
 }
