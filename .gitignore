@@ -20,5 +20,5 @@ mvn-repo/**
 settings.xml
 **/.project
 **/.classpath
-
+**/.settings/**
 
