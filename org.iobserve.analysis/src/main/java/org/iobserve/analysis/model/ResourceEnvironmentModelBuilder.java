@@ -31,17 +31,6 @@ public class ResourceEnvironmentModelBuilder extends ModelBuilder<ResourceEnviro
 		return this;
 	}
 	
-	public ResourceEnvironmentModelBuilder createResourceContainerIfAbsent(final String name) {
-		final boolean absent = this.modelProvider.getResourceContainerByName(name) == null;
-		if (absent) {
-			final ResourceEnvironment model = this.modelProvider.getModel();
-			final ResourceContainer resContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-			resContainer.setEntityName(name);
-			model.getResourceContainer_ResourceEnvironment().add(resContainer);
-		}
-		return this;
-	}
-	
 	/**
 	 * Create a {@link ResourceContainer} with the given name, without checking if it already
 	 * exists. Use {@link #createResourceContainerIfAbsent(String)} instead if you wont create

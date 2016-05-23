@@ -108,12 +108,16 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 	 * @param serverName server name
 	 */
 	private void updateModel(final String serverName) {
-		// create resource container
-		final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
-				TAllocation.this.resourceEnvModelProvider);
-		builder
-			.loadModel()
-			.createResourceContainerIfAbsent(serverName)
-			.build();
+		final boolean absent = this.resourceEnvModelProvider
+				.getResourceContainerByName(serverName) == null;
+		if (absent) {
+			// create resource container
+			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
+					TAllocation.this.resourceEnvModelProvider);
+			builder
+				.loadModel()
+				.createResourceContainer(serverName)
+				.build();
+		}
 	}
 }
