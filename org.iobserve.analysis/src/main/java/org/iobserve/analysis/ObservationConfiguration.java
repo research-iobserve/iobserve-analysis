@@ -31,12 +31,8 @@ import org.iobserve.analysis.filter.UndeploymentEventTransformation;
 import org.iobserve.analysis.modelprovider.PcmModelSaver;
 import org.iobserve.analysis.modelprovider.UsageModelProvider;
 
-import teetime.framework.AnalysisConfiguration;
-import teetime.framework.Stage;
-import teetime.framework.pipe.IPipeFactory;
-import teetime.framework.pipe.PipeFactoryRegistry;
-import teetime.framework.pipe.PipeFactoryRegistry.PipeOrdering;
-import teetime.framework.pipe.PipeFactoryRegistry.ThreadCommunication;
+import teetime.framework.Configuration;
+import teetime.framework.AbstractStage;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
 import teetime.stage.io.filesystem.Dir2RecordsFilter;
@@ -45,10 +41,8 @@ import teetime.stage.io.filesystem.Dir2RecordsFilter;
  * @author Reiner Jung
  *
  */
-public class ObservationConfiguration extends AnalysisConfiguration {
+public class ObservationConfiguration extends Configuration {
 
-	/** registry for the pipe factory used by Teetime. */
-	private final PipeFactoryRegistry pipeFactoryRegistry = PipeFactoryRegistry.INSTANCE;
 
 	/** directory containing Kieker monitoring data. */
 	private final File directory;
@@ -70,10 +64,7 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 	 */
 	public ObservationConfiguration(final File directory) throws IOException, ClassNotFoundException {
 		this.directory = directory;
-		this.addThreadableStage(this.buildAnalysis());
-	}
-
-	private Stage buildAnalysis() {
+	
 		final ICorrespondence correspondenceModel = this.getCorrespondenceModel();
 
 		// create filter
@@ -97,21 +88,15 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(
 				correspondenceModel, usageModelProvider, this.getPcmModelSaver());
 
-		// connecting filters
-		final IPipeFactory factory = this.pipeFactoryRegistry.getPipeFactory(
-				ThreadCommunication.INTRA, PipeOrdering.ARBITRARY, false);
+		/** connecting filters */
+		connectPorts(files.getOutputPort(), reader.getInputPort());
+		connectPorts(reader.getOutputPort(), this.recordSwitch.getInputPort());
+		connectPorts(this.recordSwitch.getDeploymentOutputPort(), deployment.getInputPort());
+		connectPorts(this.recordSwitch.getUndeploymentOutputPort(), undeployment.getInputPort());
+		connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
 
-		factory.create(files.getOutputPort(), reader.getInputPort());
-		factory.create(reader.getOutputPort(), this.recordSwitch.getInputPort());
-		factory.create(this.recordSwitch.getDeploymentOutputPort(), deployment.getInputPort());
-		factory.create(this.recordSwitch.getUndeploymentOutputPort(), undeployment.getInputPort());
-		factory.create(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
-
-		factory.create(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
-		factory.create(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
-
-		return files;
-
+		connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
+		connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
 	}
 
 	/**

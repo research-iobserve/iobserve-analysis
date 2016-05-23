@@ -13,16 +13,11 @@
 	</parent>
 
 	<properties>
-		<teetime-repo.url>https://oss.sonatype.org/content/groups/public/</teetime-repo.url>
 		<pcm-repo.url>https://sdqweb.ipd.kit.edu/eclipse/palladio/core/pcm/releases/4.0.0/</pcm-repo.url>
 	</properties>
 
 	<repositories>
 		<!-- repo for teetime -->
-		<repository>
-			<id>sonatype.oss.snapshots</id>
-			<url>${teetime-repo.url}</url>
-		</repository>
 		<repository>
 			<id>pcm.repo</id>
 			<url>${pcm-repo.url}</url>
@@ -67,12 +62,12 @@
 		<dependency>
 			<groupId>net.sourceforge.teetime</groupId>
 			<artifactId>teetime</artifactId>
-			<version>1.1.2</version>
+			<version>2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.teetime-stages</groupId>
 			<artifactId>teetime-stages</artifactId>
-			<version>1.1.2</version>
+			<version>2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.iobserve</groupId>
@@ -140,7 +135,7 @@
 			<artifactId>org.eclipse.emf.cdo</artifactId>
 			<version>${org.eclipse.emf.cdo}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>extra</groupId>
 			<artifactId>org.eclipse.emf.cdo.common</artifactId>

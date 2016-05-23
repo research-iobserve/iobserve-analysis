@@ -25,8 +25,8 @@ import java.io.UnsupportedEncodingException;
 
 import org.iobserve.analysis.utils.Terminal;
 
-import teetime.framework.Analysis;
-import teetime.framework.AnalysisConfiguration;
+import teetime.framework.Execution;
+import teetime.framework.Configuration;
 
 /**
  * Main calss for starting the iObserve application
@@ -47,8 +47,7 @@ public class AnalysisMain {
 	private AnalysisMainParameterBean inputParameter;
 
 	/** configuration for the analysis. */
-	private AnalysisConfiguration configuration;
-
+	private Configuration configuration;
 	/**
 	 * Default constructor.
 	 */
@@ -140,7 +139,7 @@ public class AnalysisMain {
 
 	private void run() {
 		Runtime.getRuntime().gc(); // initial gc call
-		final Analysis<AnalysisConfiguration> analysis = new Analysis<AnalysisConfiguration>(this.configuration);
+		final Execution<Configuration> analysis = new Execution<Configuration>(this.configuration);
 		analysis.executeBlocking();
 		((ObservationConfiguration) this.configuration).getRecordSwitch().outputStatistics();
 	}
