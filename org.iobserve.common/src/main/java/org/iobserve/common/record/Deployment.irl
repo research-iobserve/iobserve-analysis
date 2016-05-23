@@ -50,6 +50,7 @@ entity ServletUndeployedEvent extends ServletDeploymentEvent : IUndeploymentReco
  * Event records for PaaS servlet/WAR deployment/undeployment.	 
  */	 
 abstract entity EJBDeploymentEvent extends AbstractEvent { 
+	string serivce
 	string context
 	string deploymentId  
 }

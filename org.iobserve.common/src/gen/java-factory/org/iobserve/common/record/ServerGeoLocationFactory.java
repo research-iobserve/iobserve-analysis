@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2016 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
 package org.iobserve.common.record;
 
 import java.nio.ByteBuffer;
@@ -24,21 +23,21 @@ import kieker.common.util.registry.IRegistry;
 /**
  * @author Generic Kieker
  * 
- * @since 1.10
+ * @since 1.13
  */
-public final class ServletUndeployedEventFactory implements IRecordFactory<ServletUndeployedEvent> {
+public final class ServerGeoLocationFactory implements IRecordFactory<ServerGeoLocation> {
 	
 	@Override
-	public ServletUndeployedEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new ServletUndeployedEvent(buffer, stringRegistry);
+	public ServerGeoLocation create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
+		return new ServerGeoLocation(buffer, stringRegistry);
 	}
 	
 	@Override
-	public ServletUndeployedEvent create(final Object[] values) {
-		return new ServletUndeployedEvent(values);
+	public ServerGeoLocation create(final Object[] values) {
+		return new ServerGeoLocation(values);
 	}
 	
 	public int getRecordSizeInBytes() {
-		return ServletUndeployedEvent.SIZE;
+		return ServerGeoLocation.SIZE;
 	}
 }

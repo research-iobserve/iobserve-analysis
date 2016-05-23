@@ -12,6 +12,8 @@ sourceSets {
     irl {
     	java {
     		srcDir 'src/main/irl'
+    		srcDir 'src/gen/java'
+    		srcDir 'src/gen/java-factory'
     	}
     }
 }

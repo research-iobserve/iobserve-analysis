@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2016 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
 package org.iobserve.common.record;
 
 import kieker.common.record.IMonitoringRecord;
 
 /**
  * @author Generic Kieker
- *
- * @since 1.10
+ * 
+ * @since 1.13
  */
 public interface IDeallocationRecord extends IMonitoringRecord {
 }
