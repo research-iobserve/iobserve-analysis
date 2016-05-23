@@ -24,7 +24,6 @@ import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
@@ -139,13 +138,6 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 				.createResourceContainerIfAbsent(serivce)
 				.build();
 			
-			// create assembly context
-			final SystemModelBuilder systemBuilder = new SystemModelBuilder(TAllocation.this.systemModelProvider);
-			systemBuilder
-				.loadModel()
-				.createAssemblyContextsIfAbsent(context)
-				.build();
-			
 			return true;
 		}
 
@@ -177,16 +169,6 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 				.loadModel()
 				.createResourceContainerIfAbsent(context)
 				.build();
-			
-			// create assembly context
-			final SystemModelBuilder systemBuilder = new SystemModelBuilder(TAllocation.this.systemModelProvider);
-			systemBuilder
-				.loadModel()
-				.createAssemblyContextsIfAbsent(deploymentId)
-				.build();
-
-			System.out
-				.println("DeploymentEventTransformation.EJBDeployedEventProcessor.processEvent()");
 			return true;
 		}
 
