@@ -14,4 +14,5 @@ main.log
 settings.xml
 mvn-repo/
 **/.settings/**
-
+*.project
+*.classpath

@@ -95,8 +95,6 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 						&& beforeOperationEvent.getOperationSignature().equals(afterOperationEvent.getOperationSignature())) {
 					
 					this.outputPort.send(new EntryCallEvent(
-							TEntryCall./* added by Alessandro Giusa, see EntryCallEvent class for more information*/
-							executionCounter, 
 							beforeOperationEvent.getTimestamp(),
 							afterOperationEvent.getTimestamp(),
 							beforeOperationEvent.getOperationSignature(),
