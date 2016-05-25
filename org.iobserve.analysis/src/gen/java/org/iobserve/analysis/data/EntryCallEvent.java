@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2016 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
 package org.iobserve.analysis.data;
 
 import java.nio.BufferOverflowException;
@@ -40,7 +39,7 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 			 + TYPE_SIZE_STRING // EntryCallEvent.sessionId
 			 + TYPE_SIZE_STRING // EntryCallEvent.hostname
 	;
-	private static final long serialVersionUID = -4397283558299092423L;
+	private static final long serialVersionUID = -9019303768669463280L;
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // EntryCallEvent.entryTime
@@ -53,10 +52,6 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	
 	/* user-defined constants */
 	/* default constants */
-	public static final String OPERATION_SIGNATURE = "";
-	public static final String CLASS_SIGNATURE = "";
-	public static final String SESSION_ID = "";
-	public static final String HOSTNAME = "";
 	/* property declarations */
 	private final long entryTime;
 	private final long exitTime;
@@ -162,6 +157,17 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	 * {@inheritDoc}
 	 */
 	@Override
+	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
+		stringRegistry.get(this.getOperationSignature());
+		stringRegistry.get(this.getClassSignature());
+		stringRegistry.get(this.getSessionId());
+		stringRegistry.get(this.getHostname());
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
 	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
 		buffer.putLong(this.getEntryTime());
 		buffer.putLong(this.getExitTime());
@@ -206,6 +212,26 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	@Deprecated
 	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (obj == null) return false;
+		if (obj == this) return true;
+		if (obj.getClass() != this.getClass()) return false;
+		
+		final EntryCallEvent castedRecord = (EntryCallEvent) obj;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
+		if (this.getEntryTime() != castedRecord.getEntryTime()) return false;
+		if (this.getExitTime() != castedRecord.getExitTime()) return false;
+		if (!this.getOperationSignature().equals(castedRecord.getOperationSignature())) return false;
+		if (!this.getClassSignature().equals(castedRecord.getClassSignature())) return false;
+		if (!this.getSessionId().equals(castedRecord.getSessionId())) return false;
+		if (!this.getHostname().equals(castedRecord.getHostname())) return false;
+		return true;
 	}
 
 	public final long getEntryTime() {

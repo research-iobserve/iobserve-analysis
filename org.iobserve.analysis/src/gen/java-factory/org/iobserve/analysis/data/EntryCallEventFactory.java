@@ -13,14 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.common.record;
+package org.iobserve.analysis.data;
 
-import kieker.common.record.IMonitoringRecord;
+import java.nio.ByteBuffer;
+
+import kieker.common.record.factory.IRecordFactory;
+import kieker.common.util.registry.IRegistry;
 
 /**
- * @author Generic Kieker
+ * @author Reiner Jung
  * 
- * @since 1.13
+ * @since 1.0
  */
-public interface IDeploymentRecord extends IMonitoringRecord {
+public final class EntryCallEventFactory implements IRecordFactory<EntryCallEvent> {
+	
+	@Override
+	public EntryCallEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
+		return new EntryCallEvent(buffer, stringRegistry);
+	}
+	
+	@Override
+	public EntryCallEvent create(final Object[] values) {
+		return new EntryCallEvent(values);
+	}
+	
+	public int getRecordSizeInBytes() {
+		return EntryCallEvent.SIZE;
+	}
 }

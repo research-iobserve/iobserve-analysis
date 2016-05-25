@@ -15,12 +15,29 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import kieker.common.record.IMonitoringRecord;
+import java.nio.ByteBuffer;
+
+import kieker.common.record.factory.IRecordFactory;
+import kieker.common.util.registry.IRegistry;
 
 /**
  * @author Generic Kieker
  * 
  * @since 1.13
  */
-public interface IDeploymentRecord extends IMonitoringRecord {
+public final class ServerGeoLocationFactory implements IRecordFactory<ServerGeoLocation> {
+	
+	@Override
+	public ServerGeoLocation create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
+		return new ServerGeoLocation(buffer, stringRegistry);
+	}
+	
+	@Override
+	public ServerGeoLocation create(final Object[] values) {
+		return new ServerGeoLocation(values);
+	}
+	
+	public int getRecordSizeInBytes() {
+		return ServerGeoLocation.SIZE;
+	}
 }

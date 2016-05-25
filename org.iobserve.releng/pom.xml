@@ -11,19 +11,26 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<tycho-version>0.23.1</tycho-version>
 	</properties>
-	
+
+	<repositories>
+		<repository>
+			<id>sonatype.oss.snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+		</repository>
+	</repositories>
+
 	<dependencies>
 		<dependency>
 			<groupId>net.kieker-monitoring</groupId>
 			<artifactId>kieker</artifactId>
-			<version>1.12</version>
+			<version>1.13-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 
 	<modules>
 		<module>../org.iobserve.common</module>
 		<module>../org.iobserve.monitoring</module>
-		<module>../org.iobserve.analysis</module>
+		<!-- <module>../org.iobserve.analysis</module> -->
 	</modules>
 
 	<build>

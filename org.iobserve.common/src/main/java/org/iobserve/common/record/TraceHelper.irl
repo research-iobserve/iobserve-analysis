@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project
+ * Copyright 2014 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.common.record;
+package org.iobserve.common.record
 
-import kieker.common.record.IMonitoringRecord;
+@author "Reiner Jung" @since "1.0"
+template ITraceHelper {
+	long traceId
+	string host
+	int port
+}
 
-/**
- * @author Generic Kieker
- * 
- * @since 1.13
- */
-public interface IDeploymentRecord extends IMonitoringRecord {
+@author "Reiner Jung" @since "1.0"
+entity ServletTraceHelper : ITraceHelper, IFlowRecord {
+	string requestURI
 }

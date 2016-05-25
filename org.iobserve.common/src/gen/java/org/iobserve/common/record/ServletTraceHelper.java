@@ -19,39 +19,60 @@ import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
+import kieker.common.record.AbstractMonitoringRecord;
+import kieker.common.record.IMonitoringRecord;
 import kieker.common.util.registry.IRegistry;
 import kieker.common.util.Version;
 
-import org.iobserve.common.record.ContainerEvent;
-import org.iobserve.common.record.IAllocationRecord;
+import org.iobserve.common.record.ITraceHelper;
+import kieker.common.record.flow.IFlowRecord;
 
 /**
- * @author Generic Kieker
+ * @author Reiner Jung
  * 
- * @since 1.13
+ * @since 1.0
  */
-public class ContainerAllocationEvent extends ContainerEvent implements IAllocationRecord {
+public class ServletTraceHelper extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ITraceHelper, IFlowRecord {
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_STRING // ContainerEvent.url
+	public static final int SIZE = TYPE_SIZE_LONG // ITraceHelper.traceId
+			 + TYPE_SIZE_STRING // ITraceHelper.host
+			 + TYPE_SIZE_INT // ITraceHelper.port
+			 + TYPE_SIZE_STRING // ServletTraceHelper.requestURI
 	;
-	private static final long serialVersionUID = 5666865394947027540L;
+	private static final long serialVersionUID = 2363353535794190244L;
 	
 	public static final Class<?>[] TYPES = {
-		String.class, // ContainerEvent.url
+		long.class, // ITraceHelper.traceId
+		String.class, // ITraceHelper.host
+		int.class, // ITraceHelper.port
+		String.class, // ServletTraceHelper.requestURI
 	};
 	
 	/* user-defined constants */
 	/* default constants */
 	/* property declarations */
+	private final long traceId;
+	private final String host;
+	private final int port;
+	private final String requestURI;
 
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
-	 * @param url
-	 *            url
+	 * @param traceId
+	 *            traceId
+	 * @param host
+	 *            host
+	 * @param port
+	 *            port
+	 * @param requestURI
+	 *            requestURI
 	 */
-	public ContainerAllocationEvent(final String url) {
-		super(url);
+	public ServletTraceHelper(final long traceId, final String host, final int port, final String requestURI) {
+		this.traceId = traceId;
+		this.host = host == null?"":host;
+		this.port = port;
+		this.requestURI = requestURI == null?"":requestURI;
 	}
 
 	/**
@@ -61,8 +82,12 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	 * @param values
 	 *            The values for the record.
 	 */
-	public ContainerAllocationEvent(final Object[] values) { // NOPMD (direct store of values)
-		super(values, TYPES);
+	public ServletTraceHelper(final Object[] values) { // NOPMD (direct store of values)
+		AbstractMonitoringRecord.checkArray(values, TYPES);
+		this.traceId = (Long) values[0];
+		this.host = (String) values[1];
+		this.port = (Integer) values[2];
+		this.requestURI = (String) values[3];
 	}
 	
 	/**
@@ -73,8 +98,12 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 */
-	protected ContainerAllocationEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		super(values, valueTypes);
+	protected ServletTraceHelper(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
+		AbstractMonitoringRecord.checkArray(values, valueTypes);
+		this.traceId = (Long) values[0];
+		this.host = (String) values[1];
+		this.port = (Integer) values[2];
+		this.requestURI = (String) values[3];
 	}
 
 	/**
@@ -86,8 +115,11 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
 	 */
-	public ContainerAllocationEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
-		super(buffer, stringRegistry);
+	public ServletTraceHelper(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
+		this.traceId = buffer.getLong();
+		this.host = stringRegistry.get(buffer.getInt());
+		this.port = buffer.getInt();
+		this.requestURI = stringRegistry.get(buffer.getInt());
 	}
 
 	/**
@@ -96,7 +128,10 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	@Override
 	public Object[] toArray() {
 		return new Object[] {
-			this.getUrl()
+			this.getTraceId(),
+			this.getHost(),
+			this.getPort(),
+			this.getRequestURI()
 		};
 	}
 
@@ -105,7 +140,8 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	 */
 	@Override
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getUrl());
+		stringRegistry.get(this.getHost());
+		stringRegistry.get(this.getRequestURI());
 	}
 
 	/**
@@ -113,7 +149,10 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	 */
 	@Override
 	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
-		buffer.putInt(stringRegistry.get(this.getUrl()));
+		buffer.putLong(this.getTraceId());
+		buffer.putInt(stringRegistry.get(this.getHost()));
+		buffer.putInt(this.getPort());
+		buffer.putInt(stringRegistry.get(this.getRequestURI()));
 	}
 
 	/**
@@ -162,10 +201,29 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 		if (obj == this) return true;
 		if (obj.getClass() != this.getClass()) return false;
 		
-		final ContainerAllocationEvent castedRecord = (ContainerAllocationEvent) obj;
+		final ServletTraceHelper castedRecord = (ServletTraceHelper) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (!this.getUrl().equals(castedRecord.getUrl())) return false;
+		if (this.getTraceId() != castedRecord.getTraceId()) return false;
+		if (!this.getHost().equals(castedRecord.getHost())) return false;
+		if (this.getPort() != castedRecord.getPort()) return false;
+		if (!this.getRequestURI().equals(castedRecord.getRequestURI())) return false;
 		return true;
 	}
 
+	public final long getTraceId() {
+		return this.traceId;
+	}
+	
+	public final String getHost() {
+		return this.host;
+	}
+	
+	public final int getPort() {
+		return this.port;
+	}
+	
+	public final String getRequestURI() {
+		return this.requestURI;
+	}
+	
 }

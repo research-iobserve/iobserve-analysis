@@ -15,12 +15,29 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import kieker.common.record.IMonitoringRecord;
+import java.nio.ByteBuffer;
+
+import kieker.common.record.factory.IRecordFactory;
+import kieker.common.util.registry.IRegistry;
 
 /**
  * @author Generic Kieker
  * 
  * @since 1.13
  */
-public interface IDeploymentRecord extends IMonitoringRecord {
+public final class EJBDeployedEventFactory implements IRecordFactory<EJBDeployedEvent> {
+	
+	@Override
+	public EJBDeployedEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
+		return new EJBDeployedEvent(buffer, stringRegistry);
+	}
+	
+	@Override
+	public EJBDeployedEvent create(final Object[] values) {
+		return new EJBDeployedEvent(values);
+	}
+	
+	public int getRecordSizeInBytes() {
+		return EJBDeployedEvent.SIZE;
+	}
 }
