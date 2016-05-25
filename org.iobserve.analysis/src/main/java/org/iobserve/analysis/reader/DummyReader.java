@@ -51,21 +51,21 @@ public class DummyReader extends AbstractProducerStage<IMonitoringRecord> {
 	@Override
 	protected void execute() {
 		if (this.count < 1000) {
-			final EJBDeployedEvent deploymentEvent = new EJBDeployedEvent(0, "node-context", "http://localhost:4848/CoCoME");
+			final EJBDeployedEvent deploymentEvent = new EJBDeployedEvent(0, "service-name", "node-context", "http://localhost:4848/CoCoME");
 
 			this.outputPort.send(deploymentEvent);
 			for (int i = 0; i < 100; i++) {
 				final long timestamp = i + (this.count * 100);
-				final TraceMetadata traceMetadataRecord = new TraceMetadata(i, THREAD_ID, SESSION_ID, HOSTNAME, 0, 0);
-				final BeforeOperationEvent beforeRecord = new BeforeOperationEvent(timestamp, i, 0, OPERATION_SIGNATURE, CLASS_SIGNATURE);
-				final AfterOperationEvent afterRecord = new AfterOperationEvent(timestamp, i, 0, OPERATION_SIGNATURE, CLASS_SIGNATURE);
+				final TraceMetadata traceMetadataRecord = new TraceMetadata(i, DummyReader.THREAD_ID, DummyReader.SESSION_ID, DummyReader.HOSTNAME, 0, 0);
+				final BeforeOperationEvent beforeRecord = new BeforeOperationEvent(timestamp, i, 0, DummyReader.OPERATION_SIGNATURE, DummyReader.CLASS_SIGNATURE);
+				final AfterOperationEvent afterRecord = new AfterOperationEvent(timestamp, i, 0, DummyReader.OPERATION_SIGNATURE, DummyReader.CLASS_SIGNATURE);
 
 				this.outputPort.send(traceMetadataRecord);
 				this.outputPort.send(beforeRecord);
 				this.outputPort.send(afterRecord);
 			}
 
-			final EJBUndeployedEvent undeploymentEvent = new EJBUndeployedEvent(200, "node-context", "http://localhost:4848/CoCoME");
+			final EJBUndeployedEvent undeploymentEvent = new EJBUndeployedEvent(200, "service-name", "node-context", "http://localhost:4848/CoCoME");
 			this.outputPort.send(undeploymentEvent);
 			this.count++;
 		} else {

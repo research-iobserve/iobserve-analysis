@@ -18,18 +18,14 @@ package org.iobserve.analysis;
 import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.emf.common.util.URI;
-
-import org.iobserve.analysis.correspondence.CorrespondeceModelFactory;
-import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.filter.DeploymentEventTransformation;
 import org.iobserve.analysis.filter.RecordSwitch;
+import org.iobserve.analysis.filter.TAllocation;
+import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
 import org.iobserve.analysis.filter.TEntryEventSequence;
-import org.iobserve.analysis.filter.UndeploymentEventTransformation;
-import org.iobserve.analysis.modelprovider.PcmModelSaver;
-import org.iobserve.analysis.modelprovider.UsageModelProvider;
+import org.iobserve.analysis.filter.TNetworkLink;
+import org.iobserve.analysis.filter.TUndeployment;
 
 import teetime.framework.Configuration;
 import teetime.framework.AbstractStage;
@@ -63,25 +59,22 @@ public class ObservationConfiguration extends Configuration {
 	 *             for all file reading errors
 	 */
 	public ObservationConfiguration(final File directory) throws IOException, ClassNotFoundException {
-		this.directory = directory;
-	
 		final ICorrespondence correspondenceModel = this.getCorrespondenceModel();
 
 		// create filter
-		final InitialElementProducer<File> files = new InitialElementProducer<File>(this.directory);
+		final InitialElementProducer<File> files = new InitialElementProducer<File>(directory);
 		final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
 
 		this.recordSwitch = new RecordSwitch();
 
-		final DeploymentEventTransformation deployment = new DeploymentEventTransformation(
-				correspondenceModel);
-		final UndeploymentEventTransformation undeployment = new UndeploymentEventTransformation(
-				correspondenceModel);
-
+		final TAllocation tAllocation = new TAllocation();
+		final TDeployment tDeployment = new TDeployment();
+		final TUndeployment tUndeployment = new TUndeployment();
 		final TEntryCall tEntryCall = new TEntryCall();
 		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
+<<<<<<< HEAD
 
-		// get the usage model provider and reset it
+		/** get the usage model provider and reset it */
 		final UsageModelProvider usageModelProvider = this.getUsageModelProvider();
 		usageModelProvider.resetUsageModel();
 
@@ -97,39 +90,31 @@ public class ObservationConfiguration extends Configuration {
 
 		connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
 		connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
-	}
+=======
+		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence();
+		final TNetworkLink tNetworkLink = new TNetworkLink();
 
-	/**
-	 * Get the correspondence model
-	 * @return instance of {@link ICorrespondence}
-	 */
-	private ICorrespondence getCorrespondenceModel() {
-		final String pathMappingFile = AnalysisMain.getInstance().getInputParameter().getPathProtocomMappingFile();
-		final ICorrespondence model = CorrespondeceModelFactory.INSTANCE
-				.createCorrespondenceModel(pathMappingFile,
-						CorrespondeceModelFactory.INSTANCE.DEFAULT_OPERATION_SIGNATURE_MAPPER_2);
-		return model;
-	}
+		// connecting filters
+		final IPipeFactory factory = this.pipeFactoryRegistry.getPipeFactory(
+				ThreadCommunication.INTRA, PipeOrdering.ARBITRARY, false);
 
-	/**
-	 * Get the Model provider for the usage model
-	 * @return instance of usage model provider
-	 */
-	private UsageModelProvider getUsageModelProvider() {
-		final URI repositoryModelURI = URI.createURI(AnalysisMain.getInstance().getInputParameter().getPathPcmRepositoryModel());
-		final URI inputUsageModelURI = URI.createURI(AnalysisMain.getInstance().getInputParameter().getPathPcmUsageModel());
-		final UsageModelProvider provider = new UsageModelProvider(inputUsageModelURI, repositoryModelURI);
+		factory.create(files.getOutputPort(), reader.getInputPort());
+		factory.create(reader.getOutputPort(), this.recordSwitch.getInputPort());
+		
+		// dispatch different monitoring data
+		factory.create(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
+		factory.create(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
+		factory.create(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
+		factory.create(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
-		return provider;
-	}
+		// 
+		factory.create(tAllocation.getDeploymentOutputPort(), tDeployment.getInputPort());
+		factory.create(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
+		factory.create(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
 
-	/**
-	 * get the helper class to save PCM models
-	 * @return instance of that class
-	 */
-	private PcmModelSaver getPcmModelSaver() {
-		final URI outputUsageModelURI = URI.createURI(AnalysisMain.getInstance().getInputParameter().getOutUpdatedUsageModel());
-		return new PcmModelSaver(outputUsageModelURI);
+		return files;
+
+>>>>>>> origin/master_gradle
 	}
 
 	public RecordSwitch getRecordSwitch() {

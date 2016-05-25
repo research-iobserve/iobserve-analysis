@@ -1,13 +1,13 @@
 package org.iobserve.analysis;
 
+import giusa.software.framework.table.Table;
+import giusa.software.framework.table.TableHeader;
+import giusa.software.tools.parsing.csv.CSVParser;
+
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-
-import org.gag.software.framework.table.Table;
-import org.gag.software.framework.table.TableHeader;
-import org.gag.software.tools.parsing.csv.CSVParser;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -67,6 +67,11 @@ public class SimpleTimeMemLogger {
 		this.logOutput = path;
 	}
 	
+	public void before(final AbstractConsumerStage<?> filter,
+			final String format, final Object...objects) {
+		this.before(filter, String.format(format, objects));
+	}
+	
 	public void before(final AbstractConsumerStage<?> filter, final String idFilterExecution) {
 		
 		// get current time
@@ -105,6 +110,11 @@ public class SimpleTimeMemLogger {
 		this.asynchFilterRowCache.put(idFilterExecution, Integer.valueOf(row));
 		
 		runtime.gc();
+	}
+	
+	public void after(final AbstractConsumerStage<?> filter,
+			final String format, final Object...objects) {
+		this.after(filter, String.format(format, objects));
 	}
 	
 	public void after(final AbstractConsumerStage<?> filter, final String idFilterExecution) {

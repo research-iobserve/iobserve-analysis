@@ -1,0 +1,46 @@
+ext {
+
+	toolsDir = "../tools/"
+	toolPcmLoader = "eclipse_lib_loader.jar"
+	toolPcmLoaderConfigFile = "config_eclipse_lib_loader.xml"
+	
+	pcm_working_dir = 'res/working_dir/pcm'
+	pcm_original_dir = 'res/original_dir/pcm'
+}
+
+sourceSets {
+    irl {
+    	java {
+    		srcDir 'src/main/irl'
+    		srcDir 'src/gen/java'
+    		srcDir 'src/gen/java-factory'
+    	}
+    }
+}
+
+task loadPcmLibraries(type : Exec) {
+	String command = "java -jar $toolsDir$toolPcmLoader --config=$toolsDir$toolPcmLoaderConfigFile"
+	println "running pcm-lib-loader -> $command"
+	
+	workingDir '.'
+	commandLine 'cmd', '/c', command
+	standardOutput = System.out
+} 
+
+task cleanPcmWorkingDir(type: Delete) {
+	delete pcm_working_dir
+}
+
+task copyPcmToWorkingDir(type: Copy) {
+	dependsOn << cleanPcmWorkingDir
+	from pcm_original_dir
+	into pcm_working_dir
+}
+
+task runAnalysis(type: JavaExec) {
+	dependsOn << compileJava
+	dependsOn << copyPcmToWorkingDir
+	classpath = sourceSets.main.runtimeClasspath
+	main = 'org.iobserve.analysis.AnalysisMain'
+	args '--dirMonitoring=res/original_dir/kieker', '--dirPcm=res/working_dir/pcm', '--dirLogging=output/logging'
+}

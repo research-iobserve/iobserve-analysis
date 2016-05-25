@@ -15,6 +15,9 @@
  ***************************************************************************/
 package org.iobserve.monitoring.probe.j2ee;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
@@ -87,12 +90,23 @@ public class DeploymentInterceptor {
 	private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
 	/** Kieker time source. */
 	private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
+	/** Present system host name. */
+	private String hostname;
 
 	/**
-	 * Deployment interceptor initialization.
+	 * Deployment interceptor initialization. 
 	 */
 	public DeploymentInterceptor() {
 		// nothing to be done here
+		try {
+			hostname = InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			try {
+				hostname = InetAddress.getLocalHost().getHostAddress();
+			} catch (UnknownHostException e1) {
+				hostname = "localhost";
+			}
+		}
 	}
 
 	/**
@@ -109,10 +123,10 @@ public class DeploymentInterceptor {
 		final Object result = context.proceed();
 		if (this.monitoringCtrl.isMonitoringEnabled()) {
 			final String signature = context.getTarget().getClass().getCanonicalName();
-
+				
 			// if (this.monitoringCtrl.isProbeActivated(signature)) {
 			this.monitoringCtrl.newMonitoringRecord(new EJBDeployedEvent(
-					this.timeSource.getTime(), signature, this.deploymentId));
+					this.timeSource.getTime(), this.hostname, signature, this.deploymentId));
 			// }
 		}
 		return result;
@@ -134,7 +148,7 @@ public class DeploymentInterceptor {
 			final String signature = context.getTarget().getClass().getCanonicalName();
 			// if (this.monitoringCtrl.isProbeActivated(signature)) {
 			this.monitoringCtrl.newMonitoringRecord(new EJBUndeployedEvent(
-					this.timeSource.getTime(), signature, this.deploymentId));
+					this.timeSource.getTime(), this.hostname, signature, this.deploymentId));
 			// }
 		}
 		return result;

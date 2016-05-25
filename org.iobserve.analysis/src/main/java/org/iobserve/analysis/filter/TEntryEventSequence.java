@@ -21,14 +21,23 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.iobserve.analysis.AnalysisMain;
+import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
-import org.iobserve.analysis.modelprovider.PcmModelSaver;
-import org.iobserve.analysis.modelprovider.UsageModelProvider;
+import org.iobserve.analysis.model.ModelProviderPlatform;
+import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.UsageModelProvider;
+import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
+import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
+import org.palladiosimulator.pcm.usagemodel.Start;
+import org.palladiosimulator.pcm.usagemodel.Stop;
+import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
 import teetime.framework.AbstractConsumerStage;
+
+import com.google.common.base.Optional;
 
 /**
  * Represents the TEntryEventSequence Transformation in the paper
@@ -46,29 +55,28 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 
 	private final ICorrespondence correspondenceModel;
 	private final UsageModelProvider usageModelProvider;
-	private final PcmModelSaver pcmModelSaver;
 
-	public TEntryEventSequence(final ICorrespondence correspondenceModel,
-			final UsageModelProvider modelProvider, final PcmModelSaver modelSaver) {
-		this.correspondenceModel = correspondenceModel;
-		this.usageModelProvider = modelProvider;
-		this.pcmModelSaver = modelSaver;
+	public TEntryEventSequence() {
+		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
+		this.correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
+		this.usageModelProvider = modelProviderPlatform.getUsageModelProvider();
 	}
 
 	@Override
 	protected void execute(final EntryCallSequenceModel model) {
 		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.before(this, this.getId() + TEntryEventSequence.executionCounter);
 		
 		// do main task
 		this.doUpdateUsageModel(model.getUserSessions());
 		
 		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.after(this, this.getId() + TEntryEventSequence.executionCounter);
 		
 		// count execution
-		executionCounter++;
-		
+		TEntryEventSequence.executionCounter++;
 	}
 	
 	/**
@@ -105,16 +113,22 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 	private void doUpdateUsageModel(final List<UserSession> sessions) {
 		final long averageInterarrivalTime = this.calculateInterarrivalTime(sessions);
 		
-		boolean addedAction = false;
-		
 		// iterate over user sessions
 		for(final UserSession userSession:sessions) {
 			
-			// create start node
-			this.usageModelProvider.createStart();
+			// create simple usage model builder
+			final UsageModelBuilder builder = new UsageModelBuilder(this.usageModelProvider);
 			
-			// create open-work-load for inter arrival time
-			this.usageModelProvider.createOpenWorkload(averageInterarrivalTime);
+			// like re-load
+			builder.loadModel().resetModel();
+			
+			final UsageScenario usageScenario = builder.createUsageScenario("MyTestScenario");
+			builder.createOpenWorkload(averageInterarrivalTime, usageScenario);
+			
+			final Start start = builder.createStart();
+			builder.addUserAction(usageScenario, start);
+			
+			AbstractUserAction lastAction = start;
 			
 			// iterate over all events to create the usage behavior
 			final Iterator<EntryCallEvent> iteratorEvents = userSession.iterator();
@@ -122,31 +136,24 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 				final EntryCallEvent event = iteratorEvents.next();
 				final String classSig = event.getClassSignature();
 				final String opSig = event.getOperationSignature();
-				final String operationSig = this.correspondenceModel
+				
+				final Optional<Correspondent> optionCorrespondent = this.correspondenceModel
 						.getCorrespondent(classSig, opSig);
-				if (operationSig != null) {
-					this.usageModelProvider.addAction(operationSig);
-					addedAction = true;
+				if (optionCorrespondent.isPresent()) {
+					final Correspondent correspondent = optionCorrespondent.get();
+					final EntryLevelSystemCall eSysCall = builder.createEntryLevelSystemCall(correspondent);
+					builder.connect(lastAction, eSysCall);
+					builder.addUserAction(usageScenario, eSysCall);
+					lastAction = eSysCall;
 				}
 			}
 			
-			// create stop node
-			this.usageModelProvider.createStop();
+			final Stop stop = builder.createStop();
+			builder.connect(lastAction, stop);
+			builder.addUserAction(usageScenario, stop);
 			
-			if(addedAction) {
-				// save the model to the output
-				this.pcmModelSaver.save(this.usageModelProvider.getModel());
-				this.counterSavedUsageModel++; //TODO just for now
-				addedAction = false;
-			}
-			
-			// reset the model
-			if(this.counterSavedUsageModel > 0) {
-				this.usageModelProvider.reloadModel(this.pcmModelSaver.getOutput());
-			} else {
-				this.usageModelProvider.reloadModel();
-			}
-			
+			builder.build();
+			this.counterSavedUsageModel++; //TODO just for now
 		}
 	}
 	

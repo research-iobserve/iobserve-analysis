@@ -33,13 +33,15 @@ import org.iobserve.common.record.IDeploymentRecord;
 public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentRecord {
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
+			 + TYPE_SIZE_STRING // EJBDeploymentEvent.serivce
 			 + TYPE_SIZE_STRING // EJBDeploymentEvent.context
 			 + TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
 	;
-	private static final long serialVersionUID = 194457784482189681L;
+	private static final long serialVersionUID = -2608702278942937636L;
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // AbstractEvent.timestamp
+		String.class, // EJBDeploymentEvent.serivce
 		String.class, // EJBDeploymentEvent.context
 		String.class, // EJBDeploymentEvent.deploymentId
 	};
@@ -53,13 +55,15 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	 * 
 	 * @param timestamp
 	 *            timestamp
+	 * @param serivce
+	 *            serivce
 	 * @param context
 	 *            context
 	 * @param deploymentId
 	 *            deploymentId
 	 */
-	public EJBDeployedEvent(final long timestamp, final String context, final String deploymentId) {
-		super(timestamp, context, deploymentId);
+	public EJBDeployedEvent(final long timestamp, final String serivce, final String context, final String deploymentId) {
+		super(timestamp, serivce, context, deploymentId);
 	}
 
 	/**
@@ -105,6 +109,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTimestamp(),
+			this.getSerivce(),
 			this.getContext(),
 			this.getDeploymentId()
 		};
@@ -115,6 +120,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	 */
 	@Override
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
+		stringRegistry.get(this.getSerivce());
 		stringRegistry.get(this.getContext());
 		stringRegistry.get(this.getDeploymentId());
 	}
@@ -125,6 +131,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	@Override
 	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
 		buffer.putLong(this.getTimestamp());
+		buffer.putInt(stringRegistry.get(this.getSerivce()));
 		buffer.putInt(stringRegistry.get(this.getContext()));
 		buffer.putInt(stringRegistry.get(this.getDeploymentId()));
 	}
@@ -178,6 +185,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		final EJBDeployedEvent castedRecord = (EJBDeployedEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
+		if (!this.getSerivce().equals(castedRecord.getSerivce())) return false;
 		if (!this.getContext().equals(castedRecord.getContext())) return false;
 		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		return true;

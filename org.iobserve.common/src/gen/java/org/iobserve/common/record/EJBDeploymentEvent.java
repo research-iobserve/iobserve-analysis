@@ -29,12 +29,13 @@ import kieker.common.record.flow.AbstractEvent;
  * @since 1.13
  */
 public abstract class EJBDeploymentEvent extends AbstractEvent  {
-		private static final long serialVersionUID = 1810178583706677505L;
+	private static final long serialVersionUID = 5051017441001857971L;
 	
 	
 	/* user-defined constants */
 	/* default constants */
 	/* property declarations */
+	private final String serivce;
 	private final String context;
 	private final String deploymentId;
 
@@ -43,13 +44,16 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	 * 
 	 * @param timestamp
 	 *            timestamp
+	 * @param serivce
+	 *            serivce
 	 * @param context
 	 *            context
 	 * @param deploymentId
 	 *            deploymentId
 	 */
-	public EJBDeploymentEvent(final long timestamp, final String context, final String deploymentId) {
+	public EJBDeploymentEvent(final long timestamp, final String serivce, final String context, final String deploymentId) {
 		super(timestamp);
+		this.serivce = serivce == null?"":serivce;
 		this.context = context == null?"":context;
 		this.deploymentId = deploymentId == null?"":deploymentId;
 	}
@@ -65,8 +69,9 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	 */
 	protected EJBDeploymentEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
-		this.context = (String) values[1];
-		this.deploymentId = (String) values[2];
+		this.serivce = (String) values[1];
+		this.context = (String) values[2];
+		this.deploymentId = (String) values[3];
 	}
 
 	/**
@@ -80,6 +85,7 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	 */
 	public EJBDeploymentEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		super(buffer, stringRegistry);
+		this.serivce = stringRegistry.get(buffer.getInt());
 		this.context = stringRegistry.get(buffer.getInt());
 		this.deploymentId = stringRegistry.get(buffer.getInt());
 	}
@@ -118,11 +124,16 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 		final EJBDeploymentEvent castedRecord = (EJBDeploymentEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
+		if (!this.getSerivce().equals(castedRecord.getSerivce())) return false;
 		if (!this.getContext().equals(castedRecord.getContext())) return false;
 		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		return true;
 	}
 
+	public final String getSerivce() {
+		return this.serivce;
+	}
+	
 	public final String getContext() {
 		return this.context;
 	}

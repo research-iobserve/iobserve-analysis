@@ -3,69 +3,46 @@ package org.iobserve.analysis.correspondence;
 /**
  * Object to encapsulate some data for the correspondence of PCMElement and code artifacts
  *
- * @author Robert Heinrich, Alessandro Giusa
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
  * @version 1.0
  */
-final class Correspondent {
+public final class Correspondent {
 
-	private String pcmEntityName;
-	private String pcmEntityId;
-	private String pcmOperationName;
-	private String pcmOperationId;
+	private final String pcmEntityName;
+	private final String pcmEntityId;
+	private final String pcmOperationName;
+	private final String pcmOperationId;
+
+	/**
+	 * Package protected constructor. Correspondent object should be created by the 
+	 * {@link CorrespondentFactory}. This object is immutable.
+	 * @param pcmEntityName entity name.
+	 * @param pcmEntityId entity id.
+	 * @param pcmOperationName operation name.
+	 * @param pcmOperationId operation id.
+	 */
+	Correspondent(final String pcmEntityName, final String pcmEntityId,
+			final String pcmOperationName, final String pcmOperationId) {
+		this.pcmEntityName = pcmEntityName;
+		this.pcmEntityId = pcmEntityId;
+		this.pcmOperationName = pcmOperationName;
+		this.pcmOperationId = pcmOperationId;
+	}
 
 	public String getPcmEntityName() {
 		return this.pcmEntityName;
-	}
-
-	public void setPcmEntityName(final String pcmEntityName) {
-		this.pcmEntityName = pcmEntityName;
 	}
 
 	public String getPcmEntityId() {
 		return this.pcmEntityId;
 	}
 
-	public void setPcmEntityId(final String pcmEntityId) {
-		this.pcmEntityId = pcmEntityId;
-	}
-
 	public String getPcmOperationName() {
 		return this.pcmOperationName;
 	}
 
-	public void setPcmOperationName(final String pcmOperationName) {
-		this.pcmOperationName = pcmOperationName;
-	}
-
 	public String getPcmOperationId() {
 		return this.pcmOperationId;
-	}
-
-	public void setPcmOperationId(final String pcmOperationId) {
-		this.pcmOperationId = pcmOperationId;
-	}
-
-	// ********************************************************************
-	// * CONVENIENT HELPER
-	// ********************************************************************
-
-	/**
-	 * Create brand new {@link Correspondent} object
-	 * 
-	 * @param pcmEntityName
-	 * @param pcmEntityId
-	 * @param pcmOperationName
-	 * @param pcmOperationId
-	 * @return
-	 */
-	public static Correspondent newInstance(final String pcmEntityName, final String pcmEntityId,
-			final String pcmOperationName, final String pcmOperationId) {
-
-		final Correspondent newObject = new Correspondent();
-		newObject.setPcmEntityName(pcmEntityName);
-		newObject.setPcmEntityId(pcmEntityId);
-		newObject.setPcmOperationName(pcmOperationName);
-		newObject.setPcmOperationId(pcmOperationId);
-		return newObject;
 	}
 }

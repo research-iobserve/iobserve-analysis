@@ -1,1 +1,0 @@
---inDirMonitoringData=res/test/kieke --inPathPcmRepositoryModel=res/test/modells/PCMInput/cocome.repository --inPathPcmUsageModel=res/test/modells/PCMInput/cocome.usagemodel --inPathProtocomMappingFile=res/test/rac/mapping_fake.xml --outPathPcmUpdatedUsageModel=output/updated_usagemodel.usagemodel --outPathLoggingFile=output/log.txt

@@ -18,13 +18,13 @@ package org.iobserve.analysis.filter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.iobserve.common.record.IDeploymentRecord;
-import org.iobserve.common.record.IUndeploymentRecord;
-
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
+import kieker.common.record.flow.trace.TraceMetadata;
 
 import org.iobserve.analysis.AnalysisMain;
+import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IUndeploymentRecord;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -43,6 +43,8 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 	private final OutputPort<IUndeploymentRecord> undeploymentOutputPort = this.createOutputPort();
 	/** output port for flow events. */
 	private final OutputPort<IFlowRecord> flowOutputPort = this.createOutputPort();
+	/**output port for {@link TraceMetadata}*/
+	private final OutputPort<TraceMetadata> traceMetaPort = this.createOutputPort();
 
 	/** internal map to collect unknown record types. */
 	private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<String, Integer>();
@@ -63,7 +65,8 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 	@Override
 	protected void execute(final IMonitoringRecord element) {
 		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.before(this, this.getId() + RecordSwitch.executionCounter);
 		
 		this.recordCount++;
 		if (element instanceof IDeploymentRecord) {
@@ -72,6 +75,12 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 			this.undeploymentOutputPort.send((IUndeploymentRecord) element);
 		} else if (element instanceof IFlowRecord) {
 			this.flowOutputPort.send((IFlowRecord) element);
+			
+			// send trace meta data
+			if (element instanceof TraceMetadata) {
+				this.traceMetaPort.send((TraceMetadata)element);
+			}
+			
 		} else {
 			final String className = element.getClass().getCanonicalName();
 			Integer hits = this.unknownRecords.get(className);
@@ -91,10 +100,11 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 
 		
 		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger()
+			.after(this, this.getId() + RecordSwitch.executionCounter);
 		
 		// count execution
-		executionCounter++;
+		RecordSwitch.executionCounter++;
 	}
 
 	/**
@@ -116,6 +126,14 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 	 */
 	public final OutputPort<IFlowRecord> getFlowOutputPort() {
 		return this.flowOutputPort;
+	}
+	
+	/**
+	 * 
+	 * @return traceOutputPort
+	 */
+	public OutputPort<TraceMetadata> getTraceMetaPort() {
+		return this.traceMetaPort;
 	}
 
 	public void outputStatistics() {
