@@ -10,22 +10,20 @@ import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
 /**
- * 
+ *
  * @author Reiner Jung
  *
  */
 public class AnalysisExecution {
 	/** configuration for the analysis. */
-	private Configuration configuration;
-	
-	private ModelProviderPlatform modelProviderPlatform;
-	
-	public AnalysisExecution(final AnalysisMainParameterBean args) {		
-		final String pcmDir = args.getDirPcmModels();
-		this.modelProviderPlatform = new ModelProviderPlatform(pcmDir);
-		
-		File inputDataSource = new File(args.getDirMonitoringData());
-		this.configuration = new FileObservationConfiguration(inputDataSource, this.modelProviderPlatform);
+	private final Configuration configuration;
+
+	private final ModelProviderPlatform modelProviderPlatform;
+
+	public AnalysisExecution(final File monitoringDataDirectory, String correspondenceFile, String pcmModelsDirectory) {
+		this.modelProviderPlatform = new ModelProviderPlatform(pcmModelsDirectory);
+
+		this.configuration = new FileObservationConfiguration(monitoringDataDirectory, this.modelProviderPlatform);
 	}
 
 	/**
@@ -36,5 +34,5 @@ public class AnalysisExecution {
 		analysis.executeBlocking();
 		((AbstractObservationConfiguration) this.configuration).getRecordSwitch().outputStatistics();
 	}
-		
+
 }

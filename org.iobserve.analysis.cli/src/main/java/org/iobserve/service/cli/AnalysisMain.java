@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.service.cli;
 
+import java.io.File;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -46,8 +48,6 @@ public class AnalysisMain {
 	 * @param args command line arguments.
 	 */
 	public static void main(final String[] args) {
-		final AnalysisMainParameterBean params = new AnalysisMainParameterBean();
-
 		final CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine commandLine = parser.parse(createHelpOptions(), args);
@@ -58,18 +58,23 @@ public class AnalysisMain {
 			} else {
 				commandLine = parser.parse(createOptions(), args);
 
-				params.setDirMonitoringData(commandLine.getOptionValue("i"));
-				params.setPathProtocomMappingFile(commandLine.getOptionValue("c"));
-				params.setDirPcmModels(commandLine.getOptionValue("p"));
+				final File monitoringDataDirectory = new File(commandLine.getOptionValue("i"));
+				if (monitoringDataDirectory.isDirectory()) {
+					final String correspondenceMappingFile = commandLine.getOptionValue("c");
+					final String pcmModelsDirectory = commandLine.getOptionValue("p");
 
-				/** create and run application */
-				final AnalysisExecution application = new AnalysisExecution(params);
-				application.run();
+					/** create and run application */
+					final AnalysisExecution application = new AnalysisExecution(monitoringDataDirectory,
+							correspondenceMappingFile, pcmModelsDirectory);
+					application.run();
+				} else {
+					System.err.println("CLI error: " + monitoringDataDirectory.getName() + " is not a directory.");
+				}
 			}
 		} catch(final ParseException exp) {
-			System.err.println( "CLI error: " + exp.getMessage() );
+			System.err.println("CLI error: " + exp.getMessage());
 			final HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp( "iobserve-analysis", createOptions() );
+			formatter.printHelp("iobserve-analysis", createOptions());
 		}
 	}
 
