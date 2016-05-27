@@ -20,7 +20,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
@@ -56,25 +55,15 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 	private final ICorrespondence correspondenceModel;
 	private final UsageModelProvider usageModelProvider;
 
-	public TEntryEventSequence() {
-		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
-		this.correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
-		this.usageModelProvider = modelProviderPlatform.getUsageModelProvider();
+	public TEntryEventSequence(ICorrespondence correspondenceModel, UsageModelProvider usageModelProvider) { 
+		this.correspondenceModel = correspondenceModel;
+		this.usageModelProvider = usageModelProvider;
 	}
 
 	@Override
-	protected void execute(final EntryCallSequenceModel model) {
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TEntryEventSequence.executionCounter);
-		
+	protected void execute(final EntryCallSequenceModel model) {	
 		// do main task
-		this.doUpdateUsageModel(model.getUserSessions());
-		
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TEntryEventSequence.executionCounter);
-		
+		this.doUpdateUsageModel(model.getUserSessions());		
 		// count execution
 		TEntryEventSequence.executionCounter++;
 	}

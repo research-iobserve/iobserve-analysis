@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
@@ -36,7 +35,6 @@ import teetime.framework.OutputPort;
  */
 public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 
-	private static long executionCounter = 0;
 	private final ICorrespondence correspondence;
 	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
 	private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
@@ -47,12 +45,9 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 	 * @param correspondence
 	 *            the correspondence model access
 	 */
-	public TAllocation() {
-		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
-		
-		// get all model references
-		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
-		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
+	public TAllocation(ICorrespondence correspondence, ResourceEnvironmentModelProvider resourceEvnironmentModelProvider) {	
+		this.correspondence = correspondence;
+		this.resourceEnvModelProvider = resourceEvnironmentModelProvider;
 	}
 	
 	/**
@@ -70,9 +65,6 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TAllocation.executionCounter); //TODO testing logger
-		
 		
 		if (event instanceof ServletDeployedEvent) {
 			this.process((ServletDeployedEvent)event);
@@ -83,11 +75,6 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 		
 		// forward the event
 		this.deploymentOutputPort.send(event);
-		
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TAllocation.executionCounter); //TODO testing logger
-		
-		TAllocation.executionCounter++;
 	}
 	
 	/**

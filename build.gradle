@@ -7,11 +7,11 @@ allprojects {
     
     ext {
         appName = "org.iobserve"
-        palladioInstall = 'C:/Users/Alessandro/Desktop/NewPalladio/Palladio.win32.win32.x86_64/plugins/'
     }
 
     repositories {
         mavenCentral()
+        mavenLocal()
         jcenter()
         maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven {url "https://oss.sonatype.org/content/repositories/releases/" }
@@ -20,65 +20,13 @@ allprojects {
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo.p2"}
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo"}
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}
+		maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
+		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
+		maven {url "file:///home/rju/Projects/iObserve/iobserve-analysis/mvn-repo" }
     }
 }
 
-project(":org.iobserve.analysis") {
 
-    dependencies {
-        compile project(":org.iobserve.monitoring")
-        compile project(":org.iobserve.common")
-		
-		compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
-		compile 'net.sourceforge.teetime:teetime:1.1.2'
-		compile 'net.sourceforge.teetime-stages:teetime-stages:1.1.2'
-		compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
-		
-		compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
-		compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
-		compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.+'
-		compile 'org.eclipse.uml2:org.eclipse.uml2.uml:3.1.+'
-		
-		compile 'org.eclipse.core:runtime:3.10.+'
-		compile 'org.eclipse:ocl:3.3.+'
-		compile 'org.eclipse.ocl:common:1.2.0-v20140528-1458'
-		compile 'org.eclipse.ocl:ecore:3.3.0-v20130520-1222'
-		compile 'lpg.runtime:java:2.0.17-v201004271640'
-		compile 'org.antlr:antlr-runtime:3.5.2'
-		
-		
-		//compile group: 'org.eclipselabs', name: 'cdo.p2', version: '4.4.0'
-		//compile group: 'org.eclipselabs', name: 'cdo', version: '4.4.0', ext: 'pom'
-		//compile group: 'org.eclipselabs', name: 'cdo-maven', version: '4.4.0', ext: 'pom'
-		
-		
-        compile fileTree(dir: 'libs', include: '*.jar')
-        compile fileTree(dir: 'pcm/libs', include: '*.jar')
-        
-        /*
-        compile files(palladioInstall + "de.uka.ipd.sdq.identifier_2.1.0.201511050934.jar")
-        compile files(palladioInstall + "org.palladiosimulator.pcm_4.0.0.201511051135.jar")
-        
-        compile files(palladioInstall + "de.uka.ipd.sdq.units_2.1.0.201511050934.jar")
-        compile files(palladioInstall + "de.uka.ipd.sdq.stoex_2.2.0.201511050934.jar")
-        compile files(palladioInstall + "de.uka.ipd.sdq.probfunction_2.1.0.201511050934.jar")
-        compile files(palladioInstall + "org.eclipse.emf.cdo_4.3.0.v20140520-1823.jar")
-        compile files(palladioInstall + "org.eclipse.emf.cdo.common_4.3.0.v20140309-0644.jar")*/
-    }
-}
 
-project(":org.iobserve.monitoring") {
-    dependencies {
-		compile project(":org.iobserve.common")
-		compile 'net.kieker-monitoring:kieker:1.12'
-		compile 'javax.interceptor:javax.interceptor-api:1.2'
-		compile 'javax.servlet:javax.servlet-api:3.1.0'
-    }
-}
 
-project(":org.iobserve.common") {
-    dependencies {
-		compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
-		compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
-    }
-}
+

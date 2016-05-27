@@ -207,7 +207,8 @@ public final class EntryCallEventModelBuilder
 		if (!this.checkIfLastEventSame(event)) {
 			final String classSig = event.getClassSignature();
 			final String opSig = event.getOperationSignature();
-			final String operationSig = this.correspondence.getCorrespondent(classSig, opSig);
+			// FIXME this might be broken
+			final String operationSig = this.correspondence.getCorrespondent(classSig, opSig).get().getPcmOperationId();
 			if (operationSig != null) {
 				this.modelProvider.addAction(operationSig);
 			}

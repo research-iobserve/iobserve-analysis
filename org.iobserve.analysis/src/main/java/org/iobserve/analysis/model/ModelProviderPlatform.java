@@ -6,8 +6,6 @@ import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.correspondence.CorrespondeceModelFactory;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 
-
-
 public final class ModelProviderPlatform {
 	
 	private RepositoryModelProvider repositoryModelProvider;

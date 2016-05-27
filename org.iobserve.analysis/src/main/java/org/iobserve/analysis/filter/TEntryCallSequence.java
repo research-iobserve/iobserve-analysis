@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
@@ -36,8 +35,6 @@ import teetime.framework.OutputPort;
  *
  */
 public class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
-	
-	private static int executionCounter = 0;
 
 	private HashMap<String, UserSession> sessions = new HashMap<String, UserSession>();
 	private final List<EntryCallEvent> entryCallEventWrappers = new ArrayList<EntryCallEvent>();
@@ -49,9 +46,7 @@ public class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
 
 	@Override
 	protected void execute(final EntryCallEvent event) {
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + executionCounter);
-		
+	
 		// add the event to the corresponding user session
 		// in case the user session is not yet available, create one
 		final String userSessionId = UserSession.parseUserSessionId(event);
@@ -72,12 +67,6 @@ public class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
 				break;
 			}
 		}
-		
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + executionCounter);
-		
-		// count execution
-		executionCounter++;
 	}
 	
 	public OutputPort<EntryCallSequenceModel> getOutputPort() {

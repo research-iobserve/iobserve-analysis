@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.AllocationModelBuilder;
@@ -55,14 +54,13 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 * @param correspondence
 	 *            the correspondence model access
 	 */
-	public TDeployment() {
-		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
-		
+	public TDeployment(ICorrespondence correspondence, AllocationModelProvider allocationModelProvider,
+			SystemModelProvider systemModelProvider, ResourceEnvironmentModelProvider resourceEnvModelProvider) {
 		// get all model references
-		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
-		this.allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
-		this.systemModelProvider = modelProviderPlatform.getSystemModelProvider();
-		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
+		this.correspondence = correspondence;
+		this.allocationModelProvider = allocationModelProvider;
+		this.systemModelProvider = systemModelProvider;
+		this.resourceEnvModelProvider = resourceEnvModelProvider;
 	}
 
 	/**
@@ -73,18 +71,12 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TDeployment.executionCounter); //TODO testing logger
-		
 		if (event instanceof ServletDeployedEvent) {
 			this.process((ServletDeployedEvent)event);
 		
 		} else if (event instanceof EJBDeployedEvent) {
 			this.process((EJBDeployedEvent)event);
 		}
-		
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TDeployment.executionCounter); //TODO testing logger
 		
 		TDeployment.executionCounter++;
 	}

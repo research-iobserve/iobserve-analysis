@@ -22,7 +22,6 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.IUndeploymentRecord;
 
@@ -35,8 +34,6 @@ import teetime.framework.OutputPort;
  */
 public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 	
-	private static int executionCounter = 0;
-
 	/** output port for deployment events. */
 	private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
 	/** output port for undeployment events. */
@@ -64,10 +61,6 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 
 	@Override
 	protected void execute(final IMonitoringRecord element) {
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + RecordSwitch.executionCounter);
-		
 		this.recordCount++;
 		if (element instanceof IDeploymentRecord) {
 			this.deploymentOutputPort.send((IDeploymentRecord) element);
@@ -97,14 +90,6 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 				}
 			}
 		}
-
-		
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + RecordSwitch.executionCounter);
-		
-		// count execution
-		RecordSwitch.executionCounter++;
 	}
 
 	/**

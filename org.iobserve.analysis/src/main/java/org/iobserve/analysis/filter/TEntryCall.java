@@ -25,7 +25,6 @@ import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.data.EntryCallEvent;
 
 import teetime.framework.AbstractConsumerStage;
@@ -42,9 +41,6 @@ import teetime.framework.OutputPort;
 public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 	private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
 	
-	private static int executionCounter = 0;
-	/*added by Alessandro Giusa see EntryCallEvent class for more information*/
-
 	private final Map<Long, TraceMetadata> traceMetaDatas = new HashMap<Long, TraceMetadata>();
 	private final Map<Long, BeforeOperationEvent> beforeOperationEvents = new HashMap<Long, BeforeOperationEvent>();
 	private final OutputPort<EntryCallEvent> outputPort = this.createOutputPort();
@@ -63,10 +59,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 	 *            all IFlowRecord like TraceMetadata, BeforeOperationEvent and AfterOperationEvent
 	 */
 	@Override
-	protected void execute(final IFlowRecord event) {
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TEntryCall.executionCounter); //TODO testing logger
-		
+	protected void execute(final IFlowRecord event) {		
 		if (event instanceof TraceMetadata) {
 			final TraceMetadata metaData = (TraceMetadata) event;
 			/** only recognize traces which no parent trace (i.e. would be internal traces) */
@@ -106,12 +99,6 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 		} else {
 			TEntryCall.LOG.warn("Unsuppored flow event type " + event.getClass().getCanonicalName());
 		}
-		
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TEntryCall.executionCounter); //TODO testing logger
-		
-		// count execution
-		TEntryCall.executionCounter++;
 	}
 
 	public OutputPort<EntryCallEvent> getOutputPort() {

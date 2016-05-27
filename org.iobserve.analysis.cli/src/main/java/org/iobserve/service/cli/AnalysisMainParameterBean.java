@@ -1,4 +1,4 @@
-package org.iobserve.analysis;
+package org.iobserve.service.cli;
 
 import giusa.parser.parameter.Parameter;
 import giusa.parser.parameter.ParameterBean;
@@ -14,15 +14,10 @@ public class AnalysisMainParameterBean implements ParameterBean {
 
 	private String dirMonitoringData;
 	private String dirPcmModels;
-	private String dirLogging;
+	private String pathProtocomMappingFile;
 	
 	public AnalysisMainParameterBean() {
 		// TODO Auto-generated constructor stub
-	}
-	
-	@Parameter(name = "dirLogging")
-	public String getDirLogging() {
-		return this.dirLogging;
 	}
 	
 	@Parameter(name = "dirMonitoring")
@@ -35,15 +30,19 @@ public class AnalysisMainParameterBean implements ParameterBean {
 		return this.dirPcmModels;
 	}
 	
-	public void setDirLogging(final String dirLogging) {
-		this.dirLogging = dirLogging;
-	}
-	
 	public void setDirMonitoringData(final String dirMonitoringData) {
 		this.dirMonitoringData = dirMonitoringData;
 	}
 	
 	public void setDirPcmModels(final String dirPcmModels) {
 		this.dirPcmModels = dirPcmModels;
+	}
+
+	public String getPathProtocomMappingFile() {
+		return pathProtocomMappingFile;
+	}
+	
+	public void setPathProtocomMappingFile(String mappingFile) {
+		this.pathProtocomMappingFile = mappingFile;
 	}
 }

@@ -16,9 +16,9 @@
 package org.iobserve.analysis.filter;
 
 import org.iobserve.common.record.IDeploymentRecord;
+
 import kieker.common.record.flow.trace.TraceMetadata;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 
 import teetime.framework.AbstractConsumerStage;
@@ -47,14 +47,10 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 	 */
 	@Override
 	protected void execute(final TraceMetadata event) {
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TNetworkLink.executionCounter); //TODO testing logger
+		
 		// add your transformation here
 		System.out.println("TNetworkLink.execute()");
 		
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TNetworkLink.executionCounter); //TODO testing logger
-		TNetworkLink.executionCounter++;
 	}
 
 }
