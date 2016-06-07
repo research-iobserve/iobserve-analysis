@@ -11,6 +11,8 @@ buildscript {
     }
 }
 
+
+
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'

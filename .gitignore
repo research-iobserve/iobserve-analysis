@@ -16,3 +16,4 @@ mvn-repo/
 **/.settings/**
 *.project
 *.classpath
+gradle.properties
