@@ -17,6 +17,8 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'eclipse'
+    
+    sourceCompatibility = 1.7
 
     repositories {
         mavenCentral()
@@ -41,6 +43,4 @@ subprojects {
 	       downloadJavadoc=true
 	    }
 	}
-
-    version = '1.0'
 }
