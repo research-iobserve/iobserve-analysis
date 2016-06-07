@@ -5,3 +5,8 @@ sourceSets {
 		}
 	}
 }
+
+dependencies {
+	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
+	compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
+}
