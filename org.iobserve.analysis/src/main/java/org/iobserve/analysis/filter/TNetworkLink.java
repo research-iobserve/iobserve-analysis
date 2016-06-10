@@ -25,11 +25,17 @@ import kieker.common.record.flow.trace.TraceMetadata;
 
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -85,7 +91,6 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 		AnalysisMain.getInstance().getTimeMemLogger()
 			.before(this, this.getId() + TNetworkLink.executionCounter); //TODO testing logger
 		// add your transformation here
-		System.out.println("TNetworkLink.execute()");
 		
 		final ResourceEnvironmentModelBuilder builder = 
 					new ResourceEnvironmentModelBuilder(this.resourceEnvModelProvider);
@@ -94,18 +99,51 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 		final ResourceEnvironment resourceEnvironment = builder.getModel();
 		final List<ResourceContainer> unconnectedResourceContainer = TNetworkLink.getUnconnectedContainers.apply(resourceEnvironment);
 		
-		
+		if (!unconnectedResourceContainer.isEmpty()) {
+			
+			final SystemModelBuilder sysBuilder = new SystemModelBuilder(this.systemModelProvider);
+			sysBuilder.loadModel();
+			final org.palladiosimulator.pcm.system.System system = sysBuilder.getModel();
+			
+			final AllocationModelBuilder allocationBuilder = new AllocationModelBuilder(this.allocationModelProvider);
+			allocationBuilder.loadModel();
+			final Allocation allocation = allocationBuilder.getModel();
+			
+			unconnectedResourceContainer.stream()
+				.forEach(unconnectedConatiner -> {
+					TNetworkLink.getAsmContextDeployedOnContainer.apply(allocation, unconnectedConatiner).stream()
+						.forEach(asmCtx -> {
+							TNetworkLink.getResourceContainer.apply(allocation, TNetworkLink.getConnectedAsmCtx.apply(system, asmCtx)).stream()
+							.forEach(container -> builder.connectResourceContainer(container, unconnectedConatiner));
+						});
+				});
+		}
 		
 		AnalysisMain.getInstance().getTimeMemLogger()
 			.after(this, this.getId() + TNetworkLink.executionCounter); //TODO testing logger
 		TNetworkLink.executionCounter++;
 	}
 	
-	
 	// *****************************************************************
 	//
 	// *****************************************************************
 	
+	private static boolean isEqual(final ResourceContainer res1, final ResourceContainer res2) {
+		return res1.getId().equals(res2.getId());
+	}
+	
+	private static boolean isEqual(final AssemblyContext asm1, final AssemblyContext asm2) {
+		return asm1.getId().equals(asm2.getId());
+	}
+	
+			
+	private static final BiFunction<AssemblyContext, AssemblyContext, Boolean> isEqualAsmCtx =
+					(asm1, asm2) -> asm1.getId().equals(asm2.getId());
+	
+	
+	// *****************************************************************
+	//
+	// *****************************************************************
 	
 	private static final Function<ResourceEnvironment, List<ResourceContainer>> getUnconnectedContainers =
 			env -> env.getResourceContainer_ResourceEnvironment().stream()
@@ -119,7 +157,39 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 	
 	private static final BiFunction<LinkingResource, ResourceContainer, Optional<ResourceContainer>> findFirstLink =
 			(linking, container) -> linking.getConnectedResourceContainers_LinkingResource().stream()
-				.filter(res -> res.getId().equals(container.getId()))
+				.filter(res -> TNetworkLink.isEqual(res, container))
 				.findFirst();
+			
 	
+			
+	// *****************************************************************
+	//
+	// *****************************************************************
+			
+	private static final BiFunction<Allocation, ResourceContainer, List<AssemblyContext>> getAsmContextDeployedOnContainer =
+			(allocation, container) -> allocation.getAllocationContexts_Allocation().stream()
+				.filter(ctx -> TNetworkLink.isEqual(ctx.getResourceContainer_AllocationContext(), container))
+				.map(ctx -> ctx.getAssemblyContext_AllocationContext())
+				.collect(Collectors.toList());
+	
+
+	private static final BiFunction<org.palladiosimulator.pcm.system.System, AssemblyContext, List<AssemblyContext>> getConnectedAsmCtx =
+			(system, queryAsm) -> system.getConnectors__ComposedStructure().stream()
+				.map(connector -> TNetworkLink.tryCast(connector))
+				.filter(option -> option.isPresent())
+				.map(option -> option.get())
+				.filter(connector -> TNetworkLink.isEqual(queryAsm, connector.getRequiringAssemblyContext_AssemblyConnector()))
+				.map(connector -> connector.getRequiringAssemblyContext_AssemblyConnector())
+				.collect(Collectors.toList());
+	
+	private static BiFunction<Allocation, List<AssemblyContext>, List<ResourceContainer>> getResourceContainer =
+			(allocation, listAsm) -> allocation.getAllocationContexts_Allocation().stream()
+				.filter(ctx -> listAsm.stream()
+						.filter(asm -> TNetworkLink.isEqual(asm, ctx.getAssemblyContext_AllocationContext())).findAny().isPresent())
+				.map(ctx -> ctx.getResourceContainer_AllocationContext())
+				.collect(Collectors.toList());
+		
+	private static final Optional<AssemblyConnector> tryCast(final Connector connector) {
+		return connector instanceof AssemblyConnector?Optional.of((AssemblyConnector)connector):Optional.empty();
+	}
 }
