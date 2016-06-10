@@ -1,6 +1,7 @@
 package org.iobserve.service.cli;
 
 import java.io.File;
+import java.util.Collection;
 
 import org.iobserve.analysis.AbstractObservationConfiguration;
 import org.iobserve.analysis.FileObservationConfiguration;
@@ -20,10 +21,10 @@ public class AnalysisExecution {
 
 	private final ModelProviderPlatform modelProviderPlatform;
 
-	public AnalysisExecution(final File monitoringDataDirectory, String correspondenceFile, String pcmModelsDirectory) {
+	public AnalysisExecution(final Collection<File> monitoringDataDirectories, String correspondenceFile, String pcmModelsDirectory) {
 		this.modelProviderPlatform = new ModelProviderPlatform(pcmModelsDirectory);
 
-		this.configuration = new FileObservationConfiguration(monitoringDataDirectory, this.modelProviderPlatform);
+		this.configuration = new FileObservationConfiguration(monitoringDataDirectories, this.modelProviderPlatform);
 	}
 
 	/**

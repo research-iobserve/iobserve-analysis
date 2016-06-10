@@ -16,6 +16,8 @@
 package org.iobserve.service.cli;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -64,7 +66,12 @@ public class AnalysisMain {
 					final String pcmModelsDirectory = commandLine.getOptionValue("p");
 
 					/** create and run application */
-					final AnalysisExecution application = new AnalysisExecution(monitoringDataDirectory,
+					
+					Collection<File> monitoringDataDirectories = new ArrayList<File>();
+					
+					findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
+					
+					final AnalysisExecution application = new AnalysisExecution(monitoringDataDirectories,
 							correspondenceMappingFile, pcmModelsDirectory);
 					application.run();
 				} else {
@@ -75,6 +82,16 @@ public class AnalysisMain {
 			System.err.println("CLI error: " + exp.getMessage());
 			final HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("iobserve-analysis", createOptions());
+		}
+	}
+
+
+	private static void findDirectories(File[] listFiles, Collection<File> monitoringDataDirectories) {
+		for (File file : listFiles) {
+			if (file.isDirectory()) {
+				monitoringDataDirectories.add(file);
+				findDirectories(file.listFiles(), monitoringDataDirectories);
+			}
 		}
 	}
 

@@ -31,3 +31,4 @@ teetime.log
 *.txt
 **/**.xtendbin
 *.zip
+/build/

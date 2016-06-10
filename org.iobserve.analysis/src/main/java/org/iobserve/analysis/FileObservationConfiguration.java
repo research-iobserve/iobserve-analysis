@@ -1,6 +1,7 @@
 package org.iobserve.analysis;
 
 import java.io.File;
+import java.util.Collection;
 
 import org.iobserve.analysis.model.ModelProviderPlatform;
 
@@ -18,10 +19,10 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
 	final InitialElementProducer<File> files;
 	final Dir2RecordsFilter reader;
 	
-	public FileObservationConfiguration(File directory, ModelProviderPlatform platform) {
+	public FileObservationConfiguration(Collection<File> directories, ModelProviderPlatform platform) {
 		super(platform);
 		
-		files = new InitialElementProducer<File>(directory);
+		files = new InitialElementProducer<File>(directories);
 		reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
 		
 		/** connecting filters */
