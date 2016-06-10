@@ -22,7 +22,6 @@ import java.nio.ByteBuffer;
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
 
 
 /**
@@ -32,12 +31,12 @@ import kieker.common.util.Version;
  */
 public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // EntryCallEvent.entryTime
-			 + TYPE_SIZE_LONG // EntryCallEvent.exitTime
-			 + TYPE_SIZE_STRING // EntryCallEvent.operationSignature
-			 + TYPE_SIZE_STRING // EntryCallEvent.classSignature
-			 + TYPE_SIZE_STRING // EntryCallEvent.sessionId
-			 + TYPE_SIZE_STRING // EntryCallEvent.hostname
+	public static final int SIZE = AbstractMonitoringRecord.TYPE_SIZE_LONG // EntryCallEvent.entryTime
+			 + AbstractMonitoringRecord.TYPE_SIZE_LONG // EntryCallEvent.exitTime
+			 + AbstractMonitoringRecord.TYPE_SIZE_STRING // EntryCallEvent.operationSignature
+			 + AbstractMonitoringRecord.TYPE_SIZE_STRING // EntryCallEvent.classSignature
+			 + AbstractMonitoringRecord.TYPE_SIZE_STRING // EntryCallEvent.sessionId
+			 + AbstractMonitoringRecord.TYPE_SIZE_STRING // EntryCallEvent.hostname
 	;
 	private static final long serialVersionUID = -9019303768669463280L;
 	
@@ -83,7 +82,7 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 		this.classSignature = classSignature == null?"":classSignature;
 		this.sessionId = sessionId == null?"":sessionId;
 		this.hostname = hostname == null?"":hostname;
-	}
+	} 
 
 	/**
 	 * This constructor converts the given array into a record.
@@ -93,7 +92,7 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	 *            The values for the record.
 	 */
 	public EntryCallEvent(final Object[] values) { // NOPMD (direct store of values)
-		AbstractMonitoringRecord.checkArray(values, TYPES);
+		AbstractMonitoringRecord.checkArray(values, EntryCallEvent.TYPES);
 		this.entryTime = (Long) values[0];
 		this.exitTime = (Long) values[1];
 		this.operationSignature = (String) values[2];
@@ -182,7 +181,7 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	 */
 	@Override
 	public Class<?>[] getValueTypes() {
-		return TYPES; // NOPMD
+		return EntryCallEvent.TYPES; // NOPMD
 	}
 
 	/**
@@ -190,7 +189,7 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	 */
 	@Override
 	public int getSize() {
-		return SIZE;
+		return EntryCallEvent.SIZE;
 	}
 	/**
 	 * {@inheritDoc}
@@ -219,18 +218,38 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final EntryCallEvent castedRecord = (EntryCallEvent) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (this.getEntryTime() != castedRecord.getEntryTime()) return false;
-		if (this.getExitTime() != castedRecord.getExitTime()) return false;
-		if (!this.getOperationSignature().equals(castedRecord.getOperationSignature())) return false;
-		if (!this.getClassSignature().equals(castedRecord.getClassSignature())) return false;
-		if (!this.getSessionId().equals(castedRecord.getSessionId())) return false;
-		if (!this.getHostname().equals(castedRecord.getHostname())) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (this.getEntryTime() != castedRecord.getEntryTime()) {
+			return false;
+		}
+		if (this.getExitTime() != castedRecord.getExitTime()) {
+			return false;
+		}
+		if (!this.getOperationSignature().equals(castedRecord.getOperationSignature())) {
+			return false;
+		}
+		if (!this.getClassSignature().equals(castedRecord.getClassSignature())) {
+			return false;
+		}
+		if (!this.getSessionId().equals(castedRecord.getSessionId())) {
+			return false;
+		}
+		if (!this.getHostname().equals(castedRecord.getHostname())) {
+			return false;
+		}
 		return true;
 	}
 

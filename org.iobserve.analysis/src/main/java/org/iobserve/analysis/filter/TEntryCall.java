@@ -52,7 +52,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 	/**
 	 * Does not need additional information.
 	 */
-	public TEntryCall() {
+	public TEntryCall() { 
 		// empty constructor
 	}
 

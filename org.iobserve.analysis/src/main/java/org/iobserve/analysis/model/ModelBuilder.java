@@ -32,4 +32,12 @@ public abstract class ModelBuilder<E extends AbstractModelProvider<T>, T extends
 	public void build() {
 		this.modelProvider.save();
 	}
+	
+	/**
+	 * Get the model from the builder.
+	 * @return the model
+	 */
+	public T getModel() {
+		return this.getModel();
+	}
 }

@@ -182,10 +182,10 @@ public final class XML {
 
 				// eval errors/warnings
 				if (!seh.getWarnings().isEmpty()) {
-					_xml.getContext().put(CTX_VALIDATION_WARNINGS, seh.getWarnings());
+					_xml.getContext().put(XML.CTX_VALIDATION_WARNINGS, seh.getWarnings());
 				}
 				if (!seh.getErrors().isEmpty()) {
-					_xml.getContext().put(CTX_VALIDATION_ERRORS, seh.getErrors());
+					_xml.getContext().put(XML.CTX_VALIDATION_ERRORS, seh.getErrors());
 				}
 
 				return _xml;
@@ -455,13 +455,13 @@ public final class XML {
 			_validator.validate(_xmlSource);
 
 			if (!_errorHandler.getWarnings().isEmpty()) {
-				this.getContext().put(CTX_VALIDATION_WARNINGS, _errorHandler.getWarnings());
+				this.getContext().put(XML.CTX_VALIDATION_WARNINGS, _errorHandler.getWarnings());
 			}
 			if (!_errorHandler.getErrors().isEmpty()) {
-				this.getContext().put(CTX_VALIDATION_ERRORS, _errorHandler.getErrors());
+				this.getContext().put(XML.CTX_VALIDATION_ERRORS, _errorHandler.getErrors());
 			}
 			if (!_errorHandler.getFatals().isEmpty()) {
-				this.getContext().put(CTX_VALIDATION_FATALS, _errorHandler.getFatals());
+				this.getContext().put(XML.CTX_VALIDATION_FATALS, _errorHandler.getFatals());
 			}
 
 		} catch (final SAXException e) {
