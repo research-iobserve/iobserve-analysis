@@ -17,8 +17,6 @@ package org.iobserve.analysis.filter;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import kieker.common.record.flow.trace.TraceMetadata;
@@ -89,17 +87,16 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 	@Override
 	protected void execute(final TraceMetadata event) {
 		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TNetworkLink.executionCounter); //TODO testing logger
-		// add your transformation here
+			.before(this, this.getId() + TNetworkLink.executionCounter); 
 		
 		final ResourceEnvironmentModelBuilder builder = 
 					new ResourceEnvironmentModelBuilder(this.resourceEnvModelProvider);
 		builder.loadModel();
 		
 		final ResourceEnvironment resourceEnvironment = builder.getModel();
-		final List<ResourceContainer> unconnectedResourceContainer = TNetworkLink.getUnconnectedContainers.apply(resourceEnvironment);
+		final List<ResourceContainer> listUnconnectedResourceContainer = TNetworkLink.collectUnconnectedResourceContainer(resourceEnvironment);
 		
-		if (!unconnectedResourceContainer.isEmpty()) {
+		if (!listUnconnectedResourceContainer.isEmpty()) {
 			
 			final SystemModelBuilder sysBuilder = new SystemModelBuilder(this.systemModelProvider);
 			sysBuilder.loadModel();
@@ -109,14 +106,22 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 			allocationBuilder.loadModel();
 			final Allocation allocation = allocationBuilder.getModel();
 			
-			unconnectedResourceContainer.stream()
-				.forEach(unconnectedConatiner -> {
-					TNetworkLink.getAsmContextDeployedOnContainer.apply(allocation, unconnectedConatiner).stream()
-						.forEach(asmCtx -> {
-							TNetworkLink.getResourceContainer.apply(allocation, TNetworkLink.getConnectedAsmCtx.apply(system, asmCtx)).stream()
-							.forEach(container -> builder.connectResourceContainer(container, unconnectedConatiner));
-						});
-				});
+			// loop through all unconnected resource container
+			for (final ResourceContainer unconnectedConatiner : listUnconnectedResourceContainer) {
+				final List<AssemblyContext> listAsmDeployedOnContainer = 
+						TNetworkLink.getAsmContextDeployedOnContainer(allocation, unconnectedConatiner);
+				
+				// loop through all assembly context instances which are deployed on the unconnected resource container
+				for (final AssemblyContext asmCtx : listAsmDeployedOnContainer) {
+					final List<ResourceContainer> listResourceContainerToConnect = 
+							TNetworkLink.collectResourceContainer(allocation, TNetworkLink.getConnectedAsmCtx(system, asmCtx));
+					
+					// loop through all resource container which have to be connected to our unconnected one and connect them
+					for (final ResourceContainer containerToConnect : listResourceContainerToConnect) {
+						builder.connectResourceContainer(containerToConnect, unconnectedConatiner);
+					}
+				}
+			}
 		}
 		
 		AnalysisMain.getInstance().getTimeMemLogger()
@@ -128,68 +133,118 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 	//
 	// *****************************************************************
 	
+	/**
+	 * Check whether or not the given {@link ResourceContainer} are the same.
+	 * @param res1 first
+	 * @param res2 second
+	 * @return true if same
+	 */
 	private static boolean isEqual(final ResourceContainer res1, final ResourceContainer res2) {
 		return res1.getId().equals(res2.getId());
 	}
 	
+	/**
+	 * Check whether or not the given {@link AssemblyContext} are the same.
+	 * @param asm1 first
+	 * @param asm2 second
+	 * @return true if same
+	 */
 	private static boolean isEqual(final AssemblyContext asm1, final AssemblyContext asm2) {
 		return asm1.getId().equals(asm2.getId());
 	}
 	
-			
-	private static final BiFunction<AssemblyContext, AssemblyContext, Boolean> isEqualAsmCtx =
-					(asm1, asm2) -> asm1.getId().equals(asm2.getId());
-	
-	
 	// *****************************************************************
 	//
 	// *****************************************************************
 	
-	private static final Function<ResourceEnvironment, List<ResourceContainer>> getUnconnectedContainers =
-			env -> env.getResourceContainer_ResourceEnvironment().stream()
-				.filter(container -> TNetworkLink.getLinks.apply(env, container).isEmpty())
+	/**
+	 * Collect all {@link ResourceContainer} which are not connected yet.
+	 * @param env env
+	 * @return list
+	 */
+	private static List<ResourceContainer> collectUnconnectedResourceContainer(final ResourceEnvironment env) {
+		return env.getResourceContainer_ResourceEnvironment().stream()
+						.filter(container -> TNetworkLink.getLinks(env, container).isEmpty())
+						.collect(Collectors.toList());
+	}
+	
+	/**
+	 * Get all {@link LinkingResource} for the given {@link ResourceContainer}.
+	 * @param env env
+	 * @param container container
+	 * @return list
+	 */
+	private static List<LinkingResource> getLinks(final ResourceEnvironment env, final ResourceContainer container) {
+		return env.getLinkingResources__ResourceEnvironment().stream()
+				.filter(linking -> TNetworkLink.linkHasResContainer(linking, container).isPresent())
 				.collect(Collectors.toList());
+	}
 	
-	private static final BiFunction<ResourceEnvironment, ResourceContainer, List<LinkingResource>> getLinks =
-			(env, container) -> env.getLinkingResources__ResourceEnvironment().stream()
-				.filter(linking -> TNetworkLink.findFirstLink.apply(linking, container).isPresent())
-				.collect(Collectors.toList());
-	
-	private static final BiFunction<LinkingResource, ResourceContainer, Optional<ResourceContainer>> findFirstLink =
-			(linking, container) -> linking.getConnectedResourceContainers_LinkingResource().stream()
-				.filter(res -> TNetworkLink.isEqual(res, container))
-				.findFirst();
-			
-	
+	/**
+	 * Check whether or not the given {@link LinkingResource} has the given {@link ResourceContainer} connected.
+	 * @param link link
+	 * @param container container
+	 * @return option on the res container. If empty, it means there is no link.
+	 */
+	private static Optional<ResourceContainer> linkHasResContainer(final LinkingResource link, final ResourceContainer container) {
+		return link.getConnectedResourceContainers_LinkingResource().stream()
+					.filter(res -> TNetworkLink.isEqual(res, container))
+					.findFirst();
+	}
 			
 	// *****************************************************************
 	//
 	// *****************************************************************
-			
-	private static final BiFunction<Allocation, ResourceContainer, List<AssemblyContext>> getAsmContextDeployedOnContainer =
-			(allocation, container) -> allocation.getAllocationContexts_Allocation().stream()
+	
+	/**
+	 * Get all {@link AssemblyContext} instances which are deployed on the given {@link ResourceContainer}.
+	 * @param allocation allocation
+	 * @param container container
+	 * @return list
+	 */
+	private static List<AssemblyContext> getAsmContextDeployedOnContainer(final Allocation allocation, final ResourceContainer container) {
+		return allocation.getAllocationContexts_Allocation().stream()
 				.filter(ctx -> TNetworkLink.isEqual(ctx.getResourceContainer_AllocationContext(), container))
 				.map(ctx -> ctx.getAssemblyContext_AllocationContext())
 				.collect(Collectors.toList());
+	}
 	
-
-	private static final BiFunction<org.palladiosimulator.pcm.system.System, AssemblyContext, List<AssemblyContext>> getConnectedAsmCtx =
-			(system, queryAsm) -> system.getConnectors__ComposedStructure().stream()
+	/**
+	 * Get all {@link AssemblyContext} instances which are connected to the given {@link AssemblyContext}
+	 * @param system system
+	 * @param queryAsm asm
+	 * @return list of connected asm context
+	 */
+	private static List<AssemblyContext> getConnectedAsmCtx(final org.palladiosimulator.pcm.system.System system, final AssemblyContext queryAsm) {
+		return system.getConnectors__ComposedStructure().stream()
 				.map(connector -> TNetworkLink.tryCast(connector))
 				.filter(option -> option.isPresent())
 				.map(option -> option.get())
 				.filter(connector -> TNetworkLink.isEqual(queryAsm, connector.getRequiringAssemblyContext_AssemblyConnector()))
 				.map(connector -> connector.getRequiringAssemblyContext_AssemblyConnector())
 				.collect(Collectors.toList());
+	}
 	
-	private static BiFunction<Allocation, List<AssemblyContext>, List<ResourceContainer>> getResourceContainer =
-			(allocation, listAsm) -> allocation.getAllocationContexts_Allocation().stream()
+	/**
+	 * Collect all {@link ResourceContainer} where the given list of {@link AssemblyContext} are deployed.
+	 * @param allocation allocation
+	 * @param listAsm list of asm context
+	 * @return list of {@link ResourceContainer}
+	 */
+	private static List<ResourceContainer> collectResourceContainer(final Allocation allocation, final List<AssemblyContext> listAsm) {
+		return allocation.getAllocationContexts_Allocation().stream()
 				.filter(ctx -> listAsm.stream()
 						.filter(asm -> TNetworkLink.isEqual(asm, ctx.getAssemblyContext_AllocationContext())).findAny().isPresent())
 				.map(ctx -> ctx.getResourceContainer_AllocationContext())
 				.collect(Collectors.toList());
-		
-	private static final Optional<AssemblyConnector> tryCast(final Connector connector) {
+	}
+	
+	/**
+	 * Try the cast and give an option of the casted connector back.
+	 * @param connector connector
+	 * @return option on the cased connector. If present the cast was successfully
+	 */
+	private static Optional<AssemblyConnector> tryCast(final Connector connector) {
 		return connector instanceof AssemblyConnector?Optional.of((AssemblyConnector)connector):Optional.empty();
 	}
 }
