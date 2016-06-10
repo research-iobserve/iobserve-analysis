@@ -1,5 +1,6 @@
 package org.iobserve.analysis.model;
 
+import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
@@ -44,6 +45,21 @@ public class ResourceEnvironmentModelBuilder extends ModelBuilder<ResourceEnviro
 		resContainer.setEntityName(name);
 		model.getResourceContainer_ResourceEnvironment().add(resContainer);
 		return resContainer;
+	}
+	
+	/**
+	 * Creates a link between the given two container. 
+	 * @param res1 first container
+	 * @param res2 second container
+	 * @return link instance, already added to the model
+	 */
+	public LinkingResource connectResourceContainer(final ResourceContainer res1, final ResourceContainer res2) {
+		final ResourceEnvironment model = this.modelProvider.getModel();
+		final LinkingResource link = ResourceenvironmentFactory.eINSTANCE.createLinkingResource();
+		link.getConnectedResourceContainers_LinkingResource().add(res1);
+		link.getConnectedResourceContainers_LinkingResource().add(res2);
+		model.getLinkingResources__ResourceEnvironment().add(link);
+		return link;
 	}
 
 }
