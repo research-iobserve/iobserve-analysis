@@ -106,6 +106,7 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 			allocationBuilder.loadModel();
 			final Allocation allocation = allocationBuilder.getModel();
 			
+			//TODO performance=O(n³)?
 			// loop through all unconnected resource container
 			for (final ResourceContainer unconnectedConatiner : listUnconnectedResourceContainer) {
 				final List<AssemblyContext> listAsmDeployedOnContainer = 
