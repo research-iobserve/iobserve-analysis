@@ -66,9 +66,7 @@ public class AnalysisMain {
 					final String pcmModelsDirectory = commandLine.getOptionValue("p");
 
 					/** create and run application */
-					
 					Collection<File> monitoringDataDirectories = new ArrayList<File>();
-					
 					findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
 					
 					final AnalysisExecution application = new AnalysisExecution(monitoringDataDirectories,
@@ -126,6 +124,13 @@ public class AnalysisMain {
 	private static Options createHelpOptions() {
 		final Options options = new Options();
 
+		options.addOption(Option.builder("i").required(false).longOpt("input").hasArg().
+				desc("a Kieker logfile directory").build());
+		options.addOption(Option.builder("c").required(false).longOpt("correspondence").hasArg().
+				desc("correspondence model").build());
+		options.addOption(Option.builder("p").required(false).longOpt("pcm").hasArg().
+				desc("directory containing all PCM models").build());
+		
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").
 				desc("show usage information").build());

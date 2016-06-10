@@ -13,6 +13,7 @@ de.uka.ipd.sdq.probfunction
 protocom.extension
 org.eclipse.emf.cdo
 org.eclipse.emf.cdo.common
+org.eclipse.ocl
 EOF`
 
 MVNDIR="${BINDIR}/mvn-repo"

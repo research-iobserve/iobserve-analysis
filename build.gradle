@@ -22,7 +22,7 @@ allprojects {
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}
 		maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
 		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
-		maven {url "file:///home/rju/Projects/iObserve/iobserve-analysis/mvn-repo" }
+		maven {url "file:///home/reiner/Projects/iObserve/iobserve-analysis/mvn-repo" }
     }
 }
 
