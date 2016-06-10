@@ -1,5 +1,7 @@
 package org.iobserve.analysis.correspondence;
 
+import static org.iobserve.analysis.utils.StringUtils.trimAndRemoveSpaces;
+
 import java.io.FileInputStream;
 
 import javax.xml.bind.JAXB;
@@ -70,13 +72,13 @@ public final class CorrespondeceModelFactory {
 	 * the operation signature name.
 	 */
 	public final OperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER = (method, operationSignature) ->
-		method.getName().trim().replaceAll(" ", "").contains(operationSignature.getName().trim().replaceAll(" ", ""));
-
+		trimAndRemoveSpaces(method.getName()).get().contains(trimAndRemoveSpaces(operationSignature.getName()).get());
+ 
 	/**
 	 * Check the name of the method or the class against the operation signature. Return true if the method name or the class name contains
 	 * the operation signature name.
 	 */
 	public final OperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER_2 = (method, operationSignature) ->
-		method.getName().trim().replaceAll(" ", "").contains(operationSignature.getName().trim().replaceAll(" ", ""))
+		this.DEFAULT_OPERATION_SIGNATURE_MAPPER.select(method, operationSignature)
 			|| method.getParent().getUnitName().toLowerCase().contains(operationSignature.getName().toLowerCase());
 }
