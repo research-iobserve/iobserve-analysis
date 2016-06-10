@@ -4,11 +4,7 @@ import java.io.FileInputStream;
 
 import javax.xml.bind.JAXB;
 
-import org.iobserve.analysis.utils.BinarySelector;
-
-import protocom.extension.mapping.PcmCorrespondentMethod;
 import protocom.extension.mapping.PcmMapping;
-import protocom.extension.mapping.PcmOperationSignature;
 
 /**
  * Factory to create correspondence model instances according to RAC in paper 
@@ -42,7 +38,7 @@ public final class CorrespondeceModelFactory {
 	 * @return a {@link Correspondent} instance representing the mapping file
 	 */
 	public ICorrespondence createCorrespondenceModel(final String pathMappingFile,
-			final BinarySelector<PcmCorrespondentMethod, PcmOperationSignature> mapper) {
+			final OperationSignatureSelector mapper) {
 		final PcmMapping mapping = this.getMapping(pathMappingFile);
 		final CorrespondenceModelImpl rac = new CorrespondenceModelImpl(mapping, mapper);
 		rac.initMapping();
@@ -73,26 +69,14 @@ public final class CorrespondeceModelFactory {
 	 * Check the name of the method against the operation signature. Return true if the method name contains
 	 * the operation signature name.
 	 */
-	public final OperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER = new OperationSignatureSelector() {
-
-		@Override
-		public boolean select(final PcmCorrespondentMethod method, final PcmOperationSignature operationSignature) {
-			return method.getName().trim().replaceAll(" ", "").contains(operationSignature.getName().trim().replaceAll(" ", ""));
-		}
-	};
+	public final OperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER = (method, operationSignature) ->
+		method.getName().trim().replaceAll(" ", "").contains(operationSignature.getName().trim().replaceAll(" ", ""));
 
 	/**
 	 * Check the name of the method or the class against the operation signature. Return true if the method name or the class name contains
 	 * the operation signature name.
 	 */
-	public final OperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER_2 = new OperationSignatureSelector() {
-
-		@Override
-		public boolean select(final PcmCorrespondentMethod method, final PcmOperationSignature operationSignature) {
-			final boolean match = method.getName().trim().replaceAll(" ", "").contains(operationSignature.getName().trim().replaceAll(" ", ""))
-					|| method.getParent().getUnitName().toLowerCase().contains(operationSignature.getName().toLowerCase());
-
-			return match;
-		}
-	};
+	public final OperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER_2 = (method, operationSignature) ->
+		method.getName().trim().replaceAll(" ", "").contains(operationSignature.getName().trim().replaceAll(" ", ""))
+			|| method.getParent().getUnitName().toLowerCase().contains(operationSignature.getName().toLowerCase());
 }

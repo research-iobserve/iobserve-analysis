@@ -6,8 +6,6 @@ import java.util.Map;
 
 import javax.xml.bind.JAXB;
 
-import org.iobserve.analysis.utils.BinarySelector;
-
 import protocom.extension.mapping.PcmCorrespondentMethod;
 import protocom.extension.mapping.PcmEntity;
 import protocom.extension.mapping.PcmEntityCorrespondent;
@@ -47,7 +45,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
 	private final PcmMapping rawMapping;
 
 	/** mapper for method signature to operation signature */
-	private final BinarySelector<PcmCorrespondentMethod, PcmOperationSignature> opSigMapper;
+	private final OperationSignatureSelector opSigMapper;
 
 	/** fast access map for class-signature to object */
 	private Map<String, PcmEntityCorrespondent> mapping;
@@ -56,14 +54,12 @@ class CorrespondenceModelImpl implements ICorrespondence {
 	// * INITIALIZATION
 	// ********************************************************************
 
-	public CorrespondenceModelImpl(final PcmMapping mapping, 
-			final BinarySelector<PcmCorrespondentMethod, PcmOperationSignature> mapper) {
+	public CorrespondenceModelImpl(final PcmMapping mapping, final OperationSignatureSelector mapper) {
 		this.rawMapping = mapping;
 		this.opSigMapper = mapper;
 	}
 
-	public CorrespondenceModelImpl(final InputStream mappingFile, 
-			final BinarySelector<PcmCorrespondentMethod, PcmOperationSignature> mapper) {
+	public CorrespondenceModelImpl(final InputStream mappingFile, final OperationSignatureSelector mapper) {
 		this.rawMapping = JAXB.unmarshal(mappingFile, PcmMapping.class);
 		this.opSigMapper = mapper;
 

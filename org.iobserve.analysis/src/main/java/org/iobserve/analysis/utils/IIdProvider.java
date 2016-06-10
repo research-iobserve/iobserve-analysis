@@ -22,7 +22,8 @@ package org.iobserve.analysis.utils;
  * component has to store such elements and needs a kind of unique ID for each
  * of those elements. Using a {@link java.util.Map} could be one example.
  *
- * @author Robert Heinrich, Alessandro Giusa, alessandrogiusa@gmail.com
+ * @author Robert Heinrich, 
+ * @author Alessandro Giusa
  * @version 1.0, 23.10.2014
  *
  * @param <E>

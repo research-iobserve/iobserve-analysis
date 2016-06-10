@@ -63,6 +63,12 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
+/**
+ * Xml Helper class. This class provides much useful methods to work with XMLs.
+ * 
+ * @author Alessandro Giusa
+ *
+ */
 public final class XML {
 
 	// ********************************************************************
@@ -994,11 +1000,6 @@ public final class XML {
 		}
 	}
 
-	/**
-	 *
-	 * @author AlessandroGiusa@gmail.com
-	 *
-	 */
 	public abstract static class AbstractXMLVisitor {
 
 		protected XMLOption visitNode(final Node node) {
