@@ -158,7 +158,7 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 		final AllocationModelBuilder builder = new AllocationModelBuilder(this.allocationModelProvider);
 		builder
 			.loadModel()
-			.resetModel()
+//			.resetModel()
 			.addAllocationContext(resourceContainer, assemblyContext)
 			.build();
 	}

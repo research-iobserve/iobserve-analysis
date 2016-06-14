@@ -94,7 +94,8 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 		builder.loadModel();
 		
 		final ResourceEnvironment resourceEnvironment = builder.getModel();
-		final List<ResourceContainer> listUnconnectedResourceContainer = TNetworkLink.collectUnconnectedResourceContainer(resourceEnvironment);
+		final List<ResourceContainer> listUnconnectedResourceContainer = TNetworkLink
+				.collectUnconnectedResourceContainer(resourceEnvironment);
 		
 		if (!listUnconnectedResourceContainer.isEmpty()) {
 			
@@ -114,8 +115,9 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 				
 				// loop through all assembly context instances which are deployed on the unconnected resource container
 				for (final AssemblyContext asmCtx : listAsmDeployedOnContainer) {
+					final List<AssemblyContext> listConnectedAsmCtx = TNetworkLink.getConnectedAsmCtx(system, asmCtx);
 					final List<ResourceContainer> listResourceContainerToConnect = 
-							TNetworkLink.collectResourceContainer(allocation, TNetworkLink.getConnectedAsmCtx(system, asmCtx));
+							TNetworkLink.collectResourceContainer(allocation, listConnectedAsmCtx);
 					
 					// loop through all resource container which have to be connected to our unconnected one and connect them
 					for (final ResourceContainer containerToConnect : listResourceContainerToConnect) {

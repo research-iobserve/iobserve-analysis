@@ -25,17 +25,6 @@ class CorrespondenceModelImpl implements ICorrespondence {
 		String build(PcmCorrespondentMethod method);
 	}
 
-	// ********************************************************************
-	// * legacy
-	// ********************************************************************
-	// private static final String BOOK_SALE_OPERATION = "orderProducts";
-	// private static final String BOOK_SALE_CLASS = "ServiceProviderBookSale";
-	// private static final String COCOME_BOOK_SALE_OPERATION_SIG = "bookSale";
-
-	// ********************************************************************
-	// *
-	// ********************************************************************
-
 	private static final String PROTOCOM_BASE_PACKAGE_NAME = "org.palladiosimulator.protocom";
 
 	/** cache for already mapped correspondences */

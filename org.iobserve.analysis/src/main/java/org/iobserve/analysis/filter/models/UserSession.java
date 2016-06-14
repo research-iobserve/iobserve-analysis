@@ -77,8 +77,9 @@ public class UserSession {
 	 */
 	public void add(final EntryCallEvent event, final boolean sortByEntryTime) {
 		this.add(event);
-		if (sortByEntryTime)
-		this.sortEventsBy(SortEntryCallEventsByEntryTime);
+		if (sortByEntryTime) {
+			this.sortEventsBy(SortEntryCallEventsByEntryTime);
+		}
 	}
 	
 	/**
