@@ -47,6 +47,7 @@ dependencies {
 	compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
 	compile 'org.eclipse.core:runtime:3.10.+'
 	compile 'org.antlr:antlr-runtime:3.5.2'
+	compile 'lpg.runtime:java:2.0.+'
     
     compile fileTree(dir: "${project.properties['palladio.installation']}", include: {file -> (
     		file.name.startsWith("de.uka.ipd.sdq") 
@@ -61,7 +62,7 @@ dependencies {
 	//compile 'org.eclipse:ocl:3.4.+'
 	//compile 'org.eclipse.ocl:common:1.2.+'
 	//compile 'org.eclipse.ocl:ecore:3.3.+'
-	//compile 'lpg.runtime:java:2.0.+'
+	
 	//compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
 	//compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
 	//compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.+'
@@ -135,3 +136,15 @@ task runAnalysis(type: JavaExec) {
 	classpath = files("build/libs/org.iobserve.analysis-1.0.jar")
 	main = 'org.iobserve.analysis.AnalysisMain'
 }
+
+/*
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Implementation-Title': 'iObserve-Analysis',  
+        	'Implementation-Version': version,
+        	'Main-Class': 'org.iobserve.analysis.AnalysisMain'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}*/
