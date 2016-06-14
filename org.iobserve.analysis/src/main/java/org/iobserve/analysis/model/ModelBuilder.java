@@ -38,6 +38,6 @@ public abstract class ModelBuilder<E extends AbstractModelProvider<T>, T extends
 	 * @return the model
 	 */
 	public T getModel() {
-		return this.getModel();
+		return this.modelProvider.getModel();
 	}
 }
