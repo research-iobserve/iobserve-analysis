@@ -24,6 +24,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 import de.uka.ipd.sdq.identifier.Identifier;
@@ -122,11 +123,16 @@ public abstract class AbstractModelProvider<T extends EObject> {
 
 		final ResourceSet resSet = new ResourceSetImpl();
 		resSet.setResourceFactoryRegistry(reg);
+		EcoreUtil.resolveAll(resSet);
 
 		final Resource resource = resSet.getResource(this.uriModelInstance, true);
-
+		
 		if (!resource.getContents().isEmpty()) {
 			this.model = (T) resource.getContents().get(0);
+			
+			
+			
+			
 		} else {
 			System.err.printf("%s model was empty! Could not load anything!", this.getClass().getName());
 		}
