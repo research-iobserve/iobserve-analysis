@@ -27,7 +27,13 @@ public class AllocationModelBuilder extends ModelBuilder<AllocationModelProvider
 		return this;
 	}
 	
-	
+	/**
+	 * Create an {@link AllocationContext} for the given {@link ResourceContainer} and {@link AssemblyContext}
+	 * if they are absent to this model. No check for duplication is done!
+	 * @param resContainer container
+	 * @param asmCtx assembly context
+	 * @return builder
+	 */
 	public AllocationModelBuilder addAllocationContext(final ResourceContainer resContainer,
 			final AssemblyContext asmCtx) {
 		
@@ -41,6 +47,32 @@ public class AllocationModelBuilder extends ModelBuilder<AllocationModelProvider
 		model.getAllocationContexts_Allocation().add(allocationCtx);
 		return this;
 	}
+	
+	/**
+	 * Create an {@link AllocationContext} for the given {@link ResourceContainer} and {@link AssemblyContext}
+	 * if they are absent to this model. Check is done via {@link ResourceContainer#getEntityName()} 
+	 * and {@link AssemblyContext#getEntityName()}.
+	 * @param resContainer container
+	 * @param asmCtx assembly context.
+	 * @return build
+	 */
+	public AllocationModelBuilder addAllocationContextIfAbsent(final ResourceContainer resContainer,
+			final AssemblyContext asmCtx) {
+		final Allocation model = this.modelProvider.getModel();
+		if (!model.getAllocationContexts_Allocation()
+				.stream()
+				.filter(context -> context
+						.getAssemblyContext_AllocationContext().getEntityName()
+						.equals(asmCtx.getEntityName())
+						&& context.getResourceContainer_AllocationContext()
+								.getEntityName()
+								.equals(resContainer.getEntityName()))
+				.findAny().isPresent()) {
+			this.addAllocationContext(resContainer, asmCtx);
+		}
+		return this;
+	}
+	
 
 	// TODO testing
 	public AllocationModelBuilder removeAllocationContext(final String id) {
