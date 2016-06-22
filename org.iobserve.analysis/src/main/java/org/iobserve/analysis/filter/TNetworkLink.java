@@ -187,14 +187,13 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 	
 	private static List<LinkingResource> getLinkingResources(final ResourceEnvironment env,
 			final List<ResourceContainer> listContainer) {
-		final List<LinkingResource> listToReturn = new ArrayList<>();
-		listContainer.stream()
+		return listContainer.stream()
 			.map(nextContainer -> env.getLinkingResources__ResourceEnvironment().stream()
 				.filter(link -> link.getConnectedResourceContainers_LinkingResource().stream()
 						.filter(c -> c.getId().equals(nextContainer.getId())).findAny().isPresent())
 				.collect(Collectors.toList()))
-			.forEach(list -> listToReturn.addAll(list));
-		return listToReturn;
+			.flatMap(l->l.stream())
+			.collect(Collectors.toList());
 	}
 	
 	/**
