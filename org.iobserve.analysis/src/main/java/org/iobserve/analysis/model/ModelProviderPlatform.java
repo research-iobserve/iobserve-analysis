@@ -100,7 +100,7 @@ public final class ModelProviderPlatform {
 	}
 	
 	private URI getUri(final File file) {
-		return URI.createURI(file.getPath());
+		return URI.createFileURI(file.getAbsolutePath());
 	}
 	
 	

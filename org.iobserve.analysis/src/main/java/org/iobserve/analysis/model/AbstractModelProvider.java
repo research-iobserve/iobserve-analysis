@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
@@ -123,9 +124,15 @@ public abstract class AbstractModelProvider<T extends EObject> {
 
 		final ResourceSet resSet = new ResourceSetImpl();
 		resSet.setResourceFactoryRegistry(reg);
-		EcoreUtil.resolveAll(resSet);
 
 		final Resource resource = resSet.getResource(this.uriModelInstance, true);
+		try {
+			resource.load(null);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		EcoreUtil.resolveAll(resSet);
 		
 		if (!resource.getContents().isEmpty()) {
 			this.model = (T) resource.getContents().get(0);
@@ -157,6 +164,18 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	 */
 	public T getModel() {
 		return this.model;
+	}
+	
+	/**
+	 * Get the loaded model.
+	 * @param reload if true, it will reloaded the model before return.
+	 * @return the model
+	 */
+	public T getModel(final boolean reload) {
+		if (reload) {
+			this.loadModel();
+		}
+		return this.getModel();
 	}
 
 	/**

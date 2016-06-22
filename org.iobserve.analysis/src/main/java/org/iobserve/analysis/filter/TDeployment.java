@@ -156,10 +156,9 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 		
 		// update the allocation model
 		final AllocationModelBuilder builder = new AllocationModelBuilder(this.allocationModelProvider);
-		builder
-			.loadModel()
-//			.resetModel()
-			.addAllocationContext(resourceContainer, assemblyContext)
+		builder.loadModel()
+//			.resetModel() //TODO if we do this, it will delete all the other elements in the model?!
+			.addAllocationContextIfAbsent(resourceContainer, assemblyContext)
 			.build();
 	}
 }

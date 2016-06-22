@@ -129,7 +129,7 @@ task fatJar(type: Jar) {
 }
 
 task runAnalysis(type: JavaExec) {
-	dependsOn << fatJar
+	dependsOn << build
 	dependsOn << copyPcmToWorkingDir
 	String appArgs = "--dirMonitoring=res/original_dir/kieker --dirPcm=res/working_dir/pcm --dirLogging=output/logging"
 	args = [appArgs]
