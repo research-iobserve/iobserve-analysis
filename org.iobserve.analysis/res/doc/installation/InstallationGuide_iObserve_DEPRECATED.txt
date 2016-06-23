@@ -1,0 +1,205 @@
+Installation of iObserve 
+(Date of creation 23.06.2016)
+
+
+0. General Notes:
+
+0.1 In order to use tools like git or gradle from the terminal (cmd in windows, bash in linux),
+it is necessary to set environment variables pointing to the installation folder of those tools.
+
+Example Git:
+"C:\Program Files (x86)\Git\bin" on a windows machine.
+
+Useful links:
+https://en.wikipedia.org/wiki/Environment_variable
+https://java.com/en/download/help/path.xml
+
+or just google for setting environment variable on your system.
+
+---
+
+1. Get Palladio Bench 4.0
+
+- Download an appropriate version from: 
+http://www.palladio-simulator.com/tools/download/
+
+---
+
+2. Command line tools you will need.
+
+2.1 GIT
+https://git-scm.com/downloads (latest version).
+
+2.2 Gradle
+http://gradle.org/gradle-download/ (latest version).
+
+---
+
+3. Eclipse-Plug-ins you will need to install on your downloaded Palladio-Eclipse version:
+(always restart Eclipse when you get asked)
+To install any plug-in in Eclipse, just click on the menu bar Help > Install New Software
+and enter the the update-site url in the text box "work-with"
+
+Tutorial:
+https://www.youtube.com/watch?v=AhSOyDi-P18
+
+just install all other plug-ins analogical.
+
+Following plug-ins are optional, everything you can do with the plug-ins you can also do with 
+the tools installed in section 2.
+
+3.1 (optional) Gradle:
+http://download.eclipse.org/buildship/updates/e45/releases/1.0
+
+3.2 (optional) EGit, Eclipse version of Git:
+http://download.eclipse.org/egit/updates
+
+3.3 (recommended) Checkstyle plugin:Install checkstyle-plugin (latest version)
+http://eclipse-cs.sf.net/update
+
+3.3 (mandatory) Install JavaEE Dev-Tools (latest appropriated for your eclipse version):
+i.e. On Eclipse Luna I would use: http://download.eclipse.org/releases/luna/
+
+Check: Web,XML, Java EE and OSGi Enterprise Development > Eclipse Java EE Developer Tools
+install.
+
+3.4 (mandatory) Install Glassfish runtime (4.X):
+-> Download glassfish from: https://glassfish.java.net/download.html
+and unzip it somewhere. This is the glassfish installation path
+
+3.4.1 (mandatory) Install Glassfish-Tools (7.7.X): Help > InstallNewSoftware > Work with: 
+http://download.oracle.com/otn_software/oepe/luna
+
+Check: Tools > GlassFish Tools
+install.
+
+3.4.2 Add New Sever Runtime: Window > Preferences > Server > RuntimeEnvironment > 
+GlassFish > GlassFish4
+
+ServerRoot:browse to the your glassfish installation path
+i.e. glassfish-4.1.1\glassfish4\glassfish
+
+It is the last glassfish subfolder you'll find.
+
+---
+
+4. Get iObserve from Github:
+https://github.com/research-iobserve/iobserve-analysis.git
+
+In a terminal(cmd on windows) just type:
+- git clone https://github.com/research-iobserve/iobserve-analysis.git
+
+git will clone the iObserver project from Github into the directory where you execute this command,
+so switch to the desired directory before.
+
+Or if you are using git from eclipse as plug-in (Egit):
+https://wiki.eclipse.org/EGit/User_Guide
+
+
+5. Create User-Properties File
+In order to set user dependent properties, we will create a file 
+
+	iobserve-analysis/gradle.properties
+
+5.1 Add Palladio-Installation path to created gradle.properties
+palladio.installation=ABSOLUTE PATH TO YOUR PALLADIO INSTALLATION/plugins
+
+In my case:
+palladio.installation=C:/Users/User1/Desktop/Palladio/Palladio.win32.win32.x86_64/plugins
+
+Important: the path should point to the "plugins" folder of your palladio installation.
+
+---
+ 
+6. Import iObserve into Eclipse
+
+6.1 File > Import > Gradle (STS) > Browse
+browse to the root iobserve-analysis folder. Do NOT browse to a folder within the root iobserve-analysis
+folder, those are just modules.
+
+- Click "Build-Model". 
+- Check the root node in the presented tree and 
+- Click "Finish".
+
+You should have 4 new projects:
+- iobserve-analysis (root)
+- org.iobserve.analysis (module)
+- org.iobserve.common (module)
+- org.iobserve.monitoring (module)
+
+6.2 Right click on root project "iobserve-analysis" ContextMenu > Gradle(STS)> Refresh All
+this should refresh all stuff like dependencies..and so on. 
+
+After this step, the projects should be clean from errors.
+
+---
+
+7. Setting up iObserve Run-Configuration
+
+7.1 Add Run-Configuration:
+Run > Run Configuration > right click on Java-Application > New: Give it a name you remember
+
+7.2 Chose on <Project:> section org.iobserve.analysis
+7.3 Chose on <Main Class:> section org.iobserve.analysis.AnalysisMain class
+7.4 switch to the tab <Arguments> and start adding the parameters in the section <Program arguments:>
+
+7.5 Program arguments:
+	Add the following string:
+	
+	--dirMonitoring=res/working_dir/kieker --dirPcm=res/working_dir/pcm --dirLogging=output/logging
+	
+	if one of this folders is missing in org.iobserve.analysis/THE FOLDER, then just create it.
+	- Right-Click on org.iobserve.analysis > New > Folder...
+
+---	
+
+8. Gradle
+
+User Guide:
+https://docs.gradle.org/current/userguide/gradle_command_line.html
+
+From Terminal:
+gradle tasks --all
+
+From Eclipse:
+Window > Show View > Other > Gradle (STS) > Gradle Tasks
+
+Task to copy all resource files from original_dir to working_dir
+-> gradle copyPcmToWorkingDir
+
+The basic idea is to have a directory where you can test your program using copies instead of original
+data.
+
+In case you want to put your "original_dir" and "working_dir" somewhere else, just alter the paths
+in org.iobserve.analysis/build.gradle
+
+ext {
+	working_dir = 'res/working_dir/'
+	original_dir = 'res/original_dir/'
+}
+
+8.1 Refresh Dependencies
+
+From Terminal:
+gradle --refresh-dependencies
+
+From Eclipse:
+Right-Click on project you want to refresh deps > Gradle (STS) > Refresh Dependencies
+
+
+
+9. Additional libraries
+
+9.1 Maven repo:
+Just add the gradle specific pointer for the repository in the build.gradle file of the project which
+needs this library in the 
+
+dependencies {
+...
+}
+
+section.
+
+9.2. Own library:
+If you just have a jar file and want to add it to the classpath. Just copy it into the libs/ folder
+and refresh the dependencies like 8.1

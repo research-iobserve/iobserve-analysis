@@ -1,8 +1,8 @@
 version = '1.0'
 
 ext {
-	pcm_working_dir = 'res/working_dir/pcm'
-	pcm_original_dir = 'res/original_dir/pcm'
+	working_dir = 'res/working_dir/'
+	original_dir = 'res/original_dir/'
 }
 
 // checking the palladio installation
@@ -109,13 +109,13 @@ install {
 //********************************************************************************************
 
 task cleanPcmWorkingDir(type: Delete) {
-	delete pcm_working_dir
+	delete working_dir
 }
 
 task copyPcmToWorkingDir(type: Copy) {
 	dependsOn << cleanPcmWorkingDir
-	from pcm_original_dir
-	into pcm_working_dir
+	from original_dir
+	into working_dir
 }
 
 task cleanDebug {
