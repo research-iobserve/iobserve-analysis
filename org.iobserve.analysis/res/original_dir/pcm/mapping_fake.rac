@@ -5,6 +5,21 @@
             <Name>TradingSystem.Inventory.Application.Store</Name>
             <Id>_6tZA5dCmEduC9O_qbthgAg</Id>
             <OperationSigatures>
+		<OperationSignature>
+                    <Name>queryLowStockItemsWithRespectToIncomingProducts</Name>
+                    <SeffName>queryLowStockItemsWithRespectToIncomingProducts</SeffName>
+                    <Id>_2NNHclcvEeGI_ZRmqWdpYA</Id>
+                </OperationSignature>
+		<OperationSignature>
+                    <Name>queryStockItem</Name>
+                    <SeffName>queryStockItem</SeffName>
+                    <Id>_2NNuglcvEeGI_ZRmqWdpYA</Id>
+                </OperationSignature>
+		<OperationSignature>
+                    <Name>queryStoreById</Name>
+                    <SeffName>queryStoreById</SeffName>
+                    <Id>_2NL5WlcvEeGI_ZRmqWdpYA</Id>
+                </OperationSignature>
                 <OperationSignature>
                     <Name>bookSale</Name>
                     <SeffName>bookSale</SeffName>
@@ -76,6 +91,60 @@
                         <Interface>org.palladiosimulator.protocom.framework.IPerformancePrototypeComponent</Interface>
                     </Interfaces>
                     <UnitName>BookSale</UnitName>
+                    <CorrespondentMethods>
+                        <CorrespondentMethod>
+                            <Name>Get</Name>
+                            <ReturnType>void</ReturnType>
+                            <VisibilityModifier></VisibilityModifier>
+                            <Parameters></Parameters>
+                        </CorrespondentMethod>
+                    </CorrespondentMethods>
+                </Correspondent>
+		<Correspondent>
+            		<Comment>fake correspondent 3</Comment>
+                    <FilePath>no path</FilePath>
+                    <ProjectName>no project</ProjectName>
+                    <PackageName>de.kit.ipd.cocome.cloud.serviceadapter.Services</PackageName>
+                    <Interfaces>
+                        <Interface>org.palladiosimulator.protocom.framework.IPerformancePrototypeComponent</Interface>
+                    </Interfaces>
+                    <UnitName>queryStoreById</UnitName>
+                    <CorrespondentMethods>
+                        <CorrespondentMethod>
+                            <Name>Get</Name>
+                            <ReturnType>void</ReturnType>
+                            <VisibilityModifier></VisibilityModifier>
+                            <Parameters></Parameters>
+                        </CorrespondentMethod>
+                    </CorrespondentMethods>
+                </Correspondent>
+		<Correspondent>
+            		<Comment>fake correspondent 4</Comment>
+                    <FilePath>no path</FilePath>
+                    <ProjectName>no project</ProjectName>
+                    <PackageName>de.kit.ipd.cocome.cloud.serviceadapter.Services</PackageName>
+                    <Interfaces>
+                        <Interface>org.palladiosimulator.protocom.framework.IPerformancePrototypeComponent</Interface>
+                    </Interfaces>
+                    <UnitName>queryStockItem</UnitName>
+                    <CorrespondentMethods>
+                        <CorrespondentMethod>
+                            <Name>Get</Name>
+                            <ReturnType>void</ReturnType>
+                            <VisibilityModifier></VisibilityModifier>
+                            <Parameters></Parameters>
+                        </CorrespondentMethod>
+                    </CorrespondentMethods>
+                </Correspondent>
+		<Correspondent>
+            		<Comment>fake correspondent 5</Comment>
+                    <FilePath>no path</FilePath>
+                    <ProjectName>no project</ProjectName>
+                    <PackageName>de.kit.ipd.cocome.cloud.serviceadapter.Services</PackageName>
+                    <Interfaces>
+                        <Interface>org.palladiosimulator.protocom.framework.IPerformancePrototypeComponent</Interface>
+                    </Interfaces>
+                    <UnitName>queryLowStockItemsWithRespectToIncomingProducts</UnitName>
                     <CorrespondentMethods>
                         <CorrespondentMethod>
                             <Name>Get</Name>

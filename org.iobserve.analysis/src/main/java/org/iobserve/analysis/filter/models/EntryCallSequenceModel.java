@@ -17,6 +17,8 @@ package org.iobserve.analysis.filter.models;
 
 import java.util.List;
 
+import org.iobserve.analysis.userbehavior.data.WorkloadIntensity;
+
 /**
  * Entry Call Sequence Model according to Fig. 7 in paper
  * <i>Run-time Architecture Models for Dynamic Adaptation and Evolution of Cloud Applications</i>
@@ -28,6 +30,8 @@ import java.util.List;
 public class EntryCallSequenceModel {
 	
 	private final List<UserSession> userSessions;
+	private WorkloadIntensity workloadIntensity;
+	private double likelihoodOfUserGroup;
 	
 	/**
 	 * Simple constructor set the list
@@ -38,10 +42,53 @@ public class EntryCallSequenceModel {
 	}
 	
 	/**
+	 * Constructor to set the user group´s likelihood and its related sessions
+	 * @param sessions, likelihood
+	 */
+	public EntryCallSequenceModel(final List<UserSession> sessions, double likelihoodOfUserGroup) {
+		this.userSessions = sessions;
+		this.likelihoodOfUserGroup = likelihoodOfUserGroup;
+	}
+	
+	/**
 	 * Get the user session objects which contain the entry call events
 	 * @return
 	 */
 	public List<UserSession> getUserSessions() {
 		return this.userSessions;
 	}
+
+	/**
+	 * Get the workload intensity of the user group the enryCallSequenceModel represents
+	 * @return
+	 */
+	public WorkloadIntensity getWorkloadIntensity() {
+		return workloadIntensity;
+	}
+
+	/**
+	 * Set the workload intensity of the user group the enryCallSequenceModel represents
+	 * @return
+	 */
+	public void setWorkloadIntensity(WorkloadIntensity workloadIntensity) {
+		this.workloadIntensity = workloadIntensity;
+	}
+
+	/**
+	 * Get the likelihood of the user group the enryCallSequenceModel represents
+	 * @return
+	 */
+	public double getLikelihoodOfUserGroup() {
+		return likelihoodOfUserGroup;
+	}
+
+	/**
+	 * Set the likelihood of the user group the enryCallSequenceModel represents
+	 * @return
+	 */
+	public void setLikelihoodOfUserGroup(double likelihoodOfUserGroup) {
+		this.likelihoodOfUserGroup = likelihoodOfUserGroup;
+	}
+	
+	
 }

@@ -63,6 +63,14 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	}
 	
 	/**
+	 * Create a new usage model
+	 * @return new usage model
+	 */
+	public UsageModel createUsageModel() {
+		return UsagemodelFactory.eINSTANCE.createUsageModel();
+	}
+	
+	/**
 	 * Create an {@link UsageScenario} and create a body {@link ScenarioBehaviour} for it.
 	 * Get the {@link ScenarioBehaviour} by {@link UsageScenario#getScenarioBehaviour_UsageScenario()}
 	 * @return created usage scenario
@@ -80,6 +88,27 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		usageScenario.setScenarioBehaviour_UsageScenario(scenarioBehaviour);
 		return usageScenario;
 	}
+	
+	/**
+	 * Create new usage scenario and add it to the passed usage model
+	 * 
+	 * @param name of the usage scenario
+	 * @param usageModel the usage scenario is added to
+	 * @return created usage scenario
+	 */
+	public UsageScenario createUsageScenario(final String name, final UsageModel usageModel) {
+		// create the usage scenario
+		final UsageScenario usageScenario =  UsagemodelFactory.eINSTANCE.createUsageScenario();
+		usageScenario.setEntityName(name);
+		usageScenario.setUsageModel_UsageScenario(usageModel);
+		usageModel.getUsageScenario_UsageModel().add(usageScenario);
+		
+		// create a scenario behavior
+		final ScenarioBehaviour scenarioBehaviour = this.createScenarioBehaviour();
+		usageScenario.setScenarioBehaviour_UsageScenario(scenarioBehaviour);
+		return usageScenario;
+	}
+	
 	
 	/**
 	 * Create a {@link ScenarioBehaviour}. The behavior is just created not added any model part.
@@ -208,6 +237,14 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		return this.createEntryLevelSystemCall(correspondent.getPcmOperationName());
 	}
 	
+	/**
+	 * Create a new empty EntryLevelSystemCall  
+	 * @return
+	 */
+	public EntryLevelSystemCall createEmptyEntryLevelSystemCall() {
+		return UsagemodelFactory.eINSTANCE.createEntryLevelSystemCall();
+	}
+	
 	// *****************************************************************
 	// BRANCHING
 	// *****************************************************************
@@ -269,6 +306,14 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	}
 	
 	/**
+	 * Create new empty branch
+	 * @return
+	 */
+	public Branch createEmptyBranch() {
+		return UsagemodelFactory.eINSTANCE.createBranch();
+	}
+	
+	/**
 	 * Create loop in given parent {@link ScenarioBehaviour}. A
 	 * {@link ScenarioBehaviour} is added to the body of the loop,
 	 * in order to make it possible adding further model elements.
@@ -309,6 +354,14 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	 */
 	public Loop createLoop(final String name, final BranchTransition parent) {
 		return this.createLoop(name, parent.getBranchedBehaviour_BranchTransition());
+	}
+	
+	/**
+	 * Creates a new and empty Loop
+	 * @return
+	 */
+	public Loop createEmptyLoop() {
+		return UsagemodelFactory.eINSTANCE.createLoop();
 	}
 	
 	// *****************************************************************

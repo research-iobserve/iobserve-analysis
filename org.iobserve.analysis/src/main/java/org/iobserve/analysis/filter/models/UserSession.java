@@ -169,4 +169,19 @@ public class UserSession {
 		}
 		return entryTime;
 	}
+	
+	/**
+	 * Get the user session´s events
+	 * @return
+	 */
+	public List<EntryCallEvent> getEvents() {
+		return events;
+	}
+	/**
+	 * Get the user session´s id
+	 * @return
+	 */
+	public String getSessionId() {
+		return sessionId;
+	}
 }

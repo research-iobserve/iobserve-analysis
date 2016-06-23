@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -29,6 +31,10 @@ import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.model.UsageModelProvider;
+import org.iobserve.analysis.userbehavior.UserBehaviorModeling;
+import org.iobserve.analysis.userbehavior.test.TestElements;
+import org.iobserve.analysis.userbehavior.test.UsageModelMatcher;
+import org.iobserve.analysis.userbehavior.test.UsageModelTestBuilder;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Start;
@@ -68,8 +74,60 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 		AnalysisMain.getInstance().getTimeMemLogger()
 			.before(this, this.getId() + TEntryEventSequence.executionCounter);
 		
+		/**
+		 * Added by David Peter
+		 */
+		UsageModelTestBuilder usageModelTestBuilder = new UsageModelTestBuilder();
+		UsageModelMatcher usageModelMatcher = new UsageModelMatcher();
+		if(executionCounter==0) {
+			List<Object> dataValues = new ArrayList<Object>();
+			List<Long> timeValues = new ArrayList<Long>();
+			int numberOfIterations = 20;
+			int stepSize = 1;
+			try {
+				for(int i=1;i<=numberOfIterations;i+=stepSize) {
+					
+					int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+					int varianceOfUserGroups = AnalysisMain.getInstance().getInputParameter().getVarianceOfUserGroups();
+					int thinkTime = AnalysisMain.getInstance().getInputParameter().getThinkTime();
+					boolean isClosedWorkload = true;
+					
+//					TestElements testElementsOfSimpleBranchModel = usageModelTestBuilder.getSimpleBranchTestModel(thinkTime, isClosedWorkload);
+//					TestElements testElementsOfSimpleLoopModel = usageModelTestBuilder.getSimpleLoopTestModel(thinkTime, isClosedWorkload);
+					TestElements testElementsOfSimpleSequenceModel = usageModelTestBuilder.getSimpleSequenceTestModel(thinkTime,isClosedWorkload);
+//					EntryCallSequenceModel testLoopedBranchEntryCallSequenceModel = usageModelTestBuilder.getLoopedBranchTestModel();
+//					EntryCallSequenceModel testIncreasingCallSequenceEntryCallSequenceModel = usageModelTestBuilder.getIncreasingCallSequenceScalabilityTestModel(i);
+//					EntryCallSequenceModel testIncreasingUserSessionsEntryCallSequenceModel = usageModelTestBuilder.getIncreasingUserSessionsScalabilityTestModel(i);
+
+					
+					final long timeBefore = System.currentTimeMillis();
+					UserBehaviorModeling behaviorModeling = new UserBehaviorModeling(testElementsOfSimpleSequenceModel.getEntryCallSequenceModel(), numberOfUserGroups, varianceOfUserGroups, isClosedWorkload, thinkTime);
+					try {
+						behaviorModeling.modelUserBehavior();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					final long timeAfter = System.currentTimeMillis();
+					final long timeDifference = (timeAfter - timeBefore);
+
+					timeValues.add(timeDifference);
+					
+					System.out.println(""+i+"/"+numberOfIterations);
+					boolean isMatch = usageModelMatcher.matchUsageModels(behaviorModeling.getPcmUsageModel(), testElementsOfSimpleSequenceModel.getUsageModel());
+					dataValues.add(isMatch);
+					usageModelTestBuilder.saveModel(behaviorModeling.getPcmUsageModel(), "/Users/David/GitRepositories/iObserve/org.iobserve.analysis/output/usageModels/output.usagemodel");
+				}
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			usageModelTestBuilder.writeToCsv("match.csv",dataValues, timeValues);
+		}
+		/**
+		 * End 
+		 */
+		
 		// do main task
-		this.doUpdateUsageModel(model.getUserSessions());
+//		 this.doUpdateUsageModel(model.getUserSessions());
 		
 		// logging execution time and memory
 		AnalysisMain.getInstance().getTimeMemLogger()
