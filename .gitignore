@@ -18,3 +18,4 @@ mvn-repo/
 *.classpath
 gradle.properties
 repos/
+*.log
