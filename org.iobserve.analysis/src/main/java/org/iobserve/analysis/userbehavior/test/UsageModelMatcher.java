@@ -66,8 +66,8 @@ public class UsageModelMatcher {
 			
 		while(true) {
 			
-			if(nextActionOfScenarioBehaviour1==null&&nextActionOfScenarioBehaviour2==null)
-				break;
+			if(nextActionOfScenarioBehaviour1==null||nextActionOfScenarioBehaviour2==null)
+				return false;
 			if(nextActionOfScenarioBehaviour1.getClass().equals(StopImpl.class)&&nextActionOfScenarioBehaviour2.getClass().equals(StopImpl.class))
 				break;
 			
