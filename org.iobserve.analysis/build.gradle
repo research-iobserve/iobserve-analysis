@@ -1,4 +1,7 @@
+apply plugin: 'application'
+
 version = '1.0'
+mainClassName = 'org.iobserve.analysis.AnalysisMain'
 
 ext {
 	working_dir = 'res/working_dir/'
@@ -35,9 +38,16 @@ jar {
                    'Implementation-Version': version
        	attributes 'Main-Class': 'org.iobserve.analysis.AnalysisMain'
     }
+    
+    from {
+        (configurations.runtime).collect {
+            it.isDirectory() ? it : zipTree(it).matching{exclude{it.path.contains('maven')}}
+        }
+    }
 }
 
 dependencies {
+	compile gradleApi()
 	
     compile project(":org.iobserve.monitoring")
     compile project(":org.iobserve.common")
@@ -67,18 +77,6 @@ dependencies {
 	//compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
 	//compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.+'
 	//compile 'org.eclipse.uml2:org.eclipse.uml2.uml:3.1.+'
-}
-
-test {
-    systemProperties 'property': 'value'
-}
-
-uploadArchives {
-    repositories {
-       flatDir {
-           dirs 'repos'
-       }
-    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -122,29 +120,12 @@ task cleanDebug {
 	dependsOn << copyPcmToWorkingDir
 }
 
-task fatJar(type: Jar) {
-    baseName = project.name + '-all'
-    from { configurations.compile.collect {it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
-
 task runAnalysis(type: JavaExec) {
 	dependsOn << build
 	dependsOn << copyPcmToWorkingDir
-	String appArgs = "--dirMonitoring=res/original_dir/kieker --dirPcm=res/working_dir/pcm --dirLogging=output/logging"
+	String appArgs = "--dirMonitoring=res/working_dir/kieker --dirPcm=res/working_dir/pcm --dirLogging=output/logging"
 	args = [appArgs]
 	classpath = files("build/libs/org.iobserve.analysis-1.0.jar")
 	main = 'org.iobserve.analysis.AnalysisMain'
 }
 
-/*
-task fatJar(type: Jar) {
-	manifest {
-        attributes 'Implementation-Title': 'iObserve-Analysis',  
-        	'Implementation-Version': version,
-        	'Main-Class': 'org.iobserve.analysis.AnalysisMain'
-    }
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}*/
