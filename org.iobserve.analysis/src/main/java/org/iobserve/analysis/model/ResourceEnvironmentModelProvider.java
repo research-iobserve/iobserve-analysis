@@ -21,34 +21,56 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
-public class ResourceEnvironmentModelProvider extends AbstractModelProvider<ResourceEnvironment> {
+import com.sun.corba.se.spi.ior.Identifiable;
 
-	// ********************************************************************
-	// * INITIALIZATION
-	// ********************************************************************
+/**
+ * Model provider to provide {@link ResourceEnvironment} model.
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
+ *
+ */
+public final class ResourceEnvironmentModelProvider 
+	extends AbstractModelProvider<ResourceEnvironment> {
 
-	public ResourceEnvironmentModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
-		super(uriModelInstance, thePlatform);
+	/**
+	 * Create model provider to provide {@link ResourceEnvironment} model.
+	 * @param thePlatform platform
+	 * @param uriUsageModel uri to the model
+	 */
+	ResourceEnvironmentModelProvider(
+			final ModelProviderPlatform thePlatform, final URI uriUsageModel) {
+		super(thePlatform, uriUsageModel);
 	}
-	
-
-	// ********************************************************************
-	// * GETTER / SETTER
-	// ********************************************************************
 
 	@Override
 	public EPackage getPackage() {
 		return ResourceenvironmentPackage.eINSTANCE;
 	}
 
+	/**
+	 * Get the {@link ResourceContainer} with the given {@link Identifiable}.
+	 * @param id id of resource container
+	 * @return resource container instance or null if no resource container
+	 * available with the given id.
+	 */
 	public ResourceContainer getResourceContainer(final String id) {
 		final ResourceEnvironment env = this.getModel();
-		return (ResourceContainer) AbstractModelProvider.getIdentifiableComponent(id, env.getResourceContainer_ResourceEnvironment());
+		return (ResourceContainer) AbstractModelProvider
+				.getIdentifiableComponent(id,
+						env.getResourceContainer_ResourceEnvironment());
 	}
 	
+	/**
+	 * Get the {@link ResourceContainer} by 
+	 * its {@link ResourceContainer#getEntityName()}.
+	 * @param name name
+	 * @return resource container instance or null if no resource container
+	 * available with the given name.
+	 */
 	public ResourceContainer getResourceContainerByName(final String name) {
 		final ResourceEnvironment env = this.getModel();
-		for(final ResourceContainer nextResContainer : env.getResourceContainer_ResourceEnvironment()) {
+		for (final ResourceContainer nextResContainer 
+				: env.getResourceContainer_ResourceEnvironment()) {
 			if (nextResContainer.getEntityName().equals(name)) {
 				return nextResContainer;
 			}

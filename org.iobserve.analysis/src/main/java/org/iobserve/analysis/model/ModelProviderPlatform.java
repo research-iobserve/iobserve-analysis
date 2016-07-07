@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.model;
 
 import java.io.File;
@@ -36,23 +51,23 @@ public final class ModelProviderPlatform {
 			final String extension = this.getFileExtension(nextFile.getName());
 			if (extension.equalsIgnoreCase("repository")) {
 				final URI uri = this.getUri(nextFile);
-				this.repositoryModelProvider = new RepositoryModelProvider(uri, this);
+				this.repositoryModelProvider = new RepositoryModelProvider(this, uri);
 				
 			} else if (extension.equalsIgnoreCase("allocation")) {
 				final URI uri = this.getUri(nextFile);
-				this.allocationModelProvider = new AllocationModelProvider(uri, this);
+				this.allocationModelProvider = new AllocationModelProvider(this, uri);
 				
 			} else if (extension.equalsIgnoreCase("resourceenvironment")) {
 				final URI uri = this.getUri(nextFile);
-				this.resourceEnvironmentModelProvider = new ResourceEnvironmentModelProvider(uri, this);
+				this.resourceEnvironmentModelProvider = new ResourceEnvironmentModelProvider(this, uri);
 				
 			} else if (extension.equalsIgnoreCase("system")) {
 				final URI uri = this.getUri(nextFile);
-				this.systemModelProvider = new SystemModelProvider(uri, this);
+				this.systemModelProvider = new SystemModelProvider(this, uri);
 				
 			} else if (extension.equalsIgnoreCase("usagemodel")) {
 				final URI uri = this.getUri(nextFile);
-				this.usageModelProvider = new UsageModelProvider(uri, this);
+				this.usageModelProvider = new UsageModelProvider(this, uri);
 				
 			} else if (extension.equalsIgnoreCase("rac")) {
 				final String pathMappingFile = nextFile.getAbsolutePath();

@@ -13,39 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.model;
-
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EPackage;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
-import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
-
 /**
- * Model provider to provide a {@link UsageModel}.
+ * This package contains all model related classes. This classes are needed
+ * to load, store or work with the pcm model in general.
+ * 
  * @author Robert Heinrich
- * @author Alessandro
+ * @author Alessandro Giusa
  *
  */
-public final class UsageModelProvider 
-	extends AbstractModelProvider<UsageModel> {
-
-	/**
-	 * Create usage model provider.
-	 * @param thePlatform platform
-	 * @param uriUsageModel uri to model
-	 */
-	UsageModelProvider(final ModelProviderPlatform thePlatform,
-			final URI uriUsageModel) {
-		super(thePlatform, uriUsageModel);
-	}
-	
-	@Override
-	public EPackage getPackage() {
-		return UsagemodelPackage.eINSTANCE;
-	}
-	
-	@Override
-	protected void loadModel() {
-		super.loadModel();
-	}
-}
+package org.iobserve.analysis.model;
