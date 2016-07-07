@@ -13,37 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.filter.models;
-
-import java.util.List;
-
 /**
- * Entry Call Sequence Model according to Fig. 7 in paper <i>Run-time
- * Architecture Models for Dynamic Adaptation and Evolution of Cloud
- * Applications</i>
+ * This package contains all models used by the filter in
+ * org.iobserve.analysis.filter.
  * 
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
  */
-public final class EntryCallSequenceModel {
-	
-	/**list of user sessions.*/
-	private final List<UserSession> userSessions;
-	
-	/**
-	 * Create new model.
-	 * @param sessions sessions.
-	 */
-	public EntryCallSequenceModel(final List<UserSession> sessions) {
-		this.userSessions = sessions;
-	}
-	
-	/**
-	 * Get the user session objects which contain the entry call events.
-	 * @return list of user sessions
-	 */
-	public List<UserSession> getUserSessions() {
-		return this.userSessions;
-	}
-}
+package org.iobserve.analysis.filter.models;

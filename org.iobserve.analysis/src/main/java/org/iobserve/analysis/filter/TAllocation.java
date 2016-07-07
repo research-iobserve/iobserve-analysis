@@ -23,42 +23,50 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * It could be interesting to combine DeploymentEventTransformation and UndeploymentEventTransformation.
- * However, that would require two input ports. And I have not used the API for multiple input ports.
+ * It could be interesting to combine DeploymentEventTransformation and
+ * UndeploymentEventTransformation. However, that would require two input ports.
+ * And I have not used the API for multiple input ports.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
+public final class TAllocation 
+	extends AbstractConsumerStage<IDeploymentRecord> {
 
+	/**counter to count how often this filter was executed.*/
 	private static long executionCounter = 0;
+	/**correspondence reference.*/
 	private final ICorrespondence correspondence;
+	/**reference to {@link ResourceEnvironment} provider.*/
 	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
-	private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
+	/**output port.*/
+	private final OutputPort<IDeploymentRecord> deploymentOutputPort =
+			this.createOutputPort();
 
 	/**
-	 * Most likely the constructor needs an additional field for the PCM access. But this has to be discussed with Robert.
-	 *
-	 * @param correspondence
-	 *            the correspondence model access
+	 * Most likely the constructor needs an additional field for the PCM access.
+	 * But this has to be discussed with Robert.
 	 */
 	public TAllocation() {
-		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
+		final ModelProviderPlatform modelProviderPlatform = 
+				AnalysisMain.getInstance().getModelProviderPlatform();
 		
 		// get all model references
 		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
-		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
+		this.resourceEnvModelProvider = modelProviderPlatform
+				.getResourceEnvironmentModelProvider();
 	}
 	
 	/**
 	 * @return the deploymentOutputPort
 	 */
-	public final OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
+	public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
 		return this.deploymentOutputPort;
 	}
 
@@ -71,22 +79,22 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 	@Override
 	protected void execute(final IDeploymentRecord event) {
 		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TAllocation.executionCounter); //TODO testing logger
-		
+			.before(this, this.getId() + TAllocation.executionCounter);
 		
 		if (event instanceof ServletDeployedEvent) {
-			this.process((ServletDeployedEvent)event);
+			this.process((ServletDeployedEvent) event);
 		
 		} else if (event instanceof EJBDeployedEvent) {
-			this.process((EJBDeployedEvent)event);
+			this.process((EJBDeployedEvent) event);
 		}
 		
 		// forward the event
 		this.deploymentOutputPort.send(event);
 		
 		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TAllocation.executionCounter); //TODO testing logger
+			.after(this, this.getId() + TAllocation.executionCounter);
 		
+		// count execution for logging purposes
 		TAllocation.executionCounter++;
 	}
 	
@@ -119,7 +127,8 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 				.getResourceContainerByName(serverName) == null;
 		if (absent) {
 			// create resource container
-			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
+			final ResourceEnvironmentModelBuilder builder = 
+					new ResourceEnvironmentModelBuilder(
 					TAllocation.this.resourceEnvModelProvider);
 			builder.loadModel();
 			builder.createResourceContainer(serverName);
