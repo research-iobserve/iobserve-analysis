@@ -27,23 +27,26 @@ import teetime.framework.Analysis;
 import teetime.framework.AnalysisConfiguration;
 
 /**
- * Main class for starting the iObserve application
+ * Main class for launching the iObserve application.
  * 
  * @author Reiner Jung
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class AnalysisMain {
+public final class AnalysisMain {
 
-	/**input parameters*/
+	/**input parameters.*/
 	private AnalysisMainParameterBean inputParameter; 
+	
+	/**singleton reference.*/
+	private static AnalysisMain eINSTANCE;
 
 	/** configuration for the analysis. */
 	private AnalysisConfiguration configuration;
-	
+	/**model platform used to create all model provider.*/
 	private ModelProviderPlatform modelProviderPlatform;
-	
-	private SimpleTimeMemLogger timeMemLogger;
+	/**logger to log filter execution time.*/
+	private FilterTimeMemLogger timeMemLogger;
 
 	/**
 	 * Default constructor.
@@ -51,29 +54,18 @@ public class AnalysisMain {
 	private AnalysisMain() {
 		// do nothing here
 	}
-	
-	// *****************************************************************
-	// SINGLETON PART
-	// *****************************************************************
-
-	/**singleton reference*/
-	private static AnalysisMain INSTANCE;
 
 	/**
-	 * Get singleton instance of {@link AnalysisMain}
+	 * Get singleton instance of {@link AnalysisMain}.
 	 * 
 	 * @return singleton instance of {@link AnalysisMain}
 	 */
 	public static AnalysisMain getInstance() {
-		if (AnalysisMain.INSTANCE == null) {
-			AnalysisMain.INSTANCE = new AnalysisMain();
+		if (AnalysisMain.eINSTANCE == null) {
+			AnalysisMain.eINSTANCE = new AnalysisMain();
 		}
-		return AnalysisMain.INSTANCE;
+		return AnalysisMain.eINSTANCE;
 	}
-	
-	// *****************************************************************
-	// CONFIGURATION
-	// *****************************************************************
 	
 	/**
 	 * Initialization.
@@ -86,21 +78,18 @@ public class AnalysisMain {
 		this.createModelProviderPlatform();
 		this.createObservationConfiguration();
 	}
-	
-	// *****************************************************************
-	// RUN
-	// *****************************************************************
 
+	/**
+	 * Run the application.
+	 */
 	private void run() {
-		Runtime.getRuntime().gc(); // initial gc call
-		final Analysis<AnalysisConfiguration> analysis = new Analysis<AnalysisConfiguration>(this.configuration);
+		Runtime.getRuntime().gc();
+		final Analysis<AnalysisConfiguration> analysis = 
+				new Analysis<AnalysisConfiguration>(this.configuration);
 		analysis.executeBlocking();
-		((ObservationConfiguration) this.configuration).getRecordSwitch().outputStatistics();
+		((ObservationConfiguration) this.configuration)
+			.getRecordSwitch().outputStatistics();
 	}
-	
-	// *****************************************************************
-	// GETTER
-	// *****************************************************************
 
 	/**
 	 * Get command line parameter.
@@ -112,30 +101,26 @@ public class AnalysisMain {
 	
 	/**
 	 * Get model provider platform.
-	 * @return
+	 * @return model platform
 	 */
 	public ModelProviderPlatform getModelProviderPlatform() {
 		return this.modelProviderPlatform;
 	}
 
 	/**
-	 * Get simple logger for timing and memory usage
-	 * @return the logger
+	 * Get simple logger for timing and memory usage.
+	 * @return filter logger
 	 */
-	public SimpleTimeMemLogger getTimeMemLogger() {
+	public FilterTimeMemLogger getTimeMemLogger() {
 		return this.timeMemLogger;
 	}
 
 	/**
-	 * Close the logger
+	 * Close the logger.
 	 */
 	public void closeLogger() {
 		this.timeMemLogger.close();
 	}
-	
-	// *****************************************************************
-	// CREATION
-	// *****************************************************************
 	
 	/**
 	 * Creates the {@link ModelProviderPlatform}.
@@ -145,13 +130,21 @@ public class AnalysisMain {
 		this.modelProviderPlatform = new ModelProviderPlatform(pcmDir);
 	}
 	
+	/**
+	 * Create the logger.
+	 */
 	private void createLogger() {
-		this.timeMemLogger = new SimpleTimeMemLogger(this.inputParameter.getDirLogging());
+		this.timeMemLogger = 
+				new FilterTimeMemLogger(this.inputParameter.getDirLogging());
 	}
 	
+	/**
+	 * Create the configuration for teetime.
+	 */
 	private void createObservationConfiguration() {
 		try {
-			this.configuration = new ObservationConfiguration(new File(this.inputParameter.getDirMonitoringData()));
+			this.configuration = new ObservationConfiguration(
+					new File(this.inputParameter.getDirMonitoringData()));
 		} catch (final IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -161,20 +154,16 @@ public class AnalysisMain {
 		}
 	}
 
-	// *****************************************************************
-	// ACTUAL ANALYSIS MAIN STUFF
-	// *****************************************************************
-
 	/**
 	 * Main function.
 	 *
 	 * @param args command line arguments.
 	 */
 	public static void main(final String[] args) {
-		// parse parameter
 		final ParameterParser paramParser = new ParameterParser();
 		paramParser.parse(args);
-		final AnalysisMainParameterBean params = new AnalysisMainParameterBean();
+		final AnalysisMainParameterBean params = 
+				new AnalysisMainParameterBean();
 		try {
 			paramParser.getParameter(params);
 		} catch (MissingParameterException e1) {
@@ -187,10 +176,8 @@ public class AnalysisMain {
 		application.init(params);
 		try {
 			application.run();
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-
-			//dispatch the exception here
 		} finally {
 			application.closeLogger();
 		}

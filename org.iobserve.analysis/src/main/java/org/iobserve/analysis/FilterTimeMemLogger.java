@@ -31,7 +31,7 @@ import teetime.framework.AbstractConsumerStage;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class SimpleTimeMemLogger {
+public class FilterTimeMemLogger {
 	
 	private final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 	
@@ -41,7 +41,7 @@ public class SimpleTimeMemLogger {
 	
 	private String logOutput = "logtest.csv";
 	
-	public SimpleTimeMemLogger(final String outputPath) {
+	public FilterTimeMemLogger(final String outputPath) {
 		this.logOutput = outputPath;
 	}
 	
