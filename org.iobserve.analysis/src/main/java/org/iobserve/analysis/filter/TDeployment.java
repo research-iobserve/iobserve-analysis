@@ -35,34 +35,43 @@ import teetime.framework.AbstractConsumerStage;
 import com.google.common.base.Optional;
 
 /**
- * It could be interesting to combine DeploymentEventTransformation and UndeploymentEventTransformation.
- * However, that would require two input ports. And I have not used the API for multiple input ports.
+ * It could be interesting to combine DeploymentEventTransformation and
+ * UndeploymentEventTransformation. However, that would require two input ports.
+ * And I have not used the API for multiple input ports.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
+public final class TDeployment 
+	extends AbstractConsumerStage<IDeploymentRecord> {
 
+	/**execution counter.*/
 	private static long executionCounter = 0;
+	/**reference to correspondent model.*/
 	private final ICorrespondence correspondence;
+	/**reference to allocation model provider.*/
 	private AllocationModelProvider allocationModelProvider;
+	/**reference to system model provider.*/
 	private SystemModelProvider systemModelProvider;
+	/**reference to resource environment model provider.*/
 	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
 
 	/**
-	 * Most likely the constructor needs an additional field for the PCM access. But this has to be discussed with Robert.
-	 *
-	 * @param correspondence
-	 *            the correspondence model access
+	 * Create filter.
 	 */
 	public TDeployment() {
-		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
+		final ModelProviderPlatform modelProviderPlatform = 
+				AnalysisMain.getInstance().getModelProviderPlatform();
 		
 		// get all model references
-		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
-		this.allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
-		this.systemModelProvider = modelProviderPlatform.getSystemModelProvider();
-		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
+		this.correspondence = 
+				modelProviderPlatform.getCorrespondenceModel();
+		this.allocationModelProvider = 
+				modelProviderPlatform.getAllocationModelProvider();
+		this.systemModelProvider = 
+				modelProviderPlatform.getSystemModelProvider();
+		this.resourceEnvModelProvider = 
+				modelProviderPlatform.getResourceEnvironmentModelProvider();
 	}
 
 	/**
@@ -74,17 +83,17 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	@Override
 	protected void execute(final IDeploymentRecord event) {
 		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TDeployment.executionCounter); //TODO testing logger
+			.before(this, this.getId() + TDeployment.executionCounter);
 		
 		if (event instanceof ServletDeployedEvent) {
-			this.process((ServletDeployedEvent)event);
+			this.process((ServletDeployedEvent) event);
 		
 		} else if (event instanceof EJBDeployedEvent) {
-			this.process((EJBDeployedEvent)event);
+			this.process((EJBDeployedEvent) event);
 		}
 		
 		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TDeployment.executionCounter); //TODO testing logger
+			.after(this, this.getId() + TDeployment.executionCounter);
 		
 		TDeployment.executionCounter++;
 	}
@@ -97,7 +106,8 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 		final String serivce = event.getSerivce();
 		final String context = event.getContext();
 		
-		final Optional<Correspondent> optionCorrespondent = this.correspondence.getCorrespondent(context);
+		final Optional<Correspondent> optionCorrespondent = 
+				this.correspondence.getCorrespondent(context);
 		if (optionCorrespondent.isPresent()) {
 			final Correspondent correspondent = optionCorrespondent.get();
 			this.updateModel(serivce, correspondent);
@@ -112,7 +122,8 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 		final String service = event.getSerivce();
 		final String context = event.getContext();
 		
-		final Optional<Correspondent> optionCorrespondent = this.correspondence.getCorrespondent(context);
+		final Optional<Correspondent> optionCorrespondent = 
+				this.correspondence.getCorrespondent(context);
 		if (optionCorrespondent.isPresent()) {
 			final Correspondent correspondent = optionCorrespondent.get();
 			this.updateModel(service, correspondent);
@@ -121,9 +132,11 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 	
 	/**
 	 * Update the system- and allocation-model by the given correspondent.
+	 * @param serverName name of the server
 	 * @param correspondent correspondent
 	 */
-	private void updateModel(final String serverName, final Correspondent correspondent) {
+	private void updateModel(final String serverName, 
+			final Correspondent correspondent) {
 		// get the model entity name
 		final String entityName = correspondent.getPcmEntityName();
 		
@@ -131,9 +144,12 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 		final String asmContextName = entityName + "_" + serverName;
 		
 		// get the model parts by name
-		final ResourceContainer resourceContainer = this.resourceEnvModelProvider.getResourceContainerByName(serverName);
+		final ResourceContainer resourceContainer = 
+				this.resourceEnvModelProvider.getResourceContainerByName(
+						serverName);
 		
-		// this can not happen since TAllocation should have created the resource container already.
+		// this can not happen since TAllocation should 
+		// have created the resource container already.
 		if (resourceContainer == null) {
 			System.out.println("ResourceContainer is null in TDeployment?!");
 			return;
@@ -141,23 +157,28 @@ public class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 		
 		
 		// get the assembly context. Create it if necessary
-		AssemblyContext assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName);
+		AssemblyContext assemblyContext = this.systemModelProvider
+				.getAssemblyContextByName(asmContextName);
 		
 		// in case the assembly context is null, TDeployment should create it
 		if (assemblyContext == null) {
 			// create assembly context
-			final SystemModelBuilder systemBuilder = new SystemModelBuilder(this.systemModelProvider);
+			final SystemModelBuilder systemBuilder = 
+					new SystemModelBuilder(this.systemModelProvider);
 			systemBuilder
 				.loadModel()
 				.createAssemblyContextsIfAbsent(asmContextName)
 				.build();
-			assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName);
+			assemblyContext = this.systemModelProvider
+					.getAssemblyContextByName(asmContextName);
 		}
 		
 		// update the allocation model
-		final AllocationModelBuilder builder = new AllocationModelBuilder(this.allocationModelProvider);
+		final AllocationModelBuilder builder = 
+				new AllocationModelBuilder(this.allocationModelProvider);
 		builder.loadModel()
-//			.resetModel() //TODO if we do this, it will delete all the other elements in the model?!
+		//if we do this, it will delete all the other elements in the model?!
+//			.resetModel() 
 			.addAllocationContextIfAbsent(resourceContainer, assemblyContext)
 			.build();
 	}

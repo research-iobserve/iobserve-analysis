@@ -32,22 +32,29 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * It could be interesting to combine DeploymentEventTransformation and UndeploymentEventTransformation.
- * However, that would require two input ports. And I have not used the API for multiple input ports.
+ * It could be interesting to combine DeploymentEventTransformation and
+ * UndeploymentEventTransformation. However, that would require two input ports.
+ * And I have not used the API for multiple input ports.
  *
  * @author Reiner Jung
  * @version 1.0
- *
  */
 public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
-	private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
 	
+	/**logger.*/
+	private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
+	/**execution counter.*/
 	private static int executionCounter = 0;
 	/*added by Alessandro Giusa see EntryCallEvent class for more information*/
-
-	private final Map<Long, TraceMetadata> traceMetaDatas = new HashMap<Long, TraceMetadata>();
-	private final Map<Long, BeforeOperationEvent> beforeOperationEvents = new HashMap<Long, BeforeOperationEvent>();
-	private final OutputPort<EntryCallEvent> outputPort = this.createOutputPort();
+	/***/
+	private final Map<Long, TraceMetadata> traceMetaDatas = 
+			new HashMap<Long, TraceMetadata>();
+	/***/
+	private final Map<Long, BeforeOperationEvent> beforeOperationEvents = 
+			new HashMap<Long, BeforeOperationEvent>();
+	/***/
+	private final OutputPort<EntryCallEvent> outputPort = 
+			this.createOutputPort();
 
 	/**
 	 * Does not need additional information.
@@ -60,12 +67,13 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 	 * This method is triggered for every deployment event.
 	 *
 	 * @param event
-	 *            all IFlowRecord like TraceMetadata, BeforeOperationEvent and AfterOperationEvent
+	 *            all IFlowRecord like TraceMetadata, BeforeOperationEvent and
+	 *            AfterOperationEvent
 	 */
 	@Override
 	protected void execute(final IFlowRecord event) {
 		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TEntryCall.executionCounter); //TODO testing logger
+			.before(this, this.getId() + TEntryCall.executionCounter);
 		
 		if (event instanceof TraceMetadata) {
 			final TraceMetadata metaData = (TraceMetadata) event;
@@ -108,7 +116,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 		}
 		
 		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TEntryCall.executionCounter); //TODO testing logger
+			.after(this, this.getId() + TEntryCall.executionCounter);
 		
 		// count execution
 		TEntryCall.executionCounter++;
