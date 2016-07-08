@@ -27,24 +27,37 @@ import java.util.HashMap;
 import teetime.framework.AbstractConsumerStage;
 
 /**
- * 
+ * Logger to log execution time and memory usage of filter.
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class FilterTimeMemLogger {
+public final class FilterTimeMemLogger {
 	
-	private final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
+	/**simple formatter.*/
+	private final SimpleDateFormat dateFormatter = 
+			new SimpleDateFormat("yyyy-MM-dd");
 	
-	/**to map the filters coming in asynch*/
-	private HashMap<String, Integer> asynchFilterRowCache = new HashMap<String, Integer>();
-	private HashMap<String, Table<String>> tablesFilter = new HashMap<String, Table<String>>();
-	
+	/**to map the filters coming in asynch.*/
+	private HashMap<String, Integer> asynchFilterRowCache = 
+			new HashMap<String, Integer>();
+	/**map for logger.*/
+	private HashMap<String, Table<String>> tablesFilter = 
+			new HashMap<String, Table<String>>();
+	/***/
 	private String logOutput = "logtest.csv";
 	
+	/**
+	 * Create logger.
+	 * @param outputPath path to output logging files
+	 */
 	public FilterTimeMemLogger(final String outputPath) {
 		this.logOutput = outputPath;
 	}
 	
+	/**
+	 * Init table.
+	 * @param table table
+	 */
 	private void initTable(final Table<String> table) {
 		final TableHeader filter = new TableHeader();
 		filter.setIndex(0);
@@ -83,16 +96,37 @@ public class FilterTimeMemLogger {
 		table.getHeader().add(diffMemory);//6
 	}
 	
+	/**
+	 * Set the path for logging files.
+	 * @param path path
+	 */
 	public void setLogOutput(final String path) {
 		this.logOutput = path;
 	}
 	
+	/**
+	 * Call this method before filter execution. 
+	 * Call {@link #after(AbstractConsumerStage, String)} after execution.
+	 * @param filter filter
+	 * @param format format like filter %s is used 
+	 * 		with {@link String#format(String, Object...)}
+	 * @param objects objects used in combination with format
+	 * 	in {@link String#format(String, Object...)}
+	 * 
+	 */
 	public void before(final AbstractConsumerStage<?> filter,
 			final String format, final Object...objects) {
 		this.before(filter, String.format(format, objects));
 	}
 	
-	public void before(final AbstractConsumerStage<?> filter, final String idFilterExecution) {
+	/**
+	 * Call this method before filter execution.
+	 * @see #before(AbstractConsumerStage, String, Object...). 
+	 * @param filter filter
+	 * @param idFilterExecution id of filter
+	 */
+	public void before(final AbstractConsumerStage<?> filter,
+			final String idFilterExecution) {
 		
 		// get current time
 		final long time = System.nanoTime();
@@ -103,7 +137,7 @@ public class FilterTimeMemLogger {
 		
 		// get the table
 		Table<String> table = this.tablesFilter.get(filter.getId());
-		if(table == null) {
+		if (table == null) {
 			table = new Table<String>();
 			this.initTable(table);
 			this.tablesFilter.put(filter.getId(), table);
@@ -132,20 +166,36 @@ public class FilterTimeMemLogger {
 		runtime.gc();
 	}
 	
+	/**
+	 * Call this method after filter execution. 
+	 * Call {@link #before(AbstractConsumerStage, String, Object...)}
+	 * before execution.
+	 * @param filter filter
+	 * @param format format like {@link String#format(String, Object...)}
+	 * @param objects objects used in {@link String#format(String, Object...)}
+	 */
 	public void after(final AbstractConsumerStage<?> filter,
 			final String format, final Object...objects) {
 		this.after(filter, String.format(format, objects));
 	}
 	
-	public void after(final AbstractConsumerStage<?> filter, final String idFilterExecution) {
+	/**
+	 * Call this after filter execution.
+	 * @see #after(AbstractConsumerStage, String, Object...)
+	 * @param filter filter
+	 * @param idFilterExecution id of filter
+	 */
+	public void after(final AbstractConsumerStage<?> filter,
+			final String idFilterExecution) {
 		final long time = System.nanoTime();
 		final Runtime runtime = Runtime.getRuntime();
 		final long usedMemory = runtime.totalMemory() - runtime.freeMemory();
 		
 		// get the table
 		Table<String> table = this.tablesFilter.get(filter.getId());
-		if(table == null) {
-			throw new NullPointerException("No Table available for filter:" + filter.getId());
+		if (table == null) {
+			throw new NullPointerException("No Table available "
+					+ "for filter:" + filter.getId());
 		}
 		
 		// get the row for this specific filter
@@ -169,23 +219,25 @@ public class FilterTimeMemLogger {
 		this.close();
 	}
 	
+	/**
+	 * Close the logger.
+	 */
 	public void close() {
 		final CSVParser parser = new CSVParser();
-		for(final String filter:this.tablesFilter.keySet()) {
+		for (final String filter:this.tablesFilter.keySet()) {
 			final Table<String> table = this.tablesFilter.get(filter);
 			parser.setModel(table);
 			final String csvContent = parser.toString();
 			try {
 				final String fileName = this.logOutput 
 						+ "_" + filter
-						+ "_" + this.dateFormatter.format(new Date()) +".csv";
+						+ "_" + this.dateFormatter.format(new Date()) + ".csv";
 				final PrintWriter writer = new PrintWriter(fileName);
 				writer.append(csvContent);
 				writer.close();
-			} catch(Exception e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-		
 	}
 }

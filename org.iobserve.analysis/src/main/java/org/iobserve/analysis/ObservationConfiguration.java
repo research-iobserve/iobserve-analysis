@@ -38,25 +38,28 @@ import teetime.stage.className.ClassNameRegistryRepository;
 import teetime.stage.io.filesystem.Dir2RecordsFilter;
 
 /**
+ * Configuration of teetime framework.
  * @author Reiner Jung
- *
+ * @author Alessandro Giusa
  */
-public class ObservationConfiguration extends AnalysisConfiguration {
+public final class ObservationConfiguration extends AnalysisConfiguration {
 
 	/** registry for the pipe factory used by Teetime. */
-	private final PipeFactoryRegistry pipeFactoryRegistry = PipeFactoryRegistry.INSTANCE;
+	private final PipeFactoryRegistry pipeFactoryRegistry = 
+			PipeFactoryRegistry.INSTANCE;
 
 	/** directory containing Kieker monitoring data. */
 	private final File directory;
 
 	// TODO fix that hack
-	/** record switch filter. Is required to be global so we can cheat and get measurements from the filter. */
+	/** record switch filter. Is required to be global so we can 
+	 * cheat and get measurements from the filter. */
 	private RecordSwitch recordSwitch;
 
 	/**
 	 * Create a configuration with a ASCII file reader.
 	 *
-	 * @param directory
+	 * @param theDirectory
 	 *            directory containing kieker data
 	 *
 	 * @throws ClassNotFoundException
@@ -64,15 +67,22 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 	 * @throws IOException
 	 *             for all file reading errors
 	 */
-	public ObservationConfiguration(final File directory) throws IOException, ClassNotFoundException {
-		this.directory = directory;
+	public ObservationConfiguration(final File theDirectory) 
+			throws IOException, ClassNotFoundException {
+		this.directory = theDirectory;
 		this.addThreadableStage(this.buildAnalysis());
 	}
 
+	/**
+	 * Build the pipeline.
+	 * @return stage
+	 */
 	private Stage buildAnalysis() {
 		// create filter
-		final InitialElementProducer<File> files = new InitialElementProducer<File>(this.directory);
-		final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
+		final InitialElementProducer<File> files = 
+				new InitialElementProducer<File>(this.directory);
+		final Dir2RecordsFilter reader = new Dir2RecordsFilter(
+				new ClassNameRegistryRepository());
 
 		this.recordSwitch = new RecordSwitch();
 
@@ -80,8 +90,10 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 		final TDeployment tDeployment = new TDeployment();
 		final TUndeployment tUndeployment = new TUndeployment();
 		final TEntryCall tEntryCall = new TEntryCall();
-		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
-		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence();
+		final TEntryCallSequence tEntryCallSequence = 
+				new TEntryCallSequence();
+		final TEntryEventSequence tEntryEventSequence = 
+				new TEntryEventSequence();
 		final TNetworkLink tNetworkLink = new TNetworkLink();
 
 		// connecting filters
@@ -89,23 +101,33 @@ public class ObservationConfiguration extends AnalysisConfiguration {
 				ThreadCommunication.INTRA, PipeOrdering.ARBITRARY, false);
 
 		factory.create(files.getOutputPort(), reader.getInputPort());
-		factory.create(reader.getOutputPort(), this.recordSwitch.getInputPort());
+		factory.create(reader.getOutputPort(), 
+				this.recordSwitch.getInputPort());
 		
 		// dispatch different monitoring data
-		factory.create(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
-		factory.create(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
-		factory.create(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
-		factory.create(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
+		factory.create(this.recordSwitch.getDeploymentOutputPort(),
+				tAllocation.getInputPort());
+		factory.create(this.recordSwitch.getUndeploymentOutputPort(),
+				tUndeployment.getInputPort());
+		factory.create(this.recordSwitch.getFlowOutputPort(),
+				tEntryCall.getInputPort());
+		factory.create(this.recordSwitch.getTraceMetaPort(),
+				tNetworkLink.getInputPort());
 
-		// 
-		factory.create(tAllocation.getDeploymentOutputPort(), tDeployment.getInputPort());
-		factory.create(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
-		factory.create(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
+		factory.create(tAllocation.getDeploymentOutputPort(),
+				tDeployment.getInputPort());
+		factory.create(tEntryCall.getOutputPort(),
+				tEntryCallSequence.getInputPort());
+		factory.create(tEntryCallSequence.getOutputPort(),
+				tEntryEventSequence.getInputPort());
 
 		return files;
 
 	}
-
+	
+	/**
+	 * @return {@link RecordSwitch}
+	 */
 	public RecordSwitch getRecordSwitch() {
 		return this.recordSwitch;
 	}
