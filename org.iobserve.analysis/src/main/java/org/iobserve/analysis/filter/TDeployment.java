@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
+import java.util.Optional;
+
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
@@ -24,6 +26,7 @@ import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
@@ -95,10 +98,12 @@ public final class TDeployment
 	 * @param event event to process
 	 */
 	private void process(final ServletDeployedEvent event) {
-		final String serivce = event.getSerivce();
+		final String service = event.getSerivce();
 		final String context = event.getContext();
-		this.correspondence.getCorrespondent(context)
-			.ifPresent(correspondence -> this.updateModel(serivce, correspondence));
+		Opt.of(this.correspondence.getCorrespondent(context))
+			.ifPresent()
+			.apply(correspondence -> this.updateModel(service, correspondence))
+			.elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
 	}
 	
 	/**
@@ -108,8 +113,10 @@ public final class TDeployment
 	private void process(final EJBDeployedEvent event) {
 		final String service = event.getSerivce();
 		final String context = event.getContext();
-		this.correspondence.getCorrespondent(context)
-			.ifPresent(correspondent -> this.updateModel(service, correspondent));
+		Opt.of(this.correspondence.getCorrespondent(context))
+			.ifPresent()
+			.apply(correspondent -> this.updateModel(service, correspondent))
+			.elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
 	}
 	
 	/**
@@ -125,15 +132,23 @@ public final class TDeployment
 		final String asmContextName = entityName + "_" + serverName;
 		
 		// get the model parts by name
-		final ResourceContainer resourceContainer = this.resourceEnvModelProvider.getResourceContainerByName(serverName);
+		final Optional<ResourceContainer> optResourceContainer = 
+				this.resourceEnvModelProvider.getResourceContainerByName(serverName);
 		
-		// this can not happen since TAllocation should 
-		// have created the resource container already.
-		if (resourceContainer == null) {
-			System.out.println("ResourceContainer is null in TDeployment?!");
-			return;
-		}
-		
+		// this can not happen since TAllocation should have created the resource container already.
+		Opt.of(optResourceContainer)
+			.ifPresent()
+			.apply(resourceContainer -> this.updateModel(resourceContainer, asmContextName))
+			.elseApply(()-> System.out.printf("AssemblyContext %s was not available?!\n"));
+	}
+	
+	/**
+	 * Add allocation context to allocation model with the given {@link ResourceContainer} and {@link AssemblyContext}
+	 * identified by the given entity name.
+	 * @param resourceContainer instance of resource container
+	 * @param asmContextName entity name of assembly context
+	 */
+	private void updateModel(final ResourceContainer resourceContainer, final String asmContextName) {
 		// get assembly context by name or create it if necessary.
 		final AssemblyContext assemblyContext = this.systemModelProvider
 				.getAssemblyContextByName(asmContextName)

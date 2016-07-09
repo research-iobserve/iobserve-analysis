@@ -15,13 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
+import java.util.Optional;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
-
-import com.sun.corba.se.spi.ior.Identifiable;
 
 /**
  * Model provider to provide {@link ResourceEnvironment} model.
@@ -46,35 +46,20 @@ public final class ResourceEnvironmentModelProvider
 	public EPackage getPackage() {
 		return ResourceenvironmentPackage.eINSTANCE;
 	}
-
-	/**
-	 * Get the {@link ResourceContainer} with the given {@link Identifiable}.
-	 * @param id id of resource container
-	 * @return resource container instance or null if no resource container
-	 * available with the given id.
-	 */
-	public ResourceContainer getResourceContainer(final String id) {
-		final ResourceEnvironment env = this.getModel();
-		return (ResourceContainer) AbstractModelProvider
-				.getIdentifiableComponent(id,
-						env.getResourceContainer_ResourceEnvironment());
-	}
 	
 	/**
-	 * Get the {@link ResourceContainer} by 
-	 * its {@link ResourceContainer#getEntityName()}.
-	 * @param name name
+	 * Get the {@link ResourceContainer} by its
+	 * {@link ResourceContainer#getEntityName()}.
+	 * 
+	 * @param name
+	 *            name
 	 * @return resource container instance or null if no resource container
-	 * available with the given name.
+	 *         available with the given name.
 	 */
-	public ResourceContainer getResourceContainerByName(final String name) {
+	public Optional<ResourceContainer> getResourceContainerByName(final String name) {
 		final ResourceEnvironment env = this.getModel();
-		for (final ResourceContainer nextResContainer 
-				: env.getResourceContainer_ResourceEnvironment()) {
-			if (nextResContainer.getEntityName().equals(name)) {
-				return nextResContainer;
-			}
-		}
-		return null;
+		return env.getResourceContainer_ResourceEnvironment().stream()
+					.filter(container -> container.getEntityName().equals(name))
+					.findFirst();
 	}
 }

@@ -29,15 +29,12 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * It could be interesting to combine DeploymentEventTransformation and
- * UndeploymentEventTransformation. However, that would require two input ports.
- * And I have not used the API for multiple input ports.
+ * TAllocation creates new resource container if and only if there not already available.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public final class TAllocation 
-	extends AbstractConsumerStage<IDeploymentRecord> {
+public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 
 	/**counter to count how often this filter was executed.*/
 	private static long executionCounter = 0;
@@ -53,10 +50,7 @@ public final class TAllocation
 	 * But this has to be discussed with Robert.
 	 */
 	public TAllocation() {
-		final ModelProviderPlatform modelProviderPlatform = 
-				AnalysisMain.getInstance().getModelProviderPlatform();
-		
-		// get all model references
+		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
 		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
 		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
 	}
