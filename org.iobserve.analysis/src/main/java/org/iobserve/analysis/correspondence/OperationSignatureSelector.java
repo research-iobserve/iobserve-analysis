@@ -32,8 +32,7 @@ import protocom.extension.mapping.PcmOperationSignature;
  * @author Alessandro Giusa
  */
 @FunctionalInterface
-public interface OperationSignatureSelector 
-extends ToBoolBiFunction<PcmCorrespondentMethod, PcmOperationSignature> {
+public interface OperationSignatureSelector extends ToBoolBiFunction<PcmCorrespondentMethod, PcmOperationSignature> {
 	
 	/**
 	 * Default select method to select the given operation signature.

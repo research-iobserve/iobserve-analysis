@@ -22,7 +22,13 @@ import org.iobserve.analysis.correspondence.CorrespondeceModelFactory;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 
 
-
+/**
+ * 
+ * The model platform will load all model and {@link ICorrespondence} model.
+ * 
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
+ */
 public final class ModelProviderPlatform {
 	
 	private RepositoryModelProvider repositoryModelProvider;
@@ -32,10 +38,10 @@ public final class ModelProviderPlatform {
 	private SystemModelProvider systemModelProvider;
 	private ICorrespondence correspondenceModel;
 	
-	// *****************************************************************
-	// CONFIGURATION
-	// *****************************************************************
-	
+	/**
+	 * Create model provider.
+	 * @param pathPcm directory of pcm models.
+	 */
 	public ModelProviderPlatform(final String pathPcm) {
 		final File dirPcm = new File(pathPcm);
 		if (!dirPcm.exists()) {
@@ -45,6 +51,10 @@ public final class ModelProviderPlatform {
 		this.createModelProviders(dirPcm);
 	}
 	
+	/**
+	 * Load all model provider
+	 * @param dirPcm directory of pcm
+	 */
 	private void createModelProviders(final File dirPcm) {
 		final File[] files = dirPcm.listFiles();
 		for (final File nextFile : files) {
@@ -73,47 +83,67 @@ public final class ModelProviderPlatform {
 				final String pathMappingFile = nextFile.getAbsolutePath();
 				this.correspondenceModel = CorrespondeceModelFactory.INSTANCE
 						.createCorrespondenceModel(pathMappingFile,
-								CorrespondeceModelFactory.INSTANCE.DEFAULT_OPERATION_SIGNATURE_MAPPER_2);
+								CorrespondeceModelFactory.DEFAULT_OPERATION_SIGNATURE_MAPPER_2);
 			}
 		}
 	}
 	
-	// *****************************************************************
-	// GET MODEL PROVIDERS
-	// *****************************************************************
-	
+	/**
+	 * @return allocation model provider
+	 */
 	public AllocationModelProvider getAllocationModelProvider() {
 		return this.allocationModelProvider;
 	}
 	
+	/**
+	 * @return resource environment model provider
+	 */
 	public ResourceEnvironmentModelProvider getResourceEnvironmentModelProvider() {
 		return this.resourceEnvironmentModelProvider;
 	}
 	
+	/**
+	 * @return system model provider
+	 */
 	public SystemModelProvider getSystemModelProvider() {
 		return this.systemModelProvider;
 	}
 	
+	/**
+	 * @return usage model provider
+	 */
 	public UsageModelProvider getUsageModelProvider() {
 		return this.usageModelProvider;
 	}
 	
+	/**
+	 * @return correspondence model
+	 */
 	public ICorrespondence getCorrespondenceModel() {
 		return this.correspondenceModel;
 	}
 	
+	/**
+	 * @return repository model provider
+	 */
 	public RepositoryModelProvider getRepositoryModelProvider() {
 		return this.repositoryModelProvider;
 	}
 	
-	// *****************************************************************
-	// HELPER
-	// *****************************************************************
-	
+	/**
+	 * Get file extension of the given path.
+	 * @param path path
+	 * @return file extension
+	 */
 	private String getFileExtension(final String path) {
 		return path.substring(path.lastIndexOf(".") + 1, path.length());
 	}
 	
+	/**
+	 * Get uri from the given file.
+	 * @param file file
+	 * @return uri
+	 */
 	private URI getUri(final File file) {
 		return URI.createFileURI(file.getAbsolutePath());
 	}
