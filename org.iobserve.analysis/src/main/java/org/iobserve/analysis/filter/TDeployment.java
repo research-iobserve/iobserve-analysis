@@ -44,8 +44,7 @@ import teetime.framework.AbstractConsumerStage;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public final class TDeployment 
-	extends AbstractConsumerStage<IDeploymentRecord> {
+public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 
 	/**execution counter.*/
 	private static long executionCounter = 0;
@@ -63,8 +62,6 @@ public final class TDeployment
 	 */
 	public TDeployment() {
 		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
-		
-		// get all model references
 		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
 		this.allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
 		this.systemModelProvider = modelProviderPlatform.getSystemModelProvider();
@@ -74,8 +71,7 @@ public final class TDeployment
 	/**
 	 * This method is triggered for every deployment event.
 	 *
-	 * @param event
-	 *            one deployment event to be processed
+	 * @param event one deployment event to be processed
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
@@ -152,7 +148,7 @@ public final class TDeployment
 		// get assembly context by name or create it if necessary.
 		final AssemblyContext assemblyContext = this.systemModelProvider
 				.getAssemblyContextByName(asmContextName)
-					.orElse(createAssemblyContextByName(this.systemModelProvider, asmContextName));
+				.orElse(createAssemblyContextByName(this.systemModelProvider, asmContextName));
 		
 		// update the allocation model
 		final AllocationModelBuilder builder = new AllocationModelBuilder(this.allocationModelProvider);

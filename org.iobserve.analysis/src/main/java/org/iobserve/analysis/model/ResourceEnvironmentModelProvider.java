@@ -36,8 +36,7 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
 	 * @param thePlatform platform
 	 * @param uriUsageModel uri to the model
 	 */
-	ResourceEnvironmentModelProvider(
-			final ModelProviderPlatform thePlatform, final URI uriUsageModel) {
+	ResourceEnvironmentModelProvider(final ModelProviderPlatform thePlatform, final URI uriUsageModel) {
 		super(thePlatform, uriUsageModel);
 	}
 
@@ -50,8 +49,7 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
 	 * Get the {@link ResourceContainer} by its
 	 * {@link ResourceContainer#getEntityName()}.
 	 * 
-	 * @param name
-	 *            name
+	 * @param name name
 	 * @return resource container instance or null if no resource container
 	 *         available with the given name.
 	 */
