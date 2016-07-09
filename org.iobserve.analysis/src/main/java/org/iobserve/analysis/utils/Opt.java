@@ -97,7 +97,7 @@ public final class Opt<T> {
 	}
 
 	/**
-	 * Actual logic to do the if-else dispatch.
+	 * Actual logic to do the if-else dispatch in case the value is available
 	 */
 	private final BiFunction<Consumer<T>, Runnable, Void> ifPresent = (present, notPresent) -> {
 		if (this.optional.isPresent()) {
@@ -109,7 +109,7 @@ public final class Opt<T> {
 	};
 	
 	/**
-	 * Actual logic to do the if-else dispatch.
+	 * Actual logic to do the if-else dispatch in case the value is NOT available.
 	 */
 	private final BiFunction<Runnable, Consumer<T>, Void> ifNotPresent = (notPresent, present) -> {
 		if (!this.optional.isPresent()) {
