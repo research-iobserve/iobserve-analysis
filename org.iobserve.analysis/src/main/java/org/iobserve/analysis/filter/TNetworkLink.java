@@ -88,23 +88,35 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 		builder.loadModel();
 		
 		final ResourceEnvironment resEnv = builder.getModel();
-		final List<ResourceContainer> listUnconnectedResourceContainer = 
-				TNetworkLink.collectUnconnectedResourceContainer(resEnv);
-		
-		if (!listUnconnectedResourceContainer.isEmpty()) {
-			final org.palladiosimulator.pcm.system.System system = this.systemModelProvider.getModel(true);
-			final Allocation allocation = this.allocationModelProvider.getModel(true);
-			
-			for (final ResourceContainer unLinkedResCont : listUnconnectedResourceContainer) {
-			 getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
-			 	.map(listAsmCtxToQuery -> getConnectedAsmCtx(system, listAsmCtxToQuery))
-				.map(listAsmCtxToConnect -> collectResourceContainer(allocation, listAsmCtxToConnect))
-				.map(listResContToConnectTo -> getLinkingResources(resEnv, listResContToConnectTo))
-				.flatMap(l -> l.stream())
-				.collect(Collectors.toList())
-				.forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
-			}
-		}
+		final org.palladiosimulator.pcm.system.System system = this.systemModelProvider.getModel(true);
+		final Allocation allocation = this.allocationModelProvider.getModel(true);
+		collectUnLinkedResourceContainer(resEnv).stream()
+			.forEach(unLinkedResCont -> {
+				getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
+				 	.map(asmCtx -> getConnectedAsmCtx(system, asmCtx))
+					.map(listAsmCtxToConnect -> collectResourceContainer(allocation, listAsmCtxToConnect))
+					.map(listResContToConnectTo -> getLinkingResources(resEnv, listResContToConnectTo))
+					.flatMap(l -> l.stream())
+					.collect(Collectors.toList())
+					.stream()
+					.forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
+			});
+					
+		// old code
+//		if (!listUnLinkedReseCont.isEmpty()) {
+//			final org.palladiosimulator.pcm.system.System system = this.systemModelProvider.getModel(true);
+//			final Allocation allocation = this.allocationModelProvider.getModel(true);
+//			
+//			for (final ResourceContainer unLinkedResCont : listUnLinkedReseCont) {
+//			 getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
+//			 	.map(listAsmCtxToQuery -> getConnectedAsmCtx(system, listAsmCtxToQuery))
+//				.map(listAsmCtxToConnect -> collectResourceContainer(allocation, listAsmCtxToConnect))
+//				.map(listResContToConnectTo -> getLinkingResources(resEnv, listResContToConnectTo))
+//				.flatMap(l -> l.stream())
+//				.collect(Collectors.toList())
+//				.forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
+//			}
+//		}
 		
 		// build the model
 		builder.build();
@@ -158,7 +170,8 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 				.stream()
 				.filter(link -> link.getConnectedResourceContainers_LinkingResource()
 				.stream()
-				.filter(c -> c.getId().equals(nextContainer.getId())).findAny().isPresent()).collect(Collectors.toList()))
+				.filter(c -> c.getId().equals(nextContainer.getId())).findAny().isPresent())
+				.collect(Collectors.toList()))
 				.flatMap(l -> l.stream())
 				.collect(Collectors.toList());
 	}
@@ -168,7 +181,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 	 * @param env environment
 	 * @return list list of resource container
 	 */
-	private static List<ResourceContainer> collectUnconnectedResourceContainer(final ResourceEnvironment env) {
+	private static List<ResourceContainer> collectUnLinkedResourceContainer(final ResourceEnvironment env) {
 		return env.getResourceContainer_ResourceEnvironment().stream()
 		  .filter(container -> TNetworkLink.getLinks(env, container).isEmpty())
 		  .collect(Collectors.toList());
