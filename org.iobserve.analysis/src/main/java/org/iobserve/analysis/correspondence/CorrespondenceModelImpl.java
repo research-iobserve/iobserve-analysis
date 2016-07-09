@@ -3,6 +3,7 @@ package org.iobserve.analysis.correspondence;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.bind.JAXB;
 
@@ -12,7 +13,6 @@ import protocom.extension.mapping.PcmEntityCorrespondent;
 import protocom.extension.mapping.PcmMapping;
 import protocom.extension.mapping.PcmOperationSignature;
 
-import com.google.common.base.Optional;
 
 /**
  * Implementation of {@link ICorrespondence}.
@@ -36,12 +36,10 @@ class CorrespondenceModelImpl implements ICorrespondence {
 	}
 
 	/**namespace of current palladio framework.*/
-	private static final String PROTOCOM_BASE_PACKAGE_NAME = 
-			"org.palladiosimulator.protocom";
+	private static final String PROTOCOM_BASE_PACKAGE_NAME = "org.palladiosimulator.protocom";
 
 	/** cache for already mapped correspondences. */
-	private final Map<String, Correspondent> cachedCorrespondents =
-			new HashMap<String, Correspondent>();
+	private final Map<String, Correspondent> cachedCorrespondents = new HashMap<String, Correspondent>();
 
 	/** raw mapping objects created during ProtoCom artifacts generation. */
 	private final PcmMapping rawMapping;

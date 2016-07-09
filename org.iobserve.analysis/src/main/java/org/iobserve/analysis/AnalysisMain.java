@@ -84,11 +84,9 @@ public final class AnalysisMain {
 	 */
 	private void run() {
 		Runtime.getRuntime().gc();
-		final Analysis<AnalysisConfiguration> analysis = 
-				new Analysis<AnalysisConfiguration>(this.configuration);
+		final Analysis<AnalysisConfiguration> analysis = new Analysis<AnalysisConfiguration>(this.configuration);
 		analysis.executeBlocking();
-		((ObservationConfiguration) this.configuration)
-			.getRecordSwitch().outputStatistics();
+		((ObservationConfiguration) this.configuration).getRecordSwitch().outputStatistics();
 	}
 
 	/**
@@ -134,8 +132,7 @@ public final class AnalysisMain {
 	 * Create the logger.
 	 */
 	private void createLogger() {
-		this.timeMemLogger = 
-				new FilterTimeMemLogger(this.inputParameter.getDirLogging());
+		this.timeMemLogger = new FilterTimeMemLogger(this.inputParameter.getDirLogging());
 	}
 	
 	/**
@@ -143,8 +140,7 @@ public final class AnalysisMain {
 	 */
 	private void createObservationConfiguration() {
 		try {
-			this.configuration = new ObservationConfiguration(
-					new File(this.inputParameter.getDirMonitoringData()));
+			this.configuration = new ObservationConfiguration(new File(this.inputParameter.getDirMonitoringData()));
 		} catch (final IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -162,8 +158,7 @@ public final class AnalysisMain {
 	public static void main(final String[] args) {
 		final ParameterParser paramParser = new ParameterParser();
 		paramParser.parse(args);
-		final AnalysisMainParameterBean params = 
-				new AnalysisMainParameterBean();
+		final AnalysisMainParameterBean params = new AnalysisMainParameterBean();
 		try {
 			paramParser.getParameter(params);
 		} catch (MissingParameterException e1) {

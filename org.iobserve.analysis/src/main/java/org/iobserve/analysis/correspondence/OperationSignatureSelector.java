@@ -41,8 +41,7 @@ extends ToBoolBiFunction<PcmCorrespondentMethod, PcmOperationSignature> {
 	 * @param operation operation
 	 * @return true if the given method correspond to the given operation
 	 */
-	default boolean select(final PcmCorrespondentMethod method,
-			final PcmOperationSignature operation) {
+	default boolean select(final PcmCorrespondentMethod method, final PcmOperationSignature operation) {
 		return this.applyAsBool(method, operation);
 	}
 }

@@ -41,8 +41,7 @@ public final class FunctionalUtils {
 	 * @param <Z> output second function
 	 * @return curried function
 	 */
-	public static <X, Y, Z> Function<X, Function<Y, Z>> curry(
-			final BiFunction<X, Y, Z> function) {
+	public static <X, Y, Z> Function<X, Function<Y, Z>> curry(final BiFunction<X, Y, Z> function) {
 		return (final X x) -> (final Y y) -> function.apply(x, y);
 	}
 

@@ -42,8 +42,7 @@ public final class StringUtils {
 	 * @return supplier with the manipulated string
 	 */
 	public static Supplier<String> trimAndRemoveSpaces(final String str) {
-		return () -> StringUtils.PATTERN_SPACE
-				.matcher(str.trim()).replaceAll("");
+		return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("");
 	}
 	
 }

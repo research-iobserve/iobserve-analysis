@@ -32,7 +32,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
 
-import com.google.common.base.Optional;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and
@@ -60,18 +59,13 @@ public final class TDeployment
 	 * Create filter.
 	 */
 	public TDeployment() {
-		final ModelProviderPlatform modelProviderPlatform = 
-				AnalysisMain.getInstance().getModelProviderPlatform();
+		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
 		
 		// get all model references
-		this.correspondence = 
-				modelProviderPlatform.getCorrespondenceModel();
-		this.allocationModelProvider = 
-				modelProviderPlatform.getAllocationModelProvider();
-		this.systemModelProvider = 
-				modelProviderPlatform.getSystemModelProvider();
-		this.resourceEnvModelProvider = 
-				modelProviderPlatform.getResourceEnvironmentModelProvider();
+		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
+		this.allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
+		this.systemModelProvider = modelProviderPlatform.getSystemModelProvider();
+		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
 	}
 
 	/**
@@ -82,8 +76,7 @@ public final class TDeployment
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TDeployment.executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TDeployment.executionCounter);
 		
 		if (event instanceof ServletDeployedEvent) {
 			this.process((ServletDeployedEvent) event);
@@ -92,42 +85,31 @@ public final class TDeployment
 			this.process((EJBDeployedEvent) event);
 		}
 		
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TDeployment.executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TDeployment.executionCounter);
 		
 		TDeployment.executionCounter++;
 	}
 	
 	/**
-	 * Process the given {@link ServletDeployedEvent} event.
+	 * Process the given {@link ServletDeployedEvent} event and update the model.
 	 * @param event event to process
 	 */
 	private void process(final ServletDeployedEvent event) {
 		final String serivce = event.getSerivce();
 		final String context = event.getContext();
-		
-		final Optional<Correspondent> optionCorrespondent = 
-				this.correspondence.getCorrespondent(context);
-		if (optionCorrespondent.isPresent()) {
-			final Correspondent correspondent = optionCorrespondent.get();
-			this.updateModel(serivce, correspondent);
-		}
+		this.correspondence.getCorrespondent(context)
+			.ifPresent(correspondence -> this.updateModel(serivce, correspondence));
 	}
 	
 	/**
-	 * Process the given {@link EJBDeployedEvent} event.
+	 * Process the given {@link EJBDeployedEvent} event and update the model.
 	 * @param event event to process
 	 */
 	private void process(final EJBDeployedEvent event) {
 		final String service = event.getSerivce();
 		final String context = event.getContext();
-		
-		final Optional<Correspondent> optionCorrespondent = 
-				this.correspondence.getCorrespondent(context);
-		if (optionCorrespondent.isPresent()) {
-			final Correspondent correspondent = optionCorrespondent.get();
-			this.updateModel(service, correspondent);
-		}
+		this.correspondence.getCorrespondent(context)
+			.ifPresent(correspondent -> this.updateModel(service, correspondent));
 	}
 	
 	/**
@@ -135,8 +117,7 @@ public final class TDeployment
 	 * @param serverName name of the server
 	 * @param correspondent correspondent
 	 */
-	private void updateModel(final String serverName, 
-			final Correspondent correspondent) {
+	private void updateModel(final String serverName, final Correspondent correspondent) {
 		// get the model entity name
 		final String entityName = correspondent.getPcmEntityName();
 		
@@ -144,9 +125,7 @@ public final class TDeployment
 		final String asmContextName = entityName + "_" + serverName;
 		
 		// get the model parts by name
-		final ResourceContainer resourceContainer = 
-				this.resourceEnvModelProvider.getResourceContainerByName(
-						serverName);
+		final ResourceContainer resourceContainer = this.resourceEnvModelProvider.getResourceContainerByName(serverName);
 		
 		// this can not happen since TAllocation should 
 		// have created the resource container already.
@@ -155,31 +134,30 @@ public final class TDeployment
 			return;
 		}
 		
-		
-		// get the assembly context. Create it if necessary
-		AssemblyContext assemblyContext = this.systemModelProvider
-				.getAssemblyContextByName(asmContextName);
-		
-		// in case the assembly context is null, TDeployment should create it
-		if (assemblyContext == null) {
-			// create assembly context
-			final SystemModelBuilder systemBuilder = 
-					new SystemModelBuilder(this.systemModelProvider);
-			systemBuilder
-				.loadModel()
-				.createAssemblyContextsIfAbsent(asmContextName)
-				.build();
-			assemblyContext = this.systemModelProvider
-					.getAssemblyContextByName(asmContextName);
-		}
+		// get assembly context by name or create it if necessary.
+		final AssemblyContext assemblyContext = this.systemModelProvider
+				.getAssemblyContextByName(asmContextName)
+					.orElse(createAssemblyContextByName(this.systemModelProvider, asmContextName));
 		
 		// update the allocation model
-		final AllocationModelBuilder builder = 
-				new AllocationModelBuilder(this.allocationModelProvider);
+		final AllocationModelBuilder builder = new AllocationModelBuilder(this.allocationModelProvider);
 		builder.loadModel()
-		//if we do this, it will delete all the other elements in the model?!
-//			.resetModel() 
+//			.resetModel() //if we do this, it will delete all the other elements in the model?!
 			.addAllocationContextIfAbsent(resourceContainer, assemblyContext)
 			.build();
+	}
+	
+	/**
+	 * Create {@link AssemblyContext} with the given name.
+	 * @param provider provider
+	 * @param name name
+	 * @return created assembly context
+	 */
+	private static AssemblyContext createAssemblyContextByName(final SystemModelProvider provider, final String name) {
+		final SystemModelBuilder systemBuilder = new SystemModelBuilder(provider);
+		systemBuilder.loadModel();
+		final AssemblyContext ctx = systemBuilder.createAssemblyContext(name);
+		systemBuilder.build();
+		return ctx;
 	}
 }

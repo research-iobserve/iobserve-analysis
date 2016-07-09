@@ -26,16 +26,14 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  * @author Alessandro
  *
  */
-public final class UsageModelProvider 
-	extends AbstractModelProvider<UsageModel> {
+public final class UsageModelProvider extends AbstractModelProvider<UsageModel> {
 
 	/**
 	 * Create usage model provider.
 	 * @param thePlatform platform
 	 * @param uriUsageModel uri to model
 	 */
-	UsageModelProvider(final ModelProviderPlatform thePlatform,
-			final URI uriUsageModel) {
+	UsageModelProvider(final ModelProviderPlatform thePlatform, final URI uriUsageModel) {
 		super(thePlatform, uriUsageModel);
 	}
 	

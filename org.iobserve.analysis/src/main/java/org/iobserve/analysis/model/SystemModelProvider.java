@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
+import java.util.Optional;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -67,14 +69,14 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
 	 * @return assembly context instance, null if no assembly context with the
 	 *         given name could be found.
 	 */
-	public AssemblyContext getAssemblyContextByName(final String name) {
+	public Optional<AssemblyContext> getAssemblyContextByName(final String name) {
 		final System sys = this.getModel();
 		for (final AssemblyContext nextAssemblyContext:
 				sys.getAssemblyContexts__ComposedStructure()) {
 			if (nextAssemblyContext.getEntityName().equals(name)) {
-				return nextAssemblyContext;
+				return Optional.of(nextAssemblyContext);
 			}
 		}
-		return null;
+		return Optional.empty();
 	}
 }

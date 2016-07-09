@@ -36,8 +36,7 @@ import protocom.extension.mapping.PcmMapping;
 public final class CorrespondeceModelFactory {
 	
 	/**singleton instance of factory.*/
-	public static final CorrespondeceModelFactory INSTANCE = 
-			new CorrespondeceModelFactory();
+	public static final CorrespondeceModelFactory INSTANCE = new CorrespondeceModelFactory();
 
 	/**
 	 * Simple constructor does nothing.
@@ -59,12 +58,10 @@ public final class CorrespondeceModelFactory {
 	 *            the original operation signature.
 	 * @return a {@link Correspondent} instance representing the mapping file
 	 */
-	public ICorrespondence createCorrespondenceModel(
-			final String pathMappingFile, 
+	public ICorrespondence createCorrespondenceModel(final String pathMappingFile, 
 			final OperationSignatureSelector mapper) {
 		final PcmMapping mapping = this.getMapping(pathMappingFile);
-		final CorrespondenceModelImpl rac = new CorrespondenceModelImpl(
-				mapping, mapper);
+		final CorrespondenceModelImpl rac = new CorrespondenceModelImpl(mapping, mapper);
 		rac.initMapping();
 		return rac;
 	}
@@ -89,21 +86,17 @@ public final class CorrespondeceModelFactory {
 	 * Check the name of the method against the operation signature. Return true
 	 * if the method name contains the operation signature name.
 	 */
-	public static final OperationSignatureSelector 
-		DEFAULT_OPERATION_SIGNATURE_MAPPER = (method, operationSignature) 
+	public static final OperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER = (method, operationSignature) 
 			-> trimAndRemoveSpaces(method.getName()).get()
-				.contains(trimAndRemoveSpaces(
-						operationSignature.getName()).get());
+				.contains(trimAndRemoveSpaces(operationSignature.getName()).get());
  
 	/**
 	 * Check the name of the method or the class against the operation
 	 * signature. Return true if the method name or the class name contains the
 	 * operation signature name.
 	 */
-	public static final OperationSignatureSelector 
-		DEFAULT_OPERATION_SIGNATURE_MAPPER_2 = (method, operationSignature) 
-			-> DEFAULT_OPERATION_SIGNATURE_MAPPER.select(
-					method, operationSignature)
+	public static final OperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER_2 = (method, operationSignature) 
+			-> DEFAULT_OPERATION_SIGNATURE_MAPPER.select(method, operationSignature)
 					|| method.getParent().getUnitName().toLowerCase()
-					.contains(operationSignature.getName().toLowerCase());
+						.contains(operationSignature.getName().toLowerCase());
 }

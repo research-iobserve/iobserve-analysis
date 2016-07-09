@@ -45,8 +45,7 @@ import teetime.stage.io.filesystem.Dir2RecordsFilter;
 public final class ObservationConfiguration extends AnalysisConfiguration {
 
 	/** registry for the pipe factory used by Teetime. */
-	private final PipeFactoryRegistry pipeFactoryRegistry = 
-			PipeFactoryRegistry.INSTANCE;
+	private final PipeFactoryRegistry pipeFactoryRegistry = PipeFactoryRegistry.INSTANCE;
 
 	/** directory containing Kieker monitoring data. */
 	private final File directory;
@@ -67,8 +66,7 @@ public final class ObservationConfiguration extends AnalysisConfiguration {
 	 * @throws IOException
 	 *             for all file reading errors
 	 */
-	public ObservationConfiguration(final File theDirectory) 
-			throws IOException, ClassNotFoundException {
+	public ObservationConfiguration(final File theDirectory) throws IOException, ClassNotFoundException {
 		this.directory = theDirectory;
 		this.addThreadableStage(this.buildAnalysis());
 	}
@@ -79,10 +77,8 @@ public final class ObservationConfiguration extends AnalysisConfiguration {
 	 */
 	private Stage buildAnalysis() {
 		// create filter
-		final InitialElementProducer<File> files = 
-				new InitialElementProducer<File>(this.directory);
-		final Dir2RecordsFilter reader = new Dir2RecordsFilter(
-				new ClassNameRegistryRepository());
+		final InitialElementProducer<File> files = new InitialElementProducer<File>(this.directory);
+		final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
 
 		this.recordSwitch = new RecordSwitch();
 
@@ -90,39 +86,23 @@ public final class ObservationConfiguration extends AnalysisConfiguration {
 		final TDeployment tDeployment = new TDeployment();
 		final TUndeployment tUndeployment = new TUndeployment();
 		final TEntryCall tEntryCall = new TEntryCall();
-		final TEntryCallSequence tEntryCallSequence = 
-				new TEntryCallSequence();
-		final TEntryEventSequence tEntryEventSequence = 
-				new TEntryEventSequence();
+		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
+		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence();
 		final TNetworkLink tNetworkLink = new TNetworkLink();
 
 		// connecting filters
 		final IPipeFactory factory = this.pipeFactoryRegistry.getPipeFactory(
 				ThreadCommunication.INTRA, PipeOrdering.ARBITRARY, false);
-
 		factory.create(files.getOutputPort(), reader.getInputPort());
-		factory.create(reader.getOutputPort(), 
-				this.recordSwitch.getInputPort());
-		
-		// dispatch different monitoring data
-		factory.create(this.recordSwitch.getDeploymentOutputPort(),
-				tAllocation.getInputPort());
-		factory.create(this.recordSwitch.getUndeploymentOutputPort(),
-				tUndeployment.getInputPort());
-		factory.create(this.recordSwitch.getFlowOutputPort(),
-				tEntryCall.getInputPort());
-		factory.create(this.recordSwitch.getTraceMetaPort(),
-				tNetworkLink.getInputPort());
-
-		factory.create(tAllocation.getDeploymentOutputPort(),
-				tDeployment.getInputPort());
-		factory.create(tEntryCall.getOutputPort(),
-				tEntryCallSequence.getInputPort());
-		factory.create(tEntryCallSequence.getOutputPort(),
-				tEntryEventSequence.getInputPort());
-
+		factory.create(reader.getOutputPort(), this.recordSwitch.getInputPort());
+		factory.create(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
+		factory.create(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
+		factory.create(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
+		factory.create(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
+		factory.create(tAllocation.getDeploymentOutputPort(), tDeployment.getInputPort());
+		factory.create(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
+		factory.create(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
 		return files;
-
 	}
 	
 	/**

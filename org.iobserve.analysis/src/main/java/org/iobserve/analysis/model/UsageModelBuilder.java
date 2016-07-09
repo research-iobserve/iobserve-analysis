@@ -80,6 +80,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	/**
 	 * Create an {@link UsageScenario} and create a body {@link ScenarioBehaviour} for it.
 	 * Get the {@link ScenarioBehaviour} by {@link UsageScenario#getScenarioBehaviour_UsageScenario()}
+	 * @param name name of usage scenario
 	 * @return created usage scenario
 	 */
 	public UsageScenario createUsageScenario(final String name) {
@@ -111,12 +112,11 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	 * @param parent usage scenario the workload should be added to
 	 * @return brand new instance of {@link OpenWorkload}
 	 */
-	public OpenWorkload createOpenWorkload(final long avgInterarrivalTime,
-			final UsageScenario parent) {
+	public OpenWorkload createOpenWorkload(final long avgInterarrivalTime, final UsageScenario parent) {
 		final OpenWorkload openWorkload = UsagemodelFactory.eINSTANCE.createOpenWorkload();
 		parent.setWorkload_UsageScenario(openWorkload);
 		
-		// create varaibles
+		// create variables
 		final PCMRandomVariable pcmInterarrivalTime = 
 				CoreFactory.eINSTANCE.createPCMRandomVariable();
 		pcmInterarrivalTime.setSpecification(String.valueOf(avgInterarrivalTime));
@@ -128,9 +128,10 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	
 	/**
 	 * Create an {@link OpenWorkload} and add it to the given {@link UsageScenario}.
-	 * @param avgInterarrivalTime the interarrival time
-	 * @param parent usage scenario the workload should be added to
-	 * @return brand new instance of {@link OpenWorkload}
+	 * @param population population
+	 * @param thinkTime thinkTime
+	 * @param parent parent
+	 * @return created closed workload instance
 	 */
 	public ClosedWorkload createClosedWorkload(final int population, final double thinkTime,
 			final UsageScenario parent) {
@@ -209,7 +210,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		} else {
 			eSysCall = null;
 			System.err.printf("%s caused Nullpointer since OperationSignature=% or BasicComponent=%s is null?!",
-					operationSignature,String.valueOf(opSig), String.valueOf(bCmp));
+					operationSignature, String.valueOf(opSig), String.valueOf(bCmp));
 		}
 		return eSysCall;
 	}
@@ -272,8 +273,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	 */
 	public BranchTransition createBranchTransition(final Branch parent) {
 		// create branch transition
-		final BranchTransition branchTransition = UsagemodelFactory.eINSTANCE
-				.createBranchTransition();
+		final BranchTransition branchTransition = UsagemodelFactory.eINSTANCE.createBranchTransition();
 		branchTransition.setBranch_BranchTransition(parent);
 		parent.getBranchTransitions_Branch().add(branchTransition);
 		

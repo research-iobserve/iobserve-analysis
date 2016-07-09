@@ -15,44 +15,70 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
+import java.util.Optional;
+
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.system.System;
 
+/**
+ * SystemModelBuilder is used to provide functionality in order to build {@link System} model.
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
+ */
 public class SystemModelBuilder extends ModelBuilder<SystemModelProvider, org.palladiosimulator.pcm.system.System> {
 
+	/**
+	 * Create a system model builder
+	 * @param modelToStartWith model proivder
+	 */
 	public SystemModelBuilder(final SystemModelProvider modelToStartWith) {
 		super(modelToStartWith);
 	}
-	
-	// *****************************************************************
-	//
-	// *****************************************************************
 
+	/**
+	 * Save the model with the given strategy.
+	 * @param saveStrategy strategy
+	 * @return builder to chain commands
+	 */
 	public SystemModelBuilder save(final ModelSaveStrategy saveStrategy) {
 		this.modelProvider.save(saveStrategy);
 		return this;
 	}
 	
+	/**
+	 * Load the given model. Use this also to re-load.
+	 * @return builder to chain commands
+	 */
 	public SystemModelBuilder loadModel() {
 		this.modelProvider.loadModel();
 		return this;
 	}
 	
+	/**
+	 * Remove all elements from the model. End up with an empty model.
+	 * @return builder to chain commands
+	 */
 	public SystemModelBuilder resetModel() {
 		final org.palladiosimulator.pcm.system.System model = this.modelProvider.getModel();
 		model.getAssemblyContexts__ComposedStructure().clear();
 		return this;
 	}
 	
-	public SystemModelBuilder createAssemblyContextsIfAbsent(final String name) {
-		final boolean absent = this.modelProvider.getAssemblyContextByName(name) == null;
-		if (absent) {
+	/**
+	 * Create an {@link AssemblyContext} with the given name.
+	 * @param name entity name
+	 * @return created assembly context
+	 */
+	public AssemblyContext createAssemblyContext(final String name) {
+		final Optional<AssemblyContext> optCtx = this.modelProvider.getAssemblyContextByName(name);
+		if (!optCtx.isPresent()) {
 			final org.palladiosimulator.pcm.system.System model = this.modelProvider.getModel();
-			final AssemblyContext asmContext = CompositionFactory.eINSTANCE.createAssemblyContext();
-			asmContext.setEntityName(name);
-			model.getAssemblyContexts__ComposedStructure().add(asmContext);
+			final AssemblyContext ctx = CompositionFactory.eINSTANCE.createAssemblyContext();
+			ctx.setEntityName(name);
+			model.getAssemblyContexts__ComposedStructure().add(ctx);
+			return ctx;
 		}
-		return this;
+		return optCtx.get();
 	}
-	
 }

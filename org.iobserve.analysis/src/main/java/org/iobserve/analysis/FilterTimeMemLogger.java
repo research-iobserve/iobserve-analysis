@@ -34,16 +34,13 @@ import teetime.framework.AbstractConsumerStage;
 public final class FilterTimeMemLogger {
 	
 	/**simple formatter.*/
-	private final SimpleDateFormat dateFormatter = 
-			new SimpleDateFormat("yyyy-MM-dd");
+	private final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");
 	
 	/**to map the filters coming in asynch.*/
-	private HashMap<String, Integer> asynchFilterRowCache = 
-			new HashMap<String, Integer>();
+	private HashMap<String, Integer> asynchFilterRowCache = new HashMap<String, Integer>();
 	/**map for logger.*/
-	private HashMap<String, Table<String>> tablesFilter = 
-			new HashMap<String, Table<String>>();
-	/***/
+	private HashMap<String, Table<String>> tablesFilter = new HashMap<String, Table<String>>();
+	/**default path.*/
 	private String logOutput = "logtest.csv";
 	
 	/**
@@ -114,8 +111,7 @@ public final class FilterTimeMemLogger {
 	 * 	in {@link String#format(String, Object...)}
 	 * 
 	 */
-	public void before(final AbstractConsumerStage<?> filter,
-			final String format, final Object...objects) {
+	public void before(final AbstractConsumerStage<?> filter, final String format, final Object...objects) {
 		this.before(filter, String.format(format, objects));
 	}
 	
@@ -125,8 +121,7 @@ public final class FilterTimeMemLogger {
 	 * @param filter filter
 	 * @param idFilterExecution id of filter
 	 */
-	public void before(final AbstractConsumerStage<?> filter,
-			final String idFilterExecution) {
+	public void before(final AbstractConsumerStage<?> filter, final String idFilterExecution) {
 		
 		// get current time
 		final long time = System.nanoTime();
@@ -174,8 +169,7 @@ public final class FilterTimeMemLogger {
 	 * @param format format like {@link String#format(String, Object...)}
 	 * @param objects objects used in {@link String#format(String, Object...)}
 	 */
-	public void after(final AbstractConsumerStage<?> filter,
-			final String format, final Object...objects) {
+	public void after(final AbstractConsumerStage<?> filter, final String format, final Object...objects) {
 		this.after(filter, String.format(format, objects));
 	}
 	
@@ -185,8 +179,7 @@ public final class FilterTimeMemLogger {
 	 * @param filter filter
 	 * @param idFilterExecution id of filter
 	 */
-	public void after(final AbstractConsumerStage<?> filter,
-			final String idFilterExecution) {
+	public void after(final AbstractConsumerStage<?> filter, final String idFilterExecution) {
 		final long time = System.nanoTime();
 		final Runtime runtime = Runtime.getRuntime();
 		final long usedMemory = runtime.totalMemory() - runtime.freeMemory();

@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.Correspondent;
@@ -37,7 +38,6 @@ import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
 import teetime.framework.AbstractConsumerStage;
 
-import com.google.common.base.Optional;
 
 /**
  * Represents the TEntryEventSequence Transformation in the paper <i>Run-time
@@ -125,7 +125,7 @@ public final class TEntryEventSequence
 				this.calculateInterarrivalTime(sessions);
 		
 		// iterate over user sessions
-		for(final UserSession userSession:sessions) {
+		for (final UserSession userSession:sessions) {
 			
 			// create simple usage model builder
 			final UsageModelBuilder builder = 

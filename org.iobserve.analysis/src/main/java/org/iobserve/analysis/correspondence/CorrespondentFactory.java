@@ -23,10 +23,8 @@ public final class CorrespondentFactory {
 	 * @param pcmOperationId operation id.
 	 * @return brand new correspondent object
 	 */
-	public static Correspondent newInstance(final String pcmEntityName,
-			final String pcmEntityId, final String pcmOperationName,
-			final String pcmOperationId) {
-		return new Correspondent(pcmEntityName, pcmEntityId,
-				pcmOperationName, pcmOperationId);
+	public static Correspondent newInstance(final String pcmEntityName, final String pcmEntityId,
+			final String pcmOperationName, final String pcmOperationId) {
+		return new Correspondent(pcmEntityName, pcmEntityId, pcmOperationName, pcmOperationId);
 	}
 }

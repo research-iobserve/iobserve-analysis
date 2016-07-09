@@ -46,8 +46,7 @@ public final class TAllocation
 	/**reference to {@link ResourceEnvironment} provider.*/
 	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
 	/**output port.*/
-	private final OutputPort<IDeploymentRecord> deploymentOutputPort =
-			this.createOutputPort();
+	private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
 
 	/**
 	 * Most likely the constructor needs an additional field for the PCM access.
@@ -59,8 +58,7 @@ public final class TAllocation
 		
 		// get all model references
 		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
-		this.resourceEnvModelProvider = modelProviderPlatform
-				.getResourceEnvironmentModelProvider();
+		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
 	}
 	
 	/**
@@ -78,8 +76,7 @@ public final class TAllocation
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TAllocation.executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TAllocation.executionCounter);
 		
 		if (event instanceof ServletDeployedEvent) {
 			this.process((ServletDeployedEvent) event);
@@ -91,8 +88,7 @@ public final class TAllocation
 		// forward the event
 		this.deploymentOutputPort.send(event);
 		
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TAllocation.executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TAllocation.executionCounter);
 		
 		// count execution for logging purposes
 		TAllocation.executionCounter++;
@@ -123,12 +119,8 @@ public final class TAllocation
 	 * @param serverName server name
 	 */
 	private void updateModel(final String serverName) {
-		final boolean absent = this.resourceEnvModelProvider
-				.getResourceContainerByName(serverName) == null;
-		if (absent) {
-			// create resource container
-			final ResourceEnvironmentModelBuilder builder = 
-					new ResourceEnvironmentModelBuilder(
+		if (this.resourceEnvModelProvider.getResourceContainerByName(serverName) == null) {
+			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
 					TAllocation.this.resourceEnvModelProvider);
 			builder.loadModel();
 			builder.createResourceContainer(serverName);
