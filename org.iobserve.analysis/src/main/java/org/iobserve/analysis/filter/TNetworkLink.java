@@ -57,8 +57,6 @@ import teetime.framework.AbstractConsumerStage;
  */
 public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
-	/**execution counter.*/
-	private static long executionCounter = 0;
 	/**reference to allocation model provider.*/
 	private AllocationModelProvider allocationModelProvider;
 	/**reference to system model provider.*/
@@ -82,8 +80,6 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 	 */
 	@Override
 	protected void execute(final TraceMetadata event) {
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TNetworkLink.executionCounter); 
-		
 		final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(this.resourceEnvModelProvider);
 		builder.loadModel();
 		
@@ -120,9 +116,6 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 		
 		// build the model
 		builder.build();
-		
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TNetworkLink.executionCounter);
-		TNetworkLink.executionCounter++;
 	}
 	
 	/**

@@ -30,9 +30,6 @@ import teetime.framework.AbstractConsumerStage;
  * 
  */
 public class TUndeployment extends AbstractConsumerStage<IUndeploymentRecord> {
-
-	/**execution counter.*/
-	private static long executionCounter = 0;
 	
 	/**reference to correspondence interface.*/
 	private final ICorrespondence correspondence;

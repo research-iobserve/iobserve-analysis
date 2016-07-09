@@ -46,8 +46,6 @@ import teetime.framework.AbstractConsumerStage;
  */
 public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
 
-	/**execution counter.*/
-	private static long executionCounter = 0;
 	/**reference to correspondent model.*/
 	private final ICorrespondence correspondence;
 	/**reference to allocation model provider.*/
@@ -75,18 +73,12 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TDeployment.executionCounter);
-		
 		if (event instanceof ServletDeployedEvent) {
 			this.process((ServletDeployedEvent) event);
 		
 		} else if (event instanceof EJBDeployedEvent) {
 			this.process((EJBDeployedEvent) event);
 		}
-		
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TDeployment.executionCounter);
-		
-		TDeployment.executionCounter++;
 	}
 	
 	/**

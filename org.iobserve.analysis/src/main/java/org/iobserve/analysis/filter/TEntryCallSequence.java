@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
@@ -40,8 +39,6 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
 	
 	/**threshold for user session elements until their are send to the next filter.*/
 	private static final int USER_SESSION_THRESHOLD = 0;
-	/**execution time.*/
-	private static int executionCounter = 0;
 	/**map of sessions.*/
 	private HashMap<String, UserSession> sessions = new HashMap<String, UserSession>();
 	/**output port.*/
@@ -56,9 +53,6 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
 
 	@Override
 	protected void execute(final EntryCallEvent event) {
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + executionCounter);
-		
 		// add the event to the corresponding user session
 		// in case the user session is not yet available, create one
 		final String userSessionId = UserSession.parseUserSessionId(event);
@@ -78,12 +72,6 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
 		if (!listToSend.isEmpty()) {
 			this.outputPort.send(new EntryCallSequenceModel(listToSend));
 		}
-			
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + executionCounter);
-		
-		// count execution
-		executionCounter++;
 	}
 	
 	/**

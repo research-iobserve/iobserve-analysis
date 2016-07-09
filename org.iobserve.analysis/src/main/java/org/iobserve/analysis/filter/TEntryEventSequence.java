@@ -49,9 +49,6 @@ import teetime.framework.AbstractConsumerStage;
  */
 public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
 	
-	/**counter for execution times.*/
-	private static int executionCounter = 0;
-	
 	/**reference to the correspondence model.*/
 	private final ICorrespondence correspondenceModel;
 	/**reference to the usage model provider.*/
@@ -68,17 +65,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 
 	@Override
 	protected void execute(final EntryCallSequenceModel model) {
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TEntryEventSequence.executionCounter);
-		
-		// do main task
 		this.doUpdateUsageModel(model.getUserSessions());
-		
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TEntryEventSequence.executionCounter);
-		
-		// count execution
-		TEntryEventSequence.executionCounter++;
 	}
 	
 	/**

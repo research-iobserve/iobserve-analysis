@@ -36,8 +36,6 @@ import teetime.framework.OutputPort;
  */
 public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 
-	/**counter to count how often this filter was executed.*/
-	private static long executionCounter = 0;
 	/**reference to {@link ResourceEnvironment} provider.*/
 	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
 	/**output port.*/
@@ -67,8 +65,6 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
 	 */
 	@Override
 	protected void execute(final IDeploymentRecord event) {
-		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TAllocation.executionCounter);
-		
 		if (event instanceof ServletDeployedEvent) {
 			this.process((ServletDeployedEvent) event);
 		
@@ -78,11 +74,6 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
 		
 		// forward the event
 		this.deploymentOutputPort.send(event);
-		
-		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TAllocation.executionCounter);
-		
-		// count execution for logging purposes
-		TAllocation.executionCounter++;
 	}
 	
 	/**
