@@ -84,28 +84,25 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 	protected void execute(final TraceMetadata event) {
 		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TNetworkLink.executionCounter); 
 		
-		final ResourceEnvironmentModelBuilder builder = 
-				new ResourceEnvironmentModelBuilder(this.resourceEnvModelProvider);
+		final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(this.resourceEnvModelProvider);
 		builder.loadModel();
 		
-		final ResourceEnvironment resourceEnvironment = builder.getModel();
+		final ResourceEnvironment resEnv = builder.getModel();
 		final List<ResourceContainer> listUnconnectedResourceContainer = 
-				TNetworkLink.collectUnconnectedResourceContainer(resourceEnvironment);
+				TNetworkLink.collectUnconnectedResourceContainer(resEnv);
 		
 		if (!listUnconnectedResourceContainer.isEmpty()) {
 			final org.palladiosimulator.pcm.system.System system = this.systemModelProvider.getModel(true);
 			final Allocation allocation = this.allocationModelProvider.getModel(true);
 			
-			for (final ResourceContainer unconnectedConatiner : listUnconnectedResourceContainer) {
-				TNetworkLink.getAsmContextDeployedOnContainer(allocation, unconnectedConatiner).stream()
-					.map(listAssemblyContextToQuery -> TNetworkLink.getConnectedAsmCtx(system, listAssemblyContextToQuery))
-					.map(listAssemblyContextToConnect -> 
-						TNetworkLink.collectResourceContainer(allocation, listAssemblyContextToConnect))
-					.map(listResourceContainerToConnectTo -> 
-						getLinkingResources(resourceEnvironment, listResourceContainerToConnectTo))
-					.flatMap(l -> l.stream())
-					.collect(Collectors.toList())
-					.forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unconnectedConatiner));
+			for (final ResourceContainer unLinkedResCont : listUnconnectedResourceContainer) {
+			 getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
+			 	.map(listAsmCtxToQuery -> getConnectedAsmCtx(system, listAsmCtxToQuery))
+				.map(listAsmCtxToConnect -> collectResourceContainer(allocation, listAsmCtxToConnect))
+				.map(listResContToConnectTo -> getLinkingResources(resEnv, listResContToConnectTo))
+				.flatMap(l -> l.stream())
+				.collect(Collectors.toList())
+				.forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
 			}
 		}
 		
