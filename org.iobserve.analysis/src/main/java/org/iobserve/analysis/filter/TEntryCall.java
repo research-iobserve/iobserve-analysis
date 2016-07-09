@@ -46,15 +46,12 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 	/**execution counter.*/
 	private static int executionCounter = 0;
 	/*added by Alessandro Giusa see EntryCallEvent class for more information*/
-	/***/
-	private final Map<Long, TraceMetadata> traceMetaDatas = 
-			new HashMap<Long, TraceMetadata>();
-	/***/
-	private final Map<Long, BeforeOperationEvent> beforeOperationEvents = 
-			new HashMap<Long, BeforeOperationEvent>();
-	/***/
-	private final OutputPort<EntryCallEvent> outputPort = 
-			this.createOutputPort();
+	/**map for trace meta data.*/
+	private final Map<Long, TraceMetadata> traceMetaDatas = new HashMap<Long, TraceMetadata>();
+	/**map of before operation events.*/
+	private final Map<Long, BeforeOperationEvent> beforeOperationEvents = new HashMap<Long, BeforeOperationEvent>();
+	/**output port.*/
+	private final OutputPort<EntryCallEvent> outputPort = this.createOutputPort();
 
 	/**
 	 * Does not need additional information.
@@ -72,8 +69,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 	 */
 	@Override
 	protected void execute(final IFlowRecord event) {
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TEntryCall.executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TEntryCall.executionCounter);
 		
 		if (event instanceof TraceMetadata) {
 			final TraceMetadata metaData = (TraceMetadata) event;
@@ -115,13 +111,15 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 			TEntryCall.LOG.warn("Unsuppored flow event type " + event.getClass().getCanonicalName());
 		}
 		
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TEntryCall.executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TEntryCall.executionCounter);
 		
 		// count execution
 		TEntryCall.executionCounter++;
 	}
 
+	/**
+	 * @return output port
+	 */
 	public OutputPort<EntryCallEvent> getOutputPort() {
 		return this.outputPort;
 	}

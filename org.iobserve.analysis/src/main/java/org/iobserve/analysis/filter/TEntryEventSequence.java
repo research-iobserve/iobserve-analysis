@@ -47,13 +47,11 @@ import teetime.framework.AbstractConsumerStage;
  * @author Robert Heinrich
  * @author Alessandro Guisa
  */
-public final class TEntryEventSequence 
-	extends AbstractConsumerStage<EntryCallSequenceModel> {
+public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
 	
 	/**counter for execution times.*/
 	private static int executionCounter = 0;
-	/**counter of how often model was saved.*/
-	private int counterSavedUsageModel = 0;
+	
 	/**reference to the correspondence model.*/
 	private final ICorrespondence correspondenceModel;
 	/**reference to the usage model provider.*/
@@ -63,26 +61,21 @@ public final class TEntryEventSequence
 	 * Create filter.
 	 */
 	public TEntryEventSequence() {
-		final ModelProviderPlatform modelProviderPlatform = 
-				AnalysisMain.getInstance().getModelProviderPlatform();
-		this.correspondenceModel = 
-				modelProviderPlatform.getCorrespondenceModel();
-		this.usageModelProvider = 
-				modelProviderPlatform.getUsageModelProvider();
+		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
+		this.correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
+		this.usageModelProvider = modelProviderPlatform.getUsageModelProvider();
 	}
 
 	@Override
 	protected void execute(final EntryCallSequenceModel model) {
 		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + TEntryEventSequence.executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TEntryEventSequence.executionCounter);
 		
 		// do main task
 		this.doUpdateUsageModel(model.getUserSessions());
 		
 		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + TEntryEventSequence.executionCounter);
+		AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TEntryEventSequence.executionCounter);
 		
 		// count execution
 		TEntryEventSequence.executionCounter++;
@@ -168,9 +161,7 @@ public final class TEntryEventSequence
 			final Stop stop = builder.createStop();
 			builder.connect(lastAction, stop);
 			builder.addUserAction(usageScenario, stop);
-			
 			builder.build();
-			this.counterSavedUsageModel++; //TODO just for now
 		}
 	}
 	
