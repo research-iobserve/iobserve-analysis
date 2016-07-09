@@ -114,7 +114,7 @@ abstract class AbstractModelProvider<T extends EObject> {
 	 * </pre>
 	 * @return return the package of this model
 	 */
-	public abstract EPackage getPackage();
+	protected abstract EPackage getPackage();
 
 	/**
 	 * Load the model from {@link #uriModelInstance}.

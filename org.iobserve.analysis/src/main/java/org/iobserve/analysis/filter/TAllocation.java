@@ -16,10 +16,10 @@
 package org.iobserve.analysis.filter;
 
 import org.iobserve.analysis.AnalysisMain;
-import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
@@ -38,8 +38,6 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
 
 	/**counter to count how often this filter was executed.*/
 	private static long executionCounter = 0;
-	/**correspondence reference.*/
-	private final ICorrespondence correspondence;
 	/**reference to {@link ResourceEnvironment} provider.*/
 	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
 	/**output port.*/
@@ -51,7 +49,6 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
 	 */
 	public TAllocation() {
 		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
-		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
 		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
 	}
 	
@@ -113,12 +110,14 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
 	 * @param serverName server name
 	 */
 	private void updateModel(final String serverName) {
-		if (this.resourceEnvModelProvider.getResourceContainerByName(serverName) == null) {
-			final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
-					TAllocation.this.resourceEnvModelProvider);
-			builder.loadModel();
-			builder.createResourceContainer(serverName);
-			builder.build();
-		}
+		Opt.of(this.resourceEnvModelProvider.getResourceContainerByName(serverName))
+			.ifNotPresent()
+			.apply(() -> {
+				final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
+						TAllocation.this.resourceEnvModelProvider);
+				builder.loadModel();
+				builder.createResourceContainer(serverName);
+				builder.build();
+			});
 	}
 }

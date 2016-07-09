@@ -1,18 +1,3 @@
-/***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ***************************************************************************/
 package org.iobserve.analysis.utils;
 
 import java.util.Optional;
@@ -32,6 +17,7 @@ public final class Opt<T> {
 	
 	/**
 	 * Little "cosmetically" enhanced {@link Function} interface.
+	 * 
 	 * @author Robert Heinrich
 	 * @author Alessandro Giusa
 	 *
@@ -50,7 +36,6 @@ public final class Opt<T> {
 		default R elseApply(final T t) {
 			return this.apply(t);
 		}
-
 	}
 
 	/**immutable optional*/
@@ -122,12 +107,31 @@ public final class Opt<T> {
 		}
 		return null;
 	};
+	
+	/**
+	 * Actual logic to do the if-else dispatch.
+	 */
+	private final BiFunction<Runnable, Consumer<T>, Void> ifNotPresent = (notPresent, present) -> {
+		if (!this.optional.isPresent()) {
+			notPresent.run();
+		} else {
+			present.accept(this.optional.get());
+		}
+		return null;
+	};
 
 	/**
 	 * @return function like {@link Function} but with a "cosmatically" decorated apply function.
 	 */
 	public Fkt<Consumer<T>, Fkt<Runnable, Void>> ifPresent() {
 		return Opt.curry(this.ifPresent);
+	}
+	
+	/**
+	 * @return function like {@link Function} but with a "cosmatically" decorated apply function.
+	 */
+	public Fkt<Runnable, Fkt<Consumer<T>, Void>> ifNotPresent() {
+		return Opt.curry(this.ifNotPresent);
 	}
 
 	/**

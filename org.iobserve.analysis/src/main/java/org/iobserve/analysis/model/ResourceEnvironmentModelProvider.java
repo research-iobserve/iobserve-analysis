@@ -29,8 +29,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
  * @author Alessandro Giusa
  *
  */
-public final class ResourceEnvironmentModelProvider 
-	extends AbstractModelProvider<ResourceEnvironment> {
+public final class ResourceEnvironmentModelProvider extends AbstractModelProvider<ResourceEnvironment> {
 
 	/**
 	 * Create model provider to provide {@link ResourceEnvironment} model.
@@ -43,7 +42,7 @@ public final class ResourceEnvironmentModelProvider
 	}
 
 	@Override
-	public EPackage getPackage() {
+	protected EPackage getPackage() {
 		return ResourceenvironmentPackage.eINSTANCE;
 	}
 	
