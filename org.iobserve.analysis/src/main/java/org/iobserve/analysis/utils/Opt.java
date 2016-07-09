@@ -17,7 +17,7 @@ public final class Opt<T> {
 	
 	/**
 	 * Just a empty method which is doing nothing.
-	 * @param t value
+	 * @param t value, not relevant can be null
 	 */
 	public static void doNothing(final Object t) {
 		// nothing here

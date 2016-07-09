@@ -40,7 +40,7 @@ public final class AllocationModelProvider
 	}
 
 	@Override
-	public EPackage getPackage() {
+	protected EPackage getPackage() {
 		return AllocationPackage.eINSTANCE;
 	}
 }

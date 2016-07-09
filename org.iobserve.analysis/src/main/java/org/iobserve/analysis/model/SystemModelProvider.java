@@ -36,13 +36,12 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
 	 * @param thePlatform platform
 	 * @param uriUsageModel uri to model
 	 */
-	SystemModelProvider(final ModelProviderPlatform thePlatform,
-			final URI uriUsageModel) {
+	SystemModelProvider(final ModelProviderPlatform thePlatform, final URI uriUsageModel) {
 		super(thePlatform, uriUsageModel);
 	}
 
 	@Override
-	public EPackage getPackage() {
+	protected EPackage getPackage() {
 		return SystemPackage.eINSTANCE;
 	}
 
@@ -56,9 +55,8 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
 	 */
 	public AssemblyContext getAssemblyContext(final String id) {
 		final System sys = this.getModel();
-		return (AssemblyContext) AbstractModelProvider
-				.getIdentifiableComponent(id,
-						sys.getAssemblyContexts__ComposedStructure());
+		return (AssemblyContext) AbstractModelProvider.getIdentifiableComponent(
+				id, sys.getAssemblyContexts__ComposedStructure());
 	}
 	
 	/**
@@ -71,8 +69,7 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
 	 */
 	public Optional<AssemblyContext> getAssemblyContextByName(final String name) {
 		final System sys = this.getModel();
-		for (final AssemblyContext nextAssemblyContext:
-				sys.getAssemblyContexts__ComposedStructure()) {
+		for (final AssemblyContext nextAssemblyContext : sys.getAssemblyContexts__ComposedStructure()) {
 			if (nextAssemblyContext.getEntityName().equals(name)) {
 				return Optional.of(nextAssemblyContext);
 			}

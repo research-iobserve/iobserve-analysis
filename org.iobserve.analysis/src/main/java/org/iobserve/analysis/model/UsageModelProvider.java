@@ -38,12 +38,7 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
 	}
 	
 	@Override
-	public EPackage getPackage() {
+	protected EPackage getPackage() {
 		return UsagemodelPackage.eINSTANCE;
-	}
-	
-	@Override
-	protected void loadModel() {
-		super.loadModel();
 	}
 }

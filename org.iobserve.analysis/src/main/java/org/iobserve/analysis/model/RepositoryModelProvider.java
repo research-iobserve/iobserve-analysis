@@ -88,7 +88,7 @@ public final class RepositoryModelProvider
 	}
 
 	@Override
-	public EPackage getPackage() {
+	protected EPackage getPackage() {
 		return RepositoryPackage.eINSTANCE;
 	}
 
