@@ -118,6 +118,7 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
 				builder.loadModel();
 				builder.createResourceContainer(serverName);
 				builder.build();
-			});
+			})
+			.elseApply(Opt::doNothing);
 	}
 }

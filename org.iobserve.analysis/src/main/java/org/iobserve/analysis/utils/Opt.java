@@ -16,6 +16,14 @@ import java.util.function.Function;
 public final class Opt<T> {
 	
 	/**
+	 * Just a empty method which is doing nothing.
+	 * @param t value
+	 */
+	public static void doNothing(final Object t) {
+		// nothing here
+	}
+	
+	/**
 	 * Little "cosmetically" enhanced {@link Function} interface.
 	 * 
 	 * @author Robert Heinrich
@@ -29,7 +37,10 @@ public final class Opt<T> {
 
 		/**
 		 * Just the same as {@link #apply(Object)}. Butter readability when
-		 * used with {@link Opt#ifPresent()}
+		 * used with {@link Opt#ifPresent()}. 
+		 * <br> <br>
+		 * 
+		 * <b>Terminal action:</b> If this or {@link #apply(Object)} is not called, nothing will happen. 
 		 * @param t input
 		 * @return return value. Probably null!
 		 */
