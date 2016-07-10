@@ -31,7 +31,6 @@ subprojects {
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo.p2"}
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo"}
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}
-		maven {url "https://maven.eveoh.nl/content/repositories/releases"}
     }
 
     dependencies {
