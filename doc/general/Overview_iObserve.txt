@@ -93,6 +93,7 @@ http://www.uni-kiel.de/journals/receive/jportal_jparticle_00000265
 		in a kind of database. Therefore a you could provide an implementation for this use case. ModelSaver is set
 		by the constructor of AbstractModelProvider.
 	o	ModelLoader: same as ModelSaver but loading model.
+	o	ModelProviderPlatform: From this instance one can get all different model providers
 	
 	1.1.6 org.iobserve.analysis.utils
 	This package contains some utility or general purpose stuff.
@@ -118,3 +119,10 @@ http://www.uni-kiel.de/journals/receive/jportal_jparticle_00000265
 	
 	Each of which has its own build.gradle file. Root project is iobserve.analysis and has as well a build file
 	in order to define some common stuff like repositories and similar.
+	
+	In order to build a runnable jar file, one should run the following command on the command line:
+	
+	> gradle fatJar
+	
+	(of course gradle should be installed and also available in your global environment path)
+		
