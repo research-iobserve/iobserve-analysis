@@ -29,12 +29,10 @@ http://www.uni-kiel.de/journals/receive/jportal_jparticle_00000265
 	
 	o	ICorrespondence is the interface used in iobserve to get correspondence information between
 		implementation and model. 
-	o	CorrespondenceModelImpl is the current available implementation of ICorrespondence. An instance can
-		be get using the:
-	o	CorrespondenceModelFactory. When a correspondence is retrieved from ICorrespondence, an instance
-		of: 
-	o	Correspondent is returned, which is a simple java bean containing all information to the pcm element. 
-		obtain actual pcm elements. This informations can be used later on the specific model providers (see 1.1.4).
+	o	CorrespondenceModelImpl is the current available implementation of ICorrespondence.
+	o	CorrespondenceModelFactory: is the factory to get a ICorrespondence instance.
+	o	Correspondent: is a java bean which is returned by the ICorrespondence.getCorrespondent(...) method. The 
+		contained information can be used on the model provider (see 1.1.5) to get actual pcm elements.
 	o	OperationSignatureSelector: When the correspondence model gets used to get an operation based on the provided
 		class- and method-signature, it has to somehow decide which operation it should return. Since an pcm entity can
 		have more than one operation and during code-generation it is not clear which operation gets implemented by
@@ -133,7 +131,7 @@ http://www.uni-kiel.de/journals/receive/jportal_jparticle_00000265
 	
 	Other libraries are put in org.iobserve.analysis/libs:
 	o	giusa.software.csv-1.0.jar: Simple csv-parser library:
-		See iobserve-analysis/doc/api-usage/CSV-Parser.txt
+		One can see how it is used in org.iobserve.analysis.FilterTimeMemLogger.java
 	o	giusa.software.tooling.cmd-1.2.jar: Simple command line parsing library. This is used with the AnalysisMainParameterBean
 		class.
 		See iobserve-analysis/doc/api-usage/Parameter-Parser.txt
