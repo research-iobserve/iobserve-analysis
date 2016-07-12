@@ -1,0 +1,79 @@
+Table Content
+1. Purpose
+2. Structure
+3. Packages
+4. Important Classes
+
+Basic paper:
+"Run-time Architecture Models for Dynamic Adaptation and Evolution of Cloud Applications",
+http://www.uni-kiel.de/journals/receive/jportal_jparticle_00000265
+
+1. Structure:
+1.1 Packages:
+	1.1.1 org.iobserve.analysis:
+	This packages contains all necessary classes to run iObserve:
+		o 	AnalysisMain: The main class containing also the main-method. Is designed as singleton. A reference can
+			be retrieved from everywhere using the AnalysisMain.getInstance() method.
+		o 	AnalysisMainParameterBean: This class is a java bean containing command line parameter. It can be
+			extended by adding new fields along with corresponding getter and setter according to the java bean
+			convention. Getters are annotated with @Parameter to set their names used on the command line. 
+			More information about this: https://github.com/AlessandroGiusa/giusa.tooling.cmd
+			
+		o	FilterTimeMemLogger: Logger to log the execution time and memory usage of each filter.
+		o	ObservationConfiguration: Configuration class to configure the TeeTime pipeline. TeeTime is used as
+			pipe- and filter framework.
+			More information: https://teetime-framework.github.io/
+
+	1.1.2 org.iobserve.analysis.correspondence:
+	This package contains all necessary classes to realize the runtime architecture correspondence concept described
+	in the basic paper page 16ff.
+	
+	o	ICorrespondence is the interface used in iobserve to get correspondence information between
+		implementation and model. 
+	o	CorrespondenceModelImpl is the current available implementation of ICorrespondence. An instance can
+		be get using the:
+	o	CorrespondenceModelFactory. When a correspondence is retrieved from ICorrespondence, an instance
+		of: 
+	o	Correspondent is returned, which is a simple java bean containing all information to the pcm element. 
+		obtain actual pcm elements. This informations can be used later on the specific model providers (see 1.1.4).
+	o	OperationSignatureSelector: When the correspondence model gets used to get an operation based on the provided
+		class- and method-signature, it has to somehow decide which operation it should return. Since an pcm entity can
+		have more than one operation and during code-generation it is not clear which operation gets implemented by
+		which method, one has to somehow decide using for example the name of the method. Since this issue was not 
+		clear during implementation, a selector was introduced, in order to make this part of the mapping algorithm
+		inside of the correspondence model flexible. The correspondence model will use the selector to compare operation
+		signature with method-signatures.
+		
+	1.1.3 org.iobserve.analysis.filter:
+	This package is the main package of iobserve.analysis. It contains all filters performing the actual transformations
+	on the models. Their are described in the basic paper page 18ff.
+	
+	o	RecordSwitch: This filter dispatches different types of IMonitoringRecord data to either IDeploymentRecord,
+		IUndeploymentRecord, IFlowRecord or TraceMetadata. IMonitoringRecord is the base class for all this subclasses.
+	o	TAllocation: This filter will create ResourceContainer, if a deployment happened on a unknown ResourceContainer.
+		Input:IDeploymentRecord
+	o	TDeployment: This filter will deploy a component on a ResourceContainer, if it is not yet deployed in the model.
+		Input: IDeploymentRecord
+	o	TUndeployment: This filter does the opposite of TDeployment.
+		Input: IUndeploymentRecord
+	o	TNetworkLink: When it happens that TAllocation created a new ResourceContainer in the model, then this new 
+		container is not connected to any other already available container. This filter will connect the container with
+		the other containers. It will get the deployed component on this new container and check in the system model,
+		which other component requires the services from this component. Based on this information, it will query all
+		containers of this components, requiring the "new" deployed one and connect their container with the "new" created
+		one.
+	o	TEntryCall: According to the basic paper page 19ff, it has to create EntryCallEvents based on the FlowEvents.
+		Input: IFlowRecords
+		Output: EntryCallEvent
+	o	TEntryCallSequence: According to the basic paper page 19ff, it has to aggregate EntryCallEvents to a
+		EntryCallSequenceModel. This is done by creating a UserSession per user. The UserSession has a list of all
+		Input: EntryCallEvent
+		Output: EntryCallSequenceModel
+		EntryCallEvents from the specific user.
+	o	TEntryEventSequence: This filter will construct the UsageModel based on the observed EntryCallSequenceModels
+		and update the existing one.
+		Input: EntryCallSequenceModel
+	
+	
+	
+

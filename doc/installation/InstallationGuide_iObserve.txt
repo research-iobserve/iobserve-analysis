@@ -203,3 +203,9 @@ section.
 9.2. Own library:
 If you just have a jar file and want to add it to the classpath. Just copy it into the libs/ folder
 and refresh the dependencies like 8.1
+
+10. Used Gradle plug-ins
+
+10.1 AspectJ plugin
+https://github.com/eveoh/gradle-aspectj
+
