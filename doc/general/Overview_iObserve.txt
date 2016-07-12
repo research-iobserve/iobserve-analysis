@@ -3,8 +3,12 @@ Table Content
 3. Build Process
 
 Basic paper:
-"Run-time Architecture Models for Dynamic Adaptation and Evolution of Cloud Applications",
+Run-time Architecture Models for Dynamic Adaptation and Evolution of Cloud Applications
 http://www.uni-kiel.de/journals/receive/jportal_jparticle_00000265
+
+iObserve overview paper:
+iObserve: Integrated Observation and Modeling Techniques to Support Adaptation and Evolution of Software Systems
+http://www.uni-kiel.de/journals/receive/jportal_jparticle_00000031
 
 1. Structure:
 
