@@ -6,10 +6,21 @@ import org.iobserve.analysis.userbehavior.data.ClusteringMetrics;
 import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 import org.iobserve.analysis.userbehavior.data.UserSessionAsTransitionMatrix;
 
+import weka.attributeSelection.ASEvaluation;
+import weka.attributeSelection.ASSearch;
+import weka.attributeSelection.CfsSubsetEval;
+import weka.attributeSelection.GainRatioAttributeEval;
+import weka.attributeSelection.GreedyStepwise;
+import weka.attributeSelection.Ranker;
 import weka.clusterers.XMeans;
 import weka.core.DistanceFunction;
 import weka.core.EuclideanDistance;
 import weka.core.Instances;
+import weka.core.ManhattanDistance;
+import weka.core.NormalizableDistance;
+import weka.filters.Filter;
+import weka.filters.supervised.attribute.AttributeSelection;
+
 
 /**
  * This class performs the clustering of the user sessions that have been transformed to transition matrices before.
@@ -27,28 +38,28 @@ public class XMeansClustering extends AbstractClustering {
 	 * @param numberOfUserGroupsFromInputUsageModel is the input number of clusters
 	 * @return the clustering results that contain the number of cluster and the assignments
 	 */
-	public ClusteringResults clusterSessionsWithXMeans(List<String> listOfDistinctOperationSignatures, List<UserSessionAsTransitionMatrix> transitionModel, int numberOfUserGroupsFromInputUsageModel, int varianceOfUserGroups){
+	public ClusteringResults clusterSessionsWithXMeans(Instances instances, int numberOfUserGroupsFromInputUsageModel, int varianceOfUserGroups, int seed){
 		
 		ClusteringResults xMeansClusteringResults = null;
 		
 		try {
-				
-			Instances instances = createInstances(transitionModel, listOfDistinctOperationSignatures);
-			
+							
 			XMeans xmeans = new XMeans();
-			xmeans.setSeed(5);
-			DistanceFunction euclideanDistance = new EuclideanDistance();
-			euclideanDistance.setInstances(instances);
-			xmeans.setDistanceF(euclideanDistance);
+			xmeans.setSeed(seed);
+
+			NormalizableDistance manhattenDistance = new ManhattanDistance();
+			manhattenDistance.setDontNormalize(false);
+			manhattenDistance.setInstances(instances);
+			xmeans.setDistanceF(manhattenDistance);
 			
 			int[] clustersize = null;
 			int[] assignments = new int[instances.numInstances()];
 			
 			int numberOfClustersMin = numberOfUserGroupsFromInputUsageModel - varianceOfUserGroups;
 			int numberOfClustersMax = numberOfUserGroupsFromInputUsageModel + varianceOfUserGroups;
-			if(numberOfClustersMin<1)
+			if(numberOfClustersMin<2)
 				numberOfClustersMin = 1;
-			if(numberOfClustersMax<1)
+			if(numberOfClustersMax<2)
 				numberOfClustersMax = 1;
 			
 			xmeans.setMinNumClusters(numberOfClustersMin);

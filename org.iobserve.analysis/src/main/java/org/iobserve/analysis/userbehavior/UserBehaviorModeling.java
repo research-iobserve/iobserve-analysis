@@ -14,7 +14,7 @@ import org.iobserve.analysis.userbehavior.data.CallBranchModel;
 
 /**
  * Entry Point of the user behavior modeling. This class subsequently calls the user behavior modeling processes and stores 
- * the result as the userBeheviorModel that can be retrieved via a getter method. The modelUserBehavior method triggers the 
+ * the resulting pcm usage model that can be retrieved via a getter method. The modelUserBehavior method triggers the 
  * user behavior modeling. The constructor takes the input entryCallSequenceModel that contains the user sessions that are used to 
  * analyze and build the user behavior. The numberOfUserGroupsFromInputUsageModel states the number of user groups in the latest 
  * created usage model. It serves as input for the number of clusters within the user group detection.
@@ -32,6 +32,11 @@ public class UserBehaviorModeling {
 	private final boolean isClosedWorkloadRequested;
 	private final double thinkTime;
 	private UsageModel pcmUsageModel;
+	private long responseTimeOfUserGroupExtraction = 0;
+	private long responseTimeOfBranchExtraction = 0;
+	private long responseTimeOfLoopExtraction = 0;
+	private long responseTimeOfPcmModelling = 0;
+	private long overallResponseTime = 0;
 	
 	/**
 	* @param inputEntryCallSequenceModel contains the user sessions that are used to analyze and build the user behavior
@@ -60,7 +65,14 @@ public class UserBehaviorModeling {
 		
 		if(this.inputEntryCallSequenceModel.getUserSessions().size()<1)
 			return;
-				
+		
+		long timeBeforeOverall;
+		long timeAfterOverall;
+		long timeBefore;
+		long timeAfter;
+		
+		timeBeforeOverall = System.currentTimeMillis();
+		
 		/**
 		 * 1. The extraction of user groups
 		 * It clusters the entry call sequence model to detect different user groups within the user sessions
@@ -70,9 +82,12 @@ public class UserBehaviorModeling {
 		 * - the likelihood of its user group
 		 * - the parameters for the workload intensity of its user group
 		 */
+		timeBefore = System.currentTimeMillis();
 		final UserGroupExtraction extractionOfUserGroups = new UserGroupExtraction(inputEntryCallSequenceModel, numberOfUserGroupsFromInputUsageModel, varianceOfUserGroups);
 		extractionOfUserGroups.extractUserGroups();
-		final List<EntryCallSequenceModel> entryCallSequenceModels = extractionOfUserGroups.getEntryCallSequenceModelsOfUserGroups();
+		List<EntryCallSequenceModel> entryCallSequenceModels = extractionOfUserGroups.getEntryCallSequenceModelsOfUserGroups();
+		timeAfter = System.currentTimeMillis();
+		this.responseTimeOfUserGroupExtraction = (timeAfter - timeBefore);
 		
 		/**
 		 * 2. The aggregation of the call sequences
@@ -82,9 +97,12 @@ public class UserBehaviorModeling {
 		 * It detects branches and the branch likelihoods.
 		 * The result is one callBranchModel for each user group.
 		 */
+		timeBefore = System.currentTimeMillis();
 		final BranchExtraction branchExtraction = new BranchExtraction(entryCallSequenceModels);
 		branchExtraction.createCallBranchModels();
 		final List<CallBranchModel> callBranchModels = branchExtraction.getBranchOperationModels();
+		timeAfter = System.currentTimeMillis();
+		this.responseTimeOfBranchExtraction = (timeAfter - timeBefore);
 		
 		/**
 		 * 3. The detection of iterated behavior
@@ -93,9 +111,12 @@ public class UserBehaviorModeling {
 		 * are detected and summarized to loops containing the number of loops as the count of each loop. 
 		 * The result is one callBranchModel for each user group that additionally contains loops for iterated entryCalls.
 		 */
+		timeBefore = System.currentTimeMillis();
 		final LoopDetection loopDetection = new LoopDetection(callBranchModels);
 		loopDetection.createCallLoopBranchModels();
 		final List<CallBranchModel> callLoopBranchModels = loopDetection.getCallLoopBranchModels();
+		timeAfter = System.currentTimeMillis();
+		this.responseTimeOfLoopExtraction = (timeAfter - timeBefore);
 		
 		/**
 		 * 4. Modeling of the usage behavior
@@ -104,8 +125,15 @@ public class UserBehaviorModeling {
 		 * It contains loops and branches corresponding to the callLoopBranchModel.
 		 * The resulting PCM usage model can be retrieved via the getter method.
 		 */
+		timeBefore = System.currentTimeMillis();
 		final PcmUsageModelBuilder usageModelBuilder = new PcmUsageModelBuilder(callLoopBranchModels, this.isClosedWorkloadRequested, this.thinkTime);
 		this.pcmUsageModel = usageModelBuilder.createUsageModel();
+		timeAfter = System.currentTimeMillis();
+		this.responseTimeOfPcmModelling = (timeAfter - timeBefore);
+		
+		
+		timeAfterOverall = System.currentTimeMillis();
+		this.overallResponseTime = (timeAfterOverall - timeBeforeOverall);
 	}
 
 	/**
@@ -116,6 +144,26 @@ public class UserBehaviorModeling {
 	 */
 	public UsageModel getPcmUsageModel() {
 		return pcmUsageModel;
+	}
+
+	public long getResponseTimeOfUserGroupExtraction() {
+		return responseTimeOfUserGroupExtraction;
+	}
+
+	public long getResponseTimeOfBranchExtraction() {
+		return responseTimeOfBranchExtraction;
+	}
+
+	public long getResponseTimeOfLoopExtraction() {
+		return responseTimeOfLoopExtraction;
+	}
+
+	public long getResponseTimeOfPcmModelling() {
+		return responseTimeOfPcmModelling;
+	}
+
+	public long getOverallResponseTime() {
+		return overallResponseTime;
 	}
 	
 	

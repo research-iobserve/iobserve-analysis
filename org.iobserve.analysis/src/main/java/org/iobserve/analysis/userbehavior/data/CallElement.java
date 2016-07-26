@@ -1,6 +1,6 @@
 package org.iobserve.analysis.userbehavior.data;
 
-public class CallElement implements BranchElement {
+public class CallElement implements SequenceElement {
 	
 	private final String classSignature;
 	private final String operationSignature;

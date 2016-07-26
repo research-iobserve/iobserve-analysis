@@ -1,10 +1,13 @@
 package org.iobserve.analysis.userbehavior;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 import org.iobserve.analysis.userbehavior.data.UserSessionAsTransitionMatrix;
+
+import weka.core.Instances;
 
 /**
  * Entry Point of the user group detection. It clusters the entryCallSequenceModel´s user sessions to detect different user groups. 
@@ -26,6 +29,7 @@ public class UserGroupExtraction {
 	private final int numberOfUserGroupsFromInputUsageModel;
 	private final int varianceOfUserGroups;
 	private List<EntryCallSequenceModel> entryCallSequenceModelsOfUserGroups = null;
+	ClusteringResults clusteringResults = null;
 	
 	/**
 	 * @param entryCallSequenceModel contains the user sessions that are used to detect user groups via similar behavior
@@ -62,15 +66,21 @@ public class UserGroupExtraction {
 		 * 3. Clustering of user sessions
 		 * Clustering of the transition matrices to obtain user groups 
 		 */
-		xMeansClusteringResults = xMeansClustering.clusterSessionsWithXMeans(listOfDistinctOperationSignatures, absoluteTransitionModel, numberOfUserGroupsFromInputUsageModel, varianceOfUserGroups);
+		Instances instances = xMeansClustering.createInstances(absoluteTransitionModel, listOfDistinctOperationSignatures);
+		for(int i=0;i<5;i++) {
+			xMeansClusteringResults = xMeansClustering.clusterSessionsWithXMeans(instances, numberOfUserGroupsFromInputUsageModel, varianceOfUserGroups, i);
+			if(this.clusteringResults==null)
+				this.clusteringResults = xMeansClusteringResults;
+			else if(xMeansClusteringResults.getClusteringMetrics().getSumOfSquaredErrors()<this.clusteringResults.getClusteringMetrics().getSumOfSquaredErrors())
+				this.clusteringResults = xMeansClusteringResults;
+		}
 		
 		/**
 		 * 4. Obtaining the user groups´ call sequence models 
 		 * Creates for each cluster resp. user group its own entry call sequence model that exclusively contains its assigned
 		 * user sessions
 		 */
-//		xMeansClusteringResults.printClusteringResults();
-		List<EntryCallSequenceModel> entryCallSequenceModelsOfXMeansClustering = clusteringProcessing.getForEachUserGroupAnEntryCallSequenceModel(xMeansClusteringResults, entryCallSequenceModel);
+		List<EntryCallSequenceModel> entryCallSequenceModelsOfXMeansClustering = clusteringProcessing.getForEachUserGroupAnEntryCallSequenceModel(this.clusteringResults, entryCallSequenceModel);
 		
 		/**
 		 * 5. Obtaining the user groups´ workload intensity 

@@ -10,9 +10,12 @@ import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.userbehavior.data.Branch;
 import org.iobserve.analysis.userbehavior.data.BranchElement;
+import org.iobserve.analysis.userbehavior.data.BranchTransitionElement;
+import org.iobserve.analysis.userbehavior.data.SequenceElement;
 import org.iobserve.analysis.userbehavior.data.CallBranchModel;
 import org.iobserve.analysis.userbehavior.data.CallElement;
 import org.iobserve.analysis.userbehavior.data.ExitElement;
+
 
 /**
  * This class holds a set of methods to create a CallBranchModel from an EntryCallSequenceModel and to calculate 
@@ -22,6 +25,22 @@ import org.iobserve.analysis.userbehavior.data.ExitElement;
  */
 
 public class CallBranchModelCreator {
+	
+	boolean isFusionPerformed = false;
+	
+	/**
+	 * Iterates through the branches and sets the branches´ treeLevels. The treeLevel determines the tree depth of the branch.
+	 * For example the treeLevel of the rootBranch is 0. Its childBranches´ treeLevel is 1 and so on.
+	 * 
+	 * @param branch whose branches´ treeLevel is set
+	 * @param treeLevel is the current treeLevel
+	 */
+	public void setBranchTreeLevels(Branch branch, int treeLevel) {
+		branch.setTreeLevel(treeLevel);
+		for(int i=0;i<branch.getChildBranches().size();i++) {
+			setBranchTreeLevels(branch.getChildBranches().get(i), treeLevel+1);
+		}
+	}
 	
 	/**
 	 * It calculates for each branch of the passed CallBranchModel its likelihood
@@ -220,7 +239,7 @@ public class CallBranchModelCreator {
 	 * @param sequenceStartIndex states at which position of the passed events the branch sequence starts
 	 */
 	private void setBranchSequence(Branch examinedBranch, List<EntryCallEvent> events, int sequenceStartIndex) {
-		List<BranchElement> branchSequence = new ArrayList<BranchElement>();
+		List<SequenceElement> branchSequence = new ArrayList<SequenceElement>();
 		for(int j=sequenceStartIndex;j<events.size();j++) {
 			EntryCallEvent callEvent = events.get(j);
 			CallElement callElement = new CallElement(callEvent.getClassSignature(), callEvent.getOperationSignature());
@@ -271,9 +290,9 @@ public class CallBranchModelCreator {
 		Branch childBranch1 = new Branch();
 		Branch childBranch2 = new Branch();
 
-		List<BranchElement> branchSequence = new ArrayList<BranchElement>(examinedBranch.getBranchSequence().subList(0, positionInBranch));
-		List<BranchElement> branchSequence1 = new ArrayList<BranchElement>(examinedBranch.getBranchSequence().subList(positionInBranch, examinedBranch.getBranchSequence().size()));
-		List<BranchElement> branchSequence2 = new ArrayList<BranchElement>();
+		List<SequenceElement> branchSequence = new ArrayList<SequenceElement>(examinedBranch.getBranchSequence().subList(0, positionInBranch));
+		List<SequenceElement> branchSequence1 = new ArrayList<SequenceElement>(examinedBranch.getBranchSequence().subList(positionInBranch, examinedBranch.getBranchSequence().size()));
+		List<SequenceElement> branchSequence2 = new ArrayList<SequenceElement>();
 		
 		examinedBranch.setBranchSequence(branchSequence);
 		childBranch1.setBranchSequence(branchSequence1);
@@ -425,8 +444,183 @@ public class CallBranchModelCreator {
 			return false;
 	}
 	
-
 	
+		
+	public void compactBranchModel(CallBranchModel branchModel) {
+		compactBranch(branchModel.getRootBranch());
+		if(this.isFusionPerformed) {
+			int maxBranchId = setBranchIds(branchModel.getRootBranch(),1,1);
+			branchModel.setNumberOfBranches(maxBranchId);
+		}
+		setBranchTreeLevels(branchModel.getRootBranch(),branchModel.getRootBranch().getTreeLevel());
+	}
+	
+	private void compactBranch(Branch branch) {
+		while(compactChildBranches(branch));
+		for(int i=0;i<branch.getChildBranches().size();i++) {
+			compactBranch(branch.getChildBranches().get(i));
+		}
+	}
+	
+	private int setBranchIds(Branch branch, int branchId, int maxBranchId) {
+		branch.setBranchId(branchId);
+		if(maxBranchId<branchId)
+			maxBranchId = branchId;
+		for(int i=0;i<branch.getChildBranches().size();i++) {
+			int newBranchId = branchId +i+1;
+			maxBranchId = setBranchIds(branch.getChildBranches().get(i),newBranchId,maxBranchId);
+		}
+		return maxBranchId;
+	}
+	
+	
+	private boolean compactChildBranches(Branch branch) {
+		if(branch.getChildBranches().size()==0)
+			return false;
+		if(!checkForEqualNumberOfChildBranches(branch.getChildBranches()))
+			return false;
+		if(!doBranchContainChildBranches(branch.getChildBranches().get(0))) {
+			return fuseBranches(branch, false);
+		} else {
+			if(checkForEqualSubsequentBranches(branch.getChildBranches()))
+				return fuseBranches(branch, true);
+		}
+		return false;
+	}
+	
+	private boolean fuseBranches(Branch branch, boolean doChildBranchesExist) {
+		int indexOfEqualElements = 0;
+		boolean isElementEqual = false;
+		for(int i=branch.getChildBranches().get(0).getBranchSequence().size()-1;i>=0;i--) {
+			SequenceElement branchElement = branch.getChildBranches().get(0).getBranchSequence().get(i);
+			isElementEqual = false;
+			for(Branch childBranch : branch.getChildBranches()) {
+				if(childBranch.getBranchSequence().size()-1-indexOfEqualElements<0) {
+					isElementEqual = false;
+					break;
+				}
+				else if(doBranchElementsMatch(branchElement,childBranch.getBranchSequence().get(childBranch.getBranchSequence().size()-1-indexOfEqualElements))){
+					isElementEqual = true;
+				} else {
+					isElementEqual = false;
+					break;
+				}
+			}
+			if(!isElementEqual)
+				break;
+			indexOfEqualElements++;
+		}
+		
+		BranchElement branchElement = new BranchElement();
+		List<SequenceElement> sequenceToAddToBranch = new ArrayList<SequenceElement>();
+		for(int i=0;i<indexOfEqualElements;i++) {
+			sequenceToAddToBranch.add(0, branch.getChildBranches().get(0).getBranchSequence().get(branch.getChildBranches().get(0).getBranchSequence().size()-1));
+			for(Branch childBranch : branch.getChildBranches()) {
+				childBranch.getBranchSequence().remove(childBranch.getBranchSequence().size()-1);
+			}
+		}
+		for(Branch childBranch : branch.getChildBranches()) {
+			BranchTransitionElement branchTransition = new BranchTransitionElement();
+			branchTransition.setBranchSequence(childBranch.getBranchSequence());
+			branchTransition.setTransitionLikelihood(childBranch.getBranchLikelihood());
+			branchElement.addBranchTransition(branchTransition);
+		}
+		
+		branch.getBranchSequence().add(branchElement);
+		branch.getBranchSequence().addAll(sequenceToAddToBranch);
+		
+		if(doChildBranchesExist) {
+			List<Branch> newChildBranches = branch.getChildBranches().get(0).getChildBranches();
+			branch.getChildBranches().clear();
+			branch.setChildBranches(newChildBranches);
+		} else {
+			branch.getChildBranches().clear();
+		}
+		
+		if(doChildBranchesExist||indexOfEqualElements>0) {
+			isFusionPerformed = true;
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	private boolean checkForEqualSubsequentBranches(List<Branch> branches) {
+		if(!doChildBranchesMatch(branches)) 
+			return false;
+		List<Branch> branchesToCheck = new ArrayList<Branch>();
+		for(Branch branch : branches) {
+			branchesToCheck.addAll(branch.getChildBranches());
+		}
+		if(branchesToCheck.size()==0)
+			return true;
+		if(!checkForEqualSubsequentBranches(branchesToCheck)) {
+			return false;
+		} else
+			return true;
+	}
+	
+	
+	private boolean doChildBranchesMatch(List<Branch> branches) {
+		if(!checkForEqualNumberOfChildBranches(branches))
+			return false;
+		List<Branch> branchesToMatch = new ArrayList<Branch>();
+		for(int i=0;i<branches.get(0).getChildBranches().size();i++) {
+			branchesToMatch.add(branches.get(0).getChildBranches().get(i));
+		}
+		for(int i=0;i<branches.size();i++) {
+			if(branches.get(i).getChildBranches().size()!=branchesToMatch.size())
+				return false;
+			for(int k=0;k<branchesToMatch.size();k++) {
+				boolean matchingElementFound = false;
+				for(int j=0;j<branches.get(i).getChildBranches().size();j++) {
+					if(doBranchElementsMatch(branchesToMatch.get(k).getBranchSequence().get(0),branches.get(i).getChildBranches().get(j).getBranchSequence().get(0))
+							&&branchesToMatch.get(k).getBranchLikelihood()==branches.get(i).getChildBranches().get(j).getBranchLikelihood()) {
+						matchingElementFound = true;
+						break;
+					}
+				}
+				if(!matchingElementFound) {
+					return false;
+				}
+			}	
+		}
+
+		return true;
+	}
+
+
+
+	private boolean checkForEqualNumberOfChildBranches(List<Branch> branches) {
+		
+		int numberOfChildBranches = branches.get(0).getChildBranches().size();
+		for(Branch branch : branches) {
+			if(branch.getChildBranches().size()!=numberOfChildBranches)
+				return false;
+		}
+		
+		return true;
+	}
+	
+	private boolean doBranchContainChildBranches(Branch branch) {
+		if(branch.getChildBranches()==null||branch.getChildBranches().size()==0)
+			return false;
+		else
+			return true;
+	}
+	
+	private boolean doBranchElementsMatch(SequenceElement branchElement1, SequenceElement branchElement2) {
+		if(!branchElement1.getClass().equals(branchElement2.getClass()))
+			return false;
+		if(branchElement1.getClass().equals(CallElement.class)&&branchElement2.getClass().equals(CallElement.class)) {
+			if((!branchElement1.getClassSignature().equals(branchElement2.getClassSignature()))||
+					(!branchElement1.getOperationSignature().equals(branchElement2.getOperationSignature())))
+				return false;
+		}
+		return true;
+	}
+
+
 	// Descending Sort user sessions by call sequence length
 	// User session with longest call sequence will be first element
 	private final Comparator<UserSession> SortUserSessionByCallSequenceSize = new Comparator<UserSession>() {

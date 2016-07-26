@@ -37,14 +37,20 @@ public class BranchExtraction {
 			/**
 			 * 1. Aggregates the single EntryCall sequences to a CallBranchModel 
 			 */
-			CallBranchModel branchOperationModel = modelCreator.createCallBranchModel(entryCallSequenceModel);
+			CallBranchModel branchModel = modelCreator.createCallBranchModel(entryCallSequenceModel);
 			
 			/**
 			 * 2. Calculates the likelihoods of the branches of the obtained CallBranchModel 
 			 */
-			modelCreator.calculateLikelihoodsOfBranches(branchOperationModel);
+			modelCreator.calculateLikelihoodsOfBranches(branchModel);
 			
-			branchOperationModels.add(branchOperationModel);
+			/**
+			 * 3. Tries to fuse branches to obtain a more compact model 
+			 */
+			modelCreator.compactBranchModel(branchModel);
+			
+			
+			branchOperationModels.add(branchModel);
 		}
 
 	}

@@ -1,6 +1,6 @@
 package org.iobserve.analysis.userbehavior.data;
 
-public class ExitElement implements BranchElement  {
+public class ExitElement implements SequenceElement  {
 	
 	private int absoluteCount;
 
@@ -12,15 +12,11 @@ public class ExitElement implements BranchElement  {
 		this.absoluteCount = absoluteCount;
 	}
 
-	@Override
 	public String getClassSignature() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String getOperationSignature() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	

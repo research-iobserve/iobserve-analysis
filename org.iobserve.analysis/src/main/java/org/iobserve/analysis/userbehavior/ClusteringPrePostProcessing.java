@@ -97,6 +97,8 @@ public class ClusteringPrePostProcessing {
 				}
 				instanceNumber++;
 			}			
+			if(sessions.size()==0)
+				continue;
 			double relativeFrequencyOfUserGroup = countOfAssigendUserSessions/countOfAbsoluteUserSessions;
 			entryCallSequenceModels.add(new EntryCallSequenceModel(sessions, relativeFrequencyOfUserGroup));
 		}

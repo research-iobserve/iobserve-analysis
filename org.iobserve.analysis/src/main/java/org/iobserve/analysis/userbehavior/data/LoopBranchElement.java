@@ -3,7 +3,7 @@ package org.iobserve.analysis.userbehavior.data;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoopBranchElement implements BranchElement {
+public class LoopBranchElement implements SequenceElement {
 
 	private List<Branch> loopBranches;
 	
@@ -23,27 +23,18 @@ public class LoopBranchElement implements BranchElement {
 		this.loopBranches = loopBranches;
 	}
 
-	@Override
 	public int getAbsoluteCount() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	@Override
-	public void setAbsoluteCount(int absoluteCount) {
-		// TODO Auto-generated method stub
-		
+	public void setAbsoluteCount(int absoluteCount) {	
 	}
 
-	@Override
 	public String getClassSignature() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	@Override
 	public String getOperationSignature() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 }

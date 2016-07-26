@@ -81,16 +81,28 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 		UsageModelMatcher usageModelMatcher = new UsageModelMatcher();
 		if(executionCounter==0) {
 			List<List<Object>> listOfDataValues = new ArrayList<List<Object>>();
-			List<Object> dataValues = new ArrayList<Object>();
-			List<Object> dataValues2 = new ArrayList<Object>();
-			List<Object> dataValues3 = new ArrayList<Object>();
-			int numberOfIterations = 500;
+			List<List<Object>> listOfOverallTimeValues = new ArrayList<List<Object>>();
+			List<List<Object>> listOftimeValuesOfUserGroupExtraction = new ArrayList<List<Object>>();
+			List<List<Object>> listOftimeValuesOfBranchExtraction = new ArrayList<List<Object>>();
+			List<List<Object>> listOftimeValuesOfLoopExtraction = new ArrayList<List<Object>>();
+			List<List<Object>> listOftimeValuesOfPcmModeling = new ArrayList<List<Object>>();
+			List<Object> numberOfCalls = new ArrayList<Object>();
+			for(int j=0;j<1;j++) {
+				numberOfCalls.clear();
+			List<Object> timeValuesOfUserGroupExtraction = new ArrayList<Object>();
+			List<Object> timeValuesOfBranchExtraction = new ArrayList<Object>();
+			List<Object> timeValuesOfLoopExtraction = new ArrayList<Object>();
+			List<Object> timeValuesOfPcmModeling = new ArrayList<Object>();
+			List<Object> overallResponseTimeValues = new ArrayList<Object>();
+			int numberOfIterations = 30;
 			int stepSize = 1;
 			try {
-				for(int i=0;i<numberOfIterations;i+=stepSize) {
+				for(int i=2;i<=numberOfIterations;i+=stepSize) {
 					
-					int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-					int varianceOfUserGroups = AnalysisMain.getInstance().getInputParameter().getVarianceOfUserGroups();
+//					int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+					int numberOfUserGroups = 1;
+					int varianceOfUserGroups = 0;
+//					int varianceOfUserGroups = AnalysisMain.getInstance().getInputParameter().getVarianceOfUserGroups();
 					int thinkTime = AnalysisMain.getInstance().getInputParameter().getThinkTime();
 					boolean isClosedWorkload = AnalysisMain.getInstance().getInputParameter().isClosedWorkload();
 					
@@ -98,43 +110,139 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 //					TestElements testElementsOfSimpleLoopModel = usageModelTestBuilder.getSimpleLoopTestModel(thinkTime, isClosedWorkload);
 //					TestElements testElementsOfSimpleSequenceModel = usageModelTestBuilder.getSimpleSequenceTestModel(thinkTime,isClosedWorkload);
 //					TestElements testElementsOfDecisionLoopModel = usageModelTestBuilder.getLoopDecisionTestModel(thinkTime, isClosedWorkload);
-//					TestElements testElementsOfLoopInLoopModel = usageModelTestBuilder.getLoopInLoopTestModel(thinkTime, isClosedWorkload);
+					TestElements testElementsOfLoopInLoopModel = usageModelTestBuilder.getLoopWithinLoopTestModel(thinkTime, isClosedWorkload);
 //					TestElements testElementsOfLoopInBranchModel = usageModelTestBuilder.getLoopWithinBranchTestModel(thinkTime, isClosedWorkload);
 //					TestElements testElementsOfBranchInBranchModel = usageModelTestBuilder.getBranchWithinBranchTestModel(thinkTime, isClosedWorkload);
-					TestElements testElementsOfBranchInLoopModel = usageModelTestBuilder.getBranchWithinLoopTestModel(thinkTime, isClosedWorkload);
-//					EntryCallSequenceModel testIncreasingCallSequenceEntryCallSequenceModel = usageModelTestBuilder.getIncreasingCallSequenceScalabilityTestModel(i);
-//					EntryCallSequenceModel testIncreasingUserSessionsEntryCallSequenceModel = usageModelTestBuilder.getIncreasingUserSessionsScalabilityTestModel(i);
-					
-					final long timeBefore = System.currentTimeMillis();
-					UserBehaviorModeling behaviorModeling = new UserBehaviorModeling(testElementsOfBranchInLoopModel.getEntryCallSequenceModel(), numberOfUserGroups, varianceOfUserGroups, isClosedWorkload, thinkTime);
+//					TestElements testElementsOfBranchInLoopModel = usageModelTestBuilder.getBranchWithinLoopTestModel(thinkTime, isClosedWorkload);
+//					TestElements testElementsOfBranchToBranchToSequenceModel = usageModelTestBuilder.getBranchToBranchToSequenceTestModel(thinkTime, isClosedWorkload);
+//					TestElements testElementsOfOpenWorkloadModel = usageModelTestBuilder.getOpenWorkloadTestModel();
+//					TestElements testElementsOfIncreasingCallSequenceModel = usageModelTestBuilder.getIncreasingCallSequenceScalabilityTestModel(i);
+//					TestElements testElementsOfIncreasingUserSessionsModel = usageModelTestBuilder.getIncreasingUserSessionsScalabilityTestModel(i);
+
+					UserBehaviorModeling behaviorModeling = new UserBehaviorModeling(testElementsOfLoopInLoopModel.getEntryCallSequenceModel(), numberOfUserGroups, varianceOfUserGroups, isClosedWorkload, thinkTime);
 					try {
 						behaviorModeling.modelUserBehavior();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 
-					final long timeAfter = System.currentTimeMillis();
-					final long timeDifference = (timeAfter - timeBefore);
-
-//					dataValues2.add(timeDifference);
+					numberOfCalls.add(testElementsOfLoopInLoopModel.getEntryCallSequenceModel().getUserSessions().get(0).getEvents().size());
+					timeValuesOfUserGroupExtraction.add(behaviorModeling.getResponseTimeOfUserGroupExtraction());
+					timeValuesOfBranchExtraction.add(behaviorModeling.getResponseTimeOfBranchExtraction());
+					timeValuesOfLoopExtraction.add(behaviorModeling.getResponseTimeOfLoopExtraction());
+					timeValuesOfPcmModeling.add(behaviorModeling.getResponseTimeOfPcmModelling());
 					
-					System.out.println(""+i+"/"+numberOfIterations);
-					boolean isMatch = usageModelMatcher.matchUsageModels(behaviorModeling.getPcmUsageModel(), testElementsOfBranchInLoopModel.getUsageModel());
+//					numberOfCalls.add(i);
+					overallResponseTimeValues.add(behaviorModeling.getOverallResponseTime());
+
+					System.out.println("J:"+j+" I:"+i+"/"+numberOfIterations);
+					boolean isMatch = usageModelMatcher.matchUsageModels(behaviorModeling.getPcmUsageModel(), testElementsOfLoopInLoopModel.getUsageModel());
 
 //					dataValues.add(isMatch);
-					dataValues2.add(testElementsOfBranchInLoopModel.getLoopCount());
+//					dataValues2.add(testElementsOfBranchInLoopModel.getLoopCount());
 //					dataValues3.add(testElementsOfBranchInLoopModel.getNumberOfBranchTransitions2());
 					usageModelTestBuilder.saveModel(behaviorModeling.getPcmUsageModel(), "/Users/David/GitRepositories/iObserve/org.iobserve.analysis/output/usageModels/output.usagemodel");
-					if(!isMatch)	
-						break;
+					if(!isMatch) {	
+						System.out.println("MISSMATCH");
+					}
 				}
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-//			listOfDataValues.add(dataValues);
-			listOfDataValues.add(dataValues2);
-//			listOfDataValues.add(dataValues3);
-			usageModelTestBuilder.writeToCsv("match.csv",listOfDataValues);
+			listOfDataValues.add(overallResponseTimeValues);
+			listOfOverallTimeValues.add(overallResponseTimeValues);
+			listOftimeValuesOfUserGroupExtraction.add(timeValuesOfUserGroupExtraction);
+			listOftimeValuesOfBranchExtraction.add(timeValuesOfBranchExtraction);
+			listOftimeValuesOfLoopExtraction.add(timeValuesOfLoopExtraction);
+			listOftimeValuesOfPcmModeling.add(timeValuesOfPcmModeling);
+//			listOfDataValues.clear();
+//			listOfDataValues.add(numberOfCalls);
+//			listOfDataValues.add(overallResponseTimeValues);
+//			usageModelTestBuilder.writeToCsv("overallResponseTimeIncreasingUserSessions.csv",listOfDataValues);
+//			listOfDataValues.clear();
+//			listOfDataValues.add(numberOfCalls);
+//			listOfDataValues.add(timeValuesOfUserGroupExtraction);
+//			usageModelTestBuilder.writeToCsv("responseTimeOfUserGroupExtraction.csv",listOfDataValues);
+//			listOfDataValues.clear();
+//			listOfDataValues.add(numberOfCalls);
+//			listOfDataValues.add(timeValuesOfBranchExtraction);
+//			usageModelTestBuilder.writeToCsv("responseTimeOfBranchExtraction.csv",listOfDataValues);
+//			listOfDataValues.clear();
+//			listOfDataValues.add(numberOfCalls);
+//			listOfDataValues.add(timeValuesOfLoopExtraction);
+//			usageModelTestBuilder.writeToCsv("responseTimeOfLoopExtraction.csv",listOfDataValues);
+//			listOfDataValues.clear();
+//			listOfDataValues.add(numberOfCalls);
+//			listOfDataValues.add(timeValuesOfPcmModeling);
+//			usageModelTestBuilder.writeToCsv("responseTimeOfPcmModeling.csv",listOfDataValues);
+			}
+			List<List<Object>> listOfAverageDataValues = new ArrayList<List<Object>>();
+			List<Object> overallTimeAverageValues = new ArrayList<Object>();
+			List<Object> userGroupAverageValues = new ArrayList<Object>();
+			List<Object> branchAverageValues = new ArrayList<Object>();
+			List<Object> loopAverageValues = new ArrayList<Object>();
+			List<Object> modelingAverageValues = new ArrayList<Object>();
+			for(int j=0;j<listOfOverallTimeValues.get(0).size();j++){
+				double timeValue = 0;
+				for(int i=0;i<listOfOverallTimeValues.size();i++) {
+					long t = (long)listOfOverallTimeValues.get(i).get(j);
+					timeValue += (double)t;
+				}
+				timeValue = timeValue/listOfOverallTimeValues.size();
+				overallTimeAverageValues.add(timeValue);
+				
+				timeValue = 0;
+				for(int i=0;i<listOftimeValuesOfUserGroupExtraction.size();i++) {
+					long t = (long)listOftimeValuesOfUserGroupExtraction.get(i).get(j);
+					timeValue += (double)t;
+				}
+				timeValue = timeValue/listOftimeValuesOfUserGroupExtraction.size();
+				userGroupAverageValues.add(timeValue);
+				
+				timeValue = 0;
+				for(int i=0;i<listOftimeValuesOfBranchExtraction.size();i++) {
+					long t = (long)listOftimeValuesOfBranchExtraction.get(i).get(j);
+					timeValue += (double)t;
+				}
+				timeValue = timeValue/listOftimeValuesOfBranchExtraction.size();
+				branchAverageValues.add(timeValue);
+				
+				timeValue = 0;
+				for(int i=0;i<listOftimeValuesOfLoopExtraction.size();i++) {
+					long t = (long)listOftimeValuesOfLoopExtraction.get(i).get(j);
+					timeValue += (double)t;
+				}
+				timeValue = timeValue/listOftimeValuesOfLoopExtraction.size();
+				loopAverageValues.add(timeValue);
+				
+				timeValue = 0;
+				for(int i=0;i<listOftimeValuesOfPcmModeling.size();i++) {
+					long t = (long)listOftimeValuesOfPcmModeling.get(i).get(j);
+					timeValue += (double)t;
+				}
+				timeValue = timeValue/listOftimeValuesOfPcmModeling.size();
+				modelingAverageValues.add(timeValue);
+			}
+			listOfAverageDataValues.add(numberOfCalls);
+			listOfAverageDataValues.add(overallTimeAverageValues);
+			usageModelTestBuilder.writeToCsv("AverageOverallTimeValuesIncreasingUserSessions.csv",listOfAverageDataValues);
+			listOfAverageDataValues.clear();
+			listOfAverageDataValues.add(numberOfCalls);
+			listOfAverageDataValues.add(userGroupAverageValues);
+			usageModelTestBuilder.writeToCsv("UserGroupTimeValuesIncreasingUserSessions.csv",listOfAverageDataValues);
+			listOfAverageDataValues.clear();
+			listOfAverageDataValues.add(numberOfCalls);
+			listOfAverageDataValues.add(branchAverageValues);
+			usageModelTestBuilder.writeToCsv("BranchTimeValuesIncreasingUserSessions.csv",listOfAverageDataValues);
+			listOfAverageDataValues.clear();
+			listOfAverageDataValues.add(numberOfCalls);
+			listOfAverageDataValues.add(loopAverageValues);
+			usageModelTestBuilder.writeToCsv("LoopValuesIncreasingUserSessions.csv",listOfAverageDataValues);
+			listOfAverageDataValues.clear();
+			listOfAverageDataValues.add(numberOfCalls);
+			listOfAverageDataValues.add(modelingAverageValues);
+			usageModelTestBuilder.writeToCsv("ModelingIncreasingUserSessions.csv",listOfAverageDataValues);
+			
 		}
 		/**
 		 * End 

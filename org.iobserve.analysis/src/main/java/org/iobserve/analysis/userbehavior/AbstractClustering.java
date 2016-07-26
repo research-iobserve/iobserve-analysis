@@ -10,6 +10,7 @@ import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
 
+
 /**
  * It creates the instances for the Weka clustering. It is abstract to be usable for different clustering methods.
  * 
@@ -55,7 +56,7 @@ public abstract class AbstractClustering {
 			
 			clusterSet.add(instance);
 		}
-		
+			
 		return clusterSet;
 	}
 	
