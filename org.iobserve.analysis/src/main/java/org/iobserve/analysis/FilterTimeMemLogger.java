@@ -223,7 +223,8 @@ public final class FilterTimeMemLogger {
 			final String csvContent = parser.toString();
 			try {
 				final String fileName = this.logOutput 
-						+ "_" + filter
+						+ "/"
+						+ filter
 						+ "_" + this.dateFormatter.format(new Date()) + ".csv";
 				final PrintWriter writer = new PrintWriter(fileName);
 				writer.append(csvContent);
