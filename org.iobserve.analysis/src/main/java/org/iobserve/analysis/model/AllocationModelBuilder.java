@@ -89,12 +89,34 @@ public class AllocationModelBuilder extends ModelBuilder<AllocationModelProvider
 	}
 	
 
-	// TODO testing
+	// Can not get id of AllocationContext from TUndeployment
 	public AllocationModelBuilder removeAllocationContext(final String id) {
 		final Allocation model = this.modelProvider.getModel();
 		final AllocationContext ctx = (AllocationContext) 
 				AbstractModelProvider.getIdentifiableComponent(id, model.getAllocationContexts_Allocation());
 		model.getAllocationContexts_Allocation().remove(ctx);
+		return this;
+	}
+	
+	/**
+	 * Remove an {@link AllocationContext} from the given {@link ResourceContainer} and {@link AssemblyContext}
+	 * if they are contained in the model. Identification is done via {@link ResourceContainer#getEntityName()} 
+	 * and {@link AssemblyContext#getEntityName()}.
+	 * @param resContainer container
+	 * @param asmCtx assembly context
+	 * @return builder
+	 */
+	public AllocationModelBuilder removeAllocationContext(final ResourceContainer resContainer,
+			final AssemblyContext asmCtx) {
+		// could be inefficient on big models and high recurrences of undeployments
+		final Allocation model = this.modelProvider.getModel();
+		model.getAllocationContexts_Allocation()
+				.stream()
+				.filter(context -> 
+						context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName()) && 
+						context.getResourceContainer_AllocationContext().getEntityName().equals(resContainer.getEntityName()))
+				.findFirst().ifPresent(ctx -> model.getAllocationContexts_Allocation().remove(ctx)); 
+			
 		return this;
 	}
 	
