@@ -29,17 +29,19 @@ public class UserGroupExtraction {
 	private final int numberOfUserGroupsFromInputUsageModel;
 	private final int varianceOfUserGroups;
 	private List<EntryCallSequenceModel> entryCallSequenceModelsOfUserGroups = null;
-	ClusteringResults clusteringResults = null;
+	private ClusteringResults clusteringResults = null;
+	private boolean isClosedWorkload;
 	
 	/**
 	 * @param entryCallSequenceModel contains the user sessions that are used to detect user groups via similar behavior
 	 * @param numberOfUserGroupsFromInputUsageModel states the number of user groups in the latest created usage model. It serves
 	 * as input for the number of clusters, i.e., for the number of user groups to detect
 	 */
-	public UserGroupExtraction(EntryCallSequenceModel entryCallSequenceModel, int numberOfUserGroupsFromInputUsageModel, int varianceOfUserGroups) {
+	public UserGroupExtraction(EntryCallSequenceModel entryCallSequenceModel, int numberOfUserGroupsFromInputUsageModel, int varianceOfUserGroups, boolean isClosedWorkload) {
 		this.entryCallSequenceModel = entryCallSequenceModel;
 		this.numberOfUserGroupsFromInputUsageModel = numberOfUserGroupsFromInputUsageModel;
 		this.varianceOfUserGroups = varianceOfUserGroups;
+		this.isClosedWorkload = isClosedWorkload;
 	}
 	
 	public void extractUserGroups() {
@@ -60,13 +62,13 @@ public class UserGroupExtraction {
 		 * Transforms the call sequences of the user sessions to transition matrices that state the number of transitions
 		 * between the obtained operation signatures.
 		 */
-		List<UserSessionAsTransitionMatrix> absoluteTransitionModel = clusteringProcessing.getTransitionModel(entryCallSequenceModel.getUserSessions(), listOfDistinctOperationSignatures);
+		List<UserSessionAsTransitionMatrix> absoluteCallModel = clusteringProcessing.getAbsoluteCallModel(entryCallSequenceModel.getUserSessions(), listOfDistinctOperationSignatures);
 	
 		/**
 		 * 3. Clustering of user sessions
 		 * Clustering of the transition matrices to obtain user groups 
 		 */
-		Instances instances = xMeansClustering.createInstances(absoluteTransitionModel, listOfDistinctOperationSignatures);
+		Instances instances = xMeansClustering.createInstances(absoluteCallModel, listOfDistinctOperationSignatures);
 		for(int i=0;i<5;i++) {
 			xMeansClusteringResults = xMeansClustering.clusterSessionsWithXMeans(instances, numberOfUserGroupsFromInputUsageModel, varianceOfUserGroups, i);
 			if(this.clusteringResults==null)
@@ -86,7 +88,7 @@ public class UserGroupExtraction {
 		 * 5. Obtaining the user groups´ workload intensity 
 		 * Calculates and sets for each user group its specific workload intensity parameters
 		 */
-		clusteringProcessing.setTheWorkloadIntensityForTheEntryCallSequenceModels(entryCallSequenceModelsOfXMeansClustering);
+		clusteringProcessing.setTheWorkloadIntensityForTheEntryCallSequenceModels(entryCallSequenceModelsOfXMeansClustering, this.isClosedWorkload);
 		
 		/**
 		 * Sets the resulting entryCallSequenceModels that can be retrieved via the getter method
@@ -103,6 +105,12 @@ public class UserGroupExtraction {
 	public List<EntryCallSequenceModel> getEntryCallSequenceModelsOfUserGroups() {
 		return this.entryCallSequenceModelsOfUserGroups;
 	}
+
+	public ClusteringResults getClusteringResults() {
+		return clusteringResults;
+	}
+	
+	
 	 
 
 }

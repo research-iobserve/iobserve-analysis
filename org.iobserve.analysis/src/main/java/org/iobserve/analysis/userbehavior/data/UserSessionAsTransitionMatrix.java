@@ -4,10 +4,12 @@ public class UserSessionAsTransitionMatrix {
 	
 	private String sessionId;
 	private int [] [] absoluteTransitionMatrix;
+	private int [] absoluteCountOfCalls;
 	
-	public UserSessionAsTransitionMatrix (String sessionId, int numberOfDistinctMethods) {
+	public UserSessionAsTransitionMatrix (String sessionId, int numberOfDistinctOperationSignatures) {
 		this.sessionId = sessionId;
-		this.absoluteTransitionMatrix = new int [numberOfDistinctMethods][numberOfDistinctMethods];
+		this.absoluteTransitionMatrix = new int [numberOfDistinctOperationSignatures][numberOfDistinctOperationSignatures];
+		this.absoluteCountOfCalls = new int [numberOfDistinctOperationSignatures];
 	}
 
 	public String getSessionId() {
@@ -25,6 +27,16 @@ public class UserSessionAsTransitionMatrix {
 	public void setAbsoluteTransitionMatrix(int[][] absoluteTransitionMatrix) {
 		this.absoluteTransitionMatrix = absoluteTransitionMatrix;
 	}
+
+	public int[] getAbsoluteCountOfCalls() {
+		return absoluteCountOfCalls;
+	}
+
+	public void setAbsoluteCountOfCalls(int[] absoluteCountOfCalls) {
+		this.absoluteCountOfCalls = absoluteCountOfCalls;
+	}
+	
+	
 
 	
 }

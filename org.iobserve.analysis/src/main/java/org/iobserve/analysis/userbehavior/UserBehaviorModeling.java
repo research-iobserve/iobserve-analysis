@@ -29,7 +29,7 @@ public class UserBehaviorModeling {
 	private final EntryCallSequenceModel inputEntryCallSequenceModel;
 	private final int numberOfUserGroupsFromInputUsageModel;
 	private final int varianceOfUserGroups;
-	private final boolean isClosedWorkloadRequested;
+	private final boolean isClosedWorkload;
 	private final double thinkTime;
 	private UsageModel pcmUsageModel;
 	private long responseTimeOfUserGroupExtraction = 0;
@@ -43,11 +43,11 @@ public class UserBehaviorModeling {
 	* @param numberOfUserGroupsFromInputUsageModel states the number of user groups in the latest created usage model. It serves
 	* as input for the number of clusters
 	*/
-	public UserBehaviorModeling (EntryCallSequenceModel inputEntryCallSequenceModel, int numberOfUserGroupsFromInputUsageModel, int varianceOfUserGroups, boolean isClosedWorkloadRequested, double thinkTime) {
+	public UserBehaviorModeling (EntryCallSequenceModel inputEntryCallSequenceModel, int numberOfUserGroupsFromInputUsageModel, int varianceOfUserGroups, boolean isClosedWorkload, double thinkTime) {
 		this.inputEntryCallSequenceModel = inputEntryCallSequenceModel;
 		this.numberOfUserGroupsFromInputUsageModel = numberOfUserGroupsFromInputUsageModel;
 		this.varianceOfUserGroups = varianceOfUserGroups;
-		this.isClosedWorkloadRequested = isClosedWorkloadRequested;
+		this.isClosedWorkload = isClosedWorkload;
 		this.thinkTime = thinkTime;
 	}	
 	
@@ -83,7 +83,7 @@ public class UserBehaviorModeling {
 		 * - the parameters for the workload intensity of its user group
 		 */
 		timeBefore = System.currentTimeMillis();
-		final UserGroupExtraction extractionOfUserGroups = new UserGroupExtraction(inputEntryCallSequenceModel, numberOfUserGroupsFromInputUsageModel, varianceOfUserGroups);
+		final UserGroupExtraction extractionOfUserGroups = new UserGroupExtraction(inputEntryCallSequenceModel, numberOfUserGroupsFromInputUsageModel, varianceOfUserGroups, isClosedWorkload);
 		extractionOfUserGroups.extractUserGroups();
 		List<EntryCallSequenceModel> entryCallSequenceModels = extractionOfUserGroups.getEntryCallSequenceModelsOfUserGroups();
 		timeAfter = System.currentTimeMillis();
@@ -126,7 +126,7 @@ public class UserBehaviorModeling {
 		 * The resulting PCM usage model can be retrieved via the getter method.
 		 */
 		timeBefore = System.currentTimeMillis();
-		final PcmUsageModelBuilder usageModelBuilder = new PcmUsageModelBuilder(callLoopBranchModels, this.isClosedWorkloadRequested, this.thinkTime);
+		final PcmUsageModelBuilder usageModelBuilder = new PcmUsageModelBuilder(callLoopBranchModels, this.isClosedWorkload, this.thinkTime);
 		this.pcmUsageModel = usageModelBuilder.createUsageModel();
 		timeAfter = System.currentTimeMillis();
 		this.responseTimeOfPcmModelling = (timeAfter - timeBefore);

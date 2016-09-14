@@ -55,21 +55,24 @@ public class ClusteringPrePostProcessing {
 	 * @param listOfDistinctOperationSignatures are the distinct operation signatures that are used to build the transition matrix
 	 * @return the passed user sessions as transition matrices
 	 */
-	public List<UserSessionAsTransitionMatrix> getTransitionModel(List<UserSession> userSessions, List<String> listOfDistinctOperationSignatures) {
-		List<UserSessionAsTransitionMatrix> absoluteTransitionModel = new ArrayList<UserSessionAsTransitionMatrix>(); 
+	public List<UserSessionAsTransitionMatrix> getAbsoluteCallModel(List<UserSession> userSessions, List<String> listOfDistinctOperationSignatures) {
+		
+		List<UserSessionAsTransitionMatrix> absoluteCallModel = new ArrayList<UserSessionAsTransitionMatrix>(); 
+		
 		for(final UserSession userSession:userSessions) {
-			UserSessionAsTransitionMatrix transitionMatrix = new UserSessionAsTransitionMatrix(userSession.getSessionId(), listOfDistinctOperationSignatures.size());
+			
+			UserSessionAsTransitionMatrix absoluteCountOfCalls = new UserSessionAsTransitionMatrix(userSession.getSessionId(), listOfDistinctOperationSignatures.size());
 			List<EntryCallEvent> callSequence = userSession.getEvents();
-			for(int i=0;i<callSequence.size()-1;i++) {
-				String currentCall = callSequence.get(i).getOperationSignature();
-				String subsequentCall = callSequence.get(i+1).getOperationSignature();
+		
+			for(int i=0;i<callSequence.size();i++) {
+				String currentCall = callSequence.get(i).getOperationSignature();				
 				int indexOfCurrentCall = listOfDistinctOperationSignatures.indexOf(currentCall);
-				int indexOfSubsequentCall = listOfDistinctOperationSignatures.indexOf(subsequentCall);
-				transitionMatrix.getAbsoluteTransitionMatrix() [indexOfCurrentCall] [indexOfSubsequentCall] = transitionMatrix.getAbsoluteTransitionMatrix() [indexOfCurrentCall] [indexOfSubsequentCall] + 1;
+				absoluteCountOfCalls.getAbsoluteCountOfCalls() [indexOfCurrentCall] = absoluteCountOfCalls.getAbsoluteCountOfCalls() [indexOfCurrentCall] + 1;					
 			}
-			absoluteTransitionModel.add(transitionMatrix);
+			absoluteCallModel.add(absoluteCountOfCalls);
 		}
-		return absoluteTransitionModel;
+		
+		return absoluteCallModel;
 	}
 	
 	/**
@@ -111,55 +114,138 @@ public class ClusteringPrePostProcessing {
 	 * 
 	 * @param entryCallSequenceModels are the entryCallSequenceModels of the detected user groups
 	 */
-	public void setTheWorkloadIntensityForTheEntryCallSequenceModels(List<EntryCallSequenceModel> entryCallSequenceModels) {
+	public void setTheWorkloadIntensityForTheEntryCallSequenceModels(List<EntryCallSequenceModel> entryCallSequenceModels, boolean isClosedWorkload) {
 		for(final EntryCallSequenceModel entryCallSequenceModel:entryCallSequenceModels) {
 			WorkloadIntensity workloadIntensity = new WorkloadIntensity();
-			calculateInterarrivalTime(entryCallSequenceModel.getUserSessions(), workloadIntensity);
-			calculateTheNumberOfConcurrentUsers(entryCallSequenceModel.getUserSessions(), workloadIntensity);
+			if(isClosedWorkload) {
+				calculateTheNumberOfConcurrentUsers(entryCallSequenceModel.getUserSessions(), workloadIntensity);
+			} else {
+				calculateInterarrivalTime(entryCallSequenceModel.getUserSessions(), workloadIntensity);
+			}
 			entryCallSequenceModel.setWorkloadIntensity(workloadIntensity);
 		}	
 	}
 	
 	/**
+	 * Divides the timeframe of the passed user sessions into ten equal timeframes and calculates for each timeframe the number
+	 * of concurrent user sessions. Subsequently, it calculates the average number of concurrent users
+	 * over the ten frames and saves the obtained number as the closed workload population 
+	 * 
+	 * 
+	 * @param sessions to calculate the average concurrent sessions within
+	 * @param workloadIntensity to set the obtained average concurrent session number
+	 */
+	private void calculateTheNumberOfConcurrentUsers(final List<UserSession> sessions, WorkloadIntensity workloadIntensity) {
+		
+		int maxNumberOfConcurrentUsers = 0;
+		int averageNumberOfConcurrentUsers = 0;
+	
+		if(sessions.size()<1) {
+			workloadIntensity.setMaxNumberOfConcurrentUsers(0);
+			workloadIntensity.setAvgNumberOfConcurrentUsers(0);
+			return;
+		}
+			
+		Collections.sort(sessions, this.SortUserSessionByEntryTime);
+		
+		// Calculates the average interval within the user sessions
+		long interval = 0;
+		for (int i=0;i<sessions.size();i++) {
+			final long entryTimeUS =  getEntryTime(sessions.get(i).getEvents());
+			final long exitTimeUS =  sessions.get(i).getExitTime();
+			interval += (exitTimeUS-entryTimeUS);
+		}
+		long averageInterval = interval/sessions.size();
+		
+		// Divides the overall time of the user sessions into a number of timeframes according to the averageInterval
+		final long startTimeOfAllUserSessions = getEntryTime(sessions.get(0).getEvents());
+		final long endTimeOfAllUserSessions = sessions.get(sessions.size()-1).getExitTime();
+		long numberOfTimeFrames = Math.round(((endTimeOfAllUserSessions-startTimeOfAllUserSessions)/averageInterval)+0.5);
+		
+		// Set the start and end times and its initial count of each timeframe 
+		List<long[]> timeframes = new ArrayList<long[]>();
+		long startTimeOfTimeframe = startTimeOfAllUserSessions;
+		long endTimeOfTimeframe = startTimeOfAllUserSessions+averageInterval;
+		for(int i=0;i<numberOfTimeFrames;i++) {
+			long[] timeframe = new long[3];
+			timeframe[0] = startTimeOfTimeframe;
+			timeframe[1] = endTimeOfTimeframe;
+			timeframe[2] = 0;
+			timeframes.add(timeframe);
+			startTimeOfTimeframe = endTimeOfTimeframe;
+			endTimeOfTimeframe = endTimeOfTimeframe+averageInterval;
+		}
+		
+		// Obtains for each user session its starting timeframe and increases the count of the corrsponding timeframe
+		for (int i=0;i<sessions.size();i++) {
+			final long entryTimeUS =  getEntryTime(sessions.get(i).getEvents());
+			for(int j=0;j<timeframes.size();j++) {
+				if(entryTimeUS>=timeframes.get(j)[0]&&entryTimeUS<=timeframes.get(j)[1]){
+					timeframes.get(j)[2] = timeframes.get(j)[2] + 1;
+					break;
+				}		
+			}
+		}
+		
+		// Calculates the average concurrent user sessions over the timeframes
+		int numberOfConcurrentUserSessions = 0;
+		for(int j=0;j<timeframes.size();j++) {
+			numberOfConcurrentUserSessions += timeframes.get(j)[2]*timeframes.get(j)[2];
+			if(timeframes.get(j)[2]>maxNumberOfConcurrentUsers) {
+				maxNumberOfConcurrentUsers = (int)timeframes.get(j)[2];
+			}
+		}
+		averageNumberOfConcurrentUsers = numberOfConcurrentUserSessions/sessions.size();
+		
+		workloadIntensity.setMaxNumberOfConcurrentUsers(maxNumberOfConcurrentUsers);
+		workloadIntensity.setAvgNumberOfConcurrentUsers(averageNumberOfConcurrentUsers);		
+	}
+	
+	/**
 	 * Calculates a closed workload. For that, it calculates the average number of concurrent users as well as the maximum
 	 * number of concurrent users. That means the max/avg amount of concurrent user sessions determined by their entry and exit times. 
-	 * Both values can be used for the specification of a closed workload in an PCm usage model.
+	 * Both values can be used for the specification of a closed workload in an PCM usage model.
 	 * By calculating both it can later be chosen between the two values.
 	 * 
 	 * @param sessions are the user group´s userSessions
 	 * @param workloadIntensity is the empty workload intensity that is filled with values for the specification of a closed workload
 	 */
-	private void calculateTheNumberOfConcurrentUsers(final List<UserSession> sessions, WorkloadIntensity workloadIntensity) {
-		int maxNumberOfConcurrentUsers = 0;
-		int averageNumberOfConcurrentUsers = 0;
-		if(sessions.size() > 0) {
-			int countOfConcurrentUsers = 0;
-			Collections.sort(sessions, this.SortUserSessionByEntryTime);
-			for (int i = 0; i < sessions.size(); i++) {
-				final long entryTimeUS1 =  sessions.get(i).getEntryTime();
-				final long exitTimeUS1 = sessions.get(i).getExitTime();
-				int numberOfConcurrentUserSessionsDuringThisSession = 1;
-				for (int j = 0; j < sessions.size(); j++) {
-					if(j==i)
-						continue;
-					final long entryTimeUS2 =  sessions.get(j).getEntryTime();
-					final long exitTimeUS2 = sessions.get(j).getExitTime();
-					if(exitTimeUS2<entryTimeUS1)
-						continue;
-					if(entryTimeUS2>exitTimeUS1)
-						break;
-					if((exitTimeUS1>=entryTimeUS2&&exitTimeUS1<=exitTimeUS2)||(exitTimeUS2>=entryTimeUS1&&exitTimeUS2<=exitTimeUS1))
-						numberOfConcurrentUserSessionsDuringThisSession++;
-				}
-				if(numberOfConcurrentUserSessionsDuringThisSession > maxNumberOfConcurrentUsers)
-					maxNumberOfConcurrentUsers = numberOfConcurrentUserSessionsDuringThisSession;
-				countOfConcurrentUsers += numberOfConcurrentUserSessionsDuringThisSession;
-			}
-			averageNumberOfConcurrentUsers = countOfConcurrentUsers/sessions.size();
-		}
-		workloadIntensity.setMaxNumberOfConcurrentUsers(maxNumberOfConcurrentUsers);
-		workloadIntensity.setAvgNumberOfConcurrentUsers(averageNumberOfConcurrentUsers);
-	}
+	/**
+	 * deprecated
+	 * Nested loop of user sessions -> Bad scalability
+	 * Only used to compare with the approximated approach of calculating the number of concurrent users
+	 */
+//	private void calculateTheNumberOfConcurrentUsers(final List<UserSession> sessions, WorkloadIntensity workloadIntensity) {
+//		int maxNumberOfConcurrentUsers = 0;
+//		int averageNumberOfConcurrentUsers = 0;
+//		if(sessions.size() > 0) {
+//			int countOfConcurrentUsers = 0;
+//			Collections.sort(sessions, this.SortUserSessionByEntryTime);
+//			for (int i = 0; i < sessions.size(); i++) {
+//				final long entryTimeUS1 =  sessions.get(i).getEntryTime();
+//				final long exitTimeUS1 = sessions.get(i).getExitTime();
+//				int numberOfConcurrentUserSessionsDuringThisSession = 1;
+//				for (int j = 0; j < sessions.size(); j++) {
+//					if(j==i)
+//						continue;
+//					final long entryTimeUS2 =  sessions.get(j).getEntryTime();
+//					final long exitTimeUS2 = sessions.get(j).getExitTime();
+//					if(exitTimeUS2<entryTimeUS1)
+//						continue;
+//					if(entryTimeUS2>exitTimeUS1)
+//						break;
+//					if((exitTimeUS1>=entryTimeUS2&&exitTimeUS1<=exitTimeUS2)||(exitTimeUS2>=entryTimeUS1&&exitTimeUS2<=exitTimeUS1))
+//						numberOfConcurrentUserSessionsDuringThisSession++;
+//				}
+//				if(numberOfConcurrentUserSessionsDuringThisSession > maxNumberOfConcurrentUsers)
+//					maxNumberOfConcurrentUsers = numberOfConcurrentUserSessionsDuringThisSession;
+//				countOfConcurrentUsers += numberOfConcurrentUserSessionsDuringThisSession;
+//			}
+//			averageNumberOfConcurrentUsers = countOfConcurrentUsers/sessions.size();
+//		}
+//		workloadIntensity.setMaxNumberOfConcurrentUsers(maxNumberOfConcurrentUsers);
+//		workloadIntensity.setAvgNumberOfConcurrentUsers(averageNumberOfConcurrentUsers);
+//	}
 	
 	
 	/**

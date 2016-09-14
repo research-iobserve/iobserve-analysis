@@ -128,7 +128,7 @@ public class CallLoopBranchModelCreator {
 					loopElements.add(loopElement);
 					
 				}
-
+				
 			}
 			
 		}
@@ -336,23 +336,8 @@ public class CallLoopBranchModelCreator {
 				break;
 		}
 		
-		if(doContainBranchElement) {
-			int numberOfReplacedElements = 0;
-			for(SequenceElement sequenceElement : loopElement.getLoopSequence()) {
-				if(sequenceElement.getClass().equals(CallElement.class)) {
-					numberOfReplacedElements++;
-				} else if(sequenceElement.getClass().equals(BranchElement.class)) {
-					BranchElement branchElement = (BranchElement)sequenceElement;
-					for(BranchTransitionElement branchTransition : branchElement.getBranchTransitions()) {
-						numberOfReplacedElements += branchTransition.getBranchSequence().size();
-					}
-				}
-				loopElement.setNumberOfReplacedElements(loopCount*numberOfReplacedElements);
-			}
-		} else {
-			loopElement.setNumberOfReplacedElements(loopCount*loopElement.getLoopSequence().size());
-		}
 		loopElement.setLoopCount(loopCount);
+		loopElement.setNumberOfReplacedElements(loopCount*loopElement.getLoopSequence().size());
 		loopElement.setEndIndexInBranchSequence(loopElement.getStartIndexInBranchSequence()+loopElement.getNumberOfReplacedElements()-1);
 	}
 	

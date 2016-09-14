@@ -32,7 +32,9 @@ import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.userbehavior.UserBehaviorModeling;
+import org.iobserve.analysis.userbehavior.test.ClusteringEvaluation;
 import org.iobserve.analysis.userbehavior.test.TestElements;
+import org.iobserve.analysis.userbehavior.test.UsageModelMatcherDeprecated;
 import org.iobserve.analysis.userbehavior.test.UsageModelMatcher;
 import org.iobserve.analysis.userbehavior.test.UsageModelTestBuilder;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
@@ -78,7 +80,7 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 		 * Added by David Peter
 		 */
 		UsageModelTestBuilder usageModelTestBuilder = new UsageModelTestBuilder();
-		UsageModelMatcher usageModelMatcher = new UsageModelMatcher();
+		UsageModelMatcherDeprecated usageModelMatcher = new UsageModelMatcherDeprecated();
 		if(executionCounter==0) {
 			List<List<Object>> listOfDataValues = new ArrayList<List<Object>>();
 			List<List<Object>> listOfOverallTimeValues = new ArrayList<List<Object>>();
@@ -94,39 +96,39 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 			List<Object> timeValuesOfLoopExtraction = new ArrayList<Object>();
 			List<Object> timeValuesOfPcmModeling = new ArrayList<Object>();
 			List<Object> overallResponseTimeValues = new ArrayList<Object>();
-			int numberOfIterations = 30;
+			int numberOfIterations = 10;
 			int stepSize = 1;
 			try {
-				for(int i=2;i<=numberOfIterations;i+=stepSize) {
+				for(int i=1;i<=numberOfIterations;i+=stepSize) {
 					
 //					int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
 					int numberOfUserGroups = 1;
 					int varianceOfUserGroups = 0;
 //					int varianceOfUserGroups = AnalysisMain.getInstance().getInputParameter().getVarianceOfUserGroups();
 					int thinkTime = AnalysisMain.getInstance().getInputParameter().getThinkTime();
-					boolean isClosedWorkload = AnalysisMain.getInstance().getInputParameter().isClosedWorkload();
+					boolean isClosedWorkload = false;
 					
 //					TestElements testElementsOfSimpleBranchModel = usageModelTestBuilder.getSimpleBranchTestModel(thinkTime, isClosedWorkload);
 //					TestElements testElementsOfSimpleLoopModel = usageModelTestBuilder.getSimpleLoopTestModel(thinkTime, isClosedWorkload);
 //					TestElements testElementsOfSimpleSequenceModel = usageModelTestBuilder.getSimpleSequenceTestModel(thinkTime,isClosedWorkload);
 //					TestElements testElementsOfDecisionLoopModel = usageModelTestBuilder.getLoopDecisionTestModel(thinkTime, isClosedWorkload);
-					TestElements testElementsOfLoopInLoopModel = usageModelTestBuilder.getLoopWithinLoopTestModel(thinkTime, isClosedWorkload);
+//					TestElements testElementsOfLoopInLoopModel = usageModelTestBuilder.getLoopWithinLoopTestModel(thinkTime, isClosedWorkload);
 //					TestElements testElementsOfLoopInBranchModel = usageModelTestBuilder.getLoopWithinBranchTestModel(thinkTime, isClosedWorkload);
 //					TestElements testElementsOfBranchInBranchModel = usageModelTestBuilder.getBranchWithinBranchTestModel(thinkTime, isClosedWorkload);
 //					TestElements testElementsOfBranchInLoopModel = usageModelTestBuilder.getBranchWithinLoopTestModel(thinkTime, isClosedWorkload);
 //					TestElements testElementsOfBranchToBranchToSequenceModel = usageModelTestBuilder.getBranchToBranchToSequenceTestModel(thinkTime, isClosedWorkload);
-//					TestElements testElementsOfOpenWorkloadModel = usageModelTestBuilder.getOpenWorkloadTestModel();
-//					TestElements testElementsOfIncreasingCallSequenceModel = usageModelTestBuilder.getIncreasingCallSequenceScalabilityTestModel(i);
+					TestElements testElementsOfOpenWorkloadModel = usageModelTestBuilder.getOpenWorkloadTestModel();
+//					TestElements testElementsOfIncreasingCallSequenceModel = usageModelTestBuilder.getIncreasingCallSequenceScalabilityTestModel2(i);
 //					TestElements testElementsOfIncreasingUserSessionsModel = usageModelTestBuilder.getIncreasingUserSessionsScalabilityTestModel(i);
-
-					UserBehaviorModeling behaviorModeling = new UserBehaviorModeling(testElementsOfLoopInLoopModel.getEntryCallSequenceModel(), numberOfUserGroups, varianceOfUserGroups, isClosedWorkload, thinkTime);
+					
+					UserBehaviorModeling behaviorModeling = new UserBehaviorModeling(testElementsOfOpenWorkloadModel.getEntryCallSequenceModel(), numberOfUserGroups, varianceOfUserGroups, isClosedWorkload, thinkTime);
 					try {
 						behaviorModeling.modelUserBehavior();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
 
-					numberOfCalls.add(testElementsOfLoopInLoopModel.getEntryCallSequenceModel().getUserSessions().get(0).getEvents().size());
+					numberOfCalls.add(testElementsOfOpenWorkloadModel.getEntryCallSequenceModel().getUserSessions().get(0).getEvents().size());
 					timeValuesOfUserGroupExtraction.add(behaviorModeling.getResponseTimeOfUserGroupExtraction());
 					timeValuesOfBranchExtraction.add(behaviorModeling.getResponseTimeOfBranchExtraction());
 					timeValuesOfLoopExtraction.add(behaviorModeling.getResponseTimeOfLoopExtraction());
@@ -136,15 +138,20 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 					overallResponseTimeValues.add(behaviorModeling.getOverallResponseTime());
 
 					System.out.println("J:"+j+" I:"+i+"/"+numberOfIterations);
-					boolean isMatch = usageModelMatcher.matchUsageModels(behaviorModeling.getPcmUsageModel(), testElementsOfLoopInLoopModel.getUsageModel());
+					boolean isMatch = usageModelMatcher.matchUsageModels(behaviorModeling.getPcmUsageModel(), testElementsOfOpenWorkloadModel.getUsageModel());
 
+					UsageModelMatcher usageModelMatcher2 = new UsageModelMatcher();
+					usageModelMatcher2.matchUsageModels(behaviorModeling.getPcmUsageModel(), testElementsOfOpenWorkloadModel.getUsageModel());
+					
 //					dataValues.add(isMatch);
 //					dataValues2.add(testElementsOfBranchInLoopModel.getLoopCount());
 //					dataValues3.add(testElementsOfBranchInLoopModel.getNumberOfBranchTransitions2());
 					usageModelTestBuilder.saveModel(behaviorModeling.getPcmUsageModel(), "/Users/David/GitRepositories/iObserve/org.iobserve.analysis/output/usageModels/output.usagemodel");
-					if(!isMatch) {	
-						System.out.println("MISSMATCH");
-					}
+
+//					if(!isMatch) {	
+//						System.out.println("MISSMATCH");
+//					}
+					
 				}
 			} catch (IOException e1) {
 				e1.printStackTrace();

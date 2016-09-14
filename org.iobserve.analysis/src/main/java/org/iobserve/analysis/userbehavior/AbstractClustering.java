@@ -27,36 +27,34 @@ public abstract class AbstractClustering {
 	 * @param listOfDistinctOperationSignatures are the extracted distinct operation signatures of the input entryCallSequenceModel
 	 * @return the Weka instances that hold the data that is used for the clustering
 	 */
-	protected Instances createInstances(List<UserSessionAsTransitionMatrix> transitionModel, List<String> listOfDistinctOperationSignatures) {
+	protected Instances createInstances(List<UserSessionAsTransitionMatrix> absoluteTransitionModel, List<String> listOfCalledMethods) {
 		
-		int numberOfMatrixElements = listOfDistinctOperationSignatures.size()*listOfDistinctOperationSignatures.size();
-		FastVector fvWekaAttributes = new FastVector(numberOfMatrixElements);
+		int numberOfDistinctOperationSignatures = listOfCalledMethods.size();
+		FastVector fvWekaAttributes = new FastVector(numberOfDistinctOperationSignatures);
 		
-		for(int i=0;i<numberOfMatrixElements;i++) {
+		for(int i=0;i<numberOfDistinctOperationSignatures;i++) {
 			String attributeName = "Attribute"+i;
 			Attribute attribute = new Attribute(attributeName);
 			fvWekaAttributes.addElement(attribute);
 		}
 		
-		Instances clusterSet = new Instances("TransitionCounts", fvWekaAttributes, transitionModel.size());
+		Instances clusterSet = new Instances("CallCounts", fvWekaAttributes, absoluteTransitionModel.size());
 		
-		for(final UserSessionAsTransitionMatrix userSession:transitionModel) {
+		for(final UserSessionAsTransitionMatrix userSession:absoluteTransitionModel) {
 			
 			int indexOfAttribute = 0;
-			Instance instance = new Instance(numberOfMatrixElements);
+			Instance instance = new Instance(numberOfDistinctOperationSignatures);
 			
-			for(int row=0;row<listOfDistinctOperationSignatures.size();row++) {
-				for(int column=0;column<listOfDistinctOperationSignatures.size();column++) {
+			for(int row=0;row<listOfCalledMethods.size();row++) {
 					
-					instance.setValue((Attribute)fvWekaAttributes.elementAt(indexOfAttribute), userSession.getAbsoluteTransitionMatrix()[row][column]);
-					indexOfAttribute++;
-					
-				}
+				instance.setValue((Attribute)fvWekaAttributes.elementAt(indexOfAttribute), userSession.getAbsoluteCountOfCalls()[row]);
+				indexOfAttribute++;	
+				
 			}
 			
 			clusterSet.add(instance);
 		}
-			
+		
 		return clusterSet;
 	}
 	

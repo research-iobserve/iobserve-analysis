@@ -65,12 +65,13 @@ public class UsageModelTestBuilder {
 		TestElements testElements = new TestElements();
 		EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(this.getUserSessions(numberOfUserSessions));
 		
+		int entryTime = 1;
+		int exitTime = 2;
+		
 		for(int i=0;i<entryCallSequenceModel.getUserSessions().size();i++) {
 			
 			double userGroupDecisioner = (double)i/(double)numberOfUserSessions;
-			int entryTime = 1;
-			int exitTime = 2;
-			
+						
 			if(userGroupDecisioner<0.3) {
 				EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature1, this.classSignature1, String.valueOf(i), "hostname");
 				entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
@@ -141,7 +142,61 @@ public class UsageModelTestBuilder {
 	public TestElements getIncreasingCallSequenceScalabilityTestModel(int numberOfIterations) {
 		
 		TestElements testElements = new TestElements();
-		int numberOfUserSessions = 200;
+		int numberOfUserSessions = 50;
+		EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(this.getUserSessions(numberOfUserSessions));
+		
+		boolean branchDecisionerUserGroup1 = true;
+		boolean branchDecisionerUserGroup2 = true;
+		
+		for(int i=0;i<entryCallSequenceModel.getUserSessions().size();i++) {
+			
+			double userGroupDecisioner = (double)i/(double)numberOfUserSessions;
+			int entryTime = 1;
+			int exitTime = 2;
+			
+			if(userGroupDecisioner<0.3) {
+				branchDecisionerUserGroup1 = !branchDecisionerUserGroup1;
+				for(int j=0;j<numberOfIterations;j++) {
+					if(branchDecisionerUserGroup1) {
+						EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature1, this.classSignature1, String.valueOf(i), "hostname");
+						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
+						entryTime+=2;
+						exitTime+=2;
+					} else {
+						EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature2, this.classSignature2, String.valueOf(i), "hostname");
+						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
+						entryTime+=2;
+						exitTime+=2;
+					}
+				}
+			} else {
+				branchDecisionerUserGroup2 = !branchDecisionerUserGroup2;
+				for(int j=0;j<numberOfIterations;j++) {
+					if(branchDecisionerUserGroup2) {
+						EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature3, this.classSignature3, String.valueOf(i), "hostname");
+						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
+						entryTime+=2;
+						exitTime+=2;
+					} else {
+						EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature4, this.classSignature4, String.valueOf(i), "hostname");
+						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
+						entryTime+=2;
+						exitTime+=2;
+					}
+				}
+			}
+						
+			
+		}		
+		
+		testElements.setEntryCallSequenceModel(entryCallSequenceModel);
+		return testElements;
+	}
+	
+	public TestElements getIncreasingCallSequenceScalabilityTestModel2(int numberOfIterations) {
+		
+		TestElements testElements = new TestElements();
+		int numberOfUserSessions = 50;
 		EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(this.getUserSessions(numberOfUserSessions));
 		
 		boolean branchDecisionerUserGroup1 = true;
@@ -169,7 +224,7 @@ public class UsageModelTestBuilder {
 					entryTime+=2;
 					exitTime+=2;
 					int branchDecisioner = this.getRandomInteger(2, 1);
-					if(branchDecisionerUserGroup1) {
+					if(branchDecisioner==1) {
 						entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature1, this.classSignature1, String.valueOf(i), "hostname");
 						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
 						entryTime+=2;
@@ -201,7 +256,7 @@ public class UsageModelTestBuilder {
 					entryTime+=2;
 					exitTime+=2;
 					int branchDecisioner = this.getRandomInteger(2, 1);
-					if(branchDecisionerUserGroup2) {
+					if(branchDecisioner==1) {
 						entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature4, this.classSignature4, String.valueOf(i), "hostname");
 						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
 						entryTime+=2;
@@ -1236,7 +1291,7 @@ public class UsageModelTestBuilder {
 				lastAction = entryLevelSystemCall;
 			}
 			if(lengthOfBranchSequence==2) {
-				optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature4, this.operationSignature4);
+				optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature5, this.operationSignature5);
 				if (optionCorrespondent.isPresent()) {
 					final Correspondent correspondent = optionCorrespondent.get();
 					EntryLevelSystemCall entryLevelSystemCall = this.usageModelBuilder.createEntryLevelSystemCall(correspondent);
@@ -1256,7 +1311,17 @@ public class UsageModelTestBuilder {
 			Stop loopStop = this.usageModelBuilder.createStop("");
 			this.usageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
 			lastAction = loopStart;
-			optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature5, this.operationSignature5);
+//			optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature5, this.operationSignature5);
+			switch (i) {
+            case 0:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature2, this.operationSignature2);
+                     break;
+            case 1:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature3, this.operationSignature3);
+                     break;
+            case 2:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature1, this.operationSignature1);
+                     break;
+            default: optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature1, this.operationSignature1);
+            		 break;
+			}
 			if (optionCorrespondent.isPresent()) {
 				final Correspondent correspondent = optionCorrespondent.get();
 				EntryLevelSystemCall entryLevelSystemCall = this.usageModelBuilder.createEntryLevelSystemCall(correspondent);
@@ -1307,8 +1372,15 @@ public class UsageModelTestBuilder {
 					entryTime = entryTime + 2;
 					exitTime = exitTime + 2;
 					if(lengthOfBranchSequence==2) {
-						EntryCallEvent entryCallEvent2 = new EntryCallEvent(entryTime, exitTime, this.operationSignature4, this.classSignature4, String.valueOf(i), "hostname");
+						EntryCallEvent entryCallEvent2 = new EntryCallEvent(entryTime, exitTime, this.operationSignature5, this.classSignature5, String.valueOf(i), "hostname");
 						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent2, true);
+						entryTime = entryTime + 2;
+						exitTime = exitTime + 2;
+					}
+					// loop
+					for(int j=0;j<countOfLoop;j++) {
+						entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature2, this.classSignature2, String.valueOf(i), "hostname");
+						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
 						entryTime = entryTime + 2;
 						exitTime = exitTime + 2;
 					}
@@ -1320,8 +1392,15 @@ public class UsageModelTestBuilder {
 					entryTime = entryTime + 2;
 					exitTime = exitTime + 2;
 					if(lengthOfBranchSequence==2) {
-						EntryCallEvent entryCallEvent2 = new EntryCallEvent(entryTime, exitTime, this.operationSignature4, this.classSignature4, String.valueOf(i), "hostname");
+						EntryCallEvent entryCallEvent2 = new EntryCallEvent(entryTime, exitTime, this.operationSignature5, this.classSignature5, String.valueOf(i), "hostname");
 						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent2, true);
+						entryTime = entryTime + 2;
+						exitTime = exitTime + 2;
+					}
+					// loop
+					for(int j=0;j<countOfLoop;j++) {
+						entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature3, this.classSignature3, String.valueOf(i), "hostname");
+						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
 						entryTime = entryTime + 2;
 						exitTime = exitTime + 2;
 					}
@@ -1333,19 +1412,20 @@ public class UsageModelTestBuilder {
 					entryTime = entryTime + 2;
 					exitTime = exitTime + 2;
 					if(lengthOfBranchSequence==2) {
-						EntryCallEvent entryCallEvent2 = new EntryCallEvent(entryTime, exitTime, this.operationSignature4, this.classSignature4, String.valueOf(i), "hostname");
+						EntryCallEvent entryCallEvent2 = new EntryCallEvent(entryTime, exitTime, this.operationSignature5, this.classSignature5, String.valueOf(i), "hostname");
 						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent2, true);
 						entryTime = entryTime + 2;
 						exitTime = exitTime + 2;
 					}
+					// loop
+					for(int j=0;j<countOfLoop;j++) {
+						entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature1, this.classSignature1, String.valueOf(i), "hostname");
+						entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
+						entryTime = entryTime + 2;
+						exitTime = exitTime + 2;
+					}
 				} 
-				// loop
-				for(int j=0;j<countOfLoop;j++) {
-					EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature5, this.classSignature5, String.valueOf(i), "hostname");
-					entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
-					entryTime = entryTime + 2;
-					exitTime = exitTime + 2;
-				}
+				
 			}
 			for(int i=0;i<branchTransitionCounter.size();i++) {
 				if(branchTransitionCounter.get(i)==0) {
