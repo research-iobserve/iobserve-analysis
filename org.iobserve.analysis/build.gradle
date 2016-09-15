@@ -1,17 +1,60 @@
+project.ext {
+    aspectjVersion = '1.8.4'
+}
+
+ext {
+    working_dir = 'res/working_dir/'
+	original_dir = 'res/original_dir/'
+}
+
+buildscript {
+    repositories {
+        maven {
+            url "https://maven.eveoh.nl/content/repositories/releases"
+        }
+    }
+
+    dependencies {
+        classpath "nl.eveoh:gradle-aspectj:1.6"
+    }
+}
+
+apply plugin: 'application'
+//apply plugin: AspectJPlugin
+
+version = '1.0'
+sourceCompatibility = 1.8
+
+// checking the palladio installation
+if (project.properties['palladio.installation'] == null || project.properties['palladio.installation'].isEmpty()) {
+	System.err.println("!!! PALLADIO installation missing !!!")
+	System.err.println("Add the file iobserve-analysis/gradle.properties. Add the property palladio.installation=PATH TO THE PLUGIN FOLDER OF YOU PALLADIO INSTALLATION")
+	System.err.println("Use / for path separation")
+} else {
+	println "Your PALLADIO installation is at: " + project.properties['palladio.installation']
+}
+
 dependencies {
-    compile project(":org.iobserve.common")
-	
+	compile gradleApi()
+	compile project(":org.iobserve.common")
+
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:2.1'
 	compile 'net.sourceforge.teetime-stages:teetime-stages:2.1'
 	compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
+
+	compile 'org.eclipse.core:runtime:3.10.+'
+	compile 'org.antlr:antlr-runtime:3.5.2'
+	compile 'lpg.runtime:java:2.0.+'  
+    
+	compile group: 'org.eclipselabs', name: 'cdo.p2', version: '4.4.0'
+
 	
 	compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
 	compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
 	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.+'
 	compile 'org.eclipse.uml2:org.eclipse.uml2.uml:3.1.+'
 	
-	compile 'org.eclipse.core:runtime:3.10.+'
 	compile group: 'org.eclipse', name: 'ocl', version: '3.4.0-v20140524-1358'
 	//compile 'org.eclipse.ocl:common:1.2.0-v20140528-1458'
 	//compile 'org.eclipse.ocl:ecore:3.3.0-v20130520-1222'
@@ -23,30 +66,97 @@ dependencies {
 	//compile group: 'org.eclipselabs', name: 'cdo', version: '4.4.0', ext: 'pom'
 	//compile group: 'org.eclipselabs', name: 'cdo-maven', version: '4.4.0', ext: 'pom'
 	
-	
-    compile fileTree(dir: 'libs', include: '*.jar')
-    compile fileTree(dir: 'pcm/libs', include: '*.jar')
-    
-    
-    compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
-    compile 'extra:org.palladiosimulator.pcm:4.0.0.201511051135'
-    
-    compile 'extra:de.uka.ipd.sdq.units:2.1.0+'
-    compile 'extra:de.uka.ipd.sdq.stoex:2.2.0+'
-    compile 'extra:de.uka.ipd.sdq.probfunction:2.1.0+'
-    compile 'extra:org.eclipse.emf.cdo:4.4.1+'
-    compile 'extra:org.eclipse.emf.cdo.common:4.4.1+'
-    //compile 'extra:org.eclipse.ocl:3.5.0.v20150521-1211'
+	compile fileTree(dir: 'libs', include: '*.jar')
+	compile fileTree(dir: 'pcm/libs', include: '*.jar')
+
+	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
+	compile 'extra:org.palladiosimulator.pcm:4.0.0.201511051135'
+
+	compile 'extra:de.uka.ipd.sdq.units:2.1.0+'
+	compile 'extra:de.uka.ipd.sdq.stoex:2.2.0+'
+	compile 'extra:de.uka.ipd.sdq.probfunction:2.1.0+'
+	compile 'extra:org.eclipse.emf.cdo:4.4.1+'
+	compile 'extra:org.eclipse.emf.cdo.common:4.4.1+'
+	//compile 'extra:org.eclipse.ocl:3.5.0.v20150521-1211'
 }
 
 sourceSets {
-	main {
-	   	java {
-	   		srcDir 'src/main/irl'
-	   		srcDir 'src/gen/java'
-	   		srcDir 'src/gen/java-factory'
-	   	}
-   	}
+    irl {
+    	java {
+    		srcDir 'src/main/irl'
+    		srcDir 'src/gen/java'
+    		srcDir 'src/gen/java-factory'
+    	}
+    }
+    main {
+    	java {
+    		srcDir 'src/gen/java'
+    		srcDir 'src/main/aspectj'
+    	}
+    }
+    
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    //archives javadocJar
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.version = version
+        pom.groupId = 'iobserve-analysis'
+        pom.artifactId = 'analysis'
+    }
+}
+
+apply plugin: 'aspectj'
+
+//********************************************************************************************
+//
+//********************************************************************************************
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Main-Class' : 'org.iobserve.analysis.AnalysisMain'
+    }
+    baseName = project.name + '-snapshot'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+}
+
+task cleanPcmWorkingDir(type: Delete) {
+	delete working_dir
+}
+
+task copyPcmToWorkingDir(type: Copy) {
+	dependsOn << cleanPcmWorkingDir
+	from original_dir
+	into working_dir
+}
+
+task cleanDebug {
+	dependsOn << copyPcmToWorkingDir
+}
+
+task runAnalysis(type: JavaExec) {
+	dependsOn << build
+	dependsOn << copyPcmToWorkingDir
+	String appArgs = "--dirMonitoring=res/working_dir/kieker --dirPcm=res/working_dir/pcm --dirLogging=output/logging"
+	args = [appArgs]
+	classpath = files("build/libs/org.iobserve.analysis-1.0.jar")
+	main = 'org.iobserve.analysis.AnalysisMain'
+}
 

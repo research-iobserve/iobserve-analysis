@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
@@ -36,23 +37,20 @@ import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
 import teetime.framework.AbstractConsumerStage;
 
-import com.google.common.base.Optional;
 
 /**
- * Represents the TEntryEventSequence Transformation in the paper
- * <i>Run-time Architecture Models for Dynamic Adaptation and Evolution of Cloud Applications</i>
+ * Represents the TEntryEventSequence Transformation in the paper <i>Run-time
+ * Architecture Models for Dynamic Adaptation and Evolution of Cloud
+ * Applications</i>.
  * 
- * @author Robert Heinrich, Alessandro Guisa
- * @version 1.0
- *
+ * @author Robert Heinrich
+ * @author Alessandro Guisa
  */
-public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
+public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
 	
-	private static int executionCounter = 0;
-	
-	private int counterSavedUsageModel = 0;
-
+	/**reference to the correspondence model.*/
 	private final ICorrespondence correspondenceModel;
+	/**reference to the usage model provider.*/
 	private final UsageModelProvider usageModelProvider;
 
 	public TEntryEventSequence(ICorrespondence correspondenceModel, UsageModelProvider usageModelProvider) { 
@@ -69,15 +67,15 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 	}
 	
 	/**
-	 * Calculate the inter arrival time of the given user sessions
-	 * @param sessions sessions
+	 * Calculate the interarrival time of the given user sessions.
+	 * @param sessions sessions.
 	 * @return >= 0.
 	 */
 	private long calculateInterarrivalTime(final List<UserSession> sessions) {
 		long interArrivalTime = 0;
-		if(sessions.size() > 0) {
+		if (sessions.size() > 0) {
 			//sort user sessions
-			Collections.sort(sessions, this.SortUserSessionByExitTime);
+			Collections.sort(sessions, this.sortUserSessionByExitTime);
 			
 			long sum = 0;
 			for (int i = 0; i < sessions.size() - 1; i++) {
@@ -86,32 +84,36 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 				sum += exitTimeU2 - exitTimeU1;
 			}
 			
-			final long numberSessions = sessions.size() > 1?sessions.size()-1:1;
+			final long numberSessions = sessions.size() > 1 
+					? sessions.size() - 1 : 1;
 			interArrivalTime = sum / numberSessions;
 		}
-		
 		return interArrivalTime;
 	}
 	
 	/**
-	 * Do update the PCM usage model by iterating over user sessions and constructing the
-	 * different paths
+	 * Do update the PCM usage model by iterating over user sessions and
+	 * constructing the different paths.
 	 * 
-	 * @param sessions user session
+	 * @param sessions
+	 *            user session
 	 */
 	private void doUpdateUsageModel(final List<UserSession> sessions) {
-		final long averageInterarrivalTime = this.calculateInterarrivalTime(sessions);
+		final long averageInterarrivalTime = 
+				this.calculateInterarrivalTime(sessions);
 		
 		// iterate over user sessions
-		for(final UserSession userSession:sessions) {
+		for (final UserSession userSession:sessions) {
 			
 			// create simple usage model builder
-			final UsageModelBuilder builder = new UsageModelBuilder(this.usageModelProvider);
+			final UsageModelBuilder builder = 
+					new UsageModelBuilder(this.usageModelProvider);
 			
 			// like re-load
 			builder.loadModel().resetModel();
 			
-			final UsageScenario usageScenario = builder.createUsageScenario("MyTestScenario");
+			final UsageScenario usageScenario = 
+					builder.createUsageScenario("MyTestScenario");
 			builder.createOpenWorkload(averageInterarrivalTime, usageScenario);
 			
 			final Start start = builder.createStart();
@@ -120,17 +122,21 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 			AbstractUserAction lastAction = start;
 			
 			// iterate over all events to create the usage behavior
-			final Iterator<EntryCallEvent> iteratorEvents = userSession.iterator();
-			while(iteratorEvents.hasNext()) {
+			final Iterator<EntryCallEvent> iteratorEvents = 
+					userSession.iterator();
+			while (iteratorEvents.hasNext()) {
 				final EntryCallEvent event = iteratorEvents.next();
 				final String classSig = event.getClassSignature();
 				final String opSig = event.getOperationSignature();
 				
-				final Optional<Correspondent> optionCorrespondent = this.correspondenceModel
+				final Optional<Correspondent> optionCorrespondent = 
+						this.correspondenceModel
 						.getCorrespondent(classSig, opSig);
 				if (optionCorrespondent.isPresent()) {
-					final Correspondent correspondent = optionCorrespondent.get();
-					final EntryLevelSystemCall eSysCall = builder.createEntryLevelSystemCall(correspondent);
+					final Correspondent correspondent = 
+							optionCorrespondent.get();
+					final EntryLevelSystemCall eSysCall = 
+							builder.createEntryLevelSystemCall(correspondent);
 					builder.connect(lastAction, eSysCall);
 					builder.addUserAction(usageScenario, eSysCall);
 					lastAction = eSysCall;
@@ -140,25 +146,24 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 			final Stop stop = builder.createStop();
 			builder.connect(lastAction, stop);
 			builder.addUserAction(usageScenario, stop);
-			
 			builder.build();
-			this.counterSavedUsageModel++; //TODO just for now
 		}
 	}
 	
 	
 	/**
-	 * Sorts {@link UserSession} by the exit time
+	 * Sorts {@link UserSession} by the exit time.
 	 */
-	private final Comparator<UserSession> SortUserSessionByExitTime = new Comparator<UserSession>() {
+	private final Comparator<UserSession> sortUserSessionByExitTime = 
+			new Comparator<UserSession>() {
 		
 		@Override
 		public int compare(final UserSession o1, final UserSession o2) {
 			long exitO1 = o1.getExitTime();
 			long exitO2 = o2.getExitTime();
-			if(exitO1 > exitO2) {
+			if (exitO1 > exitO2) {
 				return 1;
-			} else if(exitO1 < exitO2) {
+			} else if (exitO1 < exitO2) {
 				return -1;
 			}
 			return 0;

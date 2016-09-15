@@ -1,5 +1,5 @@
 $0;1443603451715321473;1.9;KIEKER;PC;1;false;0;NANOSECONDS;1
-$1;1443603451713022549;1443603451712978733;server;cocome.cloud.serviceadapter;cocome.cloud.serviceadapter.1
+$1;1443603451713022549;1443603451712978733;server;de.kit.ipd.cocome.cloud.serviceadapter.Services.BookSale;cocome.cloud.serviceadapter.1
 $2;1443617843987637793;6258206575102525440;28;e542c13490cf8cb352dbae400656;PC;6258206575102525440;-1
 $3;1443617843999255964;1443617843999231096;6258206575102525440;0;de.kit.ipd.cocome.cloud.serviceadapter.Services.Database.SetData();de.kit.ipd.cocome.cloud.serviceadapter.Services.Database
 $4;1443617844173098282;1443617844173074993;de.kit.ipd.cocome.cloud.serviceadapter.Services.BookSale;book-sale-instance-01

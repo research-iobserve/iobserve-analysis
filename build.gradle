@@ -1,13 +1,27 @@
-allprojects {
-	apply plugin: "java"
-    apply plugin: "eclipse"
+buildscript { 
+	
+	// this block can be used later to add custom plug-ins for gralde
+	// just an example for now
+	
+    repositories {
+        //jcenter()
+    }
+    dependencies {
+        //classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:0.4.1"
+    }
+}
 
-    version = '1.0'
-    sourceCompatibility = 1.7
+
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'eclipse'
     
     ext {
         appName = "org.iobserve"
     }
+    sourceCompatibility = 1.8
 
     repositories {
         mavenCentral()
@@ -31,3 +45,17 @@ allprojects {
 
 
 
+=======
+
+    dependencies {
+        // nothing here
+    }
+    
+    eclipse {
+	    classpath {
+	       downloadSources=true
+	       downloadJavadoc=true
+	    }
+	}
+}
+>>>>>>> master

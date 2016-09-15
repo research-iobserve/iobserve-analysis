@@ -1,7 +1,4 @@
-dependencies {
-	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
-	compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
-}
+version = '1.0'
 
 sourceSets {
 	main {
@@ -9,4 +6,32 @@ sourceSets {
 			srcDirs = ['src/gen/java']
 		}
 	}
+}
+
+dependencies {
+	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
+	compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    //archives javadocJar
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.version = version
+        pom.groupId = 'iobserve-analysis'
+        pom.artifactId = 'common'
+    }
 }

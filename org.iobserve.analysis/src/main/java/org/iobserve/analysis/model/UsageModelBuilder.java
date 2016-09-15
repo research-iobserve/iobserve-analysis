@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.model;
 
 import org.iobserve.analysis.correspondence.Correspondent;
@@ -65,6 +80,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	/**
 	 * Create an {@link UsageScenario} and create a body {@link ScenarioBehaviour} for it.
 	 * Get the {@link ScenarioBehaviour} by {@link UsageScenario#getScenarioBehaviour_UsageScenario()}
+	 * @param name name of usage scenario
 	 * @return created usage scenario
 	 */
 	public UsageScenario createUsageScenario(final String name) {
@@ -96,12 +112,11 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	 * @param parent usage scenario the workload should be added to
 	 * @return brand new instance of {@link OpenWorkload}
 	 */
-	public OpenWorkload createOpenWorkload(final long avgInterarrivalTime,
-			final UsageScenario parent) {
+	public OpenWorkload createOpenWorkload(final long avgInterarrivalTime, final UsageScenario parent) {
 		final OpenWorkload openWorkload = UsagemodelFactory.eINSTANCE.createOpenWorkload();
 		parent.setWorkload_UsageScenario(openWorkload);
 		
-		// create varaibles
+		// create variables
 		final PCMRandomVariable pcmInterarrivalTime = 
 				CoreFactory.eINSTANCE.createPCMRandomVariable();
 		pcmInterarrivalTime.setSpecification(String.valueOf(avgInterarrivalTime));
@@ -113,9 +128,10 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	
 	/**
 	 * Create an {@link OpenWorkload} and add it to the given {@link UsageScenario}.
-	 * @param avgInterarrivalTime the interarrival time
-	 * @param parent usage scenario the workload should be added to
-	 * @return brand new instance of {@link OpenWorkload}
+	 * @param population population
+	 * @param thinkTime thinkTime
+	 * @param parent parent
+	 * @return created closed workload instance
 	 */
 	public ClosedWorkload createClosedWorkload(final int population, final double thinkTime,
 			final UsageScenario parent) {
@@ -194,7 +210,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 		} else {
 			eSysCall = null;
 			System.err.printf("%s caused Nullpointer since OperationSignature=% or BasicComponent=%s is null?!",
-					operationSignature,String.valueOf(opSig), String.valueOf(bCmp));
+					operationSignature, String.valueOf(opSig), String.valueOf(bCmp));
 		}
 		return eSysCall;
 	}
@@ -257,8 +273,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 	 */
 	public BranchTransition createBranchTransition(final Branch parent) {
 		// create branch transition
-		final BranchTransition branchTransition = UsagemodelFactory.eINSTANCE
-				.createBranchTransition();
+		final BranchTransition branchTransition = UsagemodelFactory.eINSTANCE.createBranchTransition();
 		branchTransition.setBranch_BranchTransition(parent);
 		parent.getBranchTransitions_Branch().add(branchTransition);
 		

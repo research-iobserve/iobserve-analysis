@@ -32,3 +32,6 @@ teetime.log
 **/**.xtendbin
 *.zip
 /build/
+gradle.properties
+repos/
+*.log

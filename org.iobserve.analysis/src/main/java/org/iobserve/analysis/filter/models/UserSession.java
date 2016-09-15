@@ -24,26 +24,31 @@ import java.util.List;
 import org.iobserve.analysis.data.EntryCallEvent;
 
 /**
- * Represents a user session
- * @author Robert Heinrich, Alessandro Giusa
- * @version 1.0
+ * Represents a user session.
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
  *
  */
-public class UserSession {
+public final class UserSession {
 	
-	/**internal storage of entry call events. Those represent the chronological order of user behavior*/
+	/**
+	 * internal storage of entry call events. Those represent the chronological
+	 * order of user behavior
+	 */
 	private final List<EntryCallEvent> events = new ArrayList<EntryCallEvent>();
+	/**host of session.*/
 	private final String host;
+	/**session id.*/
 	private final String sessionId;
 	
 	/**
-	 * Simple constructor. Create a user session. 
-	 * @param host host name
-	 * @param sessionId unique session id
+	 * Create a user session. 
+	 * @param theHost host name
+	 * @param theSessionId unique session id
 	 */
-	public UserSession(final String host, final String sessionId) {
-		this.host = host;
-		this.sessionId = sessionId;
+	public UserSession(final String theHost, final String theSessionId) {
+		this.host = theHost;
+		this.sessionId = theSessionId;
 	}
 	
 	@Override
@@ -53,16 +58,15 @@ public class UserSession {
 	
 	/**
 	 * Sort the internal events by the given {@link Comparator}. 
-	 * This class has a default one {@link #SortEntryCallEventsByEntryTime}
-	 * 
-	 * @param cmp
+	 * This class has a default one {@link #SORT_ENTRY_CALL_EVENTS_BY_ENTRY_TIME}
+	 * @param cmp comparator to sort user sessions
 	 */
 	public void sortEventsBy(final Comparator<EntryCallEvent> cmp) {
-		Collections.sort(this.events,cmp);
+		Collections.sort(this.events, cmp);
 	}
 	
 	/**
-	 * Add the given event to this user session
+	 * Add the given event to this user session.
 	 * @param event event to be added
 	 */
 	public void add(final EntryCallEvent event) {
@@ -70,15 +74,19 @@ public class UserSession {
 	}
 	
 	/**
-	 * Add the given event to this user session and sort the internal list by the entry time if
-	 * true is set for sortByEntrytime
-	 * @param event event to be added
-	 * @param sortByEntryTime true will trigger sort of the internal list
+	 * Add the given event to this user session and sort the internal list by
+	 * the entry time if true is set for sortByEntrytime.
+	 * 
+	 * @param event
+	 *            event to be added
+	 * @param sortByEntryTime
+	 *            true will trigger sort of the internal list
 	 */
 	public void add(final EntryCallEvent event, final boolean sortByEntryTime) {
 		this.add(event);
-		if (sortByEntryTime)
-		this.sortEventsBy(SortEntryCallEventsByEntryTime);
+		if (sortByEntryTime) {
+			this.sortEventsBy(SORT_ENTRY_CALL_EVENTS_BY_ENTRY_TIME);
+		}
 	}
 	
 	/**
@@ -90,7 +98,7 @@ public class UserSession {
 	}
 	
 	/**
-	 * Return the size of the events for this user session
+	 * Return the size of the events for this user session.
 	 * @return size
 	 */
 	public int size() {
@@ -98,10 +106,10 @@ public class UserSession {
 	}
 	
 	/**
-	 * Simple comparator for comparing the entry times
+	 * Simple comparator for comparing the entry times.
 	 */
-	public static final Comparator<EntryCallEvent> SortEntryCallEventsByEntryTime = 
-			new Comparator<EntryCallEvent>() {
+	public static final Comparator<EntryCallEvent> 
+		SORT_ENTRY_CALL_EVENTS_BY_ENTRY_TIME =  new Comparator<EntryCallEvent>() {
 		
 		@Override
 		public int compare(final EntryCallEvent o1, final EntryCallEvent o2) {
@@ -115,10 +123,10 @@ public class UserSession {
 	};
 	
 	/**
-	 * Simple comparator for comparing the entry times
+	 * Simple comparator for comparing the exit times.
 	 */
-	public static final Comparator<EntryCallEvent> SortEntryCallEventsByExitTime = 
-			new Comparator<EntryCallEvent>() {
+	public static final Comparator<EntryCallEvent> 
+		SORT_ENTRY_CALL_EVENTS_BY_EXIT_TIME = new Comparator<EntryCallEvent>() {
 		
 		@Override
 		public int compare(final EntryCallEvent o1, final EntryCallEvent o2) {
@@ -132,10 +140,11 @@ public class UserSession {
 	};
 	
 	/**
-	 * Parse the id which would be constructed by the {@link UserSession} class if it contained
-	 * that event.
+	 * Parse the id which would be constructed by the {@link UserSession} class
+	 * if it contained that event.
 	 * 
-	 * @param event event
+	 * @param event
+	 *            event
 	 * @return unique id
 	 */
 	public static String parseUserSessionId(final EntryCallEvent event) {
@@ -150,8 +159,8 @@ public class UserSession {
 	public long getExitTime() {
 		long exitTime = 0;
 		if (this.events.size() > 0) {
-			this.sortEventsBy(SortEntryCallEventsByExitTime);
-			exitTime = this.events.get(this.events.size() -1).getExitTime();
+			this.sortEventsBy(SORT_ENTRY_CALL_EVENTS_BY_EXIT_TIME);
+			exitTime = this.events.get(this.events.size() - 1).getExitTime();
 		}
 		return exitTime;
 	}
@@ -163,8 +172,8 @@ public class UserSession {
 	public long getEntryTime() {
 		long entryTime = 0;
 		if (this.events.size() > 0) {
-			this.sortEventsBy(SortEntryCallEventsByEntryTime);
-			entryTime = this.events.get(this.events.size() -1).getEntryTime();
+			this.sortEventsBy(SORT_ENTRY_CALL_EVENTS_BY_ENTRY_TIME);
+			entryTime = this.events.get(this.events.size() - 1).getEntryTime();
 		}
 		return entryTime;
 	}

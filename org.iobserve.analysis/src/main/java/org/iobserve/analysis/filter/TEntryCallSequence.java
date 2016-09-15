@@ -15,9 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
@@ -27,26 +27,32 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * Represents the TEntryCallSequence Transformation in the paper
- * <i>Run-time Architecture Models for Dynamic Adaptation and Evolution of Cloud Applications</i>
+ * Represents the TEntryCallSequence Transformation in the paper <i>Run-time
+ * Architecture Models for Dynamic Adaptation and Evolution of Cloud
+ * Applications</i>.
  * 
- * @author Robert Heinrich, Alessandro Guisa
- * @version 1.0
+ * @author Robert Heinrich
+ * @author Alessandro Guisa
  *
  */
-public class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
-
+public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
+	
+	/**threshold for user session elements until their are send to the next filter.*/
+	private static final int USER_SESSION_THRESHOLD = 0;
+	/**map of sessions.*/
 	private HashMap<String, UserSession> sessions = new HashMap<String, UserSession>();
-	private final List<EntryCallEvent> entryCallEventWrappers = new ArrayList<EntryCallEvent>();
+	/**output port.*/
 	private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
 
+	/**
+	 * Create this filter.
+	 */
 	public TEntryCallSequence() {
-		// do nothing
+		// nothing here
 	}
 
 	@Override
 	protected void execute(final EntryCallEvent event) {
-	
 		// add the event to the corresponding user session
 		// in case the user session is not yet available, create one
 		final String userSessionId = UserSession.parseUserSessionId(event);
@@ -55,20 +61,20 @@ public class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
 			userSession = new UserSession(event.getHostname(), event.getSessionId());
 			this.sessions.put(userSessionId, userSession);
 		}
-		userSession.add(event, false); //do not sort since TEntryEventSequence will sort any ways
-		
-		//TODO just for testing
-		// send the current user sessions
-		for(final UserSession nextUserSession:this.sessions.values()) {
-			if(nextUserSession.size() > 0) {
-				final ArrayList<UserSession> listToSend = new ArrayList<UserSession>();
-				listToSend.addAll(this.sessions.values());
-				this.outputPort.send(new EntryCallSequenceModel(listToSend));
-				break;
-			}
+		//do not sort since TEntryEventSequence will sort any ways
+		userSession.add(event, false); 
+		// collect all user sessions which have more elements as a defined threshold and send them to the next filter
+		final List<UserSession> listToSend = this.sessions.values().stream()
+			.filter(session -> session.size() > USER_SESSION_THRESHOLD)
+			.collect(Collectors.toList());
+		if (!listToSend.isEmpty()) {
+			this.outputPort.send(new EntryCallSequenceModel(listToSend));
 		}
 	}
 	
+	/**
+	 * @return output port
+	 */
 	public OutputPort<EntryCallSequenceModel> getOutputPort() {
 		return this.outputPort;
 	}

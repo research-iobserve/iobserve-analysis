@@ -33,7 +33,6 @@ import teetime.framework.OutputPort;
  *
  */
 public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
-	
 	/** output port for deployment events. */
 	private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
 	/** output port for undeployment events. */
@@ -71,7 +70,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 			
 			// send trace meta data
 			if (element instanceof TraceMetadata) {
-				this.traceMetaPort.send((TraceMetadata)element);
+				this.traceMetaPort.send((TraceMetadata) element);
 			}
 			
 		} else {

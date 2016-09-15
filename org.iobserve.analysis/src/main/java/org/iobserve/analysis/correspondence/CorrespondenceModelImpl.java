@@ -3,10 +3,9 @@ package org.iobserve.analysis.correspondence;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.bind.JAXB;
-
-import org.iobserve.analysis.utils.BinarySelector;
 
 import protocom.extension.mapping.PcmCorrespondentMethod;
 import protocom.extension.mapping.PcmEntity;
@@ -14,59 +13,65 @@ import protocom.extension.mapping.PcmEntityCorrespondent;
 import protocom.extension.mapping.PcmMapping;
 import protocom.extension.mapping.PcmOperationSignature;
 
-import com.google.common.base.Optional;
 
 /**
- * Implementation of {@link ICorrespondence}
+ * Implementation of {@link ICorrespondence}.
  *
- * @author Robert Heinrich, Alessandro Giusa
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
  */
 class CorrespondenceModelImpl implements ICorrespondence {
 
+	/**
+	 * String builder to build method signatures based on the given 
+	 * {@link PcmCorrespondentMethod} instance.
+	 */
 	private interface MethodSignatureBuilder {
+		/**
+		 * @param method method
+		 * @return signature of the method based on the given 
+		 * 	{@link PcmCorrespondentMethod}
+		 */
 		String build(PcmCorrespondentMethod method);
 	}
 
-	// ********************************************************************
-	// * legacy
-	// ********************************************************************
-	// private static final String BOOK_SALE_OPERATION = "orderProducts";
-	// private static final String BOOK_SALE_CLASS = "ServiceProviderBookSale";
-	// private static final String COCOME_BOOK_SALE_OPERATION_SIG = "bookSale";
-
-	// ********************************************************************
-	// *
-	// ********************************************************************
-
+	/**namespace of current palladio framework.*/
 	private static final String PROTOCOM_BASE_PACKAGE_NAME = "org.palladiosimulator.protocom";
 
-	/** cache for already mapped correspondences */
+	/** cache for already mapped correspondences. */
 	private final Map<String, Correspondent> cachedCorrespondents = new HashMap<String, Correspondent>();
 
-	/** raw mapping objects created during ProtoCom artifacts generation */
+	/** raw mapping objects created during ProtoCom artifacts generation. */
 	private final PcmMapping rawMapping;
 
-	/** mapper for method signature to operation signature */
-	private final BinarySelector<PcmCorrespondentMethod, PcmOperationSignature> opSigMapper;
+	/** mapper for method signature to operation signature. */
+	private final OperationSignatureSelector opSigMapper;
 
-	/** fast access map for class-signature to object */
+	/** fast access map for class-signature to object. */
 	private Map<String, PcmEntityCorrespondent> mapping;
 
 	// ********************************************************************
 	// * INITIALIZATION
 	// ********************************************************************
 
-	public CorrespondenceModelImpl(final PcmMapping mapping, 
-			final BinarySelector<PcmCorrespondentMethod, PcmOperationSignature> mapper) {
-		this.rawMapping = mapping;
+	/**
+	 * Create correspondence model.
+	 * @param theMapping mapping instance
+	 * @param mapper selector
+	 */
+	CorrespondenceModelImpl(final PcmMapping theMapping, final OperationSignatureSelector mapper) {
+		this.rawMapping = theMapping;
 		this.opSigMapper = mapper;
 	}
 
-	public CorrespondenceModelImpl(final InputStream mappingFile, 
-			final BinarySelector<PcmCorrespondentMethod, PcmOperationSignature> mapper) {
+	/**
+	 * Create the correspondence model.
+	 * @param mappingFile input stream of mapping file
+	 * @param mapper selector
+	 */
+	CorrespondenceModelImpl(final InputStream mappingFile, final OperationSignatureSelector mapper) {
 		this.rawMapping = JAXB.unmarshal(mappingFile, PcmMapping.class);
 		this.opSigMapper = mapper;
-
 		this.initMapping();
 	}
 
@@ -75,7 +80,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
 	// ********************************************************************
 
 	/**
-	 * Tasks
+	 * Init mapping.
 	 * <ul>
 	 * <li>Create Map for fast access</li>
 	 * <li>Set parent references on {@link PcmMapping} objects</li>
@@ -96,7 +101,8 @@ class CorrespondenceModelImpl implements ICorrespondence {
 			for (final PcmEntityCorrespondent nextCorrespondent : nextPcmEntity.getCorrespondents()) {
 				nextCorrespondent.setParent(nextPcmEntity);
 
-				final String qualifiedName = (nextCorrespondent.getPackageName() + "." + nextCorrespondent.getUnitName()).trim().replaceAll(" ", "");
+				final String qualifiedName = (nextCorrespondent.getPackageName() 
+						+ "." + nextCorrespondent.getUnitName()).trim().replaceAll(" ", "");
 				this.mapping.put(qualifiedName, nextCorrespondent);
 
 				// set parent reference
@@ -113,13 +119,8 @@ class CorrespondenceModelImpl implements ICorrespondence {
 
 	@Override
 	public Optional<Correspondent> getCorrespondent(final String classSig, final String operationSig) {
-		//TODO debug print, remove later
-		System.out.print(String.format("Try to get correspondence for classSig=%s, operationSig=%s...",
-				classSig, operationSig));
-
 		// assert parameters are not null
 		if ((classSig == null) || (operationSig == null)) {
-			System.out.println("NOK");
 			return ICorrespondence.NULL_CORRESPONDENZ;
 		}
 
@@ -133,15 +134,12 @@ class CorrespondenceModelImpl implements ICorrespondence {
 		if (correspondent == null) {
 			final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
 			if (pcmEntityCorrespondent == null) {
-				// TODO log
-				System.out.println("NOK");
 				return ICorrespondence.NULL_CORRESPONDENZ; // or something else
 			}
 
-			final PcmOperationSignature pcmOperationSignature = this.getPcmOperationSignature(pcmEntityCorrespondent, operationSig);
+			final PcmOperationSignature pcmOperationSignature = this.getPcmOperationSignature(
+					pcmEntityCorrespondent, operationSig);
 			if (pcmOperationSignature == null) {
-				// TODO log
-				System.out.println("NOK");
 				return ICorrespondence.NULL_CORRESPONDENZ;
 			}
 
@@ -155,21 +153,13 @@ class CorrespondenceModelImpl implements ICorrespondence {
 			// put into cache for next time
 			this.cachedCorrespondents.put(requestKey, correspondent);
 		}
-
-		//TODO this can be removed later
-		System.out.println("OK");
 		return Optional.of(correspondent);
 	}
 	
 	@Override
 	public Optional<Correspondent> getCorrespondent(final String classSig) {
-		//TODO debug print, remove later
-		System.out.print(String.format("Try to get correspondence for classSig=%s ...",
-				classSig));
-
 		// assert parameters are not null
 		if (classSig == null) {
-			System.out.println("NOK");
 			return ICorrespondence.NULL_CORRESPONDENZ;
 		}
 
@@ -183,8 +173,6 @@ class CorrespondenceModelImpl implements ICorrespondence {
 		if (correspondent == null) {
 			final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
 			if (pcmEntityCorrespondent == null) {
-				// TODO log
-				System.out.println("NOK");
 				return ICorrespondence.NULL_CORRESPONDENZ; // or something else
 			}
 
@@ -198,16 +186,13 @@ class CorrespondenceModelImpl implements ICorrespondence {
 			// put into cache for next time
 			this.cachedCorrespondents.put(requestKey, correspondent);
 		}
-
-		//TODO this can be removed later
-		System.out.println("OK");
 		return Optional.of(correspondent);
 	}
 
 	/**
-	 * Get the {@link PcmEntity} based on the qualified class name
+	 * Get the {@link PcmEntity} based on the qualified class name.
 	 *
-	 * @param classSig
+	 * @param classSig class signature
 	 * @return null if not available
 	 */
 	private PcmEntityCorrespondent getPcmEntityCorrespondent(final String classSig) {
@@ -215,25 +200,29 @@ class CorrespondenceModelImpl implements ICorrespondence {
 		return pcmEntityCorrespondent;
 	}
 
+	/**
+	 * Get the corresponding operation signature based the given operation
+	 * signature.
+	 * @param pcmEntityCorrespondent pcm entity correspondence
+	 * @param operationSig operation signature
+	 * @return pcm operation signature or null if operation signature not 
+	 * 	available
+	 */
 	private PcmOperationSignature getPcmOperationSignature(final PcmEntityCorrespondent pcmEntityCorrespondent,
 			final String operationSig) {
-
 		PcmOperationSignature opSig = null;
 		for (final PcmCorrespondentMethod nextCorresMethod : pcmEntityCorrespondent.getMethods()) {
-
 			final String methodSig = this.mPackageNameClassNameMethodName.build(nextCorresMethod);
-
 			if (operationSig.replaceAll(" ", "").equals(methodSig.replaceAll(" ", ""))) {
 				opSig = this.mapOperationSignature(nextCorresMethod);
 				break;
 			}
 		}
-
 		return opSig;   
 	}
 
 	/**
-	 * Builds the signature out of packagname.MethodName()
+	 * Builds the signature out of packagname.MethodName().
 	 */
 	private final MethodSignatureBuilder mPackageNameClassNameMethodName = new MethodSignatureBuilder() {
 
@@ -247,7 +236,8 @@ class CorrespondenceModelImpl implements ICorrespondence {
 	};
 
 	/**
-	 * Builds the signature like it would appear in the source code for instance void Get().
+	 * Builds the signature like it would appear in the source code for instance
+	 * void Get().
 	 */
 	private final MethodSignatureBuilder mOnlyMethodName = new MethodSignatureBuilder() {
 
@@ -263,21 +253,24 @@ class CorrespondenceModelImpl implements ICorrespondence {
 			builder.append(method.getName());
 			builder.append("(");
 			builder.append(method.getParameters().replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
-			// TODO I do not know how to handle multiple parameters..since I did not see such after protocom build
+			// TODO I do not know how to handle multiple parameters..since 
+			// I did not see such after protocom build
 			builder.append(")");
-			// TODO <exception throws signature>  is missing since this is not retrievable from protocom-generation process so far.
+			// TODO <exception throws signature>  is missing since this 
+			// is not retrievable from protocom-generation process so far.
 
 			final String methodSig = builder.toString().trim();
-
 			return methodSig;
 		}
 	};
 
 	/**
-	 * Map the given method to the correspondent operation signature based on the name. The comparison
-	 * is done by searching the operation signature name which is contained in the given method name
+	 * Map the given method to the correspondent operation signature based on
+	 * the name. The comparison is done by searching the operation signature
+	 * name which is contained in the given method name.
 	 *
 	 * @param method
+	 *            method
 	 * @return null if not found
 	 */
 	private PcmOperationSignature mapOperationSignature(final PcmCorrespondentMethod method) {
@@ -292,8 +285,11 @@ class CorrespondenceModelImpl implements ICorrespondence {
 		return opSig;
 	}
 
+	/**
+	 * Test method to print all mappings.
+	 */
 	private void printAllMappings() {
-		for(String nextMappingKey:this.mapping.keySet()) {
+		for (String nextMappingKey : this.mapping.keySet()) {
 			System.out.println(nextMappingKey);
 			final PcmEntityCorrespondent correspondent = this.mapping.get(nextMappingKey);
 			System.out.println(correspondent);
