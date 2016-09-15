@@ -67,11 +67,11 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		final TAllocation tAllocation = new TAllocation(correspondenceModel, resourceEvnironmentModelProvider);
 		final TDeployment tDeployment = new TDeployment(correspondenceModel, allocationModelProvider,
 				systemModelProvider, resourceEvnironmentModelProvider);
-		final TUndeployment tUndeployment = new TUndeployment();
+		final TUndeployment tUndeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider, resourceEvnironmentModelProvider);
 		final TEntryCall tEntryCall = new TEntryCall();
 		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
 		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider);
-		final TNetworkLink tNetworkLink = new TNetworkLink();
+		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider, resourceEvnironmentModelProvider);
 
 		/** dispatch different monitoring data */
 		connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());

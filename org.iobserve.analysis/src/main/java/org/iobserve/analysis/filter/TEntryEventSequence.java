@@ -26,7 +26,6 @@ import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
-import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
@@ -62,8 +61,6 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 	protected void execute(final EntryCallSequenceModel model) {	
 		// do main task
 		this.doUpdateUsageModel(model.getUserSessions());		
-		// count execution
-		TEntryEventSequence.executionCounter++;
 	}
 	
 	/**

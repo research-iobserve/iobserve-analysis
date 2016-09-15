@@ -1,6 +1,6 @@
 buildscript { 
 	
-	// this block can be used later to add custom plug-ins for gralde
+	// this block can be used later to add custom plug-ins for gradle
 	// just an example for now
 	
     repositories {
@@ -29,6 +29,7 @@ subprojects {
         jcenter()
         maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven {url "https://oss.sonatype.org/content/repositories/releases/" }
+		maven {url "https://mvnrepository.com/artifact/org.eclipse.emf/org.eclipse.emf.ecore" }
 		maven {url "https://oss.sonatype.org/content/groups/public/"}
 		maven {url "https://jitpack.io"}
 		maven {url "https://mvnrepository.com/artifact/org.eclipse/ocl" }
@@ -37,18 +38,7 @@ subprojects {
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}
 		maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
 		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
-		maven {url "file:///home/reiner/Projects/iObserve/iobserve-analysis/mvn-repo" }
-    }
-}
-
-
-
-
-
-=======
-
-    dependencies {
-        // nothing here
+		maven {url "../mvn-repo" }
     }
     
     eclipse {
@@ -58,4 +48,3 @@ subprojects {
 	    }
 	}
 }
->>>>>>> master

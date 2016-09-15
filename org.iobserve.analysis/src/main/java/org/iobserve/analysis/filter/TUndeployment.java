@@ -17,12 +17,10 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.utils.Opt;
@@ -52,7 +50,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 	/**reference to system model provider.*/
 	private SystemModelProvider systemModelProvider;
 	/**reference to resource environment model provider.*/
-	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
+	private ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
 
 	/**
 	 * Most likely the constructor needs an additional field for the PCM access.
@@ -60,12 +58,12 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 	 *
 	 * @param correspondence
 	 */
-	public TUndeployment() {
-		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
-		this.correspondence = modelProviderPlatform.getCorrespondenceModel();
-		this.allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
-		this.systemModelProvider = modelProviderPlatform.getSystemModelProvider();
-		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
+	public TUndeployment(ICorrespondence correspondence, AllocationModelProvider allocationModelProvider, 
+			SystemModelProvider systemModelProvider, ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+		this.correspondence = correspondence;
+		this.allocationModelProvider = allocationModelProvider;
+		this.systemModelProvider = systemModelProvider;
+		this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
 	}
 
 	/**
@@ -121,7 +119,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 		
 		// get the model parts by name
 		final Optional<ResourceContainer> optResourceContainer = 
-				this.resourceEnvModelProvider.getResourceContainerByName(serverName);
+				this.resourceEnvironmentModelProvider.getResourceContainerByName(serverName);
 		
 		// this can not happen since TAllocation should have created the resource container already.
 		Opt.of(optResourceContainer)

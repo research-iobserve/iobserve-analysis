@@ -16,7 +16,6 @@
 package org.iobserve.analysis.filter;
 
 import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;

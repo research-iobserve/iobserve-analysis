@@ -3,15 +3,13 @@ project.ext {
 }
 
 ext {
-    working_dir = 'res/working_dir/'
+	working_dir = 'res/working_dir/'
 	original_dir = 'res/original_dir/'
 }
 
 buildscript {
     repositories {
-        maven {
-            url "https://maven.eveoh.nl/content/repositories/releases"
-        }
+        maven {url "https://maven.eveoh.nl/content/repositories/releases"}
     }
 
     dependencies {
@@ -20,18 +18,19 @@ buildscript {
 }
 
 apply plugin: 'application'
-//apply plugin: AspectJPlugin
+apply plugin: 'aspectj'
 
 version = '1.0'
 sourceCompatibility = 1.8
 
-// checking the palladio installation
-if (project.properties['palladio.installation'] == null || project.properties['palladio.installation'].isEmpty()) {
-	System.err.println("!!! PALLADIO installation missing !!!")
-	System.err.println("Add the file iobserve-analysis/gradle.properties. Add the property palladio.installation=PATH TO THE PLUGIN FOLDER OF YOU PALLADIO INSTALLATION")
+// checking the presence of an Eclipse API baseline
+if (project.properties['eclipse.api.baseline'] == null || project.properties['eclipse.api.baseline'].isEmpty()) {
+	System.err.println("Cannot find an Eclipse API baseline")
+	System.err.println("Create file iobserve-analysis/gradle.properties if missing.")
+	System.err.println("Add the property eclipse.api.baseline=ECLIPSE PLUGIN PATH")
 	System.err.println("Use / for path separation")
 } else {
-	println "Your PALLADIO installation is at: " + project.properties['palladio.installation']
+	println "Eclipse API baseline installation is at: " + project.properties['eclipse.api.baseline']
 }
 
 dependencies {
@@ -47,17 +46,16 @@ dependencies {
 	compile 'org.antlr:antlr-runtime:3.5.2'
 	compile 'lpg.runtime:java:2.0.+'  
     
-	compile group: 'org.eclipselabs', name: 'cdo.p2', version: '4.4.0'
+	compile 'org.eclipselabs:cdo.p2:4.4.0'
 
-	
+	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
 	compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
 	compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
 	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.+'
 	compile 'org.eclipse.uml2:org.eclipse.uml2.uml:3.1.+'
 	
-	compile group: 'org.eclipse', name: 'ocl', version: '3.4.0-v20140524-1358'
-	//compile 'org.eclipse.ocl:common:1.2.0-v20140528-1458'
-	//compile 'org.eclipse.ocl:ecore:3.3.0-v20130520-1222'
+	compile 'org.eclipse.ocl:common:1.2.0-v20140528-1458'
+	compile 'org.eclipse.ocl:ecore:3.3.0-v20130520-1222'
 	compile 'lpg.runtime:java:2.0.17-v201004271640'
 	compile 'org.antlr:antlr-runtime:3.5.2'
 	
@@ -66,9 +64,6 @@ dependencies {
 	//compile group: 'org.eclipselabs', name: 'cdo', version: '4.4.0', ext: 'pom'
 	//compile group: 'org.eclipselabs', name: 'cdo-maven', version: '4.4.0', ext: 'pom'
 	
-	compile fileTree(dir: 'libs', include: '*.jar')
-	compile fileTree(dir: 'pcm/libs', include: '*.jar')
-
 	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
 	compile 'extra:org.palladiosimulator.pcm:4.0.0.201511051135'
 
@@ -77,20 +72,20 @@ dependencies {
 	compile 'extra:de.uka.ipd.sdq.probfunction:2.1.0+'
 	compile 'extra:org.eclipse.emf.cdo:4.4.1+'
 	compile 'extra:org.eclipse.emf.cdo.common:4.4.1+'
-	//compile 'extra:org.eclipse.ocl:3.5.0.v20150521-1211'
+	compile 'extra:org.eclipse.ocl:3.5.0.v20150521-1211'
 }
 
 sourceSets {
-    irl {
-    	java {
-    		srcDir 'src/main/irl'
-    		srcDir 'src/gen/java'
-    		srcDir 'src/gen/java-factory'
-    	}
+	irl {
+		java {
+			srcDir 'src/main/irl'
+			srcDir 'src/gen/java'
+			srcDir 'src/gen/java-factory'
+	}
     }
     main {
     	java {
-    		srcDir 'src/gen/java'
+    		srcDir 'src/main/java'
     		srcDir 'src/main/aspectj'
     	}
     }
@@ -119,8 +114,6 @@ install {
         pom.artifactId = 'analysis'
     }
 }
-
-apply plugin: 'aspectj'
 
 //********************************************************************************************
 //

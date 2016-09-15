@@ -21,18 +21,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import kieker.common.record.flow.trace.TraceMetadata;
-
-import org.iobserve.common.record.IDeploymentRecord;
-
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.correspondence.ICorrespondence;
-
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -41,6 +33,7 @@ import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
+import kieker.common.record.flow.trace.TraceMetadata;
 import teetime.framework.AbstractConsumerStage;
 
 /**
@@ -68,16 +61,20 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 	/**reference to system model provider.*/
 	private SystemModelProvider systemModelProvider;
 	/**reference to resource environment model provider.*/
-	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
+	private ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
 
 	/**
 	 * Create new TNetworkLink filter.
+	 * 
+	 * @param allocationModelProvider
+	 * @param systemModelProvider
+	 * @param resourceEnvironmentModelProvider
 	 */
-	public TNetworkLink() {
-		final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
-		this.allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
-		this.systemModelProvider = modelProviderPlatform.getSystemModelProvider();
-		this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
+	public TNetworkLink(AllocationModelProvider allocationModelProvider, SystemModelProvider systemModelProvider, 
+			ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+		this.allocationModelProvider = allocationModelProvider;
+		this.systemModelProvider = systemModelProvider;
+		this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
 	}
 
 	/**
@@ -86,7 +83,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 	 */
 	@Override
 	protected void execute(final TraceMetadata event) {
-		final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(this.resourceEnvModelProvider);
+		final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(this.resourceEnvironmentModelProvider);
 		builder.loadModel();
 		
 		final ResourceEnvironment resEnv = builder.getModel();

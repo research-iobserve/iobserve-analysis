@@ -17,12 +17,10 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;

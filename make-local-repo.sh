@@ -2,7 +2,7 @@
 
 BINDIR=$(cd "$(dirname "$0")"; pwd)
 
-LIBS=~/eclipse-mars/plugins
+LIBS=~/.p2/pool/plugins
 
 LIST=`cat << EOF
 de.uka.ipd.sdq.identifier
@@ -26,7 +26,9 @@ PROPERTIES=""
 NEWLINE=$'\n'
 
 for I in $LIST ; do
+	echo "Op $I"
 	for P in `find ${LIBS} -name "${I}_*.jar"` ; do
+		echo "$P"
 		if [ -f "$P" ] ; then
 			N=`basename $P`
 			ARTIFACT=`echo $N | sed 's/^\(.*\)_.*$/\1/'`
