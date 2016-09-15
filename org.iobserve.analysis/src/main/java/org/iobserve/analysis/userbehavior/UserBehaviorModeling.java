@@ -18,6 +18,7 @@ import org.iobserve.analysis.userbehavior.data.CallBranchModel;
  * user behavior modeling. The constructor takes the input entryCallSequenceModel that contains the user sessions that are used to 
  * analyze and build the user behavior. The numberOfUserGroupsFromInputUsageModel states the number of user groups in the latest 
  * created usage model. It serves as input for the number of clusters within the user group detection.
+ * It also measures the response times of the individual process steps and an overall response time
  *  
  * @param inputEntryCallSequenceModel contains the user sessions that are used to analyze and build the user behavior
  * @param numberOfUserGroupsFromInputUsageModel states the number of user groups in the latest created usage model. It serves

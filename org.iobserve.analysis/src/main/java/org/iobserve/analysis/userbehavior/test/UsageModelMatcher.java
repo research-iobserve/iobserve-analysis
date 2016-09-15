@@ -35,7 +35,8 @@ public class UsageModelMatcher {
 	 * @param usageModel2 is matched against usage model 1
 	 * @throws IOException 
 	 */
-	public void matchUsageModels(final UsageModel usageModel1, final UsageModel usageModel2) throws IOException {
+	public AccuracyResults matchUsageModels(final UsageModel usageModel1, final UsageModel usageModel2) throws IOException {
+		AccuracyResults accuracyResults = new AccuracyResults();
 		UsageScenario usageScenarioOfUsageModel1 = usageModel1.getUsageScenario_UsageModel().get(0);
 		UsageScenario usageScenarioOfUsageModel2 = usageModel2.getUsageScenario_UsageModel().get(0);
 		ScenarioBehaviour scenarioBehaviourOfUsageModel1 = usageScenarioOfUsageModel1.getScenarioBehaviour_UsageScenario();
@@ -46,9 +47,9 @@ public class UsageModelMatcher {
 		getModelElements(scenarioBehaviourOfUsageModel2,modelElementsOfUsageModel2);
 		double jc = calculateJaccardCoefficient(modelElementsOfUsageModel1,modelElementsOfUsageModel2);
 		double srcc = calculateSpearmansCoefficient(modelElementsOfUsageModel1,modelElementsOfUsageModel2);
-		System.out.println(jc);
-		System.out.println(srcc);
-//		writeResults(jc,srcc);
+		accuracyResults.setJc(jc);
+		accuracyResults.setSrcc(srcc);
+		return accuracyResults;
 	}
 	
 	/**
@@ -157,6 +158,12 @@ public class UsageModelMatcher {
 		
 	}
 	
+	/**
+	 * It sorts a list of branch transitions by their first EntryLevelSystemCall
+	 * 
+	 * @param branchTransitions that are sorted
+	 * @return sorted list of branch transitions
+	 */
 	private List<BranchTransition> sortBranchTransitions(List<BranchTransition> branchTransitions) {
 		List<String> entityNames = new ArrayList<String>();
 		List<BranchTransition> branchTransitionsSorted = new ArrayList<BranchTransition>();

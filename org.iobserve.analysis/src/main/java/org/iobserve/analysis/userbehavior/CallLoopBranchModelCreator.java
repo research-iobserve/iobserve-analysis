@@ -72,7 +72,7 @@ public class CallLoopBranchModelCreator {
 		int branchSequenceSizeWithoutExitElement = branchSequence.size();
 		if(branchSequence.get(branchSequence.size()-1).getClass().equals(ExitElement.class))
 			branchSequenceSizeWithoutExitElement = branchSequenceSizeWithoutExitElement - 1;
-		if(branchSequence==null||branchSequenceSizeWithoutExitElement<2) {
+		if(branchSequence==null||branchSequenceSizeWithoutExitElement<1) {
 			return;
 		}
 			

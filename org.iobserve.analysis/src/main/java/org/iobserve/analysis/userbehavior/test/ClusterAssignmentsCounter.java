@@ -2,6 +2,7 @@ package org.iobserve.analysis.userbehavior.test;
 
 /**
  * Counts the assignments of user user sessions of each user group to a cluster
+ * Used for the clustering evaluation
  * 
  * @author David
  *

@@ -13,7 +13,13 @@ import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.userbehavior.UserGroupExtraction;
 import org.iobserve.analysis.userbehavior.data.ClusteringMetrics;
 
-
+/**
+ * 
+ * Contains the evaluation of the clustering
+ * 
+ * @author David
+ *
+ */
 public class ClusteringEvaluation {
 	
 	// The number of user sessions of each user group defines the user group mix

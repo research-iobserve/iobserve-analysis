@@ -137,7 +137,6 @@ public class ClusteringPrePostProcessing {
 	 */
 	private void calculateTheNumberOfConcurrentUsers(final List<UserSession> sessions, WorkloadIntensity workloadIntensity) {
 		
-		int maxNumberOfConcurrentUsers = 0;
 		int averageNumberOfConcurrentUsers = 0;
 	
 		if(sessions.size()<1) {
@@ -155,25 +154,25 @@ public class ClusteringPrePostProcessing {
 			final long exitTimeUS =  sessions.get(i).getExitTime();
 			interval += (exitTimeUS-entryTimeUS);
 		}
-		long averageInterval = interval/sessions.size();
+		long avgInterval = interval/sessions.size();
 		
 		// Divides the overall time of the user sessions into a number of timeframes according to the averageInterval
 		final long startTimeOfAllUserSessions = getEntryTime(sessions.get(0).getEvents());
 		final long endTimeOfAllUserSessions = sessions.get(sessions.size()-1).getExitTime();
-		long numberOfTimeFrames = Math.round(((endTimeOfAllUserSessions-startTimeOfAllUserSessions)/averageInterval)+0.5);
+		long numberOfTimeFrames = Math.round(((endTimeOfAllUserSessions-startTimeOfAllUserSessions)/avgInterval)+0.5);
 		
 		// Set the start and end times and its initial count of each timeframe 
 		List<long[]> timeframes = new ArrayList<long[]>();
 		long startTimeOfTimeframe = startTimeOfAllUserSessions;
-		long endTimeOfTimeframe = startTimeOfAllUserSessions+averageInterval;
+		long endTimeOfTimeframe = startTimeOfAllUserSessions+avgInterval;
 		for(int i=0;i<numberOfTimeFrames;i++) {
 			long[] timeframe = new long[3];
 			timeframe[0] = startTimeOfTimeframe;
 			timeframe[1] = endTimeOfTimeframe;
 			timeframe[2] = 0;
 			timeframes.add(timeframe);
-			startTimeOfTimeframe = endTimeOfTimeframe;
-			endTimeOfTimeframe = endTimeOfTimeframe+averageInterval;
+			startTimeOfTimeframe = endTimeOfTimeframe+1;
+			endTimeOfTimeframe = endTimeOfTimeframe+avgInterval+1;
 		}
 		
 		// Obtains for each user session its starting timeframe and increases the count of the corrsponding timeframe
@@ -191,62 +190,12 @@ public class ClusteringPrePostProcessing {
 		int numberOfConcurrentUserSessions = 0;
 		for(int j=0;j<timeframes.size();j++) {
 			numberOfConcurrentUserSessions += timeframes.get(j)[2]*timeframes.get(j)[2];
-			if(timeframes.get(j)[2]>maxNumberOfConcurrentUsers) {
-				maxNumberOfConcurrentUsers = (int)timeframes.get(j)[2];
-			}
 		}
 		averageNumberOfConcurrentUsers = numberOfConcurrentUserSessions/sessions.size();
 		
-		workloadIntensity.setMaxNumberOfConcurrentUsers(maxNumberOfConcurrentUsers);
 		workloadIntensity.setAvgNumberOfConcurrentUsers(averageNumberOfConcurrentUsers);		
 	}
-	
-	/**
-	 * Calculates a closed workload. For that, it calculates the average number of concurrent users as well as the maximum
-	 * number of concurrent users. That means the max/avg amount of concurrent user sessions determined by their entry and exit times. 
-	 * Both values can be used for the specification of a closed workload in an PCM usage model.
-	 * By calculating both it can later be chosen between the two values.
-	 * 
-	 * @param sessions are the user group´s userSessions
-	 * @param workloadIntensity is the empty workload intensity that is filled with values for the specification of a closed workload
-	 */
-	/**
-	 * deprecated
-	 * Nested loop of user sessions -> Bad scalability
-	 * Only used to compare with the approximated approach of calculating the number of concurrent users
-	 */
-//	private void calculateTheNumberOfConcurrentUsers(final List<UserSession> sessions, WorkloadIntensity workloadIntensity) {
-//		int maxNumberOfConcurrentUsers = 0;
-//		int averageNumberOfConcurrentUsers = 0;
-//		if(sessions.size() > 0) {
-//			int countOfConcurrentUsers = 0;
-//			Collections.sort(sessions, this.SortUserSessionByEntryTime);
-//			for (int i = 0; i < sessions.size(); i++) {
-//				final long entryTimeUS1 =  sessions.get(i).getEntryTime();
-//				final long exitTimeUS1 = sessions.get(i).getExitTime();
-//				int numberOfConcurrentUserSessionsDuringThisSession = 1;
-//				for (int j = 0; j < sessions.size(); j++) {
-//					if(j==i)
-//						continue;
-//					final long entryTimeUS2 =  sessions.get(j).getEntryTime();
-//					final long exitTimeUS2 = sessions.get(j).getExitTime();
-//					if(exitTimeUS2<entryTimeUS1)
-//						continue;
-//					if(entryTimeUS2>exitTimeUS1)
-//						break;
-//					if((exitTimeUS1>=entryTimeUS2&&exitTimeUS1<=exitTimeUS2)||(exitTimeUS2>=entryTimeUS1&&exitTimeUS2<=exitTimeUS1))
-//						numberOfConcurrentUserSessionsDuringThisSession++;
-//				}
-//				if(numberOfConcurrentUserSessionsDuringThisSession > maxNumberOfConcurrentUsers)
-//					maxNumberOfConcurrentUsers = numberOfConcurrentUserSessionsDuringThisSession;
-//				countOfConcurrentUsers += numberOfConcurrentUserSessionsDuringThisSession;
-//			}
-//			averageNumberOfConcurrentUsers = countOfConcurrentUsers/sessions.size();
-//		}
-//		workloadIntensity.setMaxNumberOfConcurrentUsers(maxNumberOfConcurrentUsers);
-//		workloadIntensity.setAvgNumberOfConcurrentUsers(averageNumberOfConcurrentUsers);
-//	}
-	
+		
 	
 	/**
 	 * David Peter
@@ -283,6 +232,26 @@ public class ClusteringPrePostProcessing {
 		workloadIntensity.setInterarrivalTimeOfUserSessions(interArrivalTime);
 	}
 	
+	
+	
+	private final Comparator<UserSession> SortUserSessionByDuration = new Comparator<UserSession>() {
+		
+		@Override
+		public int compare(final UserSession o1, final UserSession o2) {
+			long entryO1 = getEntryTime(o1.getEvents());
+			long entryO2 = getEntryTime(o2.getEvents());
+			long exitO1 = o1.getExitTime();
+			long exitO2 = o2.getExitTime();
+			long duration1 = entryO1-exitO1;
+			long duration2 = entryO2-exitO2;
+			if(duration1 > duration2) {
+				return 1;
+			} else if(duration1 < duration2) {
+				return -1;
+			}
+			return 0;
+		}
+	};
 	
 	/**
 	 * David Peter

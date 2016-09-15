@@ -1,5 +1,15 @@
 package org.iobserve.analysis.userbehavior.test;
 
+/**
+ * 
+ * Contains the information of an PCM usage model element
+ * Thereby, a model element can be any model element of a PCM usage model
+ * Is used to match the elements of two usage models against each other
+ * Used by the UsageModelMatcher
+ * 
+ * @author David
+ *
+ */
 public class ModelElement {
 	
 	private boolean isStartElement;
