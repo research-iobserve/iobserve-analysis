@@ -17,6 +17,7 @@ allprojects {
         maven {url "https://oss.sonatype.org/content/repositories/releases/" }
 		maven {url "https://oss.sonatype.org/content/groups/public/"}
 		maven {url "https://jitpack.io"}
+		maven {url "https://mvnrepository.com/artifact/org.eclipse/ocl" }
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo.p2"}
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo"}
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}

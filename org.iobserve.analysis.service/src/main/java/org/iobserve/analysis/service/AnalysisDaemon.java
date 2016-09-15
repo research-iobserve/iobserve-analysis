@@ -47,12 +47,14 @@ public class AnalysisDaemon implements Daemon {
 				final File correspondenceMappingFile = new File(commandLine.getOptionValue("c"));
 				final File pcmModelsDirectory = new File(commandLine.getOptionValue("p"));
 
+				final String systemId = commandLine.getOptionValue("s");
+								
 				if (correspondenceMappingFile.exists()) {
 					if (correspondenceMappingFile.canRead()) {
 						if (pcmModelsDirectory.exists()) {
 							if (pcmModelsDirectory.isDirectory()) {
-								final ModelProviderPlatform platform = new ModelProviderPlatform(pcmModelsDirectory.getPath());
-								this.thread = new AnalysisThread(this, listenPort, outputHostname, outputPort, platform);
+								final ModelProviderPlatform modelProvider = new ModelProviderPlatform(pcmModelsDirectory.getPath());
+								this.thread = new AnalysisThread(this, listenPort, outputHostname, outputPort, systemId, modelProvider);
 							} else {
 								throw new DaemonInitException("CLI error: PCM directory " + pcmModelsDirectory.getPath() + " is not a directory.");
 							}
@@ -114,6 +116,8 @@ public class AnalysisDaemon implements Daemon {
 		options.addOption(Option.builder("o").required(true).longOpt("output").
 				hasArgs().numberOfArgs(2).valueSeparator(':').
 				desc("hostname and port of the iobserve visualization, e.g., visualization:80").build());
+		options.addOption(Option.builder("s").required(true).longOpt("system").
+				hasArg().desc("system").build());
 		options.addOption(Option.builder("c").required(true).longOpt("correspondence").hasArg().
 				desc("correspondence model").build());
 		options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg().

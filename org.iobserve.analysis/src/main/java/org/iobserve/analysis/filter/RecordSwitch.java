@@ -121,6 +121,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 		return this.traceMetaPort;
 	}
 
+	// TODO remove this, as it belongs to logging
 	public void outputStatistics() {
 		final double delta = ((double) (System.nanoTime() - this.startTime)) / 1000000;
 		System.out.println("Record " + this.recordCount + " rate " + ((this.recordCount) / delta));

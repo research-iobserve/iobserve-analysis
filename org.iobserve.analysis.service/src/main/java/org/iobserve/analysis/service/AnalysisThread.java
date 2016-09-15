@@ -17,9 +17,9 @@ public class AnalysisThread extends Thread {
 	private final Configuration configuration;
 
 	public AnalysisThread(final AnalysisDaemon daemon, final int inputPort,
-			final String outputHostname, final String outputPort, ModelProviderPlatform platform) throws MalformedURLException {
+			final String outputHostname, final String outputPort, final String systemId, ModelProviderPlatform platform) throws MalformedURLException {
 		this.daemon = daemon;
-		this.configuration = new ServiceConfiguration(inputPort, outputHostname, outputPort, SYSTEM_ID, platform);
+		this.configuration = new ServiceConfiguration(inputPort, outputHostname, outputPort, systemId, platform);
 	}
 
 	@Override
