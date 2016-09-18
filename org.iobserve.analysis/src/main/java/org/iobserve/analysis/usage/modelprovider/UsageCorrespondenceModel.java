@@ -15,11 +15,12 @@
  ***************************************************************************/
 package org.iobserve.analysis.usage.modelprovider;
 
+import java.util.Optional;
+
 import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.palladiosimulator.pcm.core.entity.NamedElement;
 
-import com.google.common.base.Optional;
 
 import kieker.common.record.IMonitoringRecord;
 
