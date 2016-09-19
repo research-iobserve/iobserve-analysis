@@ -70,6 +70,116 @@ public class ReferenceUsageModelBuilder {
 		this.correspondenceModel = AnalysisMain.getInstance().getModelProviderPlatform().getCorrespondenceModel();
 	}
 	
+	/**
+	 * 
+	 * Creates a reference model that contains a loop element. Accordingly, user sessions whose call sequences contain 
+	 * iterated calls are created.(RQ-1.3)
+	 * 
+	 * @return the reference usage model and a corresponding EntryCallSequenceModel
+	 * @throws IOException
+	 */
+	public ReferenceElements getSimpleLoopReferenceModel() throws IOException {
+
+		// Random model parameters
+		int numberOfConcurrentUsers = this.getRandomInteger(200, 1);
+		int loopCount = this.getRandomInteger(5, 2);
+		int numberOfIteratedCalls = this.getRandomInteger(5, 1);
+		
+		EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(this.getUserSessions(numberOfConcurrentUsers));
+		AbstractUserAction lastAction;
+		ReferenceElements referenceElements = new ReferenceElements();
+		
+		/*
+		 * Creation of the reference usage model 
+		 */
+		UsageModel usageModel = this.usageModelBuilder.createUsageModel();
+		UsageScenario usageScenario = this.usageModelBuilder.createUsageScenario("", usageModel);
+
+		ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
+		Start start = this.usageModelBuilder.createStart("");
+		this.usageModelBuilder.addUserAction(scenarioBehaviour, start);
+		Stop stop = this.usageModelBuilder.createStop("");
+		this.usageModelBuilder.addUserAction(scenarioBehaviour, stop);
+		
+		// usage model behavior
+		Loop loop = this.usageModelBuilder.createLoop("", scenarioBehaviour);
+		this.usageModelBuilder.connect(start, loop);
+		final PCMRandomVariable pcmLoopIteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
+		pcmLoopIteration.setSpecification(String.valueOf(loopCount));
+		loop.setLoopIteration_Loop(pcmLoopIteration); // Set number of loops
+		this.usageModelBuilder.connect(loop,stop);
+		
+		// Loop behavior
+		Start loopStart = this.usageModelBuilder.createStart("");
+		this.usageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
+		Stop loopStop = this.usageModelBuilder.createStop("");
+		this.usageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
+		lastAction = loopStart;
+		Optional<Correspondent> optionCorrespondent;
+		for(int i=0;i<numberOfIteratedCalls;i++) {
+			switch (i) {
+            case 0:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature1, this.operationSignature1);
+                     break;
+            case 1:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature2, this.operationSignature2);
+                     break;
+            case 2:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature3, this.operationSignature3);
+                     break;
+            case 3:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature4, this.operationSignature4);
+                     break;
+            case 4:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature5, this.operationSignature5);
+                     break;
+            default: optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature1, this.operationSignature1);
+            		 break;
+			}
+			if (optionCorrespondent.isPresent()) {
+				final Correspondent correspondent = optionCorrespondent.get();
+				EntryLevelSystemCall entryLevelSystemCall = this.usageModelBuilder.createEntryLevelSystemCall(correspondent);
+				this.usageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
+				this.usageModelBuilder.connect(lastAction, entryLevelSystemCall);
+				lastAction = entryLevelSystemCall;
+			}
+		}
+		this.usageModelBuilder.connect(lastAction, loopStop);
+		
+		/*
+		 * Creation of the corresponding user sessions
+		 */
+		int entryTime = 1;
+		int exitTime = 2;
+		for(int i=0;i<entryCallSequenceModel.getUserSessions().size();i++) {
+			entryTime = 1;
+			exitTime = 2;
+			for(int k=0;k<loopCount;k++) {
+				for(int j=0;j<numberOfIteratedCalls;j++) {
+					EntryCallEvent entryCallEvent = null;
+					switch (j) {
+		            case 0:  entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature1, this.classSignature1, String.valueOf(i), "hostname");
+		                     break;
+		            case 1:  entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature2, this.classSignature2, String.valueOf(i), "hostname");
+		                     break;
+		            case 2:  entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature3, this.classSignature3, String.valueOf(i), "hostname");
+		                     break;
+		            case 3:  entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature4, this.classSignature4, String.valueOf(i), "hostname");
+		                     break;
+		            case 4:  entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature5, this.classSignature5, String.valueOf(i), "hostname");
+		                     break;
+		            default: entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature1, this.classSignature1, String.valueOf(i), "hostname");
+		            		 break;
+					}
+					entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
+					entryTime = entryTime + 2;
+					exitTime = exitTime + 2;
+				}
+			}
+		}
+		
+		saveModel(usageModel,usageModelFolder+"ReferenceModel.usagemodel");
+		referenceElements.setEntryCallSequenceModel(entryCallSequenceModel);
+		referenceElements.setUsageModel(usageModel);
+		
+		return referenceElements;
+	}
+	
 	
 	/**
 	 * Creates a reference model that contains a branch element. Accordingly, user sessions whose call sequences differ from
@@ -341,117 +451,6 @@ public class ReferenceUsageModelBuilder {
 		referenceElements.setMeanInterArrivalTime(meanInterArrivalTime+(numberOfCalls*2));
 		referenceElements.setMeanConcurrentUserSessions(this.calculateTheNumberOfConcurrentUsers(entryCallSequenceModel.getUserSessions()));
 
-		return referenceElements;
-	}
-	
-
-	/**
-	 * 
-	 * Creates a reference model that contains a loop element. Accordingly, user sessions whose call sequences contain 
-	 * iterated calls are created.(RQ-1.3)
-	 * 
-	 * @return the reference usage model and a corresponding EntryCallSequenceModel
-	 * @throws IOException
-	 */
-	public ReferenceElements getSimpleLoopReferenceModel() throws IOException {
-
-		// Random model parameters
-		int numberOfConcurrentUsers = this.getRandomInteger(200, 1);
-		int loopCount = this.getRandomInteger(5, 2);
-		int numberOfIteratedCalls = this.getRandomInteger(5, 1);
-		
-		EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(this.getUserSessions(numberOfConcurrentUsers));
-		AbstractUserAction lastAction;
-		ReferenceElements referenceElements = new ReferenceElements();
-		
-		/*
-		 * Creation of the reference usage model 
-		 */
-		UsageModel usageModel = this.usageModelBuilder.createUsageModel();
-		UsageScenario usageScenario = this.usageModelBuilder.createUsageScenario("", usageModel);
-
-		ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-		Start start = this.usageModelBuilder.createStart("");
-		this.usageModelBuilder.addUserAction(scenarioBehaviour, start);
-		Stop stop = this.usageModelBuilder.createStop("");
-		this.usageModelBuilder.addUserAction(scenarioBehaviour, stop);
-		
-		// usage model behavior
-		Loop loop = this.usageModelBuilder.createLoop("", scenarioBehaviour);
-		this.usageModelBuilder.connect(start, loop);
-		final PCMRandomVariable pcmLoopIteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
-		pcmLoopIteration.setSpecification(String.valueOf(loopCount));
-		loop.setLoopIteration_Loop(pcmLoopIteration); // Set number of loops
-		this.usageModelBuilder.connect(loop,stop);
-		
-		// Loop behavior
-		Start loopStart = this.usageModelBuilder.createStart("");
-		this.usageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
-		Stop loopStop = this.usageModelBuilder.createStop("");
-		this.usageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
-		lastAction = loopStart;
-		Optional<Correspondent> optionCorrespondent;
-		for(int i=0;i<numberOfIteratedCalls;i++) {
-			switch (i) {
-            case 0:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature1, this.operationSignature1);
-                     break;
-            case 1:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature2, this.operationSignature2);
-                     break;
-            case 2:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature3, this.operationSignature3);
-                     break;
-            case 3:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature4, this.operationSignature4);
-                     break;
-            case 4:  optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature5, this.operationSignature5);
-                     break;
-            default: optionCorrespondent = this.correspondenceModel.getCorrespondent(this.classSignature1, this.operationSignature1);
-            		 break;
-			}
-			if (optionCorrespondent.isPresent()) {
-				final Correspondent correspondent = optionCorrespondent.get();
-				EntryLevelSystemCall entryLevelSystemCall = this.usageModelBuilder.createEntryLevelSystemCall(correspondent);
-				this.usageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
-				this.usageModelBuilder.connect(lastAction, entryLevelSystemCall);
-				lastAction = entryLevelSystemCall;
-			}
-		}
-		this.usageModelBuilder.connect(lastAction, loopStop);
-		
-		/*
-		 * Creation of the corresponding user sessions
-		 */
-		int entryTime = 1;
-		int exitTime = 2;
-		for(int i=0;i<entryCallSequenceModel.getUserSessions().size();i++) {
-			entryTime = 1;
-			exitTime = 2;
-			for(int k=0;k<loopCount;k++) {
-				for(int j=0;j<numberOfIteratedCalls;j++) {
-					EntryCallEvent entryCallEvent = null;
-					switch (j) {
-		            case 0:  entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature1, this.classSignature1, String.valueOf(i), "hostname");
-		                     break;
-		            case 1:  entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature2, this.classSignature2, String.valueOf(i), "hostname");
-		                     break;
-		            case 2:  entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature3, this.classSignature3, String.valueOf(i), "hostname");
-		                     break;
-		            case 3:  entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature4, this.classSignature4, String.valueOf(i), "hostname");
-		                     break;
-		            case 4:  entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature5, this.classSignature5, String.valueOf(i), "hostname");
-		                     break;
-		            default: entryCallEvent = new EntryCallEvent(entryTime, exitTime, this.operationSignature1, this.classSignature1, String.valueOf(i), "hostname");
-		            		 break;
-					}
-					entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
-					entryTime = entryTime + 2;
-					exitTime = exitTime + 2;
-				}
-			}
-		}
-		
-		saveModel(usageModel,usageModelFolder+"ReferenceModel.usagemodel");
-		referenceElements.setEntryCallSequenceModel(entryCallSequenceModel);
-		referenceElements.setUsageModel(usageModel);
-		
 		return referenceElements;
 	}
 	

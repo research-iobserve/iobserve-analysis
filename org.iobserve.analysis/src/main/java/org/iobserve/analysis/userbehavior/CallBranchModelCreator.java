@@ -113,7 +113,7 @@ public class CallBranchModelCreator {
 		// Descending sort by call sequence length
 		Collections.sort(userSessions, this.SortUserSessionByCallSequenceSize); 
 		
-		// Initialzes the root sequence with the longest call sequence
+		// Initializes the root sequence with the longest call sequence
 		setBranchSequence(rootBranch, userSessions.get(0).getEvents(), 0);
 		
 		int numberOfBranches = 1;
