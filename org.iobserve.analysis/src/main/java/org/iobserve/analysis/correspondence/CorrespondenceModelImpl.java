@@ -7,11 +7,11 @@ import java.util.Optional;
 
 import javax.xml.bind.JAXB;
 
-import protocom.extension.mapping.PcmCorrespondentMethod;
-import protocom.extension.mapping.PcmEntity;
-import protocom.extension.mapping.PcmEntityCorrespondent;
-import protocom.extension.mapping.PcmMapping;
-import protocom.extension.mapping.PcmOperationSignature;
+import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
+import org.iobserve.analysis.protocom.PcmEntity;
+import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
+import org.iobserve.analysis.protocom.PcmMapping;
+import org.iobserve.analysis.protocom.PcmOperationSignature;
 
 
 /**
@@ -35,7 +35,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
 		String build(PcmCorrespondentMethod method);
 	}
 
-	/**namespace of current palladio framework.*/
+	/** namespace of current palladio framework. */
 	private static final String PROTOCOM_BASE_PACKAGE_NAME = "org.palladiosimulator.protocom";
 
 	/** cache for already mapped correspondences. */

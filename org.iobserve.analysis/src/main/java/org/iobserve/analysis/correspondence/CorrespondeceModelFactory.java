@@ -21,7 +21,7 @@ import java.io.FileInputStream;
 
 import javax.xml.bind.JAXB;
 
-import protocom.extension.mapping.PcmMapping;
+import org.iobserve.analysis.protocom.PcmMapping;
 
 /**
  * Factory to create correspondence model instances according to RAC in paper

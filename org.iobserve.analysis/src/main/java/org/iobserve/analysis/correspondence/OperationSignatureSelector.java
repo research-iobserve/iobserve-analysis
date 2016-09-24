@@ -17,11 +17,10 @@ package org.iobserve.analysis.correspondence;
 
 import java.util.function.BiFunction;
 
+import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
+import org.iobserve.analysis.protocom.PcmOperationSignature;
 import org.iobserve.analysis.utils.ToBoolBiFunction;
 import org.palladiosimulator.pcm.repository.OperationSignature;
-
-import protocom.extension.mapping.PcmCorrespondentMethod;
-import protocom.extension.mapping.PcmOperationSignature;
 
 /**
  * Function used to select {@link OperationSignature} instances based on the
