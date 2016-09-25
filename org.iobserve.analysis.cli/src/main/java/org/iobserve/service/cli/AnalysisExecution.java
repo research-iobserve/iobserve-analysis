@@ -3,7 +3,6 @@ package org.iobserve.service.cli;
 import java.io.File;
 import java.util.Collection;
 
-import org.iobserve.analysis.AbstractObservationConfiguration;
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 
@@ -16,24 +15,24 @@ import teetime.framework.Execution;
  *
  */
 public class AnalysisExecution {
-	/** configuration for the analysis. */
-	private final Configuration configuration;
+    /** configuration for the analysis. */
+    private final Configuration configuration;
 
-	private final ModelProviderPlatform modelProviderPlatform;
+    private final ModelProviderPlatform modelProviderPlatform;
 
-	public AnalysisExecution(final Collection<File> monitoringDataDirectories, String correspondenceFile, String pcmModelsDirectory) {
-		this.modelProviderPlatform = new ModelProviderPlatform(pcmModelsDirectory);
+    public AnalysisExecution(final Collection<File> monitoringDataDirectories, final String correspondenceFile,
+            final String pcmModelsDirectory) {
+        this.modelProviderPlatform = new ModelProviderPlatform(pcmModelsDirectory);
 
-		this.configuration = new FileObservationConfiguration(monitoringDataDirectories, this.modelProviderPlatform);
-	}
+        this.configuration = new FileObservationConfiguration(monitoringDataDirectories, this.modelProviderPlatform);
+    }
 
-	/**
-	 * run the analysis application core.
-	 */
-	public void run() {
-		final Execution<Configuration> analysis = new Execution<Configuration>(this.configuration);
-		analysis.executeBlocking();
-		((AbstractObservationConfiguration) this.configuration).getRecordSwitch().outputStatistics();
-	}
+    /**
+     * run the analysis application core.
+     */
+    public void run() {
+        final Execution<Configuration> analysis = new Execution<>(this.configuration);
+        analysis.executeBlocking();
+    }
 
 }
