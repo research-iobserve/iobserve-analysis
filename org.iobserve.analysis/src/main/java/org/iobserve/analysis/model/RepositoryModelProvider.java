@@ -34,147 +34,146 @@ import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
 
 /**
  * Model provider to provide {@link Repository} model.
+ * 
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
  */
-public final class RepositoryModelProvider 
-	extends AbstractModelProvider<Repository> {
+public final class RepositoryModelProvider extends AbstractModelProvider<Repository> {
 
-	/**list of operation interfaces.*/
-	private List<OperationInterface> operationInterfaces;
-	/**list of basic components.*/
-	private List<BasicComponent> basicComponents;
+    /** list of operation interfaces. */
+    private List<OperationInterface> operationInterfaces;
+    /** list of basic components. */
+    private List<BasicComponent> basicComponents;
 
-	/**
-	 * Create model provider to provide {@link Repository} model.
-	 * @param thePlatform platform
-	 * @param uriUsageModel uri to the model
-	 */
-	RepositoryModelProvider(final ModelProviderPlatform thePlatform,
-			final URI uriUsageModel) {
-		super(thePlatform, uriUsageModel);
-		this.loadAllBasicComponents();
-		this.loadAllOperationInterfaces();
-	}
+    /**
+     * Create model provider to provide {@link Repository} model.
+     * 
+     * @param thePlatform
+     *            platform
+     * @param uriUsageModel
+     *            uri to the model
+     */
+    RepositoryModelProvider(final ModelProviderPlatform thePlatform, final URI uriUsageModel) {
+        super(thePlatform, uriUsageModel);
+        this.loadAllBasicComponents();
+        this.loadAllOperationInterfaces();
+    }
 
-	/**
-	 * Load all basic components.
-	 */
-	private void loadAllBasicComponents() {
-		this.basicComponents = new ArrayList<BasicComponent>();
-		for (final RepositoryComponent nextRepoCmp 
-				: this.getModel().getComponents__Repository()) {
-			if (nextRepoCmp instanceof BasicComponent) {
-				final BasicComponent basicCmp = (BasicComponent) nextRepoCmp;
-				this.basicComponents.add(basicCmp);
-			}
-		}
-	}
+    /**
+     * Load all basic components.
+     */
+    private void loadAllBasicComponents() {
+        this.basicComponents = new ArrayList<BasicComponent>();
+        for (final RepositoryComponent nextRepoCmp : this.getModel().getComponents__Repository()) {
+            if (nextRepoCmp instanceof BasicComponent) {
+                final BasicComponent basicCmp = (BasicComponent) nextRepoCmp;
+                this.basicComponents.add(basicCmp);
+            }
+        }
+    }
 
-	/**
-	 * Load all operation interfaces.
-	 */
-	private void loadAllOperationInterfaces() {
-		this.operationInterfaces = new ArrayList<OperationInterface>();
-		for (final Interface nextInterface 
-				: this.getModel().getInterfaces__Repository()) {
-			if (nextInterface instanceof OperationInterface) {
-				final OperationInterface opInf =
-						(OperationInterface) nextInterface;
-				this.operationInterfaces.add(opInf);
-			}
-		}
-	}
+    /**
+     * Load all operation interfaces.
+     */
+    private void loadAllOperationInterfaces() {
+        this.operationInterfaces = new ArrayList<OperationInterface>();
+        for (final Interface nextInterface : this.getModel().getInterfaces__Repository()) {
+            if (nextInterface instanceof OperationInterface) {
+                final OperationInterface opInf = (OperationInterface) nextInterface;
+                this.operationInterfaces.add(opInf);
+            }
+        }
+    }
 
-	@Override
-	protected EPackage getPackage() {
-		return RepositoryPackage.eINSTANCE;
-	}
+    @Override
+    protected EPackage getPackage() {
+        return RepositoryPackage.eINSTANCE;
+    }
 
-	/**
-	 * @return list of basic components
-	 */
-	public List<BasicComponent> getBasicComponents() {
-		return this.basicComponents;
-	}
+    /**
+     * @return list of basic components
+     */
+    public List<BasicComponent> getBasicComponents() {
+        return this.basicComponents;
+    }
 
-	/**
-	 * @return list of all operation interfaces
-	 */
-	public List<OperationInterface> getOperationInterfaces() {
-		return this.operationInterfaces;
-	}
+    /**
+     * @return list of all operation interfaces
+     */
+    public List<OperationInterface> getOperationInterfaces() {
+        return this.operationInterfaces;
+    }
 
-	/**
-	 * Get the {@link OperationSignature} with the given signature. The 
-	 * comparison is done by the {@link OperationSignature#getEntityName()}.
-	 * @param operationSig operation signature
-	 * @return operation signature instance or null if no operation
-	 * signature with the given entity name could be found
-	 */
-	public OperationSignature getOperationSignature(final String operationSig) {
-		for (final OperationInterface nextOpInter : this.operationInterfaces) {
-			for (final OperationSignature nextOpSig : nextOpInter
-					.getSignatures__OperationInterface()) {
-				if (nextOpSig.getEntityName().equalsIgnoreCase(operationSig)) {
-					return nextOpSig;
-				}
-			}
-		}
-		return null;
-	}
+    /**
+     * Get the {@link OperationSignature} with the given signature. The comparison is done by the
+     * {@link OperationSignature#getEntityName()}.
+     * 
+     * @param operationSig
+     *            operation signature
+     * @return operation signature instance or null if no operation signature with the given entity
+     *         name could be found
+     */
+    public OperationSignature getOperationSignature(final String operationSig) {
+        for (final OperationInterface nextOpInter : this.operationInterfaces) {
+            for (final OperationSignature nextOpSig : nextOpInter.getSignatures__OperationInterface()) {
+                if (nextOpSig.getEntityName().equalsIgnoreCase(operationSig)) {
+                    return nextOpSig;
+                }
+            }
+        }
+        return null;
+    }
 
-	/**
-	 * Get the {@link BasicComponent} with the given operation signature.
-	 * @param operationSig operation signature
-	 * @return basic component instance or null if no basic component with 
-	 * the given signature could be found
-	 */
-	public BasicComponent getBasicComponent(final String operationSig) {
-		for (final BasicComponent nextBasicCmp : this.basicComponents) {
-			for (final ServiceEffectSpecification nextSerEffSpec 
-					: nextBasicCmp
-					.getServiceEffectSpecifications__BasicComponent()) {
-				if (nextSerEffSpec instanceof ResourceDemandingSEFF) {
-					final ResourceDemandingSEFF rdSeff =
-							(ResourceDemandingSEFF) nextSerEffSpec;
-					if (operationSig.equalsIgnoreCase(rdSeff.getId())) {
-						return nextBasicCmp;
-					}
-				}
-			}
-		}
-		return null;
-	}
-	
-	/**
-	 * Get the {@link OperationProvidedRole} by the given operation 
-	 * interface and basic component.
-	 * @param operationInterface operation interface. 
-	 * @param basicComp basic component
-	 * @return operation provide role instance or null if none available by
-	 * the given operation interface and basic component
-	 * 
-	 * @see {@link #getOperationInterfaces()}
-	 * @see #getBasicComponent(String)
-	 */
-	public OperationProvidedRole getOperationProvidedRole(
-			final OperationInterface operationInterface,
-			final BasicComponent basicComp) {
-		for (final ProvidedRole nextProvidedRole 
-				: basicComp.getProvidedRoles_InterfaceProvidingEntity()) {
-			if (nextProvidedRole instanceof OperationProvidedRole) {
-				final OperationProvidedRole operationProvidedRole = 
-						(OperationProvidedRole) nextProvidedRole;
-				final String idProvidedRole = operationProvidedRole
-						.getProvidedInterface__OperationProvidedRole().getId();
-				final String idOpIf = operationInterface.getId();
-				if (idOpIf.equals(idProvidedRole)) {
-					return operationProvidedRole;
-				}
-			}
-		}
-		return null;
-	}
+    /**
+     * Get the {@link BasicComponent} with the given operation signature.
+     * 
+     * @param operationSig
+     *            operation signature
+     * @return basic component instance or null if no basic component with the given signature could
+     *         be found
+     */
+    public BasicComponent getBasicComponent(final String operationSig) {
+        for (final BasicComponent nextBasicCmp : this.basicComponents) {
+            for (final ServiceEffectSpecification nextSerEffSpec : nextBasicCmp
+                    .getServiceEffectSpecifications__BasicComponent()) {
+                if (nextSerEffSpec instanceof ResourceDemandingSEFF) {
+                    final ResourceDemandingSEFF rdSeff = (ResourceDemandingSEFF) nextSerEffSpec;
+                    if (operationSig.equalsIgnoreCase(rdSeff.getId())) {
+                        return nextBasicCmp;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the {@link OperationProvidedRole} by the given operation interface and basic component.
+     * 
+     * @param operationInterface
+     *            operation interface.
+     * @param basicComp
+     *            basic component
+     * @return operation provide role instance or null if none available by the given operation
+     *         interface and basic component
+     * 
+     * @see {@link #getOperationInterfaces()}
+     * @see #getBasicComponent(String)
+     */
+    public OperationProvidedRole getOperationProvidedRole(final OperationInterface operationInterface,
+            final BasicComponent basicComp) {
+        for (final ProvidedRole nextProvidedRole : basicComp.getProvidedRoles_InterfaceProvidingEntity()) {
+            if (nextProvidedRole instanceof OperationProvidedRole) {
+                final OperationProvidedRole operationProvidedRole = (OperationProvidedRole) nextProvidedRole;
+                final String idProvidedRole = operationProvidedRole.getProvidedInterface__OperationProvidedRole()
+                        .getId();
+                final String idOpIf = operationInterface.getId();
+                if (idOpIf.equals(idProvidedRole)) {
+                    return operationProvidedRole;
+                }
+            }
+        }
+        return null;
+    }
 }

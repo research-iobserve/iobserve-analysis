@@ -14,12 +14,14 @@ import org.eclipse.emf.ecore.EObject;
  */
 @FunctionalInterface
 public interface ModelLoader {
-	
-	/**
-	 * Load the model given by the uri.
-	 * @param uri uri
-	 * @return model
-	 */
-	Optional<EObject> load(URI uri);
+
+    /**
+     * Load the model given by the uri.
+     * 
+     * @param uri
+     *            uri
+     * @return model
+     */
+    Optional<EObject> load(URI uri);
 
 }

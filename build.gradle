@@ -48,3 +48,17 @@ subprojects {
 	    }
 	}
 }
+
+task buildSetup {
+	// checking the presence of an Eclipse API baseline
+	if (project.properties['eclipse.api.baseline'] == null || project.properties['eclipse.api.baseline'].isEmpty()) {
+		System.err.println("Cannot find an Eclipse API baseline")
+		System.err.println("Create file iobserve-analysis/gradle.properties if missing.")
+		System.err.println("Add the property eclipse.api.baseline=ECLIPSE PLUGIN PATH")
+		System.err.println("Use / for path separation")
+	} else {
+		println "Eclipse API baseline installation is at: " + project.properties['eclipse.api.baseline']
+	}
+	
+	
+}

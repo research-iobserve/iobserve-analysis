@@ -20,29 +20,32 @@ import java.util.regex.Pattern;
 
 /**
  * Utility class for string related stuff.
+ * 
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
  */
 public final class StringUtils {
-	
-	/**pattern for space.*/
-	private static final Pattern PATTERN_SPACE = Pattern.compile(" ");
-	
-	/**
-	 * Private constructor, since this is an utility class.
-	 */
-	private StringUtils() {
-		// no implementation
-	}
-	
-	/**
-	 * Trim and remove the spaces of the given string.
-	 * @param str string to manipulate
-	 * @return supplier with the manipulated string
-	 */
-	public static Supplier<String> trimAndRemoveSpaces(final String str) {
-		return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("");
-	}
-	
+
+    /** pattern for space. */
+    private static final Pattern PATTERN_SPACE = Pattern.compile(" ");
+
+    /**
+     * Private constructor, since this is an utility class.
+     */
+    private StringUtils() {
+        // no implementation
+    }
+
+    /**
+     * Trim and remove the spaces of the given string.
+     * 
+     * @param str
+     *            string to manipulate
+     * @return supplier with the manipulated string
+     */
+    public static Supplier<String> trimAndRemoveSpaces(final String str) {
+        return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("");
+    }
+
 }
