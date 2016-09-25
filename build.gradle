@@ -12,6 +12,17 @@ buildscript {
 }
 
 
+// checking the presence of an Eclipse API baseline repositorsy
+if (project.properties['api.baseline'] == null || project.properties['api.baseline'].isEmpty()) {
+	System.err.println("Cannot find an Eclipse API baseline repository")
+	System.err.println("Create file iobserve-analysis/gradle.properties if missing.")
+	System.err.println("Add the property api.baseline=path to the repository")
+	System.err.println("Use / for path separation")
+	System.err.println("The repository can be found at git@github.com:research-iobserve/iobserve-repository.git")
+} else {
+	println "iObserve API baseline repository is at: " + project.properties['api.baseline']
+}
+
 
 subprojects {
     apply plugin: 'java'
@@ -38,7 +49,7 @@ subprojects {
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}
 		maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
 		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
-		maven {url "../mvn-repo" }
+		maven {url project.properties['api.baseline']}
     }
     
     eclipse {
@@ -49,16 +60,3 @@ subprojects {
 	}
 }
 
-task buildSetup {
-	// checking the presence of an Eclipse API baseline
-	if (project.properties['eclipse.api.baseline'] == null || project.properties['eclipse.api.baseline'].isEmpty()) {
-		System.err.println("Cannot find an Eclipse API baseline")
-		System.err.println("Create file iobserve-analysis/gradle.properties if missing.")
-		System.err.println("Add the property eclipse.api.baseline=ECLIPSE PLUGIN PATH")
-		System.err.println("Use / for path separation")
-	} else {
-		println "Eclipse API baseline installation is at: " + project.properties['eclipse.api.baseline']
-	}
-	
-	
-}

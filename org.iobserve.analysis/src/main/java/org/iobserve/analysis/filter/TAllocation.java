@@ -16,7 +16,6 @@
 package org.iobserve.analysis.filter;
 
 import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.utils.Opt;
@@ -36,81 +35,85 @@ import teetime.framework.OutputPort;
  */
 public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 
-	private final ICorrespondence correspondence;
-	/**reference to {@link ResourceEnvironment} provider.*/
-	private ResourceEnvironmentModelProvider resourceEnvModelProvider;
-	/**output port.*/
-	private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
+    private final ICorrespondence correspondence;
+    /** reference to {@link ResourceEnvironment} provider. */
+    private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
+    /** output port. */
+    private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
 
-	/**
-	 * Most likely the constructor needs an additional field for the PCM access.
-	 * But this has to be discussed with Robert.
-	 */
-	public TAllocation(ICorrespondence correspondence, ResourceEnvironmentModelProvider resourceEvnironmentModelProvider) {	
-		this.correspondence = correspondence;
-		this.resourceEnvModelProvider = resourceEvnironmentModelProvider;
-	}
+    /**
+     * Most likely the constructor needs an additional field for the PCM access. But this has to be
+     * discussed with Robert.
+     */
+    public TAllocation(final ICorrespondence correspondence,
+            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider) {
+        this.correspondence = correspondence;
+        resourceEnvModelProvider = resourceEvnironmentModelProvider;
+    }
 
-	/**
-	 * @return the deploymentOutputPort
-	 */
-	public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
-		return this.deploymentOutputPort;
-	}
+    /**
+     * @return the deploymentOutputPort
+     */
+    public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
+        return deploymentOutputPort;
+    }
 
-	/**
-	 * This method is triggered for every deployment event.
-	 *
-	 * @param event
-	 *            one deployment event to be processed
-	 */
-	@Override
-	protected void execute(final IDeploymentRecord event) {
-		if (event instanceof ServletDeployedEvent) {
-			this.process((ServletDeployedEvent) event);
-		
-		} else if (event instanceof EJBDeployedEvent) {
-			this.process((EJBDeployedEvent) event);
-		}
-		
-		// forward the event
-		this.deploymentOutputPort.send(event);
-	}
-	
-	/**
-	 * Process the given {@link ServletDeployedEvent} event. And 
-	 * call {@link #updateModel(String)} to create a new server if necessary.
-	 * @param event event to process
-	 */
-	private void process(final ServletDeployedEvent event) {
-		final String serivce = event.getSerivce();
-		this.updateModel(serivce);
-	}
-	
-	/**
-	 * Process the given {@link EJBDeployedEvent} event. And 
-	 * call {@link #updateModel(String)} to create a new server if necessary.
-	 * @param event event to process
-	 */
-	private void process(final EJBDeployedEvent event) {
-		final String service = event.getSerivce();
-		this.updateModel(service);
-	}
-	
-	/**
-	 * Update the allocation model with the given server-name if necessary.
-	 * @param serverName server name
-	 */
-	private void updateModel(final String serverName) {
-		Opt.of(this.resourceEnvModelProvider.getResourceContainerByName(serverName))
-			.ifNotPresent()
-			.apply(() -> {
-				final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
-						TAllocation.this.resourceEnvModelProvider);
-				builder.loadModel();
-				builder.createResourceContainer(serverName);
-				builder.build();
-			})
-			.elseApply(Opt::doNothing);
-	}
+    /**
+     * This method is triggered for every deployment event.
+     *
+     * @param event
+     *            one deployment event to be processed
+     */
+    @Override
+    protected void execute(final IDeploymentRecord event) {
+        if (event instanceof ServletDeployedEvent) {
+            this.process((ServletDeployedEvent) event);
+
+        } else if (event instanceof EJBDeployedEvent) {
+            this.process((EJBDeployedEvent) event);
+        }
+
+        // forward the event
+        deploymentOutputPort.send(event);
+    }
+
+    /**
+     * Process the given {@link ServletDeployedEvent} event. And call {@link #updateModel(String)}
+     * to create a new server if necessary.
+     * 
+     * @param event
+     *            event to process
+     */
+    private void process(final ServletDeployedEvent event) {
+        final String serivce = event.getSerivce();
+        updateModel(serivce);
+    }
+
+    /**
+     * Process the given {@link EJBDeployedEvent} event. And call {@link #updateModel(String)} to
+     * create a new server if necessary.
+     * 
+     * @param event
+     *            event to process
+     */
+    private void process(final EJBDeployedEvent event) {
+        final String service = event.getSerivce();
+        updateModel(service);
+    }
+
+    /**
+     * Update the allocation model with the given server-name if necessary.
+     * 
+     * @param serverName
+     *            server name
+     */
+    private void updateModel(final String serverName) {
+        Opt.of(resourceEnvModelProvider.getResourceContainerByName(serverName)).ifNotPresent().apply(() -> {
+            final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
+                    TAllocation.this.resourceEnvModelProvider);
+            builder.loadModel();
+            builder.createResourceContainer(serverName);
+            builder.build();
+        }).elseApply(Opt::doNothing);
+    }
 }
