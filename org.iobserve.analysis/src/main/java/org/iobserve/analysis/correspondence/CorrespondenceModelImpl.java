@@ -70,29 +70,29 @@ class CorrespondenceModelImpl implements ICorrespondence {
 
     /**
      * Create correspondence model.
-     * 
+     *
      * @param theMapping
      *            mapping instance
      * @param mapper
      *            selector
      */
     CorrespondenceModelImpl(final PcmMapping theMapping, final OperationSignatureSelector mapper) {
-        rawMapping = theMapping;
-        opSigMapper = mapper;
+        this.rawMapping = theMapping;
+        this.opSigMapper = mapper;
     }
 
     /**
      * Create the correspondence model.
-     * 
+     *
      * @param mappingFile
      *            input stream of mapping file
      * @param mapper
      *            selector
      */
     CorrespondenceModelImpl(final InputStream mappingFile, final OperationSignatureSelector mapper) {
-        rawMapping = JAXB.unmarshal(mappingFile, PcmMapping.class);
-        opSigMapper = mapper;
-        initMapping();
+        this.rawMapping = JAXB.unmarshal(mappingFile, PcmMapping.class);
+        this.opSigMapper = mapper;
+        this.initMapping();
     }
 
     // ********************************************************************
@@ -107,10 +107,10 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * </ul>
      */
     public void initMapping() {
-        mapping = new HashMap<>();
+        this.mapping = new HashMap<>();
 
-        for (final PcmEntity nextPcmEntity : rawMapping.getEntities()) {
-            nextPcmEntity.setParent(rawMapping);
+        for (final PcmEntity nextPcmEntity : this.rawMapping.getEntities()) {
+            nextPcmEntity.setParent(this.rawMapping);
 
             // set the parent reference
             for (final PcmOperationSignature nextOperation : nextPcmEntity.getOperationSigs()) {
@@ -123,7 +123,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
 
                 final String qualifiedName = (nextCorrespondent.getPackageName() + "."
                         + nextCorrespondent.getUnitName()).trim().replaceAll(" ", "");
-                mapping.put(qualifiedName, nextCorrespondent);
+                this.mapping.put(qualifiedName, nextCorrespondent);
 
                 // set parent reference
                 for (final PcmCorrespondentMethod nextCorresMethod : nextCorrespondent.getMethods()) {
@@ -148,16 +148,16 @@ class CorrespondenceModelImpl implements ICorrespondence {
         final String requestKey = classSig.trim().replaceAll(" ", "") + operationSig.trim().replaceAll(" ", "");
 
         // try to get the correspondent from the cache
-        Correspondent correspondent = cachedCorrespondents.get(requestKey);
+        Correspondent correspondent = this.cachedCorrespondents.get(requestKey);
 
         // in case the correspondent is not available it has to be mapped
         if (correspondent == null) {
-            final PcmEntityCorrespondent pcmEntityCorrespondent = getPcmEntityCorrespondent(classSig);
+            final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
             if (pcmEntityCorrespondent == null) {
                 return ICorrespondence.NULL_CORRESPONDENZ; // or something else
             }
 
-            final PcmOperationSignature pcmOperationSignature = getPcmOperationSignature(pcmEntityCorrespondent,
+            final PcmOperationSignature pcmOperationSignature = this.getPcmOperationSignature(pcmEntityCorrespondent,
                     operationSig);
             if (pcmOperationSignature == null) {
                 return ICorrespondence.NULL_CORRESPONDENZ;
@@ -169,7 +169,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
                     pcmOperationSignature.getId());
 
             // put into cache for next time
-            cachedCorrespondents.put(requestKey, correspondent);
+            this.cachedCorrespondents.put(requestKey, correspondent);
         }
         return Optional.of(correspondent);
     }
@@ -185,11 +185,11 @@ class CorrespondenceModelImpl implements ICorrespondence {
         final String requestKey = classSig.trim().replaceAll(" ", "");
 
         // try to get the correspondent from the cache
-        Correspondent correspondent = cachedCorrespondents.get(requestKey);
+        Correspondent correspondent = this.cachedCorrespondents.get(requestKey);
 
         // in case the correspondent is not available it has to be mapped
         if (correspondent == null) {
-            final PcmEntityCorrespondent pcmEntityCorrespondent = getPcmEntityCorrespondent(classSig);
+            final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
             if (pcmEntityCorrespondent == null) {
                 return ICorrespondence.NULL_CORRESPONDENZ; // or something else
             }
@@ -199,7 +199,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
                     pcmEntityCorrespondent.getParent().getId(), null, null);
 
             // put into cache for next time
-            cachedCorrespondents.put(requestKey, correspondent);
+            this.cachedCorrespondents.put(requestKey, correspondent);
         }
         return Optional.of(correspondent);
     }
@@ -212,13 +212,13 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * @return null if not available
      */
     private PcmEntityCorrespondent getPcmEntityCorrespondent(final String classSig) {
-        final PcmEntityCorrespondent pcmEntityCorrespondent = mapping.get(classSig.trim().replaceAll(" ", ""));
+        final PcmEntityCorrespondent pcmEntityCorrespondent = this.mapping.get(classSig.trim().replaceAll(" ", ""));
         return pcmEntityCorrespondent;
     }
 
     /**
      * Get the corresponding operation signature based the given operation signature.
-     * 
+     *
      * @param pcmEntityCorrespondent
      *            pcm entity correspondence
      * @param operationSig
@@ -229,9 +229,9 @@ class CorrespondenceModelImpl implements ICorrespondence {
             final String operationSig) {
         PcmOperationSignature opSig = null;
         for (final PcmCorrespondentMethod nextCorresMethod : pcmEntityCorrespondent.getMethods()) {
-            final String methodSig = mPackageNameClassNameMethodName.build(nextCorresMethod);
+            final String methodSig = this.mPackageNameClassNameMethodName.build(nextCorresMethod);
             if (operationSig.replaceAll(" ", "").equals(methodSig.replaceAll(" ", ""))) {
-                opSig = mapOperationSignature(nextCorresMethod);
+                opSig = this.mapOperationSignature(nextCorresMethod);
                 break;
             }
         }
@@ -293,7 +293,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
         final PcmEntity pcmEntity = method.getParent().getParent();
         PcmOperationSignature opSig = null;
         for (final PcmOperationSignature nextOpSig : pcmEntity.getOperationSigs()) {
-            if (opSigMapper.select(method, nextOpSig)) {
+            if (this.opSigMapper.select(method, nextOpSig)) {
                 opSig = nextOpSig;
                 break;
             }
@@ -305,9 +305,9 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * Test method to print all mappings.
      */
     private void printAllMappings() {
-        for (final String nextMappingKey : mapping.keySet()) {
+        for (final String nextMappingKey : this.mapping.keySet()) {
             System.out.println(nextMappingKey);
-            final PcmEntityCorrespondent correspondent = mapping.get(nextMappingKey);
+            final PcmEntityCorrespondent correspondent = this.mapping.get(nextMappingKey);
             System.out.println(correspondent);
         }
     }
