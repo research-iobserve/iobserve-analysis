@@ -44,7 +44,7 @@ import org.iobserve.analysis.model.UsageModelBuilder;
  * Therefore, reference usage models are created. Each contains a certain user behavior of the research question RQ-1.1 - RQ-1.9
  * According to the user behavior user sessions are created whose call sequences correspond to the user behavior of the reference model
  * Subsequently, the approach can be executed with the created user sessions and the obtained usage model can be matched against the
- * reference usage model for correspondence. The matching procedure is implemented in {@link org.iobserve.analysis.userbehavior.test.UsageModelMatcher}   
+ * reference usage model for correspondence. The matching procedure is implemented in {@link org.iobserve.analysis.userbehavior.test.UserBehaviorEvaluation}   
  * 
  * @author David
  *

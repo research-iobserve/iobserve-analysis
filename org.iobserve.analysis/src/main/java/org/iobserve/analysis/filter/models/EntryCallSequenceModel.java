@@ -20,75 +20,84 @@ import java.util.List;
 import org.iobserve.analysis.userbehavior.data.WorkloadIntensity;
 
 /**
- * Entry Call Sequence Model according to Fig. 7 in paper
- * <i>Run-time Architecture Models for Dynamic Adaptation and Evolution of Cloud Applications</i>
- * 
- * @author Robert Heinrich, Alessandro Giusa
+ * Entry Call Sequence Model according to Fig. 7 in paper <i>Run-time Architecture Models for
+ * Dynamic Adaptation and Evolution of Cloud Applications</i> Extended to also represent the
+ * likelihood of the user group and the workload intensity of the user group the Entry Call Sequence
+ * Model represents
+ *
+ * @author Robert Heinrich, Alessandro Giusa, David Peter
  * @version 1.0
  *
  */
 public class EntryCallSequenceModel {
-	
-	private final List<UserSession> userSessions;
-	private WorkloadIntensity workloadIntensity;
-	private double likelihoodOfUserGroup;
-	
-	/**
-	 * Simple constructor set the list
-	 * @param sessions
-	 */
-	public EntryCallSequenceModel(final List<UserSession> sessions) {
-		this.userSessions = sessions;
-	}
-	
-	/**
-	 * Constructor to set the user group´s likelihood and its related sessions
-	 * @param sessions, likelihood
-	 */
-	public EntryCallSequenceModel(final List<UserSession> sessions, double likelihoodOfUserGroup) {
-		this.userSessions = sessions;
-		this.likelihoodOfUserGroup = likelihoodOfUserGroup;
-	}
-	
-	/**
-	 * Get the user session objects which contain the entry call events
-	 * @return
-	 */
-	public List<UserSession> getUserSessions() {
-		return this.userSessions;
-	}
 
-	/**
-	 * Get the workload intensity of the user group the enryCallSequenceModel represents
-	 * @return
-	 */
-	public WorkloadIntensity getWorkloadIntensity() {
-		return workloadIntensity;
-	}
+    private final List<UserSession> userSessions;
+    private WorkloadIntensity workloadIntensity;
+    private double likelihoodOfUserGroup;
 
-	/**
-	 * Set the workload intensity of the user group the enryCallSequenceModel represents
-	 * @return
-	 */
-	public void setWorkloadIntensity(WorkloadIntensity workloadIntensity) {
-		this.workloadIntensity = workloadIntensity;
-	}
+    /**
+     * Simple constructor set the list
+     *
+     * @param sessions
+     */
+    public EntryCallSequenceModel(final List<UserSession> sessions) {
+        this.userSessions = sessions;
+    }
 
-	/**
-	 * Get the likelihood of the user group the enryCallSequenceModel represents
-	 * @return
-	 */
-	public double getLikelihoodOfUserGroup() {
-		return likelihoodOfUserGroup;
-	}
+    /**
+     * Constructor to set the user group´s likelihood and its related sessions
+     *
+     * @param sessions,
+     *            likelihood
+     */
+    public EntryCallSequenceModel(final List<UserSession> sessions, final double likelihoodOfUserGroup) {
+        this.userSessions = sessions;
+        this.likelihoodOfUserGroup = likelihoodOfUserGroup;
+    }
 
-	/**
-	 * Set the likelihood of the user group the enryCallSequenceModel represents
-	 * @return
-	 */
-	public void setLikelihoodOfUserGroup(double likelihoodOfUserGroup) {
-		this.likelihoodOfUserGroup = likelihoodOfUserGroup;
-	}
-	
-	
+    /**
+     * Get the user session objects which contain the entry call events
+     *
+     * @return
+     */
+    public List<UserSession> getUserSessions() {
+        return this.userSessions;
+    }
+
+    /**
+     * Get the workload intensity of the user group the enryCallSequenceModel represents
+     *
+     * @return
+     */
+    public WorkloadIntensity getWorkloadIntensity() {
+        return this.workloadIntensity;
+    }
+
+    /**
+     * Set the workload intensity of the user group the enryCallSequenceModel represents
+     *
+     * @return
+     */
+    public void setWorkloadIntensity(final WorkloadIntensity workloadIntensity) {
+        this.workloadIntensity = workloadIntensity;
+    }
+
+    /**
+     * Get the likelihood of the user group the enryCallSequenceModel represents
+     *
+     * @return
+     */
+    public double getLikelihoodOfUserGroup() {
+        return this.likelihoodOfUserGroup;
+    }
+
+    /**
+     * Set the likelihood of the user group the enryCallSequenceModel represents
+     *
+     * @return
+     */
+    public void setLikelihoodOfUserGroup(final double likelihoodOfUserGroup) {
+        this.likelihoodOfUserGroup = likelihoodOfUserGroup;
+    }
+
 }

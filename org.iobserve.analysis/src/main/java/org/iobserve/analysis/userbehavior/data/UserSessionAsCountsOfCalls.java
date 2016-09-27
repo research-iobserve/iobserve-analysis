@@ -15,38 +15,35 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
- * Represents the branch transitions of a branch element. Used to represent the branched behavior of
- * branches that were subsequently merged.
+ * Represents a user session's call sequence as counts of called operation signatures
  *
  * @author David Peter, Robert Heinrich
  */
-public class BranchTransitionElement {
+public class UserSessionAsCountsOfCalls {
 
-    private double transitionLikelihood;
-    private List<SequenceElement> branchSequence;
+    private String sessionId;
+    private int[] absoluteCountOfCalls;
 
-    public BranchTransitionElement() {
-        this.branchSequence = new ArrayList<SequenceElement>();
+    public UserSessionAsCountsOfCalls(final String sessionId, final int numberOfDistinctOperationSignatures) {
+        this.sessionId = sessionId;
+        this.absoluteCountOfCalls = new int[numberOfDistinctOperationSignatures];
     }
 
-    public double getTransitionLikelihood() {
-        return this.transitionLikelihood;
+    public String getSessionId() {
+        return this.sessionId;
     }
 
-    public void setTransitionLikelihood(final double transitionLikelihood) {
-        this.transitionLikelihood = transitionLikelihood;
+    public void setSessionId(final String sessionId) {
+        this.sessionId = sessionId;
     }
 
-    public List<SequenceElement> getBranchSequence() {
-        return this.branchSequence;
+    public int[] getAbsoluteCountOfCalls() {
+        return this.absoluteCountOfCalls;
     }
 
-    public void setBranchSequence(final List<SequenceElement> branchSequence) {
-        this.branchSequence = branchSequence;
+    public void setAbsoluteCountOfCalls(final int[] absoluteCountOfCalls) {
+        this.absoluteCountOfCalls = absoluteCountOfCalls;
     }
 
 }

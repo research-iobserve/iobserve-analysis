@@ -1,124 +1,144 @@
+/***************************************************************************
+ * Copyright 2016 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.userbehavior.data;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a loop element. It contains the iterated sequence and the number of iterations as loop
+ * count. The start and end index states at which index the iterated segment that is represented by
+ * the loop element starts and ends within the sequence
+ *
+ * @author David Peter, Robert Heinrich
+ */
 public class LoopElement implements SequenceElement {
-	
-	private int loopId;
-	private List<SequenceElement> loopSequence;
-	private int loopCount;
-	private int startIndexInBranchSequence;
-	private int endIndexInBranchSequence;
-	private int numberOfReplacedElements;
-	private int currentIndexToCheck;
-	private boolean doContainBranchElement;
-	
-	public LoopElement() {
-		loopSequence = new ArrayList<SequenceElement>();
-	}
-	
-	public void addSequenceElementToLoopSequence(SequenceElement sequenceElement) {
-		loopSequence.add(sequenceElement);
-	}
-	
-	public void addCallElementToLoopSequence(int index, SequenceElement branchElement) {
-		loopSequence.add(index, branchElement);
-	}
 
-	public List<SequenceElement> getLoopSequence() {
-		return loopSequence;
-	}
+    private int loopId;
+    private List<SequenceElement> loopSequence;
+    private int loopCount;
+    private int startIndexInBranchSequence;
+    private int endIndexInBranchSequence;
+    private int numberOfReplacedElements;
+    private int currentIndexToCheck;
+    private boolean doContainBranchElement;
 
-	public void setLoopSequence(List<SequenceElement> loopSequence) {
-		this.loopSequence = loopSequence;
-	}
+    public LoopElement() {
+        this.loopSequence = new ArrayList<SequenceElement>();
+    }
 
-	public int getLoopCount() {
-		return loopCount;
-	}
+    public void addSequenceElementToLoopSequence(final SequenceElement sequenceElement) {
+        this.loopSequence.add(sequenceElement);
+    }
 
-	public void setLoopCount(int loopCount) {
-		this.loopCount = loopCount;
-	}
+    public void addCallElementToLoopSequence(final int index, final SequenceElement branchElement) {
+        this.loopSequence.add(index, branchElement);
+    }
 
-	public int getStartIndexInBranchSequence() {
-		return startIndexInBranchSequence;
-	}
+    public List<SequenceElement> getLoopSequence() {
+        return this.loopSequence;
+    }
 
-	public void setStartIndexInBranchSequence(int startIndexInBranchSequence) {
-		this.startIndexInBranchSequence = startIndexInBranchSequence;
-	}
+    public void setLoopSequence(final List<SequenceElement> loopSequence) {
+        this.loopSequence = loopSequence;
+    }
 
-	public int getEndIndexInBranchSequence() {
-		return endIndexInBranchSequence;
-	}
+    public int getLoopCount() {
+        return this.loopCount;
+    }
 
-	public void setEndIndexInBranchSequence(int endIndexInBranchSequence) {
-		this.endIndexInBranchSequence = endIndexInBranchSequence;
-	}
+    public void setLoopCount(final int loopCount) {
+        this.loopCount = loopCount;
+    }
 
-	public int getNumberOfReplacedElements() {
-		return numberOfReplacedElements;
-	}
+    public int getStartIndexInBranchSequence() {
+        return this.startIndexInBranchSequence;
+    }
 
-	public void setNumberOfReplacedElements(int numberOfReplacedElements) {
-		this.numberOfReplacedElements = numberOfReplacedElements;
-	}
+    public void setStartIndexInBranchSequence(final int startIndexInBranchSequence) {
+        this.startIndexInBranchSequence = startIndexInBranchSequence;
+    }
 
-	public int getAbsoluteCount() {
-		return 0;
-	}
+    public int getEndIndexInBranchSequence() {
+        return this.endIndexInBranchSequence;
+    }
 
-	public void setAbsoluteCount(int absoluteCount) {		
-	}
+    public void setEndIndexInBranchSequence(final int endIndexInBranchSequence) {
+        this.endIndexInBranchSequence = endIndexInBranchSequence;
+    }
 
-	public String getClassSignature() {
-		return null;
-	}
+    public int getNumberOfReplacedElements() {
+        return this.numberOfReplacedElements;
+    }
 
-	public String getOperationSignature() {
-		return null;
-	}
+    public void setNumberOfReplacedElements(final int numberOfReplacedElements) {
+        this.numberOfReplacedElements = numberOfReplacedElements;
+    }
 
-	public int getCurrentIndexToCheck() {
-		return currentIndexToCheck;
-	}
+    @Override
+    public int getAbsoluteCount() {
+        return 0;
+    }
 
-	public void setCurrentIndexToCheck(int currentIndexToCheck) {
-		this.currentIndexToCheck = currentIndexToCheck;
-	}
+    @Override
+    public void setAbsoluteCount(final int absoluteCount) {
+    }
 
-	public void copyLoopValues(LoopElement loopElement) {
-		this.loopSequence = loopElement.getLoopSequence();
-		this.loopCount = loopElement.getLoopCount();
-		this.startIndexInBranchSequence = loopElement.getStartIndexInBranchSequence();
-		this.endIndexInBranchSequence = loopElement.getEndIndexInBranchSequence();
-		this.numberOfReplacedElements = loopElement.getNumberOfReplacedElements();
-		this.currentIndexToCheck = loopElement.getCurrentIndexToCheck();
-		this.loopId = loopElement.getLoopId();
-	}
+    @Override
+    public String getClassSignature() {
+        return null;
+    }
 
-	public int getLoopId() {
-		return loopId;
-	}
+    @Override
+    public String getOperationSignature() {
+        return null;
+    }
 
-	public void setLoopId(int loopId) {
-		this.loopId = loopId;
-	}
+    public int getCurrentIndexToCheck() {
+        return this.currentIndexToCheck;
+    }
 
-	public boolean isDoContainBranchElement() {
-		return doContainBranchElement;
-	}
+    public void setCurrentIndexToCheck(final int currentIndexToCheck) {
+        this.currentIndexToCheck = currentIndexToCheck;
+    }
 
-	public void setDoContainBranchElement(boolean doContainBranchElement) {
-		this.doContainBranchElement = doContainBranchElement;
-	}
+    public void copyLoopValues(final LoopElement loopElement) {
+        this.loopSequence = loopElement.getLoopSequence();
+        this.loopCount = loopElement.getLoopCount();
+        this.startIndexInBranchSequence = loopElement.getStartIndexInBranchSequence();
+        this.endIndexInBranchSequence = loopElement.getEndIndexInBranchSequence();
+        this.numberOfReplacedElements = loopElement.getNumberOfReplacedElements();
+        this.currentIndexToCheck = loopElement.getCurrentIndexToCheck();
+        this.loopId = loopElement.getLoopId();
+    }
 
-	
-	
-	
-	
-	
+    public int getLoopId() {
+        return this.loopId;
+    }
+
+    public void setLoopId(final int loopId) {
+        this.loopId = loopId;
+    }
+
+    public boolean isDoContainBranchElement() {
+        return this.doContainBranchElement;
+    }
+
+    public void setDoContainBranchElement(final boolean doContainBranchElement) {
+        this.doContainBranchElement = doContainBranchElement;
+    }
 
 }
