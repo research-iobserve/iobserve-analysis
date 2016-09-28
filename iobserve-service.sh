@@ -17,13 +17,13 @@ DESC="iobserve service"
 EXEC="/usr/bin/jsvc"
 
 # The path to the folder containing MyDaemon.jar
-FILE_PATH="/home/rju/Projects/iObserve/iobserve-service/"
+FILE_PATH="/home/reiner/Projects/iObserve/iobserve-analysis/"
 
 # The path to the folder containing the java runtime
-JAVA_HOME="/usr/lib/jvm/default-java"
+JAVA_HOME="/usr/lib/jvm/java-8-oracle"
 
 # Our classpath including our jar file and the Apache Commons Daemon library
-CLASS_PATH="$FILE_PATH/build/libs/iobserve-service-1.0.jar"
+CLASS_PATH="$FILE_PATH/org.iobserve.analysis.service/build/libs/org.iobserve.analysis.service.jar"
 
 # The fully qualified name of the class to execute
 CLASS="org.iobserve.analysis.service.AnalysisDaemon"
@@ -32,10 +32,10 @@ CLASS="org.iobserve.analysis.service.AnalysisDaemon"
 ARGS="-i 3000 -o localhost:3001 -p . -c test.rac"
 
 #The user to run the daemon as
-USER="rju"
+USER="reiner"
 
 # The file that will contain our process identification number (pid) for other scripts/programs that need to access it.
-PID="/var/run/$NAME.pid"
+PID="$FILE_PATH/$NAME.pid"
 
 # System.out writes to this file...
 LOG_OUT="$FILE_PATH/log/$NAME.out"
@@ -48,6 +48,11 @@ jsvc_exec()
     cd $FILE_PATH
     $EXEC -home $JAVA_HOME -cp $CLASS_PATH -user $USER -outfile $LOG_OUT -errfile $LOG_ERR -pidfile $PID $1 $CLASS $ARGS
 }
+
+if [ ! -f $CLASS_PATH ] ; then
+	echo $CLASS_PATH error
+	exit 1
+fi
 
 case "$1" in
     start) 

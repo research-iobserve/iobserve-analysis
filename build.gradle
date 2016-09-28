@@ -11,6 +11,8 @@ buildscript {
     }
 }
 
+version = '1.0-SNAPSHOT'
+
 
 // checking the presence of an Eclipse API baseline repositorsy
 if (project.properties['api.baseline'] == null || project.properties['api.baseline'].isEmpty()) {

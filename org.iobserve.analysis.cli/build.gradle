@@ -1,3 +1,7 @@
+apply plugin: 'application'
+
+mainClassName='org.iobserve.service.cli.AnalysisMain'
+
 dependencies {
 	compile project(":org.iobserve.analysis")
 	compile 'commons-cli:commons-cli:1.3.1'
@@ -35,6 +39,6 @@ task runAnalysis(type: JavaExec) {
 	dependsOn << compileJava
 	dependsOn << copyPcmToWorkingDir
 	classpath = sourceSets.main.runtimeClasspath
-	main = 'org.iobserve.analysis.cli.AnalysisMain'
+	main = 'org.iobserve.service.cli.AnalysisMain'
 	args '-i /data/cocome -c /home/reiner/Projects/iObserve/cocomePcmModel/ -p /home/reiner/Projects/iObserve/cocomePcmModel/'
 }

@@ -1,11 +1,13 @@
+apply plugin: 'application'
+
+mainClassName = 'org.iobserve.analysis.service.AnalysisDaemon'
+
 dependencies {
     compile project(":org.iobserve.analysis")
-    compile group: 'commons-daemon', name: 'commons-daemon', version: '1.0.15'
+    compile 'commons-daemon:commons-daemon:1.0.15'
     compile 'commons-cli:commons-cli:1.3.1'
     
 
 	// central
 	testCompile group: 'junit', name: 'junit', version: '4.+'
 }
-
-// add package task which includes all depedencies into the daemon jar
