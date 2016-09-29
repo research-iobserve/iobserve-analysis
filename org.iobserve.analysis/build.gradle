@@ -41,6 +41,7 @@ dependencies {
 	compile 'extra:org.palladiosimulator.pcm:4.0.0.201511051135'
 
 	compile 'extra:de.uka.ipd.sdq.stoex:2.2.0+'
+	compile 'extra:de.uka.ipd.sdq.units:2.1.0.201511050934'
 	compile 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
 	compile 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
 	
