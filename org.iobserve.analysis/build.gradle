@@ -44,6 +44,7 @@ dependencies {
 	compile 'extra:de.uka.ipd.sdq.units:2.1.0.201511050934'
 	compile 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
 	compile 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
+	compile 'extra:org.eclipse.net4j:4.5.0.v20160607-1254'
 	
 	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
   	compile 'org.apache.logging.log4j:log4j-core:2.6.2'
