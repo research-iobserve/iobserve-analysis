@@ -73,8 +73,7 @@ public class UserBehaviorEvaluation {
         this.getModelElements(scenarioBehaviourOfReferenceUsageModel, modelElementsOfReferenceUsageModel);
 
         // Calculate the evaluation metrics according to the extracted lists of model elements
-        final double jc = this.calculateJaccardCoefficient(modelElementsOfCreatedUsageModel,
-                modelElementsOfReferenceUsageModel);
+        final double jc = this.calculateJC(modelElementsOfCreatedUsageModel, modelElementsOfReferenceUsageModel);
         final double srcc = this.calculateSpearmansCoefficient(modelElementsOfCreatedUsageModel,
                 modelElementsOfReferenceUsageModel);
         accuracyResults.setJc(jc);
@@ -94,34 +93,77 @@ public class UserBehaviorEvaluation {
      *            contains the model elements of the reference usage model
      * @return
      */
-    private double calculateJaccardCoefficient(final List<ModelElement> modelElementsOfCreatedUsageModel,
+    private double calculateJC(final List<ModelElement> modelElementsOfCreatedUsageModel,
             final List<ModelElement> modelElementsOfReferenceUsageModel) {
         final List<ModelElement> modelElements1 = new ArrayList<ModelElement>(modelElementsOfCreatedUsageModel);
         final List<ModelElement> modelElements2 = new ArrayList<ModelElement>(modelElementsOfReferenceUsageModel);
-        int numberOfMatchingElements = 0;
+        // Creates the intersection of the lists. Thereby, the elements of the intersection are
+        // removed from both lists. Thus, after calculating the intersection both lists only contain
+        // the elements that are not part of the intersection list. They are subsequently used to
+        // calculate the union of both lists
+        final List<ModelElement> intersectionList = this.getIntersectionList(modelElements1, modelElements2);
+        // Creates the union of the lists
+        final List<ModelElement> unionList = this.getUnionList(modelElements1, modelElements2, intersectionList);
+        // Calculates the Jaccard Coefficient
+        final double jc = (intersectionList.size() * 1.0) / (unionList.size() * 1.0);
+        return jc;
+    }
+
+    /**
+     * Creates the intersection of the passed lists
+     *
+     * @param modelElementsOfCreatedUsageModel
+     *            contains the model elements of the created usage model
+     * @param modelElementsOfReferenceUsageModel
+     *            contains the model elements of the reference usage model
+     * @return intersection
+     */
+    private List<ModelElement> getIntersectionList(final List<ModelElement> modelElementsOfCreatedUsageModel,
+            final List<ModelElement> modelElementsOfReferenceUsageModel) {
+        final List<ModelElement> intersectionList = new ArrayList<ModelElement>();
         // Checks whether for each of the model elements of the created usage model there is a
         // corresponding model element within the reference usage model
-        for (int i = 0; i < modelElements1.size(); i++) {
-            for (int j = 0; j < modelElements2.size(); j++) {
-                // If there is a match between two elements, the matching elements are removed from
-                // both lists and the number of matching elements is incremented. Thus, at the next
-                // loop run the model elements that are already matched are not considered any more
-                if (modelElements1.get(i).equals(modelElements2.get(j))) {
-                    modelElements1.remove(i);
+        for (int i = 0; i < modelElementsOfCreatedUsageModel.size(); i++) {
+            for (int j = 0; j < modelElementsOfReferenceUsageModel.size(); j++) {
+                // If there is a match between two elements, the matching element is added to the
+                // intersection list and the matching element is removed from both lists.
+                // Thus, at the next loop run the model elements that are already matched are not
+                // considered any more
+                if (modelElementsOfCreatedUsageModel.get(i).equals(modelElementsOfReferenceUsageModel.get(j))) {
+                    intersectionList.add(modelElementsOfCreatedUsageModel.get(i));
+                    modelElementsOfCreatedUsageModel.remove(i);
                     i--;
-                    modelElements2.remove(j);
-                    numberOfMatchingElements++;
+                    modelElementsOfReferenceUsageModel.remove(j);
                     break;
                 }
             }
         }
-        // The JC is calculated by the number of matching model elements divided by the overall
-        // number of model elements. The overall number of model elements can be calculated by
-        // adding the number of matching elements and the number of non-matching elements of both
-        // lists
-        final double jc = numberOfMatchingElements
-                / ((modelElements1.size() * 1.0) + (modelElements2.size() * 1.0) + (numberOfMatchingElements * 1.0));
-        return jc;
+        return intersectionList;
+    }
+
+    /**
+     * Creates the union of the lists
+     *
+     * @param modelElementsOfCreatedUsageModel
+     *            contains the model elements of the created usage model that do not belong to the
+     *            intersection
+     * @param modelElementsOfReferenceUsageModel
+     *            contains the model elements of the reference usage model that do not belong to the
+     *            intersection
+     * @param intersectionList
+     *            contains the intersection of both lists
+     * @return union
+     */
+    private List<ModelElement> getUnionList(final List<ModelElement> modelElementsOfCreatedUsageModel,
+            final List<ModelElement> modelElementsOfReferenceUsageModel, final List<ModelElement> intersectionList) {
+        final List<ModelElement> unionList = new ArrayList<ModelElement>();
+        // The lists of the created and the reference usage model each contain only the model
+        // elements that are not part of the intersection of both lists. Thus, the union consists of
+        // the intersection and the rest of the model elements
+        unionList.addAll(modelElementsOfCreatedUsageModel);
+        unionList.addAll(modelElementsOfReferenceUsageModel);
+        unionList.addAll(intersectionList);
+        return unionList;
     }
 
     /**
