@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
-import org.iobserve.analysis.correspondence.Correspondent;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.repository.BasicComponent;
@@ -37,18 +36,20 @@ import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 import org.palladiosimulator.pcm.usagemodel.UserData;
 
+import org.iobserve.analysis.correspondence.Correspondent;
+
 /**
  * UsageModelBuilder is able to build a {@link UsageModel}.
- * 
+ *
  * @author Robert Heinrich
  * @author Alessandro
  *
  */
-public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageModel> {
+public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, UsageModel> {
 
     /**
      * Create a usage model builder.
-     * 
+     *
      * @param modelProvider
      *            model provider
      */
@@ -62,7 +63,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Load the model from file using the model provider.
-     * 
+     *
      * @return builder to pipeline more commands
      */
     public UsageModelBuilder loadModel() {
@@ -72,7 +73,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Reset the model. This will delete all {@link UsageScenario} and {@link UserData} instances.
-     * 
+     *
      * @return builder to pipeline more commands
      */
     public UsageModelBuilder resetModel() {
@@ -85,7 +86,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
     /**
      * Create an {@link UsageScenario} and create a body {@link ScenarioBehaviour} for it. Get the
      * {@link ScenarioBehaviour} by {@link UsageScenario#getScenarioBehaviour_UsageScenario()}
-     * 
+     *
      * @param name
      *            name of usage scenario
      * @return created usage scenario
@@ -106,7 +107,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create a {@link ScenarioBehaviour}. The behavior is just created not added any model part.
-     * 
+     *
      * @return the behavior
      */
     public ScenarioBehaviour createScenarioBehaviour() {
@@ -116,7 +117,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create an {@link OpenWorkload} and add it to the given {@link UsageScenario}.
-     * 
+     *
      * @param avgInterarrivalTime
      *            the interarrival time
      * @param parent
@@ -138,7 +139,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create an {@link OpenWorkload} and add it to the given {@link UsageScenario}.
-     * 
+     *
      * @param population
      *            population
      * @param thinkTime
@@ -163,7 +164,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create a start node.
-     * 
+     *
      * @param name
      *            of start node
      * @return start node
@@ -176,7 +177,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create a start node without name. (Recommended to use {@link #createStart(String)}).
-     * 
+     *
      * @return start node
      */
     public Start createStart() {
@@ -185,7 +186,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create a stop node.
-     * 
+     *
      * @param name
      *            name of stop node
      * @return stop node.
@@ -198,7 +199,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create a stop node without name. (Recommended to use {@link #createStop(String)}).
-     * 
+     *
      * @return stop node.
      */
     public Stop createStop() {
@@ -207,7 +208,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create an EntryLevelSystemCall with the given operation signature.
-     * 
+     *
      * @param operationSignature
      *            operation signature of the EntryLevelSystemCall
      * @return null, if the creation failed, the instance if not.
@@ -219,7 +220,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
         final OperationSignature opSig = repositoryModelProvider.getOperationSignature(operationSignature);
         final BasicComponent bCmp = repositoryModelProvider.getBasicComponent(operationSignature);
         final EntryLevelSystemCall eSysCall;
-        if (opSig != null && bCmp != null) {
+        if ((opSig != null) && (bCmp != null)) {
             eSysCall = UsagemodelFactory.eINSTANCE.createEntryLevelSystemCall();
             eSysCall.setEntityName(opSig.getEntityName());
             eSysCall.setOperationSignature__EntryLevelSystemCall(opSig);
@@ -237,7 +238,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create an EntryLevelSystemCall with the given correspondent.
-     * 
+     *
      * @param correspondent
      *            correspondent containing operation signature
      * @return null, if the creation failed, the instance if not.
@@ -252,7 +253,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create branch with the given name and add it to the given scenario behavior.
-     * 
+     *
      * @param name
      *            name of the branch
      * @param parent
@@ -269,7 +270,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create branch with the given name and add it to the given loop.
-     * 
+     *
      * @param name
      *            name of the branch
      * @param parent
@@ -282,7 +283,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create branch with the given name and add it to the given branch transition.
-     * 
+     *
      * @param name
      *            name of the branch
      * @param parent
@@ -297,7 +298,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
      * Create empty {@link BranchTransition} with the given parent. A {@link ScenarioBehaviour} is
      * added to the body of the branch transition, in order to make it possible adding further model
      * elements.
-     * 
+     *
      * @param parent
      *            branch to add transition to
      * @return created branch transition
@@ -317,7 +318,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
     /**
      * Create loop in given parent {@link ScenarioBehaviour}. A {@link ScenarioBehaviour} is added
      * to the body of the loop, in order to make it possible adding further model elements.
-     * 
+     *
      * @param name
      *            name of loop
      * @param parent
@@ -338,7 +339,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create a loop within the given loop.
-     * 
+     *
      * @param name
      *            name of the loop
      * @param parent
@@ -351,7 +352,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Create a loop within the given branch transition.
-     * 
+     *
      * @param name
      *            name of loop
      * @param parent
@@ -368,7 +369,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Connect actions.
-     * 
+     *
      * @param predecessor
      *            predecessor of successor
      * @param successor
@@ -381,7 +382,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Add the given actions to the given {@link ScenarioBehaviour}.
-     * 
+     *
      * @param parent
      *            parent
      * @param actions
@@ -395,7 +396,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Add the given actions to the given {@link UsageScenario}.
-     * 
+     *
      * @param parent
      *            parent
      * @param actions
@@ -407,7 +408,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Add the given actions to the given {@link BranchTransition}.
-     * 
+     *
      * @param parent
      *            parent
      * @param actions
@@ -419,7 +420,7 @@ public class UsageModelBuilder extends ModelBuilder<UsageModelProvider, UsageMod
 
     /**
      * Add the given actions to the given {@link Loop}.
-     * 
+     *
      * @param parent
      *            parent
      * @param actions

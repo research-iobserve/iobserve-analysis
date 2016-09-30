@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.utils;
 
-import java.util.function.BiFunction;
+import java.util.function.BiFunction; // NOCS
 
 /**
  * Represents a function that accepts two arguments and produces an boolean-valued result. This is
@@ -31,9 +31,11 @@ import java.util.function.BiFunction;
  *            the type of the second argument to the function
  *
  * @see BiFunction
+ *
+ * @author Alessandro Giusa
  */
 @FunctionalInterface
-public interface ToBoolBiFunction<T, U> {
+public interface IToBoolBiFunction<T, U> {
 
     /**
      * Applies this function to the given arguments.

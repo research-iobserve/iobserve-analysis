@@ -27,7 +27,7 @@ import org.palladiosimulator.pcm.system.System;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class SystemModelBuilder extends ModelBuilder<SystemModelProvider, org.palladiosimulator.pcm.system.System> {
+public class SystemModelBuilder extends AbstractModelBuilder<SystemModelProvider, org.palladiosimulator.pcm.system.System> {
 
     /**
      * Create a system model builder

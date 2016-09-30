@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import java.io.IOException;
+
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
@@ -37,56 +39,61 @@ import teetime.framework.Configuration;
  *
  */
 public abstract class AbstractObservationConfiguration extends Configuration {
-	
-	/** record switch filter. Is required to be global so we can cheat and get measurements from the filter. */
-	protected RecordSwitch recordSwitch;
 
+    /**
+     * record switch filter. Is required to be global so we can cheat and get measurements from the
+     * filter.
+     */
+    protected RecordSwitch recordSwitch;
 
-	/**
-	 * Create a configuration with a ASCII file reader.
-	 *
-	 * @param directory
-	 *            directory containing kieker data
-	 *
-	 * @throws ClassNotFoundException
-	 *             when a record type could not be loaded by class loader
-	 * @throws IOException
-	 *             for all file reading errors
-	 */
-	public AbstractObservationConfiguration(ModelProviderPlatform platform) {
-		final ICorrespondence correspondenceModel = platform.getCorrespondenceModel();
-		final UsageModelProvider usageModelProvider = platform.getUsageModelProvider();
-		final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider =
-				platform.getResourceEnvironmentModelProvider();
-		final AllocationModelProvider allocationModelProvider =	platform.getAllocationModelProvider();
-		final SystemModelProvider systemModelProvider = platform.getSystemModelProvider();
-		
-		/** configure filter. */
-		recordSwitch = new RecordSwitch();
-		
-		final TAllocation tAllocation = new TAllocation(correspondenceModel, resourceEvnironmentModelProvider);
-		final TDeployment tDeployment = new TDeployment(correspondenceModel, allocationModelProvider,
-				systemModelProvider, resourceEvnironmentModelProvider);
-		final TUndeployment tUndeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider, resourceEvnironmentModelProvider);
-		final TEntryCall tEntryCall = new TEntryCall();
-		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
-		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider);
-		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider, resourceEvnironmentModelProvider);
+    /**
+     * Create a configuration with a ASCII file reader.
+     *
+     * @param platform
+     *            model provider platform
+     *
+     * @throws ClassNotFoundException
+     *             when a record type could not be loaded by class loader
+     * @throws IOException
+     *             for all file reading errors
+     */
+    public AbstractObservationConfiguration(final ModelProviderPlatform platform) {
+        final ICorrespondence correspondenceModel = platform.getCorrespondenceModel();
+        final UsageModelProvider usageModelProvider = platform.getUsageModelProvider();
+        final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = platform
+                .getResourceEnvironmentModelProvider();
+        final AllocationModelProvider allocationModelProvider = platform.getAllocationModelProvider();
+        final SystemModelProvider systemModelProvider = platform.getSystemModelProvider();
 
-		/** dispatch different monitoring data */
-		connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
-		connectPorts(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
-		connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
-		connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
+        /** configure filter. */
+        this.recordSwitch = new RecordSwitch();
 
-		// 
-		connectPorts(tAllocation.getDeploymentOutputPort(), tDeployment.getInputPort());
-		connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
-		connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
-	}
-	
-	public RecordSwitch getRecordSwitch() {
-		return this.recordSwitch;
-	}
-	
+        final TAllocation tAllocation = new TAllocation(correspondenceModel, resourceEvnironmentModelProvider);
+        final TDeployment tDeployment = new TDeployment(correspondenceModel, allocationModelProvider,
+                systemModelProvider, resourceEvnironmentModelProvider);
+        final TUndeployment tUndeployment = new TUndeployment(correspondenceModel, allocationModelProvider,
+                systemModelProvider, resourceEvnironmentModelProvider);
+        final TEntryCall tEntryCall = new TEntryCall();
+        final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
+        final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel,
+                usageModelProvider);
+        final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
+                resourceEvnironmentModelProvider);
+
+        /** dispatch different monitoring data */
+        this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
+        this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
+        this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
+        this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
+
+        //
+        this.connectPorts(tAllocation.getDeploymentOutputPort(), tDeployment.getInputPort());
+        this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
+        this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
+    }
+
+    public RecordSwitch getRecordSwitch() {
+        return this.recordSwitch;
+    }
+
 }

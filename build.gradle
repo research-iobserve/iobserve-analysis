@@ -30,6 +30,11 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'eclipse'
+    // apply plugin: 'checkstyle'
+    
+    // checkstyle {
+    //	configFile = rootProject.file('cs-conf.xml')
+  	//}
     
     ext {
         appName = "org.iobserve"

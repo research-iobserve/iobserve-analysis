@@ -26,6 +26,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Generic entity class.
+ *
+ * @author Alesanndro Guisa
+ *
+ */
 @XmlRootElement(name = "PcmEntity")
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @XmlType(name = "PcmEntity", propOrder = { "name", "id", "operationSigs", "correspondents" })
@@ -37,31 +43,38 @@ public class PcmEntity {
     private List<PcmEntityCorrespondent> correspondents = new ArrayList<>();
     private PcmMapping parent;
 
+    /**
+     * Default constructor.
+     */
+    public PcmEntity() {
+        /* nothing to do */
+    }
+
     @XmlElement(name = "Name")
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @XmlElement(name = "Id")
     public String getId() {
-        return id;
+        return this.id;
     }
 
     @XmlElementWrapper(name = "OperationSigatures")
     @XmlElement(name = "OperationSignature")
     public List<PcmOperationSignature> getOperationSigs() {
-        return operationSigs;
+        return this.operationSigs;
     }
 
     @XmlElementWrapper(name = "Correspondents")
     @XmlElement(name = "Correspondent")
     public List<PcmEntityCorrespondent> getCorrespondents() {
-        return correspondents;
+        return this.correspondents;
     }
 
     @XmlTransient
     public PcmMapping getParent() {
-        return parent;
+        return this.parent;
     }
 
     public void setName(final String name) {

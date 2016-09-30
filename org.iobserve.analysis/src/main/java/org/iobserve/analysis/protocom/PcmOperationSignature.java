@@ -22,6 +22,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Representing an operation signature mapping between on operation in code and a seff.
+ *
+ * @author Alessandro Guisa
+ *
+ */
 @XmlRootElement(name = "OperationSignature")
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @XmlType(name = "OperationSignature", propOrder = { "name", "seffName", "id" })
@@ -32,24 +38,31 @@ public class PcmOperationSignature {
     private String id;
     private PcmEntity parent;
 
+    /**
+     * Default constructor.
+     */
+    public PcmOperationSignature() {
+        /* nothing to do */
+    }
+
     @XmlElement(name = "Name")
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @XmlElement(name = "Id")
     public String getId() {
-        return id;
+        return this.id;
     }
 
     @XmlElement(name = "SeffName")
     public String getSeffName() {
-        return seffName;
+        return this.seffName;
     }
 
     @XmlTransient
     public PcmEntity getParent() {
-        return parent;
+        return this.parent;
     }
 
     public void setSeffName(final String seffName) {

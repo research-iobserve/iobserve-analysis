@@ -21,7 +21,7 @@ import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-public class AllocationModelBuilder extends ModelBuilder<AllocationModelProvider, Allocation> {
+public class AllocationModelBuilder extends AbstractModelBuilder<AllocationModelProvider, Allocation> {
 
     public AllocationModelBuilder(final AllocationModelProvider modelToStartWith) {
         super(modelToStartWith);

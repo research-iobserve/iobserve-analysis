@@ -36,22 +36,6 @@ import org.iobserve.analysis.protocom.PcmOperationSignature;
  */
 class CorrespondenceModelImpl implements ICorrespondence {
 
-    /**
-     * String builder to build method signatures based on the given {@link PcmCorrespondentMethod}
-     * instance.
-     */
-    private interface MethodSignatureBuilder {
-        /**
-         * @param method
-         *            method
-         * @return signature of the method based on the given {@link PcmCorrespondentMethod}
-         */
-        String build(PcmCorrespondentMethod method);
-    }
-
-    /** namespace of current palladio framework. */
-    private static final String PROTOCOM_BASE_PACKAGE_NAME = "org.palladiosimulator.protocom";
-
     /** cache for already mapped correspondences. */
     private final Map<String, Correspondent> cachedCorrespondents = new HashMap<>();
 
@@ -59,10 +43,55 @@ class CorrespondenceModelImpl implements ICorrespondence {
     private final PcmMapping rawMapping;
 
     /** mapper for method signature to operation signature. */
-    private final OperationSignatureSelector opSigMapper;
+    private final IOperationSignatureSelector opSigMapper;
 
     /** fast access map for class-signature to object. */
     private Map<String, PcmEntityCorrespondent> mapping;
+
+    /** namespace of current palladio framework. */
+    // private static final String PROTOCOM_BASE_PACKAGE_NAME = "org.palladiosimulator.protocom";
+
+    /**
+     * Builds the signature out of packagname.MethodName().
+     */
+    private final IMethodSignatureBuilder mPackageNameClassNameMethodName = new IMethodSignatureBuilder() {
+
+        @Override
+        public String build(final PcmCorrespondentMethod method) {
+            final String packageName = method.getParent().getPackageName();
+            final String className = method.getParent().getUnitName();
+            final String methodName = method.getName();
+            return packageName + "." + className + "." + methodName + "()";
+        }
+    };
+
+    /**
+     * Builds the signature like it would appear in the source code for instance void Get().
+     */
+    private final IMethodSignatureBuilder mOnlyMethodName = new IMethodSignatureBuilder() {
+
+        @Override
+        public String build(final PcmCorrespondentMethod method) {
+            final StringBuilder builder = new StringBuilder();
+
+            // build method signature
+            builder.append(method.getVisibilityModifier());
+            builder.append(" ");
+            builder.append(method.getReturnType());
+            builder.append(" ");
+            builder.append(method.getName());
+            builder.append("(");
+            builder.append(method.getParameters().replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
+            // TODO I do not know how to handle multiple parameters..since
+            // I did not see such after protocom build
+            builder.append(")");
+            // TODO <exception throws signature> is missing since this
+            // is not retrievable from protocom-generation process so far.
+
+            final String methodSig = builder.toString().trim();
+            return methodSig;
+        }
+    };
 
     // ********************************************************************
     // * INITIALIZATION
@@ -76,7 +105,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * @param mapper
      *            selector
      */
-    CorrespondenceModelImpl(final PcmMapping theMapping, final OperationSignatureSelector mapper) {
+    CorrespondenceModelImpl(final PcmMapping theMapping, final IOperationSignatureSelector mapper) {
         this.rawMapping = theMapping;
         this.opSigMapper = mapper;
     }
@@ -89,7 +118,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * @param mapper
      *            selector
      */
-    CorrespondenceModelImpl(final InputStream mappingFile, final OperationSignatureSelector mapper) {
+    CorrespondenceModelImpl(final InputStream mappingFile, final IOperationSignatureSelector mapper) {
         this.rawMapping = JAXB.unmarshal(mappingFile, PcmMapping.class);
         this.opSigMapper = mapper;
         this.initMapping();
@@ -239,48 +268,6 @@ class CorrespondenceModelImpl implements ICorrespondence {
     }
 
     /**
-     * Builds the signature out of packagname.MethodName().
-     */
-    private final MethodSignatureBuilder mPackageNameClassNameMethodName = new MethodSignatureBuilder() {
-
-        @Override
-        public String build(final PcmCorrespondentMethod method) {
-            final String packageName = method.getParent().getPackageName();
-            final String className = method.getParent().getUnitName();
-            final String methodName = method.getName();
-            return packageName + "." + className + "." + methodName + "()";
-        }
-    };
-
-    /**
-     * Builds the signature like it would appear in the source code for instance void Get().
-     */
-    private final MethodSignatureBuilder mOnlyMethodName = new MethodSignatureBuilder() {
-
-        @Override
-        public String build(final PcmCorrespondentMethod method) {
-            final StringBuilder builder = new StringBuilder();
-
-            // build method signature
-            builder.append(method.getVisibilityModifier());
-            builder.append(" ");
-            builder.append(method.getReturnType());
-            builder.append(" ");
-            builder.append(method.getName());
-            builder.append("(");
-            builder.append(method.getParameters().replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
-            // TODO I do not know how to handle multiple parameters..since
-            // I did not see such after protocom build
-            builder.append(")");
-            // TODO <exception throws signature> is missing since this
-            // is not retrievable from protocom-generation process so far.
-
-            final String methodSig = builder.toString().trim();
-            return methodSig;
-        }
-    };
-
-    /**
      * Map the given method to the correspondent operation signature based on the name. The
      * comparison is done by searching the operation signature name which is contained in the given
      * method name.
@@ -310,5 +297,18 @@ class CorrespondenceModelImpl implements ICorrespondence {
             final PcmEntityCorrespondent correspondent = this.mapping.get(nextMappingKey);
             System.out.println(correspondent);
         }
+    }
+
+    /**
+     * String builder to build method signatures based on the given {@link PcmCorrespondentMethod}
+     * instance.
+     */
+    private interface IMethodSignatureBuilder {
+        /**
+         * @param method
+         *            method
+         * @return signature of the method based on the given {@link PcmCorrespondentMethod}
+         */
+        String build(PcmCorrespondentMethod method);
     }
 }

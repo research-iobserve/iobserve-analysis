@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright 2016 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,28 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
+import java.util.Optional;
+
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
+
 /**
+ * Model loader will load a model from the given uri.
  *
- * @author Alessandro Guisa
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
  *
  */
-public enum ModelSaveStrategy {
+@FunctionalInterface
+public interface IModelLoader {
 
-    OVERRIDE, MERGE;
+    /**
+     * Load the model given by the uri.
+     *
+     * @param uri
+     *            uri
+     * @return model
+     */
+    Optional<EObject> load(URI uri);
 
 }

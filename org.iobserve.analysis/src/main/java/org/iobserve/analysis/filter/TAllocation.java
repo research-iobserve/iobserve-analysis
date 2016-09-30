@@ -15,6 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -22,10 +27,6 @@ import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * TAllocation creates new resource container if and only if there not already available.
@@ -44,18 +45,23 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
+     *
+     * @param correspondence
+     *            the correspondence model
+     * @param resourceEvnironmentModelProvider
+     *            the resource evnironment model provider
      */
     public TAllocation(final ICorrespondence correspondence,
             final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider) {
         this.correspondence = correspondence;
-        resourceEnvModelProvider = resourceEvnironmentModelProvider;
+        this.resourceEnvModelProvider = resourceEvnironmentModelProvider;
     }
 
     /**
      * @return the deploymentOutputPort
      */
     public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
-        return deploymentOutputPort;
+        return this.deploymentOutputPort;
     }
 
     /**
@@ -74,41 +80,41 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
         }
 
         // forward the event
-        deploymentOutputPort.send(event);
+        this.deploymentOutputPort.send(event);
     }
 
     /**
      * Process the given {@link ServletDeployedEvent} event. And call {@link #updateModel(String)}
      * to create a new server if necessary.
-     * 
+     *
      * @param event
      *            event to process
      */
     private void process(final ServletDeployedEvent event) {
         final String serivce = event.getSerivce();
-        updateModel(serivce);
+        this.updateModel(serivce);
     }
 
     /**
      * Process the given {@link EJBDeployedEvent} event. And call {@link #updateModel(String)} to
      * create a new server if necessary.
-     * 
+     *
      * @param event
      *            event to process
      */
     private void process(final EJBDeployedEvent event) {
         final String service = event.getSerivce();
-        updateModel(service);
+        this.updateModel(service);
     }
 
     /**
      * Update the allocation model with the given server-name if necessary.
-     * 
+     *
      * @param serverName
      *            server name
      */
     private void updateModel(final String serverName) {
-        Opt.of(resourceEnvModelProvider.getResourceContainerByName(serverName)).ifNotPresent().apply(() -> {
+        Opt.of(this.resourceEnvModelProvider.getResourceContainerByName(serverName)).ifNotPresent().apply(() -> {
             final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
                     TAllocation.this.resourceEnvModelProvider);
             builder.loadModel();

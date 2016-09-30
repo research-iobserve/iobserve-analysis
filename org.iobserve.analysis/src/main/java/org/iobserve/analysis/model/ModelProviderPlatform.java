@@ -18,13 +18,14 @@ package org.iobserve.analysis.model;
 import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
+
 import org.iobserve.analysis.correspondence.CorrespondeceModelFactory;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 
 /**
- * 
+ *
  * The model platform will load all model and {@link ICorrespondence} model.
- * 
+ *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
@@ -39,7 +40,7 @@ public final class ModelProviderPlatform {
 
     /**
      * Create model provider.
-     * 
+     *
      * @param pathPcm
      *            directory of pcm models.
      */
@@ -52,8 +53,8 @@ public final class ModelProviderPlatform {
     }
 
     /**
-     * Load all model provider
-     * 
+     * Load all model provider.
+     *
      * @param dirPcm
      *            directory of pcm
      */
@@ -61,27 +62,27 @@ public final class ModelProviderPlatform {
         final File[] files = dirPcm.listFiles();
         for (final File nextFile : files) {
             final String extension = this.getFileExtension(nextFile.getName());
-            if (extension.equalsIgnoreCase("repository")) {
+            if ("repository".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
                 this.repositoryModelProvider = new RepositoryModelProvider(this, uri);
 
-            } else if (extension.equalsIgnoreCase("allocation")) {
+            } else if ("allocation".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
                 this.allocationModelProvider = new AllocationModelProvider(this, uri);
 
-            } else if (extension.equalsIgnoreCase("resourceenvironment")) {
+            } else if ("resourceenvironment".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
                 this.resourceEnvironmentModelProvider = new ResourceEnvironmentModelProvider(this, uri);
 
-            } else if (extension.equalsIgnoreCase("system")) {
+            } else if ("system".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
                 this.systemModelProvider = new SystemModelProvider(this, uri);
 
-            } else if (extension.equalsIgnoreCase("usagemodel")) {
+            } else if ("usagemodel".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
                 this.usageModelProvider = new UsageModelProvider(this, uri);
 
-            } else if (extension.equalsIgnoreCase("rac")) {
+            } else if ("rac".equalsIgnoreCase(extension)) {
                 final String pathMappingFile = nextFile.getAbsolutePath();
                 this.correspondenceModel = CorrespondeceModelFactory.INSTANCE.createCorrespondenceModel(pathMappingFile,
                         CorrespondeceModelFactory.DEFAULT_OPERATION_SIGNATURE_MAPPER_2);
@@ -133,7 +134,7 @@ public final class ModelProviderPlatform {
 
     /**
      * Get file extension of the given path.
-     * 
+     *
      * @param path
      *            path
      * @return file extension
@@ -144,7 +145,7 @@ public final class ModelProviderPlatform {
 
     /**
      * Get uri from the given file.
-     * 
+     *
      * @param file
      *            file
      * @return uri

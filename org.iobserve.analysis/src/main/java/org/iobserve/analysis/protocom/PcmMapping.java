@@ -25,6 +25,12 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Mapping class.
+ *
+ * @author Alessandro Guisa
+ *
+ */
 @XmlRootElement(name = "PcmMapping")
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @XmlType(name = "PcmMapping", propOrder = { "entities" })
@@ -32,10 +38,17 @@ public class PcmMapping {
 
     private List<PcmEntity> entities = new ArrayList<>();
 
+    /**
+     * Default constructor.
+     */
+    public PcmMapping() {
+        /* nothing to do here. */
+    }
+
     @XmlElementWrapper(name = "PcmEntities")
     @XmlElement(name = "PcmEntity")
     public List<PcmEntity> getEntities() {
-        return entities;
+        return this.entities;
     }
 
     public void setEntities(final List<PcmEntity> entities) {

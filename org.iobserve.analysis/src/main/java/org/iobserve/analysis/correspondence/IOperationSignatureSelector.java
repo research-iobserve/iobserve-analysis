@@ -17,29 +17,33 @@ package org.iobserve.analysis.correspondence;
 
 import java.util.function.BiFunction;
 
-import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
-import org.iobserve.analysis.protocom.PcmOperationSignature;
-import org.iobserve.analysis.utils.ToBoolBiFunction;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 
+import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
+import org.iobserve.analysis.protocom.PcmOperationSignature;
+import org.iobserve.analysis.utils.IToBoolBiFunction;
+
 /**
- * Function used to select {@link OperationSignature} instances based on the
- * given {@link PcmCorrespondentMethod}.
- * 
+ * Function used to select {@link OperationSignature} instances based on the given
+ * {@link PcmCorrespondentMethod}.
+ *
  * @see BiFunction
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
 @FunctionalInterface
-public interface OperationSignatureSelector extends ToBoolBiFunction<PcmCorrespondentMethod, PcmOperationSignature> {
-	
-	/**
-	 * Default select method to select the given operation signature.
-	 * @param method method
-	 * @param operation operation
-	 * @return true if the given method correspond to the given operation
-	 */
-	default boolean select(final PcmCorrespondentMethod method, final PcmOperationSignature operation) {
-		return this.applyAsBool(method, operation);
-	}
+public interface IOperationSignatureSelector extends IToBoolBiFunction<PcmCorrespondentMethod, PcmOperationSignature> {
+
+    /**
+     * Default select method to select the given operation signature.
+     *
+     * @param method
+     *            method
+     * @param operation
+     *            operation
+     * @return true if the given method correspond to the given operation
+     */
+    default boolean select(final PcmCorrespondentMethod method, final PcmOperationSignature operation) {
+        return this.applyAsBool(method, operation);
+    }
 }

@@ -26,6 +26,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Correspondence between somthing.
+ *
+ * @author Alessandro Guisa
+ *
+ */
 @XmlRootElement(name = "Correspondent")
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @XmlType(name = "Correspondent", propOrder = { "filePath", "projectName", "packageName", "interfaces", "unitName",
@@ -40,41 +46,48 @@ public class PcmEntityCorrespondent {
     private List<PcmCorrespondentMethod> methods = new ArrayList<>();
     private PcmEntity parent;
 
+    /**
+     * Default constructor.
+     */
+    public PcmEntityCorrespondent() {
+        /* nothing to do */
+    }
+
     @XmlElement(name = "FilePath")
     public String getFilePath() {
-        return filePath;
+        return this.filePath;
     }
 
     @XmlElement(name = "ProjectName")
     public String getProjectName() {
-        return projectName;
+        return this.projectName;
     }
 
     @XmlElement(name = "PackageName")
     public String getPackageName() {
-        return packageName;
+        return this.packageName;
     }
 
     @XmlElement(name = "UnitName")
     public String getUnitName() {
-        return unitName;
+        return this.unitName;
     }
 
     @XmlElementWrapper(name = "Interfaces")
     @XmlElement(name = "Interface")
     public List<String> getInterfaces() {
-        return interfaces;
+        return this.interfaces;
     }
 
     @XmlElementWrapper(name = "CorrespondentMethods")
     @XmlElement(name = "CorrespondentMethod")
     public List<PcmCorrespondentMethod> getMethods() {
-        return methods;
+        return this.methods;
     }
 
     @XmlTransient
     public PcmEntity getParent() {
-        return parent;
+        return this.parent;
     }
 
     public void setFilePath(final String filePath) {

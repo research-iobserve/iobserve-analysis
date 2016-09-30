@@ -22,6 +22,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+/**
+ * Methods description.
+ *
+ * @author Alessandro Guisa
+ *
+ */
 @XmlRootElement(name = "CorrespondentMethod")
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
 @XmlType(name = "CorrespondentMethod", propOrder = { "name", "returnType", "visibilityModifier", "parameters" })
@@ -33,29 +39,36 @@ public class PcmCorrespondentMethod {
     private String parameters;
     private PcmEntityCorrespondent parent;
 
+    /**
+     * Empty constructor for entity class.
+     */
+    public PcmCorrespondentMethod() {
+        /* nothing to do here */
+    }
+
     @XmlElement(name = "Name")
     public String getName() {
-        return name;
+        return this.name;
     }
 
     @XmlElement(name = "ReturnType")
     public String getReturnType() {
-        return returnType;
+        return this.returnType;
     }
 
     @XmlElement(name = "VisibilityModifier")
     public String getVisibilityModifier() {
-        return visibilityModifier;
+        return this.visibilityModifier;
     }
 
     @XmlElement(name = "Parameters")
     public String getParameters() {
-        return parameters;
+        return this.parameters;
     }
 
     @XmlTransient
     public PcmEntityCorrespondent getParent() {
-        return parent;
+        return this.parent;
     }
 
     public void setName(final String name) {

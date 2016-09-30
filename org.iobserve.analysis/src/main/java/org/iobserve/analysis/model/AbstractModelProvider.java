@@ -28,9 +28,10 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.iobserve.analysis.utils.Opt;
 
 import de.uka.ipd.sdq.identifier.Identifier;
+
+import org.iobserve.analysis.utils.Opt;
 
 /**
  * Base class for pcm model provider. Implements common methods for loading/saving pcm model.
@@ -41,16 +42,61 @@ import de.uka.ipd.sdq.identifier.Identifier;
  */
 abstract class AbstractModelProvider<T extends EObject> {
 
+    /**
+     * Model loader which saves models to file.
+     */
+    public static final IModelSaver MODEL_FILE_SAVER = (obj, uri) -> {
+        final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+        final Map<String, Object> map = reg.getExtensionToFactoryMap();
+        map.put("*", new XMIResourceFactoryImpl());
+
+        final ResourceSet resSet = new ResourceSetImpl();
+        resSet.setResourceFactoryRegistry(reg);
+
+        final Resource res = resSet.createResource(uri);
+        res.getContents().add(obj);
+        try {
+            res.save(null);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+    };
+
+    /**
+     * Model loader which loads models from file
+     */
+    public static final IModelLoader MODEL_FILE_LOADER = uri -> {
+        final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+        final Map<String, Object> map = reg.getExtensionToFactoryMap();
+        map.put("*", new XMIResourceFactoryImpl());
+
+        final ResourceSet resSet = new ResourceSetImpl();
+        resSet.setResourceFactoryRegistry(reg);
+
+        final Resource resource = resSet.getResource(uri, true);
+        try {
+            resource.load(null);
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+        EcoreUtil.resolveAll(resSet);
+        EObject model = null;
+        if (!resource.getContents().isEmpty()) {
+            model = resource.getContents().get(0);
+        }
+        return Optional.ofNullable(model);
+    };
+
     /** uri to the pcm model. */
     private final URI uriModelInstance;
     /** parent where this provider belongs to. */
     private final ModelProviderPlatform platform;
     /** save strategy of model. */
     private ModelSaveStrategy saveStrategy = ModelSaveStrategy.OVERRIDE;
-    /** model saver */
-    private final ModelSaver modelSaver;
-    /** model loader */
-    private final ModelLoader modelLoader;
+    /** model saver. */
+    private final IModelSaver modelSaver;
+    /** model loader. */
+    private final IModelLoader modelLoader;
 
     /** the model instance. */
     private T model;
@@ -58,19 +104,20 @@ abstract class AbstractModelProvider<T extends EObject> {
     /**
      * Create a model provider for the given. Uses {@link #MODEL_FILE_LOADER} as loader and
      * {@link #MODEL_FILE_SAVER} as saver.
-     * 
+     *
      * @param thePlatform
      *            platform
      * @param theUriModelInstance
      *            uri to the model
      */
     AbstractModelProvider(final ModelProviderPlatform thePlatform, final URI theUriModelInstance) {
-        this(thePlatform, theUriModelInstance, MODEL_FILE_LOADER, MODEL_FILE_SAVER);
+        this(thePlatform, theUriModelInstance, AbstractModelProvider.MODEL_FILE_LOADER,
+                AbstractModelProvider.MODEL_FILE_SAVER);
     }
 
     /**
      * Create a model provider for the given .
-     * 
+     *
      * @param thePlatform
      *            platform
      * @param theUriModelInstance
@@ -79,10 +126,10 @@ abstract class AbstractModelProvider<T extends EObject> {
      *            model loader
      * @param saver
      *            model saver
-     * 
+     *
      */
     AbstractModelProvider(final ModelProviderPlatform thePlatform, final URI theUriModelInstance,
-            final ModelLoader loader, final ModelSaver saver) {
+            final IModelLoader loader, final IModelSaver saver) {
         this.uriModelInstance = theUriModelInstance;
         this.platform = thePlatform;
 
@@ -95,7 +142,7 @@ abstract class AbstractModelProvider<T extends EObject> {
 
     /**
      * Set the save strategy which is used to save the model, when {@link #save()} is called.
-     * 
+     *
      * @param theSaveStrategy
      *            save strategy
      */
@@ -105,7 +152,7 @@ abstract class AbstractModelProvider<T extends EObject> {
 
     /**
      * Save the internal model. This will override the existing.
-     * 
+     *
      * @param strategy
      *            strategy how to save the model. Default {@link ModelSaveStrategy#OVERRIDE}
      */
@@ -141,7 +188,7 @@ abstract class AbstractModelProvider<T extends EObject> {
      *     return AllocationPackage.eINSTANCE;
      * }
      * </pre>
-     * 
+     *
      * @return return the package of this model
      */
     protected abstract EPackage getPackage();
@@ -157,7 +204,7 @@ abstract class AbstractModelProvider<T extends EObject> {
 
     /**
      * Get the platform.
-     * 
+     *
      * @return the platform
      */
     public ModelProviderPlatform getPlatform() {
@@ -166,7 +213,7 @@ abstract class AbstractModelProvider<T extends EObject> {
 
     /**
      * Get the loaded model.
-     * 
+     *
      * @return model
      */
     public T getModel() {
@@ -175,7 +222,7 @@ abstract class AbstractModelProvider<T extends EObject> {
 
     /**
      * Set the model.
-     * 
+     *
      * @param obj
      *            model
      */
@@ -186,7 +233,7 @@ abstract class AbstractModelProvider<T extends EObject> {
 
     /**
      * Get the uri to the model.
-     * 
+     *
      * @return uri to model
      */
     public URI getModelUri() {
@@ -195,7 +242,7 @@ abstract class AbstractModelProvider<T extends EObject> {
 
     /**
      * Get the loaded model.
-     * 
+     *
      * @param reload
      *            if true, it will reloaded the model before return.
      * @return the model
@@ -223,48 +270,4 @@ abstract class AbstractModelProvider<T extends EObject> {
         return null;
     }
 
-    /**
-     * Model loader which saves models to file
-     */
-    public static final ModelSaver MODEL_FILE_SAVER = (obj, uri) -> {
-        final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-        final Map<String, Object> map = reg.getExtensionToFactoryMap();
-        map.put("*", new XMIResourceFactoryImpl());
-
-        final ResourceSet resSet = new ResourceSetImpl();
-        resSet.setResourceFactoryRegistry(reg);
-
-        final Resource res = resSet.createResource(uri);
-        res.getContents().add(obj);
-        try {
-            res.save(null);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-    };
-
-    /**
-     * Model loader which loads models from file
-     */
-    public static final ModelLoader MODEL_FILE_LOADER = uri -> {
-        final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-        final Map<String, Object> map = reg.getExtensionToFactoryMap();
-        map.put("*", new XMIResourceFactoryImpl());
-
-        final ResourceSet resSet = new ResourceSetImpl();
-        resSet.setResourceFactoryRegistry(reg);
-
-        final Resource resource = resSet.getResource(uri, true);
-        try {
-            resource.load(null);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        EcoreUtil.resolveAll(resSet);
-        EObject model = null;
-        if (!resource.getContents().isEmpty()) {
-            model = resource.getContents().get(0);
-        }
-        return Optional.ofNullable(model);
-    };
 }

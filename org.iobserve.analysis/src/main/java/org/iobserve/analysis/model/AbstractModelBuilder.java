@@ -30,7 +30,7 @@ import org.eclipse.emf.ecore.EObject;
  * @param <E>
  *
  */
-public abstract class ModelBuilder<E extends AbstractModelProvider<T>, T extends EObject> {
+public abstract class AbstractModelBuilder<E extends AbstractModelProvider<T>, T extends EObject> {
 
     /** model provider. */
     protected final E modelProvider;
@@ -41,7 +41,7 @@ public abstract class ModelBuilder<E extends AbstractModelProvider<T>, T extends
      * @param modelToStartWith
      *            model to work on
      */
-    public ModelBuilder(final E modelToStartWith) {
+    public AbstractModelBuilder(final E modelToStartWith) {
         this.modelProvider = modelToStartWith;
     }
 

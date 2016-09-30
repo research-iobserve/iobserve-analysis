@@ -21,7 +21,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
 public class ResourceEnvironmentModelBuilder
-        extends ModelBuilder<ResourceEnvironmentModelProvider, ResourceEnvironment> {
+        extends AbstractModelBuilder<ResourceEnvironmentModelProvider, ResourceEnvironment> {
 
     public ResourceEnvironmentModelBuilder(final ResourceEnvironmentModelProvider modelToStartWith) {
         super(modelToStartWith);
