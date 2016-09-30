@@ -47,9 +47,10 @@ dependencies {
 	compile 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
 	compile 'extra:org.eclipse.net4j:4.5.0.v20160607-1254'
 	compile 'extra:org.eclipse.net4j.util:3.6.0.v20160607-1254'
+	compile 'extra:org.eclipse.equinox.common:3.8.0.v20160509-1230'
 	
 	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
-  	compile 'org.apache.logging.log4j:log4j-core:2.6.2'
+	compile 'org.apache.logging.log4j:log4j-core:2.6.2'
 }
 
 sourceSets {
