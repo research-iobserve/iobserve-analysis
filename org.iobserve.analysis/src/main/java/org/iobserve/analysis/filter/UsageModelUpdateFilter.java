@@ -32,16 +32,16 @@ import teetime.framework.AbstractConsumerStage;
  */
 public class UsageModelUpdateFilter extends AbstractConsumerStage<List<EntryCallEvent>> {
 
-	private final ICorrespondence correspondenceModel;
+    private final ICorrespondence correspondenceModel;
 
-	public UsageModelUpdateFilter(final ICorrespondence correspondenceModel) {
-		this.correspondenceModel = correspondenceModel;
-	}
+    public UsageModelUpdateFilter(final ICorrespondence correspondenceModel) {
+        this.correspondenceModel = correspondenceModel;
+    }
 
-	@Override
-	protected void execute(final List<EntryCallEvent> element) {
-		// TODO Auto-generated method stub
+    @Override
+    protected void execute(final List<EntryCallEvent> element) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
 }

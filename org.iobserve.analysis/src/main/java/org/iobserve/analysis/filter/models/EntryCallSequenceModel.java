@@ -18,32 +18,34 @@ package org.iobserve.analysis.filter.models;
 import java.util.List;
 
 /**
- * Entry Call Sequence Model according to Fig. 7 in paper <i>Run-time
- * Architecture Models for Dynamic Adaptation and Evolution of Cloud
- * Applications</i>
+ * Entry Call Sequence Model according to Fig. 7 in paper <i>Run-time Architecture Models for
+ * Dynamic Adaptation and Evolution of Cloud Applications</i>
  * 
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
  */
 public final class EntryCallSequenceModel {
-	
-	/**list of user sessions.*/
-	private final List<UserSession> userSessions;
-	
-	/**
-	 * Create new model.
-	 * @param sessions sessions.
-	 */
-	public EntryCallSequenceModel(final List<UserSession> sessions) {
-		this.userSessions = sessions;
-	}
-	
-	/**
-	 * Get the user session objects which contain the entry call events.
-	 * @return list of user sessions
-	 */
-	public List<UserSession> getUserSessions() {
-		return this.userSessions;
-	}
+
+    /** list of user sessions. */
+    private final List<UserSession> userSessions;
+
+    /**
+     * Create new model.
+     * 
+     * @param sessions
+     *            sessions.
+     */
+    public EntryCallSequenceModel(final List<UserSession> sessions) {
+        this.userSessions = sessions;
+    }
+
+    /**
+     * Get the user session objects which contain the entry call events.
+     * 
+     * @return list of user sessions
+     */
+    public List<UserSession> getUserSessions() {
+        return this.userSessions;
+    }
 }

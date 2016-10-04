@@ -32,89 +32,90 @@ import java.io.UnsupportedEncodingException;
  */
 public final class TimeLogger {
 
-	/** bad excuse for a singleton. */
-	public static final TimeLogger INSTANCE = new TimeLogger();
+    /** bad excuse for a singleton. */
+    public static final TimeLogger INSTANCE = new TimeLogger();
 
-	/** output of the time logger. */
-	private BufferedWriter writer;
+    /** output of the time logger. */
+    private BufferedWriter writer;
 
-	/** last present time record. */
-	private long presentTime;
+    /** last present time record. */
+    private long presentTime;
 
-	/** remember a time measurement. */
-	private long pastTime;
+    /** remember a time measurement. */
+    private long pastTime;
 
-	/** i don't know. !! */
-	private long rememberedTime;
+    /** i don't know. !! */
+    private long rememberedTime;
 
-	/** what? */
-	private volatile boolean haveVal;
+    /** what? */
+    private volatile boolean haveVal;
 
-	/**
-	 *
-	 */
-	private TimeLogger() {}
+    /**
+     *
+     */
+    private TimeLogger() {
+    }
 
-	/**
-	 * Return the TimeLogger singleton.
-	 *
-	 * @return
-	 */
-	public static TimeLogger getTimeLogger() {
-		return INSTANCE;
-	}
+    /**
+     * Return the TimeLogger singleton.
+     *
+     * @return
+     */
+    public static TimeLogger getTimeLogger() {
+        return INSTANCE;
+    }
 
-	public void open(final String filename) throws UnsupportedEncodingException, FileNotFoundException {
-		this.writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), "utf-8"));
-		this.presentTime = System.nanoTime();
-	}
+    public void open(final String filename) throws UnsupportedEncodingException, FileNotFoundException {
+        this.writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filename), "utf-8"));
+        this.presentTime = System.nanoTime();
+    }
 
-	public void write(final Object value) {
-		try {
-			if (value instanceof String) {
-				this.writer.write("\"" + value + "\";");
-			} else {
-				this.writer.write(value + ";");
-			}
-		} catch (final IOException e) {
-			// TODO there is a thing called Logger, use it.
-			System.out.println("record failure.");
-		}
-	}
+    public void write(final Object value) {
+        try {
+            if (value instanceof String) {
+                this.writer.write("\"" + value + "\";");
+            } else {
+                this.writer.write(value + ";");
+            }
+        } catch (final IOException e) {
+            // TODO there is a thing called Logger, use it.
+            System.out.println("record failure.");
+        }
+    }
 
-	public void newline() {
-		try {
-			this.writer.write("\n");
-		} catch (final IOException e) {
-			System.out.println("record failure.");
-		}
-	}
+    public void newline() {
+        try {
+            this.writer.write("\n");
+        } catch (final IOException e) {
+            System.out.println("record failure.");
+        }
+    }
 
-	public void setPastTime(final long pastTime) {
-		this.pastTime = pastTime;
-	}
+    public void setPastTime(final long pastTime) {
+        this.pastTime = pastTime;
+    }
 
-	public void close() throws IOException {
-		this.writer.close();
-	}
+    public void close() throws IOException {
+        this.writer.close();
+    }
 
-	public long getTime() {
-		return (System.nanoTime() - this.presentTime) + this.pastTime;
-	}
+    public long getTime() {
+        return (System.nanoTime() - this.presentTime) + this.pastTime;
+    }
 
-	public long getPresentTime() {
-		return System.nanoTime();
-	}
+    public long getPresentTime() {
+        return System.nanoTime();
+    }
 
-	public void rememberTime() {
-		if (!this.haveVal) {
-			this.rememberedTime = System.nanoTime();
-			this.haveVal = true;
-		}
-	}
+    public void rememberTime() {
+        if (!this.haveVal) {
+            this.rememberedTime = System.nanoTime();
+            this.haveVal = true;
+        }
+    }
 
-	public long getRemberedTime() {
-		this.haveVal = false;
-		return this.rememberedTime;
-	}
+    public long getRemberedTime() {
+        this.haveVal = false;
+        return this.rememberedTime;
+    }
 }

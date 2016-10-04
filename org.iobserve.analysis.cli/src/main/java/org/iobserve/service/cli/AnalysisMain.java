@@ -36,106 +36,101 @@ import org.apache.commons.cli.ParseException;
  */
 public class AnalysisMain {
 
-	/**
-	 * Default constructor.
-	 */
-	private AnalysisMain() {
-		// do nothing here
-	}
+    /**
+     * Default constructor.
+     */
+    private AnalysisMain() {
+        // do nothing here
+    }
 
+    /**
+     * Main function.
+     *
+     * @param args
+     *            command line arguments.
+     */
+    public static void main(final String[] args) {
+        final CommandLineParser parser = new DefaultParser();
+        try {
+            CommandLine commandLine = parser.parse(createHelpOptions(), args);
 
-	/**
-	 * Main function.
-	 *
-	 * @param args command line arguments.
-	 */
-	public static void main(final String[] args) {
-		final CommandLineParser parser = new DefaultParser();
-		try {
-			CommandLine commandLine = parser.parse(createHelpOptions(), args);
+            if (commandLine.hasOption("h")) {
+                final HelpFormatter formatter = new HelpFormatter();
+                formatter.printHelp("iobserve-analysis", createOptions());
+            } else {
+                commandLine = parser.parse(createOptions(), args);
 
-			if (commandLine.hasOption("h")) {
-				final HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp( "iobserve-analysis", createOptions() );
-			} else {
-				commandLine = parser.parse(createOptions(), args);
+                final File monitoringDataDirectory = new File(commandLine.getOptionValue("i"));
+                if (monitoringDataDirectory.isDirectory()) {
+                    final String correspondenceMappingFile = commandLine.getOptionValue("c");
+                    final String pcmModelsDirectory = commandLine.getOptionValue("p");
 
-				final File monitoringDataDirectory = new File(commandLine.getOptionValue("i"));
-				if (monitoringDataDirectory.isDirectory()) {
-					final String correspondenceMappingFile = commandLine.getOptionValue("c");
-					final String pcmModelsDirectory = commandLine.getOptionValue("p");
+                    /** create and run application */
+                    Collection<File> monitoringDataDirectories = new ArrayList<File>();
+                    findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
 
-					/** create and run application */
-					Collection<File> monitoringDataDirectories = new ArrayList<File>();
-					findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
-					
-					final AnalysisExecution application = new AnalysisExecution(monitoringDataDirectories,
-							correspondenceMappingFile, pcmModelsDirectory);
-					application.run();
-				} else {
-					System.err.println("CLI error: " + monitoringDataDirectory.getName() + " is not a directory.");
-				}
-			}
-		} catch(final ParseException exp) {
-			System.err.println("CLI error: " + exp.getMessage());
-			final HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp("iobserve-analysis", createOptions());
-		}
-	}
+                    final AnalysisExecution application = new AnalysisExecution(monitoringDataDirectories,
+                            correspondenceMappingFile, pcmModelsDirectory);
+                    application.run();
+                } else {
+                    System.err.println("CLI error: " + monitoringDataDirectory.getName() + " is not a directory.");
+                }
+            }
+        } catch (final ParseException exp) {
+            System.err.println("CLI error: " + exp.getMessage());
+            final HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("iobserve-analysis", createOptions());
+        }
+    }
 
+    private static void findDirectories(File[] listFiles, Collection<File> monitoringDataDirectories) {
+        for (File file : listFiles) {
+            if (file.isDirectory()) {
+                monitoringDataDirectories.add(file);
+                findDirectories(file.listFiles(), monitoringDataDirectories);
+            }
+        }
+    }
 
-	private static void findDirectories(File[] listFiles, Collection<File> monitoringDataDirectories) {
-		for (File file : listFiles) {
-			if (file.isDirectory()) {
-				monitoringDataDirectories.add(file);
-				findDirectories(file.listFiles(), monitoringDataDirectories);
-			}
-		}
-	}
+    /**
+     * Create the command line parameter setup.
+     *
+     * @return options for the command line parser
+     */
+    private static Options createOptions() {
+        final Options options = new Options();
 
+        options.addOption(Option.builder("i").required(true).longOpt("input").hasArg()
+                .desc("a Kieker logfile directory").build());
+        options.addOption(Option.builder("c").required(true).longOpt("correspondence").hasArg()
+                .desc("correspondence model").build());
+        options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg()
+                .desc("directory containing all PCM models").build());
 
-	/**
-	 * Create the command line parameter setup.
-	 *
-	 * @return options for the command line parser
-	 */
-	private static Options createOptions() {
-		final Options options = new Options();
+        /** help */
+        options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
 
-		options.addOption(Option.builder("i").required(true).longOpt("input").hasArg().
-				desc("a Kieker logfile directory").build());
-		options.addOption(Option.builder("c").required(true).longOpt("correspondence").hasArg().
-				desc("correspondence model").build());
-		options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg().
-				desc("directory containing all PCM models").build());
+        return options;
+    }
 
-		/** help */
-		options.addOption(Option.builder("h").required(false).longOpt("help").
-				desc("show usage information").build());
+    /**
+     * Create a command line setup with only the help option.
+     *
+     * @return returns simplified options
+     */
+    private static Options createHelpOptions() {
+        final Options options = new Options();
 
-		return options;
-	}
+        options.addOption(Option.builder("i").required(false).longOpt("input").hasArg()
+                .desc("a Kieker logfile directory").build());
+        options.addOption(Option.builder("c").required(false).longOpt("correspondence").hasArg()
+                .desc("correspondence model").build());
+        options.addOption(Option.builder("p").required(false).longOpt("pcm").hasArg()
+                .desc("directory containing all PCM models").build());
 
-	/**
-	 * Create a command line setup with only the help option.
-	 *
-	 * @return returns simplified options
-	 */
-	private static Options createHelpOptions() {
-		final Options options = new Options();
+        /** help */
+        options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
 
-		options.addOption(Option.builder("i").required(false).longOpt("input").hasArg().
-				desc("a Kieker logfile directory").build());
-		options.addOption(Option.builder("c").required(false).longOpt("correspondence").hasArg().
-				desc("correspondence model").build());
-		options.addOption(Option.builder("p").required(false).longOpt("pcm").hasArg().
-				desc("directory containing all PCM models").build());
-		
-		/** help */
-		options.addOption(Option.builder("h").required(false).longOpt("help").
-				desc("show usage information").build());
-
-		return options;
-	}
+        return options;
+    }
 }
-
