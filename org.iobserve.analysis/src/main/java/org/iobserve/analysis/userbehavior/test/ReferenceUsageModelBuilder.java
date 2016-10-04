@@ -49,7 +49,7 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 /**
  *

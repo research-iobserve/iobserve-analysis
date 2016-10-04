@@ -42,8 +42,9 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      * @param platform
      *            the model provider platform
      */
-    public FileObservationConfiguration(final Collection<File> directories, final ModelProviderPlatform platform) {
-        super(platform);
+    public FileObservationConfiguration(final Collection<File> directories, final ModelProviderPlatform platform,
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+        super(platform, varianceOfUserGroups, thinkTime, closedWorkload);
 
         this.files = new InitialElementProducer<>(directories);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());

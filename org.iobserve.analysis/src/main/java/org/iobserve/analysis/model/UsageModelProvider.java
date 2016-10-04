@@ -22,7 +22,7 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 /**
  * Model provider to provide a {@link UsageModel}.
- * 
+ *
  * @author Robert Heinrich
  * @author Alessandro
  *
@@ -31,14 +31,14 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
 
     /**
      * Create usage model provider.
-     * 
+     *
      * @param uriUsageModel
      *            uri to model
      * @param thePlatform
      *            platform
      */
     public UsageModelProvider(final URI uriUsageModel, final ModelProviderPlatform thePlatform) {
-        super(uriUsageModel, thePlatform);
+        super(thePlatform, uriUsageModel);
     }
 
     @Override
@@ -47,7 +47,7 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
     }
 
     @Override
-    protected void loadModel() {
+    public void loadModel() {
         super.loadModel();
     }
 

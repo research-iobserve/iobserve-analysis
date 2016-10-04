@@ -16,16 +16,16 @@ import org.iobserve.analysis.service.updater.VisualizationUpdateStage;
  */
 public class ServiceConfiguration extends MultiInputObservationConfiguration {
 
-    public ServiceConfiguration(int inputPort, String outputHostname, String outputPort, String systemId,
-            ModelProviderPlatform platform) throws MalformedURLException {
-        super(inputPort, platform);
+    public ServiceConfiguration(final int inputPort, final String outputHostname, final String outputPort,
+            final String systemId, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
+            final ModelProviderPlatform platform) throws MalformedURLException {
+        super(inputPort, platform, varianceOfUserGroups, thinkTime, closedWorkload);
 
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
 
         final VisualizationUpdateStage visualizationUpdateStage = new VisualizationUpdateStage(url);
 
-        // TODO connect this filter and add one for the model update
     }
 
 }

@@ -22,35 +22,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
-import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.userbehavior.UserBehaviorModeling;
-
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Start;
 import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
-
-
-import com.google.common.base.Optional;
-
-import teetime.framework.AbstractConsumerStage;
-
-import org.iobserve.analysis.correspondence.Correspondent;
-import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.filter.models.UserSession;
-import org.iobserve.analysis.model.UsageModelBuilder;
-import org.iobserve.analysis.model.UsageModelProvider;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -62,12 +46,10 @@ import teetime.framework.AbstractConsumerStage;
  * @author Robert Heinrich
  * @author Alessandro Guisa
  * @author David Peter
- * 
+ *
  * @version 1.0
  */
 public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
-
-    private int counterSavedUsageModel = 0;
 
     private final UsageModelBuilder usageModelBuilder;
 
@@ -76,34 +58,43 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
     /** reference to the usage model provider. */
     private final UsageModelProvider usageModelProvider;
 
+    private final int numberOfUserGroups;
+
+    private final int varianceOfUserGroups;
+
+    private final int thinkTime;
+
+    private final boolean isClosedWorkload;
+
     /**
      * Create a entry event sequence filter.
      *
      * @param correspondenceModel
      * @param usageModelProvider
+     * @param varianceOfUserGroups
+     * @param thinkTime
+     * @param isClosedWorkload
      */
-    public TEntryEventSequence(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider) {
+    public TEntryEventSequence(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
         this.correspondenceModel = correspondenceModel;
         this.usageModelProvider = usageModelProvider;
-        this.usageModelBuilder = new UsageModelBuilder(modelProviderPlatform.getUsageModelProvider());
+        this.usageModelBuilder = new UsageModelBuilder(usageModelProvider);
+
+        this.numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+        this.varianceOfUserGroups = varianceOfUserGroups;
+        this.thinkTime = thinkTime;
+        this.isClosedWorkload = closedWorkload;
     }
 
     @Override
     protected void execute(final EntryCallSequenceModel model) {
-        // logging execution time and memory
-        AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId());
-
-        // Gets the input parameter for the user behavior modeling
-        final int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-        final int varianceOfUserGroups = AnalysisMain.getInstance().getInputParameter().getVarianceOfUserGroups();
-        final int thinkTime = AnalysisMain.getInstance().getInputParameter().getThinkTime();
-        final boolean isClosedWorkload = AnalysisMain.getInstance().getInputParameter().isClosedWorkload();
-
         // Resets the current usage model
         this.usageModelBuilder.loadModel().resetModel();
         // Executes the user behavior modeling procedure
-        final UserBehaviorModeling behaviorModeling = new UserBehaviorModeling(model, numberOfUserGroups,
-                varianceOfUserGroups, isClosedWorkload, thinkTime, this.usageModelBuilder, this.correspondenceModel);
+        final UserBehaviorModeling behaviorModeling = new UserBehaviorModeling(model, this.numberOfUserGroups,
+                this.varianceOfUserGroups, this.isClosedWorkload, this.thinkTime, this.usageModelBuilder,
+                this.correspondenceModel);
         try {
             behaviorModeling.modelUserBehavior();
         } catch (final IOException e) {
@@ -112,10 +103,6 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 
         // Sets the new usage model within iObserve
         this.usageModelBuilder.build();
-
-        // logging execution time and memory
-        AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId());
-
     }
 
     /**
@@ -199,7 +186,6 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
             builder.addUserAction(usageScenario, stop);
 
             builder.build();
-            this.counterSavedUsageModel++; // TODO just for now
         }
     }
 

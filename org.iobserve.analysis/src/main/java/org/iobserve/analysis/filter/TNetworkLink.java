@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -28,13 +32,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import kieker.common.record.flow.trace.TraceMetadata;
-
 import teetime.framework.AbstractConsumerStage;
-
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
 
 /**
  * TNetworkLink runs asynchronous from the other filters like TAllocation, TDeployment, TEntryCall ,
@@ -46,15 +44,13 @@ import org.iobserve.analysis.model.SystemModelProvider;
  * will be just a subset of the transitive closure. This part of the implementation is used
  * currently as fallback behavior, since there is now way to check whether or not the connection is
  * actual available. With future planed enhancements in monitoring, this will change.
- * 
+ *
  * @author Robert Heinrich
  * @author Reiner Jung
  * @author Alessandro Giusa
  */
 public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
-    private static long executionCounter = 0;
 
-    private final ICorrespondence correspondence;
     /** reference to allocation model provider. */
     private final AllocationModelProvider allocationModelProvider;
     /** reference to system model provider. */
@@ -64,7 +60,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
     /**
      * Create new TNetworkLink filter.
-     * 
+     *
      * @param allocationModelProvider
      * @param systemModelProvider
      * @param resourceEnvironmentModelProvider
@@ -79,14 +75,12 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
     /**
      * Execute this filter.
-     * 
+     *
      * @param event
      *            event to use
      */
     @Override
     protected void execute(final TraceMetadata event) {
-        AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TNetworkLink.executionCounter);
-
         final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
                 this.resourceEnvironmentModelProvider);
         builder.loadModel();
@@ -98,22 +92,19 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
             TNetworkLink.getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
                     .map(asmCtx -> TNetworkLink.getConnectedAsmCtx(system, asmCtx))
                     .map(listAsmCtxToConnect -> TNetworkLink.collectResourceContainer(allocation, listAsmCtxToConnect))
-                    .map(listResContToConnectTo -> TNetworkLink.getLinkingResources(resEnv, listResContToConnectTo))
+                    .map(listResContToConnectTo -> TNetworkLink.getLinkingResources(resourceEnvironment,
+                            listResContToConnectTo))
                     .flatMap(l -> l.stream()).collect(Collectors.toList()).stream()
                     .forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
         });
 
         // build the model
         builder.build();
-        AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TNetworkLink.executionCounter); // TODO
-                                                                                                                 // testing
-                                                                                                                 // logger
-        TNetworkLink.executionCounter++;
     }
 
     /**
      * Check whether or not the given {@link ResourceContainer} are the same.
-     * 
+     *
      * @param res1
      *            first
      * @param res2
@@ -126,7 +117,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
     /**
      * Check whether or not the given {@link AssemblyContext} are the same.
-     * 
+     *
      * @param asm1
      *            first
      * @param asm2
@@ -144,7 +135,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
     /**
      * Check whether or not the given {@link AssemblyContext} are the same.
-     * 
+     *
      * @param asm1
      *            first
      * @param asm2
@@ -159,7 +150,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
     /**
      * Get all links of the given resource container.
-     * 
+     *
      * @param env
      *            environment.
      * @param listContainer
@@ -178,7 +169,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
     /**
      * Collect all {@link ResourceContainer} which are not connected yet.
-     * 
+     *
      * @param env
      *            environment
      * @return list list of resource container
@@ -190,7 +181,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
     /**
      * Get all {@link LinkingResource} for the given {@link ResourceContainer}.
-     * 
+     *
      * @param env
      *            env
      * @param container
@@ -206,7 +197,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     /**
      * Check whether or not the given {@link LinkingResource} has the given
      * {@link ResourceContainer} connected.
-     * 
+     *
      * @param link
      *            link
      * @param container
@@ -226,7 +217,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     /**
      * Get all {@link AssemblyContext} instances which are deployed on the given
      * {@link ResourceContainer}.
-     * 
+     *
      * @param allocation
      *            allocation
      * @param container
@@ -243,7 +234,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     /**
      * Get all {@link AssemblyContext} instances which are connected to the given
      * {@link AssemblyContext}.
-     * 
+     *
      * @param system
      *            system
      * @param queryAsm
@@ -263,7 +254,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     /**
      * same as {@link #getConnectedAsmCtx(org.palladiosimulator.pcm.system.System, AssemblyContext)}
      * but for all the {@link AssemblyContext} objects in the provided list.
-     * 
+     *
      * @param system
      *            system object
      * @param listQueryAsm
@@ -279,7 +270,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     /**
      * Collect all {@link ResourceContainer} where the given list of {@link AssemblyContext} are
      * deployed.
-     * 
+     *
      * @param allocation
      *            allocation
      * @param listAsm
@@ -294,12 +285,11 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
                         .map(i -> i.getResourceContainer_AllocationContext()).collect(Collectors.toList()))
                 .flatMap(l -> l.stream()).collect(Collectors.toList());
 
-        
     }
 
     /**
      * Try the cast and give an option of the casted connector back.
-     * 
+     *
      * @param connector
      *            connector
      * @return option on the cased connector. If present the cast was successfully

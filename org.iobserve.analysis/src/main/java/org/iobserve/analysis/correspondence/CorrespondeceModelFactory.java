@@ -81,24 +81,22 @@ public final class CorrespondeceModelFactory {
         return mapping;
     }
 
-    // **********************************************************************
-    // Default implementations For OperationSignatureMapper
-    // **********************************************************************
-
     /**
      * Check the name of the method against the operation signature. Return true if the method name
      * contains the operation signature name.
      */
-    public final OperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER = (method,
-            operationSignature) -> trimAndRemoveSpaces(method.getName()).get()
-                    .contains(trimAndRemoveSpaces(operationSignature.getName()).get());
+    public final static IOperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER = (method,
+            operationSignature) -> StringUtils.trimAndRemoveSpaces(method.getName()).get()
+                    .contains(StringUtils.trimAndRemoveSpaces(operationSignature.getName()).get());
 
     /**
      * Check the name of the method or the class against the operation signature. Return true if the
      * method name or the class name contains the operation signature name.
      */
-    public final OperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER_2 = (method,
-            operationSignature) -> this.DEFAULT_OPERATION_SIGNATURE_MAPPER.select(method, operationSignature) || method
-                    .getParent().getUnitName().toLowerCase().contains(operationSignature.getName().toLowerCase());
+    public final static IOperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER_2 = (method,
+            operationSignature) -> CorrespondeceModelFactory.DEFAULT_OPERATION_SIGNATURE_MAPPER.select(method,
+                    operationSignature)
+                    || method.getParent().getUnitName().toLowerCase()
+                            .contains(operationSignature.getName().toLowerCase());
 
 }

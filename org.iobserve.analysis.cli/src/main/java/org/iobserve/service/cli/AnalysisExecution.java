@@ -21,10 +21,12 @@ public class AnalysisExecution {
     private final ModelProviderPlatform modelProviderPlatform;
 
     public AnalysisExecution(final Collection<File> monitoringDataDirectories, final String correspondenceFile,
-            final String pcmModelsDirectory) {
+            final String pcmModelsDirectory, final int varianceOfUserGroups, final int thinkTime,
+            final boolean closedWorkload) {
         this.modelProviderPlatform = new ModelProviderPlatform(pcmModelsDirectory);
 
-        this.configuration = new FileObservationConfiguration(monitoringDataDirectories, this.modelProviderPlatform);
+        this.configuration = new FileObservationConfiguration(monitoringDataDirectories, this.modelProviderPlatform,
+                varianceOfUserGroups, thinkTime, closedWorkload);
     }
 
     /**

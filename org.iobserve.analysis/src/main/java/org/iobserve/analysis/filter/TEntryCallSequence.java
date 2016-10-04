@@ -19,12 +19,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
-
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
+
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 /**
  * Represents the TEntryCallSequence Transformation in the paper <i>Run-time Architecture Models for
@@ -37,13 +37,10 @@ import org.iobserve.analysis.filter.models.UserSession;
  */
 public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
 
-    private static int executionCounter = 0;
-
     /** threshold for user session elements until their are send to the next filter. */
     private static final int USER_SESSION_THRESHOLD = 0;
     /** map of sessions. */
     private final HashMap<String, UserSession> sessions = new HashMap<>();
-    private final List<EntryCallEvent> entryCallEventWrappers = new ArrayList<EntryCallEvent>();
     /** output port. */
     private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
 
@@ -56,9 +53,6 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
 
     @Override
     protected void execute(final EntryCallEvent event) {
-        // logging execution time and memory
-        AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + executionCounter);
-
         // add the event to the corresponding user session
         // in case the user session is not yet available, create one
         final String userSessionId = UserSession.parseUserSessionId(event);
@@ -78,12 +72,6 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
         if (!listToSend.isEmpty()) {
             this.outputPort.send(new EntryCallSequenceModel(listToSend));
         }
-
-        // logging execution time and memory
-        AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + executionCounter);
-
-        // count execution
-        executionCounter++;
     }
 
     /**

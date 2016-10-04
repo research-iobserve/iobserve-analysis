@@ -15,11 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
-
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -27,19 +22,21 @@ import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and
  * UndeploymentEventTransformation. However, that would require two input ports. And I have not used
- * the API for multiple input ports.
- * TAllocation creates new resource container if and only if there not already available.
+ * the API for multiple input ports. TAllocation creates new resource container if and only if there
+ * not already available.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
 public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
-
-    private static long executionCounter = 0;
 
     private final ICorrespondence correspondence;
     /** reference to {@link ResourceEnvironment} provider. */
@@ -77,10 +74,6 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
      */
     @Override
     protected void execute(final IDeploymentRecord event) {
-        AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TAllocation.executionCounter); // TODO
-                                                                                                                 // testing
-                                                                                                                 // logger
-
         if (event instanceof ServletDeployedEvent) {
             this.process((ServletDeployedEvent) event);
 
@@ -90,18 +83,12 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
 
         // forward the event
         this.deploymentOutputPort.send(event);
-
-        AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TAllocation.executionCounter); // TODO
-                                                                                                                // testing
-                                                                                                                // logger
-
-        TAllocation.executionCounter++;
     }
 
     /**
      * Process the given {@link ServletDeployedEvent} event. And call {@link #updateModel(String)}
      * to create a new server if necessary.
-     * 
+     *
      * @param event
      *            event to process
      */
@@ -113,7 +100,7 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
     /**
      * Process the given {@link EJBDeployedEvent} event. And call {@link #updateModel(String)} to
      * create a new server if necessary.
-     * 
+     *
      * @param event
      *            event to process
      */
@@ -124,7 +111,7 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
 
     /**
      * Update the allocation model with the given server-name if necessary.
-     * 
+     *
      * @param serverName
      *            server name
      */

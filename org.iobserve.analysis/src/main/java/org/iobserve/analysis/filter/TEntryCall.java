@@ -18,15 +18,14 @@ package org.iobserve.analysis.filter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.iobserve.analysis.data.EntryCallEvent;
+
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
-
-import org.iobserve.analysis.data.EntryCallEvent;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -42,12 +41,10 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     /** logger. */
     private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
 
-    private static int executionCounter = 0;
-
     /* added by Alessandro Giusa see EntryCallEvent class for more information. */
-    private final Map<Long, TraceMetadata> traceMetaDatas = new HashMap<Long, TraceMetadata>();
+    private final Map<Long, TraceMetadata> traceMetaDatas = new HashMap<>();
     /** map of before operation events. */
-    private final Map<Long, BeforeOperationEvent> beforeOperationEvents = new HashMap<Long, BeforeOperationEvent>();
+    private final Map<Long, BeforeOperationEvent> beforeOperationEvents = new HashMap<>();
     /** output port. */
     private final OutputPort<EntryCallEvent> outputPort = this.createOutputPort();
 
@@ -66,10 +63,6 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
      */
     @Override
     protected void execute(final IFlowRecord event) {
-        AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TEntryCall.executionCounter); // TODO
-                                                                                                                // testing
-                                                                                                                // logger
-
         if (event instanceof TraceMetadata) {
             final TraceMetadata metaData = (TraceMetadata) event;
             /** only recognize traces which no parent trace (i.e. would be internal traces) */
@@ -106,13 +99,6 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
         } else {
             TEntryCall.LOG.warn("Unsuppored flow event type " + event.getClass().getCanonicalName());
         }
-
-        AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TEntryCall.executionCounter); // TODO
-                                                                                                               // testing
-                                                                                                               // logger
-
-        // count execution
-        TEntryCall.executionCounter++;
     }
 
     /**

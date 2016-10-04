@@ -57,7 +57,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      * @throws IOException
      *             for all file reading errors
      */
-    public AbstractObservationConfiguration(final ModelProviderPlatform platform) {
+    public AbstractObservationConfiguration(final ModelProviderPlatform platform, final int varianceOfUserGroups,
+            final int thinkTime, final boolean closedWorkload) {
         final ICorrespondence correspondenceModel = platform.getCorrespondenceModel();
         final UsageModelProvider usageModelProvider = platform.getUsageModelProvider();
         final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = platform
@@ -75,12 +76,12 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 systemModelProvider, resourceEvnironmentModelProvider);
         final TEntryCall tEntryCall = new TEntryCall();
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
-        final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel,
-                usageModelProvider);
+        final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
+                varianceOfUserGroups, thinkTime, closedWorkload);
         final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
                 resourceEvnironmentModelProvider);
 
-        /** dispatch different monitoring data */
+        /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
         this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());

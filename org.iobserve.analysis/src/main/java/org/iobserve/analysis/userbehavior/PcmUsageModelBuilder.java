@@ -41,7 +41,7 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 /**
  * This class creates a PCM usage model from the passed LoopBranchModels. For each user group its

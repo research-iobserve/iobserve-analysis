@@ -36,8 +36,6 @@ import org.iobserve.analysis.protocom.PcmOperationSignature;
  */
 class CorrespondenceModelImpl implements ICorrespondence {
 
-    private static final String PROTOCOM_BASE_PACKAGE_NAME = "org.palladiosimulator.protocom";
-
     /** cache for already mapped correspondences. */
     private final Map<String, Correspondent> cachedCorrespondents = new HashMap<>();
 
@@ -280,50 +278,6 @@ class CorrespondenceModelImpl implements ICorrespondence {
 
         return opSig;
     }
-
-    /**
-<<<<<<< HEAD
-     * Builds the signature out of packagname.MethodName()
-     */
-    private final MethodSignatureBuilder mPackageNameClassNameMethodName = new MethodSignatureBuilder() {
-
-        @Override
-        public String build(final PcmCorrespondentMethod method) {
-            final String packageName = method.getParent().getPackageName();
-            final String className = method.getParent().getUnitName();
-            final String methodName = method.getName();
-            return packageName + "." + className + "." + methodName + "()";
-        }
-    };
-
-    /**
-     * Builds the signature like it would appear in the source code for instance void Get().
-     */
-    private final MethodSignatureBuilder mOnlyMethodName = new MethodSignatureBuilder() {
-
-        @Override
-        public String build(final PcmCorrespondentMethod method) {
-            final StringBuilder builder = new StringBuilder();
-
-            // build method signature
-            builder.append(method.getVisibilityModifier());
-            builder.append(" ");
-            builder.append(method.getReturnType());
-            builder.append(" ");
-            builder.append(method.getName());
-            builder.append("(");
-            builder.append(method.getParameters().replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
-            // TODO I do not know how to handle multiple parameters..since I did not see such after
-            // protocom build
-            builder.append(")");
-            // TODO <exception throws signature> is missing since this is not retrievable from
-            // protocom-generation process so far.
-
-            final String methodSig = builder.toString().trim();
-
-            return methodSig;
-        }
-    };
 
     /**
      * Map the given method to the correspondent operation signature based on the name. The

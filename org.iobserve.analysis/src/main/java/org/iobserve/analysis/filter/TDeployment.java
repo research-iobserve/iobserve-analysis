@@ -41,19 +41,16 @@ import teetime.framework.AbstractConsumerStage;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-<<<<<<< HEAD
 public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
-
-    private static long executionCounter = 0;
 
     /** reference to correspondent model. */
     private final ICorrespondence correspondence;
     /** reference to allocation model provider. */
-    private AllocationModelProvider allocationModelProvider;
+    private final AllocationModelProvider allocationModelProvider;
     /** reference to system model provider. */
-    private SystemModelProvider systemModelProvider;
+    private final SystemModelProvider systemModelProvider;
     /** reference to resource environment model provider. */
-    private ResourceEnvironmentModelProvider resourceEnvModelProvider;
+    private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -62,9 +59,9 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      * @param correspondence
      *            the correspondence model access
      */
-    public TDeployment(ICorrespondence correspondence, AllocationModelProvider allocationModelProvider,
-            SystemModelProvider systemModelProvider,
-            ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+    public TDeployment(final ICorrespondence correspondence, final AllocationModelProvider allocationModelProvider,
+            final SystemModelProvider systemModelProvider,
+            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
         // get all model references
         this.correspondence = correspondence;
         this.allocationModelProvider = allocationModelProvider;
@@ -80,27 +77,17 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      */
     @Override
     protected void execute(final IDeploymentRecord event) {
-        AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TDeployment.executionCounter); // TODO
-                                                                                                                 // testing
-                                                                                                                 // logger
-
         if (event instanceof ServletDeployedEvent) {
             this.process((ServletDeployedEvent) event);
 
         } else if (event instanceof EJBDeployedEvent) {
             this.process((EJBDeployedEvent) event);
         }
-
-        AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + TDeployment.executionCounter); // TODO
-                                                                                                                // testing
-                                                                                                                // logger
-
-        TDeployment.executionCounter++;
     }
 
     /**
      * Process the given {@link ServletDeployedEvent} event and update the model.
-     * 
+     *
      * @param event
      *            event to process
      */
@@ -114,7 +101,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 
     /**
      * Process the given {@link EJBDeployedEvent} event and update the model.
-     * 
+     *
      * @param event
      *            event to process
      */
@@ -129,7 +116,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 
     /**
      * Update the system- and allocation-model by the given correspondent.
-     * 
+     *
      * @param serverName
      *            name of the server
      * @param correspondent
@@ -152,21 +139,21 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
                 .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n"));
 
         // get the assembly context. Create it if necessary
-        AssemblyContext assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName);
+        AssemblyContext assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName).get();
 
         // in case the assembly context is null, TDeployment should create it
         if (assemblyContext == null) {
             // create assembly context
             final SystemModelBuilder systemBuilder = new SystemModelBuilder(this.systemModelProvider);
             systemBuilder.loadModel().createAssemblyContextsIfAbsent(asmContextName).build();
-            assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName);
+            assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName).get();
         }
     }
 
     /**
      * Add allocation context to allocation model with the given {@link ResourceContainer} and
      * {@link AssemblyContext} identified by the given entity name.
-     * 
+     *
      * @param resourceContainer
      *            instance of resource container
      * @param asmContextName
@@ -175,7 +162,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     private void updateModel(final ResourceContainer resourceContainer, final String asmContextName) {
         // get assembly context by name or create it if necessary.
         final AssemblyContext assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName)
-                .orElse(createAssemblyContextByName(this.systemModelProvider, asmContextName));
+                .orElse(TDeployment.createAssemblyContextByName(this.systemModelProvider, asmContextName));
 
         // update the allocation model
         final AllocationModelBuilder builder = new AllocationModelBuilder(this.allocationModelProvider);
@@ -187,7 +174,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 
     /**
      * Create {@link AssemblyContext} with the given name.
-     * 
+     *
      * @param provider
      *            provider
      * @param name

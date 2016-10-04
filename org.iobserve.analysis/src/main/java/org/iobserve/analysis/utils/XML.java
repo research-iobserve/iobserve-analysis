@@ -63,9 +63,11 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
+// TODO this class is broken. It is unclear why?
+
 /**
  * Xml Helper class. This class provides much useful methods to work with XMLs.
- * 
+ *
  * @author Alessandro Giusa
  *
  */
@@ -106,7 +108,7 @@ public final class XML {
     private Document doc;
 
     /** context of this XML object */
-    private final Map<String, Object> context = new HashMap<String, Object>();
+    private final Map<String, Object> context = new HashMap<>();
 
     /** namespace context */
     private final SimpleNameSpaceContext namespaceContext = new SimpleNameSpaceContext();
@@ -172,12 +174,12 @@ public final class XML {
             if ((input != null) && (input.available() != 0)) {
 
                 // validate
-                final Schema _schema = XML.createSchema(schemaInput, XMLConstants.XML_DTD_NS_URI);
+                final Schema schema = XML.createSchema(schemaInput, XMLConstants.XML_DTD_NS_URI);
 
                 final DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
                 df.setNamespaceAware(true);
                 df.setValidating(true); // this is when validating with DTD
-                df.setSchema(_schema);
+                // df.setSchema(schema); // TODO fix this, the method exits
                 final DocumentBuilder docBuilder = df.newDocumentBuilder();
                 final SimpleErrorHandler seh = new SimpleErrorHandler();
                 docBuilder.setErrorHandler(seh);
@@ -233,7 +235,7 @@ public final class XML {
 
                 final DocumentBuilderFactory df = DocumentBuilderFactory.newInstance();
                 df.setNamespaceAware(true);
-                df.setSchema(_schema);
+                // df.setSchema(_schema); // TODO this is correct code, why does this not work?
                 final DocumentBuilder docBuilder = df.newDocumentBuilder();
 
                 // read
@@ -372,7 +374,7 @@ public final class XML {
     public void addNode(final Node parent, final String name, final String content) {
         final Element elem = this.doc.createElement(name);
         if (content != null) {
-            elem.setTextContent(content);
+            // elem.setTextContent(content);
         }
         parent.appendChild(elem);
         this.lastTouched = elem;
@@ -668,8 +670,8 @@ public final class XML {
      */
     private final void attachNode(final Node n1, final Node n2) {
         try {
-            Node myNode = n1.cloneNode(true);
-            myNode = this.doc.adoptNode(myNode);
+            final Node myNode = n1.cloneNode(true);
+            // myNode = this.doc.adoptNode(myNode);
             if (myNode != null) {
                 n2.appendChild(myNode);
             }
@@ -687,59 +689,59 @@ public final class XML {
      */
     private void walkRecursivlyBreadthFirstSearch(final List<Node> visitedNodes, final Node node,
             final AbstractXMLVisitor... visitors) {
-        if (node != null) {
-            XMLOption option = XMLOption.CONTINUE;
-            for (final AbstractXMLVisitor visitor : visitors) {
-                try {
-                    // TODO this is super ugly. Use if-then-else instead
-                    switch (node.getNodeType()) {
-                    case Node.ELEMENT_NODE:
-                        option = visitor.visitNode(node);
-                        if ((option != XMLOption.BREAK) && !node.getTextContent().isEmpty()) {
-                            option = visitor.visitNode(node.getTextContent());
-                        }
-                        visitedNodes.add(node);
-
-                        // compute attributes
-                        if (node.hasAttributes()) {
-                            final int _lenAttr = node.getAttributes().getLength();
-                            Node _nodeAttr;
-                            for (int i = 0; i < _lenAttr; i++) {
-                                _nodeAttr = node.getAttributes().item(i);
-                                option = visitor.visitAttr(_nodeAttr);
-                                if ((option != XMLOption.BREAK) && !_nodeAttr.getTextContent().isEmpty()) {
-                                    option = visitor.visitAttr(_nodeAttr.getTextContent());
-                                }
-                            }
-                        }
-                        break;
-                    default:
-                        break;
-                    }
-                    // check if this can be replaced by a specific exception
-                } catch (final Exception e) { // NOCS
-                    e.printStackTrace();
-                }
-                switch (option) {
-                case CONTINUE:
-                    // do nothing
-                    break;
-                case BREAK:
-                    // end with the recursive walk through
-                    return;
-                case SKIP:
-                    // TODO no functionality yet
-                    break;
-                case BREADTH_FIRST_SEARCH:
-                    break;
-                case DEPTH_FIRST_SEARCH:
-                    break;
-                default:
-                    break;
-                }
-            }
-            this.walkRecursivlyBreadthFirstSearch(visitedNodes, node.getNextSibling(), visitors);
-        }
+        // if (node != null) {
+        // XMLOption option = XMLOption.CONTINUE;
+        // for (final AbstractXMLVisitor visitor : visitors) {
+        // try {
+        // // TODO this is super ugly. Use if-then-else instead
+        // switch (node.getNodeType()) {
+        // case Node.ELEMENT_NODE:
+        // option = visitor.visitNode(node);
+        // if ((option != XMLOption.BREAK) && !node.getTextContent().isEmpty()) {
+        // option = visitor.visitNode(node.getTextContent());
+        // }
+        // visitedNodes.add(node);
+        //
+        // // compute attributes
+        // if (node.hasAttributes()) {
+        // final int _lenAttr = node.getAttributes().getLength();
+        // Node _nodeAttr;
+        // for (int i = 0; i < _lenAttr; i++) {
+        // _nodeAttr = node.getAttributes().item(i);
+        // option = visitor.visitAttr(_nodeAttr);
+        // if ((option != XMLOption.BREAK) && !_nodeAttr.getTextContent().isEmpty()) {
+        // option = visitor.visitAttr(_nodeAttr.getTextContent());
+        // }
+        // }
+        // }
+        // break;
+        // default:
+        // break;
+        // }
+        // // check if this can be replaced by a specific exception
+        // } catch (final Exception e) { // NOCS
+        // e.printStackTrace();
+        // }
+        // switch (option) {
+        // case CONTINUE:
+        // // do nothing
+        // break;
+        // case BREAK:
+        // // end with the recursive walk through
+        // return;
+        // case SKIP:
+        // // TODO no functionality yet
+        // break;
+        // case BREADTH_FIRST_SEARCH:
+        // break;
+        // case DEPTH_FIRST_SEARCH:
+        // break;
+        // default:
+        // break;
+        // }
+        // }
+        // this.walkRecursivlyBreadthFirstSearch(visitedNodes, node.getNextSibling(), visitors);
+        // }
         // here there is no sibling any more
         if (visitedNodes.size() > 0) {
             final int len = visitedNodes.size() - 1;
@@ -754,72 +756,72 @@ public final class XML {
         }
     }
 
-    private void walkRecursivlyDepthFirstSearch(Node start, final Node node, final AbstractXMLVisitor... visitors)
+    private void walkRecursivlyDepthFirstSearch(final Node start, final Node node, final AbstractXMLVisitor... visitors)
             throws XMLNotification {
-        if (node != null) {
-            XMLOption option = XMLOption.CONTINUE;
-            for (final AbstractXMLVisitor visitor : visitors) {
-                try {
-                    // TODO this is ugly use if-then-else instead
-                    switch (node.getNodeType()) {
-                    case Node.ELEMENT_NODE:
-                        option = visitor.visitNode(node);
-                        if ((option != XMLOption.BREAK) && !node.getTextContent().isEmpty()) {
-                            option = visitor.visitNode(node.getTextContent());
-                        }
-
-                        // compute attributes
-                        if (node.hasAttributes()) {
-                            final int _lenAttr = node.getAttributes().getLength();
-                            Node _nodeAttr;
-                            for (int i = 0; i < _lenAttr; i++) {
-                                _nodeAttr = node.getAttributes().item(i);
-                                option = visitor.visitAttr(_nodeAttr);
-                                if ((option != XMLOption.BREAK) && !_nodeAttr.getTextContent().isEmpty()) {
-                                    option = visitor.visitAttr(_nodeAttr.getTextContent());
-                                }
-                            }
-                        }
-                        break;
-                    default:
-                        break;
-                    }
-                    // check if this can be replaced by a specific exception
-                } catch (final Exception e) { // NOCS
-                    e.printStackTrace();
-                }
-                switch (option) {
-                case CONTINUE:
-                    // do nothing
-                    break;
-                case BREAK:
-                    // end with the recursive walk through
-                    return;
-                case SKIP:
-                    // TODO no functionality yet
-                    break;
-                case BREADTH_FIRST_SEARCH:
-                    break;
-                case DEPTH_FIRST_SEARCH:
-                    break;
-                default:
-                    break;
-                }
-            }
-            this.walkRecursivlyDepthFirstSearch(node, node.getFirstChild(), visitors);
-        }
-        // here there is no sibling any more
-        Node nextSibling = null;
-        // TODO this is very ugly, as a parameter passed to the method is used as a variable
-        while ((nextSibling = start.getNextSibling()) == null) {
-            start = start.getParentNode(); // NOCS (please remove this)
-            if (start.getNodeType() == Node.DOCUMENT_NODE) {
-                throw new XMLNotification(XMLNotification.SUCCESSFULLY_FINISHED);
-            }
-        }
-        if (nextSibling != null) {
-            this.walkRecursivlyDepthFirstSearch(start, nextSibling, visitors);
-        }
+        // if (node != null) {
+        // XMLOption option = XMLOption.CONTINUE;
+        // for (final AbstractXMLVisitor visitor : visitors) {
+        // try {
+        // // TODO this is ugly use if-then-else instead
+        // switch (node.getNodeType()) {
+        // case Node.ELEMENT_NODE:
+        // option = visitor.visitNode(node);
+        // if ((option != XMLOption.BREAK) && !node.getTextContent().isEmpty()) {
+        // option = visitor.visitNode(node.getTextContent());
+        // }
+        //
+        // // compute attributes
+        // if (node.hasAttributes()) {
+        // final int _lenAttr = node.getAttributes().getLength();
+        // Node _nodeAttr;
+        // for (int i = 0; i < _lenAttr; i++) {
+        // _nodeAttr = node.getAttributes().item(i);
+        // option = visitor.visitAttr(_nodeAttr);
+        // if ((option != XMLOption.BREAK) && !_nodeAttr.getTextContent().isEmpty()) {
+        // option = visitor.visitAttr(_nodeAttr.getTextContent());
+        // }
+        // }
+        // }
+        // break;
+        // default:
+        // break;
+        // }
+        // // check if this can be replaced by a specific exception
+        // } catch (final Exception e) { // NOCS
+        // e.printStackTrace();
+        // }
+        // switch (option) {
+        // case CONTINUE:
+        // // do nothing
+        // break;
+        // case BREAK:
+        // // end with the recursive walk through
+        // return;
+        // case SKIP:
+        // // TODO no functionality yet
+        // break;
+        // case BREADTH_FIRST_SEARCH:
+        // break;
+        // case DEPTH_FIRST_SEARCH:
+        // break;
+        // default:
+        // break;
+        // }
+        // }
+        // this.walkRecursivlyDepthFirstSearch(node, node.getFirstChild(), visitors);
+        // }
+        // // here there is no sibling any more
+        // Node nextSibling = null;
+        // // TODO this is very ugly, as a parameter passed to the method is used as a variable
+        // while ((nextSibling = start.getNextSibling()) == null) {
+        // start = start.getParentNode(); // NOCS (please remove this)
+        // if (start.getNodeType() == Node.DOCUMENT_NODE) {
+        // throw new XMLNotification(XMLNotification.SUCCESSFULLY_FINISHED);
+        // }
+        // }
+        // if (nextSibling != null) {
+        // this.walkRecursivlyDepthFirstSearch(start, nextSibling, visitors);
+        // }
     }
 
     // ********************************************************************
@@ -858,11 +860,11 @@ public final class XML {
      */
     private static class SimpleErrorHandler extends DefaultHandler {
 
-        private final List<SAXParseException> warnings = new ArrayList<SAXParseException>();
+        private final List<SAXParseException> warnings = new ArrayList<>();
 
-        private final List<SAXParseException> errors = new ArrayList<SAXParseException>();
+        private final List<SAXParseException> errors = new ArrayList<>();
 
-        private final List<SAXParseException> fatals = new ArrayList<SAXParseException>();
+        private final List<SAXParseException> fatals = new ArrayList<>();
 
         /**
          * dummy default constructor.
@@ -922,7 +924,7 @@ public final class XML {
     // and use a package to contain them together with the XML.java class
     public static class SimpleNameSpaceContext implements NamespaceContext {
 
-        private final Map<String, String> ctx = new HashMap<String, String>();
+        private final Map<String, String> ctx = new HashMap<>();
 
         /**
          * dummy constructor.
@@ -951,7 +953,7 @@ public final class XML {
 
         @Override
         public Iterator<String> getPrefixes(final String namespaceURI) {
-            final List<String> _list = new ArrayList<String>();
+            final List<String> _list = new ArrayList<>();
             _list.add(this.getPrefix(namespaceURI));
             return _list.iterator();
         }

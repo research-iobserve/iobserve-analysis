@@ -37,8 +37,9 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      * @param platform
      *            the platform model handler
      */
-    public MultiInputObservationConfiguration(final int inputPort, final ModelProviderPlatform platform) {
-        super(platform);
+    public MultiInputObservationConfiguration(final int inputPort, final ModelProviderPlatform platform,
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+        super(platform, varianceOfUserGroups, thinkTime, closedWorkload);
 
         // TODO we need a multi input reader (issue exists with TeeTime)
 

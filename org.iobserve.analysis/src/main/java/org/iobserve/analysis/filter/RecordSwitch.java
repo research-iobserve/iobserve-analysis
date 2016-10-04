@@ -20,16 +20,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IUndeploymentRecord;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
-
-import org.iobserve.common.record.IDeploymentRecord;
-import org.iobserve.common.record.IUndeploymentRecord;
 
 /**
  * The record switch filter is used to scan the event stream and send events based on their type to
@@ -39,8 +37,6 @@ import org.iobserve.common.record.IUndeploymentRecord;
  *
  */
 public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
-
-    private static int executionCounter = 0;
 
     private static final Logger LOGGER = LogManager.getLogger(RecordSwitch.class);
 
@@ -56,10 +52,6 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     /** internal map to collect unknown record types. */
     private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<>();
 
-    /**
-     * start time of the filter for monitoring purposes. Please use a monitoring framework for that.
-     */
-    private final long startTime;
     /** Statistics. */
     private int recordCount;
 
@@ -68,14 +60,10 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
      */
     public RecordSwitch() {
         // nothing to do here
-        this.startTime = System.nanoTime();
     }
 
     @Override
     protected void execute(final IMonitoringRecord element) {
-        // logging execution time and memory
-        AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + RecordSwitch.executionCounter);
-
         this.recordCount++;
         if (element instanceof IDeploymentRecord) {
             this.deploymentOutputPort.send((IDeploymentRecord) element);
@@ -103,12 +91,6 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
                 }
             }
         }
-
-        // logging execution time and memory
-        AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + RecordSwitch.executionCounter);
-
-        // count execution
-        RecordSwitch.executionCounter++;
     }
 
     /**

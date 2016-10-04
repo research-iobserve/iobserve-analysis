@@ -36,6 +36,10 @@ import org.apache.commons.cli.ParseException;
  */
 public class AnalysisMain {
 
+    private static final String VARIANCE_OF_USER_GROUPS = "variance-of-user-groups";
+    private static final String THINK_TIME = "think-time";
+    private static final String CLOSED_WORKLOAD = "closed-workload";
+
     /**
      * Default constructor.
      */
@@ -52,25 +56,33 @@ public class AnalysisMain {
     public static void main(final String[] args) {
         final CommandLineParser parser = new DefaultParser();
         try {
-            CommandLine commandLine = parser.parse(createHelpOptions(), args);
+            CommandLine commandLine = parser.parse(AnalysisMain.createHelpOptions(), args);
 
             if (commandLine.hasOption("h")) {
                 final HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("iobserve-analysis", createOptions());
+                formatter.printHelp("iobserve-analysis", AnalysisMain.createOptions());
             } else {
-                commandLine = parser.parse(createOptions(), args);
+                commandLine = parser.parse(AnalysisMain.createOptions(), args);
 
+                /** get configuration parameter. */
+                final int varianceOfUserGroups = Integer
+                        .parseInt(commandLine.getOptionValue(AnalysisMain.VARIANCE_OF_USER_GROUPS));
+                final int thinkTime = Integer.parseInt(commandLine.getOptionValue(AnalysisMain.THINK_TIME));
+                final boolean closedWorkload = commandLine.hasOption(AnalysisMain.CLOSED_WORKLOAD);
+
+                /** process parameter. */
                 final File monitoringDataDirectory = new File(commandLine.getOptionValue("i"));
                 if (monitoringDataDirectory.isDirectory()) {
                     final String correspondenceMappingFile = commandLine.getOptionValue("c");
                     final String pcmModelsDirectory = commandLine.getOptionValue("p");
 
                     /** create and run application */
-                    Collection<File> monitoringDataDirectories = new ArrayList<File>();
-                    findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
+                    final Collection<File> monitoringDataDirectories = new ArrayList<>();
+                    AnalysisMain.findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
 
                     final AnalysisExecution application = new AnalysisExecution(monitoringDataDirectories,
-                            correspondenceMappingFile, pcmModelsDirectory);
+                            correspondenceMappingFile, pcmModelsDirectory, varianceOfUserGroups, thinkTime,
+                            closedWorkload);
                     application.run();
                 } else {
                     System.err.println("CLI error: " + monitoringDataDirectory.getName() + " is not a directory.");
@@ -79,15 +91,15 @@ public class AnalysisMain {
         } catch (final ParseException exp) {
             System.err.println("CLI error: " + exp.getMessage());
             final HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("iobserve-analysis", createOptions());
+            formatter.printHelp("iobserve-analysis", AnalysisMain.createOptions());
         }
     }
 
-    private static void findDirectories(File[] listFiles, Collection<File> monitoringDataDirectories) {
-        for (File file : listFiles) {
+    private static void findDirectories(final File[] listFiles, final Collection<File> monitoringDataDirectories) {
+        for (final File file : listFiles) {
             if (file.isDirectory()) {
                 monitoringDataDirectories.add(file);
-                findDirectories(file.listFiles(), monitoringDataDirectories);
+                AnalysisMain.findDirectories(file.listFiles(), monitoringDataDirectories);
             }
         }
     }
@@ -106,6 +118,12 @@ public class AnalysisMain {
                 .desc("correspondence model").build());
         options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg()
                 .desc("directory containing all PCM models").build());
+        options.addOption(Option.builder("V").required(true).longOpt(AnalysisMain.VARIANCE_OF_USER_GROUPS).hasArg()
+                .desc("Variance of user groups for the clustering").build());
+        options.addOption(Option.builder("t").required(true).longOpt(AnalysisMain.THINK_TIME).hasArg()
+                .desc("Variance of user groups for the clustering").build());
+        options.addOption(
+                Option.builder("w").required(true).longOpt("closed-workload").desc("Closed workload").build());
 
         /** help */
         options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
@@ -127,6 +145,12 @@ public class AnalysisMain {
                 .desc("correspondence model").build());
         options.addOption(Option.builder("p").required(false).longOpt("pcm").hasArg()
                 .desc("directory containing all PCM models").build());
+        options.addOption(Option.builder("V").required(true).longOpt("variance-of-user-groups").hasArg()
+                .desc("Variance of user groups for the clustering").build());
+        options.addOption(Option.builder("t").required(true).longOpt("think-time").hasArg()
+                .desc("Variance of user groups for the clustering").build());
+        options.addOption(
+                Option.builder("w").required(true).longOpt("closed-workload").desc("Closed workload").build());
 
         /** help */
         options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());

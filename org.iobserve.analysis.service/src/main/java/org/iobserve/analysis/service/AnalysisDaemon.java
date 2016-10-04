@@ -24,6 +24,10 @@ import org.iobserve.analysis.model.ModelProviderPlatform;
  */
 public class AnalysisDaemon implements Daemon {
 
+    private static final String VARIANCE_OF_USER_GROUPS = "variance-of-user-groups";
+    private static final String THINK_TIME = "think-time";
+    private static final String CLOSED_WORKLOAD = "closed-workload";
+
     private AnalysisThread thread;
     private boolean running = false;
 
@@ -32,14 +36,15 @@ public class AnalysisDaemon implements Daemon {
         final String[] args = context.getArguments();
         final CommandLineParser parser = new DefaultParser();
         try {
-            CommandLine commandLine = parser.parse(createHelpOptions(), args);
+            CommandLine commandLine = parser.parse(AnalysisDaemon.createHelpOptions(), args);
 
             if (commandLine.hasOption("h")) {
                 final HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("iobserve-service", createOptions());
+                formatter.printHelp("iobserve-service", AnalysisDaemon.createOptions());
             } else {
-                commandLine = parser.parse(createOptions(), args);
+                commandLine = parser.parse(AnalysisDaemon.createOptions(), args);
 
+                /** get configuration parameter. */
                 final int listenPort = Integer.parseInt(commandLine.getOptionValue("i"));
                 final String outputHostname = commandLine.getOptionValues("o")[0];
                 final String outputPort = commandLine.getOptionValues("o")[1];
@@ -47,8 +52,14 @@ public class AnalysisDaemon implements Daemon {
                 final File correspondenceMappingFile = new File(commandLine.getOptionValue("c"));
                 final File pcmModelsDirectory = new File(commandLine.getOptionValue("p"));
 
+                final int varianceOfUserGroups = Integer
+                        .parseInt(commandLine.getOptionValue(AnalysisDaemon.VARIANCE_OF_USER_GROUPS));
+                final int thinkTime = Integer.parseInt(commandLine.getOptionValue(AnalysisDaemon.THINK_TIME));
+                final boolean closedWorkload = commandLine.hasOption(AnalysisDaemon.CLOSED_WORKLOAD);
+
                 final String systemId = commandLine.getOptionValue("s");
 
+                /** process parameter. */
                 if (correspondenceMappingFile.exists()) {
                     if (correspondenceMappingFile.canRead()) {
                         if (pcmModelsDirectory.exists()) {
@@ -56,7 +67,7 @@ public class AnalysisDaemon implements Daemon {
                                 final ModelProviderPlatform modelProvider = new ModelProviderPlatform(
                                         pcmModelsDirectory.getPath());
                                 this.thread = new AnalysisThread(this, listenPort, outputHostname, outputPort, systemId,
-                                        modelProvider);
+                                        varianceOfUserGroups, thinkTime, closedWorkload, modelProvider);
                             } else {
                                 throw new DaemonInitException("CLI error: PCM directory " + pcmModelsDirectory.getPath()
                                         + " is not a directory.");
@@ -77,7 +88,7 @@ public class AnalysisDaemon implements Daemon {
             }
         } catch (final ParseException exp) {
             final HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("iobserve-analysis", createOptions());
+            formatter.printHelp("iobserve-analysis", AnalysisDaemon.createOptions());
             throw new DaemonInitException("CLI error: " + exp.getMessage());
         }
     }

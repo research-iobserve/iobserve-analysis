@@ -28,10 +28,9 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.iobserve.analysis.utils.Opt;
 
 import de.uka.ipd.sdq.identifier.Identifier;
-
-import org.iobserve.analysis.utils.Opt;
 
 /**
  * Base class for pcm model provider. Implements common methods for loading/saving pcm model.
@@ -142,7 +141,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
 
     /**
      * Set the save strategy which is used to save the model, when {@link #save()} is called.
-     * 
+     *
      * @param saveStrategy
      *            save strategy
      */
@@ -196,7 +195,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
     /**
      * Load the model from {@link #uriModelInstance}.
      */
-    public final void loadModel() {
+    public void loadModel() {
         this.getPackage().eClass();
         Opt.of(this.modelLoader.load(this.uriModelInstance)).ifPresent().apply(this::setModel).elseApply(
                 () -> System.out.printf("Model at %s could not be loaded!\n", this.uriModelInstance.toString()));

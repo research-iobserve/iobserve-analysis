@@ -25,32 +25,24 @@ import org.palladiosimulator.pcm.system.SystemPackage;
 
 /**
  * Model provider to provide {@link System} model.
- * 
+ *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
  */
 public final class SystemModelProvider extends AbstractModelProvider<System> {
 
-    // ********************************************************************
-    // * INITIALIZATION
-    // ********************************************************************
-
     /**
      * Create model provider to provide {@link System} model.
-     * 
+     *
      * @param uriModelInstance
      *            uri to model
      * @param thePlatform
      *            platform
      */
     public SystemModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
-        super(uriModelInstance, thePlatform);
+        super(thePlatform, uriModelInstance);
     }
-
-    // ********************************************************************
-    // * GETTER / SETTER
-    // ********************************************************************
 
     @Override
     public EPackage getPackage() {
@@ -59,7 +51,7 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
 
     /**
      * Get the assembly context with the given id.
-     * 
+     *
      * @param id
      *            id
      * @return assembly context instance, null if no assembly context with the given id could be
@@ -73,7 +65,7 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
 
     /**
      * Get the assembly context by the name.
-     * 
+     *
      * @param name
      *            name of assembly context
      * @return assembly context instance, null if no assembly context with the given name could be
