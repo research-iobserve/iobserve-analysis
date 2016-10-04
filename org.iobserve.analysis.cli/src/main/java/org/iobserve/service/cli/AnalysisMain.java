@@ -26,6 +26,16 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.iobserve.analysis.FileObservationConfiguration;
+import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.ModelProviderPlatform;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.model.UsageModelProvider;
+
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
 
 /**
  * Main class for starting the iObserve application.
@@ -72,18 +82,35 @@ public class AnalysisMain {
 
                 /** process parameter. */
                 final File monitoringDataDirectory = new File(commandLine.getOptionValue("i"));
+
                 if (monitoringDataDirectory.isDirectory()) {
-                    final String correspondenceMappingFile = commandLine.getOptionValue("c");
-                    final String pcmModelsDirectory = commandLine.getOptionValue("p");
+                    final File pcmModelsDirectory = new File(commandLine.getOptionValue("p"));
+                    if (pcmModelsDirectory.exists()) {
+                        /** create and run application */
+                        final Collection<File> monitoringDataDirectories = new ArrayList<>();
+                        AnalysisMain.findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
 
-                    /** create and run application */
-                    final Collection<File> monitoringDataDirectories = new ArrayList<>();
-                    AnalysisMain.findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
+                        final ModelProviderPlatform modelProviderPlatform = new ModelProviderPlatform(
+                                pcmModelsDirectory);
 
-                    final AnalysisExecution application = new AnalysisExecution(monitoringDataDirectories,
-                            correspondenceMappingFile, pcmModelsDirectory, varianceOfUserGroups, thinkTime,
-                            closedWorkload);
-                    application.run();
+                        final ICorrespondence correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
+                        final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
+                        final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProviderPlatform
+                                .getResourceEnvironmentModelProvider();
+                        final AllocationModelProvider allocationModelProvider = modelProviderPlatform
+                                .getAllocationModelProvider();
+                        final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
+
+                        final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
+                                correspondenceModel, usageModelProvider, resourceEvnironmentModelProvider,
+                                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime,
+                                closedWorkload);
+
+                        final Execution<Configuration> analysis = new Execution<>(configuration);
+                        analysis.executeBlocking();
+                    } else {
+                        System.err.println(String.format("the pcm dir %s does not exist?!", pcmModelsDirectory));
+                    }
                 } else {
                     System.err.println("CLI error: " + monitoringDataDirectory.getName() + " is not a directory.");
                 }
@@ -114,8 +141,6 @@ public class AnalysisMain {
 
         options.addOption(Option.builder("i").required(true).longOpt("input").hasArg()
                 .desc("a Kieker logfile directory").build());
-        options.addOption(Option.builder("c").required(true).longOpt("correspondence").hasArg()
-                .desc("correspondence model").build());
         options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg()
                 .desc("directory containing all PCM models").build());
         options.addOption(Option.builder("V").required(true).longOpt(AnalysisMain.VARIANCE_OF_USER_GROUPS).hasArg()
@@ -141,8 +166,6 @@ public class AnalysisMain {
 
         options.addOption(Option.builder("i").required(false).longOpt("input").hasArg()
                 .desc("a Kieker logfile directory").build());
-        options.addOption(Option.builder("c").required(false).longOpt("correspondence").hasArg()
-                .desc("correspondence model").build());
         options.addOption(Option.builder("p").required(false).longOpt("pcm").hasArg()
                 .desc("directory containing all PCM models").build());
         options.addOption(Option.builder("V").required(true).longOpt("variance-of-user-groups").hasArg()

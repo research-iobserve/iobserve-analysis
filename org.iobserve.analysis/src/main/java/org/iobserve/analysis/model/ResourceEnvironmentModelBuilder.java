@@ -27,10 +27,6 @@ public class ResourceEnvironmentModelBuilder
         super(modelToStartWith);
     }
 
-    // *****************************************************************
-    //
-    // *****************************************************************
-
     public ResourceEnvironmentModelBuilder save(final ModelSaveStrategy saveStrategy) {
         this.modelProvider.save(saveStrategy);
         return this;
@@ -45,6 +41,7 @@ public class ResourceEnvironmentModelBuilder
         final ResourceEnvironment model = this.modelProvider.getModel();
         model.getResourceContainer_ResourceEnvironment().clear();
         model.getLinkingResources__ResourceEnvironment().clear();
+
         return this;
     }
 
@@ -52,7 +49,7 @@ public class ResourceEnvironmentModelBuilder
      * Create a {@link ResourceContainer} with the given name, without checking if it already
      * exists. Use {@link #createResourceContainerIfAbsent(String)} instead if you wont create the
      * container if it is already available.
-     * 
+     *
      * @param name
      *            name of the new container
      * @return builder
@@ -67,7 +64,7 @@ public class ResourceEnvironmentModelBuilder
 
     /**
      * Creates a link between the given two container.
-     * 
+     *
      * @param res1
      *            first container
      * @param res2
@@ -80,6 +77,7 @@ public class ResourceEnvironmentModelBuilder
         link.getConnectedResourceContainers_LinkingResource().add(res1);
         link.getConnectedResourceContainers_LinkingResource().add(res2);
         model.getLinkingResources__ResourceEnvironment().add(link);
+
         return link;
     }
 

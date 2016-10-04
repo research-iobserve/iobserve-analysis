@@ -27,7 +27,6 @@ import org.iobserve.analysis.filter.TEntryEventSequence;
 import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
@@ -57,19 +56,15 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      * @throws IOException
      *             for all file reading errors
      */
-    public AbstractObservationConfiguration(final ModelProviderPlatform platform, final int varianceOfUserGroups,
-            final int thinkTime, final boolean closedWorkload) {
-        final ICorrespondence correspondenceModel = platform.getCorrespondenceModel();
-        final UsageModelProvider usageModelProvider = platform.getUsageModelProvider();
-        final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = platform
-                .getResourceEnvironmentModelProvider();
-        final AllocationModelProvider allocationModelProvider = platform.getAllocationModelProvider();
-        final SystemModelProvider systemModelProvider = platform.getSystemModelProvider();
-
+    public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
+            final UsageModelProvider usageModelProvider,
+            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
+            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
-        final TAllocation tAllocation = new TAllocation(correspondenceModel, resourceEvnironmentModelProvider);
+        final TAllocation tAllocation = new TAllocation(resourceEvnironmentModelProvider);
         final TDeployment tDeployment = new TDeployment(correspondenceModel, allocationModelProvider,
                 systemModelProvider, resourceEvnironmentModelProvider);
         final TUndeployment tUndeployment = new TUndeployment(correspondenceModel, allocationModelProvider,

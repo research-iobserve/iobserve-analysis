@@ -18,7 +18,11 @@ package org.iobserve.analysis;
 import java.io.File;
 import java.util.Collection;
 
-import org.iobserve.analysis.model.ModelProviderPlatform;
+import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.model.UsageModelProvider;
 
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
@@ -42,9 +46,13 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      * @param platform
      *            the model provider platform
      */
-    public FileObservationConfiguration(final Collection<File> directories, final ModelProviderPlatform platform,
+    public FileObservationConfiguration(final Collection<File> directories, final ICorrespondence correspondenceModel,
+            final UsageModelProvider usageModelProvider,
+            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
+            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
-        super(platform, varianceOfUserGroups, thinkTime, closedWorkload);
+        super(correspondenceModel, usageModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
+                systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
 
         this.files = new InitialElementProducer<>(directories);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());

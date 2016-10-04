@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.utils.Opt;
@@ -38,7 +37,6 @@ import teetime.framework.OutputPort;
  */
 public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 
-    private final ICorrespondence correspondence;
     /** reference to {@link ResourceEnvironment} provider. */
     private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
     /** output port. */
@@ -48,14 +46,10 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
-     * @param correspondence
-     *            the correspondence model
      * @param resourceEvnironmentModelProvider
-     *            the resource evnironment model provider
+     *            the resource environment model provider
      */
-    public TAllocation(final ICorrespondence correspondence,
-            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider) {
-        this.correspondence = correspondence;
+    public TAllocation(final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider) {
         this.resourceEnvModelProvider = resourceEvnironmentModelProvider;
     }
 
@@ -75,38 +69,15 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
     @Override
     protected void execute(final IDeploymentRecord event) {
         if (event instanceof ServletDeployedEvent) {
-            this.process((ServletDeployedEvent) event);
-
+            final String serivce = ((ServletDeployedEvent) event).getSerivce();
+            this.updateModel(serivce);
         } else if (event instanceof EJBDeployedEvent) {
-            this.process((EJBDeployedEvent) event);
+            final String service = ((EJBDeployedEvent) event).getSerivce();
+            this.updateModel(service);
         }
 
         // forward the event
         this.deploymentOutputPort.send(event);
-    }
-
-    /**
-     * Process the given {@link ServletDeployedEvent} event. And call {@link #updateModel(String)}
-     * to create a new server if necessary.
-     *
-     * @param event
-     *            event to process
-     */
-    private void process(final ServletDeployedEvent event) {
-        final String serivce = event.getSerivce();
-        this.updateModel(serivce);
-    }
-
-    /**
-     * Process the given {@link EJBDeployedEvent} event. And call {@link #updateModel(String)} to
-     * create a new server if necessary.
-     *
-     * @param event
-     *            event to process
-     */
-    private void process(final EJBDeployedEvent event) {
-        final String service = event.getSerivce();
-        this.updateModel(service);
     }
 
     /**
@@ -122,6 +93,6 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
             builder.loadModel();
             builder.createResourceContainer(serverName);
             builder.build();
-        }).elseApply(Opt::doNothing);
+        });
     }
 }

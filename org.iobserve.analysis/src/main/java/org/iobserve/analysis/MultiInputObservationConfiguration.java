@@ -15,7 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import org.iobserve.analysis.model.ModelProviderPlatform;
+import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.model.UsageModelProvider;
 
 import teetime.stage.io.network.TcpReaderStage;
 
@@ -37,9 +41,13 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      * @param platform
      *            the platform model handler
      */
-    public MultiInputObservationConfiguration(final int inputPort, final ModelProviderPlatform platform,
+    public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
+            final UsageModelProvider usageModelProvider,
+            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
+            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
-        super(platform, varianceOfUserGroups, thinkTime, closedWorkload);
+        super(correspondenceModel, usageModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
+                systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
 
         // TODO we need a multi input reader (issue exists with TeeTime)
 

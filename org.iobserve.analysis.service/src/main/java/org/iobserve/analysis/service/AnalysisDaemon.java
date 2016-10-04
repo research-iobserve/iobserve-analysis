@@ -16,7 +16,14 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
+import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ModelProviderPlatform;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.model.UsageModelProvider;
+
+import teetime.framework.Configuration;
 
 /**
  * @author Reiner Jung
@@ -49,7 +56,6 @@ public class AnalysisDaemon implements Daemon {
                 final String outputHostname = commandLine.getOptionValues("o")[0];
                 final String outputPort = commandLine.getOptionValues("o")[1];
 
-                final File correspondenceMappingFile = new File(commandLine.getOptionValue("c"));
                 final File pcmModelsDirectory = new File(commandLine.getOptionValue("p"));
 
                 final int varianceOfUserGroups = Integer
@@ -60,31 +66,32 @@ public class AnalysisDaemon implements Daemon {
                 final String systemId = commandLine.getOptionValue("s");
 
                 /** process parameter. */
-                if (correspondenceMappingFile.exists()) {
-                    if (correspondenceMappingFile.canRead()) {
-                        if (pcmModelsDirectory.exists()) {
-                            if (pcmModelsDirectory.isDirectory()) {
-                                final ModelProviderPlatform modelProvider = new ModelProviderPlatform(
-                                        pcmModelsDirectory.getPath());
-                                this.thread = new AnalysisThread(this, listenPort, outputHostname, outputPort, systemId,
-                                        varianceOfUserGroups, thinkTime, closedWorkload, modelProvider);
-                            } else {
-                                throw new DaemonInitException("CLI error: PCM directory " + pcmModelsDirectory.getPath()
-                                        + " is not a directory.");
-                            }
-                        } else {
-                            throw new DaemonInitException(
-                                    "CLI error: PCM directory " + pcmModelsDirectory.getPath() + " does not exist.");
-                        }
+                if (pcmModelsDirectory.exists()) {
+                    if (pcmModelsDirectory.isDirectory()) {
+                        final ModelProviderPlatform modelProvider = new ModelProviderPlatform(pcmModelsDirectory);
+
+                        final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
+                        final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
+                        final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider
+                                .getResourceEnvironmentModelProvider();
+                        final AllocationModelProvider allocationModelProvider = modelProvider
+                                .getAllocationModelProvider();
+                        final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
+
+                        final Configuration configuration = new ServiceConfiguration(listenPort, outputHostname,
+                                outputPort, systemId, varianceOfUserGroups, thinkTime, closedWorkload,
+                                correspondenceModel, usageModelProvider, resourceEvnironmentModelProvider,
+                                allocationModelProvider, systemModelProvider);
+
+                        this.thread = new AnalysisThread(this, configuration);
                     } else {
-                        throw new DaemonInitException("CLI error: Access denied to the correspondence file "
-                                + correspondenceMappingFile.getPath());
+                        throw new DaemonInitException(
+                                "CLI error: PCM directory " + pcmModelsDirectory.getPath() + " is not a directory.");
                     }
                 } else {
-                    throw new DaemonInitException("CLI error: Correspondence file "
-                            + correspondenceMappingFile.getPath() + " does not exist.");
+                    throw new DaemonInitException(
+                            "CLI error: PCM directory " + pcmModelsDirectory.getPath() + " does not exist.");
                 }
-
             }
         } catch (final ParseException exp) {
             final HelpFormatter formatter = new HelpFormatter();
@@ -133,8 +140,6 @@ public class AnalysisDaemon implements Daemon {
                 Option.builder("o").required(true).longOpt("output").hasArgs().numberOfArgs(2).valueSeparator(':')
                         .desc("hostname and port of the iobserve visualization, e.g., visualization:80").build());
         options.addOption(Option.builder("s").required(true).longOpt("system").hasArg().desc("system").build());
-        options.addOption(Option.builder("c").required(true).longOpt("correspondence").hasArg()
-                .desc("correspondence model").build());
         options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg()
                 .desc("directory containing all PCM models").build());
 

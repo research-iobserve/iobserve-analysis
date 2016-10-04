@@ -43,21 +43,7 @@ public final class ModelProviderPlatform {
      * @param pathPcm
      *            directory of pcm models.
      */
-    public ModelProviderPlatform(final String pathPcm) {
-        final File dirPcm = new File(pathPcm);
-        if (!dirPcm.exists()) {
-            throw new NullPointerException(String.format("the pcm dir %s does not exist?!", pathPcm));
-        }
-        this.createModelProviders(dirPcm);
-    }
-
-    /**
-     * Load all model provider.
-     *
-     * @param dirPcm
-     *            directory of pcm
-     */
-    private void createModelProviders(final File dirPcm) {
+    public ModelProviderPlatform(final File dirPcm) {
         final File[] files = dirPcm.listFiles();
         for (final File nextFile : files) {
             final String extension = this.getFileExtension(nextFile.getName());

@@ -16,25 +16,12 @@
 package org.iobserve.analysis.filter;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
 
-import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.userbehavior.UserBehaviorModeling;
-import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
-import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
-import org.palladiosimulator.pcm.usagemodel.Start;
-import org.palladiosimulator.pcm.usagemodel.Stop;
-import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -104,107 +91,5 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
         // Sets the new usage model within iObserve
         this.usageModelBuilder.build();
     }
-
-    /**
-     * Calculate the interarrival time of the given user sessions.
-     *
-     * @param sessions
-     *            sessions.
-     * @return >= 0.
-     */
-    private long calculateInterarrivalTime(final List<UserSession> sessions) {
-        long interArrivalTime = 0;
-        if (sessions.size() > 0) {
-            // sort user sessions
-            Collections.sort(sessions, this.sortUserSessionByExitTime);
-
-            long sum = 0;
-            for (int i = 0; i < (sessions.size() - 1); i++) {
-                final long exitTimeU1 = sessions.get(i).getExitTime();
-                final long exitTimeU2 = sessions.get(i + 1).getExitTime();
-                sum += exitTimeU2 - exitTimeU1;
-            }
-
-            final long numberSessions = sessions.size() > 1 ? sessions.size() - 1 : 1;
-            interArrivalTime = sum / numberSessions;
-        }
-
-        return interArrivalTime;
-    }
-
-    /**
-     * Do update the PCM usage model by iterating over user sessions and constructing the different
-     * paths.
-     *
-     * This procedure creates a test scenario. The creation of a PCM usage model is now done by
-     * {@link org.iobserve.analysis.userbehavior.UserBehaviorModeling}
-     *
-     * @param sessions
-     *            user session
-     */
-    @Deprecated
-    private void doUpdateUsageModel(final List<UserSession> sessions) {
-        final long averageInterarrivalTime = this.calculateInterarrivalTime(sessions);
-
-        // iterate over user sessions
-        for (final UserSession userSession : sessions) {
-
-            // create simple usage model builder
-            final UsageModelBuilder builder = new UsageModelBuilder(this.usageModelProvider);
-
-            // like re-load
-            builder.loadModel().resetModel();
-
-            final UsageScenario usageScenario = builder.createUsageScenario("MyTestScenario");
-            builder.createOpenWorkload(averageInterarrivalTime, usageScenario);
-
-            final Start start = builder.createStart();
-            builder.addUserAction(usageScenario, start);
-
-            AbstractUserAction lastAction = start;
-
-            // iterate over all events to create the usage behavior
-            final Iterator<EntryCallEvent> iteratorEvents = userSession.iterator();
-            while (iteratorEvents.hasNext()) {
-                final EntryCallEvent event = iteratorEvents.next();
-                final String classSig = event.getClassSignature();
-                final String opSig = event.getOperationSignature();
-
-                final Optional<Correspondent> optionCorrespondent = this.correspondenceModel.getCorrespondent(classSig,
-                        opSig);
-                if (optionCorrespondent.isPresent()) {
-                    final Correspondent correspondent = optionCorrespondent.get();
-                    final EntryLevelSystemCall eSysCall = builder.createEntryLevelSystemCall(correspondent);
-                    builder.connect(lastAction, eSysCall);
-                    builder.addUserAction(usageScenario, eSysCall);
-                    lastAction = eSysCall;
-                }
-            }
-
-            final Stop stop = builder.createStop();
-            builder.connect(lastAction, stop);
-            builder.addUserAction(usageScenario, stop);
-
-            builder.build();
-        }
-    }
-
-    /**
-     * Sorts {@link UserSession} by the exit time.
-     */
-    private final Comparator<UserSession> sortUserSessionByExitTime = new Comparator<UserSession>() {
-
-        @Override
-        public int compare(final UserSession o1, final UserSession o2) {
-            final long exitO1 = o1.getExitTime();
-            final long exitO2 = o2.getExitTime();
-            if (exitO1 > exitO2) {
-                return 1;
-            } else if (exitO1 < exitO2) {
-                return -1;
-            }
-            return 0;
-        }
-    };
 
 }

@@ -17,11 +17,6 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-
-import teetime.framework.AbstractConsumerStage;
-
 import org.iobserve.analysis.correspondence.Correspondent;
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.AllocationModelBuilder;
@@ -32,6 +27,10 @@ import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeploymentRecord;
 import org.iobserve.common.record.ServletUndeployedEvent;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+
+import teetime.framework.AbstractConsumerStage;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and
@@ -43,8 +42,6 @@ import org.iobserve.common.record.ServletUndeployedEvent;
  *
  */
 public final class TUndeployment extends AbstractConsumerStage<IUndeploymentRecord> {
-
-    private static long executionCounter = 0;
 
     /** reference to correspondence interface. */
     private final ICorrespondence correspondence;
@@ -92,7 +89,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
     /**
      * Process the given {@link ServletUndeployedEvent} event and update the model.
-     * 
+     *
      * @param event
      *            event to process
      */
@@ -106,7 +103,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
     /**
      * Process the given {@link EJBUndeployedEvent} event and update the model.
-     * 
+     *
      * @param event
      *            event to process
      */
@@ -120,7 +117,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
     /**
      * Update the system- and allocation-model by the given correspondent.
-     * 
+     *
      * @param serverName
      *            name of the server
      * @param correspondent
@@ -146,7 +143,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     /**
      * Remove allocation context from allocation model with the given {@link ResourceContainer} and
      * {@link AssemblyContext} identified by the given entity name.
-     * 
+     *
      * @param resourceContainer
      *            instance of resource container
      * @param asmContextName
