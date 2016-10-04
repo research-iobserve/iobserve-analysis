@@ -23,36 +23,36 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 public class ResourceEnvironmentModelProvider extends AbstractModelProvider<ResourceEnvironment> {
 
-	// ********************************************************************
-	// * INITIALIZATION
-	// ********************************************************************
+    // ********************************************************************
+    // * INITIALIZATION
+    // ********************************************************************
 
-	public ResourceEnvironmentModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
-		super(uriModelInstance, thePlatform);
-	}
-	
+    public ResourceEnvironmentModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
+        super(uriModelInstance, thePlatform);
+    }
 
-	// ********************************************************************
-	// * GETTER / SETTER
-	// ********************************************************************
+    // ********************************************************************
+    // * GETTER / SETTER
+    // ********************************************************************
 
-	@Override
-	public EPackage getPackage() {
-		return ResourceenvironmentPackage.eINSTANCE;
-	}
+    @Override
+    public EPackage getPackage() {
+        return ResourceenvironmentPackage.eINSTANCE;
+    }
 
-	public ResourceContainer getResourceContainer(final String id) {
-		final ResourceEnvironment env = this.getModel();
-		return (ResourceContainer) AbstractModelProvider.getIdentifiableComponent(id, env.getResourceContainer_ResourceEnvironment());
-	}
-	
-	public ResourceContainer getResourceContainerByName(final String name) {
-		final ResourceEnvironment env = this.getModel();
-		for(final ResourceContainer nextResContainer : env.getResourceContainer_ResourceEnvironment()) {
-			if (nextResContainer.getEntityName().equals(name)) {
-				return nextResContainer;
-			}
-		}
-		return null;
-	}
+    public ResourceContainer getResourceContainer(final String id) {
+        final ResourceEnvironment env = this.getModel();
+        return (ResourceContainer) AbstractModelProvider.getIdentifiableComponent(id,
+                env.getResourceContainer_ResourceEnvironment());
+    }
+
+    public ResourceContainer getResourceContainerByName(final String name) {
+        final ResourceEnvironment env = this.getModel();
+        for (final ResourceContainer nextResContainer : env.getResourceContainer_ResourceEnvironment()) {
+            if (nextResContainer.getEntityName().equals(name)) {
+                return nextResContainer;
+            }
+        }
+        return null;
+    }
 }

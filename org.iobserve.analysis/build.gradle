@@ -37,36 +37,50 @@ jar {
     }
 }
 
+
+
+repositories {
+   maven {url "/home/reiner/Projects/iObserve/iobserve-repository/mvn-repo/"}
+   maven {url "https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable"}
+   
+   flatDir {
+       dirs 'libs'
+   }
+}
+
 dependencies {
 	
     compile project(":org.iobserve.monitoring")
     compile project(":org.iobserve.common")
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
-	compile 'net.sourceforge.teetime:teetime:1.1.2'
-	compile 'net.sourceforge.teetime-stages:teetime-stages:1.1.2'
+	compile 'net.sourceforge.teetime:teetime:2.1'
+	compile 'net.sourceforge.teetime-stages:teetime-stages:2.1'
 	compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
-	compile 'org.eclipse.core:runtime:3.10.+'
-	compile 'org.antlr:antlr-runtime:3.5.2'
-	compile 'lpg.runtime:java:2.0.+'
     
-    compile fileTree(dir: "${project.properties['palladio.installation']}", include: {file -> (
-    		file.name.startsWith("de.uka.ipd.sdq") 
-    		|| file.name.startsWith("org.palladiosimulator") 
-    		|| file.name.contains("emf") 
-    		|| file.name.contains("ocl"))})
-    compile fileTree(dir: 'libs', include: '*.jar')
-    
-    //compile group: 'org.eclipselabs', name: 'cdo.p2', version: '4.4.0'
-	//compile group: 'org.eclipselabs', name: 'cdo', version: '4.4.0', ext: 'pom'
-	//compile group: 'org.eclipselabs', name: 'cdo-maven', version: '4.4.0', ext: 'pom'
-	//compile 'org.eclipse:ocl:3.4.+'
-	//compile 'org.eclipse.ocl:common:1.2.+'
-	//compile 'org.eclipse.ocl:ecore:3.3.+'
+	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
+	compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
+	compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
+		
+	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
+	compile 'extra:org.palladiosimulator.pcm:4.0.0.201511051135'
+
+	compile 'nz.ac.waikato.cms.weka:weka-stable:3.6.13'
+
+	compile 'extra:de.uka.ipd.sdq.stoex:2.2.0+'
+	compile 'extra:de.uka.ipd.sdq.units:2.1.0.201511050934'
+	compile 'extra:de.uka.ipd.sdq.probfunction:2.1.0.201511050934'
+	compile 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
+	compile 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
+	compile 'extra:org.eclipse.net4j:4.5.0.v20160607-1254'
+	compile 'extra:org.eclipse.net4j.util:3.6.0.v20160607-1254'
+	compile 'extra:org.eclipse.equinox.common:3.8.0.v20160509-1230'
 	
-	//compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
-	//compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
-	//compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.+'
-	//compile 'org.eclipse.uml2:org.eclipse.uml2.uml:3.1.+'
+	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
+    compile 'org.apache.logging.log4j:log4j-core:2.6.2'
+    
+    compile name: 'mapping.lib'  
+    compile name: 'giusa.tooling.cmd-1.2'
+    compile name: 'giusa.software.csv-1.0'
 }
 
 test {

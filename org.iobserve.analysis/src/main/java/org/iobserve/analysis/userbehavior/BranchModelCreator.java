@@ -794,7 +794,8 @@ public class BranchModelCreator {
      *            matched against element 1
      * @return whether two elements match
      */
-    private boolean doBranchElementsMatch(final SequenceElement sequenceElement1, final SequenceElement sequenceElement2) {
+    private boolean doBranchElementsMatch(final SequenceElement sequenceElement1,
+            final SequenceElement sequenceElement2) {
         if (!sequenceElement1.getClass().equals(sequenceElement2.getClass())) {
             return false;
         }

@@ -23,35 +23,36 @@ import org.palladiosimulator.pcm.system.SystemPackage;
 
 public class SystemModelProvider extends AbstractModelProvider<System> {
 
-	// ********************************************************************
-	// * INITIALIZATION
-	// ********************************************************************
+    // ********************************************************************
+    // * INITIALIZATION
+    // ********************************************************************
 
-	public SystemModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
-		super(uriModelInstance, thePlatform);
-	}
+    public SystemModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
+        super(uriModelInstance, thePlatform);
+    }
 
-	// ********************************************************************
-	// * GETTER / SETTER
-	// ********************************************************************
+    // ********************************************************************
+    // * GETTER / SETTER
+    // ********************************************************************
 
-	@Override
-	public EPackage getPackage() {
-		return SystemPackage.eINSTANCE;
-	}
+    @Override
+    public EPackage getPackage() {
+        return SystemPackage.eINSTANCE;
+    }
 
-	public AssemblyContext getAssemblyContext(final String id) {
-		final System sys = this.getModel();
-		return (AssemblyContext) AbstractModelProvider.getIdentifiableComponent(id, sys.getAssemblyContexts__ComposedStructure());
-	}
-	
-	public AssemblyContext getAssemblyContextByName(final String name) {
-		final System sys = this.getModel();
-		for(final AssemblyContext nextAssemblyContext: sys.getAssemblyContexts__ComposedStructure()) {
-			if (nextAssemblyContext.getEntityName().equals(name)) {
-				return nextAssemblyContext;
-			}
-		}
-		return null;
-	}
+    public AssemblyContext getAssemblyContext(final String id) {
+        final System sys = this.getModel();
+        return (AssemblyContext) AbstractModelProvider.getIdentifiableComponent(id,
+                sys.getAssemblyContexts__ComposedStructure());
+    }
+
+    public AssemblyContext getAssemblyContextByName(final String name) {
+        final System sys = this.getModel();
+        for (final AssemblyContext nextAssemblyContext : sys.getAssemblyContexts__ComposedStructure()) {
+            if (nextAssemblyContext.getEntityName().equals(name)) {
+                return nextAssemblyContext;
+            }
+        }
+        return null;
+    }
 }

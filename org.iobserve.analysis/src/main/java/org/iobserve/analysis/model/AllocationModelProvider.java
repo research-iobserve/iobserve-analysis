@@ -27,22 +27,21 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
  */
 public class AllocationModelProvider extends AbstractModelProvider<Allocation> {
 
-	// ********************************************************************
-	// * INITIALIZATION
-	// ********************************************************************
+    // ********************************************************************
+    // * INITIALIZATION
+    // ********************************************************************
 
-	public AllocationModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
-		super(uriModelInstance, thePlatform);
-		
-		
-	}
+    public AllocationModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
+        super(uriModelInstance, thePlatform);
 
-	// ********************************************************************
-	// * GETTER / SETTER
-	// ********************************************************************
+    }
 
-	@Override
-	public EPackage getPackage() {
-		return AllocationPackage.eINSTANCE;
-	}
+    // ********************************************************************
+    // * GETTER / SETTER
+    // ********************************************************************
+
+    @Override
+    public EPackage getPackage() {
+        return AllocationPackage.eINSTANCE;
+    }
 }

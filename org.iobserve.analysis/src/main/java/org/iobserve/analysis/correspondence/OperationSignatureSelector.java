@@ -7,8 +7,8 @@ import protocom.extension.mapping.PcmOperationSignature;
 
 @FunctionalInterface
 public interface OperationSignatureSelector extends ToBoolBiFunction<PcmCorrespondentMethod, PcmOperationSignature> {
-	
-	default boolean select(final PcmCorrespondentMethod method, final PcmOperationSignature operation) {
-		return this.applyAsBool(method, operation);
-	}
+
+    default boolean select(final PcmCorrespondentMethod method, final PcmOperationSignature operation) {
+        return this.applyAsBool(method, operation);
+    }
 }

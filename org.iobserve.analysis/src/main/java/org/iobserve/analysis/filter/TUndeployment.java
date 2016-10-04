@@ -21,32 +21,34 @@ import org.iobserve.common.record.IUndeploymentRecord;
 import teetime.framework.AbstractConsumerStage;
 
 /**
- * It could be interesting to combine DeploymentEventTransformation and UndeploymentEventTransformation.
- * However, that would require two input ports. And I have not used the API for multiple input ports.
+ * It could be interesting to combine DeploymentEventTransformation and
+ * UndeploymentEventTransformation. However, that would require two input ports. And I have not used
+ * the API for multiple input ports.
  *
  *
  */
 public class TUndeployment extends AbstractConsumerStage<IUndeploymentRecord> {
 
-	private static long executionCounter = 0;
-	
-	private final ICorrespondence correspondence;
+    private static long executionCounter = 0;
 
-	/**
-	 * Most likely the constructor needs an additional field for the PCM access. But this has to be discussed with Robert.
-	 *
-	 * @param correspondence
-	 */
-	public TUndeployment() {
-		this.correspondence = null;
-	}
+    private final ICorrespondence correspondence;
 
-	/**
-	 * This method is triggered for every undeployment event
-	 */
-	@Override
-	protected void execute(final IUndeploymentRecord event) {
-		// add your transformation here
-	}
+    /**
+     * Most likely the constructor needs an additional field for the PCM access. But this has to be
+     * discussed with Robert.
+     *
+     * @param correspondence
+     */
+    public TUndeployment() {
+        this.correspondence = null;
+    }
+
+    /**
+     * This method is triggered for every undeployment event
+     */
+    @Override
+    protected void execute(final IUndeploymentRecord event) {
+        // add your transformation here
+    }
 
 }

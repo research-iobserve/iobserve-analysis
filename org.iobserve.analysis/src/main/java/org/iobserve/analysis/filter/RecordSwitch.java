@@ -34,110 +34,110 @@ import teetime.framework.OutputPort;
  *
  */
 public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
-	
-	private static int executionCounter = 0;
 
-	/** output port for deployment events. */
-	private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
-	/** output port for undeployment events. */
-	private final OutputPort<IUndeploymentRecord> undeploymentOutputPort = this.createOutputPort();
-	/** output port for flow events. */
-	private final OutputPort<IFlowRecord> flowOutputPort = this.createOutputPort();
-	/**output port for {@link TraceMetadata}*/
-	private final OutputPort<TraceMetadata> traceMetaPort = this.createOutputPort();
+    private static int executionCounter = 0;
 
-	/** internal map to collect unknown record types. */
-	private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<String, Integer>();
+    /** output port for deployment events. */
+    private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
+    /** output port for undeployment events. */
+    private final OutputPort<IUndeploymentRecord> undeploymentOutputPort = this.createOutputPort();
+    /** output port for flow events. */
+    private final OutputPort<IFlowRecord> flowOutputPort = this.createOutputPort();
+    /** output port for {@link TraceMetadata} */
+    private final OutputPort<TraceMetadata> traceMetaPort = this.createOutputPort();
 
-	/** start time of the filter for monitoring purposes. Please use a monitoring framework for that. */
-	private final long startTime;
-	/** Statistics. */
-	private int recordCount;
+    /** internal map to collect unknown record types. */
+    private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<String, Integer>();
 
-	/**
-	 * Empty default constructor.
-	 */
-	public RecordSwitch() {
-		// nothing to do here
-		this.startTime = System.nanoTime();
-	}
+    /**
+     * start time of the filter for monitoring purposes. Please use a monitoring framework for that.
+     */
+    private final long startTime;
+    /** Statistics. */
+    private int recordCount;
 
-	@Override
-	protected void execute(final IMonitoringRecord element) {
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.before(this, this.getId() + RecordSwitch.executionCounter);
-		
-		this.recordCount++;
-		if (element instanceof IDeploymentRecord) {
-			this.deploymentOutputPort.send((IDeploymentRecord) element);
-		} else if (element instanceof IUndeploymentRecord) {
-			this.undeploymentOutputPort.send((IUndeploymentRecord) element);
-		} else if (element instanceof IFlowRecord) {
-			this.flowOutputPort.send((IFlowRecord) element);
-			
-			// send trace meta data
-			if (element instanceof TraceMetadata) {
-				this.traceMetaPort.send((TraceMetadata)element);
-			}
-			
-		} else {
-			final String className = element.getClass().getCanonicalName();
-			Integer hits = this.unknownRecords.get(className);
-			if (hits == null) {
-				// TODO use a logging facility for that
-				System.out.println("What the flip! " + className);
-				this.unknownRecords.put(className, Integer.valueOf(1));
-			} else {
-				hits++;
-				this.unknownRecords.put(className, hits);
-				// TODO use a logging facility for that
-				if ((hits % 100) == 0) {
-					System.out.println("Unknown record occurances " + hits + " of " + className);
-				}
-			}
-		}
-		
-		// logging execution time and memory
-		AnalysisMain.getInstance().getTimeMemLogger()
-			.after(this, this.getId() + RecordSwitch.executionCounter);
-		
-		// count execution
-		RecordSwitch.executionCounter++;
-	}
+    /**
+     * Empty default constructor.
+     */
+    public RecordSwitch() {
+        // nothing to do here
+        this.startTime = System.nanoTime();
+    }
 
-	/**
-	 * @return the deploymentOutputPort
-	 */
-	public final OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
-		return this.deploymentOutputPort;
-	}
+    @Override
+    protected void execute(final IMonitoringRecord element) {
+        // logging execution time and memory
+        AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + RecordSwitch.executionCounter);
 
-	/**
-	 * @return the undeploymentOutputPort
-	 */
-	public final OutputPort<IUndeploymentRecord> getUndeploymentOutputPort() {
-		return this.undeploymentOutputPort;
-	}
+        this.recordCount++;
+        if (element instanceof IDeploymentRecord) {
+            this.deploymentOutputPort.send((IDeploymentRecord) element);
+        } else if (element instanceof IUndeploymentRecord) {
+            this.undeploymentOutputPort.send((IUndeploymentRecord) element);
+        } else if (element instanceof IFlowRecord) {
+            this.flowOutputPort.send((IFlowRecord) element);
 
-	/**
-	 * @return the flowOutputPort
-	 */
-	public final OutputPort<IFlowRecord> getFlowOutputPort() {
-		return this.flowOutputPort;
-	}
-	
-	/**
-	 * 
-	 * @return traceOutputPort
-	 */
-	public OutputPort<TraceMetadata> getTraceMetaPort() {
-		return this.traceMetaPort;
-	}
+            // send trace meta data
+            if (element instanceof TraceMetadata) {
+                this.traceMetaPort.send((TraceMetadata) element);
+            }
 
-	public void outputStatistics() {
-		final double delta = ((double) (System.nanoTime() - this.startTime)) / 1000000;
-		System.out.println("Record " + this.recordCount + " rate " + ((this.recordCount) / delta));
-	}
+        } else {
+            final String className = element.getClass().getCanonicalName();
+            Integer hits = this.unknownRecords.get(className);
+            if (hits == null) {
+                // TODO use a logging facility for that
+                System.out.println("What the flip! " + className);
+                this.unknownRecords.put(className, Integer.valueOf(1));
+            } else {
+                hits++;
+                this.unknownRecords.put(className, hits);
+                // TODO use a logging facility for that
+                if ((hits % 100) == 0) {
+                    System.out.println("Unknown record occurances " + hits + " of " + className);
+                }
+            }
+        }
+
+        // logging execution time and memory
+        AnalysisMain.getInstance().getTimeMemLogger().after(this, this.getId() + RecordSwitch.executionCounter);
+
+        // count execution
+        RecordSwitch.executionCounter++;
+    }
+
+    /**
+     * @return the deploymentOutputPort
+     */
+    public final OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
+        return this.deploymentOutputPort;
+    }
+
+    /**
+     * @return the undeploymentOutputPort
+     */
+    public final OutputPort<IUndeploymentRecord> getUndeploymentOutputPort() {
+        return this.undeploymentOutputPort;
+    }
+
+    /**
+     * @return the flowOutputPort
+     */
+    public final OutputPort<IFlowRecord> getFlowOutputPort() {
+        return this.flowOutputPort;
+    }
+
+    /**
+     * 
+     * @return traceOutputPort
+     */
+    public OutputPort<TraceMetadata> getTraceMetaPort() {
+        return this.traceMetaPort;
+    }
+
+    public void outputStatistics() {
+        final double delta = ((double) (System.nanoTime() - this.startTime)) / 1000000;
+        System.out.println("Record " + this.recordCount + " rate " + ((this.recordCount) / delta));
+    }
 
 }
