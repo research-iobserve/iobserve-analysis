@@ -11,6 +11,8 @@ import java.util.HashMap;
 
 import teetime.framework.AbstractConsumerStage;
 
+// TODO should be replaced by kieker logger
+
 public class SimpleTimeMemLogger {
 
     private final SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd");

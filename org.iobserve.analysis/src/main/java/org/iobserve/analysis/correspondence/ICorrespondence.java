@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.correspondence;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 /**
  * This is the interface for to query the correspondence model. Input is a pair of operation and
@@ -35,9 +35,9 @@ public interface ICorrespondence {
     // Return instance EntryLevelSystemCall
 
     /**
-     * Empty Correspondence
+     * Empty Correspondence.
      **/
-    Optional<Correspondent> NULL_CORRESPONDENZ = Optional.absent();
+    Optional<Correspondent> NULL_CORRESPONDENZ = Optional.empty();
 
     /**
      * Get the correspondent object which contains all the information needed to get the actual
@@ -59,6 +59,7 @@ public interface ICorrespondence {
      *            full qualified java class name.
      * @return option of a correspondent in model
      */
+
     public Optional<Correspondent> getCorrespondent(String classSig);
 
     /**

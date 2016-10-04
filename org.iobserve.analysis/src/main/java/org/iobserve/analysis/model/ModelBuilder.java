@@ -1,5 +1,7 @@
 package org.iobserve.analysis.model;
 
+// TODO was deleted in master
+
 import org.eclipse.emf.ecore.EObject;
 
 /**

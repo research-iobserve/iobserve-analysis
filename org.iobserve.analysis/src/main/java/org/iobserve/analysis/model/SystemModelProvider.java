@@ -15,18 +15,35 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
+import java.util.Optional;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 
-public class SystemModelProvider extends AbstractModelProvider<System> {
+/**
+ * Model provider to provide {@link System} model.
+ * 
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
+ *
+ */
+public final class SystemModelProvider extends AbstractModelProvider<System> {
 
     // ********************************************************************
     // * INITIALIZATION
     // ********************************************************************
 
+    /**
+     * Create model provider to provide {@link System} model.
+     * 
+     * @param uriModelInstance
+     *            uri to model
+     * @param thePlatform
+     *            platform
+     */
     public SystemModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
         super(uriModelInstance, thePlatform);
     }
@@ -40,19 +57,35 @@ public class SystemModelProvider extends AbstractModelProvider<System> {
         return SystemPackage.eINSTANCE;
     }
 
+    /**
+     * Get the assembly context with the given id.
+     * 
+     * @param id
+     *            id
+     * @return assembly context instance, null if no assembly context with the given id could be
+     *         found.
+     */
     public AssemblyContext getAssemblyContext(final String id) {
         final System sys = this.getModel();
         return (AssemblyContext) AbstractModelProvider.getIdentifiableComponent(id,
                 sys.getAssemblyContexts__ComposedStructure());
     }
 
-    public AssemblyContext getAssemblyContextByName(final String name) {
+    /**
+     * Get the assembly context by the name.
+     * 
+     * @param name
+     *            name of assembly context
+     * @return assembly context instance, null if no assembly context with the given name could be
+     *         found.
+     */
+    public Optional<AssemblyContext> getAssemblyContextByName(final String name) {
         final System sys = this.getModel();
         for (final AssemblyContext nextAssemblyContext : sys.getAssemblyContexts__ComposedStructure()) {
             if (nextAssemblyContext.getEntityName().equals(name)) {
-                return nextAssemblyContext;
+                return Optional.of(nextAssemblyContext);
             }
         }
-        return null;
+        return Optional.empty();
     }
 }

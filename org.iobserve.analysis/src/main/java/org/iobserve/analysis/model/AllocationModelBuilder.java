@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.model;
 
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -6,7 +21,7 @@ import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-public class AllocationModelBuilder extends ModelBuilder<AllocationModelProvider, Allocation> {
+public class AllocationModelBuilder extends AbstractModelBuilder<AllocationModelProvider, Allocation> {
 
     public AllocationModelBuilder(final AllocationModelProvider modelToStartWith) {
         super(modelToStartWith);
@@ -75,12 +90,36 @@ public class AllocationModelBuilder extends ModelBuilder<AllocationModelProvider
         return this;
     }
 
-    // TODO testing
+    // Can not get id of AllocationContext from TUndeployment
     public AllocationModelBuilder removeAllocationContext(final String id) {
         final Allocation model = this.modelProvider.getModel();
         final AllocationContext ctx = (AllocationContext) AbstractModelProvider.getIdentifiableComponent(id,
                 model.getAllocationContexts_Allocation());
         model.getAllocationContexts_Allocation().remove(ctx);
+        return this;
+    }
+
+    /**
+     * Remove an {@link AllocationContext} from the given {@link ResourceContainer} and
+     * {@link AssemblyContext} if they are contained in the model. Identification is done via
+     * {@link ResourceContainer#getEntityName()} and {@link AssemblyContext#getEntityName()}.
+     * 
+     * @param resContainer
+     *            container
+     * @param asmCtx
+     *            assembly context
+     * @return builder
+     */
+    public AllocationModelBuilder removeAllocationContext(final ResourceContainer resContainer,
+            final AssemblyContext asmCtx) {
+        // could be inefficient on big models and high recurrences of undeployments
+        final Allocation model = this.modelProvider.getModel();
+        model.getAllocationContexts_Allocation().stream().filter(
+                context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName())
+                        && context.getResourceContainer_AllocationContext().getEntityName()
+                                .equals(resContainer.getEntityName()))
+                .findFirst().ifPresent(ctx -> model.getAllocationContexts_Allocation().remove(ctx));
+
         return this;
     }
 

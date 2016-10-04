@@ -15,34 +15,41 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import org.iobserve.analysis.AnalysisMain;
-import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.filter.models.UserSession;
+import java.util.stream.Collectors;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.filter.models.UserSession;
+
 /**
  * Represents the TEntryCallSequence Transformation in the paper <i>Run-time Architecture Models for
- * Dynamic Adaptation and Evolution of Cloud Applications</i>
- * 
- * @author Robert Heinrich, Alessandro Guisa
- * @version 1.0
+ * Dynamic Adaptation and Evolution of Cloud Applications</i>.
  *
+ * @author Robert Heinrich
+ * @author Alessandro Guisa
+ *
+ * @version 1.0
  */
-public class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
+public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
 
     private static int executionCounter = 0;
 
-    private HashMap<String, UserSession> sessions = new HashMap<String, UserSession>();
+    /** threshold for user session elements until their are send to the next filter. */
+    private static final int USER_SESSION_THRESHOLD = 0;
+    /** map of sessions. */
+    private final HashMap<String, UserSession> sessions = new HashMap<>();
     private final List<EntryCallEvent> entryCallEventWrappers = new ArrayList<EntryCallEvent>();
+    /** output port. */
     private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
 
+    /**
+     * Create this filter.
+     */
     public TEntryCallSequence() {
         // do nothing
     }
@@ -60,17 +67,16 @@ public class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
             userSession = new UserSession(event.getHostname(), event.getSessionId());
             this.sessions.put(userSessionId, userSession);
         }
-        userSession.add(event, false); // do not sort since TEntryEventSequence will sort any ways
+        // do not sort since TEntryEventSequence will sort any ways
+        userSession.add(event, false);
 
-        // TODO just for testing
-        // send the current user sessions
-        for (final UserSession nextUserSession : this.sessions.values()) {
-            if (nextUserSession.size() > 0) {
-                final ArrayList<UserSession> listToSend = new ArrayList<UserSession>();
-                listToSend.addAll(this.sessions.values());
-                this.outputPort.send(new EntryCallSequenceModel(listToSend));
-                break;
-            }
+        // collect all user sessions which have more elements as a defined threshold and send them
+        // to the next filter
+        final List<UserSession> listToSend = this.sessions.values().stream()
+                .filter(session -> session.size() > TEntryCallSequence.USER_SESSION_THRESHOLD)
+                .collect(Collectors.toList());
+        if (!listToSend.isEmpty()) {
+            this.outputPort.send(new EntryCallSequenceModel(listToSend));
         }
 
         // logging execution time and memory
@@ -80,6 +86,9 @@ public class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
         executionCounter++;
     }
 
+    /**
+     * @return output port
+     */
     public OutputPort<EntryCallSequenceModel> getOutputPort() {
         return this.outputPort;
     }

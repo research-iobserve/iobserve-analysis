@@ -29,7 +29,7 @@ import kieker.common.record.flow.AbstractEvent;
  * @since 1.13
  */
 public abstract class EJBDeploymentEvent extends AbstractEvent  {
-		private static final long serialVersionUID = 5051017441001857971L;
+	private static final long serialVersionUID = 5051017441001857971L;
 	
 	
 	/* user-defined constants */

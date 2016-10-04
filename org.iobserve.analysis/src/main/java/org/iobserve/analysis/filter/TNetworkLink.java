@@ -15,23 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import kieker.common.record.flow.trace.TraceMetadata;
-
-import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.iobserve.analysis.AnalysisMain;
-import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ModelProviderPlatform;
-import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
@@ -39,7 +27,14 @@ import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
+import kieker.common.record.flow.trace.TraceMetadata;
+
 import teetime.framework.AbstractConsumerStage;
+
+import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelProvider;
 
 /**
  * TNetworkLink runs asynchronous from the other filters like TAllocation, TDeployment, TEntryCall ,
@@ -56,82 +51,57 @@ import teetime.framework.AbstractConsumerStage;
  * @author Reiner Jung
  * @author Alessandro Giusa
  */
-public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
-
+public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private static long executionCounter = 0;
 
     private final ICorrespondence correspondence;
-    private AllocationModelProvider allocationModelProvider;
-    private SystemModelProvider systemModelProvider;
-    private ResourceEnvironmentModelProvider resourceEnvModelProvider;
+    /** reference to allocation model provider. */
+    private final AllocationModelProvider allocationModelProvider;
+    /** reference to system model provider. */
+    private final SystemModelProvider systemModelProvider;
+    /** reference to resource environment model provider. */
+    private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
 
     /**
      * Create new TNetworkLink filter.
+     * 
+     * @param allocationModelProvider
+     * @param systemModelProvider
+     * @param resourceEnvironmentModelProvider
      */
-    public TNetworkLink() {
-        final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
-
-        // get all model references
-        this.correspondence = modelProviderPlatform.getCorrespondenceModel();
-        this.allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
-        this.systemModelProvider = modelProviderPlatform.getSystemModelProvider();
-        this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
+    public TNetworkLink(final AllocationModelProvider allocationModelProvider,
+            final SystemModelProvider systemModelProvider,
+            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+        this.allocationModelProvider = allocationModelProvider;
+        this.systemModelProvider = systemModelProvider;
+        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
     }
 
     /**
+     * Execute this filter.
      * 
      * @param event
+     *            event to use
      */
     @Override
     protected void execute(final TraceMetadata event) {
         AnalysisMain.getInstance().getTimeMemLogger().before(this, this.getId() + TNetworkLink.executionCounter);
 
         final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
-                this.resourceEnvModelProvider);
+                this.resourceEnvironmentModelProvider);
         builder.loadModel();
 
         final ResourceEnvironment resourceEnvironment = builder.getModel();
-        final List<ResourceContainer> listUnconnectedResourceContainer = TNetworkLink
-                .collectUnconnectedResourceContainer(resourceEnvironment);
-
-        if (!listUnconnectedResourceContainer.isEmpty()) {
-
-            final org.palladiosimulator.pcm.system.System system = this.systemModelProvider.getModel(true);
-            final Allocation allocation = this.allocationModelProvider.getModel(true);
-
-            for (final ResourceContainer unconnectedConatiner : listUnconnectedResourceContainer) {
-                TNetworkLink.getAsmContextDeployedOnContainer(allocation, unconnectedConatiner).stream()
-                        .map(listAssemblyContextToQuery -> TNetworkLink.getConnectedAsmCtx(system,
-                                listAssemblyContextToQuery))
-                        .map(listAssemblyContextToConnect -> TNetworkLink.collectResourceContainer(allocation,
-                                listAssemblyContextToConnect))
-                        .map(listResourceContainerToConnectTo -> getLinkingResources(resourceEnvironment,
-                                listResourceContainerToConnectTo))
-                        .flatMap(l -> l.stream()).collect(Collectors.toList()).forEach(link -> link
-                                .getConnectedResourceContainers_LinkingResource().add(unconnectedConatiner));
-            }
-
-            // loop through all unconnected resource container
-            // for (final ResourceContainer unconnectedConatiner : listUnconnectedResourceContainer)
-            // {
-            // final List<AssemblyContext> listAsmDeployedOnContainer =
-            // TNetworkLink.getAsmContextDeployedOnContainer(allocation, unconnectedConatiner);
-            //
-            // // loop through all assembly context instances which are deployed on the unconnected
-            // resource container
-            // for (final AssemblyContext asmCtx : listAsmDeployedOnContainer) {
-            // final List<AssemblyContext> listConnectedAsmCtx =
-            // TNetworkLink.getConnectedAsmCtx(system, asmCtx);
-            // final List<ResourceContainer> listResourceContainerToConnect =
-            // TNetworkLink.collectResourceContainer(allocation, listConnectedAsmCtx);
-            //
-            // final List<LinkingResource> links = getLinkingResources(resourceEnvironment,
-            // listResourceContainerToConnect);
-            // links.stream().forEach(link ->
-            // link.getConnectedResourceContainers_LinkingResource().add(unconnectedConatiner));
-            // }
-            // }
-        }
+        final org.palladiosimulator.pcm.system.System system = this.systemModelProvider.getModel(true);
+        final Allocation allocation = this.allocationModelProvider.getModel(true);
+        TNetworkLink.collectUnLinkedResourceContainer(resourceEnvironment).stream().forEach(unLinkedResCont -> {
+            TNetworkLink.getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
+                    .map(asmCtx -> TNetworkLink.getConnectedAsmCtx(system, asmCtx))
+                    .map(listAsmCtxToConnect -> TNetworkLink.collectResourceContainer(allocation, listAsmCtxToConnect))
+                    .map(listResContToConnectTo -> TNetworkLink.getLinkingResources(resEnv, listResContToConnectTo))
+                    .flatMap(l -> l.stream()).collect(Collectors.toList()).stream()
+                    .forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
+        });
 
         // build the model
         builder.build();
@@ -140,10 +110,6 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
                                                                                                                  // logger
         TNetworkLink.executionCounter++;
     }
-
-    // *****************************************************************
-    //
-    // *****************************************************************
 
     /**
      * Check whether or not the given {@link ResourceContainer} are the same.
@@ -191,10 +157,15 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
         return asm1.getId().equals(asm2.getId());
     }
 
-    // *****************************************************************
-    //
-    // *****************************************************************
-
+    /**
+     * Get all links of the given resource container.
+     * 
+     * @param env
+     *            environment.
+     * @param listContainer
+     *            list with resource container.
+     * @return list with the links
+     */
     private static List<LinkingResource> getLinkingResources(final ResourceEnvironment env,
             final List<ResourceContainer> listContainer) {
         return listContainer.stream()
@@ -209,10 +180,10 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * Collect all {@link ResourceContainer} which are not connected yet.
      * 
      * @param env
-     *            env
-     * @return list
+     *            environment
+     * @return list list of resource container
      */
-    private static List<ResourceContainer> collectUnconnectedResourceContainer(final ResourceEnvironment env) {
+    private static List<ResourceContainer> collectUnLinkedResourceContainer(final ResourceEnvironment env) {
         return env.getResourceContainer_ResourceEnvironment().stream()
                 .filter(container -> TNetworkLink.getLinks(env, container).isEmpty()).collect(Collectors.toList());
     }
@@ -271,7 +242,7 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
     /**
      * Get all {@link AssemblyContext} instances which are connected to the given
-     * {@link AssemblyContext}
+     * {@link AssemblyContext}.
      * 
      * @param system
      *            system
@@ -301,10 +272,8 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
      */
     private static List<AssemblyContext> getConnectedAsmCtx(final org.palladiosimulator.pcm.system.System system,
             final List<AssemblyContext> listQueryAsm) {
-        final List<AssemblyContext> listToReturn = new ArrayList<>();
-        listQueryAsm.stream().map(asm -> getConnectedAsmCtx(system, asm)).forEach(list -> listToReturn.addAll(list));
-        return listToReturn;
-
+        return listQueryAsm.stream().map(asm -> TNetworkLink.getConnectedAsmCtx(system, asm)).flatMap(l -> l.stream())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -319,26 +288,13 @@ public class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
      */
     private static List<ResourceContainer> collectResourceContainer(final Allocation allocation,
             final List<AssemblyContext> listAsm) {
-        final List<ResourceContainer> listToReturn = new ArrayList<>();
-        for (final AssemblyContext nextSearchedAsmCtx : listAsm) {
-            final String queryId = nextSearchedAsmCtx.getId();
-            for (final AllocationContext allocationCtx : allocation.getAllocationContexts_Allocation()) {
-                final AssemblyContext asm = allocationCtx.getAssemblyContext_AllocationContext();
-                if (asm.eIsProxy()) {
-                    EcoreUtil.resolve(asm, allocationCtx.eResource());
-                }
-                final String asmId = asm.getId();
-                if (asmId.equals(queryId)) {
-                    final ResourceContainer resContainer = allocationCtx.getResourceContainer_AllocationContext();
-                    if (resContainer.eIsProxy()) {
-                        EcoreUtil.resolve(resContainer, allocationCtx.eResource());
-                    }
-                    listToReturn.add(resContainer);
-                    break;
-                }
-            }
-        }
-        return listToReturn;
+        return listAsm.stream()
+                .map(asm -> allocation.getAllocationContexts_Allocation().stream()
+                        .filter(i -> i.getAssemblyContext_AllocationContext().getId().equals(asm.getId()))
+                        .map(i -> i.getResourceContainer_AllocationContext()).collect(Collectors.toList()))
+                .flatMap(l -> l.stream()).collect(Collectors.toList());
+
+        
     }
 
     /**

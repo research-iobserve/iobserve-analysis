@@ -25,7 +25,6 @@ import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 
-import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.data.EntryCallEvent;
 
 import teetime.framework.AbstractConsumerStage;
@@ -38,16 +37,18 @@ import teetime.framework.OutputPort;
  *
  * @author Reiner Jung
  * @version 1.0
- *
  */
 public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
+    /** logger. */
     private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
 
     private static int executionCounter = 0;
-    /* added by Alessandro Giusa see EntryCallEvent class for more information */
 
+    /* added by Alessandro Giusa see EntryCallEvent class for more information. */
     private final Map<Long, TraceMetadata> traceMetaDatas = new HashMap<Long, TraceMetadata>();
+    /** map of before operation events. */
     private final Map<Long, BeforeOperationEvent> beforeOperationEvents = new HashMap<Long, BeforeOperationEvent>();
+    /** output port. */
     private final OutputPort<EntryCallEvent> outputPort = this.createOutputPort();
 
     /**
@@ -114,6 +115,9 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
         TEntryCall.executionCounter++;
     }
 
+    /**
+     * @return output port
+     */
     public OutputPort<EntryCallEvent> getOutputPort() {
         return this.outputPort;
     }

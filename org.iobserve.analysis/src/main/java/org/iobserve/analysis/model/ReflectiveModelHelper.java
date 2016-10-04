@@ -32,6 +32,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
+// TODO This class was deleted in master, maybe it is obsolete
+
 /**
  * This class helps a model provider by providing some reflective methods like
  * {@link #getFactory(String)} etc.

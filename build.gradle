@@ -1,6 +1,6 @@
 buildscript { 
 	
-	// this block can be used later to add custom plug-ins for gralde
+	// this block can be used later to add custom plug-ins for gradle
 	// just an example for now
 	
     repositories {
@@ -11,30 +11,52 @@ buildscript {
     }
 }
 
+version = '1.0-SNAPSHOT'
+
+
+// checking the presence of an Eclipse API baseline repositorsy
+if (project.properties['api.baseline'] == null || project.properties['api.baseline'].isEmpty()) {
+	System.err.println("Cannot find an Eclipse API baseline repository")
+	System.err.println("Create file iobserve-analysis/gradle.properties if missing.")
+	System.err.println("Add the property api.baseline=path to the repository")
+	System.err.println("Use / for path separation")
+	System.err.println("The repository can be found at git@github.com:research-iobserve/iobserve-repository.git")
+} else {
+	println "iObserve API baseline repository is at: " + project.properties['api.baseline']
+}
 
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'eclipse'
+    // apply plugin: 'checkstyle'
     
+    // checkstyle {
+    //	configFile = rootProject.file('cs-conf.xml')
+  	//}
+    
+    ext {
+        appName = "org.iobserve"
+    }
     sourceCompatibility = 1.8
 
     repositories {
         mavenCentral()
         mavenLocal()
-	    jcenter()
-	    maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
-	    maven {url "https://oss.sonatype.org/content/repositories/releases/" }
+        jcenter()
+        maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        maven {url "https://oss.sonatype.org/content/repositories/releases/" }
+		maven {url "https://mvnrepository.com/artifact/org.eclipse.emf/org.eclipse.emf.ecore" }
 		maven {url "https://oss.sonatype.org/content/groups/public/"}
 		maven {url "https://jitpack.io"}
+		maven {url "https://mvnrepository.com/artifact/org.eclipse/ocl" }
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo.p2"}
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo"}
 		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}
-    }
-
-    dependencies {
-        // nothing here
+		maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
+		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
+		maven {url project.properties['api.baseline']}
     }
     
     eclipse {
@@ -44,3 +66,4 @@ subprojects {
 	    }
 	}
 }
+

@@ -1,0 +1,162 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>analysis</artifactId>
+	<name>iObserve Analysis</name>
+
+	<parent>
+		<relativePath>../org.iobserve.releng/pom.xml</relativePath>
+		<groupId>org.iobserve</groupId>
+		<artifactId>releng</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<properties>
+		<pcm-repo.url>https://sdqweb.ipd.kit.edu/eclipse/palladio/core/pcm/releases/4.0.0/</pcm-repo.url>
+	</properties>
+
+	<repositories>
+		<!-- repo for teetime -->
+		<repository>
+			<id>pcm.repo</id>
+			<url>${pcm-repo.url}</url>
+			<layout>p2</layout>
+		</repository>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+		<repository>
+			<id>extra</id>
+			<url>file://${mvn-repo}</url>
+		</repository>
+	</repositories>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>1.9.1</version>
+					<executions>
+						<execution>
+							<phase>generate-sources</phase>
+							<goals>
+								<goal>add-source</goal>
+							</goals>
+							<configuration>
+								<sources>
+									<source>src/gen/java</source>
+								</sources>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>net.sourceforge.teetime</groupId>
+			<artifactId>teetime</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.teetime-stages</groupId>
+			<artifactId>teetime-stages</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.iobserve</groupId>
+			<artifactId>common</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<!-- eclipse -->
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+			<version>2.10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.common</artifactId>
+			<version>2.10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.emf</groupId>
+			<artifactId>org.eclipse.emf.ecore</artifactId>
+			<version>2.10.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.uml2</groupId>
+			<artifactId>org.eclipse.uml2.uml</artifactId>
+			<version>3.1.0.v201006071150</version>
+		</dependency>
+
+		<!-- pcm -->
+		<dependency>
+			<groupId>extra</groupId>
+			<artifactId>de.uka.ipd.sdq.identifier</artifactId>
+			<version>${de.uka.ipd.sdq.identifier}</version>
+		</dependency>
+		<dependency>
+			<groupId>extra</groupId>
+			<artifactId>org.palladiosimulator.pcm</artifactId>
+			<version>${org.palladiosimulator.pcm}</version>
+		</dependency>
+		<dependency>
+			<groupId>extra</groupId>
+			<artifactId>de.uka.ipd.sdq.units</artifactId>
+			<version>${de.uka.ipd.sdq.units}</version>
+		</dependency>
+		<dependency>
+			<groupId>extra</groupId>
+			<artifactId>de.uka.ipd.sdq.stoex</artifactId>
+			<version>${de.uka.ipd.sdq.stoex}</version>
+		</dependency>
+		<dependency>
+			<groupId>extra</groupId>
+			<artifactId>de.uka.ipd.sdq.probfunction</artifactId>
+			<version>${de.uka.ipd.sdq.probfunction}</version>
+		</dependency>
+
+		<!-- <dependency> -->
+		<!-- <groupId>extra</groupId> -->
+		<!-- <artifactId>protocom.extension</artifactId> -->
+		<!-- <version>${protocom.extension}</version> -->
+		<!-- </dependency> -->
+
+		<!-- cdo -->
+		<dependency>
+			<groupId>extra</groupId>
+			<artifactId>org.eclipse.emf.cdo</artifactId>
+			<version>${org.eclipse.emf.cdo}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>extra</groupId>
+			<artifactId>org.eclipse.emf.cdo.common</artifactId>
+			<version>${org.eclipse.emf.cdo.common}</version>
+		</dependency>
+
+		<!-- <dependency> -->
+		<!-- <groupId>cdo-net4j</groupId> -->
+		<!-- <artifactId>net4j</artifactId> -->
+		<!-- <version>4.4.0</version> -->
+		<!-- </dependency> -->
+
+
+
+		<!-- Also library from AlessandroGiusa -->
+		<!-- <dependency> <groupId>csv.xml.parsing</groupId> <artifactId>identifier</artifactId> 
+			<version>1.0</version> <systemPath>${lib.location}/csvxml.jar</systemPath> 
+			<scope>system</scope> </dependency> -->
+		<!--https://github.com/AlessandroGiusa/giusa.tooling.cmd -->
+		<!-- <dependency> <groupId>parameter.parser</groupId> <artifactId>identifier</artifactId> 
+			<version>1.0</version> <systemPath>${lib.location}/giusa.tooling.cmd-v1.0.jar</systemPath> 
+			<scope>system</scope> </dependency> -->
+	</dependencies>
+</project>

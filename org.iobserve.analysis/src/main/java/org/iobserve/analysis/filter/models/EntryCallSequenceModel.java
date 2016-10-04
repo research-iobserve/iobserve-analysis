@@ -25,20 +25,24 @@ import org.iobserve.analysis.userbehavior.data.WorkloadIntensity;
  * likelihood of the user group and the workload intensity of the user group the Entry Call Sequence
  * Model represents
  *
- * @author Robert Heinrich, Alessandro Giusa, David Peter
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
+ * @author David Peter
  * @version 1.0
  *
  */
-public class EntryCallSequenceModel {
+public final class EntryCallSequenceModel {
 
+    /** list of user sessions. */
     private final List<UserSession> userSessions;
     private WorkloadIntensity workloadIntensity;
     private double likelihoodOfUserGroup;
 
     /**
-     * Simple constructor set the list
-     *
+     * Create new model.
+     * 
      * @param sessions
+     *            sessions.
      */
     public EntryCallSequenceModel(final List<UserSession> sessions) {
         this.userSessions = sessions;
@@ -56,9 +60,9 @@ public class EntryCallSequenceModel {
     }
 
     /**
-     * Get the user session objects which contain the entry call events
-     *
-     * @return
+     * Get the user session objects which contain the entry call events.
+     * 
+     * @return list of user sessions
      */
     public List<UserSession> getUserSessions() {
         return this.userSessions;
@@ -99,5 +103,6 @@ public class EntryCallSequenceModel {
     public void setLikelihoodOfUserGroup(final double likelihoodOfUserGroup) {
         this.likelihoodOfUserGroup = likelihoodOfUserGroup;
     }
+
 
 }

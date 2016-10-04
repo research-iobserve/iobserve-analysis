@@ -17,6 +17,8 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
+// TODO deleted in master
+
 public abstract class AbstractEcoreModelProvider {
 
     private EPackage ecorePackage;

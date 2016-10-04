@@ -32,6 +32,7 @@ import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
 import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
 
+<<<<<<< HEAD
 public class RepositoryModelProvider extends AbstractModelProvider<Repository> {
 
     private List<OperationInterface> operationInterfaces;
@@ -44,10 +45,42 @@ public class RepositoryModelProvider extends AbstractModelProvider<Repository> {
     public RepositoryModelProvider(final URI uriModelInstance, final ModelProviderPlatform thePlatform) {
         super(uriModelInstance, thePlatform);
 
+=======
+/**
+ * Model provider to provide {@link Repository} model.
+ * 
+ * @author Robert Heinrich
+ * @author Alessandro Giusa
+ *
+ */
+public final class RepositoryModelProvider extends AbstractModelProvider<Repository> {
+
+    /** list of operation interfaces. */
+    private List<OperationInterface> operationInterfaces;
+    /** list of basic components. */
+    private List<BasicComponent> basicComponents;
+
+    /**
+     * Create model provider to provide {@link Repository} model.
+     * 
+     * @param thePlatform
+     *            platform
+     * @param uriUsageModel
+     *            uri to the model
+     */
+    RepositoryModelProvider(final ModelProviderPlatform thePlatform, final URI uriUsageModel) {
+        super(thePlatform, uriUsageModel);
+>>>>>>> master
         this.loadAllBasicComponents();
         this.loadAllOperationInterfaces();
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Load all basic components.
+     */
+>>>>>>> master
     private void loadAllBasicComponents() {
         this.basicComponents = new ArrayList<BasicComponent>();
         for (final RepositoryComponent nextRepoCmp : this.getModel().getComponents__Repository()) {
@@ -58,6 +91,12 @@ public class RepositoryModelProvider extends AbstractModelProvider<Repository> {
         }
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Load all operation interfaces.
+     */
+>>>>>>> master
     private void loadAllOperationInterfaces() {
         this.operationInterfaces = new ArrayList<OperationInterface>();
         for (final Interface nextInterface : this.getModel().getInterfaces__Repository()) {
@@ -68,6 +107,7 @@ public class RepositoryModelProvider extends AbstractModelProvider<Repository> {
         }
     }
 
+<<<<<<< HEAD
     // ********************************************************************
     // * GETTER / SETTER
     // ********************************************************************
@@ -77,14 +117,42 @@ public class RepositoryModelProvider extends AbstractModelProvider<Repository> {
         return RepositoryPackage.eINSTANCE;
     }
 
+=======
+    @Override
+    protected EPackage getPackage() {
+        return RepositoryPackage.eINSTANCE;
+    }
+
+    /**
+     * @return list of basic components
+     */
+>>>>>>> master
     public List<BasicComponent> getBasicComponents() {
         return this.basicComponents;
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * @return list of all operation interfaces
+     */
+>>>>>>> master
     public List<OperationInterface> getOperationInterfaces() {
         return this.operationInterfaces;
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Get the {@link OperationSignature} with the given signature. The comparison is done by the
+     * {@link OperationSignature#getEntityName()}.
+     * 
+     * @param operationSig
+     *            operation signature
+     * @return operation signature instance or null if no operation signature with the given entity
+     *         name could be found
+     */
+>>>>>>> master
     public OperationSignature getOperationSignature(final String operationSig) {
         for (final OperationInterface nextOpInter : this.operationInterfaces) {
             for (final OperationSignature nextOpSig : nextOpInter.getSignatures__OperationInterface()) {
@@ -96,6 +164,17 @@ public class RepositoryModelProvider extends AbstractModelProvider<Repository> {
         return null;
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Get the {@link BasicComponent} with the given operation signature.
+     * 
+     * @param operationSig
+     *            operation signature
+     * @return basic component instance or null if no basic component with the given signature could
+     *         be found
+     */
+>>>>>>> master
     public BasicComponent getBasicComponent(final String operationSig) {
         for (final BasicComponent nextBasicCmp : this.basicComponents) {
             for (final ServiceEffectSpecification nextSerEffSpec : nextBasicCmp
@@ -111,6 +190,22 @@ public class RepositoryModelProvider extends AbstractModelProvider<Repository> {
         return null;
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Get the {@link OperationProvidedRole} by the given operation interface and basic component.
+     * 
+     * @param operationInterface
+     *            operation interface.
+     * @param basicComp
+     *            basic component
+     * @return operation provide role instance or null if none available by the given operation
+     *         interface and basic component
+     * 
+     * @see {@link #getOperationInterfaces()}
+     * @see #getBasicComponent(String)
+     */
+>>>>>>> master
     public OperationProvidedRole getOperationProvidedRole(final OperationInterface operationInterface,
             final BasicComponent basicComp) {
         for (final ProvidedRole nextProvidedRole : basicComp.getProvidedRoles_InterfaceProvidingEntity()) {

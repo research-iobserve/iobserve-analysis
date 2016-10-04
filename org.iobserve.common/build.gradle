@@ -30,8 +30,8 @@ artifacts {
 
 install {
     repositories.mavenInstaller {
-        pom.version = version
+        pom.version = "1.0"
         pom.groupId = 'iobserve-analysis'
-        pom.artifactId = 'common'
+        pom.artifactId = 'org.iobserve.common'
     }
 }

@@ -18,18 +18,23 @@ package org.iobserve.analysis.filter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 
-import org.iobserve.analysis.AnalysisMain;
-import org.iobserve.common.record.IDeploymentRecord;
-import org.iobserve.common.record.IUndeploymentRecord;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IUndeploymentRecord;
+
 /**
+ * The record switch filter is used to scan the event stream and send events based on their type to
+ * different output ports.
+ *
  * @author Reiner Jung
  *
  */
@@ -37,17 +42,19 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 
     private static int executionCounter = 0;
 
+    private static final Logger LOGGER = LogManager.getLogger(RecordSwitch.class);
+
     /** output port for deployment events. */
     private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
     /** output port for undeployment events. */
     private final OutputPort<IUndeploymentRecord> undeploymentOutputPort = this.createOutputPort();
     /** output port for flow events. */
     private final OutputPort<IFlowRecord> flowOutputPort = this.createOutputPort();
-    /** output port for {@link TraceMetadata} */
+    /** output port for {@link TraceMetadata}. */
     private final OutputPort<TraceMetadata> traceMetaPort = this.createOutputPort();
 
     /** internal map to collect unknown record types. */
-    private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<String, Integer>();
+    private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<>();
 
     /**
      * start time of the filter for monitoring purposes. Please use a monitoring framework for that.
@@ -86,15 +93,13 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             final String className = element.getClass().getCanonicalName();
             Integer hits = this.unknownRecords.get(className);
             if (hits == null) {
-                // TODO use a logging facility for that
-                System.out.println("What the flip! " + className);
+                RecordSwitch.LOGGER.error("Configuration error: New unknown event type " + className);
                 this.unknownRecords.put(className, Integer.valueOf(1));
             } else {
                 hits++;
                 this.unknownRecords.put(className, hits);
-                // TODO use a logging facility for that
                 if ((hits % 100) == 0) {
-                    System.out.println("Unknown record occurances " + hits + " of " + className);
+                    RecordSwitch.LOGGER.error("Event occurances " + hits + " of unknown event type " + className);
                 }
             }
         }
@@ -128,16 +133,14 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     }
 
     /**
-     * 
+     *
      * @return traceOutputPort
      */
     public OutputPort<TraceMetadata> getTraceMetaPort() {
         return this.traceMetaPort;
     }
 
-    public void outputStatistics() {
-        final double delta = ((double) (System.nanoTime() - this.startTime)) / 1000000;
-        System.out.println("Record " + this.recordCount + " rate " + ((this.recordCount) / delta));
+    public long getRecordCount() {
+        return this.recordCount;
     }
-
 }

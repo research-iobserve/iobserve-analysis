@@ -1,57 +1,34 @@
-version = '1.0'
+project.ext {
+    aspectjVersion = '1.8.4'
+}
 
 ext {
-	pcm_working_dir = 'res/working_dir/pcm'
-	pcm_original_dir = 'res/original_dir/pcm'
+	working_dir = 'res/working_dir/'
+	original_dir = 'res/original_dir/'
 }
 
-// checking the palladio installation
-if (project.properties['palladio.installation'] == null || project.properties['palladio.installation'].isEmpty()) {
-	System.err.println("!!! PALLADIO installation missing !!!")
-	System.err.println("Add the file iobserve-analysis/gradle.properties. Add the property palladio.installation=PATH TO THE PLUGIN FOLDER OF YOU PALLADIO INSTALLATION")
-	System.err.println("Use / for path separation")
-} else {
-	println "Your PALLADIO installation is at: " + project.properties['palladio.installation']
-}
-
-sourceSets {
-    irl {
-    	java {
-    		srcDir 'src/main/irl'
-    		srcDir 'src/gen/java'
-    		srcDir 'src/gen/java-factory'
-    	}
+buildscript {
+    repositories {
+        maven {url "https://maven.eveoh.nl/content/repositories/releases"}
     }
-    main {
-    	java {
-    		srcDir 'src/gen/java'
-    	}
-    }
-}
 
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'org.iobserve.analysis',
-                   'Implementation-Version': version
-       	attributes 'Main-Class': 'org.iobserve.analysis.AnalysisMain'
+    dependencies {
+        classpath "nl.eveoh:gradle-aspectj:1.6"
     }
 }
 
 
+apply plugin: 'application'
+//apply plugin: 'aspectj'
 
-repositories {
-   maven {url "/home/reiner/Projects/iObserve/iobserve-repository/mvn-repo/"}
-   maven {url "https://mvnrepository.com/artifact/nz.ac.waikato.cms.weka/weka-stable"}
-   
-   flatDir {
-       dirs 'libs'
-   }
-}
+version = '1.0'
+sourceCompatibility = 1.8
+mainClassName = "org.iobserve.analysis.AnalysisMain"
 
 dependencies {
-	
-    compile project(":org.iobserve.monitoring")
-    compile project(":org.iobserve.common")
+	compile gradleApi()
+	compile project(":org.iobserve.common")
+
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:2.1'
 	compile 'net.sourceforge.teetime-stages:teetime-stages:2.1'
@@ -76,23 +53,27 @@ dependencies {
 	compile 'extra:org.eclipse.equinox.common:3.8.0.v20160509-1230'
 	
 	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
-    compile 'org.apache.logging.log4j:log4j-core:2.6.2'
-    
+
     compile name: 'mapping.lib'  
     compile name: 'giusa.tooling.cmd-1.2'
     compile name: 'giusa.software.csv-1.0'
 }
 
-test {
-    systemProperties 'property': 'value'
-}
-
-uploadArchives {
-    repositories {
-       flatDir {
-           dirs 'repos'
-       }
+sourceSets {
+	irl {
+		java {
+			srcDir 'src/main/irl'
+		}
+    	}
+    main {
+    	java {
+    		srcDir 'src/main/java'
+		srcDir 'src/gen/java'
+//		srcDir 'src/gen/java-factory'
+//    		srcDir 'src/main/aspectj'
+    	}
     }
+    
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -122,43 +103,37 @@ install {
 //
 //********************************************************************************************
 
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Main-Class' : 'org.iobserve.analysis.AnalysisMain'
+    }
+    baseName = project.name + '-snapshot'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+}
+
 task cleanPcmWorkingDir(type: Delete) {
-	delete pcm_working_dir
+	delete working_dir
 }
 
 task copyPcmToWorkingDir(type: Copy) {
 	dependsOn << cleanPcmWorkingDir
-	from pcm_original_dir
-	into pcm_working_dir
+	from original_dir
+	into working_dir
 }
 
 task cleanDebug {
 	dependsOn << copyPcmToWorkingDir
 }
 
-task fatJar(type: Jar) {
-    baseName = project.name + '-all'
-    from { configurations.compile.collect {it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}
-
 task runAnalysis(type: JavaExec) {
 	dependsOn << build
 	dependsOn << copyPcmToWorkingDir
-	String appArgs = "--dirMonitoring=res/original_dir/kieker --dirPcm=res/working_dir/pcm --dirLogging=output/logging"
+	String appArgs = "--dirMonitoring=res/working_dir/kieker --dirPcm=res/working_dir/pcm --dirLogging=output/logging"
 	args = [appArgs]
 	classpath = files("build/libs/org.iobserve.analysis-1.0.jar")
 	main = 'org.iobserve.analysis.AnalysisMain'
 }
 
-/*
-task fatJar(type: Jar) {
-	manifest {
-        attributes 'Implementation-Title': 'iObserve-Analysis',  
-        	'Implementation-Version': version,
-        	'Main-Class': 'org.iobserve.analysis.AnalysisMain'
-    }
-    baseName = project.name + '-all'
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-    with jar
-}*/

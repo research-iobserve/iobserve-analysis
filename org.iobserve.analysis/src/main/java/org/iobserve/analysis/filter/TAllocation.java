@@ -15,31 +15,36 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.iobserve.analysis.AnalysisMain;
-import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.ModelProviderPlatform;
-import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.common.record.EJBDeployedEvent;
-import org.iobserve.common.record.IDeploymentRecord;
-import org.iobserve.common.record.ServletDeployedEvent;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.utils.Opt;
+import org.iobserve.common.record.EJBDeployedEvent;
+import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.ServletDeployedEvent;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and
  * UndeploymentEventTransformation. However, that would require two input ports. And I have not used
  * the API for multiple input ports.
+ * TAllocation creates new resource container if and only if there not already available.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
+public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 
     private static long executionCounter = 0;
+
     private final ICorrespondence correspondence;
-    private ResourceEnvironmentModelProvider resourceEnvModelProvider;
+    /** reference to {@link ResourceEnvironment} provider. */
+    private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
+    /** output port. */
     private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
 
     /**
@@ -47,20 +52,20 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
      * discussed with Robert.
      *
      * @param correspondence
-     *            the correspondence model access
+     *            the correspondence model
+     * @param resourceEvnironmentModelProvider
+     *            the resource evnironment model provider
      */
-    public TAllocation() {
-        final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
-
-        // get all model references
-        this.correspondence = modelProviderPlatform.getCorrespondenceModel();
-        this.resourceEnvModelProvider = modelProviderPlatform.getResourceEnvironmentModelProvider();
+    public TAllocation(final ICorrespondence correspondence,
+            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider) {
+        this.correspondence = correspondence;
+        this.resourceEnvModelProvider = resourceEvnironmentModelProvider;
     }
 
     /**
      * @return the deploymentOutputPort
      */
-    public final OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
+    public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
         return this.deploymentOutputPort;
     }
 
@@ -124,14 +129,12 @@ public class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
      *            server name
      */
     private void updateModel(final String serverName) {
-        final boolean absent = this.resourceEnvModelProvider.getResourceContainerByName(serverName) == null;
-        if (absent) {
-            // create resource container
+        Opt.of(this.resourceEnvModelProvider.getResourceContainerByName(serverName)).ifNotPresent().apply(() -> {
             final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
                     TAllocation.this.resourceEnvModelProvider);
             builder.loadModel();
             builder.createResourceContainer(serverName);
             builder.build();
-        }
+        }).elseApply(Opt::doNothing);
     }
 }

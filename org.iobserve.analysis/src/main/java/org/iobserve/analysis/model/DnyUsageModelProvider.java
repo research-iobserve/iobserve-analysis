@@ -4,6 +4,8 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
+// TODO was removed in master
+
 public final class DnyUsageModelProvider extends AbstractEcoreModelProvider {
 
     public static final String PACKAGE_USAGEMODEL = "usagemodel";

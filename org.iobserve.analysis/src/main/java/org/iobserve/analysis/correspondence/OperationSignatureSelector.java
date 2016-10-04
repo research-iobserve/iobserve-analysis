@@ -5,6 +5,8 @@ import org.iobserve.analysis.utils.ToBoolBiFunction;
 import protocom.extension.mapping.PcmCorrespondentMethod;
 import protocom.extension.mapping.PcmOperationSignature;
 
+// TODO not used in master
+
 @FunctionalInterface
 public interface OperationSignatureSelector extends ToBoolBiFunction<PcmCorrespondentMethod, PcmOperationSignature> {
 

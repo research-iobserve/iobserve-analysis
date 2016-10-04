@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.correspondence.Correspondent;
@@ -31,13 +32,25 @@ import org.iobserve.analysis.model.ModelProviderPlatform;
 import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.userbehavior.UserBehaviorModeling;
+
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Start;
 import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
+
 import com.google.common.base.Optional;
+
+import teetime.framework.AbstractConsumerStage;
+
+import org.iobserve.analysis.correspondence.Correspondent;
+import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.filter.models.UserSession;
+import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.UsageModelProvider;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -46,22 +59,32 @@ import teetime.framework.AbstractConsumerStage;
  * for Dynamic Adaptation and Evolution of Cloud Applications</i> Triggers the user behavior
  * modeling process that creates a PCM usage model from an EntryCallSequenceModel
  *
- * @author Robert Heinrich, Alessandro Guisa, David Peter
+ * @author Robert Heinrich
+ * @author Alessandro Guisa
+ * @author David Peter
+ * 
  * @version 1.0
- *
  */
-public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
+public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
 
     private int counterSavedUsageModel = 0;
 
-    private final ICorrespondence correspondenceModel;
-    private final UsageModelProvider usageModelProvider;
     private final UsageModelBuilder usageModelBuilder;
 
-    public TEntryEventSequence() {
-        final ModelProviderPlatform modelProviderPlatform = AnalysisMain.getInstance().getModelProviderPlatform();
-        this.correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
-        this.usageModelProvider = modelProviderPlatform.getUsageModelProvider();
+    /** reference to the correspondence model. */
+    private final ICorrespondence correspondenceModel;
+    /** reference to the usage model provider. */
+    private final UsageModelProvider usageModelProvider;
+
+    /**
+     * Create a entry event sequence filter.
+     *
+     * @param correspondenceModel
+     * @param usageModelProvider
+     */
+    public TEntryEventSequence(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider) {
+        this.correspondenceModel = correspondenceModel;
+        this.usageModelProvider = usageModelProvider;
         this.usageModelBuilder = new UsageModelBuilder(modelProviderPlatform.getUsageModelProvider());
     }
 
@@ -96,17 +119,17 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
     }
 
     /**
-     * Calculate the inter arrival time of the given user sessions
+     * Calculate the interarrival time of the given user sessions.
      *
      * @param sessions
-     *            sessions
+     *            sessions.
      * @return >= 0.
      */
     private long calculateInterarrivalTime(final List<UserSession> sessions) {
         long interArrivalTime = 0;
         if (sessions.size() > 0) {
             // sort user sessions
-            Collections.sort(sessions, this.SortUserSessionByExitTime);
+            Collections.sort(sessions, this.sortUserSessionByExitTime);
 
             long sum = 0;
             for (int i = 0; i < (sessions.size() - 1); i++) {
@@ -124,7 +147,7 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
 
     /**
      * Do update the PCM usage model by iterating over user sessions and constructing the different
-     * paths
+     * paths.
      *
      * This procedure creates a test scenario. The creation of a PCM usage model is now done by
      * {@link org.iobserve.analysis.userbehavior.UserBehaviorModeling}
@@ -181,9 +204,9 @@ public class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequence
     }
 
     /**
-     * Sorts {@link UserSession} by the exit time
+     * Sorts {@link UserSession} by the exit time.
      */
-    private final Comparator<UserSession> SortUserSessionByExitTime = new Comparator<UserSession>() {
+    private final Comparator<UserSession> sortUserSessionByExitTime = new Comparator<UserSession>() {
 
         @Override
         public int compare(final UserSession o1, final UserSession o2) {

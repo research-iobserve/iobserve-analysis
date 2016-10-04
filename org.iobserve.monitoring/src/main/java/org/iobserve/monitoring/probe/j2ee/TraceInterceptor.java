@@ -60,8 +60,7 @@ public class TraceInterceptor {
 	 * @throws Throwable
 	 */
 	@AroundInvoke
-	public Object interceptMethodCall(final InvocationContext context)
-			throws Throwable { // NOCS (IllegalThrowsCheck)
+	public Object interceptMethodCall(final InvocationContext context) throws Throwable { // NOCS (IllegalThrowsCheck)
 		if (this.monitoringCtrl.isMonitoringEnabled()) {
 			final String signature = context.getMethod().toString();
 			if (this.monitoringCtrl.isProbeActivated(signature)) {
