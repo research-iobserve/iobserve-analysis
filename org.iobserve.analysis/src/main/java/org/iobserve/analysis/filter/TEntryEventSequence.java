@@ -17,18 +17,18 @@ package org.iobserve.analysis.filter;
 
 import java.io.IOException;
 
+import teetime.framework.AbstractConsumerStage;
+
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.userbehavior.UserBehaviorModeling;
 
-import teetime.framework.AbstractConsumerStage;
-
 /**
  * Represents the TEntryEventSequence Transformation in the paper <i>Run-time Architecture Models
  * for Dynamic Adaptation and Evolution of Cloud Applications</i> Triggers the user behavior
- * modeling process that creates a PCM usage model from an EntryCallSequenceModel
+ * modeling process that creates a PCM usage model from an EntryCallSequenceModel.
  *
  * @author Robert Heinrich
  * @author Alessandro Guisa
@@ -51,16 +51,21 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 
     private final int thinkTime;
 
-    private final boolean isClosedWorkload;
+    private final boolean closedWorkload;
 
     /**
      * Create a entry event sequence filter.
      *
      * @param correspondenceModel
+     *            the model mapping model elements to code
      * @param usageModelProvider
+     *            provider for the usage model
      * @param varianceOfUserGroups
+     *            variance of user groups for the behavior detection
      * @param thinkTime
-     * @param isClosedWorkload
+     *            think time used for behavior detection
+     * @param closedWorkload
+     *            type of workload
      */
     public TEntryEventSequence(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
@@ -71,7 +76,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
         this.numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
         this.varianceOfUserGroups = varianceOfUserGroups;
         this.thinkTime = thinkTime;
-        this.isClosedWorkload = closedWorkload;
+        this.closedWorkload = closedWorkload;
     }
 
     @Override
@@ -80,7 +85,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
         this.usageModelBuilder.loadModel().resetModel();
         // Executes the user behavior modeling procedure
         final UserBehaviorModeling behaviorModeling = new UserBehaviorModeling(model, this.numberOfUserGroups,
-                this.varianceOfUserGroups, this.isClosedWorkload, this.thinkTime, this.usageModelBuilder,
+                this.varianceOfUserGroups, this.closedWorkload, this.thinkTime, this.usageModelBuilder,
                 this.correspondenceModel);
         try {
             behaviorModeling.modelUserBehavior();

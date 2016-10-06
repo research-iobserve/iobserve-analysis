@@ -38,28 +38,36 @@ import org.iobserve.analysis.userbehavior.UserGroupExtraction;
 public class ClusteringEvaluation {
 
     // The number of user sessions of each user group defines the user group mix
-    int numberOfUserSessionsOfUserGroupCustomer = 2000;
-    int numberOfUserSessionsOfUserGroupStockManager = 2000;
-    int numberOfUserSessionsOfUserGroupStoreManager = 4000;
-    EntryCallSequenceModel entryCallSequenceModel;
-    String customerTag = "Customer";
-    String StockManagerTag = "StockManager";
-    String StoreManagerTag = "StoreManager";
-    int varianceValue = 10;
-    int numberOfEvaluationIterations = 1;
-    List<ClusterAssignmentsCounter> listOfClusterAssignmentsCounter = new ArrayList<ClusterAssignmentsCounter>();
+    private static final int NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_CUSTOMER = 2000;
+    private static final int NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STOCK_MANAGER = 2000;
+    private static final int NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STORE_MANAGER = 4000;
+    private static final String CUSTOMER_TAG = "Customer";
+    private static final String STOCK_MANAGER_TAG = "StockManager";
+    private static final String STORE_MANAGER_TAG = "StoreManager";
+    private static final int VARIANCE_VALUE = 10;
+    private static final int NUMBER_OF_EVALUATION_ITERATIONS = 1;
+
+    private EntryCallSequenceModel entryCallSequenceModel;
+    private List<ClusterAssignmentsCounter> listOfClusterAssignmentsCounter = new ArrayList<>();
 
     /**
-     * Executes the evaluation of the clustering
+     * Default constructor.
+     */
+    public ClusteringEvaluation() {
+    }
+
+    /**
+     * Executes the evaluation of the clustering.
      *
      * @throws IOException
+     *             on error
      */
     public void evaluateTheClustering() throws IOException {
 
-        final List<Double> sseValues = new ArrayList<Double>();
-        final List<Double> mcValues = new ArrayList<Double>();
+        final List<Double> sseValues = new ArrayList<>();
+        final List<Double> mcValues = new ArrayList<>();
 
-        for (int j = 0; j < this.numberOfEvaluationIterations; j++) {
+        for (int j = 0; j < ClusteringEvaluation.NUMBER_OF_EVALUATION_ITERATIONS; j++) {
             this.createCallSequenceModelWithVaryingUserGroups();
             final double sse = this.performClustering();
             sseValues.add(sse);
@@ -80,9 +88,9 @@ public class ClusteringEvaluation {
     private double calculateMC() {
         double mc = 0;
 
-        final List<Integer> assignmentsOfUserGroupCustomer = new ArrayList<Integer>();
-        final List<Integer> assignmentsOfUserGroupStockManager = new ArrayList<Integer>();
-        final List<Integer> assignmentsOfUserGroupStoreManager = new ArrayList<Integer>();
+        final List<Integer> assignmentsOfUserGroupCustomer = new ArrayList<>();
+        final List<Integer> assignmentsOfUserGroupStockManager = new ArrayList<>();
+        final List<Integer> assignmentsOfUserGroupStoreManager = new ArrayList<>();
         // Counts the assignments of user sessions to the clusters
         // Thus, for each user group it is known to which clusters its user sessions are assigned
         for (final ClusterAssignmentsCounter assignmentCounts : this.listOfClusterAssignmentsCounter) {
@@ -148,8 +156,9 @@ public class ClusteringEvaluation {
         }
 
         // Calculates the mean missclassification rate over all user groups
-        mc = mc / (this.numberOfUserSessionsOfUserGroupCustomer + this.numberOfUserSessionsOfUserGroupStockManager
-                + this.numberOfUserSessionsOfUserGroupStoreManager);
+        mc = mc / (ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_CUSTOMER
+                + ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STOCK_MANAGER
+                + ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STORE_MANAGER);
 
         return mc * 100;
     }
@@ -161,12 +170,12 @@ public class ClusteringEvaluation {
                 "NumberOfUserSessionsOfUserGroupCustomer,NumberOfUserSessionsOfUserGroupStockManager,NumberOfUserSessionsOfUserGroupStoreManager,SSE,MC");
         writer.append('\n');
 
-        for (int j = 0; j < this.numberOfEvaluationIterations; j++) {
-            writer.append(String.valueOf(this.numberOfUserSessionsOfUserGroupCustomer));
+        for (int j = 0; j < ClusteringEvaluation.NUMBER_OF_EVALUATION_ITERATIONS; j++) {
+            writer.append(String.valueOf(ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_CUSTOMER));
             writer.append(',');
-            writer.append(String.valueOf(this.numberOfUserSessionsOfUserGroupStockManager));
+            writer.append(String.valueOf(ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STOCK_MANAGER));
             writer.append(',');
-            writer.append(String.valueOf(this.numberOfUserSessionsOfUserGroupStoreManager));
+            writer.append(String.valueOf(ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STORE_MANAGER));
             writer.append(',');
             writer.append(String.valueOf(sseValues.get(j)));
             writer.append(',');
@@ -180,23 +189,25 @@ public class ClusteringEvaluation {
 
     /**
      * Creates for each user group user sessions with random behavior according to the
-     * BehaviorModels and subsumes the user sessions within an EntryCallSequenceModel
+     * BehaviorModels and subsumes the user sessions within an EntryCallSequenceModel.
      *
      * @throws IOException
      */
     private void createCallSequenceModelWithVaryingUserGroups() throws IOException {
 
-        final List<UserSession> userSessionsOfGroupCustomer = this
-                .getUserSessions(this.numberOfUserSessionsOfUserGroupCustomer, this.customerTag);
-        final List<UserSession> userSessionsOfGroupStockManager = this
-                .getUserSessions(this.numberOfUserSessionsOfUserGroupStockManager, this.StockManagerTag);
-        final List<UserSession> userSessionsOfGroupStoreManager = this
-                .getUserSessions(this.numberOfUserSessionsOfUserGroupStoreManager, this.StoreManagerTag);
+        final List<UserSession> userSessionsOfGroupCustomer = this.getUserSessions(
+                ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_CUSTOMER, ClusteringEvaluation.CUSTOMER_TAG);
+        final List<UserSession> userSessionsOfGroupStockManager = this.getUserSessions(
+                ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STOCK_MANAGER,
+                ClusteringEvaluation.STOCK_MANAGER_TAG);
+        final List<UserSession> userSessionsOfGroupStoreManager = this.getUserSessions(
+                ClusteringEvaluation.NUMBER_OF_USER_SESSIONS_OF_USER_GROUP_STORE_MANAGER,
+                ClusteringEvaluation.STORE_MANAGER_TAG);
         this.createCallSequencesForUserGroupCustomer(userSessionsOfGroupCustomer);
         this.createCallSequencesForUserGroupStockManager(userSessionsOfGroupStockManager);
         this.createCallSequencesForUserGroupStoreManager(userSessionsOfGroupStoreManager);
 
-        final List<UserSession> userSessions = new ArrayList<UserSession>();
+        final List<UserSession> userSessions = new ArrayList<>();
         userSessions.addAll(userSessionsOfGroupStockManager);
         userSessions.addAll(userSessionsOfGroupStoreManager);
         userSessions.addAll(userSessionsOfGroupCustomer);
@@ -217,11 +228,11 @@ public class ClusteringEvaluation {
     private double performClustering() throws IOException {
 
         final UserGroupExtraction userGroupExtraction = new UserGroupExtraction(this.entryCallSequenceModel, 3,
-                this.varianceValue, true);
+                ClusteringEvaluation.VARIANCE_VALUE, true);
         userGroupExtraction.extractUserGroups();
         final List<EntryCallSequenceModel> entryCallSequenceModelsOfUserGroups = userGroupExtraction
                 .getEntryCallSequenceModelsOfUserGroups();
-        this.listOfClusterAssignmentsCounter = new ArrayList<ClusterAssignmentsCounter>();
+        this.listOfClusterAssignmentsCounter = new ArrayList<>();
 
         for (int i = 0; i < entryCallSequenceModelsOfUserGroups.size(); i++) {
             final ClusterAssignmentsCounter clusterAssignments = new ClusterAssignmentsCounter();
@@ -229,13 +240,13 @@ public class ClusteringEvaluation {
         }
 
         int index = 0;
-        for (final EntryCallSequenceModel entryCallSequenceModel : entryCallSequenceModelsOfUserGroups) {
-            for (final UserSession userSession : entryCallSequenceModel.getUserSessions()) {
-                if (userSession.getSessionId().equals(this.customerTag)) {
+        for (final EntryCallSequenceModel entryCallSequence : entryCallSequenceModelsOfUserGroups) {
+            for (final UserSession userSession : entryCallSequence.getUserSessions()) {
+                if (userSession.getSessionId().equals(ClusteringEvaluation.CUSTOMER_TAG)) {
                     this.listOfClusterAssignmentsCounter.get(index).increaseNumberOfUserGroupCustomer();
-                } else if (userSession.getSessionId().equals(this.StoreManagerTag)) {
+                } else if (userSession.getSessionId().equals(ClusteringEvaluation.STORE_MANAGER_TAG)) {
                     this.listOfClusterAssignmentsCounter.get(index).increaseNumberOfUserGroupStoreManager();
-                } else if (userSession.getSessionId().equals(this.StockManagerTag)) {
+                } else if (userSession.getSessionId().equals(ClusteringEvaluation.STOCK_MANAGER_TAG)) {
                     this.listOfClusterAssignmentsCounter.get(index).increaseNumberOfUserGroupStockManager();
                 }
             }
@@ -246,14 +257,14 @@ public class ClusteringEvaluation {
     }
 
     /**
-     * Creates for the passed user group the passed number of user sessions
+     * Creates for the passed user group the passed number of user sessions.
      *
      * @param numberOfUserSessionsToCreate
      * @param userGroupId
      * @return user sessions tagged with their user group belonging
      */
     private List<UserSession> getUserSessions(final int numberOfUserSessionsToCreate, final String userGroupId) {
-        final List<UserSession> userSessions = new ArrayList<UserSession>();
+        final List<UserSession> userSessions = new ArrayList<>();
         for (int i = 0; i < numberOfUserSessionsToCreate; i++) {
             final UserSession userSession = new UserSession("host", userGroupId);
             userSessions.add(userSession);
@@ -262,7 +273,7 @@ public class ClusteringEvaluation {
     }
 
     /**
-     * Returns a random integer according to the passed max and min values
+     * Returns a random integer according to the passed max and min values.
      *
      * @param max
      * @param min
@@ -274,7 +285,7 @@ public class ClusteringEvaluation {
     }
 
     /**
-     * Returns a random double according to the passed max and min values
+     * Returns a random double according to the passed max and min values.
      *
      * @param max
      * @param min

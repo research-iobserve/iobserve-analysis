@@ -27,20 +27,25 @@ import org.iobserve.analysis.userbehavior.data.BranchTransitionElement;
 import org.iobserve.analysis.userbehavior.data.CallElement;
 import org.iobserve.analysis.userbehavior.data.ExitElement;
 import org.iobserve.analysis.userbehavior.data.LoopElement;
-import org.iobserve.analysis.userbehavior.data.SequenceElement;
+import org.iobserve.analysis.userbehavior.data.ISequenceElement;
 
 /**
  * This class contains all necessary methods to detect iterated behavior and to replace the iterated
- * segments by loop elements including the number of iterations as loop counts
+ * segments by loop elements including the number of iterations as loop counts.
  *
  * @author David Peter, Robert Heinrich
  */
 public class LoopBranchModelCreator {
 
-    boolean isTreeReconstructed = false;
+    /**
+     * Default constructor.
+     */
+    public LoopBranchModelCreator() {
+
+    }
 
     /**
-     * Triggers the loop extraction process
+     * Triggers the loop extraction process.
      *
      * @param branchModel
      *            whose branch sequences are examined for iterated behavior
@@ -51,7 +56,7 @@ public class LoopBranchModelCreator {
     }
 
     /**
-     * Iterates over the branches and starts the detection process for each branch
+     * Iterates over the branches and starts the detection process for each branch.
      *
      * @param branch
      *            that is examined for loops
@@ -73,101 +78,100 @@ public class LoopBranchModelCreator {
      * @param branchSequence
      *            that is examined for iterated behavior
      */
-    private void detectLoopsWithinBranchSequence(final List<SequenceElement> branchSequence) {
+    private void detectLoopsWithinBranchSequence(final List<ISequenceElement> branchSequence) {
 
-        if (!(branchSequence.size() > 1)) {
-            return;
-        }
+        if (branchSequence.size() > 1) {
+            final List<LoopElement> loopElements = new ArrayList<>();
+            loopElements.clear();
 
-        final List<LoopElement> loopElements = new ArrayList<LoopElement>();
-        loopElements.clear();
-
-        // The exit element of a sequence is not considered for the loop detection
-        int branchSequenceSizeWithoutExitElement = branchSequence.size();
-        if (branchSequence.get(branchSequence.size() - 1).getClass().equals(ExitElement.class)) {
-            branchSequenceSizeWithoutExitElement = branchSequenceSizeWithoutExitElement - 1;
-        }
-        if ((branchSequence == null) || (branchSequenceSizeWithoutExitElement < 1)) {
-            return;
-        }
-
-        for (int indexOfElementInElementList = 0; indexOfElementInElementList < branchSequenceSizeWithoutExitElement; indexOfElementInElementList++) {
-
-            // If the sequence element is a branch element, it is checked for loops within the
-            // sequences of the branches
-            if (branchSequence.get(indexOfElementInElementList).getClass().equals(BranchElement.class)) {
-                final BranchElement loopi = (BranchElement) branchSequence.get(indexOfElementInElementList);
-                for (int i = 0; i < loopi.getBranchTransitions().size(); i++) {
-                    this.detectLoopsWithinBranchSequence(loopi.getBranchTransitions().get(i).getBranchSequence());
-                }
+            // The exit element of a sequence is not considered for the loop detection
+            int branchSequenceSizeWithoutExitElement = branchSequence.size();
+            if (branchSequence.get(branchSequence.size() - 1).getClass().equals(ExitElement.class)) {
+                branchSequenceSizeWithoutExitElement = branchSequenceSizeWithoutExitElement - 1;
             }
 
-            // Checks subSequences of the sequence for equality
-            // Starting with the max longest sub sequence
-            // If a loop is detected it is memorized
-            for (int i = 0; i < ((branchSequenceSizeWithoutExitElement - indexOfElementInElementList) / 2); i++) {
+            if ((branchSequence != null) && (branchSequenceSizeWithoutExitElement > 0)) {
+                for (int indexOfElementInElementList = 0; indexOfElementInElementList < branchSequenceSizeWithoutExitElement; indexOfElementInElementList++) {
 
-                final int elementsToCheck = ((branchSequenceSizeWithoutExitElement - indexOfElementInElementList) / 2)
-                        - i;
-
-                boolean isALoop = true;
-                final LoopElement loopElement = new LoopElement();
-                for (int k = 0; k < elementsToCheck; k++) {
-                    final SequenceElement element1 = branchSequence.get(indexOfElementInElementList + k);
-                    final SequenceElement element2 = branchSequence
-                            .get(indexOfElementInElementList + elementsToCheck + k);
-                    if (element1.getClass().equals(CallElement.class)
-                            && element2.getClass().equals(CallElement.class)) {
-                        if (!this.areSequenceElementsEqual(element1, element2)) {
-                            isALoop = false;
-                            break;
+                    // If the sequence element is a branch element, it is checked for loops within
+                    // the
+                    // sequences of the branches
+                    if (branchSequence.get(indexOfElementInElementList).getClass().equals(BranchElement.class)) {
+                        final BranchElement loopi = (BranchElement) branchSequence.get(indexOfElementInElementList);
+                        for (int i = 0; i < loopi.getBranchTransitions().size(); i++) {
+                            this.detectLoopsWithinBranchSequence(
+                                    loopi.getBranchTransitions().get(i).getBranchSequence());
                         }
-                    } else if (element1.getClass().equals(BranchElement.class)
-                            && element2.getClass().equals(BranchElement.class)) {
-                        if (!this.areSequenceElementsEqual(element1, element2)) {
-                            isALoop = false;
-                            break;
-                        }
-                    } else {
-                        isALoop = false;
-                        break;
                     }
-                    loopElement.addSequenceElementToLoopSequence(branchSequence.get(indexOfElementInElementList + k));
 
+                    // Checks subSequences of the sequence for equality
+                    // Starting with the max longest sub sequence
+                    // If a loop is detected it is memorized
+                    for (int i = 0; i < ((branchSequenceSizeWithoutExitElement - indexOfElementInElementList)
+                            / 2); i++) {
+
+                        final int elementsToCheck = ((branchSequenceSizeWithoutExitElement
+                                - indexOfElementInElementList) / 2) - i;
+
+                        boolean isALoop = true;
+                        final LoopElement loopElement = new LoopElement();
+                        for (int k = 0; k < elementsToCheck; k++) {
+                            final ISequenceElement element1 = branchSequence.get(indexOfElementInElementList + k);
+                            final ISequenceElement element2 = branchSequence
+                                    .get(indexOfElementInElementList + elementsToCheck + k);
+                            if (element1.getClass().equals(CallElement.class)
+                                    && element2.getClass().equals(CallElement.class)) {
+                                if (!this.areSequenceElementsEqual(element1, element2)) {
+                                    isALoop = false;
+                                    break;
+                                }
+                            } else if (element1.getClass().equals(BranchElement.class)
+                                    && element2.getClass().equals(BranchElement.class)) {
+                                if (!this.areSequenceElementsEqual(element1, element2)) {
+                                    isALoop = false;
+                                    break;
+                                }
+                            } else {
+                                isALoop = false;
+                                break;
+                            }
+                            loopElement.addSequenceElementToLoopSequence(
+                                    branchSequence.get(indexOfElementInElementList + k));
+
+                        }
+
+                        if (isALoop) {
+
+                            loopElement.setStartIndexInBranchSequence(indexOfElementInElementList);
+                            loopElement.setEndIndexInBranchSequence(
+                                    (indexOfElementInElementList + elementsToCheck + elementsToCheck) - 1);
+
+                            // Determines the number of loops for each loop
+                            this.determineLoopCount(loopElement, branchSequence);
+
+                            loopElements.add(loopElement);
+
+                        }
+
+                    }
                 }
 
-                if (isALoop) {
-
-                    loopElement.setStartIndexInBranchSequence(indexOfElementInElementList);
-                    loopElement.setEndIndexInBranchSequence(
-                            (indexOfElementInElementList + elementsToCheck + elementsToCheck) - 1);
-
-                    // Determines the number of loops for each loop
-                    this.determineLoopCount(loopElement, branchSequence);
-
-                    loopElements.add(loopElement);
-
+                if (loopElements.size() > 0) {
+                    // Filters the loops from overlapping loops
+                    this.filterLoops(loopElements);
+                    // Find Loops within the loops
+                    for (final LoopElement loopElement : loopElements) {
+                        this.detectLoopsWithinBranchSequence(loopElement.getLoopSequence());
+                    }
+                    // Inserts the loops into the branch
+                    this.insertLoopsIntoBranch(loopElements, branchSequence);
                 }
-
             }
-
         }
-
-        if (loopElements.size() > 0) {
-            // Filters the loops from overlapping loops
-            this.filterLoops(loopElements);
-            // Find Loops within the loops
-            for (final LoopElement loopElement : loopElements) {
-                this.detectLoopsWithinBranchSequence(loopElement.getLoopSequence());
-            }
-            // Inserts the loops into the branch
-            this.insertLoopsIntoBranch(loopElements, branchSequence);
-        }
-
     }
 
     /**
-     * Checks whether two sequence elements are equal
+     * Checks whether two sequence elements are equal.
      *
      * @param sequenceElement1
      *            is matched against element 2
@@ -175,8 +179,8 @@ public class LoopBranchModelCreator {
      *            is matched against element 1
      * @return whether two sequence elements are equal
      */
-    private boolean areSequenceElementsEqual(final SequenceElement sequenceElement1,
-            final SequenceElement sequenceElement2) {
+    private boolean areSequenceElementsEqual(final ISequenceElement sequenceElement1,
+            final ISequenceElement sequenceElement2) {
         if (!sequenceElement1.getClass().equals(sequenceElement2.getClass())) {
             return false;
         }
@@ -197,7 +201,7 @@ public class LoopBranchModelCreator {
     }
 
     /**
-     * Checks whether two branch elements are equal
+     * Checks whether two branch elements are equal.
      *
      * @param branchElement1
      *            is matched against element 2
@@ -206,32 +210,34 @@ public class LoopBranchModelCreator {
      * @return whether the two passed branch elements are equal
      */
     private boolean doBranchElementsMatch(final BranchElement branchElement1, final BranchElement branchElement2) {
-        if (branchElement1.getBranchTransitions().size() != branchElement2.getBranchTransitions().size()) {
-            return false;
-        }
-        for (int i = 0; i < branchElement1.getBranchTransitions().size(); i++) {
-            boolean matchFound = false;
-            final BranchTransitionElement transition1 = branchElement1.getBranchTransitions().get(i);
-            for (int j = 0; j < branchElement2.getBranchTransitions().size(); j++) {
-                final BranchTransitionElement transition2 = branchElement2.getBranchTransitions().get(j);
-                if (transition1.getTransitionLikelihood() != transition2.getTransitionLikelihood()) {
-                    continue;
-                } else if (!this.doSequencesMatch(transition1.getBranchSequence(), transition2.getBranchSequence())) {
-                    continue;
-                } else {
-                    matchFound = true;
-                    break;
+        if (branchElement1.getBranchTransitions().size() == branchElement2.getBranchTransitions().size()) {
+            for (int i = 0; i < branchElement1.getBranchTransitions().size(); i++) {
+                boolean matchFound = false;
+                final BranchTransitionElement transition1 = branchElement1.getBranchTransitions().get(i);
+                for (int j = 0; j < branchElement2.getBranchTransitions().size(); j++) {
+                    final BranchTransitionElement transition2 = branchElement2.getBranchTransitions().get(j);
+                    if (transition1.getTransitionLikelihood() != transition2.getTransitionLikelihood()) {
+                        continue;
+                    } else if (!this.doSequencesMatch(transition1.getBranchSequence(),
+                            transition2.getBranchSequence())) {
+                        continue;
+                    } else {
+                        matchFound = true;
+                        break;
+                    }
+                }
+                if (!matchFound) {
+                    return false;
                 }
             }
-            if (!matchFound) {
-                return false;
-            }
+            return true;
+        } else {
+            return false;
         }
-        return true;
     }
 
     /**
-     * Checks whether two sequences are equal
+     * Checks whether two sequences are equal.
      *
      * @param sequence1
      *            is matched against sequence 2
@@ -239,13 +245,13 @@ public class LoopBranchModelCreator {
      *            is matched against sequence 1
      * @return whether the two passed sequences are equal
      */
-    private boolean doSequencesMatch(final List<SequenceElement> sequence1, final List<SequenceElement> sequence2) {
+    private boolean doSequencesMatch(final List<ISequenceElement> sequence1, final List<ISequenceElement> sequence2) {
         if (sequence1.size() < sequence2.size()) {
             return false;
         }
         for (int i = 0; i < sequence2.size(); i++) {
-            final SequenceElement branchElementOfSequence1 = sequence1.get(i);
-            final SequenceElement branchElementOfSequence2 = sequence2.get(i);
+            final ISequenceElement branchElementOfSequence1 = sequence1.get(i);
+            final ISequenceElement branchElementOfSequence2 = sequence2.get(i);
             if (!branchElementOfSequence1.getClass().equals(branchElementOfSequence2.getClass())) {
                 return false;
             }
@@ -269,7 +275,7 @@ public class LoopBranchModelCreator {
     }
 
     /**
-     * Inserts the passed loops into the branch sequence and removes the call elements that are
+     * Inserts the passed loops into the branch sequence and removes the call elements that are.
      * replaced by the loops
      *
      * @param loopElements
@@ -278,9 +284,21 @@ public class LoopBranchModelCreator {
      *            receives the loops within its branch sequence
      */
     private void insertLoopsIntoBranch(final List<LoopElement> loopElements,
-            final List<SequenceElement> branchSequence) {
+            final List<ISequenceElement> branchSequence) {
 
-        Collections.sort(loopElements, this.SortLoopElementsByStartIndex);
+        Collections.sort(loopElements, new Comparator<LoopElement>() {
+            @Override
+            public int compare(final LoopElement e1, final LoopElement e2) {
+                final int index1 = e1.getStartIndexInBranchSequence();
+                final int index2 = e2.getStartIndexInBranchSequence();
+                if (index1 > index2) {
+                    return 1;
+                } else if (index1 < index2) {
+                    return -1;
+                }
+                return 0;
+            }
+        });
 
         for (int i = 0; i < loopElements.size(); i++) {
             final LoopElement loopElement = loopElements.get(i);
@@ -336,10 +354,10 @@ public class LoopBranchModelCreator {
 
                     // Iterate loop considering the removing
                     if (loop1Weaker) {
-                        i--;
+                        i--; // NOCS
                         break;
                     } else {
-                        j--;
+                        j--; // NOCS
                     }
                 }
             }
@@ -382,23 +400,22 @@ public class LoopBranchModelCreator {
     }
 
     /**
-     * Determines the loop count by checking how often the loop is iterated in a row
+     * Determines the loop count by checking how often the loop is iterated in a row.
      *
      * @param loopElement
      *            whose loopCount is determined
      * @param branchSequence
      *            within the loopCount is determined
      */
-    private void determineLoopCount(final LoopElement loopElement, final List<SequenceElement> branchSequence) {
+    private void determineLoopCount(final LoopElement loopElement, final List<ISequenceElement> branchSequence) {
         int loopCount = 2;
-        boolean doContainBranchElement = false;
         for (int i = loopElement.getEndIndexInBranchSequence(); (i
                 + loopElement.getLoopSequence().size()) < branchSequence
                         .size(); i = i + loopElement.getLoopSequence().size()) {
             boolean isAdditionalLoop = true;
             for (int j = 0; j < loopElement.getLoopSequence().size(); j++) {
-                final SequenceElement element1 = branchSequence.get(loopElement.getStartIndexInBranchSequence() + j);
-                final SequenceElement element2 = branchSequence.get(i + 1 + j);
+                final ISequenceElement element1 = branchSequence.get(loopElement.getStartIndexInBranchSequence() + j);
+                final ISequenceElement element2 = branchSequence.get(i + 1 + j);
                 if (element1.getClass().equals(CallElement.class) && element2.getClass().equals(CallElement.class)) {
                     if (!this.areSequenceElementsEqual(element1, element2)) {
                         isAdditionalLoop = false;
@@ -406,7 +423,6 @@ public class LoopBranchModelCreator {
                     }
                 } else if (element1.getClass().equals(BranchElement.class)
                         && element2.getClass().equals(BranchElement.class)) {
-                    doContainBranchElement = true;
                     if (!this.areSequenceElementsEqual(element1, element2)) {
                         isAdditionalLoop = false;
                         break;
@@ -428,23 +444,5 @@ public class LoopBranchModelCreator {
         loopElement.setEndIndexInBranchSequence(
                 (loopElement.getStartIndexInBranchSequence() + loopElement.getNumberOfReplacedElements()) - 1);
     }
-
-    /**
-     * Comparator to sort the loopElements according to their position in the sequence
-     */
-    private final Comparator<LoopElement> SortLoopElementsByStartIndex = new Comparator<LoopElement>() {
-
-        @Override
-        public int compare(final LoopElement e1, final LoopElement e2) {
-            final int index1 = e1.getStartIndexInBranchSequence();
-            final int index2 = e2.getStartIndexInBranchSequence();
-            if (index1 > index2) {
-                return 1;
-            } else if (index1 < index2) {
-                return -1;
-            }
-            return 0;
-        }
-    };
 
 }

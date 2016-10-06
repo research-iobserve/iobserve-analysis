@@ -21,7 +21,7 @@ package org.iobserve.analysis.userbehavior.data;
  *
  * @author David Peter, Robert Heinrich
  */
-public class CallElement implements SequenceElement {
+public class CallElement implements ISequenceElement {
 
     private final String classSignature;
     private final String operationSignature;

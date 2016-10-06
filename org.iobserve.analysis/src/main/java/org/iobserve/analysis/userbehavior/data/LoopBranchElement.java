@@ -23,7 +23,7 @@ import java.util.List;
  *
  * @author David Peter, Robert Heinrich
  */
-public class LoopBranchElement implements SequenceElement {
+public class LoopBranchElement implements ISequenceElement {
 
     private List<Branch> loopBranches;
 

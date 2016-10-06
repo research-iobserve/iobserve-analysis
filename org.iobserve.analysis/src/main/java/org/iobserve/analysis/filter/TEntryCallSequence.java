@@ -17,14 +17,15 @@ package org.iobserve.analysis.filter;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * Represents the TEntryCallSequence Transformation in the paper <i>Run-time Architecture Models for
@@ -40,7 +41,7 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
     /** threshold for user session elements until their are send to the next filter. */
     private static final int USER_SESSION_THRESHOLD = 0;
     /** map of sessions. */
-    private final HashMap<String, UserSession> sessions = new HashMap<>();
+    private final Map<String, UserSession> sessions = new HashMap<>();
     /** output port. */
     private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
 

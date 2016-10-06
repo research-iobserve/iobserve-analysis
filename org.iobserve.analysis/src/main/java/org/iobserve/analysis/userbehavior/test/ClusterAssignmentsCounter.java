@@ -17,30 +17,42 @@ package org.iobserve.analysis.userbehavior.test;
 
 /**
  * Counts the assignments of user user sessions of each user group to a cluster Used for the
- * clustering evaluation
+ * clustering evaluation.
  *
  * @author David Peter, Robert Heinrich
  */
 public class ClusterAssignmentsCounter {
 
-    int numberOfUserGroupCustomer;
-    int numberOfUserGroupStoreManager;
-    int numberOfUserGroupStockManager;
+    private int numberOfUserGroupCustomer;
+    private int numberOfUserGroupStoreManager;
+    private int numberOfUserGroupStockManager;
 
+    /**
+     * Default initialization constructor.
+     */
     public ClusterAssignmentsCounter() {
         this.numberOfUserGroupCustomer = 0;
         this.numberOfUserGroupStoreManager = 0;
         this.numberOfUserGroupStockManager = 0;
     }
 
+    /**
+     * increase the number of customers.
+     */
     public void increaseNumberOfUserGroupCustomer() {
         this.numberOfUserGroupCustomer++;
     }
 
+    /**
+     * increase the number of store managers.
+     */
     public void increaseNumberOfUserGroupStoreManager() {
         this.numberOfUserGroupStoreManager++;
     }
 
+    /**
+     * increase the number of stock managers.
+     */
     public void increaseNumberOfUserGroupStockManager() {
         this.numberOfUserGroupStockManager++;
     }

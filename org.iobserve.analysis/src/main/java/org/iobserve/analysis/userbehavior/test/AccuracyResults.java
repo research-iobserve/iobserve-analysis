@@ -17,7 +17,7 @@ package org.iobserve.analysis.userbehavior.test;
 
 /**
  * Contains the metrics of the modeling accuracy: Jaccard Coefficient and Spearman Rank Coreelation
- * Coefficient
+ * Coefficient.
  *
  * @author David Peter, Robert Heinrich
  */
@@ -25,6 +25,13 @@ public class AccuracyResults {
 
     private double jc;
     private double srcc;
+
+    /**
+     * Default constructor.
+     */
+    public AccuracyResults() {
+        // nothing to be done here
+    }
 
     public double getJc() {
         return this.jc;

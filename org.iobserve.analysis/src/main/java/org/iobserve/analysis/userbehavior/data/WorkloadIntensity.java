@@ -27,6 +27,13 @@ public class WorkloadIntensity {
     private int maxNumberOfConcurrentUsers;
     private int avgNumberOfConcurrentUsers;
 
+    /**
+     * Default constructor.
+     */
+    public WorkloadIntensity() {
+
+    }
+
     public long getInterarrivalTimeOfUserSessions() {
         return this.interarrivalTimeOfUserSessions;
     }

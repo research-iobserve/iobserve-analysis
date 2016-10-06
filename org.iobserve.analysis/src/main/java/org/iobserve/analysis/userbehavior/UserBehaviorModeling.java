@@ -13,18 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
-package org.iobserve.analysis.userbehavior;/**
-                                           */
+package org.iobserve.analysis.userbehavior;
 
 import java.io.IOException;
 import java.util.List;
+
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.model.UsageModelBuilder;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * Entry Point of the user behavior modeling. This class subsequently calls the user behavior
@@ -96,6 +95,9 @@ public class UserBehaviorModeling {
      *
      * After performing this method the resulting user behavior model that contains for each user
      * group its specific behavior model can be retrieved via the getter method.
+     *
+     * @throws IOException
+     *             on various errors
      */
     public void modelUserBehavior() throws IOException {
 
@@ -103,12 +105,10 @@ public class UserBehaviorModeling {
             return;
         }
 
-        long timeBeforeOverall;
-        long timeAfterOverall;
+        final long timeBeforeOverall = System.currentTimeMillis();
+        final long timeAfterOverall;
         long timeBefore;
         long timeAfter;
-
-        timeBeforeOverall = System.currentTimeMillis();
 
         /**
          * 1. The extraction of user groups. It clusters the entry call sequence model to detect
@@ -163,9 +163,9 @@ public class UserBehaviorModeling {
          * The resulting PCM usage model can be retrieved via the getter method.
          */
         timeBefore = System.currentTimeMillis();
-        final PcmUsageModelBuilder usageModelBuilder = new PcmUsageModelBuilder(loopBranchModels, this.isClosedWorkload,
-                this.thinkTime, this.usageModelBuilder, this.correspondenceModel);
-        this.pcmUsageModel = usageModelBuilder.createUsageModel();
+        final PcmUsageModelBuilder pcmUsageModelBuilder = new PcmUsageModelBuilder(loopBranchModels,
+                this.isClosedWorkload, this.thinkTime, this.usageModelBuilder, this.correspondenceModel);
+        this.pcmUsageModel = pcmUsageModelBuilder.createUsageModel();
         timeAfter = System.currentTimeMillis();
         this.responseTimeOfPcmModelling = (timeAfter - timeBefore);
 

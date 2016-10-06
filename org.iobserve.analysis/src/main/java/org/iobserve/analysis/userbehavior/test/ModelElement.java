@@ -33,6 +33,26 @@ public class ModelElement {
     private final String loopIteration;
     private final double branchProbability;
 
+    /**
+     * Construct a model element.
+     *
+     * @param isStartElement
+     *            indicate start element
+     * @param isStopElement
+     *            indicate stop element
+     * @param isCallElement
+     *            indicate call element
+     * @param isBranchTransitionElement
+     *            indicate branch transition element
+     * @param isLoopElement
+     *            indicate loop element
+     * @param entiteyName
+     *            the name of the element
+     * @param loopIteration
+     *            number of loop iterations for loop element
+     * @param branchProbability
+     *            probability of a branch
+     */
     public ModelElement(final boolean isStartElement, final boolean isStopElement, final boolean isCallElement,
             final boolean isBranchTransitionElement, final boolean isLoopElement, final String entiteyName,
             final String loopIteration, final double branchProbability) {
@@ -47,7 +67,13 @@ public class ModelElement {
         this.branchProbability = branchProbability;
     }
 
-    public boolean equals(final ModelElement modelElement) {
+    /**
+     * Special equals method.
+     *
+     * @param modelElement
+     * @return true if element is the equivalence of this element
+     */
+    public boolean equals(final ModelElement modelElement) { // NOCS
         if (this.isStartElement != modelElement.isStartElement) {
             return false;
         }

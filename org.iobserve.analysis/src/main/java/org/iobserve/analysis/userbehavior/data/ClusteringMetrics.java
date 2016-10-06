@@ -34,12 +34,25 @@ public class ClusteringMetrics {
     private final Instances instances;
     private final int[] assignments;
 
+    /**
+     * Construct cluster metrics.
+     *
+     * @param centroids
+     *            instances of something
+     * @param instances
+     *            other instances
+     * @param assignments
+     *            assignments
+     */
     public ClusteringMetrics(final Instances centroids, final Instances instances, final int[] assignments) {
         this.centroids = centroids;
         this.instances = instances;
         this.assignments = assignments;
     }
 
+    /**
+     * Compute the metrics.
+     */
     public void calculateSimilarityMetrics() {
         this.sumOfSquaredErrors = this.calculateSumOfSquaredErrors();
     }
@@ -52,21 +65,24 @@ public class ClusteringMetrics {
         euclideanDistance.setInstances(this.instances);
 
         final double numberOfCentroids = this.centroids.numInstances();
-        double sumOfSquaredErrors = 0;
+
+        this.sumOfSquaredErrors = 0;
 
         for (int i = 0; i < numberOfCentroids; i++) {
             for (int j = 0; j < this.instances.numInstances(); j++) {
                 if (this.assignments[j] == i) {
-                    sumOfSquaredErrors += Math
+                    this.sumOfSquaredErrors += Math
                             .pow(euclideanDistance.distance(this.instances.instance(j), this.centroids.instance(i)), 2);
                 }
             }
         }
 
-        return sumOfSquaredErrors;
+        return this.sumOfSquaredErrors;
     }
 
-    // Prints the calculated metrics
+    /**
+     * Prints the calculated metrics.
+     */
     public void printSimilarityMetrics() {
         if (this.sumOfSquaredErrors == 0) {
             System.out.println("Metrics have not been calculated");

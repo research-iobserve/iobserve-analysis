@@ -24,14 +24,23 @@ import java.util.List;
  *
  * @author David Peter, Robert Heinrich
  */
-public class BranchElement implements SequenceElement {
+public class BranchElement implements ISequenceElement {
 
-    List<BranchTransitionElement> branchTransitions;
+    private List<BranchTransitionElement> branchTransitions;
 
+    /**
+     * Default constructor initializing branchTransition with a default array.
+     */
     public BranchElement() {
-        this.branchTransitions = new ArrayList<BranchTransitionElement>();
+        this.branchTransitions = new ArrayList<>();
     }
 
+    /**
+     * Add a transition.
+     *
+     * @param transition
+     *            the transition to add
+     */
     public void addBranchTransition(final BranchTransitionElement transition) {
         this.branchTransitions.add(transition);
     }

@@ -29,17 +29,44 @@ import org.iobserve.analysis.userbehavior.data.BranchModel;
 import org.iobserve.analysis.userbehavior.data.BranchTransitionElement;
 import org.iobserve.analysis.userbehavior.data.CallElement;
 import org.iobserve.analysis.userbehavior.data.ExitElement;
-import org.iobserve.analysis.userbehavior.data.SequenceElement;
+import org.iobserve.analysis.userbehavior.data.ISequenceElement;
 
 /**
  * This class holds a set of methods to create a BranchModel from an EntryCallSequenceModel and to
  * calculate the branch likelihoods of a BranchModel.
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter
+ * @author Robert Heinrich
  */
 public class BranchModelCreator {
 
-    boolean isFusionPerformed = false;
+    /**
+     * Descending Sort user sessions by call sequence length. User session with longest call
+     * sequence will be first element.
+     */
+    private static final Comparator<UserSession> SORT_USER_SESSION_BY_CALL_SEQUENCE_SIZE = new Comparator<UserSession>() {
+
+        @Override
+        public int compare(final UserSession o1, final UserSession o2) {
+            final int sizeO1 = o1.getEvents().size();
+            final int sizeO2 = o2.getEvents().size();
+            if (sizeO1 < sizeO2) {
+                return 1;
+            } else if (sizeO1 > sizeO2) {
+                return -1;
+            }
+            return 0;
+        }
+    };
+
+    private boolean fusionPerformed = false;
+
+    /**
+     * empty default constructor.
+     */
+    public BranchModelCreator() {
+
+    }
 
     /**
      * Iterates through the branches and sets the branches' treeLevels. The treeLevel determines the
@@ -59,7 +86,7 @@ public class BranchModelCreator {
     }
 
     /**
-     * It calculates for each branch of the passed BranchModel its likelihood
+     * It calculates for each branch of the passed BranchModel its likelihood.
      *
      * @param branchModel
      *            whose branch likelihoods should be calculated
@@ -72,7 +99,7 @@ public class BranchModelCreator {
     }
 
     /**
-     * Recursive traversing through the branches
+     * Recursive traversing through the branches.
      *
      * @param branch
      *            is the start branch that is recursively traversed
@@ -85,7 +112,7 @@ public class BranchModelCreator {
     }
 
     /**
-     * It calculates the likelihoods of the branch's child branches
+     * It calculates the likelihoods of the branch's child branches.
      *
      * @param examinedBranch
      *            whose child branches' likelihoods are calculated and set
@@ -104,7 +131,7 @@ public class BranchModelCreator {
             countOfParentNode = 1;
         }
         for (int i = 0; i < examinedBranch.getChildBranches().size(); i++) {
-            double countOfChildNode;
+            final double countOfChildNode;
             countOfChildNode = examinedBranch.getChildBranches().get(i).getBranchSequence().get(0).getAbsoluteCount();
             final double likelihhod = countOfChildNode / countOfParentNode;
             examinedBranch.getChildBranches().get(i).setBranchLikelihood(likelihhod);
@@ -136,7 +163,7 @@ public class BranchModelCreator {
         rootBranch.setTreeLevel(0);
 
         // Descending sort by call sequence length
-        Collections.sort(userSessions, this.SortUserSessionByCallSequenceSize);
+        Collections.sort(userSessions, BranchModelCreator.SORT_USER_SESSION_BY_CALL_SEQUENCE_SIZE);
 
         // Initializes the root sequence with the longest call sequence
         this.setBranchSequence(rootBranch, userSessions.get(0).getEvents(), 0);
@@ -149,7 +176,7 @@ public class BranchModelCreator {
             final UserSession userSession = userSessions.get(j);
             // The branchGuide guides through the tree structure. It determines the recent regarded
             // branch
-            final List<Integer> branchGuide = new ArrayList<Integer>();
+            final List<Integer> branchGuide = new ArrayList<>();
             // The position states the recent position within the branch sequence
             int positionInBranch = 0;
 
@@ -178,7 +205,7 @@ public class BranchModelCreator {
                         if (indexOfMatchingChildBranch > -1) {
                             // Continue with the same call event but switching to the new branch
                             branchGuide.add(indexOfMatchingChildBranch);
-                            i--;
+                            i--; // NOCS
                             positionInBranch = 0;
                             continue;
                         }
@@ -189,10 +216,7 @@ public class BranchModelCreator {
                             userSession, i);
                     break;
 
-                }
-                // End of sequence -> looking for an exit element
-                else {
-
+                } else { // End of sequence -> looking for an exit element
                     if (this.checkIfBranchSequenceTerminates(examinedBranch, positionInBranch)) {
                         this.incrementCountOfBranchElement(examinedBranch, positionInBranch);
                         break;
@@ -203,7 +227,7 @@ public class BranchModelCreator {
                         if (indexOfMatchingChildBranch > -1) {
                             // Iterate the exit state adding but switching to the new branch
                             branchGuide.add(indexOfMatchingChildBranch);
-                            i--;
+                            i--; // NOCS
                             positionInBranch = 0;
                             continue;
                         }
@@ -229,6 +253,8 @@ public class BranchModelCreator {
     /**
      * It creates a new branch and adds it to the current examined branch as a new child branch.
      *
+     * TODO this function is largely broken as it modifies input parameter
+     *
      * @param examinedBranch
      *            that is splitted
      * @param positionInBranch
@@ -244,21 +270,20 @@ public class BranchModelCreator {
      *            if it is not the end of the sequence, it states at which position in the sequence
      *            it is added to the new branch
      */
-    private int splitBranch(Branch examinedBranch, int positionInBranch, int numberOfBranches, final boolean isExit,
-            final UserSession userSession, final int indexOfCallEvent) {
+    private int splitBranch(Branch examinedBranch, final int positionInBranch, int numberOfBranches, // NOCS
+            final boolean isExit, // NOCS
+            final UserSession userSession, final int indexOfCallEvent) { // NOCS
         // If there is already a split at that position add a new branch
         if (this.isPositionLastElementInBranchSequence(examinedBranch, positionInBranch)) {
             this.addNewBranch(examinedBranch, numberOfBranches);
-            numberOfBranches++;
-        }
-        // Else split the branch into two branches
-        else {
+            numberOfBranches++; // NOCS
+        } else { // Else split the branch into two branches
             this.splitBranch(examinedBranch, positionInBranch, numberOfBranches);
-            numberOfBranches = numberOfBranches + 2;
+            numberOfBranches = numberOfBranches + 2; // NOCS
         }
         final int indexOfNewAddedBranch = examinedBranch.getChildBranches().size() - 1;
-        examinedBranch = examinedBranch.getChildBranches().get(indexOfNewAddedBranch);
-        positionInBranch = 0;
+        examinedBranch = examinedBranch.getChildBranches().get(indexOfNewAddedBranch); // NOCS
+
         // Adds an exit element to the new exit branch
         if (isExit) {
             this.setExitElement(examinedBranch);
@@ -284,7 +309,7 @@ public class BranchModelCreator {
      */
     private void setBranchSequence(final Branch examinedBranch, final List<EntryCallEvent> events,
             final int sequenceStartIndex) {
-        final List<SequenceElement> branchSequence = new ArrayList<SequenceElement>();
+        final List<ISequenceElement> branchSequence = new ArrayList<>();
         for (int j = sequenceStartIndex; j < events.size(); j++) {
             final EntryCallEvent callEvent = events.get(j);
             final CallElement callElement = new CallElement(callEvent.getClassSignature(),
@@ -299,7 +324,7 @@ public class BranchModelCreator {
     }
 
     /**
-     * Adds an exit element to the end of the branch sequence of the passed branch
+     * Adds an exit element to the end of the branch sequence of the passed branch.
      *
      * @param examinedBranch
      *            receives an exit element at the end of its branch sequence
@@ -319,10 +344,9 @@ public class BranchModelCreator {
      * @param numberOfBranches
      *            is the current overall number of branches. Defines the id of the new added branch
      */
-    private void addNewBranch(final Branch examinedBranch, int numberOfBranches) {
+    private void addNewBranch(final Branch examinedBranch, final int numberOfBranches) {
         final Branch childBranch = new Branch();
-        numberOfBranches++;
-        childBranch.setBranchId(numberOfBranches);
+        childBranch.setBranchId(numberOfBranches + 1);
         examinedBranch.addBranch(childBranch);
     }
 
@@ -340,24 +364,22 @@ public class BranchModelCreator {
      * @param numberOfBranches
      *            is the current overall number of branches. Defines the new branch ids
      */
-    private void splitBranch(final Branch examinedBranch, final int positionInBranch, int numberOfBranches) {
+    private void splitBranch(final Branch examinedBranch, final int positionInBranch, final int numberOfBranches) {
         final Branch childBranch1 = new Branch();
         final Branch childBranch2 = new Branch();
 
-        final List<SequenceElement> branchSequence = new ArrayList<SequenceElement>(
+        final List<ISequenceElement> branchSequence = new ArrayList<>(
                 examinedBranch.getBranchSequence().subList(0, positionInBranch));
-        final List<SequenceElement> branchSequence1 = new ArrayList<SequenceElement>(examinedBranch.getBranchSequence()
+        final List<ISequenceElement> branchSequence1 = new ArrayList<>(examinedBranch.getBranchSequence()
                 .subList(positionInBranch, examinedBranch.getBranchSequence().size()));
-        final List<SequenceElement> branchSequence2 = new ArrayList<SequenceElement>();
+        final List<ISequenceElement> branchSequence2 = new ArrayList<>();
 
         examinedBranch.setBranchSequence(branchSequence);
         childBranch1.setBranchSequence(branchSequence1);
         childBranch2.setBranchSequence(branchSequence2);
 
-        numberOfBranches++;
-        childBranch1.setBranchId(numberOfBranches);
-        numberOfBranches++;
-        childBranch2.setBranchId(numberOfBranches);
+        childBranch1.setBranchId(numberOfBranches + 1);
+        childBranch2.setBranchId(numberOfBranches + 2);
 
         for (final Branch childBranch : examinedBranch.getChildBranches()) {
             childBranch1.addBranch(childBranch);
@@ -420,7 +442,7 @@ public class BranchModelCreator {
 
     /**
      * Checks if there is an ExitElement at the passed position in the branch sequence of the passed
-     * branch
+     * branch.
      *
      * @param examinedBranch
      *            holds the branch sequence that is examined for an ExitElement
@@ -440,7 +462,7 @@ public class BranchModelCreator {
     }
 
     /**
-     * Increments the count of an branch element
+     * Increments the count of an branch element.
      *
      * @param examinedBranch
      *            holds the branch sequence´s element that is incremented
@@ -472,7 +494,7 @@ public class BranchModelCreator {
     }
 
     /**
-     * Checks if a callEvent and a callElement match
+     * Checks if a callEvent and a callElement match.
      *
      * @param callEvent
      *            that will be matched with the callElement
@@ -481,17 +503,13 @@ public class BranchModelCreator {
      * @return if the passed callEvent and callElement match
      */
     private boolean isCallEventCallElementMatch(final EntryCallEvent callEvent, final CallElement callElement) {
-        if (callEvent.getOperationSignature().equals(callElement.getOperationSignature())
-                && callEvent.getClassSignature().equals(callElement.getClassSignature())) {
-            return true;
-        } else {
-            return false;
-        }
+        return callEvent.getOperationSignature().equals(callElement.getOperationSignature())
+                && callEvent.getClassSignature().equals(callElement.getClassSignature());
     }
 
     /**
      * Checks if the passed callEvent matches the callElement at the passed position in the branch
-     * sequence of the passed branch
+     * sequence of the passed branch.
      *
      * @param callEvent
      *            that will be matched
@@ -506,22 +524,19 @@ public class BranchModelCreator {
      */
     private boolean checkPositionMatchInBranch(final EntryCallEvent callEvent, final Branch examinedBranch,
             final int positionInBranch) {
-        if (positionInBranch >= examinedBranch.getBranchSequence().size()) {
-            return false;
+        if (positionInBranch < examinedBranch.getBranchSequence().size()) {
+            if (examinedBranch.getBranchSequence().get(positionInBranch).getClass().equals(CallElement.class)) {
+                final CallElement callElement = (CallElement) examinedBranch.getBranchSequence().get(positionInBranch);
+                return this.isCallEventCallElementMatch(callEvent, callElement);
+            }
         }
-        if (!examinedBranch.getBranchSequence().get(positionInBranch).getClass().equals(CallElement.class)) {
-            return false;
-        }
-        final CallElement callElement = (CallElement) examinedBranch.getBranchSequence().get(positionInBranch);
-        if (this.isCallEventCallElementMatch(callEvent, callElement)) {
-            return true;
-        }
+
         return false;
     }
 
     /**
      * Checks if the passed positionInBranch is equal to the length of the branch sequence of the
-     * passed branch
+     * passed branch.
      *
      * @param examinedBranch
      *            whose branch sequence length is checked
@@ -531,11 +546,7 @@ public class BranchModelCreator {
      * @return if the passed positionInBranch matches the length of the branch sequence
      */
     private boolean isPositionLastElementInBranchSequence(final Branch examinedBranch, final int positionInBranch) {
-        if (examinedBranch.getBranchSequence().size() == positionInBranch) {
-            return true;
-        } else {
-            return false;
-        }
+        return examinedBranch.getBranchSequence().size() == positionInBranch;
     }
 
     /**
@@ -548,7 +559,7 @@ public class BranchModelCreator {
      */
     public void compactBranchModel(final BranchModel branchModel) {
         this.compactBranch(branchModel.getRootBranch());
-        if (this.isFusionPerformed) {
+        if (this.fusionPerformed) {
             final int maxBranchId = this.setBranchIds(branchModel.getRootBranch(), 1, 1);
             branchModel.setNumberOfBranches(maxBranchId);
         }
@@ -556,15 +567,16 @@ public class BranchModelCreator {
     }
 
     /**
-     * Examines for each branch its child branches to check whether they can be merged
+     * Examines for each branch its child branches to check whether they can be merged.
      *
      * @param branch
      *            that is examined whether its child branches can be merged
      */
     private void compactBranch(final Branch branch) {
-        while (this.compactChildBranches(branch)) {
-            ;
-        }
+        boolean continueCompacting = false;
+        do {
+            continueCompacting = this.compactChildBranches(branch);
+        } while (continueCompacting);
         for (int i = 0; i < branch.getChildBranches().size(); i++) {
             this.compactBranch(branch.getChildBranches().get(i));
         }
@@ -577,20 +589,21 @@ public class BranchModelCreator {
      *            that is numbered
      * @param branchId
      *            the id of the branch that is set
-     * @param maxBranchId
+     * @param topBranchId
      *            the current highest branch id
      * @return the highest branch id
      */
-    private int setBranchIds(final Branch branch, final int branchId, int maxBranchId) {
+    private int setBranchIds(final Branch branch, final int branchId, final int topBranchId) {
+        int newTopBranchId = topBranchId;
         branch.setBranchId(branchId);
-        if (maxBranchId < branchId) {
-            maxBranchId = branchId;
+        if (newTopBranchId < branchId) {
+            newTopBranchId = branchId;
         }
         for (int i = 0; i < branch.getChildBranches().size(); i++) {
             final int newBranchId = branchId + i + 1;
-            maxBranchId = this.setBranchIds(branch.getChildBranches().get(i), newBranchId, maxBranchId);
+            newTopBranchId = this.setBranchIds(branch.getChildBranches().get(i), newBranchId, newTopBranchId);
         }
-        return maxBranchId;
+        return topBranchId;
     }
 
     /**
@@ -602,24 +615,23 @@ public class BranchModelCreator {
      * @return whether branches could be merged
      */
     private boolean compactChildBranches(final Branch branch) {
-        if (branch.getChildBranches().size() == 0) {
-            return false;
-        }
-        if (!this.checkForEqualNumberOfChildBranches(branch.getChildBranches())) {
-            return false;
-        }
-        if (!this.doBranchContainChildBranches(branch.getChildBranches().get(0))) {
-            return this.mergeBranches(branch, false);
-        } else {
-            if (this.checkForEqualSubsequentBranches(branch.getChildBranches())) {
-                return this.mergeBranches(branch, true);
+        if (branch.getChildBranches().size() > 0) {
+            if (this.checkForEqualNumberOfChildBranches(branch.getChildBranches())) {
+                if (this.doBranchContainChildBranches(branch.getChildBranches().get(0))) {
+                    if (this.checkForEqualSubsequentBranches(branch.getChildBranches())) {
+                        return this.mergeBranches(branch, true);
+                    }
+                } else {
+                    return this.mergeBranches(branch, false);
+                }
             }
         }
+
         return false;
     }
 
     /**
-     * Merges branches
+     * Merges branches.
      *
      * @param branch
      *            whose child branches are merged
@@ -632,7 +644,7 @@ public class BranchModelCreator {
         // Checks whether the sequenes of the child branches contain equal calls at the ending of
         // their sequences
         for (int i = branch.getChildBranches().get(0).getBranchSequence().size() - 1; i >= 0; i--) {
-            final SequenceElement branchElement = branch.getChildBranches().get(0).getBranchSequence().get(i);
+            final ISequenceElement branchElement = branch.getChildBranches().get(0).getBranchSequence().get(i);
             isElementEqual = false;
             for (final Branch childBranch : branch.getChildBranches()) {
                 if ((childBranch.getBranchSequence().size() - 1 - indexOfEqualElements) < 0) {
@@ -654,7 +666,7 @@ public class BranchModelCreator {
 
         // Creates a new branch element that replaces the child branches that are merged
         final BranchElement branchElement = new BranchElement();
-        final List<SequenceElement> sequenceToAddToBranch = new ArrayList<SequenceElement>();
+        final List<ISequenceElement> sequenceToAddToBranch = new ArrayList<>();
         for (int i = 0; i < indexOfEqualElements; i++) {
             sequenceToAddToBranch.add(0, branch.getChildBranches().get(0).getBranchSequence()
                     .get(branch.getChildBranches().get(0).getBranchSequence().size() - 1));
@@ -681,7 +693,7 @@ public class BranchModelCreator {
         }
 
         if (doChildBranchesExist || (indexOfEqualElements > 0)) {
-            this.isFusionPerformed = true;
+            this.fusionPerformed = true;
             return true;
         } else {
             return false;
@@ -689,7 +701,7 @@ public class BranchModelCreator {
     }
 
     /**
-     * Checks whether branches contain equal child branches
+     * Checks whether branches contain equal child branches.
      *
      * @param branches
      *            whose child branches are checked for equality
@@ -699,61 +711,59 @@ public class BranchModelCreator {
         if (!this.doChildBranchesMatch(branches)) {
             return false;
         }
-        final List<Branch> branchesToCheck = new ArrayList<Branch>();
+        final List<Branch> branchesToCheck = new ArrayList<>();
         for (final Branch branch : branches) {
             branchesToCheck.addAll(branch.getChildBranches());
         }
         if (branchesToCheck.size() == 0) {
             return true;
         }
-        if (!this.checkForEqualSubsequentBranches(branchesToCheck)) {
-            return false;
-        } else {
-            return true;
-        }
+
+        return !this.checkForEqualSubsequentBranches(branchesToCheck);
     }
 
     /**
-     * Checks whether child branches match
+     * Checks whether child branches match.
      *
      * @param branches
      *            whose child branches are matched against each other
      * @return whether the child branches match
      */
     private boolean doChildBranchesMatch(final List<Branch> branches) {
-        if (!this.checkForEqualNumberOfChildBranches(branches)) {
-            return false;
-        }
-        final List<Branch> branchesToMatch = new ArrayList<Branch>();
-        for (int i = 0; i < branches.get(0).getChildBranches().size(); i++) {
-            branchesToMatch.add(branches.get(0).getChildBranches().get(i));
-        }
-        for (int i = 0; i < branches.size(); i++) {
-            if (branches.get(i).getChildBranches().size() != branchesToMatch.size()) {
-                return false;
+        if (this.checkForEqualNumberOfChildBranches(branches)) {
+            final List<Branch> branchesToMatch = new ArrayList<>();
+            for (int i = 0; i < branches.get(0).getChildBranches().size(); i++) {
+                branchesToMatch.add(branches.get(0).getChildBranches().get(i));
             }
-            for (int k = 0; k < branchesToMatch.size(); k++) {
-                boolean matchingElementFound = false;
-                for (int j = 0; j < branches.get(i).getChildBranches().size(); j++) {
-                    if (this.doBranchElementsMatch(branchesToMatch.get(k).getBranchSequence().get(0),
-                            branches.get(i).getChildBranches().get(j).getBranchSequence().get(0))
-                            && (branchesToMatch.get(k).getBranchLikelihood() == branches.get(i).getChildBranches()
-                                    .get(j).getBranchLikelihood())) {
-                        matchingElementFound = true;
-                        break;
-                    }
-                }
-                if (!matchingElementFound) {
+            for (int i = 0; i < branches.size(); i++) {
+                if (branches.get(i).getChildBranches().size() != branchesToMatch.size()) {
                     return false;
                 }
+                for (int k = 0; k < branchesToMatch.size(); k++) {
+                    boolean matchingElementFound = false;
+                    for (int j = 0; j < branches.get(i).getChildBranches().size(); j++) {
+                        if (this.doBranchElementsMatch(branchesToMatch.get(k).getBranchSequence().get(0),
+                                branches.get(i).getChildBranches().get(j).getBranchSequence().get(0))
+                                && (branchesToMatch.get(k).getBranchLikelihood() == branches.get(i).getChildBranches()
+                                        .get(j).getBranchLikelihood())) {
+                            matchingElementFound = true;
+                            break;
+                        }
+                    }
+                    if (!matchingElementFound) {
+                        return false;
+                    }
+                }
             }
-        }
 
-        return true;
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
-     * Checks whether branches contain the equal number of child branches
+     * Checks whether branches contain the equal number of child branches.
      *
      * @param branches
      *            whose number of child branches are checked
@@ -772,21 +782,17 @@ public class BranchModelCreator {
     }
 
     /**
-     * Checks whether a branch contains child branches
+     * Checks whether a branch contains child branches.
      *
      * @param branch
      * @return whether a branch contains child branches
      */
     private boolean doBranchContainChildBranches(final Branch branch) {
-        if ((branch.getChildBranches() == null) || (branch.getChildBranches().size() == 0)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !((branch.getChildBranches() == null) || (branch.getChildBranches().size() == 0));
     }
 
     /**
-     * Checks whether two elements match
+     * Checks whether two elements match.
      *
      * @param sequenceElement1
      *            matched against element 2
@@ -794,8 +800,8 @@ public class BranchModelCreator {
      *            matched against element 1
      * @return whether two elements match
      */
-    private boolean doBranchElementsMatch(final SequenceElement sequenceElement1,
-            final SequenceElement sequenceElement2) {
+    private boolean doBranchElementsMatch(final ISequenceElement sequenceElement1,
+            final ISequenceElement sequenceElement2) {
         if (!sequenceElement1.getClass().equals(sequenceElement2.getClass())) {
             return false;
         }
@@ -808,22 +814,5 @@ public class BranchModelCreator {
         }
         return true;
     }
-
-    // Descending Sort user sessions by call sequence length
-    // User session with longest call sequence will be first element
-    private final Comparator<UserSession> SortUserSessionByCallSequenceSize = new Comparator<UserSession>() {
-
-        @Override
-        public int compare(final UserSession o1, final UserSession o2) {
-            final int sizeO1 = o1.getEvents().size();
-            final int sizeO2 = o2.getEvents().size();
-            if (sizeO1 < sizeO2) {
-                return 1;
-            } else if (sizeO1 > sizeO2) {
-                return -1;
-            }
-            return 0;
-        }
-    };
 
 }

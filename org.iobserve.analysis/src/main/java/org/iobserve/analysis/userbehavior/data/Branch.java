@@ -27,12 +27,12 @@ public class Branch {
 
     private int branchId;
     private int treeLevel;
-    private List<SequenceElement> branchSequence;
+    private List<ISequenceElement> branchSequence;
     private double branchLikelihood;
     private List<Branch> childBranches;
 
     public Branch() {
-        this.branchSequence = new ArrayList<SequenceElement>();
+        this.branchSequence = new ArrayList<ISequenceElement>();
         this.childBranches = new ArrayList<Branch>();
         this.branchLikelihood = 0;
     }
@@ -47,11 +47,11 @@ public class Branch {
         this.childBranches.add(childBranch);
     }
 
-    public List<SequenceElement> getBranchSequence() {
+    public List<ISequenceElement> getBranchSequence() {
         return this.branchSequence;
     }
 
-    public void setBranchSequence(final List<SequenceElement> branchSequence) {
+    public void setBranchSequence(final List<ISequenceElement> branchSequence) {
         this.branchSequence = branchSequence;
     }
 

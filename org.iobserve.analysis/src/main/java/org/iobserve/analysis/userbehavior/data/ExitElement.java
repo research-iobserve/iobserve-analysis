@@ -16,13 +16,20 @@
 package org.iobserve.analysis.userbehavior.data;
 
 /**
- * States the end of a call sequence
+ * States the end of a call sequence.
  *
  * @author David Peter, Robert Heinrich
  */
-public class ExitElement implements SequenceElement {
+public class ExitElement implements ISequenceElement {
 
     private int absoluteCount;
+
+    /**
+     * default constructor.
+     */
+    public ExitElement() {
+
+    }
 
     @Override
     public int getAbsoluteCount() {

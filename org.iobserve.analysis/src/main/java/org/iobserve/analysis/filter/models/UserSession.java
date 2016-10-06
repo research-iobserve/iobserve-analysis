@@ -24,8 +24,8 @@ import java.util.List;
 import org.iobserve.analysis.data.EntryCallEvent;
 
 /**
- * Represents a user session
- * 
+ * Represents a user session.
+ *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
@@ -78,7 +78,7 @@ public final class UserSession {
 
     /**
      * Simple constructor. Create a user session.
-     * 
+     *
      * @param host
      *            host name
      * @param sessionId
@@ -97,7 +97,7 @@ public final class UserSession {
     /**
      * Sort the internal events by the given {@link Comparator}. This class has a default one
      * {@link #SORT_ENTRY_CALL_EVENTS_BY_ENTRY_TIME}
-     * 
+     *
      * @param cmp
      *            comparator to sort user sessions
      */
@@ -107,7 +107,7 @@ public final class UserSession {
 
     /**
      * Add the given event to this user session.
-     * 
+     *
      * @param event
      *            event to be added
      */
@@ -118,7 +118,7 @@ public final class UserSession {
     /**
      * Add the given event to this user session and sort the internal list by the entry time if true
      * is set for sortByEntrytime.
-     * 
+     *
      * @param event
      *            event to be added
      * @param sortByEntryTime
@@ -133,7 +133,7 @@ public final class UserSession {
 
     /**
      * Get the iterator of the internal event list
-     * 
+     *
      * @return iterator
      */
     public Iterator<EntryCallEvent> iterator() {
@@ -142,7 +142,7 @@ public final class UserSession {
 
     /**
      * Return the size of the events for this user session.
-
+     *
      * 
      * @return size
      */
@@ -153,7 +153,7 @@ public final class UserSession {
     /**
      * Parse the id which would be constructed by the {@link UserSession} class if it contained that
      * event.
-     * 
+     *
      * @param event
      *            event
      * @return unique id
@@ -165,7 +165,7 @@ public final class UserSession {
 
     /**
      * Get the exit time of this entire session.
-     * 
+     *
      * @return 0 if no events available at all and > 0 else.
      */
     public long getExitTime() {
@@ -179,7 +179,7 @@ public final class UserSession {
 
     /**
      * Get the entry time of this entire session.
-     * 
+     *
      * @return 0 if no events available at all and > 0 else.
      */
     public long getEntryTime() {
@@ -193,20 +193,20 @@ public final class UserSession {
 
     /**
      * Get the user session´s events
-     * 
+     *
      * @return
      */
     public List<EntryCallEvent> getEvents() {
-        return events;
+        return this.events;
     }
 
     /**
      * Get the user session´s id
-     * 
+     *
      * @return
      */
     public String getSessionId() {
-        return sessionId;
+        return this.sessionId;
     }
 
 }

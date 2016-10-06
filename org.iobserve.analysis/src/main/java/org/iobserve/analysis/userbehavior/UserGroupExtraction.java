@@ -69,6 +69,9 @@ public class UserGroupExtraction {
         this.isClosedWorkload = isClosedWorkload;
     }
 
+    /**
+     * Function to extract user groups.
+     */
     public void extractUserGroups() {
 
         final ClusteringPrePostProcessing clusteringProcessing = new ClusteringPrePostProcessing();

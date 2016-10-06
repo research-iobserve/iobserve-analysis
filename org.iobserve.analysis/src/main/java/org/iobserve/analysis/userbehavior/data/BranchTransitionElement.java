@@ -27,10 +27,10 @@ import java.util.List;
 public class BranchTransitionElement {
 
     private double transitionLikelihood;
-    private List<SequenceElement> branchSequence;
+    private List<ISequenceElement> branchSequence;
 
     public BranchTransitionElement() {
-        this.branchSequence = new ArrayList<SequenceElement>();
+        this.branchSequence = new ArrayList<ISequenceElement>();
     }
 
     public double getTransitionLikelihood() {
@@ -41,11 +41,11 @@ public class BranchTransitionElement {
         this.transitionLikelihood = transitionLikelihood;
     }
 
-    public List<SequenceElement> getBranchSequence() {
+    public List<ISequenceElement> getBranchSequence() {
         return this.branchSequence;
     }
 
-    public void setBranchSequence(final List<SequenceElement> branchSequence) {
+    public void setBranchSequence(final List<ISequenceElement> branchSequence) {
         this.branchSequence = branchSequence;
     }
 

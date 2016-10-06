@@ -16,18 +16,33 @@
 package org.iobserve.analysis.userbehavior.data;
 
 /**
- * Interface that state the elements of a call sequence
+ * Interface that state the elements of a call sequence.
  *
  * @author David Peter, Robert Heinrich
  */
-public interface SequenceElement {
+public interface ISequenceElement {
 
+    /**
+     * @return returns the count
+     */
     public int getAbsoluteCount();
 
+    /**
+     * @param absoluteCount
+     *            sets the count.
+     */
     public void setAbsoluteCount(int absoluteCount);
 
+    /**
+     *
+     * @return returns the class signature for the element.
+     */
     public String getClassSignature();
 
+    /**
+     *
+     * @return returns the operation signature for the element.
+     */
     public String getOperationSignature();
 
 }

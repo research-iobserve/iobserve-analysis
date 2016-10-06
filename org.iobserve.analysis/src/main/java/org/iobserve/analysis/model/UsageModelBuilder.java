@@ -49,7 +49,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create a usage model builder.
-     * 
+     *
      * @param modelProvider
      *            model provider
      */
@@ -73,7 +73,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Reset the model. This will delete all {@link UsageScenario} and {@link UserData} instances.
-     * 
+     *
      * @return builder to pipeline more commands
      */
     public UsageModelBuilder resetModel() {
@@ -84,12 +84,44 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
     }
 
     /**
-     * Create a new usage model
-     * 
+     * Create a new usage model.
+     *
      * @return new usage model
      */
     public UsageModel createUsageModel() {
         return UsagemodelFactory.eINSTANCE.createUsageModel();
+    }
+
+    /**
+     * Convenience routine to create and add stop actions.
+     * 
+     * @param name
+     *            the name of the action
+     * @param behavior
+     *            the scenario behavior
+     * @return the resulting stop action
+     */
+    public Stop createAddStopAction(final String name, final ScenarioBehaviour behavior) {
+        final Stop stop = this.createStop(name);
+        this.addUserAction(behavior, stop);
+
+        return stop;
+    }
+
+    /**
+     * Convenience routine to create and add start actions.
+     * 
+     * @param name
+     *            the name of the action
+     * @param behavior
+     *            the scenario behavior
+     * @return the resulting stop action
+     */
+    public Start createAddStartAction(final String name, final ScenarioBehaviour behavior) {
+        final Start start = this.createStart(name);
+        this.addUserAction(behavior, start);
+
+        return start;
     }
 
     /**
@@ -115,8 +147,8 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
     }
 
     /**
-     * Create new usage scenario and add it to the passed usage model
-     * 
+     * Create new usage scenario and add it to the passed usage model.
+     *
      * @param name
      *            of the usage scenario
      * @param usageModel
@@ -138,7 +170,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create a {@link ScenarioBehaviour}. The behavior is just created not added any model part.
-     * 
+     *
      * @return the behavior
      */
     public ScenarioBehaviour createScenarioBehaviour() {
@@ -148,7 +180,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create an {@link OpenWorkload} and add it to the given {@link UsageScenario}.
-     * 
+     *
      * @param avgInterarrivalTime
      *            the interarrival time
      * @param parent
@@ -158,7 +190,6 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
     public OpenWorkload createOpenWorkload(final long avgInterarrivalTime, final UsageScenario parent) {
         final OpenWorkload openWorkload = UsagemodelFactory.eINSTANCE.createOpenWorkload();
         parent.setWorkload_UsageScenario(openWorkload);
-
 
         // create variables
         final PCMRandomVariable pcmInterarrivalTime = CoreFactory.eINSTANCE.createPCMRandomVariable();
@@ -196,7 +227,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create a start node.
-     * 
+     *
      * @param name
      *            of start node
      * @return start node
@@ -209,7 +240,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create a start node without name. (Recommended to use {@link #createStart(String)}).
-     * 
+     *
      * @return start node
      */
     public Start createStart() {
@@ -218,7 +249,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create a stop node.
-     * 
+     *
      * @param name
      *            name of stop node
      * @return stop node.
@@ -231,7 +262,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create a stop node without name. (Recommended to use {@link #createStop(String)}).
-     * 
+     *
      * @return stop node.
      */
     public Stop createStop() {
@@ -240,7 +271,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create an EntryLevelSystemCall with the given operation signature.
-     * 
+     *
      * @param operationSignature
      *            operation signature of the EntryLevelSystemCall
      * @return null, if the creation failed, the instance if not.
@@ -271,7 +302,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create an EntryLevelSystemCall with the given correspondent.
-     * 
+     *
      * @param correspondent
      *            correspondent containing operation signature
      * @return null, if the creation failed, the instance if not.
@@ -282,7 +313,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create a new empty EntryLevelSystemCall
-     * 
+     *
      * @return
      */
     public EntryLevelSystemCall createEmptyEntryLevelSystemCall() {
@@ -295,7 +326,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create branch with the given name and add it to the given scenario behavior.
-     * 
+     *
      * @param name
      *            name of the branch
      * @param parent
@@ -312,7 +343,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create branch with the given name and add it to the given loop.
-     * 
+     *
      * @param name
      *            name of the branch
      * @param parent
@@ -325,7 +356,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create branch with the given name and add it to the given branch transition.
-     * 
+     *
      * @param name
      *            name of the branch
      * @param parent
@@ -340,7 +371,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      * Create empty {@link BranchTransition} with the given parent. A {@link ScenarioBehaviour} is
      * added to the body of the branch transition, in order to make it possible adding further model
      * elements.
-     * 
+     *
      * @param parent
      *            branch to add transition to
      * @return created branch transition
@@ -359,7 +390,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create new empty branch
-     * 
+     *
      * @return
      */
     public Branch createEmptyBranch() {
@@ -369,7 +400,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
     /**
      * Create loop in given parent {@link ScenarioBehaviour}. A {@link ScenarioBehaviour} is added
      * to the body of the loop, in order to make it possible adding further model elements.
-     * 
+     *
      * @param name
      *            name of loop
      * @param parent
@@ -390,7 +421,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create a loop within the given loop.
-     * 
+     *
      * @param name
      *            name of the loop
      * @param parent
@@ -403,7 +434,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Create a loop within the given branch transition.
-     * 
+     *
      * @param name
      *            name of loop
      * @param parent
@@ -416,7 +447,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Creates a new and empty Loop
-     * 
+     *
      * @return
      */
     public Loop createEmptyLoop() {
@@ -429,7 +460,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Connect actions.
-     * 
+     *
      * @param predecessor
      *            predecessor of successor
      * @param successor
@@ -442,7 +473,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Add the given actions to the given {@link ScenarioBehaviour}.
-     * 
+     *
      * @param parent
      *            parent
      * @param actions
@@ -456,7 +487,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Add the given actions to the given {@link UsageScenario}.
-     * 
+     *
      * @param parent
      *            parent
      * @param actions
@@ -468,7 +499,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Add the given actions to the given {@link BranchTransition}.
-     * 
+     *
      * @param parent
      *            parent
      * @param actions
@@ -480,7 +511,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
 
     /**
      * Add the given actions to the given {@link Loop}.
-     * 
+     *
      * @param parent
      *            parent
      * @param actions

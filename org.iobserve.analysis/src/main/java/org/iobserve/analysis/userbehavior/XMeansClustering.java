@@ -33,6 +33,13 @@ import weka.core.NormalizableDistance;
 public class XMeansClustering extends AbstractClustering {
 
     /**
+     * Default constructor.
+     */
+    public XMeansClustering() {
+
+    }
+
+    /**
      *
      * @param instances
      *            data to cluster in Weka format
@@ -93,7 +100,8 @@ public class XMeansClustering extends AbstractClustering {
             xMeansClusteringResults = new ClusteringResults("X-Means", xmeans.getClusterCenters().numInstances(),
                     assignments, clusteringMetrics);
 
-        } catch (final Exception e) {
+        } catch (final Exception e) { // NOCS due to broken xmeans implementation triggering
+                                      // Exception
             e.printStackTrace();
         }
 

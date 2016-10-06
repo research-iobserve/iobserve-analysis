@@ -25,10 +25,10 @@ import java.util.List;
  *
  * @author David Peter, Robert Heinrich
  */
-public class LoopElement implements SequenceElement {
+public class LoopElement implements ISequenceElement {
 
     private int loopId;
-    private List<SequenceElement> loopSequence;
+    private List<ISequenceElement> loopSequence;
     private int loopCount;
     private int startIndexInBranchSequence;
     private int endIndexInBranchSequence;
@@ -37,22 +37,22 @@ public class LoopElement implements SequenceElement {
     private boolean doContainBranchElement;
 
     public LoopElement() {
-        this.loopSequence = new ArrayList<SequenceElement>();
+        this.loopSequence = new ArrayList<ISequenceElement>();
     }
 
-    public void addSequenceElementToLoopSequence(final SequenceElement sequenceElement) {
+    public void addSequenceElementToLoopSequence(final ISequenceElement sequenceElement) {
         this.loopSequence.add(sequenceElement);
     }
 
-    public void addCallElementToLoopSequence(final int index, final SequenceElement branchElement) {
+    public void addCallElementToLoopSequence(final int index, final ISequenceElement branchElement) {
         this.loopSequence.add(index, branchElement);
     }
 
-    public List<SequenceElement> getLoopSequence() {
+    public List<ISequenceElement> getLoopSequence() {
         return this.loopSequence;
     }
 
-    public void setLoopSequence(final List<SequenceElement> loopSequence) {
+    public void setLoopSequence(final List<ISequenceElement> loopSequence) {
         this.loopSequence = loopSequence;
     }
 

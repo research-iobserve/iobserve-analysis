@@ -27,9 +27,17 @@ import org.palladiosimulator.pcm.usagemodel.impl.OpenWorkloadImpl;
  * Evaluation of the workload specification. Calculates the relative measurement error between the
  * approach's calculated workload and a reference workload
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter
+ * @author Robert Heinrich
  */
-public class WorkloadEvaluation {
+public final class WorkloadEvaluation {
+
+    /**
+     * Default constructor.
+     */
+    private WorkloadEvaluation() {
+
+    }
 
     /**
      * Calculates the relative measurement error between a reference workload and the approach's
@@ -41,8 +49,9 @@ public class WorkloadEvaluation {
      *            contains the calculated workload
      * @param referenceElements
      *            contains the reference workload
+     * @return return the relative measurement error
      */
-    public double calculateRME(final UsageModel usageModel, final ReferenceElements referenceElements) {
+    public static double calculateRME(final UsageModel usageModel, final ReferenceElements referenceElements) {
         double rme = 0;
         final UsageScenario usageScenarioOfUsageModel = usageModel.getUsageScenario_UsageModel().get(0);
         final Workload workload = usageScenarioOfUsageModel.getWorkload_UsageScenario();

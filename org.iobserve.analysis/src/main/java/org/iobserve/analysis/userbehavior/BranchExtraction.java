@@ -29,7 +29,8 @@ import org.iobserve.analysis.userbehavior.data.BranchModel;
  * depends on the occurrence frequency of its sequence. The result is a BranchModel for each
  * EntryCallSequenceModel(user group).
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter
+ * @author Robert Heinrich
  */
 public class BranchExtraction {
 
@@ -45,10 +46,13 @@ public class BranchExtraction {
         this.entryCallSequenceModels = entryCallSequenceModels;
     }
 
+    /**
+     * Create a call branch model.
+     */
     public void createCallBranchModels() {
 
         final BranchModelCreator modelCreator = new BranchModelCreator();
-        this.branchModels = new ArrayList<BranchModel>();
+        this.branchModels = new ArrayList<>();
 
         for (final EntryCallSequenceModel entryCallSequenceModel : this.entryCallSequenceModels) {
             /**

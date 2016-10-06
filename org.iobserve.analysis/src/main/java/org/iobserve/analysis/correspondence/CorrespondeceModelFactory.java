@@ -38,7 +38,25 @@ public final class CorrespondeceModelFactory {
     public static final CorrespondeceModelFactory INSTANCE = new CorrespondeceModelFactory();
 
     /**
-     * Simple constructor does nothing
+     * Check the name of the method against the operation signature. Return true if the method name
+     * contains the operation signature name.
+     */
+    public static final IOperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER = (method,
+            operationSignature) -> StringUtils.trimAndRemoveSpaces(method.getName()).get()
+                    .contains(StringUtils.trimAndRemoveSpaces(operationSignature.getName()).get());
+
+    /**
+     * Check the name of the method or the class against the operation signature. Return true if the
+     * method name or the class name contains the operation signature name.
+     */
+    public static final IOperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER_2 = (method,
+            operationSignature) -> CorrespondeceModelFactory.DEFAULT_OPERATION_SIGNATURE_MAPPER.select(method,
+                    operationSignature)
+                    || method.getParent().getUnitName().toLowerCase()
+                            .contains(operationSignature.getName().toLowerCase());
+
+    /**
+     * Simple constructor does nothing.
      */
     private CorrespondeceModelFactory() {
         // do nothing
@@ -80,23 +98,5 @@ public final class CorrespondeceModelFactory {
         }
         return mapping;
     }
-
-    /**
-     * Check the name of the method against the operation signature. Return true if the method name
-     * contains the operation signature name.
-     */
-    public final static IOperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER = (method,
-            operationSignature) -> StringUtils.trimAndRemoveSpaces(method.getName()).get()
-                    .contains(StringUtils.trimAndRemoveSpaces(operationSignature.getName()).get());
-
-    /**
-     * Check the name of the method or the class against the operation signature. Return true if the
-     * method name or the class name contains the operation signature name.
-     */
-    public final static IOperationSignatureSelector DEFAULT_OPERATION_SIGNATURE_MAPPER_2 = (method,
-            operationSignature) -> CorrespondeceModelFactory.DEFAULT_OPERATION_SIGNATURE_MAPPER.select(method,
-                    operationSignature)
-                    || method.getParent().getUnitName().toLowerCase()
-                            .contains(operationSignature.getName().toLowerCase());
 
 }

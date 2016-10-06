@@ -18,18 +18,9 @@ package org.iobserve.analysis.userbehavior;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-import org.iobserve.analysis.correspondence.Correspondent;
-import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.UsageModelBuilder;
-import org.iobserve.analysis.userbehavior.data.Branch;
-import org.iobserve.analysis.userbehavior.data.BranchElement;
-import org.iobserve.analysis.userbehavior.data.BranchModel;
-import org.iobserve.analysis.userbehavior.data.BranchTransitionElement;
-import org.iobserve.analysis.userbehavior.data.CallElement;
-import org.iobserve.analysis.userbehavior.data.LoopBranchElement;
-import org.iobserve.analysis.userbehavior.data.LoopElement;
-import org.iobserve.analysis.userbehavior.data.SequenceElement;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
@@ -41,7 +32,17 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import java.util.Optional;
+import org.iobserve.analysis.correspondence.Correspondent;
+import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.userbehavior.data.Branch;
+import org.iobserve.analysis.userbehavior.data.BranchElement;
+import org.iobserve.analysis.userbehavior.data.BranchModel;
+import org.iobserve.analysis.userbehavior.data.BranchTransitionElement;
+import org.iobserve.analysis.userbehavior.data.CallElement;
+import org.iobserve.analysis.userbehavior.data.LoopBranchElement;
+import org.iobserve.analysis.userbehavior.data.LoopElement;
+import org.iobserve.analysis.userbehavior.data.ISequenceElement;
 
 /**
  * This class creates a PCM usage model from the passed LoopBranchModels. For each user group its
@@ -54,10 +55,10 @@ import java.util.Optional;
  */
 public class PcmUsageModelBuilder {
 
-    List<BranchModel> loopBranchModels;
-    boolean isClosedWorkloadRequested;
-    double thinkTime;
-    private final List<HashMap<Integer, ScenarioBehaviour>> branchScenarioBehavioursOfUserGroups;
+    private final List<BranchModel> loopBranchModels;
+    private final boolean isClosedWorkloadRequested;
+    private final double thinkTime;
+    private final List<Map<Integer, ScenarioBehaviour>> branchScenarioBehavioursOfUserGroups;
     private final UsageModelBuilder usageModelBuilder;
     private final ICorrespondence correspondenceModel;
 
@@ -80,13 +81,13 @@ public class PcmUsageModelBuilder {
         this.loopBranchModels = loopBranchModels;
         this.isClosedWorkloadRequested = isClosedWorkloadRequested;
         this.thinkTime = thinkTime;
-        this.branchScenarioBehavioursOfUserGroups = new ArrayList<HashMap<Integer, ScenarioBehaviour>>();
+        this.branchScenarioBehavioursOfUserGroups = new ArrayList<>();
         this.usageModelBuilder = usageModelBuilder;
         this.correspondenceModel = correspondenceModel;
     }
 
     /**
-     * Creates a PCM usage model from the passed LoopBranchModels
+     * Creates a PCM usage model from the passed LoopBranchModels.
      *
      * @return the created PCM usage model
      */
@@ -99,7 +100,7 @@ public class PcmUsageModelBuilder {
             final BranchModel callBranchModel = this.loopBranchModels.get(i);
             final UsageScenario usageScenario = this.usageModelBuilder
                     .createUsageScenario("Usage Scneario of user group " + i, usageModel);
-            final HashMap<Integer, ScenarioBehaviour> branchScenarioBehaviours = new HashMap<Integer, ScenarioBehaviour>();
+            final Map<Integer, ScenarioBehaviour> branchScenarioBehaviours = new HashMap<>();
             this.branchScenarioBehavioursOfUserGroups.add(branchScenarioBehaviours);
 
             if (this.isClosedWorkloadRequested) {
@@ -139,7 +140,7 @@ public class PcmUsageModelBuilder {
     }
 
     /**
-     * Creates for the passed branch a scenario behavior
+     * Creates for the passed branch a scenario behavior.
      *
      * @param branch
      *            whose behavior is created
@@ -166,7 +167,7 @@ public class PcmUsageModelBuilder {
      * @return the created scenario behavior
      */
     private ScenarioBehaviour transformSequenceToScenarioBehavior(final int indexOfScenario,
-            final List<SequenceElement> sequence, final Branch branch) {
+            final List<ISequenceElement> sequence, final Branch branch) {
 
         final ScenarioBehaviour scenarioBehaviour = this.usageModelBuilder.createScenarioBehaviour();
 
@@ -186,7 +187,7 @@ public class PcmUsageModelBuilder {
 
         // Loops over all elements of the sequence and creates a corresponding scenario behavior by
         // connecting the elements via successor and predecessor connections
-        for (final SequenceElement branchElement : sequence) {
+        for (final ISequenceElement branchElement : sequence) {
 
             // Element is a entryLevelSystemCall
             if (branchElement.getClass().equals(CallElement.class)) {
@@ -216,9 +217,7 @@ public class PcmUsageModelBuilder {
                     isLastElementALoopBranch = false;
                     isLastElementABranch = false;
                 }
-            }
-            // Element is a loop
-            else if (branchElement.getClass().equals(LoopElement.class)) {
+            } else if (branchElement.getClass().equals(LoopElement.class)) { // Element is a loop
                 final Loop loop = this.createLoop(scenarioBehaviour, (LoopElement) branchElement);
                 if (isLastElementACall) {
                     this.usageModelBuilder.connect(lastESysCall, loop);
@@ -236,9 +235,8 @@ public class PcmUsageModelBuilder {
                 isLastElementACall = false;
                 isLastElementALoopBranch = false;
                 isLastElementABranch = false;
-            }
-            // Element is a looped Branch
-            else if (branchElement.getClass().equals(LoopBranchElement.class)) {
+            } else if (branchElement.getClass().equals(LoopBranchElement.class)) { // Element is a
+                                                                                   // looped Branch
                 final org.palladiosimulator.pcm.usagemodel.Branch loopBranch = this.createLoopBranch(scenarioBehaviour,
                         (LoopBranchElement) branchElement);
                 if (isLastElementACall) {
@@ -257,9 +255,8 @@ public class PcmUsageModelBuilder {
                 isLastElementACall = false;
                 isLastElementALoop = false;
                 isLastElementABranch = false;
-            }
-            // Element is a Branch
-            else if (branchElement.getClass().equals(BranchElement.class)) {
+            } else if (branchElement.getClass().equals(BranchElement.class)) { // Element is a
+                                                                               // Branch
                 final org.palladiosimulator.pcm.usagemodel.Branch branchInter = this.createBranch(scenarioBehaviour,
                         (BranchElement) branchElement);
                 if (isLastElementACall) {
@@ -335,7 +332,7 @@ public class PcmUsageModelBuilder {
     }
 
     /**
-     * Creates for a branch a corresponding PCM branch including a corresponding usage scenario
+     * Creates for a branch a corresponding PCM branch including a corresponding usage scenario.
      *
      * @param scenarioBehaviour
      *            to that the PCM branch is added
@@ -360,7 +357,7 @@ public class PcmUsageModelBuilder {
     }
 
     /**
-     * Creates for a loop element a corresponding PCM loop including a corresponding usage scenario
+     * Creates for a loop element a corresponding PCM loop including a corresponding usage scenario.
      *
      * @param scenarioBehaviour
      *            to that the PCM loop is added
@@ -382,7 +379,7 @@ public class PcmUsageModelBuilder {
     }
 
     /**
-     * Creates a PCM branch corresponding to the child branches of the passed branch
+     * Creates a PCM branch corresponding to the child branches of the passed branch.
      *
      * @param scenarioBehaviour
      *            to that the PCM branch is added
@@ -412,7 +409,7 @@ public class PcmUsageModelBuilder {
     }
 
     /**
-     * Creates a PCM branch for a LoopBranchElement
+     * Creates a PCM branch for a LoopBranchElement.
      *
      * @param scenarioBehaviour
      *            to that the PCM branch is added

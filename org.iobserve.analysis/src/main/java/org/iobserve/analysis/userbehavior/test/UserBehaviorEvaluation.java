@@ -35,25 +35,31 @@ import org.palladiosimulator.pcm.usagemodel.impl.StopImpl;
 
 /**
  * It matches two usage models related to their model elements as well as the ordering of their
- * elements. The objective is to determine whether the two usage models correspond to each other
+ * elements. The objective is to determine whether the two usage models correspond to each other.
  *
  * @author David Peter, Robert Heinrich
  */
-public class UserBehaviorEvaluation {
-
-    int countOfMatchingElements = 0;
+public final class UserBehaviorEvaluation {
 
     /**
-     * Executes the matching of the two passed usage models
+     * Default constructor.
+     */
+    private UserBehaviorEvaluation() {
+    }
+
+    /**
+     * Executes the matching of the two passed usage models.
      *
      * @param createdUsageModel
      *            is matched against the reference usage model
      * @param referenceUsageModel
      *            is matched against the approach's generated usage model
+     * @return returns accuracy results
      * @throws IOException
+     *             on error
      */
-    public AccuracyResults matchUsageModels(final UsageModel createdUsageModel, final UsageModel referenceUsageModel)
-            throws IOException {
+    public static AccuracyResults matchUsageModels(final UsageModel createdUsageModel,
+            final UsageModel referenceUsageModel) throws IOException {
 
         final AccuracyResults accuracyResults = new AccuracyResults();
 
@@ -67,14 +73,16 @@ public class UserBehaviorEvaluation {
                 .getScenarioBehaviour_UsageScenario();
 
         // Creates for each usage model a list that contains the usage model's model elements
-        final List<ModelElement> modelElementsOfCreatedUsageModel = new ArrayList<ModelElement>();
-        final List<ModelElement> modelElementsOfReferenceUsageModel = new ArrayList<ModelElement>();
-        this.getModelElements(scenarioBehaviourOfCreatedUsageModel, modelElementsOfCreatedUsageModel);
-        this.getModelElements(scenarioBehaviourOfReferenceUsageModel, modelElementsOfReferenceUsageModel);
+        final List<ModelElement> modelElementsOfCreatedUsageModel = new ArrayList<>();
+        final List<ModelElement> modelElementsOfReferenceUsageModel = new ArrayList<>();
+        UserBehaviorEvaluation.getModelElements(scenarioBehaviourOfCreatedUsageModel, modelElementsOfCreatedUsageModel);
+        UserBehaviorEvaluation.getModelElements(scenarioBehaviourOfReferenceUsageModel,
+                modelElementsOfReferenceUsageModel);
 
         // Calculate the evaluation metrics according to the extracted lists of model elements
-        final double jc = this.calculateJC(modelElementsOfCreatedUsageModel, modelElementsOfReferenceUsageModel);
-        final double srcc = this.calculateSpearmansCoefficient(modelElementsOfCreatedUsageModel,
+        final double jc = UserBehaviorEvaluation.calculateJC(modelElementsOfCreatedUsageModel,
+                modelElementsOfReferenceUsageModel);
+        final double srcc = UserBehaviorEvaluation.calculateSpearmansCoefficient(modelElementsOfCreatedUsageModel,
                 modelElementsOfReferenceUsageModel);
         accuracyResults.setJc(jc);
         accuracyResults.setSrcc(srcc);
@@ -93,24 +101,26 @@ public class UserBehaviorEvaluation {
      *            contains the model elements of the reference usage model
      * @return
      */
-    private double calculateJC(final List<ModelElement> modelElementsOfCreatedUsageModel,
+    private static double calculateJC(final List<ModelElement> modelElementsOfCreatedUsageModel,
             final List<ModelElement> modelElementsOfReferenceUsageModel) {
-        final List<ModelElement> modelElements1 = new ArrayList<ModelElement>(modelElementsOfCreatedUsageModel);
-        final List<ModelElement> modelElements2 = new ArrayList<ModelElement>(modelElementsOfReferenceUsageModel);
+        final List<ModelElement> modelElements1 = new ArrayList<>(modelElementsOfCreatedUsageModel);
+        final List<ModelElement> modelElements2 = new ArrayList<>(modelElementsOfReferenceUsageModel);
         // Creates the intersection of the lists. Thereby, the elements of the intersection are
         // removed from both lists. Thus, after calculating the intersection both lists only contain
         // the elements that are not part of the intersection list. They are subsequently used to
         // calculate the union of both lists
-        final List<ModelElement> intersectionList = this.getIntersectionList(modelElements1, modelElements2);
+        final List<ModelElement> intersectionList = UserBehaviorEvaluation.getIntersectionList(modelElements1,
+                modelElements2);
         // Creates the union of the lists
-        final List<ModelElement> unionList = this.getUnionList(modelElements1, modelElements2, intersectionList);
+        final List<ModelElement> unionList = UserBehaviorEvaluation.getUnionList(modelElements1, modelElements2,
+                intersectionList);
         // Calculates the Jaccard Coefficient
         final double jc = (intersectionList.size() * 1.0) / (unionList.size() * 1.0);
         return jc;
     }
 
     /**
-     * Creates the intersection of the passed lists
+     * Creates the intersection of the passed lists.
      *
      * @param modelElementsOfCreatedUsageModel
      *            contains the model elements of the created usage model
@@ -118,9 +128,9 @@ public class UserBehaviorEvaluation {
      *            contains the model elements of the reference usage model
      * @return intersection
      */
-    private List<ModelElement> getIntersectionList(final List<ModelElement> modelElementsOfCreatedUsageModel,
+    private static List<ModelElement> getIntersectionList(final List<ModelElement> modelElementsOfCreatedUsageModel,
             final List<ModelElement> modelElementsOfReferenceUsageModel) {
-        final List<ModelElement> intersectionList = new ArrayList<ModelElement>();
+        final List<ModelElement> intersectionList = new ArrayList<>();
         // Checks whether for each of the model elements of the created usage model there is a
         // corresponding model element within the reference usage model
         for (int i = 0; i < modelElementsOfCreatedUsageModel.size(); i++) {
@@ -132,7 +142,7 @@ public class UserBehaviorEvaluation {
                 if (modelElementsOfCreatedUsageModel.get(i).equals(modelElementsOfReferenceUsageModel.get(j))) {
                     intersectionList.add(modelElementsOfCreatedUsageModel.get(i));
                     modelElementsOfCreatedUsageModel.remove(i);
-                    i--;
+                    i--; // NOCS
                     modelElementsOfReferenceUsageModel.remove(j);
                     break;
                 }
@@ -142,7 +152,7 @@ public class UserBehaviorEvaluation {
     }
 
     /**
-     * Creates the union of the lists
+     * Creates the union of the lists.
      *
      * @param modelElementsOfCreatedUsageModel
      *            contains the model elements of the created usage model that do not belong to the
@@ -154,9 +164,9 @@ public class UserBehaviorEvaluation {
      *            contains the intersection of both lists
      * @return union
      */
-    private List<ModelElement> getUnionList(final List<ModelElement> modelElementsOfCreatedUsageModel,
+    private static List<ModelElement> getUnionList(final List<ModelElement> modelElementsOfCreatedUsageModel,
             final List<ModelElement> modelElementsOfReferenceUsageModel, final List<ModelElement> intersectionList) {
-        final List<ModelElement> unionList = new ArrayList<ModelElement>();
+        final List<ModelElement> unionList = new ArrayList<>();
         // The lists of the created and the reference usage model each contain only the model
         // elements that are not part of the intersection of both lists. Thus, the union consists of
         // the intersection and the rest of the model elements
@@ -177,7 +187,7 @@ public class UserBehaviorEvaluation {
      *            contains the model elements of usage model 2
      * @return
      */
-    private double calculateSpearmansCoefficient(final List<ModelElement> modelElementsOfUsageModel1,
+    private static double calculateSpearmansCoefficient(final List<ModelElement> modelElementsOfUsageModel1,
             final List<ModelElement> modelElementsOfUsageModel2) {
 
         final long numberOfModelElements = 1L * modelElementsOfUsageModel1.size();
@@ -203,14 +213,15 @@ public class UserBehaviorEvaluation {
     }
 
     /**
-     * Extracts for a scenario behavior the model elements
+     * Extracts for a scenario behavior the model elements.
      *
      * @param scenarioBehaviour
      *            whose model elements are extracted
      * @param modelElements
      *            the list to that the model elements are added
      */
-    private void getModelElements(final ScenarioBehaviour scenarioBehaviour, final List<ModelElement> modelElements) {
+    private static void getModelElements(final ScenarioBehaviour scenarioBehaviour,
+            final List<ModelElement> modelElements) {
 
         final List<AbstractUserAction> actionsOfScenarioBehaviour = scenarioBehaviour.getActions_ScenarioBehaviour();
         AbstractUserAction nextActionOfScenarioBehaviour = actionsOfScenarioBehaviour.get(0);
@@ -235,7 +246,7 @@ public class UserBehaviorEvaluation {
                 final ModelElement modelElement = new ModelElement(false, false, false, false, true, "",
                         loop.getLoopIteration_Loop().getSpecification(), 0);
                 modelElements.add(modelElement);
-                this.getModelElements(loop.getBodyBehaviour_Loop(), modelElements);
+                UserBehaviorEvaluation.getModelElements(loop.getBodyBehaviour_Loop(), modelElements);
             } else if (nextActionOfScenarioBehaviour.getClass().equals(BranchImpl.class)) {
                 final Branch branch = (Branch) nextActionOfScenarioBehaviour;
                 // Because the branch transitions of the usage models are not always in the same
@@ -244,14 +255,14 @@ public class UserBehaviorEvaluation {
                 // added in the same order independently of the ordering of the usage model. The
                 // ordering of the branch transitions does not affect the accuracy of an usage model
                 // and is created randomly within the usage model and can not be influenced.
-                final List<BranchTransition> branchTransitionsSorted = this
+                final List<BranchTransition> branchTransitionsSorted = UserBehaviorEvaluation
                         .sortBranchTransitions(branch.getBranchTransitions_Branch());
                 for (int i = 0; i < branchTransitionsSorted.size(); i++) {
                     final ModelElement modelElement = new ModelElement(false, false, false, true, false, "", "",
                             branchTransitionsSorted.get(i).getBranchProbability());
                     modelElements.add(modelElement);
-                    this.getModelElements(branchTransitionsSorted.get(i).getBranchedBehaviour_BranchTransition(),
-                            modelElements);
+                    UserBehaviorEvaluation.getModelElements(
+                            branchTransitionsSorted.get(i).getBranchedBehaviour_BranchTransition(), modelElements);
                 }
             }
 
@@ -262,15 +273,15 @@ public class UserBehaviorEvaluation {
     }
 
     /**
-     * It sorts a list of branch transitions by their first EntryLevelSystemCall
+     * It sorts a list of branch transitions by their first EntryLevelSystemCall.
      *
      * @param branchTransitions
      *            that are sorted
      * @return sorted list of branch transitions
      */
-    private List<BranchTransition> sortBranchTransitions(final List<BranchTransition> branchTransitions) {
-        final List<String> entityNames = new ArrayList<String>();
-        final List<BranchTransition> branchTransitionsSorted = new ArrayList<BranchTransition>();
+    private static List<BranchTransition> sortBranchTransitions(final List<BranchTransition> branchTransitions) {
+        final List<String> entityNames = new ArrayList<>();
+        final List<BranchTransition> branchTransitionsSorted = new ArrayList<>();
         for (final BranchTransition branchTransition : branchTransitions) {
             final EntryLevelSystemCall call = (EntryLevelSystemCall) branchTransition
                     .getBranchedBehaviour_BranchTransition().getActions_ScenarioBehaviour().get(0).getSuccessor();

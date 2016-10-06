@@ -15,8 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.test;
 
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+
+import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 
 /**
  * Contains the reference elements that are created by the ReferenceUsageModelBuilder: Reference
@@ -31,6 +32,9 @@ public class ReferenceElements {
     private long meanInterArrivalTime;
     private int meanConcurrentUserSessions;
 
+    /**
+     * Default entity constructor.
+     */
     public ReferenceElements() {
     }
 
