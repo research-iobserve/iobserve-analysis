@@ -198,8 +198,14 @@ abstract class AbstractModelProvider<T extends EObject> {
      */
     public final void loadModel() {
         this.getPackage().eClass();
-        Opt.of(this.modelLoader.load(this.uriModelInstance)).ifPresent().apply(this::setModel).elseApply(
-                () -> System.out.printf("Model at %s could not be loaded!\n", this.uriModelInstance.toString()));
+        Optional<EObject> opt = this.modelLoader.load(this.uriModelInstance);
+        if(opt.isPresent()) {
+        	this.setModel(opt.get());
+        } else {
+        	System.out.printf("Model at %s could not be loaded!\n", this.uriModelInstance.toString());
+        }
+//        Opt.of(this.modelLoader.load(this.uriModelInstance)).ifPresent().apply(this::setModel).elseApply(
+//                () -> System.out.printf("Model at %s could not be loaded!\n", this.uriModelInstance.toString()));
     }
 
     /**
