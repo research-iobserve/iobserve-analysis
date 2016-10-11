@@ -64,6 +64,7 @@ public final class ModelProviderPlatform {
             final String extension = this.getFileExtension(nextFile.getName());
             if ("repository".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
+System.out.println("XX " + uri);
                 this.repositoryModelProvider = new RepositoryModelProvider(this, uri);
 
             } else if ("allocation".equalsIgnoreCase(extension)) {
