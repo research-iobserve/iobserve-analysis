@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
+import kieker.common.record.misc.KiekerMetadataRecord;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -79,6 +80,14 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             if (element instanceof TraceMetadata) {
                 this.traceMetaPort.send((TraceMetadata) element);
             }
+        } else if (element instanceof KiekerMetadataRecord) {
+            final KiekerMetadataRecord metadata = (KiekerMetadataRecord) element;
+            RecordSwitch.LOGGER.info("Kieker Metadata\n" + "\ncontroller name   " + metadata.getControllerName()
+                    + "\nexperiment id     " + metadata.getExperimentId() + "\nhostname          "
+                    + metadata.getHostname() + "\nlogging timestamp " + metadata.getLoggingTimestamp()
+                    + "\nnumber of records " + metadata.getNumberOfRecords() + "\nsize              "
+                    + metadata.getSize() + "\ntime offset       " + metadata.getTimeOffset() + "\nunit              "
+                    + metadata.getTimeUnit() + "\nversion           " + metadata.getVersion());
         } else {
             final String className = element.getClass().getCanonicalName();
             Integer hits = this.unknownRecords.get(className);

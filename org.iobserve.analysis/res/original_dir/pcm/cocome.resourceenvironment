@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ASCII"?>
 <resourceenvironment:ResourceEnvironment xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:resourceenvironment="http://palladiosimulator.org/PalladioComponentModel/ResourceEnvironment/5.1">
   <linkingResources__ResourceEnvironment id="_0LG40h84Edy8vbmreGRsqg" entityName="Store_1_Client-Store_1_Server" connectedResourceContainers_LinkingResource="_mpMBEOEgEduBSuO8WivxSA _ZVdrwOEhEduBSuO8WivxSA">
     <communicationLinkResourceSpecifications_LinkingResource id="_1PtW8amNEeGXyPyPMyKH6g">
