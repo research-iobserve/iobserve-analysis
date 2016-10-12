@@ -20,14 +20,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.iobserve.common.record.IDeploymentRecord;
-import org.iobserve.common.record.IUndeploymentRecord;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.ServletTraceHelper;
 
 /**
  * The record switch filter is used to scan the event stream and send events based on their type to
@@ -69,14 +72,13 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             this.deploymentOutputPort.send((IDeploymentRecord) element);
         } else if (element instanceof IUndeploymentRecord) {
             this.undeploymentOutputPort.send((IUndeploymentRecord) element);
+        } else if (element instanceof ServletTraceHelper) { // NOCS
+            // TODO this is later used to improve trace information
         } else if (element instanceof IFlowRecord) {
             this.flowOutputPort.send((IFlowRecord) element);
-
-            // send trace meta data
             if (element instanceof TraceMetadata) {
                 this.traceMetaPort.send((TraceMetadata) element);
             }
-
         } else {
             final String className = element.getClass().getCanonicalName();
             Integer hits = this.unknownRecords.get(className);

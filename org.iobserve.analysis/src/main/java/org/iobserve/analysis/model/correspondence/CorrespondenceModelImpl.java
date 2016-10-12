@@ -22,6 +22,9 @@ import java.util.Optional;
 
 import javax.xml.bind.JAXB;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
 import org.iobserve.analysis.protocom.PcmEntity;
 import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
@@ -35,6 +38,8 @@ import org.iobserve.analysis.protocom.PcmOperationSignature;
  * @author Alessandro Giusa
  */
 class CorrespondenceModelImpl implements ICorrespondence {
+
+    private static final Logger LOGGER = LogManager.getLogger(CorrespondenceModelImpl.class);
 
     /** cache for already mapped correspondences. */
     private final Map<String, Correspondent> cachedCorrespondents = new HashMap<>();
@@ -180,17 +185,15 @@ class CorrespondenceModelImpl implements ICorrespondence {
         if (correspondent == null) {
             final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
             if (pcmEntityCorrespondent == null) {
-                // TODO log
-                System.out.println("NOK");
+                CorrespondenceModelImpl.LOGGER.info("Mapping not available for class signature: " + classSig);
 
-                return ICorrespondence.NULL_CORRESPONDENZ; // or something else
+                return ICorrespondence.NULL_CORRESPONDENZ;
             }
 
             final PcmOperationSignature pcmOperationSignature = this.getPcmOperationSignature(pcmEntityCorrespondent,
                     operationSig);
             if (pcmOperationSignature == null) {
-                // TODO log
-                System.out.println("NOK");
+                CorrespondenceModelImpl.LOGGER.info("Mapping not available for operation signature: " + operationSig);
 
                 return ICorrespondence.NULL_CORRESPONDENZ;
             }
@@ -210,8 +213,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
     @Override
     public Optional<Correspondent> getCorrespondent(final String classSig) {
 
-        // TODO debug print, remove later
-        System.out.print(String.format("Try to get correspondence for classSig=%s ...", classSig));
+        CorrespondenceModelImpl.LOGGER.debug(String.format("Try to get correspondence for classSig=%s ...", classSig));
 
         // assert parameters are not null
         if (classSig == null) {
