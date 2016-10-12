@@ -56,7 +56,6 @@ public final class InitializeModelProviders {
             if ("repository".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
                 this.repositoryModelProvider = new RepositoryModelProvider(uri);
-
             } else if ("allocation".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
                 this.allocationModelProvider = new AllocationModelProvider(uri);
