@@ -3,6 +3,8 @@ package org.iobserve.service.cli;
 import java.io.File;
 import java.util.Collection;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.model.ModelProviderPlatform;
 
@@ -15,6 +17,9 @@ import teetime.framework.Execution;
  *
  */
 public class AnalysisExecution {
+	
+	private static final Logger LOGGER = LogManager.getLogger(AnalysisExecution.class);
+	
     /** configuration for the analysis. */
     private final Configuration configuration;
 
@@ -31,8 +36,10 @@ public class AnalysisExecution {
      * run the analysis application core.
      */
     public void run() {
+        LOGGER.info("Execute Analysis");
         final Execution<Configuration> analysis = new Execution<>(this.configuration);
         analysis.executeBlocking();
+        LOGGER.info("Analysis Complete");
     }
 
 }

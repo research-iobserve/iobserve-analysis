@@ -65,8 +65,6 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
      */
     private void loadAllBasicComponents() {
         this.basicComponents = new ArrayList<BasicComponent>();
-System.out.println(">>1 " + this.getModel());
-System.out.println(">>2 " + this.getModel().getComponents__Repository());
         for (final RepositoryComponent nextRepoCmp : this.getModel().getComponents__Repository()) {
             if (nextRepoCmp instanceof BasicComponent) {
                 final BasicComponent basicCmp = (BasicComponent) nextRepoCmp;

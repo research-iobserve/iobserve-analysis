@@ -81,14 +81,14 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 resourceEvnironmentModelProvider);
 
         /** dispatch different monitoring data */
-        //this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
-        //this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
-        //this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
-        //this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
+        this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
+        this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
+        this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
+        this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
-        // this.connectPorts(tAllocation.getDeploymentOutputPort(), tDeployment.getInputPort());
-        // this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
-        // this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
+        this.connectPorts(tAllocation.getDeploymentOutputPort(), tDeployment.getInputPort());
+        this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
+        this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
     }
 
     public RecordSwitch getRecordSwitch() {
