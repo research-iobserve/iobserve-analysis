@@ -15,16 +15,17 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and
@@ -87,12 +88,12 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
      *            server name
      */
     private void updateModel(final String serverName) {
-        Opt.of(this.resourceEnvModelProvider.getResourceContainerByName(serverName)).ifNotPresent().apply(() -> {
-            final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
-                    TAllocation.this.resourceEnvModelProvider);
-            builder.loadModel();
-            builder.createResourceContainer(serverName);
-            builder.build();
-        });
+        Opt.of(ResourceEnvironmentModelBuilder.getResourceContainerByName(this.resourceEnvModelProvider.getModel(),
+                serverName)).ifNotPresent().apply(() -> {
+                    TAllocation.this.resourceEnvModelProvider.loadModel();
+                    final ResourceEnvironment model = TAllocation.this.resourceEnvModelProvider.getModel();
+                    ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
+                    TAllocation.this.resourceEnvModelProvider.save();
+                });
     }
 }

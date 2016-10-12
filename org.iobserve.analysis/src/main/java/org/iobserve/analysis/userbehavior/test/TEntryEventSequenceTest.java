@@ -21,9 +21,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.UsageModelBuilder;
-import org.iobserve.analysis.userbehavior.UserBehaviorModeling;
+import org.iobserve.analysis.model.RepositoryModelProvider;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.analysis.userbehavior.test.builder.SimpleSequenceReference;
 
 /**
@@ -62,8 +62,8 @@ public final class TEntryEventSequenceTest {
     @Test
     public void testBranchWithinLoop() throws IOException {
 
-        final UsageModelBuilder usageModelBuilder = null; // TODO load that model
         final ICorrespondence correspondenceModel = null; // TODO load that model
+        final RepositoryModelProvider repositoryModelProvider = null; // TODO load that model
 
         final int numberOfIterations = 500;
         final int stepSize = 1;
@@ -76,12 +76,12 @@ public final class TEntryEventSequenceTest {
             final boolean isClosedWorkload = TEntryEventSequenceTest.CLOSED_WORKLOAD;
 
             final ReferenceElements referenceElements = SimpleSequenceReference.getModel(
-                    TEntryEventSequenceTest.REFERENCE_USAGE_MODEL, usageModelBuilder, correspondenceModel, thinkTime,
-                    isClosedWorkload);
+                    TEntryEventSequenceTest.REFERENCE_USAGE_MODEL, repositoryModelProvider, correspondenceModel,
+                    thinkTime, isClosedWorkload);
 
-            final UserBehaviorModeling behaviorModeling = new UserBehaviorModeling(
+            final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), numberOfUserGroups, varianceOfUserGroups,
-                    isClosedWorkload, thinkTime, usageModelBuilder, correspondenceModel);
+                    isClosedWorkload, thinkTime, repositoryModelProvider, correspondenceModel);
 
             behaviorModeling.modelUserBehavior();
 

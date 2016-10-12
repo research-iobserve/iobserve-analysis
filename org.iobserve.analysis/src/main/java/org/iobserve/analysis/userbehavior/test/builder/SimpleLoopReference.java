@@ -29,11 +29,12 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import org.iobserve.analysis.correspondence.Correspondent;
-import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
 import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.test.TestHelper;
@@ -41,7 +42,8 @@ import org.iobserve.analysis.userbehavior.test.TestHelper;
 /**
  * Simple loop reference.
  *
- * @author Reiner Jung
+ * @author David Peter -- initial contribution
+ * @author Reiner Jung -- refactoring
  *
  */
 public final class SimpleLoopReference {
@@ -59,8 +61,8 @@ public final class SimpleLoopReference {
      *
      * @param referenceUsageModelFileName
      *            reference usage model file name
-     * @param usageModelBuilder
-     *            usage model builder
+     * @param repositoryModelProvider
+     *            repository model provider
      * @param correspondenceModel
      *            correspondence model
      *
@@ -69,7 +71,8 @@ public final class SimpleLoopReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final UsageModelBuilder usageModelBuilder, final ICorrespondence correspondenceModel) throws IOException {
+            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            throws IOException {
         // Create a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
         // subsequently the user sessions are used to create a usage model. The created usage model
@@ -84,23 +87,23 @@ public final class SimpleLoopReference {
 
         // In the following the reference usage model is created
         AbstractUserAction lastAction;
-        final UsageModel usageModel = usageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = usageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
+        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-        final Start start = usageModelBuilder.createAddStartAction("", scenarioBehaviour);
-        final Stop stop = usageModelBuilder.createAddStopAction("", scenarioBehaviour);
+        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
+        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
 
         // A loop is created and the loop count is set
-        final Loop loop = usageModelBuilder.createLoop("", scenarioBehaviour);
-        usageModelBuilder.connect(start, loop);
+        final Loop loop = UsageModelBuilder.createLoop("", scenarioBehaviour);
+        UsageModelBuilder.connect(start, loop);
         final PCMRandomVariable pcmLoopIteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
         pcmLoopIteration.setSpecification(String.valueOf(loopCount));
         loop.setLoopIteration_Loop(pcmLoopIteration);
-        usageModelBuilder.connect(loop, stop);
+        UsageModelBuilder.connect(loop, stop);
 
         // The EntryLevelSystemCalls that are iterated are added to the loop element
-        final Start loopStart = usageModelBuilder.createAddStartAction("", loop.getBodyBehaviour_Loop());
-        final Stop loopStop = usageModelBuilder.createAddStopAction("", loop.getBodyBehaviour_Loop());
+        final Start loopStart = UsageModelBuilder.createAddStartAction("", loop.getBodyBehaviour_Loop());
+        final Stop loopStop = UsageModelBuilder.createAddStopAction("", loop.getBodyBehaviour_Loop());
         lastAction = loopStart;
 
         Optional<Correspondent> optionCorrespondent;
@@ -117,14 +120,14 @@ public final class SimpleLoopReference {
             }
             if (optionCorrespondent.isPresent()) {
                 final Correspondent correspondent = optionCorrespondent.get();
-                final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                        .createEntryLevelSystemCall(correspondent);
-                usageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
-                usageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
+                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
         }
-        usageModelBuilder.connect(lastAction, loopStop);
+        UsageModelBuilder.connect(lastAction, loopStop);
 
         // According to the reference usage model user sessions are created that exactly represent
         // the user behavior of the reference usage model. The entry and exit times enable that the

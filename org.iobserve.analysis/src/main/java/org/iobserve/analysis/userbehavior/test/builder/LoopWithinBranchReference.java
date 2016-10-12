@@ -23,6 +23,7 @@ import java.util.Optional;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
+import org.palladiosimulator.pcm.usagemodel.Branch;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Loop;
@@ -32,11 +33,12 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import org.iobserve.analysis.correspondence.Correspondent;
-import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
 import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.test.TestHelper;
@@ -44,7 +46,8 @@ import org.iobserve.analysis.userbehavior.test.TestHelper;
 /**
  * LoopWithinBranchReferenceModel.
  *
- * @author Reiner Jung
+ * @author David Peter -- initial contribution
+ * @author Reiner Jung -- refactoring
  *
  */
 public final class LoopWithinBranchReference {
@@ -63,8 +66,8 @@ public final class LoopWithinBranchReference {
      *
      * @param referenceUsageModelFileName
      *            file name of the reference model to store its result
-     * @param usageModelBuilder
-     *            usage model builder
+     * @param repositoryModelProvider
+     *            repository model provider
      * @param correspondenceModel
      *            correspondence model
      *
@@ -73,7 +76,8 @@ public final class LoopWithinBranchReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final UsageModelBuilder usageModelBuilder, final ICorrespondence correspondenceModel) throws IOException {
+            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
@@ -91,103 +95,14 @@ public final class LoopWithinBranchReference {
         final ReferenceElements referenceElements = new ReferenceElements();
 
         // In the following the reference usage model is created
-        AbstractUserAction lastAction;
-        Optional<Correspondent> optionCorrespondent;
-        final UsageModel usageModel = usageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = usageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
+        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-        final Start start = usageModelBuilder.createStart("");
-        usageModelBuilder.addUserAction(scenarioBehaviour, start);
-        final Stop stop = usageModelBuilder.createStop("");
-        usageModelBuilder.addUserAction(scenarioBehaviour, stop);
-        lastAction = start;
 
-        // Creates a branch and branch transitions according to the random countOfBranchTransitions
-        final org.palladiosimulator.pcm.usagemodel.Branch branch = usageModelBuilder.createBranch("",
-                scenarioBehaviour);
-        usageModelBuilder.connect(lastAction, branch);
-        usageModelBuilder.connect(branch, stop);
-        // For each branch transition its calls are added to the branch transition
-        for (int i = 0; i < numberOfBranchTransitions; i++) {
-            final BranchTransition branchTransition = usageModelBuilder.createBranchTransition(branch);
-            final ScenarioBehaviour branchTransitionBehaviour = branchTransition
-                    .getBranchedBehaviour_BranchTransition();
-            final Start startBranchTransition = usageModelBuilder.createStart("");
-            usageModelBuilder.addUserAction(branchTransitionBehaviour, startBranchTransition);
-            final Stop stopBranchTransition = usageModelBuilder.createStop("");
-            usageModelBuilder.addUserAction(branchTransitionBehaviour, stopBranchTransition);
-            lastAction = startBranchTransition;
-            if ((i >= 0) && (i < 3)) {
-                optionCorrespondent = correspondenceModel.getCorrespondent(
-                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
-                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
-            } else {
-                throw new IllegalArgumentException("Illegal value of model element parameter");
-            }
-            if (optionCorrespondent.isPresent()) {
-                final Correspondent correspondent = optionCorrespondent.get();
-                final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                        .createEntryLevelSystemCall(correspondent);
-                usageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-                usageModelBuilder.connect(lastAction, entryLevelSystemCall);
-                lastAction = entryLevelSystemCall;
-            }
-            if (lengthOfBranchSequence == 2) {
-                optionCorrespondent = correspondenceModel.getCorrespondent(
-                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[4],
-                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
-                if (optionCorrespondent.isPresent()) {
-                    final Correspondent correspondent = optionCorrespondent.get();
-                    final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                            .createEntryLevelSystemCall(correspondent);
-                    usageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-                    usageModelBuilder.connect(lastAction, entryLevelSystemCall);
-                    lastAction = entryLevelSystemCall;
-                }
-            }
+        // lastAction = start;
 
-            // Within the branch transition a loop element is created
-            final Loop loop = usageModelBuilder.createLoop("", branchTransitionBehaviour);
-            usageModelBuilder.connect(lastAction, loop);
-            final PCMRandomVariable pcmLoop2Iteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
-            pcmLoop2Iteration.setSpecification(String.valueOf(countOfLoop));
-            loop.setLoopIteration_Loop(pcmLoop2Iteration);
-            final Start loopStart = usageModelBuilder.createStart("");
-            usageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
-            final Stop loopStop = usageModelBuilder.createStop("");
-            usageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
-            lastAction = loopStart;
-            // The calls that are iterated are added to the loop
-            switch (i) {
-            case 0:
-                optionCorrespondent = correspondenceModel.getCorrespondent(
-                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[1],
-                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[1]);
-                break;
-            case 1:
-                optionCorrespondent = correspondenceModel.getCorrespondent(
-                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[2],
-                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2]);
-                break;
-            case 2:
-                optionCorrespondent = correspondenceModel.getCorrespondent(
-                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[0],
-                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0]);
-                break;
-            default:
-                throw new IllegalArgumentException("Illegal value of model element parameter");
-            }
-            if (optionCorrespondent.isPresent()) {
-                final Correspondent correspondent = optionCorrespondent.get();
-                final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                        .createEntryLevelSystemCall(correspondent);
-                usageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
-                usageModelBuilder.connect(lastAction, entryLevelSystemCall);
-                lastAction = entryLevelSystemCall;
-            }
-            usageModelBuilder.connect(lastAction, loopStop);
-            usageModelBuilder.connect(loop, stopBranchTransition);
-        }
+        final Branch branch = LoopWithinBranchReference.createBranch(repositoryModelProvider, scenarioBehaviour,
+                correspondenceModel, numberOfBranchTransitions, lengthOfBranchSequence, countOfLoop);
 
         // According to the reference usage model user sessions are created that exactly represent
         // the user behavior of the reference usage model. The entry and exit times enable that the
@@ -201,90 +116,19 @@ public final class LoopWithinBranchReference {
                 branchTransitionCounter.add(i, 0);
             }
             int entryTime = 1;
-            int exitTime = 2;
             for (int i = 0; i < entryCallSequenceModel.getUserSessions().size(); i++) {
                 entryTime = 1;
-                exitTime = 2;
                 // Each user session represents one of the branch transitions
                 final int branchDecisioner = TestHelper.getRandomInteger(numberOfBranchTransitions - 1, 0);
                 if (branchDecisioner == 0) {
-                    final int countOfBranchTransition = branchTransitionCounter.get(0) + 1;
-                    branchTransitionCounter.set(0, countOfBranchTransition);
-                    EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime,
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0],
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[0], String.valueOf(i), "hostname");
-                    entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
-                    entryTime = entryTime + 2;
-                    exitTime = exitTime + 2;
-                    if (lengthOfBranchSequence == 2) {
-                        final EntryCallEvent entryCallEvent2 = new EntryCallEvent(entryTime, exitTime,
-                                ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4],
-                                ReferenceUsageModelBuilder.CLASS_SIGNATURE[4], String.valueOf(i), "hostname");
-                        entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent2, true);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    }
-                    // Within the branch transition the loop is represented by iterated calls
-                    for (int j = 0; j < countOfLoop; j++) {
-                        entryCallEvent = new EntryCallEvent(entryTime, exitTime,
-                                ReferenceUsageModelBuilder.OPERATION_SIGNATURE[1],
-                                ReferenceUsageModelBuilder.CLASS_SIGNATURE[1], String.valueOf(i), "hostname");
-                        entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    }
+                    entryTime = LoopWithinBranchReference.createLoop(branchTransitionCounter, entryTime, 0, 1,
+                            entryCallSequenceModel, lengthOfBranchSequence, countOfLoop, i);
                 } else if (branchDecisioner == 1) {
-                    final int countOfBranchTransition = branchTransitionCounter.get(1) + 1;
-                    branchTransitionCounter.set(1, countOfBranchTransition);
-                    EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime,
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[1],
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[1], String.valueOf(i), "hostname");
-                    entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
-                    entryTime = entryTime + 2;
-                    exitTime = exitTime + 2;
-                    if (lengthOfBranchSequence == 2) {
-                        final EntryCallEvent entryCallEvent2 = new EntryCallEvent(entryTime, exitTime,
-                                ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4],
-                                ReferenceUsageModelBuilder.CLASS_SIGNATURE[4], String.valueOf(i), "hostname");
-                        entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent2, true);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    }
-                    // Within the branch transition the loop is represented by iterated calls
-                    for (int j = 0; j < countOfLoop; j++) {
-                        entryCallEvent = new EntryCallEvent(entryTime, exitTime,
-                                ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2],
-                                ReferenceUsageModelBuilder.CLASS_SIGNATURE[2], String.valueOf(i), "hostname");
-                        entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    }
+                    entryTime = LoopWithinBranchReference.createLoop(branchTransitionCounter, entryTime, 1, 2,
+                            entryCallSequenceModel, lengthOfBranchSequence, countOfLoop, i);
                 } else if (branchDecisioner == 2) {
-                    final int countOfBranchTransition = branchTransitionCounter.get(2) + 1;
-                    branchTransitionCounter.set(2, countOfBranchTransition);
-                    EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime,
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2],
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[2], String.valueOf(i), "hostname");
-                    entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
-                    entryTime = entryTime + 2;
-                    exitTime = exitTime + 2;
-                    if (lengthOfBranchSequence == 2) {
-                        final EntryCallEvent entryCallEvent2 = new EntryCallEvent(entryTime, exitTime,
-                                ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4],
-                                ReferenceUsageModelBuilder.CLASS_SIGNATURE[4], String.valueOf(i), "hostname");
-                        entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent2, true);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    }
-                    // Within the branch transition the loop is represented by iterated calls
-                    for (int j = 0; j < countOfLoop; j++) {
-                        entryCallEvent = new EntryCallEvent(entryTime, exitTime,
-                                ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0],
-                                ReferenceUsageModelBuilder.CLASS_SIGNATURE[0], String.valueOf(i), "hostname");
-                        entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    }
+                    entryTime = LoopWithinBranchReference.createLoop(branchTransitionCounter, entryTime, 2, 0,
+                            entryCallSequenceModel, lengthOfBranchSequence, countOfLoop, i);
                 }
 
             }
@@ -311,5 +155,159 @@ public final class LoopWithinBranchReference {
         referenceElements.setUsageModel(usageModel);
 
         return referenceElements;
+    }
+
+    /**
+     * Create a loop code.
+     *
+     * @param branchTransitionCounter
+     * @param startTime
+     * @param callIndex
+     * @param loopIndex
+     * @param entryCallSequenceModel
+     * @param lengthOfBranchSequence
+     * @param countOfLoop
+     * @param i
+     * @return
+     */
+    private static int createLoop(final List<Integer> branchTransitionCounter, final int startTime, final int callIndex,
+            final int loopIndex, final EntryCallSequenceModel entryCallSequenceModel, final int lengthOfBranchSequence,
+            final int countOfLoop, final int i) {
+        int entryTime = startTime;
+        final int countOfBranchTransition = branchTransitionCounter.get(callIndex) + 1;
+        branchTransitionCounter.set(callIndex, countOfBranchTransition);
+        EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, entryTime + 1,
+                ReferenceUsageModelBuilder.OPERATION_SIGNATURE[callIndex],
+                ReferenceUsageModelBuilder.CLASS_SIGNATURE[callIndex], String.valueOf(i), "hostname");
+        entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
+        entryTime += 2;
+        if (lengthOfBranchSequence == 2) {
+            final EntryCallEvent entryCallEvent2 = new EntryCallEvent(entryTime, entryTime + 1,
+                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4], ReferenceUsageModelBuilder.CLASS_SIGNATURE[4],
+                    String.valueOf(i), "hostname");
+            entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent2, true);
+            entryTime += 2;
+        }
+        // Within the branch transition the loop is represented by iterated calls
+        for (int j = 0; j < countOfLoop; j++) {
+            entryCallEvent = new EntryCallEvent(entryTime, entryTime + 1,
+                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[loopIndex],
+                    ReferenceUsageModelBuilder.CLASS_SIGNATURE[loopIndex], String.valueOf(i), "hostname");
+            entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
+            entryTime += 2;
+        }
+
+        return entryTime;
+    }
+
+    /**
+     * Creates a branch and branch transitions according to the random countOfBranchTransitions.
+     *
+     * @param scenarioBehaviour
+     * @param correspondenceModel
+     * @param numberOfBranchTransitions
+     * @param lengthOfBranchSequence
+     * @param countOfLoop
+     * @return
+     */
+    private static Branch createBranch(final RepositoryModelProvider repositoryModelProvider,
+            final ScenarioBehaviour scenarioBehaviour, final ICorrespondence correspondenceModel,
+            final int numberOfBranchTransitions, final int lengthOfBranchSequence, final int countOfLoop) {
+        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
+        final Branch branch = UsageModelBuilder.createBranch("", scenarioBehaviour);
+        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
+
+        UsageModelBuilder.connect(start, branch);
+        UsageModelBuilder.connect(branch, stop);
+
+        AbstractUserAction lastAction = start;
+
+        // For each branch transition its calls are added to the branch transition
+        for (int i = 0; i < numberOfBranchTransitions; i++) {
+            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branch);
+            final ScenarioBehaviour branchTransitionBehaviour = branchTransition
+                    .getBranchedBehaviour_BranchTransition();
+            final Start startBranchTransition = UsageModelBuilder.createStart("");
+            UsageModelBuilder.addUserAction(branchTransitionBehaviour, startBranchTransition);
+            final Stop stopBranchTransition = UsageModelBuilder.createStop("");
+            UsageModelBuilder.addUserAction(branchTransitionBehaviour, stopBranchTransition);
+            lastAction = startBranchTransition;
+
+            if ((i >= 0) && (i < 3)) {
+                final Optional<Correspondent> optionCorrespondent = correspondenceModel.getCorrespondent(
+                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
+                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
+                if (optionCorrespondent.isPresent()) {
+                    final Correspondent correspondent = optionCorrespondent.get();
+                    final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                            .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                    UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
+                    UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                    lastAction = entryLevelSystemCall;
+                }
+            } else {
+                throw new IllegalArgumentException("Illegal value of model element parameter");
+            }
+
+            if (lengthOfBranchSequence == 2) {
+                final Optional<Correspondent> optionCorrespondent = correspondenceModel.getCorrespondent(
+                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[4],
+                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
+                if (optionCorrespondent.isPresent()) {
+                    final Correspondent correspondent = optionCorrespondent.get();
+                    final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                            .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                    UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
+                    UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                    lastAction = entryLevelSystemCall;
+                }
+            }
+
+            // Within the branch transition a loop element is created
+            final Loop loop = UsageModelBuilder.createLoop("", branchTransitionBehaviour);
+            UsageModelBuilder.connect(lastAction, loop);
+            final PCMRandomVariable pcmLoop2Iteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
+            pcmLoop2Iteration.setSpecification(String.valueOf(countOfLoop));
+            loop.setLoopIteration_Loop(pcmLoop2Iteration);
+            final Start loopStart = UsageModelBuilder.createStart("");
+            UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
+            final Stop loopStop = UsageModelBuilder.createStop("");
+            UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
+            lastAction = loopStart;
+
+            // The calls that are iterated are added to the loop
+            final Optional<Correspondent> optionCorrespondent;
+            switch (i) {
+            case 0:
+                optionCorrespondent = correspondenceModel.getCorrespondent(
+                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[1],
+                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[1]);
+                break;
+            case 1:
+                optionCorrespondent = correspondenceModel.getCorrespondent(
+                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[2],
+                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2]);
+                break;
+            case 2:
+                optionCorrespondent = correspondenceModel.getCorrespondent(
+                        ReferenceUsageModelBuilder.CLASS_SIGNATURE[0],
+                        ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0]);
+                break;
+            default:
+                throw new IllegalArgumentException("Illegal value of model element parameter");
+            }
+            if (optionCorrespondent.isPresent()) {
+                final Correspondent correspondent = optionCorrespondent.get();
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
+                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                lastAction = entryLevelSystemCall;
+            }
+            UsageModelBuilder.connect(lastAction, loopStop);
+            UsageModelBuilder.connect(loop, stopBranchTransition);
+        }
+
+        return branch;
     }
 }

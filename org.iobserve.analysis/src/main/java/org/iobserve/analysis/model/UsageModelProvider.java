@@ -18,7 +18,9 @@ package org.iobserve.analysis.model;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
+import org.palladiosimulator.pcm.usagemodel.UserData;
 
 /**
  * Model provider to provide a {@link UsageModel}.
@@ -34,21 +36,24 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
      *
      * @param uriUsageModel
      *            uri to model
-     * @param thePlatform
-     *            platform
      */
-    public UsageModelProvider(final URI uriUsageModel, final ModelProviderPlatform thePlatform) {
-        super(thePlatform, uriUsageModel);
+    public UsageModelProvider(final URI uriUsageModel) {
+        super(uriUsageModel);
     }
 
     @Override
-    public EPackage getPackage() {
+    protected EPackage getPackage() {
         return UsagemodelPackage.eINSTANCE;
     }
 
-    @Override
-    public void loadModel() {
-        super.loadModel();
+    /**
+     * Reset the model. This will delete all {@link UsageScenario} and {@link UserData} instances.
+     *
+     */
+    public void resetModel() {
+        final UsageModel model = this.getModel();
+        model.getUsageScenario_UsageModel().clear();
+        model.getUserData_UsageModel().clear();
     }
 
 }

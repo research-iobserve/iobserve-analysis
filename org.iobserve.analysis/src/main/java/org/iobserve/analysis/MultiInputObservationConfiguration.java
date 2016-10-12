@@ -15,13 +15,14 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import org.iobserve.analysis.correspondence.ICorrespondence;
+import teetime.stage.io.network.TcpReaderStage;
+
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-
-import teetime.stage.io.network.TcpReaderStage;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -38,16 +39,32 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *
      * @param inputPort
      *            the input port where the analysis is listening
-     * @param platform
-     *            the platform model handler
+     * @param correspondenceModel
+     *            the correspondence model
+     * @param usageModelProvider
+     *            the usage model provider
+     * @param repositoryModelProvider
+     *            the repository model provider
+     * @param resourceEnvironmentModelProvider
+     *            the resource environment provider
+     * @param allocationModelProvider
+     *            the allocation model provider
+     * @param systemModelProvider
+     *            the system model provider
+     * @param varianceOfUserGroups
+     *            variance of user groups, configuration for entry event filter
+     * @param thinkTime
+     *            think time, configuration for entry event filter
+     * @param closedWorkload
+     *            kind of workload, configuration for entry event filter
      */
     public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
-            final UsageModelProvider usageModelProvider,
-            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
+            final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
+            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
-        super(correspondenceModel, usageModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
-                systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+        super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
+                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
 
         // TODO we need a multi input reader (issue exists with TeeTime)
 

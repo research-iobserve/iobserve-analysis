@@ -29,11 +29,12 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import org.iobserve.analysis.correspondence.Correspondent;
-import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
 import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.test.TestHelper;
@@ -41,7 +42,8 @@ import org.iobserve.analysis.userbehavior.test.TestHelper;
 /**
  * SimpleBranchReference.
  *
- * @author reiner
+ * @author David Peter -- initial contribution
+ * @author Reiner Jung -- refactoring
  *
  */
 public final class SimpleBranchReference {
@@ -58,8 +60,8 @@ public final class SimpleBranchReference {
      *
      * @param referenceModelFileName
      *            file name of the reference model to store its result
-     * @param usageModelBuilder
-     *            usage model builder
+     * @param repositoryModelProvider
+     *            repository model provider
      * @param correspondenceModel
      *            correspondence model
      *
@@ -68,7 +70,8 @@ public final class SimpleBranchReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceModelFileName,
-            final UsageModelBuilder usageModelBuilder, final ICorrespondence correspondenceModel) throws IOException {
+            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
@@ -86,28 +89,28 @@ public final class SimpleBranchReference {
         // In the following the reference usage model is created
         Optional<Correspondent> correspondent;
 
-        final UsageModel usageModel = usageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = usageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
+        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
 
-        final Start start = usageModelBuilder.createAddStartAction("", scenarioBehaviour);
-        final Stop stop = usageModelBuilder.createAddStopAction("", scenarioBehaviour);
+        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
+        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
 
         AbstractUserAction lastAction = start;
 
         // Creates the branch element and the branch transitions according to the random number of
         // branch transitions
-        final org.palladiosimulator.pcm.usagemodel.Branch branch = usageModelBuilder.createBranch("",
+        final org.palladiosimulator.pcm.usagemodel.Branch branch = UsageModelBuilder.createBranch("",
                 scenarioBehaviour);
-        usageModelBuilder.connect(start, branch);
+        UsageModelBuilder.connect(start, branch);
         // For each branch transition an alternative EntryLevelSystemCall is created to represent
         // the alternative call sequences
         for (int i = 0; i < numberOfBranchTransitions; i++) {
-            final BranchTransition branchTransition = usageModelBuilder.createBranchTransition(branch);
+            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branch);
             final ScenarioBehaviour branchTransitionBehaviour = branchTransition
                     .getBranchedBehaviour_BranchTransition();
-            final Start startBranchTransition = usageModelBuilder.createAddStartAction("", branchTransitionBehaviour);
-            final Stop stopBranchTransition = usageModelBuilder.createAddStopAction("", branchTransitionBehaviour);
+            final Start startBranchTransition = UsageModelBuilder.createAddStartAction("", branchTransitionBehaviour);
+            final Stop stopBranchTransition = UsageModelBuilder.createAddStopAction("", branchTransitionBehaviour);
 
             lastAction = startBranchTransition;
 
@@ -118,10 +121,10 @@ public final class SimpleBranchReference {
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
             if (correspondent.isPresent()) {
-                final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                        .createEntryLevelSystemCall(correspondent.get());
-                usageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-                usageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+                UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
+                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
             if (i == 0) {
@@ -132,25 +135,25 @@ public final class SimpleBranchReference {
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0]);
             }
             if (correspondent.isPresent()) {
-                final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                        .createEntryLevelSystemCall(correspondent.get());
-                usageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-                usageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+                UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
+                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
 
-            usageModelBuilder.connect(lastAction, stopBranchTransition);
+            UsageModelBuilder.connect(lastAction, stopBranchTransition);
         }
         correspondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[2],
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2]);
         if (correspondent.isPresent()) {
-            final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                    .createEntryLevelSystemCall(correspondent.get());
-            usageModelBuilder.addUserAction(scenarioBehaviour, entryLevelSystemCall);
-            usageModelBuilder.connect(branch, entryLevelSystemCall);
+            final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+            UsageModelBuilder.addUserAction(scenarioBehaviour, entryLevelSystemCall);
+            UsageModelBuilder.connect(branch, entryLevelSystemCall);
             lastAction = entryLevelSystemCall;
         }
-        usageModelBuilder.connect(lastAction, stop);
+        UsageModelBuilder.connect(lastAction, stop);
 
         // According to the reference usage model user sessions are created that exactly represent
         // the user behavior of the reference usage model. The entry and exit times enable that the

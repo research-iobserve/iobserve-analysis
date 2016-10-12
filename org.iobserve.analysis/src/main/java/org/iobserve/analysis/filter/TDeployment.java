@@ -17,21 +17,23 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.correspondence.Correspondent;
-import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.AllocationModelBuilder;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelBuilder;
-import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.utils.Opt;
-import org.iobserve.common.record.EJBDeployedEvent;
-import org.iobserve.common.record.IDeploymentRecord;
-import org.iobserve.common.record.ServletDeployedEvent;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
+
+import org.iobserve.analysis.model.AllocationModelBuilder;
+import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelBuilder;
+import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.utils.Opt;
+import org.iobserve.common.record.EJBDeployedEvent;
+import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.ServletDeployedEvent;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and
@@ -58,6 +60,12 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      *
      * @param correspondence
      *            the correspondence model access
+     * @param allocationModelProvider
+     *            allocation model provider
+     * @param systemModelProvider
+     *            system model provider
+     * @param resourceEnvironmentModelProvider
+     *            resource environment model provider
      */
     public TDeployment(final ICorrespondence correspondence, final AllocationModelProvider allocationModelProvider,
             final SystemModelProvider systemModelProvider,
@@ -130,23 +138,26 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         final String asmContextName = entityName + "_" + serverName;
 
         // get the model parts by name
-        final Optional<ResourceContainer> optResourceContainer = this.resourceEnvModelProvider
-                .getResourceContainerByName(serverName);
+        final Optional<ResourceContainer> optResourceContainer = ResourceEnvironmentModelBuilder
+                .getResourceContainerByName(this.resourceEnvModelProvider.getModel(), serverName);
 
         // this can not happen since TAllocation should have created the resource container already.
         Opt.of(optResourceContainer).ifPresent()
-                .apply(resourceContainer -> this.updateModel(resourceContainer, asmContextName))
+                .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName))
                 .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n"));
 
         // get the assembly context. Create it if necessary
-        AssemblyContext assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName).get();
+        AssemblyContext assemblyContext = SystemModelBuilder
+                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName).get();
 
         // in case the assembly context is null, TDeployment should create it
         if (assemblyContext == null) {
             // create assembly context
-            final SystemModelBuilder systemBuilder = new SystemModelBuilder(this.systemModelProvider);
-            systemBuilder.loadModel().createAssemblyContextsIfAbsent(asmContextName).build();
-            assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName).get();
+            this.systemModelProvider.loadModel();
+            SystemModelBuilder.createAssemblyContextsIfAbsent(this.systemModelProvider.getModel(), asmContextName);
+            this.systemModelProvider.save();
+            assemblyContext = SystemModelBuilder
+                    .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName).get();
         }
     }
 
@@ -159,17 +170,17 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      * @param asmContextName
      *            entity name of assembly context
      */
-    private void updateModel(final ResourceContainer resourceContainer, final String asmContextName) {
+    private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName) {
         // get assembly context by name or create it if necessary.
-        final AssemblyContext assemblyContext = this.systemModelProvider.getAssemblyContextByName(asmContextName)
+        final AssemblyContext assemblyContext = SystemModelBuilder
+                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName)
                 .orElse(TDeployment.createAssemblyContextByName(this.systemModelProvider, asmContextName));
 
         // update the allocation model
-        final AllocationModelBuilder builder = new AllocationModelBuilder(this.allocationModelProvider);
-        builder.loadModel()
-                // .resetModel() //TODO if we do this, it will delete all the other elements in the
-                // model?!
-                .addAllocationContextIfAbsent(resourceContainer, assemblyContext).build();
+        this.allocationModelProvider.loadModel();
+        AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
+                assemblyContext);
+        this.allocationModelProvider.save();
     }
 
     /**
@@ -182,10 +193,9 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      * @return created assembly context
      */
     private static AssemblyContext createAssemblyContextByName(final SystemModelProvider provider, final String name) {
-        final SystemModelBuilder systemBuilder = new SystemModelBuilder(provider);
-        systemBuilder.loadModel();
-        final AssemblyContext ctx = systemBuilder.createAssemblyContext(name);
-        systemBuilder.build();
+        provider.loadModel();
+        final AssemblyContext ctx = SystemModelBuilder.createAssemblyContextsIfAbsent(provider.getModel(), name);
+        provider.save();
         return ctx;
     }
 

@@ -31,18 +31,20 @@ import org.palladiosimulator.pcm.usagemodel.Start;
 import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 
-import org.iobserve.analysis.correspondence.Correspondent;
-import org.iobserve.analysis.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.data.Branch;
 import org.iobserve.analysis.userbehavior.data.BranchElement;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
 import org.iobserve.analysis.userbehavior.data.BranchTransitionElement;
 import org.iobserve.analysis.userbehavior.data.CallElement;
+import org.iobserve.analysis.userbehavior.data.ISequenceElement;
 import org.iobserve.analysis.userbehavior.data.LoopBranchElement;
 import org.iobserve.analysis.userbehavior.data.LoopElement;
-import org.iobserve.analysis.userbehavior.data.ISequenceElement;
 
 /**
  * This class creates a PCM usage model from the passed LoopBranchModels. For each user group its
@@ -59,7 +61,7 @@ public class PcmUsageModelBuilder {
     private final boolean isClosedWorkloadRequested;
     private final double thinkTime;
     private final List<Map<Integer, ScenarioBehaviour>> branchScenarioBehavioursOfUserGroups;
-    private final UsageModelBuilder usageModelBuilder;
+    private final RepositoryModelProvider repositoryModelProvider;
     private final ICorrespondence correspondenceModel;
 
     /**
@@ -70,20 +72,20 @@ public class PcmUsageModelBuilder {
      *            states whether a closed or an open workload is requested
      * @param thinkTime
      *            states the think time of a closed workload
-     * @param usageModelBuilder
-     *            used to build the usage model
+     * @param repositoryModelProvider
+     *            repository model provider
      * @param correspondenceModel
      *            used to map calls to call elements of the usage model
      */
     public PcmUsageModelBuilder(final List<BranchModel> loopBranchModels, final boolean isClosedWorkloadRequested,
-            final double thinkTime, final UsageModelBuilder usageModelBuilder,
+            final double thinkTime, final RepositoryModelProvider repositoryModelProvider,
             final ICorrespondence correspondenceModel) {
         this.loopBranchModels = loopBranchModels;
         this.isClosedWorkloadRequested = isClosedWorkloadRequested;
         this.thinkTime = thinkTime;
         this.branchScenarioBehavioursOfUserGroups = new ArrayList<>();
-        this.usageModelBuilder = usageModelBuilder;
         this.correspondenceModel = correspondenceModel;
+        this.repositoryModelProvider = repositoryModelProvider;
     }
 
     /**
@@ -93,22 +95,22 @@ public class PcmUsageModelBuilder {
      */
     public UsageModel createUsageModel() {
 
-        final UsageModel usageModel = this.usageModelBuilder.createUsageModel();
+        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
 
         // Creates for each detected user group its own usage scenario
         for (int i = 0; i < this.loopBranchModels.size(); i++) {
             final BranchModel callBranchModel = this.loopBranchModels.get(i);
-            final UsageScenario usageScenario = this.usageModelBuilder
+            final UsageScenario usageScenario = UsageModelBuilder
                     .createUsageScenario("Usage Scneario of user group " + i, usageModel);
             final Map<Integer, ScenarioBehaviour> branchScenarioBehaviours = new HashMap<>();
             this.branchScenarioBehavioursOfUserGroups.add(branchScenarioBehaviours);
 
             if (this.isClosedWorkloadRequested) {
-                this.usageModelBuilder.createClosedWorkload(
+                UsageModelBuilder.createClosedWorkload(
                         callBranchModel.getWorkloadIntensity().getAvgNumberOfConcurrentUsers(), this.thinkTime,
                         usageScenario);
             } else {
-                this.usageModelBuilder.createOpenWorkload(
+                UsageModelBuilder.createOpenWorkload(
                         callBranchModel.getWorkloadIntensity().getInterarrivalTimeOfUserSessions(), usageScenario);
             }
             // creates for each Branch its own scenario behavior
@@ -169,20 +171,18 @@ public class PcmUsageModelBuilder {
     private ScenarioBehaviour transformSequenceToScenarioBehavior(final int indexOfScenario,
             final List<ISequenceElement> sequence, final Branch branch) {
 
-        final ScenarioBehaviour scenarioBehaviour = this.usageModelBuilder.createScenarioBehaviour();
+        final ScenarioBehaviour scenarioBehaviour = UsageModelBuilder.createScenarioBehaviour();
 
-        final Start start = this.usageModelBuilder.createStart("");
-        this.usageModelBuilder.addUserAction(scenarioBehaviour, start);
-        final Stop stop = this.usageModelBuilder.createStop("");
-        this.usageModelBuilder.addUserAction(scenarioBehaviour, stop);
+        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
+        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
 
-        EntryLevelSystemCall lastESysCall = this.usageModelBuilder.createEmptyEntryLevelSystemCall();
+        EntryLevelSystemCall lastESysCall = UsageModelBuilder.createEmptyEntryLevelSystemCall();
         boolean isLastElementACall = false;
-        Loop lastLoop = this.usageModelBuilder.createEmptyLoop();
+        Loop lastLoop = UsageModelBuilder.createEmptyLoop();
         boolean isLastElementALoop = false;
-        org.palladiosimulator.pcm.usagemodel.Branch lastLoopBranch = this.usageModelBuilder.createEmptyBranch();
+        org.palladiosimulator.pcm.usagemodel.Branch lastLoopBranch = UsagemodelFactory.eINSTANCE.createBranch();
         boolean isLastElementALoopBranch = false;
-        org.palladiosimulator.pcm.usagemodel.Branch lastBranch = this.usageModelBuilder.createEmptyBranch();
+        org.palladiosimulator.pcm.usagemodel.Branch lastBranch = UsagemodelFactory.eINSTANCE.createBranch();
         boolean isLastElementABranch = false;
 
         // Loops over all elements of the sequence and creates a corresponding scenario behavior by
@@ -196,21 +196,22 @@ public class PcmUsageModelBuilder {
                         .getCorrespondent(branchElement.getClassSignature(), branchElement.getOperationSignature());
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                    eSysCall = this.usageModelBuilder.createEntryLevelSystemCall(correspondent);
+                    eSysCall = UsageModelBuilder.createEntryLevelSystemCall(this.repositoryModelProvider,
+                            correspondent);
                 }
                 if (eSysCall != null) {
                     if (isLastElementACall) {
-                        this.usageModelBuilder.connect(lastESysCall, eSysCall);
+                        UsageModelBuilder.connect(lastESysCall, eSysCall);
                     } else if (isLastElementALoop) {
-                        this.usageModelBuilder.connect(lastLoop, eSysCall);
+                        UsageModelBuilder.connect(lastLoop, eSysCall);
                     } else if (isLastElementALoopBranch) {
-                        this.usageModelBuilder.connect(lastLoopBranch, eSysCall);
+                        UsageModelBuilder.connect(lastLoopBranch, eSysCall);
                     } else if (isLastElementABranch) {
-                        this.usageModelBuilder.connect(lastBranch, eSysCall);
+                        UsageModelBuilder.connect(lastBranch, eSysCall);
                     } else {
-                        this.usageModelBuilder.connect(start, eSysCall);
+                        UsageModelBuilder.connect(start, eSysCall);
                     }
-                    this.usageModelBuilder.addUserAction(scenarioBehaviour, eSysCall);
+                    UsageModelBuilder.addUserAction(scenarioBehaviour, eSysCall);
                     lastESysCall = eSysCall;
                     isLastElementACall = true;
                     isLastElementALoop = false;
@@ -220,15 +221,15 @@ public class PcmUsageModelBuilder {
             } else if (branchElement.getClass().equals(LoopElement.class)) { // Element is a loop
                 final Loop loop = this.createLoop(scenarioBehaviour, (LoopElement) branchElement);
                 if (isLastElementACall) {
-                    this.usageModelBuilder.connect(lastESysCall, loop);
+                    UsageModelBuilder.connect(lastESysCall, loop);
                 } else if (isLastElementALoop) {
-                    this.usageModelBuilder.connect(lastLoop, loop);
+                    UsageModelBuilder.connect(lastLoop, loop);
                 } else if (isLastElementALoopBranch) {
-                    this.usageModelBuilder.connect(lastLoopBranch, loop);
+                    UsageModelBuilder.connect(lastLoopBranch, loop);
                 } else if (isLastElementABranch) {
-                    this.usageModelBuilder.connect(lastBranch, loop);
+                    UsageModelBuilder.connect(lastBranch, loop);
                 } else {
-                    this.usageModelBuilder.connect(start, loop);
+                    UsageModelBuilder.connect(start, loop);
                 }
                 lastLoop = loop;
                 isLastElementALoop = true;
@@ -240,15 +241,15 @@ public class PcmUsageModelBuilder {
                 final org.palladiosimulator.pcm.usagemodel.Branch loopBranch = this.createLoopBranch(scenarioBehaviour,
                         (LoopBranchElement) branchElement);
                 if (isLastElementACall) {
-                    this.usageModelBuilder.connect(lastESysCall, loopBranch);
+                    UsageModelBuilder.connect(lastESysCall, loopBranch);
                 } else if (isLastElementALoop) {
-                    this.usageModelBuilder.connect(lastLoop, loopBranch);
+                    UsageModelBuilder.connect(lastLoop, loopBranch);
                 } else if (isLastElementALoopBranch) {
-                    this.usageModelBuilder.connect(lastLoopBranch, loopBranch);
+                    UsageModelBuilder.connect(lastLoopBranch, loopBranch);
                 } else if (isLastElementABranch) {
-                    this.usageModelBuilder.connect(lastBranch, loopBranch);
+                    UsageModelBuilder.connect(lastBranch, loopBranch);
                 } else {
-                    this.usageModelBuilder.connect(start, loopBranch);
+                    UsageModelBuilder.connect(start, loopBranch);
                 }
                 lastLoopBranch = loopBranch;
                 isLastElementALoopBranch = true;
@@ -260,15 +261,15 @@ public class PcmUsageModelBuilder {
                 final org.palladiosimulator.pcm.usagemodel.Branch branchInter = this.createBranch(scenarioBehaviour,
                         (BranchElement) branchElement);
                 if (isLastElementACall) {
-                    this.usageModelBuilder.connect(lastESysCall, branchInter);
+                    UsageModelBuilder.connect(lastESysCall, branchInter);
                 } else if (isLastElementALoop) {
-                    this.usageModelBuilder.connect(lastLoop, branchInter);
+                    UsageModelBuilder.connect(lastLoop, branchInter);
                 } else if (isLastElementALoopBranch) {
-                    this.usageModelBuilder.connect(lastLoopBranch, branchInter);
+                    UsageModelBuilder.connect(lastLoopBranch, branchInter);
                 } else if (isLastElementABranch) {
-                    this.usageModelBuilder.connect(lastBranch, branchInter);
+                    UsageModelBuilder.connect(lastBranch, branchInter);
                 } else {
-                    this.usageModelBuilder.connect(start, branchInter);
+                    UsageModelBuilder.connect(start, branchInter);
                 }
                 lastBranch = branchInter;
                 isLastElementABranch = true;
@@ -283,47 +284,47 @@ public class PcmUsageModelBuilder {
         // checks if the branch got child branches
         if (branch == null) {
             if (isLastElementACall) {
-                this.usageModelBuilder.connect(lastESysCall, stop);
+                UsageModelBuilder.connect(lastESysCall, stop);
             } else if (isLastElementALoop) {
-                this.usageModelBuilder.connect(lastLoop, stop);
+                UsageModelBuilder.connect(lastLoop, stop);
             } else if (isLastElementALoopBranch) {
-                this.usageModelBuilder.connect(lastLoopBranch, stop);
+                UsageModelBuilder.connect(lastLoopBranch, stop);
             } else if (isLastElementABranch) {
-                this.usageModelBuilder.connect(lastBranch, stop);
+                UsageModelBuilder.connect(lastBranch, stop);
             } else {
-                this.usageModelBuilder.connect(start, stop);
+                UsageModelBuilder.connect(start, stop);
             }
         } else {
             final org.palladiosimulator.pcm.usagemodel.Branch branchUM = this.createChildBranch(scenarioBehaviour,
                     indexOfScenario, branch);
             if (branchUM != null) {
                 if (isLastElementACall) {
-                    this.usageModelBuilder.connect(lastESysCall, branchUM);
-                    this.usageModelBuilder.connect(branchUM, stop);
+                    UsageModelBuilder.connect(lastESysCall, branchUM);
+                    UsageModelBuilder.connect(branchUM, stop);
                 } else if (isLastElementALoop) {
-                    this.usageModelBuilder.connect(lastLoop, branchUM);
-                    this.usageModelBuilder.connect(branchUM, stop);
+                    UsageModelBuilder.connect(lastLoop, branchUM);
+                    UsageModelBuilder.connect(branchUM, stop);
                 } else if (isLastElementALoopBranch) {
-                    this.usageModelBuilder.connect(lastLoopBranch, branchUM);
-                    this.usageModelBuilder.connect(branchUM, stop);
+                    UsageModelBuilder.connect(lastLoopBranch, branchUM);
+                    UsageModelBuilder.connect(branchUM, stop);
                 } else if (isLastElementABranch) {
-                    this.usageModelBuilder.connect(lastBranch, branchUM);
-                    this.usageModelBuilder.connect(branchUM, stop);
+                    UsageModelBuilder.connect(lastBranch, branchUM);
+                    UsageModelBuilder.connect(branchUM, stop);
                 } else {
-                    this.usageModelBuilder.connect(start, branchUM);
-                    this.usageModelBuilder.connect(branchUM, stop);
+                    UsageModelBuilder.connect(start, branchUM);
+                    UsageModelBuilder.connect(branchUM, stop);
                 }
             } else {
                 if (isLastElementACall) {
-                    this.usageModelBuilder.connect(lastESysCall, stop);
+                    UsageModelBuilder.connect(lastESysCall, stop);
                 } else if (isLastElementALoop) {
-                    this.usageModelBuilder.connect(lastLoop, stop);
+                    UsageModelBuilder.connect(lastLoop, stop);
                 } else if (isLastElementALoopBranch) {
-                    this.usageModelBuilder.connect(lastLoopBranch, stop);
+                    UsageModelBuilder.connect(lastLoopBranch, stop);
                 } else if (isLastElementABranch) {
-                    this.usageModelBuilder.connect(lastBranch, stop);
+                    UsageModelBuilder.connect(lastBranch, stop);
                 } else {
-                    this.usageModelBuilder.connect(start, stop);
+                    UsageModelBuilder.connect(start, stop);
                 }
             }
         }
@@ -342,10 +343,10 @@ public class PcmUsageModelBuilder {
      */
     private org.palladiosimulator.pcm.usagemodel.Branch createBranch(final ScenarioBehaviour scenarioBehaviour,
             final BranchElement branchElement) {
-        final org.palladiosimulator.pcm.usagemodel.Branch branchUM = this.usageModelBuilder.createBranch("",
+        final org.palladiosimulator.pcm.usagemodel.Branch branchUM = UsageModelBuilder.createBranch("",
                 scenarioBehaviour);
         for (final BranchTransitionElement transition : branchElement.getBranchTransitions()) {
-            final BranchTransition branchTransition = this.usageModelBuilder.createBranchTransition(branchUM);
+            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branchUM);
             final ScenarioBehaviour branchScenarioBehaviour = this.transformSequenceToScenarioBehavior(0,
                     transition.getBranchSequence(), null);
             branchTransition.setBranchedBehaviour_BranchTransition(branchScenarioBehaviour);
@@ -367,7 +368,7 @@ public class PcmUsageModelBuilder {
      */
     private Loop createLoop(final ScenarioBehaviour scenarioBehaviour, final LoopElement loopElement) {
 
-        final Loop loop = this.usageModelBuilder.createLoop("", scenarioBehaviour);
+        final Loop loop = UsageModelBuilder.createLoop("", scenarioBehaviour);
         final ScenarioBehaviour loopScenarioBehaviour = this.transformSequenceToScenarioBehavior(0,
                 loopElement.getLoopSequence(), null);
         loop.setBodyBehaviour_Loop(loopScenarioBehaviour); // Set behavior of the loop
@@ -393,10 +394,10 @@ public class PcmUsageModelBuilder {
             final int indexOfScenario, final Branch branch) {
 
         if (branch.getChildBranches().size() > 0) {
-            final org.palladiosimulator.pcm.usagemodel.Branch branchUM = this.usageModelBuilder.createBranch("",
+            final org.palladiosimulator.pcm.usagemodel.Branch branchUM = UsageModelBuilder.createBranch("",
                     scenarioBehaviour);
             for (final Branch childBranch : branch.getChildBranches()) {
-                final BranchTransition branchTransition = this.usageModelBuilder.createBranchTransition(branchUM);
+                final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branchUM);
                 branchTransition.setBranchedBehaviour_BranchTransition(
                         this.branchScenarioBehavioursOfUserGroups.get(indexOfScenario).get(childBranch.getBranchId()));
                 branchTransition.setBranch_BranchTransition(branchUM);
@@ -420,10 +421,10 @@ public class PcmUsageModelBuilder {
     private org.palladiosimulator.pcm.usagemodel.Branch createLoopBranch(final ScenarioBehaviour scenarioBehaviour,
             final LoopBranchElement loopBranch) {
 
-        final org.palladiosimulator.pcm.usagemodel.Branch branchUM = this.usageModelBuilder.createBranch("",
+        final org.palladiosimulator.pcm.usagemodel.Branch branchUM = UsageModelBuilder.createBranch("",
                 scenarioBehaviour);
         for (final Branch branch : loopBranch.getLoopBranches()) {
-            final BranchTransition branchTransition = this.usageModelBuilder.createBranchTransition(branchUM);
+            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branchUM);
             final ScenarioBehaviour branchScenarioBehaviour = this.transformSequenceToScenarioBehavior(0,
                     branch.getBranchSequence(), null);
             branchTransition.setBranchedBehaviour_BranchTransition(branchScenarioBehaviour);

@@ -16,7 +16,7 @@
 package org.iobserve.analysis.userbehavior.data;
 
 /**
- * Represents a user session's call sequence as counts of called operation signatures
+ * Represents a user session's call sequence as counts of called operation signatures.
  *
  * @author David Peter, Robert Heinrich
  */
@@ -25,6 +25,14 @@ public class UserSessionAsCountsOfCalls {
     private String sessionId;
     private int[] absoluteCountOfCalls;
 
+    /**
+     * Constructor for a call sequence for a user session.
+     *
+     * @param sessionId
+     *            the session id
+     * @param numberOfDistinctOperationSignatures
+     *            number of operation signatures in the sequence.
+     */
     public UserSessionAsCountsOfCalls(final String sessionId, final int numberOfDistinctOperationSignatures) {
         this.sessionId = sessionId;
         this.absoluteCountOfCalls = new int[numberOfDistinctOperationSignatures];

@@ -26,6 +26,9 @@ package org.iobserve.analysis.userbehavior.test;
  * Subsequently, the approach can be executed with the created user sessions and the obtained usage
  * model can be matched against the reference usage model.
  *
+ * The single reference model builder have been moven to
+ * org.iobserve.analysis.userbehavior.test.builder.
+ *
  * @author David Peter, Robert Heinrich
  */
 public final class ReferenceUsageModelBuilder {

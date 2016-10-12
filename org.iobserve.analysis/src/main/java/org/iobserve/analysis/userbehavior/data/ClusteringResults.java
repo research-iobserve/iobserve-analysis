@@ -17,7 +17,7 @@ package org.iobserve.analysis.userbehavior.data;
 
 /**
  * It contains the results of the clustering: The assignments of the clustered data to the clusters
- * and the clustering metrics
+ * and the clustering metrics.
  *
  * @author David Peter, Robert Heinrich
  */
@@ -28,6 +28,16 @@ public class ClusteringResults {
     private final int[] assignments;
     private final ClusteringMetrics clusteringMetrics;
 
+    /**
+     * Create a result node.
+     *
+     * @param clusteringMethod
+     *            kind of clustering
+     * @param numberOfClusters
+     *            number of clusters
+     * @param assignments
+     * @param clusteringMetrics
+     */
     public ClusteringResults(final String clusteringMethod, final int numberOfClusters, final int[] assignments,
             final ClusteringMetrics clusteringMetrics) {
         this.clusteringMethod = clusteringMethod;
@@ -36,7 +46,9 @@ public class ClusteringResults {
         this.clusteringMetrics = clusteringMetrics;
     }
 
-    // Prints the clustering results
+    /**
+     * Prints the clustering results.
+     */
     public void printClusteringResults() {
         System.out.println("#######################################");
         System.out.println("Clustering method: " + this.clusteringMethod);

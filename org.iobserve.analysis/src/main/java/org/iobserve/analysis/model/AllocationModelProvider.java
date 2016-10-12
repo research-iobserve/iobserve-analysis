@@ -22,7 +22,7 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
 
 /**
  * Model provider to provide {@link Allocation} model.
- * 
+ *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
@@ -31,19 +31,22 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
 
     /**
      * Create model provider to provide {@link Allocation} model.
-     * 
-     * @param thePlatform
-     *            platform
+     *
      * @param uriModelInstance
      *            uri to the model
      */
-    AllocationModelProvider(final ModelProviderPlatform thePlatform, final URI uriModelInstance) {
-        super(thePlatform, uriModelInstance);
+    public AllocationModelProvider(final URI uriModelInstance) {
+        super(uriModelInstance);
     }
 
-    // ********************************************************************
-    // * GETTER / SETTER
-    // ********************************************************************
+    /**
+     * Reset model.
+     */
+    @Override
+    public void resetModel() {
+        final Allocation model = this.getModel();
+        model.getAllocationContexts_Allocation().clear();
+    }
 
     @Override
     public EPackage getPackage() {

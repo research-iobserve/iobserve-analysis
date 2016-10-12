@@ -19,18 +19,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a looped branch that can be added to a sequence of a loop element
+ * Represents a looped branch that can be added to a sequence of a loop element.
  *
  * @author David Peter, Robert Heinrich
  */
 public class LoopBranchElement implements ISequenceElement {
 
-    private List<Branch> loopBranches;
+    private List<Branch> loopBranches = new ArrayList<>();
 
+    /**
+     * Entity constructor.
+     */
     public LoopBranchElement() {
-        this.loopBranches = new ArrayList<Branch>();
     }
 
+    /**
+     * Add branch to this loop branch.
+     *
+     * @param branch
+     *            the branch to be added
+     */
     public void addBranchToLoopBranch(final Branch branch) {
         this.loopBranches.add(branch);
     }

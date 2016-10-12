@@ -29,12 +29,13 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import org.iobserve.analysis.correspondence.Correspondent;
-import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
+import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
 import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.test.TestHelper;
@@ -42,7 +43,8 @@ import org.iobserve.analysis.userbehavior.test.TestHelper;
 /**
  * SimpleSequenceReference.
  *
- * @author Reiner Jung
+ * @author David Peter -- initial contribution
+ * @author Reiner Jung -- refactoring
  *
  */
 public final class SimpleSequenceReference {
@@ -63,8 +65,8 @@ public final class SimpleSequenceReference {
      *
      * @param referenceUsageModelFileName
      *            file name of the reference model to store its result
-     * @param usageModelBuilder
-     *            usage model builder
+     * @param repositoryModelProvider
+     *            repository model provider
      * @param correspondenceModel
      *            correspondence model
      * @param thinkTime
@@ -77,8 +79,8 @@ public final class SimpleSequenceReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final UsageModelBuilder usageModelBuilder, final ICorrespondence correspondenceModel, final int thinkTime,
-            final boolean isClosedWorkload) throws IOException {
+            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel,
+            final int thinkTime, final boolean isClosedWorkload) throws IOException {
 
         // Creates a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
@@ -92,11 +94,11 @@ public final class SimpleSequenceReference {
         final ReferenceElements referenceElements = new ReferenceElements();
 
         // In the following the reference usage model is created
-        final UsageModel usageModel = usageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = usageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
+        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-        final Start start = usageModelBuilder.createAddStartAction("", scenarioBehaviour);
-        final Stop stop = usageModelBuilder.createAddStopAction("", scenarioBehaviour);
+        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
+        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
 
         AbstractUserAction lastAction = start;
 
@@ -111,14 +113,14 @@ public final class SimpleSequenceReference {
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
             if (correspondent.isPresent()) {
-                final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                        .createEntryLevelSystemCall(correspondent.get());
-                usageModelBuilder.addUserAction(scenarioBehaviour, entryLevelSystemCall);
-                usageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+                UsageModelBuilder.addUserAction(scenarioBehaviour, entryLevelSystemCall);
+                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
         }
-        usageModelBuilder.connect(lastAction, stop);
+        UsageModelBuilder.connect(lastAction, stop);
 
         // According to the reference usage model user sessions are created that exactly represent
         // the user behavior of the reference usage model. The entry and exit times are set randomly

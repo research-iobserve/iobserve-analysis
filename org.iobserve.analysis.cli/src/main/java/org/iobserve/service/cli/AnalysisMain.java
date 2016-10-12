@@ -26,16 +26,18 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.iobserve.analysis.FileObservationConfiguration;
-import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ModelProviderPlatform;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.model.UsageModelProvider;
 
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
+
+import org.iobserve.analysis.FileObservationConfiguration;
+import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.RepositoryModelProvider;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.model.UsageModelProvider;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 /**
  * Main class for starting the iObserve application.
@@ -90,10 +92,12 @@ public class AnalysisMain {
                         final Collection<File> monitoringDataDirectories = new ArrayList<>();
                         AnalysisMain.findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
 
-                        final ModelProviderPlatform modelProviderPlatform = new ModelProviderPlatform(
+                        final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
                                 pcmModelsDirectory);
 
                         final ICorrespondence correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
+                        final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform
+                                .getRepositoryModelProvider();
                         final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
                         final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProviderPlatform
                                 .getResourceEnvironmentModelProvider();
@@ -102,12 +106,15 @@ public class AnalysisMain {
                         final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
 
                         final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
-                                correspondenceModel, usageModelProvider, resourceEvnironmentModelProvider,
-                                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime,
-                                closedWorkload);
+                                correspondenceModel, usageModelProvider, repositoryModelProvider,
+                                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider,
+                                varianceOfUserGroups, thinkTime, closedWorkload);
 
+                        System.out.println("Analysis configuration");
                         final Execution<Configuration> analysis = new Execution<>(configuration);
+                        System.out.println("Analysis start");
                         analysis.executeBlocking();
+                        System.out.println("Anaylsis complete");
                     } else {
                         System.err.println(String.format("the pcm dir %s does not exist?!", pcmModelsDirectory));
                     }

@@ -32,7 +32,6 @@ import kieker.common.record.flow.trace.TraceMetadata;
 import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 
@@ -64,8 +63,11 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * Create new TNetworkLink filter.
      *
      * @param allocationModelProvider
+     *            the allocation model provider
      * @param systemModelProvider
+     *            system model provider
      * @param resourceEnvironmentModelProvider
+     *            resource environment provider
      */
     public TNetworkLink(final AllocationModelProvider allocationModelProvider,
             final SystemModelProvider systemModelProvider,
@@ -83,11 +85,9 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
      */
     @Override
     protected void execute(final TraceMetadata event) {
-        final ResourceEnvironmentModelBuilder builder = new ResourceEnvironmentModelBuilder(
-                this.resourceEnvironmentModelProvider);
-        builder.loadModel();
+        this.resourceEnvironmentModelProvider.loadModel();
 
-        final ResourceEnvironment resourceEnvironment = builder.getModel();
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider.getModel();
         final org.palladiosimulator.pcm.system.System system = this.systemModelProvider.getModel(true);
         final Allocation allocation = this.allocationModelProvider.getModel(true);
         TNetworkLink.collectUnLinkedResourceContainer(resourceEnvironment).stream().forEach(unLinkedResCont -> {
@@ -101,7 +101,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
         });
 
         // build the model
-        builder.build();
+        this.resourceEnvironmentModelProvider.save();
     }
 
     /**
@@ -133,21 +133,6 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
         System.out.printf("isEqual?Id: %s==%s, Name: %s==%s\n", asm1.getId(), asm2.getId(), asm1Name, asm2Name);
 
         return asm1Name.contains(asm2Name);
-    }
-
-    /**
-     * Check whether or not the given {@link AssemblyContext} are the same.
-     *
-     * @param asm1
-     *            first
-     * @param asm2
-     *            second
-     * @return true if same
-     */
-    private static boolean isEqualById(final AssemblyContext asm1, final AssemblyContext asm2) {
-        System.out.printf("isEqual?Id: %s==%s, Name: %s==%s\n", asm1.getId(), asm2.getId(), asm1.getEntityName(),
-                asm2.getEntityName());
-        return asm1.getId().equals(asm2.getId());
     }
 
     /**
@@ -250,22 +235,6 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
                 .filter(connector -> TNetworkLink.isEqualByName(queryAsm,
                         connector.getRequiringAssemblyContext_AssemblyConnector()))
                 .map(connector -> connector.getProvidingAssemblyContext_AssemblyConnector())
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * same as {@link #getConnectedAsmCtx(org.palladiosimulator.pcm.system.System, AssemblyContext)}
-     * but for all the {@link AssemblyContext} objects in the provided list.
-     *
-     * @param system
-     *            system object
-     * @param listQueryAsm
-     *            list to loop through
-     * @return list
-     */
-    private static List<AssemblyContext> getConnectedAsmCtx(final org.palladiosimulator.pcm.system.System system,
-            final List<AssemblyContext> listQueryAsm) {
-        return listQueryAsm.stream().map(asm -> TNetworkLink.getConnectedAsmCtx(system, asm)).flatMap(l -> l.stream())
                 .collect(Collectors.toList());
     }
 

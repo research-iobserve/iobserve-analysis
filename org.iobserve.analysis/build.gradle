@@ -50,6 +50,11 @@ dependencies {
 	compile 'extra:org.eclipse.net4j:4.5.0.v20160607-1254'
 	compile 'extra:org.eclipse.net4j.util:3.6.0.v20160607-1254'
 	compile 'extra:org.eclipse.equinox.common:3.8.0.v20160509-1230'
+    compile 'extra:org.eclipse.ocl:3.6.0.v20160523-1914'
+    compile 'extra:org.eclipse.ocl.common:1.4.0.v20160521-2033'
+    compile 'extra:org.eclipse.ocl.ecore:3.6.0.v20160523-1914'
+
+    compile 'extra:lpg.runtime.java:2.0.17.v201004271640'
 	
 	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
 }

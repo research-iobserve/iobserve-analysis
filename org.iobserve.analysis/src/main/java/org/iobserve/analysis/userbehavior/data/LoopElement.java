@@ -28,7 +28,7 @@ import java.util.List;
 public class LoopElement implements ISequenceElement {
 
     private int loopId;
-    private List<ISequenceElement> loopSequence;
+    private List<ISequenceElement> loopSequence = new ArrayList<>();
     private int loopCount;
     private int startIndexInBranchSequence;
     private int endIndexInBranchSequence;
@@ -36,16 +36,32 @@ public class LoopElement implements ISequenceElement {
     private int currentIndexToCheck;
     private boolean doContainBranchElement;
 
+    /**
+     * Entity constructor.
+     */
     public LoopElement() {
-        this.loopSequence = new ArrayList<ISequenceElement>();
     }
 
-    public void addSequenceElementToLoopSequence(final ISequenceElement sequenceElement) {
-        this.loopSequence.add(sequenceElement);
+    /**
+     * Add a sequence to this loop element.
+     *
+     * @param element
+     *            the element to be added
+     */
+    public void addElementToLoopSequence(final ISequenceElement element) {
+        this.loopSequence.add(element);
     }
 
-    public void addCallElementToLoopSequence(final int index, final ISequenceElement branchElement) {
-        this.loopSequence.add(index, branchElement);
+    /**
+     * Add a call element to this loop element.
+     *
+     * @param index
+     *            where the element must be inserted
+     * @param element
+     *            the element to be inserted
+     */
+    public void insertElementToLoopSequence(final int index, final ISequenceElement element) {
+        this.loopSequence.add(index, element);
     }
 
     public List<ISequenceElement> getLoopSequence() {
@@ -115,6 +131,12 @@ public class LoopElement implements ISequenceElement {
         this.currentIndexToCheck = currentIndexToCheck;
     }
 
+    /**
+     * Reinitialize loop element.
+     *
+     * @param loopElement
+     *            the new loop element
+     */
     public void copyLoopValues(final LoopElement loopElement) {
         this.loopSequence = loopElement.getLoopSequence();
         this.loopCount = loopElement.getLoopCount();

@@ -17,7 +17,8 @@ package org.iobserve.analysis;
 
 import java.io.IOException;
 
-import org.iobserve.analysis.correspondence.ICorrespondence;
+import teetime.framework.Configuration;
+
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
@@ -27,11 +28,11 @@ import org.iobserve.analysis.filter.TEntryEventSequence;
 import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-
-import teetime.framework.Configuration;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 /**
  * @author Reiner Jung
@@ -48,8 +49,24 @@ public abstract class AbstractObservationConfiguration extends Configuration {
     /**
      * Create a configuration with a ASCII file reader.
      *
-     * @param platform
-     *            model provider platform
+     * @param correspondenceModel
+     *            the correspondence model
+     * @param usageModelProvider
+     *            the usage model provider
+     * @param repositoryModelProvider
+     *            the repository model provider
+     * @param resourceEnvironmentModelProvider
+     *            the resource environment provider
+     * @param allocationModelProvider
+     *            the allocation model provider
+     * @param systemModelProvider
+     *            the system model provider
+     * @param varianceOfUserGroups
+     *            variance of user groups, configuration for entry event filter
+     * @param thinkTime
+     *            think time, configuration for entry event filter
+     * @param closedWorkload
+     *            kind of workload, configuration for entry event filter
      *
      * @throws ClassNotFoundException
      *             when a record type could not be loaded by class loader
@@ -57,24 +74,24 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *             for all file reading errors
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
-            final UsageModelProvider usageModelProvider,
-            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
+            final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
+            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
-        final TAllocation tAllocation = new TAllocation(resourceEvnironmentModelProvider);
+        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
         final TDeployment tDeployment = new TDeployment(correspondenceModel, allocationModelProvider,
-                systemModelProvider, resourceEvnironmentModelProvider);
+                systemModelProvider, resourceEnvironmentModelProvider);
         final TUndeployment tUndeployment = new TUndeployment(correspondenceModel, allocationModelProvider,
-                systemModelProvider, resourceEvnironmentModelProvider);
+                systemModelProvider, resourceEnvironmentModelProvider);
         final TEntryCall tEntryCall = new TEntryCall();
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
         final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
-                varianceOfUserGroups, thinkTime, closedWorkload);
+                repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
         final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
-                resourceEvnironmentModelProvider);
+                resourceEnvironmentModelProvider);
 
         /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());

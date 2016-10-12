@@ -13,22 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.model;
+package org.iobserve.analysis;
 
 import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.correspondence.CorrespondeceModelFactory;
-import org.iobserve.analysis.correspondence.ICorrespondence;
+
+import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.RepositoryModelProvider;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.model.UsageModelProvider;
+import org.iobserve.analysis.model.correspondence.CorrespondeceModelFactory;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 /**
  *
- * The model platform will load all model and {@link ICorrespondence} model.
+ * will load all model and {@link ICorrespondence} model.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public final class ModelProviderPlatform {
+public final class InitializeModelProviders {
 
     private RepositoryModelProvider repositoryModelProvider;
     private UsageModelProvider usageModelProvider;
@@ -40,32 +46,32 @@ public final class ModelProviderPlatform {
     /**
      * Create model provider.
      *
-     * @param pathPcm
+     * @param dirPcm
      *            directory of pcm models.
      */
-    public ModelProviderPlatform(final File dirPcm) {
+    public InitializeModelProviders(final File dirPcm) {
         final File[] files = dirPcm.listFiles();
         for (final File nextFile : files) {
             final String extension = this.getFileExtension(nextFile.getName());
             if ("repository".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
-                this.repositoryModelProvider = new RepositoryModelProvider(this, uri);
+                this.repositoryModelProvider = new RepositoryModelProvider(uri);
 
             } else if ("allocation".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
-                this.allocationModelProvider = new AllocationModelProvider(this, uri);
+                this.allocationModelProvider = new AllocationModelProvider(uri);
 
             } else if ("resourceenvironment".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
-                this.resourceEnvironmentModelProvider = new ResourceEnvironmentModelProvider(this, uri);
+                this.resourceEnvironmentModelProvider = new ResourceEnvironmentModelProvider(uri);
 
             } else if ("system".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
-                this.systemModelProvider = new SystemModelProvider(uri, this);
+                this.systemModelProvider = new SystemModelProvider(uri);
 
             } else if ("usagemodel".equalsIgnoreCase(extension)) {
                 final URI uri = this.getUri(nextFile);
-                this.usageModelProvider = new UsageModelProvider(uri, this);
+                this.usageModelProvider = new UsageModelProvider(uri);
 
             } else if ("rac".equalsIgnoreCase(extension)) {
                 final String pathMappingFile = nextFile.getAbsolutePath();

@@ -27,10 +27,12 @@ import java.util.List;
 public class BranchTransitionElement {
 
     private double transitionLikelihood;
-    private List<ISequenceElement> branchSequence;
+    private List<ISequenceElement> branchSequence = new ArrayList<>();
 
+    /**
+     * Entity constructor.
+     */
     public BranchTransitionElement() {
-        this.branchSequence = new ArrayList<ISequenceElement>();
     }
 
     public double getTransitionLikelihood() {

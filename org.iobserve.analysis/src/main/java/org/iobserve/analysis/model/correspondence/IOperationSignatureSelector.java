@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.correspondence;
+package org.iobserve.analysis.model.correspondence;
 
 import java.util.function.BiFunction;
 

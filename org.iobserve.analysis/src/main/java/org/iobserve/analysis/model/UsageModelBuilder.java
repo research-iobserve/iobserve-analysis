@@ -34,9 +34,8 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
-import org.palladiosimulator.pcm.usagemodel.UserData;
 
-import org.iobserve.analysis.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.Correspondent;
 
 /**
  * UsageModelBuilder is able to build a {@link UsageModel}.
@@ -45,7 +44,7 @@ import org.iobserve.analysis.correspondence.Correspondent;
  * @author Alessandro
  *
  */
-public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, UsageModel> {
+public final class UsageModelBuilder {
 
     /**
      * Create a usage model builder.
@@ -53,34 +52,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      * @param modelProvider
      *            model provider
      */
-    public UsageModelBuilder(final UsageModelProvider modelProvider) {
-        super(modelProvider);
-    }
-
-    // *****************************************************************
-    //
-    // *****************************************************************
-
-    /**
-     * Load the model from file using the model provider.
-     *
-     * @return builder to pipeline more commands
-     */
-    public UsageModelBuilder loadModel() {
-        this.modelProvider.loadModel();
-        return this;
-    }
-
-    /**
-     * Reset the model. This will delete all {@link UsageScenario} and {@link UserData} instances.
-     *
-     * @return builder to pipeline more commands
-     */
-    public UsageModelBuilder resetModel() {
-        final UsageModel model = this.modelProvider.getModel();
-        model.getUsageScenario_UsageModel().clear();
-        model.getUserData_UsageModel().clear();
-        return this;
+    private UsageModelBuilder() {
     }
 
     /**
@@ -88,62 +60,40 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *
      * @return new usage model
      */
-    public UsageModel createUsageModel() {
+    public static UsageModel createUsageModel() {
         return UsagemodelFactory.eINSTANCE.createUsageModel();
     }
 
     /**
      * Convenience routine to create and add stop actions.
-     * 
+     *
      * @param name
      *            the name of the action
      * @param behavior
      *            the scenario behavior
      * @return the resulting stop action
      */
-    public Stop createAddStopAction(final String name, final ScenarioBehaviour behavior) {
-        final Stop stop = this.createStop(name);
-        this.addUserAction(behavior, stop);
+    public static Stop createAddStopAction(final String name, final ScenarioBehaviour behavior) {
+        final Stop stop = UsageModelBuilder.createStop(name);
+        UsageModelBuilder.addUserAction(behavior, stop);
 
         return stop;
     }
 
     /**
      * Convenience routine to create and add start actions.
-     * 
+     *
      * @param name
      *            the name of the action
      * @param behavior
      *            the scenario behavior
      * @return the resulting stop action
      */
-    public Start createAddStartAction(final String name, final ScenarioBehaviour behavior) {
-        final Start start = this.createStart(name);
-        this.addUserAction(behavior, start);
+    public static Start createAddStartAction(final String name, final ScenarioBehaviour behavior) {
+        final Start start = UsageModelBuilder.createStart(name);
+        UsageModelBuilder.addUserAction(behavior, start);
 
         return start;
-    }
-
-    /**
-     * Create an {@link UsageScenario} and create a body {@link ScenarioBehaviour} for it. Get the
-     * {@link ScenarioBehaviour} by {@link UsageScenario#getScenarioBehaviour_UsageScenario()}
-     *
-     * @param name
-     *            name of usage scenario
-     * @return created usage scenario
-     */
-    public UsageScenario createUsageScenario(final String name) {
-        // create the usage scenario
-        final UsageModel model = this.modelProvider.getModel();
-        final UsageScenario usageScenario = UsagemodelFactory.eINSTANCE.createUsageScenario();
-        usageScenario.setEntityName(name);
-        usageScenario.setUsageModel_UsageScenario(model);
-        model.getUsageScenario_UsageModel().add(usageScenario);
-
-        // create a scenario behavior
-        final ScenarioBehaviour scenarioBehaviour = this.createScenarioBehaviour();
-        usageScenario.setScenarioBehaviour_UsageScenario(scenarioBehaviour);
-        return usageScenario;
     }
 
     /**
@@ -155,7 +105,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            the usage scenario is added to
      * @return created usage scenario
      */
-    public UsageScenario createUsageScenario(final String name, final UsageModel usageModel) {
+    public static UsageScenario createUsageScenario(final String name, final UsageModel usageModel) {
         // create the usage scenario
         final UsageScenario usageScenario = UsagemodelFactory.eINSTANCE.createUsageScenario();
         usageScenario.setEntityName(name);
@@ -163,7 +113,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
         usageModel.getUsageScenario_UsageModel().add(usageScenario);
 
         // create a scenario behavior
-        final ScenarioBehaviour scenarioBehaviour = this.createScenarioBehaviour();
+        final ScenarioBehaviour scenarioBehaviour = UsageModelBuilder.createScenarioBehaviour();
         usageScenario.setScenarioBehaviour_UsageScenario(scenarioBehaviour);
         return usageScenario;
     }
@@ -173,9 +123,8 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *
      * @return the behavior
      */
-    public ScenarioBehaviour createScenarioBehaviour() {
-        final ScenarioBehaviour scenarioBehaviour = UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
-        return scenarioBehaviour;
+    public static ScenarioBehaviour createScenarioBehaviour() {
+        return UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
     }
 
     /**
@@ -187,7 +136,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            usage scenario the workload should be added to
      * @return brand new instance of {@link OpenWorkload}
      */
-    public OpenWorkload createOpenWorkload(final long avgInterarrivalTime, final UsageScenario parent) {
+    public static OpenWorkload createOpenWorkload(final long avgInterarrivalTime, final UsageScenario parent) {
         final OpenWorkload openWorkload = UsagemodelFactory.eINSTANCE.createOpenWorkload();
         parent.setWorkload_UsageScenario(openWorkload);
 
@@ -211,7 +160,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            usage scenario the workload should be added to
      * @return created closed workload instance
      */
-    public ClosedWorkload createClosedWorkload(final int population, final double thinkTime,
+    public static ClosedWorkload createClosedWorkload(final int population, final double thinkTime,
             final UsageScenario parent) {
         final ClosedWorkload closedWorkload = UsagemodelFactory.eINSTANCE.createClosedWorkload();
         parent.setWorkload_UsageScenario(closedWorkload);
@@ -232,7 +181,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            of start node
      * @return start node
      */
-    public Start createStart(final String name) {
+    public static Start createStart(final String name) {
         final Start start = UsagemodelFactory.eINSTANCE.createStart();
         start.setEntityName(name);
         return start;
@@ -243,8 +192,8 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *
      * @return start node
      */
-    public Start createStart() {
-        return this.createStart("start-with-no-name");
+    public static Start createStart() {
+        return UsageModelBuilder.createStart("start-with-no-name");
     }
 
     /**
@@ -254,7 +203,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            name of stop node
      * @return stop node.
      */
-    public Stop createStop(final String name) {
+    public static Stop createStop(final String name) {
         final Stop stop = UsagemodelFactory.eINSTANCE.createStop();
         stop.setEntityName(name);
         return stop;
@@ -265,21 +214,21 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *
      * @return stop node.
      */
-    public Stop createStop() {
-        return this.createStop("stop-with-no-name");
+    public static Stop createStop() {
+        return UsageModelBuilder.createStop("stop-with-no-name");
     }
 
     /**
      * Create an EntryLevelSystemCall with the given operation signature.
      *
+     * @param repositoryModelProvider
+     *            provider for a repository model
      * @param operationSignature
      *            operation signature of the EntryLevelSystemCall
      * @return null, if the creation failed, the instance if not.
      */
-    public EntryLevelSystemCall createEntryLevelSystemCall(final String operationSignature) {
-        final RepositoryModelProvider repositoryModelProvider = this.modelProvider.getPlatform()
-                .getRepositoryModelProvider();
-
+    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryModelProvider repositoryModelProvider,
+            final String operationSignature) {
         final OperationSignature opSig = repositoryModelProvider.getOperationSignature(operationSignature);
         final BasicComponent bCmp = repositoryModelProvider.getBasicComponent(operationSignature);
         final EntryLevelSystemCall eSysCall;
@@ -303,20 +252,24 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
     /**
      * Create an EntryLevelSystemCall with the given correspondent.
      *
+     * @param repositoryModelProvider
+     *            provider for a repository model
      * @param correspondent
      *            correspondent containing operation signature
      * @return null, if the creation failed, the instance if not.
      */
-    public EntryLevelSystemCall createEntryLevelSystemCall(final Correspondent correspondent) {
-        return this.createEntryLevelSystemCall(correspondent.getPcmOperationName());
+    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryModelProvider repositoryModelProvider,
+            final Correspondent correspondent) {
+        return UsageModelBuilder.createEntryLevelSystemCall(repositoryModelProvider,
+                correspondent.getPcmOperationName());
     }
 
     /**
-     * Create a new empty EntryLevelSystemCall
+     * Create a new empty EntryLevelSystemCall.
      *
-     * @return
+     * @return entry level system call.
      */
-    public EntryLevelSystemCall createEmptyEntryLevelSystemCall() {
+    public static EntryLevelSystemCall createEmptyEntryLevelSystemCall() {
         return UsagemodelFactory.eINSTANCE.createEntryLevelSystemCall();
     }
 
@@ -333,7 +286,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            parent to add branch to
      * @return created branch instance
      */
-    public Branch createBranch(final String name, final ScenarioBehaviour parent) {
+    public static Branch createBranch(final String name, final ScenarioBehaviour parent) {
         final Branch branch = UsagemodelFactory.eINSTANCE.createBranch();
         branch.setEntityName(name);
         branch.setScenarioBehaviour_AbstractUserAction(parent);
@@ -350,8 +303,8 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            parent to add branch to
      * @return created branch instance
      */
-    public Branch createBranch(final String name, final Loop parent) {
-        return this.createBranch(name, parent.getBodyBehaviour_Loop());
+    public static Branch createBranch(final String name, final Loop parent) {
+        return UsageModelBuilder.createBranch(name, parent.getBodyBehaviour_Loop());
     }
 
     /**
@@ -363,8 +316,8 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            parent to add branch to
      * @return created branch instance
      */
-    public Branch createBranch(final String name, final BranchTransition parent) {
-        return this.createBranch(name, parent.getBranchedBehaviour_BranchTransition());
+    public static Branch createBranch(final String name, final BranchTransition parent) {
+        return UsageModelBuilder.createBranch(name, parent.getBranchedBehaviour_BranchTransition());
     }
 
     /**
@@ -376,25 +329,16 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            branch to add transition to
      * @return created branch transition
      */
-    public BranchTransition createBranchTransition(final Branch parent) {
+    public static BranchTransition createBranchTransition(final Branch parent) {
         // create branch transition
         final BranchTransition branchTransition = UsagemodelFactory.eINSTANCE.createBranchTransition();
         branchTransition.setBranch_BranchTransition(parent);
         parent.getBranchTransitions_Branch().add(branchTransition);
 
         // create body of branch transition
-        final ScenarioBehaviour bodyScenarioBehaviour = this.createScenarioBehaviour();
+        final ScenarioBehaviour bodyScenarioBehaviour = UsageModelBuilder.createScenarioBehaviour();
         branchTransition.setBranchedBehaviour_BranchTransition(bodyScenarioBehaviour);
         return branchTransition;
-    }
-
-    /**
-     * Create new empty branch
-     *
-     * @return
-     */
-    public Branch createEmptyBranch() {
-        return UsagemodelFactory.eINSTANCE.createBranch();
     }
 
     /**
@@ -407,14 +351,14 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            parent
      * @return created loop
      */
-    public Loop createLoop(final String name, final ScenarioBehaviour parent) {
+    public static Loop createLoop(final String name, final ScenarioBehaviour parent) {
         // create the loop
         final Loop loop = UsagemodelFactory.eINSTANCE.createLoop();
         loop.setEntityName(name);
         parent.getActions_ScenarioBehaviour().add(loop);
 
         // create the body scenario behavior
-        final ScenarioBehaviour bodyScenarioBehaviour = this.createScenarioBehaviour();
+        final ScenarioBehaviour bodyScenarioBehaviour = UsageModelBuilder.createScenarioBehaviour();
         loop.setBodyBehaviour_Loop(bodyScenarioBehaviour);
         return loop;
     }
@@ -428,8 +372,8 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            parent loop
      * @return created loop
      */
-    public Loop createLoop(final String name, final Loop parent) {
-        return this.createLoop(name, parent.getBodyBehaviour_Loop());
+    public static Loop createLoop(final String name, final Loop parent) {
+        return UsageModelBuilder.createLoop(name, parent.getBodyBehaviour_Loop());
     }
 
     /**
@@ -441,22 +385,18 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      *            parent branch transition
      * @return created loop
      */
-    public Loop createLoop(final String name, final BranchTransition parent) {
-        return this.createLoop(name, parent.getBranchedBehaviour_BranchTransition());
+    public static Loop createLoop(final String name, final BranchTransition parent) {
+        return UsageModelBuilder.createLoop(name, parent.getBranchedBehaviour_BranchTransition());
     }
 
     /**
-     * Creates a new and empty Loop
+     * Creates a new and empty Loop.
      *
-     * @return
+     * @return loop
      */
-    public Loop createEmptyLoop() {
+    public static Loop createEmptyLoop() {
         return UsagemodelFactory.eINSTANCE.createLoop();
     }
-
-    // *****************************************************************
-    //
-    // *****************************************************************
 
     /**
      * Connect actions.
@@ -466,7 +406,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      * @param successor
      *            successor of predecessor
      */
-    public void connect(final AbstractUserAction predecessor, final AbstractUserAction successor) {
+    public static void connect(final AbstractUserAction predecessor, final AbstractUserAction successor) {
         successor.setPredecessor(predecessor);
         predecessor.setSuccessor(successor);
     }
@@ -479,7 +419,7 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      * @param actions
      *            actions to add
      */
-    public void addUserAction(final ScenarioBehaviour parent, final AbstractUserAction... actions) {
+    public static void addUserAction(final ScenarioBehaviour parent, final AbstractUserAction... actions) {
         for (final AbstractUserAction nextUserAction : actions) {
             parent.getActions_ScenarioBehaviour().add(nextUserAction);
         }
@@ -493,8 +433,8 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      * @param actions
      *            actions to add
      */
-    public void addUserAction(final UsageScenario parent, final AbstractUserAction... actions) {
-        this.addUserAction(parent.getScenarioBehaviour_UsageScenario(), actions);
+    public static void addUserAction(final UsageScenario parent, final AbstractUserAction... actions) {
+        UsageModelBuilder.addUserAction(parent.getScenarioBehaviour_UsageScenario(), actions);
     }
 
     /**
@@ -505,8 +445,8 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      * @param actions
      *            actions to add
      */
-    public void addUserAction(final BranchTransition parent, final AbstractUserAction... actions) {
-        this.addUserAction(parent.getBranchedBehaviour_BranchTransition(), actions);
+    public static void addUserAction(final BranchTransition parent, final AbstractUserAction... actions) {
+        UsageModelBuilder.addUserAction(parent.getBranchedBehaviour_BranchTransition(), actions);
     }
 
     /**
@@ -517,8 +457,8 @@ public class UsageModelBuilder extends AbstractModelBuilder<UsageModelProvider, 
      * @param actions
      *            actions to add
      */
-    public void addUserAction(final Loop parent, final AbstractUserAction... actions) {
-        this.addUserAction(parent.getBodyBehaviour_Loop(), actions);
+    public static void addUserAction(final Loop parent, final AbstractUserAction... actions) {
+        UsageModelBuilder.addUserAction(parent.getBodyBehaviour_Loop(), actions);
     }
 
 }

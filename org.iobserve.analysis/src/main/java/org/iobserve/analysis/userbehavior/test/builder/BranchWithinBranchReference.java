@@ -29,11 +29,12 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import org.iobserve.analysis.correspondence.Correspondent;
-import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
 import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.test.TestHelper;
@@ -41,8 +42,8 @@ import org.iobserve.analysis.userbehavior.test.TestHelper;
 /**
  * BranchWithinBranchReference.
  *
- * @author Reiner Jung
- *
+ * @author David Peter -- initial contribution
+ * @author Reiner Jung -- refactoring *
  */
 public final class BranchWithinBranchReference {
 
@@ -62,6 +63,8 @@ public final class BranchWithinBranchReference {
      *            file name of the reference model to store its result
      * @param usageModelBuilder
      *            usage model builder
+     * @param repositoryModelProvider
+     *            repository model provider
      * @param correspondenceModel
      *            correspondence model
      *
@@ -70,7 +73,8 @@ public final class BranchWithinBranchReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final UsageModelBuilder usageModelBuilder, final ICorrespondence correspondenceModel) throws IOException {
+            final UsageModelBuilder usageModelBuilder, final RepositoryModelProvider repositoryModelProvider,
+            final ICorrespondence correspondenceModel) throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
@@ -84,16 +88,48 @@ public final class BranchWithinBranchReference {
 
         final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
                 TestHelper.getUserSessions(numberOfConcurrentUsers));
+
         final ReferenceElements referenceElements = new ReferenceElements();
 
-        // User sessions are created that exactly represent
-        // the user behavior of the reference usage model. The entry and exit times enable that the
-        // calls within the user sessions are ordered according to the reference usage model
-        // The branch transition counter ensures that each branch transition is visited by at least
-        // one user session
         final List<Integer> branchTransitionCounter = new ArrayList<>();
         final List<List<Integer>> listOfbranchTransitionCounterInterior = new ArrayList<>();
+
+        BranchWithinBranchReference.createUserSessions(branchTransitionCounter, listOfbranchTransitionCounterInterior,
+                numberOfTransitionsOfExteriorBranch, numberOfTransitionsOfInteriorBranches, entryCallSequenceModel);
+
+        final UsageModel usageModel = BranchWithinBranchReference.createTheReferenceModel(usageModelBuilder,
+                repositoryModelProvider, correspondenceModel, numberOfTransitionsOfExteriorBranch,
+                numberOfTransitionsOfInteriorBranches, numberOfConcurrentUsers, branchTransitionCounter,
+                listOfbranchTransitionCounterInterior);
+
+        // Saves the reference usage model and sets the usage model and the EntryCallSequenceModel
+        // as the reference elements. Our approach is now executed with the EntryCallSequenceModel
+        // and the resulting usage model can be matched against the reference usage model
+        TestHelper.saveModel(usageModel, referenceUsageModelFileName);
+        referenceElements.setEntryCallSequenceModel(entryCallSequenceModel);
+        referenceElements.setUsageModel(usageModel);
+
+        return referenceElements;
+    }
+
+    /**
+     * User sessions are created that exactly represent the user behavior of the reference usage
+     * model. The entry and exit times enable that the calls within the user sessions are ordered
+     * according to the reference usage model. The branch transition counter ensures that each
+     * branch transition is visited by at least one user session
+     *
+     * @param branchTransitionCounter
+     * @param listOfbranchTransitionCounterInterior
+     * @param numberOfTransitionsOfExteriorBranch
+     * @param numberOfTransitionsOfInteriorBranches
+     * @param entryCallSequenceModel
+     */
+    private static void createUserSessions(final List<Integer> branchTransitionCounter,
+            final List<List<Integer>> listOfbranchTransitionCounterInterior,
+            final int numberOfTransitionsOfExteriorBranch, final int numberOfTransitionsOfInteriorBranches,
+            final EntryCallSequenceModel entryCallSequenceModel) {
         boolean areAllBranchesVisited = true;
+
         do {
             for (int i = 0; i < numberOfTransitionsOfExteriorBranch; i++) {
                 branchTransitionCounter.add(i, 0);
@@ -104,116 +140,20 @@ public final class BranchWithinBranchReference {
                 listOfbranchTransitionCounterInterior.add(i, branchTransitionCounterInterior);
             }
             int entryTime = 1;
-            int exitTime = 2;
 
-            for (int i = 0; i < entryCallSequenceModel.getUserSessions().size(); i++) {
+            for (int userSessionIndex = 0; userSessionIndex < entryCallSequenceModel.getUserSessions()
+                    .size(); userSessionIndex++) {
                 entryTime = 1;
-                exitTime = 2;
                 // Each user sessions represents randomly one of the branch transitions
-                int branchDecisioner = TestHelper.getRandomInteger(numberOfTransitionsOfExteriorBranch - 1, 0);
-                if (branchDecisioner == 0) {
-                    final int countOfBranchTransition = branchTransitionCounter.get(0) + 1;
-                    branchTransitionCounter.set(0, countOfBranchTransition);
-                    final EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime,
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0],
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[0], String.valueOf(i), "hostname");
-                    entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
-                    entryTime = entryTime + 2;
-                    exitTime = exitTime + 2;
-                    branchDecisioner = TestHelper.getRandomInteger(numberOfTransitionsOfInteriorBranches - 1, 0);
-                    for (int k = 0; k < numberOfTransitionsOfInteriorBranches; k++) {
-                        if (listOfbranchTransitionCounterInterior.get(0).get(k) == 0) {
-                            branchDecisioner = k;
-                            break;
-                        }
-                    }
-                    // Within the branch transition again a random branch transition is chosen
-                    if (branchDecisioner == 0) {
-                        BranchWithinBranchReference.createEntryCallEventForBranch(i, 0, 0, 0, entryCallSequenceModel,
-                                entryTime, exitTime, listOfbranchTransitionCounterInterior);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    } else if (branchDecisioner == 1) {
-                        BranchWithinBranchReference.createEntryCallEventForBranch(i, 0, 1, 3, entryCallSequenceModel,
-                                entryTime, exitTime, listOfbranchTransitionCounterInterior);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    } else if (branchDecisioner == 2) {
-                        BranchWithinBranchReference.createEntryCallEventForBranch(i, 0, 2, 4, entryCallSequenceModel,
-                                entryTime, exitTime, listOfbranchTransitionCounterInterior);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    }
-                } else if (branchDecisioner == 1) {
-                    final int countOfBranchTransition = branchTransitionCounter.get(1) + 1;
-                    branchTransitionCounter.set(1, countOfBranchTransition);
-                    final EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime,
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[1],
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[1], String.valueOf(i), "hostname");
-                    entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
-                    entryTime = entryTime + 2;
-                    exitTime = exitTime + 2;
-                    branchDecisioner = TestHelper.getRandomInteger(numberOfTransitionsOfInteriorBranches - 1, 0);
-                    for (int k = 0; k < numberOfTransitionsOfInteriorBranches; k++) {
-                        if (listOfbranchTransitionCounterInterior.get(1).get(k) == 0) {
-                            branchDecisioner = k;
-                            break;
-                        }
-                    }
-                    // Within the branch transition again a random branch transition is chosen
-                    if (branchDecisioner == 0) {
-                        BranchWithinBranchReference.createEntryCallEventForBranch(i, 1, 0, 0, entryCallSequenceModel,
-                                entryTime, exitTime, listOfbranchTransitionCounterInterior);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    } else if (branchDecisioner == 1) {
-                        BranchWithinBranchReference.createEntryCallEventForBranch(i, 1, 1, 3, entryCallSequenceModel,
-                                entryTime, exitTime, listOfbranchTransitionCounterInterior);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    } else if (branchDecisioner == 2) {
-                        BranchWithinBranchReference.createEntryCallEventForBranch(i, 1, 2, 4, entryCallSequenceModel,
-                                entryTime, exitTime, listOfbranchTransitionCounterInterior);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    }
-                } else if (branchDecisioner == 2) {
-                    final int countOfBranchTransition = branchTransitionCounter.get(2) + 1;
-                    branchTransitionCounter.set(2, countOfBranchTransition);
-                    final EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime,
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2],
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[2], String.valueOf(i), "hostname");
-                    entryCallSequenceModel.getUserSessions().get(i).add(entryCallEvent, true);
-                    entryTime = entryTime + 2;
-                    exitTime = exitTime + 2;
-                    branchDecisioner = TestHelper.getRandomInteger(numberOfTransitionsOfInteriorBranches - 1, 0);
-                    for (int k = 0; k < numberOfTransitionsOfInteriorBranches; k++) {
-                        if (listOfbranchTransitionCounterInterior.get(2).get(k) == 0) {
-                            branchDecisioner = k;
-                            break;
-                        }
-                    }
-                    // Within the branch transition again a random branch transition is chosen
-                    if (branchDecisioner == 0) {
-                        BranchWithinBranchReference.createEntryCallEventForBranch(i, 2, 0, 0, entryCallSequenceModel,
-                                entryTime, exitTime, listOfbranchTransitionCounterInterior);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-
-                    } else if (branchDecisioner == 1) {
-                        BranchWithinBranchReference.createEntryCallEventForBranch(i, 2, 1, 3, entryCallSequenceModel,
-                                entryTime, exitTime, listOfbranchTransitionCounterInterior);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    } else if (branchDecisioner == 2) {
-                        BranchWithinBranchReference.createEntryCallEventForBranch(i, 2, 2, 4, entryCallSequenceModel,
-                                entryTime, exitTime, listOfbranchTransitionCounterInterior);
-                        entryTime = entryTime + 2;
-                        exitTime = exitTime + 2;
-                    }
+                final int branchDecisioner = TestHelper.getRandomInteger(numberOfTransitionsOfExteriorBranch - 1, 0);
+                if (branchDecisioner < 3) {
+                    entryTime = BranchWithinBranchReference.createBranch(branchTransitionCounter, entryTime,
+                            entryCallSequenceModel, numberOfTransitionsOfInteriorBranches,
+                            listOfbranchTransitionCounterInterior, userSessionIndex, branchDecisioner);
                 }
             }
-            // Checks whether all branch transitions of the exterior branch are represented within
+            // Checks whether all branch transitions of the exterior branch are represented
+            // within
             // the user sessions
             for (int i = 0; i < branchTransitionCounter.size(); i++) {
                 if (branchTransitionCounter.get(i) == 0) {
@@ -221,7 +161,8 @@ public final class BranchWithinBranchReference {
                     break;
                 }
             }
-            // Checks whether all branch transitions of the interior branches are represented within
+            // Checks whether all branch transitions of the interior branches are represented
+            // within
             // the user sessions
             for (final List<Integer> branchTransitionCounterInterior : listOfbranchTransitionCounterInterior) {
                 for (int j = 0; j < branchTransitionCounterInterior.size(); j++) {
@@ -239,36 +180,52 @@ public final class BranchWithinBranchReference {
                 branchTransitionCounter.clear();
             }
         } while (!areAllBranchesVisited);
+    }
 
+    /**
+     * Creates the reference model.
+     *
+     * @param usageModelBuilder
+     * @param correspondenceModel
+     * @param numberOfTransitionsOfExteriorBranch
+     * @param numberOfTransitionsOfInteriorBranches
+     * @param numberOfConcurrentUsers
+     * @param branchTransitionCounter
+     * @param listOfbranchTransitionCounterInterior
+     * @return
+     */
+    private static UsageModel createTheReferenceModel(final UsageModelBuilder usageModelBuilder,
+            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel,
+            final int numberOfTransitionsOfExteriorBranch, final int numberOfTransitionsOfInteriorBranches,
+            final int numberOfConcurrentUsers, final List<Integer> branchTransitionCounter,
+            final List<List<Integer>> listOfbranchTransitionCounterInterior) {
         // In the following the reference usage model is created
         AbstractUserAction lastAction;
         Optional<Correspondent> optionCorrespondent;
-        final UsageModel usageModel = usageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = usageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
+        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-        final Start start = usageModelBuilder.createStart("");
-        usageModelBuilder.addUserAction(scenarioBehaviour, start);
-        final Stop stop = usageModelBuilder.createStop("");
-        usageModelBuilder.addUserAction(scenarioBehaviour, stop);
+        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
+        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
         lastAction = start;
 
         // The exterior branch is created
-        final org.palladiosimulator.pcm.usagemodel.Branch branch = usageModelBuilder.createBranch("",
+        final org.palladiosimulator.pcm.usagemodel.Branch branch = UsageModelBuilder.createBranch("",
                 scenarioBehaviour);
-        usageModelBuilder.connect(lastAction, branch);
-        usageModelBuilder.connect(branch, stop);
+        UsageModelBuilder.connect(lastAction, branch);
+        UsageModelBuilder.connect(branch, stop);
 
         // Creates branch transitions according to the random countOfBranchTransitions
         for (int i = 0; i < numberOfTransitionsOfExteriorBranch; i++) {
-            final BranchTransition branchTransition = usageModelBuilder.createBranchTransition(branch);
+            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branch);
             final ScenarioBehaviour branchTransitionBehaviour = branchTransition
                     .getBranchedBehaviour_BranchTransition();
             branchTransition
                     .setBranchProbability((double) branchTransitionCounter.get(i) / (double) numberOfConcurrentUsers);
-            final Start startBranchTransition = usageModelBuilder.createStart("");
-            usageModelBuilder.addUserAction(branchTransitionBehaviour, startBranchTransition);
-            final Stop stopBranchTransition = usageModelBuilder.createStop("");
-            usageModelBuilder.addUserAction(branchTransitionBehaviour, stopBranchTransition);
+            final Start startBranchTransition = UsageModelBuilder.createStart("");
+            UsageModelBuilder.addUserAction(branchTransitionBehaviour, startBranchTransition);
+            final Stop stopBranchTransition = UsageModelBuilder.createStop("");
+            UsageModelBuilder.addUserAction(branchTransitionBehaviour, stopBranchTransition);
             lastAction = startBranchTransition;
             if ((i >= 0) && (i < 3)) {
                 optionCorrespondent = correspondenceModel.getCorrespondent(
@@ -278,32 +235,32 @@ public final class BranchWithinBranchReference {
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
             if (optionCorrespondent.isPresent()) {
-                final Correspondent correspondent = optionCorrespondent.get();
-                final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                        .createEntryLevelSystemCall(correspondent);
-                usageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-                usageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                        .createEntryLevelSystemCall(repositoryModelProvider, optionCorrespondent.get());
+                UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
+                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
 
             // The interior branch is created
-            final org.palladiosimulator.pcm.usagemodel.Branch branchInterior = usageModelBuilder.createBranch("",
+            final org.palladiosimulator.pcm.usagemodel.Branch branchInterior = UsageModelBuilder.createBranch("",
                     branchTransitionBehaviour);
-            usageModelBuilder.connect(lastAction, branchInterior);
-            usageModelBuilder.connect(branchInterior, stopBranchTransition);
+            UsageModelBuilder.connect(lastAction, branchInterior);
+            UsageModelBuilder.connect(branchInterior, stopBranchTransition);
 
             for (int j = 0; j < numberOfTransitionsOfInteriorBranches; j++) {
-                final BranchTransition branchTransitionInterior = usageModelBuilder
+                final BranchTransition branchTransitionInterior = UsageModelBuilder
                         .createBranchTransition(branchInterior);
                 final ScenarioBehaviour branchTransitionBehaviourInterior = branchTransitionInterior
                         .getBranchedBehaviour_BranchTransition();
                 branchTransitionInterior
                         .setBranchProbability((double) listOfbranchTransitionCounterInterior.get(i).get(j)
                                 / (double) branchTransitionCounter.get(i));
-                final Start startBranchTransitionInterior = usageModelBuilder.createStart("");
-                usageModelBuilder.addUserAction(branchTransitionBehaviourInterior, startBranchTransitionInterior);
-                final Stop stopBranchTransitionInterior = usageModelBuilder.createStop("");
-                usageModelBuilder.addUserAction(branchTransitionBehaviourInterior, stopBranchTransitionInterior);
+
+                final Start startBranchTransitionInterior = UsageModelBuilder.createAddStartAction("",
+                        branchTransitionBehaviourInterior);
+                final Stop stopBranchTransitionInterior = UsageModelBuilder.createAddStopAction("",
+                        branchTransitionBehaviourInterior);
                 lastAction = startBranchTransitionInterior;
                 switch (j) {
                 case 0:
@@ -326,26 +283,63 @@ public final class BranchWithinBranchReference {
                 }
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                    final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                            .createEntryLevelSystemCall(correspondent);
-                    usageModelBuilder.addUserAction(branchTransitionBehaviourInterior, entryLevelSystemCall);
-                    usageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                    final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                            .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                    UsageModelBuilder.addUserAction(branchTransitionBehaviourInterior, entryLevelSystemCall);
+                    UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
                     lastAction = entryLevelSystemCall;
                 }
-                usageModelBuilder.connect(lastAction, stopBranchTransitionInterior);
+                UsageModelBuilder.connect(lastAction, stopBranchTransitionInterior);
 
             }
-
         }
 
-        // Saves the reference usage model and sets the usage model and the EntryCallSequenceModel
-        // as the reference elements. Our approach is now executed with the EntryCallSequenceModel
-        // and the resulting usage model can be matched against the reference usage model
-        TestHelper.saveModel(usageModel, referenceUsageModelFileName);
-        referenceElements.setEntryCallSequenceModel(entryCallSequenceModel);
-        referenceElements.setUsageModel(usageModel);
+        return usageModel;
+    }
 
-        return referenceElements;
+    /**
+     * Create a branch.
+     *
+     * @param branchTransitionCounter
+     * @param entryTime
+     * @param entryCallSequenceModel
+     * @param numberOfTransitionsOfInteriorBranches
+     * @param listOfbranchTransitionCounterInterior
+     * @param userSessionIndex
+     * @param operationId
+     * @return
+     */
+    private static int createBranch(final List<Integer> branchTransitionCounter, final int entryTime,
+            final EntryCallSequenceModel entryCallSequenceModel, final int numberOfTransitionsOfInteriorBranches,
+            final List<List<Integer>> listOfbranchTransitionCounterInterior, final int userSessionIndex,
+            final int operationId) {
+        final int countOfBranchTransition = branchTransitionCounter.get(operationId) + 1;
+        branchTransitionCounter.set(operationId, countOfBranchTransition);
+        final EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, entryTime + 1,
+                ReferenceUsageModelBuilder.OPERATION_SIGNATURE[operationId],
+                ReferenceUsageModelBuilder.CLASS_SIGNATURE[operationId], String.valueOf(userSessionIndex), "hostname");
+        entryCallSequenceModel.getUserSessions().get(userSessionIndex).add(entryCallEvent, true);
+
+        int branchDecisioner = TestHelper.getRandomInteger(numberOfTransitionsOfInteriorBranches - 1, 0);
+        for (int k = 0; k < numberOfTransitionsOfInteriorBranches; k++) {
+            if (listOfbranchTransitionCounterInterior.get(operationId).get(k) == 0) {
+                branchDecisioner = k;
+                break;
+            }
+        }
+        // Within the branch transition again a random branch transition is chosen
+        if (branchDecisioner == 0) {
+            return BranchWithinBranchReference.createEntryCallEventForBranch(userSessionIndex, operationId, 0, 0,
+                    entryCallSequenceModel, entryTime + 2, listOfbranchTransitionCounterInterior);
+        } else if (branchDecisioner == 1) {
+            return BranchWithinBranchReference.createEntryCallEventForBranch(userSessionIndex, operationId, 1, 3,
+                    entryCallSequenceModel, entryTime + 2, listOfbranchTransitionCounterInterior);
+        } else if (branchDecisioner == 2) {
+            return BranchWithinBranchReference.createEntryCallEventForBranch(userSessionIndex, operationId, 2, 4,
+                    entryCallSequenceModel, entryTime + 2, listOfbranchTransitionCounterInterior);
+        } else {
+            return entryTime + 2;
+        }
     }
 
     /**
@@ -364,15 +358,17 @@ public final class BranchWithinBranchReference {
      * @param listOfbranchTransitionCounterInterior
      *            list of iterators
      */
-    private static void createEntryCallEventForBranch(final int index, final int iteratorId, final int branchDecisioner,
+    private static int createEntryCallEventForBranch(final int index, final int iteratorId, final int branchDecisioner,
             final int signatureId, final EntryCallSequenceModel entryCallSequenceModel, final int entryTime,
-            final int exitTime, final List<List<Integer>> listOfbranchTransitionCounterInterior) {
+            final List<List<Integer>> listOfbranchTransitionCounterInterior) {
         final int countOfBranchTransition = listOfbranchTransitionCounterInterior.get(iteratorId).get(branchDecisioner)
                 + 1;
         listOfbranchTransitionCounterInterior.get(iteratorId).set(branchDecisioner, countOfBranchTransition);
-        final EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, exitTime,
+        final EntryCallEvent entryCallEvent = new EntryCallEvent(entryTime, entryTime + 1,
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[signatureId],
                 ReferenceUsageModelBuilder.CLASS_SIGNATURE[signatureId], String.valueOf(index), "hostname");
         entryCallSequenceModel.getUserSessions().get(index).add(entryCallEvent, true);
+
+        return entryTime + 2;
     }
 }

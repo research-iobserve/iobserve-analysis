@@ -17,20 +17,23 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.correspondence.Correspondent;
-import org.iobserve.analysis.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.AllocationModelBuilder;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.utils.Opt;
-import org.iobserve.common.record.EJBUndeployedEvent;
-import org.iobserve.common.record.IUndeploymentRecord;
-import org.iobserve.common.record.ServletUndeployedEvent;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
+
+import org.iobserve.analysis.model.AllocationModelBuilder;
+import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.SystemModelBuilder;
+import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.utils.Opt;
+import org.iobserve.common.record.EJBUndeployedEvent;
+import org.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.ServletUndeployedEvent;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and
@@ -131,8 +134,8 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         final String asmContextName = entityName + "_" + serverName;
 
         // get the model parts by name
-        final Optional<ResourceContainer> optResourceContainer = this.resourceEnvironmentModelProvider
-                .getResourceContainerByName(serverName);
+        final Optional<ResourceContainer> optResourceContainer = ResourceEnvironmentModelBuilder
+                .getResourceContainerByName(this.resourceEnvironmentModelProvider.getModel(), serverName);
 
         // this can not happen since TAllocation should have created the resource container already.
         Opt.of(optResourceContainer).ifPresent()
@@ -151,17 +154,19 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      */
     private void updateModel(final ResourceContainer resourceContainer, final String asmContextName) {
         // update the allocation model
-        final AllocationModelBuilder builder = new AllocationModelBuilder(this.allocationModelProvider);
 
         // get assembly context by name or create it if necessary.
-        final Optional<AssemblyContext> optAssemblyContext = this.systemModelProvider
-                .getAssemblyContextByName(asmContextName);
+        final Optional<AssemblyContext> optAssemblyContext = SystemModelBuilder
+                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName);
 
-        Opt.of(optAssemblyContext).ifPresent()
-                .apply(assemblyContext -> builder.loadModel()
-                        .removeAllocationContext(resourceContainer, assemblyContext).build())
-                .elseApply(() -> System.out
-                        .printf("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n"));
+        if (optAssemblyContext.isPresent()) {
+            this.allocationModelProvider.loadModel();
+            AllocationModelBuilder.removeAllocationContext(this.allocationModelProvider.getModel(), resourceContainer,
+                    optAssemblyContext.get());
+            this.allocationModelProvider.save();
+        } else {
+            System.out.printf("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n");
+        }
     }
 
 }

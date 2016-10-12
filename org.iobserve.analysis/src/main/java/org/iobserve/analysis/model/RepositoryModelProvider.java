@@ -49,15 +49,18 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
     /**
      * Create model provider to provide {@link Repository} model.
      *
-     * @param thePlatform
-     *            platform
      * @param uriUsageModel
      *            uri to the model
      */
-    RepositoryModelProvider(final ModelProviderPlatform thePlatform, final URI uriUsageModel) {
-        super(thePlatform, uriUsageModel);
+    public RepositoryModelProvider(final URI uriUsageModel) {
+        super(uriUsageModel);
         this.loadAllBasicComponents();
         this.loadAllOperationInterfaces();
+    }
+
+    @Override
+    public void resetModel() {
+        // nothing to do
     }
 
     /**
@@ -87,7 +90,7 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
     }
 
     @Override
-    public EPackage getPackage() {
+    protected EPackage getPackage() {
         return RepositoryPackage.eINSTANCE;
     }
 

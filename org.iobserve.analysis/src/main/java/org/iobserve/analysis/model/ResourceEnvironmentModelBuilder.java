@@ -15,34 +15,28 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
+import java.util.Optional;
+
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
-public class ResourceEnvironmentModelBuilder
-        extends AbstractModelBuilder<ResourceEnvironmentModelProvider, ResourceEnvironment> {
+/**
+ * Model builder for resource environment models.
+ *
+ * @author David Peter -- initial contribution
+ *
+ */
+public final class ResourceEnvironmentModelBuilder {
 
-    public ResourceEnvironmentModelBuilder(final ResourceEnvironmentModelProvider modelToStartWith) {
-        super(modelToStartWith);
-    }
-
-    public ResourceEnvironmentModelBuilder save(final ModelSaveStrategy saveStrategy) {
-        this.modelProvider.save(saveStrategy);
-        return this;
-    }
-
-    public ResourceEnvironmentModelBuilder loadModel() {
-        this.modelProvider.loadModel();
-        return this;
-    }
-
-    public ResourceEnvironmentModelBuilder resetModel() {
-        final ResourceEnvironment model = this.modelProvider.getModel();
-        model.getResourceContainer_ResourceEnvironment().clear();
-        model.getLinkingResources__ResourceEnvironment().clear();
-
-        return this;
+    /**
+     * Constructor for resource models with a start model.
+     *
+     * @param modelToStartWith
+     *            model provider.
+     */
+    private ResourceEnvironmentModelBuilder() {
     }
 
     /**
@@ -50,12 +44,13 @@ public class ResourceEnvironmentModelBuilder
      * exists. Use {@link #createResourceContainerIfAbsent(String)} instead if you wont create the
      * container if it is already available.
      *
+     * @param model
+     *            resource environment model
      * @param name
      *            name of the new container
      * @return builder
      */
-    public ResourceContainer createResourceContainer(final String name) {
-        final ResourceEnvironment model = this.modelProvider.getModel();
+    public static ResourceContainer createResourceContainer(final ResourceEnvironment model, final String name) {
         final ResourceContainer resContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
         resContainer.setEntityName(name);
         model.getResourceContainer_ResourceEnvironment().add(resContainer);
@@ -65,20 +60,38 @@ public class ResourceEnvironmentModelBuilder
     /**
      * Creates a link between the given two container.
      *
+     * @param model
+     *            resource environment model
      * @param res1
      *            first container
      * @param res2
      *            second container
      * @return link instance, already added to the model
      */
-    public LinkingResource connectResourceContainer(final ResourceContainer res1, final ResourceContainer res2) {
-        final ResourceEnvironment model = this.modelProvider.getModel();
+    public static LinkingResource connectResourceContainer(final ResourceEnvironment model,
+            final ResourceContainer res1, final ResourceContainer res2) {
         final LinkingResource link = ResourceenvironmentFactory.eINSTANCE.createLinkingResource();
         link.getConnectedResourceContainers_LinkingResource().add(res1);
         link.getConnectedResourceContainers_LinkingResource().add(res2);
         model.getLinkingResources__ResourceEnvironment().add(link);
 
         return link;
+    }
+
+    /**
+     * Get the {@link ResourceContainer} by its {@link ResourceContainer#getEntityName()}.
+     *
+     * @param resourceEnvironment
+     *            the resource environment model
+     * @param name
+     *            name
+     * @return resource container instance or null if no resource container available with the given
+     *         name.
+     */
+    public static Optional<ResourceContainer> getResourceContainerByName(final ResourceEnvironment resourceEnvironment,
+            final String name) {
+        return resourceEnvironment.getResourceContainer_ResourceEnvironment().stream()
+                .filter(container -> container.getEntityName().equals(name)).findFirst();
     }
 
 }

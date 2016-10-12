@@ -23,84 +23,76 @@ import org.palladiosimulator.pcm.system.System;
 
 /**
  * SystemModelBuilder is used to provide functionality in order to build {@link System} model.
- * 
+ *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class SystemModelBuilder
-        extends AbstractModelBuilder<SystemModelProvider, org.palladiosimulator.pcm.system.System> {
+public final class SystemModelBuilder {
 
     /**
-     * Create a system model builder
-     * 
+     * Create a system model builder.
+     *
      * @param modelToStartWith
      *            model proivder
      */
-    public SystemModelBuilder(final SystemModelProvider modelToStartWith) {
-        super(modelToStartWith);
+    private SystemModelBuilder() {
     }
 
     /**
-     * Save the model with the given strategy.
-     * 
-     * @param saveStrategy
-     *            strategy
-     * @return builder to chain commands
+     * Checks whether an assembly context with the provided name exists, and, in case it is missing,
+     * a new assembly context is created and added to the system model.
+     *
+     * @param system
+     *            system model
+     * @param name
+     *            name of the assembly context
+     *
+     * @return returns the new assembly context
      */
-    public SystemModelBuilder save(final ModelSaveStrategy saveStrategy) {
-        this.modelProvider.save(saveStrategy);
-        return this;
-    }
-
-    /**
-     * Load the given model. Use this also to re-load.
-     * 
-     * @return builder to chain commands
-     */
-    public SystemModelBuilder loadModel() {
-        this.modelProvider.loadModel();
-        return this;
-    }
-
-    /**
-     * Remove all elements from the model. End up with an empty model.
-     * 
-     * @return builder to chain commands
-     */
-    public SystemModelBuilder resetModel() {
-        final org.palladiosimulator.pcm.system.System model = this.modelProvider.getModel();
-        model.getAssemblyContexts__ComposedStructure().clear();
-        return this;
-    }
-
-    public SystemModelBuilder createAssemblyContextsIfAbsent(final String name) {
-        final boolean absent = this.modelProvider.getAssemblyContextByName(name) == null;
-        if (absent) {
-            final org.palladiosimulator.pcm.system.System model = this.modelProvider.getModel();
+    public static AssemblyContext createAssemblyContextsIfAbsent(final System system, final String name) {
+        final Optional<AssemblyContext> context = SystemModelBuilder.getAssemblyContextByName(system, name);
+        if (!context.isPresent()) {
             final AssemblyContext asmContext = CompositionFactory.eINSTANCE.createAssemblyContext();
             asmContext.setEntityName(name);
-            model.getAssemblyContexts__ComposedStructure().add(asmContext);
+            system.getAssemblyContexts__ComposedStructure().add(asmContext);
+            return asmContext;
+        } else {
+            return context.get();
         }
-        return this;
     }
 
     /**
-     * Create an {@link AssemblyContext} with the given name.
-     * 
-     * @param name
-     *            entity name
-     * @return created assembly context
+     * Get the assembly context with the given id.
+     *
+     * @param system
+     *            system model
+     * @param id
+     *            id
+     * @return assembly context instance, null if no assembly context with the given id could be
+     *         found.
      */
-    public AssemblyContext createAssemblyContext(final String name) {
-        final Optional<AssemblyContext> optCtx = this.modelProvider.getAssemblyContextByName(name);
-        if (!optCtx.isPresent()) {
-            final org.palladiosimulator.pcm.system.System model = this.modelProvider.getModel();
-            final AssemblyContext ctx = CompositionFactory.eINSTANCE.createAssemblyContext();
-            ctx.setEntityName(name);
-            model.getAssemblyContexts__ComposedStructure().add(ctx);
-            return ctx;
+    public static AssemblyContext getAssemblyContext(final System system, final String id) {
+        return (AssemblyContext) AbstractModelProvider.getIdentifiableComponent(id,
+                system.getAssemblyContexts__ComposedStructure());
+    }
+
+    /**
+     * Get the assembly context by the name.
+     *
+     * @param system
+     *            the system model
+     * @param name
+     *            name of assembly context
+     * @return assembly context instance, null if no assembly context with the given name could be
+     *         found.
+     */
+    public static Optional<AssemblyContext> getAssemblyContextByName(final System system, final String name) {
+        for (final AssemblyContext nextAssemblyContext : system.getAssemblyContexts__ComposedStructure()) {
+            if (nextAssemblyContext.getEntityName().equals(name)) {
+                return Optional.of(nextAssemblyContext);
+            }
         }
-        return optCtx.get();
+        return Optional.empty();
     }
 
 }

@@ -40,7 +40,7 @@ public final class EntryCallSequenceModel {
 
     /**
      * Create new model.
-     * 
+     *
      * @param sessions
      *            sessions.
      */
@@ -49,10 +49,12 @@ public final class EntryCallSequenceModel {
     }
 
     /**
-     * Constructor to set the user group´s likelihood and its related sessions
+     * Constructor to set the user group´s likelihood and its related sessions.
      *
-     * @param sessions,
-     *            likelihood
+     * @param sessions
+     *            sessions
+     * @param likelihoodOfUserGroup
+     *            probability of user groups
      */
     public EntryCallSequenceModel(final List<UserSession> sessions, final double likelihoodOfUserGroup) {
         this.userSessions = sessions;
@@ -61,48 +63,27 @@ public final class EntryCallSequenceModel {
 
     /**
      * Get the user session objects which contain the entry call events.
-     * 
+     *
      * @return list of user sessions
      */
     public List<UserSession> getUserSessions() {
         return this.userSessions;
     }
 
-    /**
-     * Get the workload intensity of the user group the enryCallSequenceModel represents
-     *
-     * @return
-     */
     public WorkloadIntensity getWorkloadIntensity() {
         return this.workloadIntensity;
     }
 
-    /**
-     * Set the workload intensity of the user group the enryCallSequenceModel represents
-     *
-     * @return
-     */
     public void setWorkloadIntensity(final WorkloadIntensity workloadIntensity) {
         this.workloadIntensity = workloadIntensity;
     }
 
-    /**
-     * Get the likelihood of the user group the enryCallSequenceModel represents
-     *
-     * @return
-     */
     public double getLikelihoodOfUserGroup() {
         return this.likelihoodOfUserGroup;
     }
 
-    /**
-     * Set the likelihood of the user group the enryCallSequenceModel represents
-     *
-     * @return
-     */
     public void setLikelihoodOfUserGroup(final double likelihoodOfUserGroup) {
         this.likelihoodOfUserGroup = likelihoodOfUserGroup;
     }
-
 
 }

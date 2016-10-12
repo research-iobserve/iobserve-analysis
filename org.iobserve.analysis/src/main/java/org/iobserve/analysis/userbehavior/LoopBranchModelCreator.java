@@ -135,7 +135,7 @@ public class LoopBranchModelCreator {
                                 isALoop = false;
                                 break;
                             }
-                            loopElement.addSequenceElementToLoopSequence(
+                            loopElement.addElementToLoopSequence(
                                     branchSequence.get(indexOfElementInElementList + k));
 
                         }

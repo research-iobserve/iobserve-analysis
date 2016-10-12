@@ -34,12 +34,13 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import org.iobserve.analysis.correspondence.Correspondent;
-import org.iobserve.analysis.correspondence.ICorrespondence;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
+import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
 import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.test.TestHelper;
@@ -67,8 +68,8 @@ public final class BranchWithinLoopReference {
      *
      * @param referenceUsageModelFileName
      *            reference usage model file name
-     * @param usageModelBuilder
-     *            usage model builder
+     * @param repositoryModelProvider
+     *            repository model builder
      * @param correspondenceModel
      *            correspondence model
      *
@@ -77,7 +78,8 @@ public final class BranchWithinLoopReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final UsageModelBuilder usageModelBuilder, final ICorrespondence correspondenceModel) throws IOException {
+            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            throws IOException {
 
         // The number of model element parameters are created randomly. The number of user sessions
         // must be created accordingly to the number of branch transitions, because it must be
@@ -92,49 +94,49 @@ public final class BranchWithinLoopReference {
         final ReferenceElements testElements = new ReferenceElements();
 
         // In the following the reference usage model is created
-        final UsageModel usageModel = usageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = usageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
+        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
 
-        final Start start = usageModelBuilder.createAddStartAction("", scenarioBehaviour);
-        final Stop stop = usageModelBuilder.createAddStopAction("", scenarioBehaviour);
+        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
+        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
 
         final AbstractUserAction lastAction = start;
 
         // The loop element is created that contains the iterated branch
-        final Loop loop = usageModelBuilder.createLoop("", scenarioBehaviour);
+        final Loop loop = UsageModelBuilder.createLoop("", scenarioBehaviour);
         final ScenarioBehaviour loopScenarioBehaviour = loop.getBodyBehaviour_Loop();
-        usageModelBuilder.connect(lastAction, loop);
+        UsageModelBuilder.connect(lastAction, loop);
 
         final PCMRandomVariable pcmLoopIteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
         pcmLoopIteration.setSpecification(String.valueOf(numberOfLoops));
         loop.setLoopIteration_Loop(pcmLoopIteration); // Set number of loops
-        usageModelBuilder.connect(loop, stop);
-        final Start loopStart = usageModelBuilder.createAddStartAction("", loopScenarioBehaviour);
-        final Stop loopStop = usageModelBuilder.createAddStopAction("", loopScenarioBehaviour);
+        UsageModelBuilder.connect(loop, stop);
+        final Start loopStart = UsageModelBuilder.createAddStartAction("", loopScenarioBehaviour);
+        final Stop loopStop = UsageModelBuilder.createAddStopAction("", loopScenarioBehaviour);
 
         // The branch that is contained within the loop element is created
-        final org.palladiosimulator.pcm.usagemodel.Branch branch = usageModelBuilder.createBranch("",
+        final org.palladiosimulator.pcm.usagemodel.Branch branch = UsageModelBuilder.createBranch("",
                 loopScenarioBehaviour);
-        usageModelBuilder.connect(loopStart, branch);
+        UsageModelBuilder.connect(loopStart, branch);
 
         // The branch transition 1 is created
         final BranchTransition branchTransition1 = BranchWithinLoopReference.createBranchTransition(2,
-                usageModelBuilder, branch, correspondenceModel);
+                repositoryModelProvider, branch, correspondenceModel);
 
         // The branch transition 2 is created
         final BranchTransition branchTransition2 = BranchWithinLoopReference.createBranchTransition(3,
-                usageModelBuilder, branch, correspondenceModel);
+                repositoryModelProvider, branch, correspondenceModel);
 
         final Optional<Correspondent> optionCorrespondent = correspondenceModel.getCorrespondent(
                 ReferenceUsageModelBuilder.CLASS_SIGNATURE[4], ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
         if (optionCorrespondent.isPresent()) {
             final Correspondent correspondent = optionCorrespondent.get();
-            final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                    .createEntryLevelSystemCall(correspondent);
-            usageModelBuilder.addUserAction(loopScenarioBehaviour, entryLevelSystemCall);
-            usageModelBuilder.connect(branch, entryLevelSystemCall);
-            usageModelBuilder.connect(entryLevelSystemCall, loopStop);
+            final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+            UsageModelBuilder.addUserAction(loopScenarioBehaviour, entryLevelSystemCall);
+            UsageModelBuilder.connect(branch, entryLevelSystemCall);
+            UsageModelBuilder.connect(entryLevelSystemCall, loopStop);
         }
 
         // User sessions according to the reference usage model are created. Thereby, it must be
@@ -265,7 +267,7 @@ public final class BranchWithinLoopReference {
      *
      * @param callId
      *            id of the operation class and operation signature
-     * @param usageModelBuilder
+     * @param repositoryModelProvider
      *            usage model builder
      * @param branch
      *            pcm branch element
@@ -274,27 +276,28 @@ public final class BranchWithinLoopReference {
      *
      * @return returns the created branch transition or null on error
      */
-    private static BranchTransition createBranchTransition(final int callId, final UsageModelBuilder usageModelBuilder,
+    private static BranchTransition createBranchTransition(final int callId,
+            final RepositoryModelProvider repositoryModelProvider,
             final org.palladiosimulator.pcm.usagemodel.Branch branch, final ICorrespondence correspondenceModel) {
-        final BranchTransition branchTransition = usageModelBuilder.createBranchTransition(branch);
+        final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branch);
         final ScenarioBehaviour branchTransitionBehaviour = branchTransition.getBranchedBehaviour_BranchTransition();
 
-        final Start start = usageModelBuilder.createStart("");
-        usageModelBuilder.addUserAction(branchTransitionBehaviour, start);
+        final Start start = UsageModelBuilder.createStart("");
+        UsageModelBuilder.addUserAction(branchTransitionBehaviour, start);
 
-        final Stop stop = usageModelBuilder.createStop("");
-        usageModelBuilder.addUserAction(branchTransitionBehaviour, stop);
+        final Stop stop = UsageModelBuilder.createStop("");
+        UsageModelBuilder.addUserAction(branchTransitionBehaviour, stop);
 
         final Optional<Correspondent> optionCorrespondent = correspondenceModel.getCorrespondent(
                 ReferenceUsageModelBuilder.CLASS_SIGNATURE[callId],
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[callId]);
         if (optionCorrespondent.isPresent()) {
             final Correspondent correspondent = optionCorrespondent.get();
-            final EntryLevelSystemCall entryLevelSystemCall = usageModelBuilder
-                    .createEntryLevelSystemCall(correspondent);
-            usageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-            usageModelBuilder.connect(start, entryLevelSystemCall);
-            usageModelBuilder.connect(entryLevelSystemCall, stop);
+            final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+            UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
+            UsageModelBuilder.connect(start, entryLevelSystemCall);
+            UsageModelBuilder.connect(entryLevelSystemCall, stop);
 
             return branchTransition;
         } else {

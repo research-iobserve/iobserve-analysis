@@ -47,12 +47,12 @@ public class LoopExtraction {
     }
 
     /**
-     * Executes the extraction of iterated behavior process
+     * Executes the extraction of iterated behavior process.
      */
     public void createCallLoopBranchModels() {
 
         final LoopBranchModelCreator modelCreator = new LoopBranchModelCreator();
-        this.loopBranchModels = new ArrayList<BranchModel>();
+        this.loopBranchModels = new ArrayList<>();
 
         for (final BranchModel branchModel : this.branchModels) {
             // Each BranchModel is checked for iterated behavior

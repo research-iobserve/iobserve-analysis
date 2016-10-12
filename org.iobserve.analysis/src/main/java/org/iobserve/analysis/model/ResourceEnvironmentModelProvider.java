@@ -15,17 +15,14 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
-import java.util.Optional;
-
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * Model provider to provide {@link ResourceEnvironment} model.
- * 
+ *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
@@ -34,38 +31,24 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
 
     /**
      * Create model provider to provide {@link ResourceEnvironment} model.
-     * 
-     * @param thePlatform
-     *            platform
+     *
      * @param uriUsageModel
      *            uri to the model
      */
-    ResourceEnvironmentModelProvider(final ModelProviderPlatform thePlatform, final URI uriUsageModel) {
-        super(thePlatform, uriUsageModel);
+    public ResourceEnvironmentModelProvider(final URI uriUsageModel) {
+        super(uriUsageModel);
     }
 
     @Override
-    public EPackage getPackage() {
+    public void resetModel() {
+        final ResourceEnvironment model = this.getModel();
+        model.getResourceContainer_ResourceEnvironment().clear();
+        model.getLinkingResources__ResourceEnvironment().clear();
+    }
+
+    @Override
+    protected EPackage getPackage() {
         return ResourceenvironmentPackage.eINSTANCE;
     }
 
-    public ResourceContainer getResourceContainer(final String id) {
-        final ResourceEnvironment env = this.getModel();
-        return (ResourceContainer) AbstractModelProvider.getIdentifiableComponent(id,
-                env.getResourceContainer_ResourceEnvironment());
-    }
-
-    /**
-     * Get the {@link ResourceContainer} by its {@link ResourceContainer#getEntityName()}.
-     * 
-     * @param name
-     *            name
-     * @return resource container instance or null if no resource container available with the given
-     *         name.
-     */
-    public Optional<ResourceContainer> getResourceContainerByName(final String name) {
-        final ResourceEnvironment env = this.getModel();
-        return env.getResourceContainer_ResourceEnvironment().stream()
-                .filter(container -> container.getEntityName().equals(name)).findFirst();
-    }
 }

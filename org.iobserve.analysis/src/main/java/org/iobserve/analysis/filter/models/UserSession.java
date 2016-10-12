@@ -132,7 +132,7 @@ public final class UserSession {
     }
 
     /**
-     * Get the iterator of the internal event list
+     * Get the iterator of the internal event list.
      *
      * @return iterator
      */
@@ -143,7 +143,7 @@ public final class UserSession {
     /**
      * Return the size of the events for this user session.
      *
-     * 
+     *
      * @return size
      */
     public int size() {
@@ -191,20 +191,10 @@ public final class UserSession {
         return entryTime;
     }
 
-    /**
-     * Get the user session´s events
-     *
-     * @return
-     */
     public List<EntryCallEvent> getEvents() {
         return this.events;
     }
 
-    /**
-     * Get the user session´s id
-     *
-     * @return
-     */
     public String getSessionId() {
         return this.sessionId;
     }

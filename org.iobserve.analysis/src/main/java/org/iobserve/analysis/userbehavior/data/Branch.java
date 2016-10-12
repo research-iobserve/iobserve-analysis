@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents branched behavior and the probability of reaching the behavior
+ * Represents branched behavior and the probability of reaching the behavior.
  *
  * @author David Peter, Robert Heinrich
  */
@@ -27,18 +27,18 @@ public class Branch {
 
     private int branchId;
     private int treeLevel;
-    private List<ISequenceElement> branchSequence;
-    private double branchLikelihood;
-    private List<Branch> childBranches;
+    private List<ISequenceElement> branchSequence = new ArrayList<>();
+    private double branchLikelihood = 0;
+    private List<Branch> childBranches = new ArrayList<>();
 
+    /**
+     * Entity constructor.
+     */
     public Branch() {
-        this.branchSequence = new ArrayList<ISequenceElement>();
-        this.childBranches = new ArrayList<Branch>();
-        this.branchLikelihood = 0;
     }
 
     /**
-     * Adds a branch as a child branch to the branch
+     * Adds a branch as a child branch to the branch.
      *
      * @param childBranch
      *            that is added as child branch

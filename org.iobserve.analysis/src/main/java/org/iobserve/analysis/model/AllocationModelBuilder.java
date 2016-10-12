@@ -21,116 +21,92 @@ import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-public class AllocationModelBuilder extends AbstractModelBuilder<AllocationModelProvider, Allocation> {
+/**
+ *
+ * @author Alessandro Giusa
+ *
+ */
+public final class AllocationModelBuilder {
 
-    public AllocationModelBuilder(final AllocationModelProvider modelToStartWith) {
-        super(modelToStartWith);
-    }
-
-    // *****************************************************************
-    //
-    // *****************************************************************
-
-    public AllocationModelBuilder loadModel() {
-        this.modelProvider.loadModel();
-        return this;
-    }
-
-    public AllocationModelBuilder resetModel() {
-        final Allocation model = this.modelProvider.getModel();
-        model.getAllocationContexts_Allocation().clear();
-        return this;
+    /**
+     *
+     * @param modelProvider
+     */
+    private AllocationModelBuilder() {
     }
 
     /**
-     * Create an {@link AllocationContext} for the given {@link ResourceContainer} and
+     * Add an {@link AllocationContext} for the given {@link ResourceContainer} and
      * {@link AssemblyContext} if they are absent to this model. No check for duplication is done!
-     * 
+     *
+     * @param model
+     *            allocation model
      * @param resContainer
      *            container
      * @param asmCtx
      *            assembly context
-     * @return builder
      */
-    public AllocationModelBuilder addAllocationContext(final ResourceContainer resContainer,
+    public static void addAllocationContext(final Allocation model, final ResourceContainer resContainer,
             final AssemblyContext asmCtx) {
-
-        final Allocation model = this.modelProvider.getModel();
-
         final AllocationFactory factory = AllocationFactory.eINSTANCE;
         final AllocationContext allocationCtx = factory.createAllocationContext();
         allocationCtx.setEntityName(asmCtx.getEntityName());
         allocationCtx.setAssemblyContext_AllocationContext(asmCtx);
         allocationCtx.setResourceContainer_AllocationContext(resContainer);
         model.getAllocationContexts_Allocation().add(allocationCtx);
-        return this;
     }
 
     /**
      * Create an {@link AllocationContext} for the given {@link ResourceContainer} and
      * {@link AssemblyContext} if they are absent to this model. Check is done via
      * {@link ResourceContainer#getEntityName()} and {@link AssemblyContext#getEntityName()}.
-     * 
+     *
+     * @param model
+     *            the allocation model
      * @param resContainer
      *            container
      * @param asmCtx
      *            assembly context.
-     * @return build
      */
-    public AllocationModelBuilder addAllocationContextIfAbsent(final ResourceContainer resContainer,
+    public static void addAllocationContextIfAbsent(final Allocation model, final ResourceContainer resContainer,
             final AssemblyContext asmCtx) {
-        final Allocation model = this.modelProvider.getModel();
         if (!model.getAllocationContexts_Allocation().stream().filter(
                 context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName())
                         && context.getResourceContainer_AllocationContext().getEntityName()
                                 .equals(resContainer.getEntityName()))
                 .findAny().isPresent()) {
-            this.addAllocationContext(resContainer, asmCtx);
+            AllocationModelBuilder.addAllocationContext(model, resContainer, asmCtx);
         }
-        return this;
-    }
-
-    // Can not get id of AllocationContext from TUndeployment
-    public AllocationModelBuilder removeAllocationContext(final String id) {
-        final Allocation model = this.modelProvider.getModel();
-        final AllocationContext ctx = (AllocationContext) AbstractModelProvider.getIdentifiableComponent(id,
-                model.getAllocationContexts_Allocation());
-        model.getAllocationContexts_Allocation().remove(ctx);
-        return this;
     }
 
     /**
      * Remove an {@link AllocationContext} from the given {@link ResourceContainer} and
      * {@link AssemblyContext} if they are contained in the model. Identification is done via
      * {@link ResourceContainer#getEntityName()} and {@link AssemblyContext#getEntityName()}.
-     * 
+     *
+     * @param model
+     *            the allocation model
      * @param resContainer
      *            container
      * @param asmCtx
      *            assembly context
-     * @return builder
      */
-    public AllocationModelBuilder removeAllocationContext(final ResourceContainer resContainer,
+    public static void removeAllocationContext(final Allocation model, final ResourceContainer resContainer,
             final AssemblyContext asmCtx) {
         // could be inefficient on big models and high recurrences of undeployments
-        final Allocation model = this.modelProvider.getModel();
         model.getAllocationContexts_Allocation().stream().filter(
                 context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName())
                         && context.getResourceContainer_AllocationContext().getEntityName()
                                 .equals(resContainer.getEntityName()))
                 .findFirst().ifPresent(ctx -> model.getAllocationContexts_Allocation().remove(ctx));
-
-        return this;
     }
 
-    public AllocationModelBuilder addAllocationContext(final Class<?> type) {
+    public static void addAllocationContext(final Allocation model, final Class<?> type) {
         // TODO add an allocation
-        return this;
     }
 
-    public AllocationModelBuilder removeAllocationContext(final Class<?> type) {
+    public static void removeAllocationContext(final Allocation model, final Class<?> type) {
         // TODO remove allocation context
-        return this;
     }
 
 }

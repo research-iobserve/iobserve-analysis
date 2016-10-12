@@ -16,14 +16,16 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
-import org.iobserve.analysis.correspondence.ICorrespondence;
+
+import teetime.framework.Configuration;
+
+import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ModelProviderPlatform;
+import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-
-import teetime.framework.Configuration;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 /**
  * @author Reiner Jung
@@ -68,10 +70,12 @@ public class AnalysisDaemon implements Daemon {
                 /** process parameter. */
                 if (pcmModelsDirectory.exists()) {
                     if (pcmModelsDirectory.isDirectory()) {
-                        final ModelProviderPlatform modelProvider = new ModelProviderPlatform(pcmModelsDirectory);
+                        final InitializeModelProviders modelProvider = new InitializeModelProviders(pcmModelsDirectory);
 
                         final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
                         final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
+                        final RepositoryModelProvider repositoryModelProvider = modelProvider
+                                .getRepositoryModelProvider();
                         final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider
                                 .getResourceEnvironmentModelProvider();
                         final AllocationModelProvider allocationModelProvider = modelProvider
@@ -80,8 +84,8 @@ public class AnalysisDaemon implements Daemon {
 
                         final Configuration configuration = new ServiceConfiguration(listenPort, outputHostname,
                                 outputPort, systemId, varianceOfUserGroups, thinkTime, closedWorkload,
-                                correspondenceModel, usageModelProvider, resourceEvnironmentModelProvider,
-                                allocationModelProvider, systemModelProvider);
+                                correspondenceModel, usageModelProvider, repositoryModelProvider,
+                                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider);
 
                         this.thread = new AnalysisThread(this, configuration);
                     } else {

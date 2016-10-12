@@ -27,6 +27,14 @@ public class CallElement implements ISequenceElement {
     private final String operationSignature;
     private int absoluteCount;
 
+    /**
+     * Call element constructor.
+     *
+     * @param classSignature
+     *            the class signature of the called operation
+     * @param operationSignature
+     *            the operation signature of the called operation
+     */
     public CallElement(final String classSignature, final String operationSignature) {
         this.classSignature = classSignature;
         this.operationSignature = operationSignature;

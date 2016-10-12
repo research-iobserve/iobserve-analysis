@@ -31,11 +31,26 @@ public class BranchModel {
     private final double likelihoodOfUserGroup;
     private int numberOfBranches;
 
+    /**
+     * Constructor.
+     *
+     * @param workloadIntensity
+     *            the workload intensity for the branch
+     * @param likelihoodOfUserGroup
+     *            possibility of this branch
+     */
     public BranchModel(final WorkloadIntensity workloadIntensity, final double likelihoodOfUserGroup) {
         this.workloadIntensity = workloadIntensity;
         this.likelihoodOfUserGroup = likelihoodOfUserGroup;
     }
 
+    /**
+     * get the requested branch. TODO what is the purpose of this?
+     *
+     * @param branchGuide
+     *            selector for a branch
+     * @return the selected branch
+     */
     public Branch getExaminedBranch(final List<Integer> branchGuide) {
         if (this.rootBranch == null) {
             return null;
