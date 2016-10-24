@@ -52,10 +52,11 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
     private final int bufferSize;
 
     /**
+     * Create a single threaded multi connection tcp reader stage.
      *
-     * @param port
+     * @param inputPort
      *            used to accept <code>IMonitoringRecord</code>s and string registry entries.
-     * @param bufferCapacity
+     * @param bufferSize
      *            capacity of the receiving buffer
      */
     public MultipleConnectionTcpReaderStage(final int inputPort, final int bufferSize) {
@@ -150,7 +151,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
         }
     }
 
-    protected boolean onBufferReceived(final Connection connection) {
+    private boolean onBufferReceived(final Connection connection) {
         // identify record class
         if (connection.getBuffer().remaining() < MultipleConnectionTcpReaderStage.INT_BYTES) {
             return false;

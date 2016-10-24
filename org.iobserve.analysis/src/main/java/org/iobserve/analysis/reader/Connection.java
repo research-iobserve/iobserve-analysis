@@ -40,6 +40,14 @@ public class Connection {
     /** Byte buffer for reading the channel. */
     private final ByteBuffer buffer;
 
+    /**
+     * Create a connection for the given channel and utilizing the specified buffer size.
+     *
+     * @param channel
+     *            connection channel used to read data
+     * @param bufferSize
+     *            buffer size for reading information
+     */
     public Connection(final SocketChannel channel, final int bufferSize) {
         this.channel = channel;
         this.stringRegistryWrapper = new GetValueAdapter<>(this.registry);
