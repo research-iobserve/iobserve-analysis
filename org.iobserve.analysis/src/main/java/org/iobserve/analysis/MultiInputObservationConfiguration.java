@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import teetime.stage.io.network.TcpReaderStage;
-
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.reader.MultipleConnectionTcpReaderStage;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -66,10 +65,8 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
 
-        // TODO we need a multi input reader (issue exists with TeeTime)
-
-        final TcpReaderStage reader = new TcpReaderStage(inputPort, MultiInputObservationConfiguration.CAPACITY,
-                inputPort + 1);
+        final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
+                MultiInputObservationConfiguration.CAPACITY);
         this.connectPorts(reader.getOutputPort(), this.recordSwitch.getInputPort());
     }
 

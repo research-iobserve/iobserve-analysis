@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -26,6 +24,7 @@ import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and

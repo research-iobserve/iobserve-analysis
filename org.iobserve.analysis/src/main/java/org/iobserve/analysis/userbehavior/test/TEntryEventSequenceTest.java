@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
-
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.analysis.userbehavior.test.builder.SimpleSequenceReference;
+import org.junit.Test;
 
 /**
  * Test of the TEntryEventSequence filter.

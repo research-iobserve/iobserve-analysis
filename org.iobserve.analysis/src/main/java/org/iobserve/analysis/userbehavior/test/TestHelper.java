@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-
 import org.iobserve.analysis.filter.models.UserSession;
 
 /**

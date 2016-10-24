@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.iobserve.analysis.model;
 import java.io.IOException;
 import java.util.Map;
 
+import de.uka.ipd.sdq.identifier.Identifier;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -27,8 +29,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-
-import de.uka.ipd.sdq.identifier.Identifier;
 
 /**
  * Base class for pcm model provider. Implements common methods for loading/saving pcm model.

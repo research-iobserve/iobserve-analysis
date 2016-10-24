@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.util.function.Function;
 
 /**
  * Utility class for functional style programming helper methods.
- * 
+ *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
@@ -36,7 +36,7 @@ public final class FunctionalUtils {
 
     /**
      * Convert the given two parameter function into a curry equivalent one.
-     * 
+     *
      * @param function
      *            function to convert
      * @param <X>

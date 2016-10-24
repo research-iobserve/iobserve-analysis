@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.test;
 
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * Contains the reference elements that are created by the ReferenceUsageModelBuilder: Reference

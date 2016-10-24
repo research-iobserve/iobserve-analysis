@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.iobserve.analysis;
 import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
-
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;

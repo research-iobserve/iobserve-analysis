@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,14 +47,14 @@ public interface ICorrespondence {
      *            class signature
      * @param functionSig
      *            method signature
-     * 
+     *
      * @return option on a {@link Correspondent} object.
      */
     public Optional<Correspondent> getCorrespondent(String classSig, String functionSig);
 
     /**
      * Get the correspondent model component based on the class signature.
-     * 
+     *
      * @param classSig
      *            full qualified java class name.
      * @return option of a correspondent in model

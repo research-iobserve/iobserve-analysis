@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.model.RepositoryModelProvider;
+import org.iobserve.analysis.model.UsageModelBuilder;
+import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.userbehavior.test.ReferenceElements;
+import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
+import org.iobserve.analysis.userbehavior.test.TestHelper;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
@@ -32,16 +41,6 @@ import org.palladiosimulator.pcm.usagemodel.Start;
 import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
-
-import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.UsageModelBuilder;
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.userbehavior.test.ReferenceElements;
-import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
-import org.iobserve.analysis.userbehavior.test.TestHelper;
 
 /**
  * LoopWithinBranchReferenceModel.

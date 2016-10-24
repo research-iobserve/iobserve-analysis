@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,16 +18,17 @@ package org.iobserve.analysis.filter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.iobserve.analysis.data.EntryCallEvent;
-
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.data.EntryCallEvent;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and

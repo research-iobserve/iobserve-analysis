@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.core.composition.Connector;
-import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
 import kieker.common.record.flow.trace.TraceMetadata;
 
 import teetime.framework.AbstractConsumerStage;
@@ -34,6 +26,13 @@ import teetime.framework.AbstractConsumerStage;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.Connector;
+import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  * TNetworkLink runs asynchronous from the other filters like TAllocation, TDeployment, TEntryCall ,

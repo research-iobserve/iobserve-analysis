@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@ package org.iobserve.analysis.model.correspondence;
 
 import java.util.function.BiFunction;
 
-import org.palladiosimulator.pcm.repository.OperationSignature;
-
 import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
 import org.iobserve.analysis.protocom.PcmOperationSignature;
 import org.iobserve.analysis.utils.IToBoolBiFunction;
+import org.palladiosimulator.pcm.repository.OperationSignature;
 
 /**
  * Function used to select {@link OperationSignature} instances based on the given

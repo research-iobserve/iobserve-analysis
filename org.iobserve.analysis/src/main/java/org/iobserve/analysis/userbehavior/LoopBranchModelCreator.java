@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import org.iobserve.analysis.userbehavior.data.BranchModel;
 import org.iobserve.analysis.userbehavior.data.BranchTransitionElement;
 import org.iobserve.analysis.userbehavior.data.CallElement;
 import org.iobserve.analysis.userbehavior.data.ExitElement;
-import org.iobserve.analysis.userbehavior.data.LoopElement;
 import org.iobserve.analysis.userbehavior.data.ISequenceElement;
+import org.iobserve.analysis.userbehavior.data.LoopElement;
 
 /**
  * This class contains all necessary methods to detect iterated behavior and to replace the iterated
@@ -135,8 +135,7 @@ public class LoopBranchModelCreator {
                                 isALoop = false;
                                 break;
                             }
-                            loopElement.addElementToLoopSequence(
-                                    branchSequence.get(indexOfElementInElementList + k));
+                            loopElement.addElementToLoopSequence(branchSequence.get(indexOfElementInElementList + k));
 
                         }
 

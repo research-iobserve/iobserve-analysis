@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,6 @@ package org.iobserve.analysis.filter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
@@ -29,6 +26,8 @@ import kieker.common.record.misc.KiekerMetadataRecord;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.IUndeploymentRecord;
 import org.iobserve.common.record.ServletTraceHelper;
