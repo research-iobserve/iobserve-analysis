@@ -17,67 +17,48 @@ buildscript {
     }
 }
 
-apply plugin: 'application'
 //apply plugin: 'aspectj'
 
-version = '1.0'
 sourceCompatibility = 1.8
-mainClassName = "org.iobserve.analysis.AnalysisMain"
 
 dependencies {
 	compile gradleApi()
 	compile project(":org.iobserve.common")
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
-	compile 'net.sourceforge.teetime:teetime:2.1'
-	compile 'net.sourceforge.teetime-stages:teetime-stages:2.1'
+	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
+	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
 	compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
     
 	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
 	compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
 	compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
-	compile group: 'org.antlr', name: 'antlr-runtime', version: '3.5.2'
+		
+	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
+	compile 'org.apache.logging.log4j:log4j-core:2.6.2'
+	
+	compile 'junit:junit:4.11'
+	
+	compile 'org.antlr:antlr-runtime:3.5.2' 
+
+	compile 'nz.ac.waikato.cms.weka:weka-stable:3.6.13'
 		
 	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
 	compile 'extra:org.palladiosimulator.pcm:4.0.0.201511051135'
 
-	compile 'nz.ac.waikato.cms.weka:weka-stable:3.6.13'
-
 	compile 'extra:de.uka.ipd.sdq.stoex:2.2.0+'
 	compile 'extra:de.uka.ipd.sdq.units:2.1.0.201511050934'
 	compile 'extra:de.uka.ipd.sdq.probfunction:2.1.0.201511050934'
+
 	compile 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
 	compile 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
 	compile 'extra:org.eclipse.net4j:4.5.0.v20160607-1254'
 	compile 'extra:org.eclipse.net4j.util:3.6.0.v20160607-1254'
 	compile 'extra:org.eclipse.equinox.common:3.8.0.v20160509-1230'
-<<<<<<< HEAD
-    compile 'extra:org.eclipse.ocl:3.6.0.v20160523-1914'
-    compile 'extra:org.eclipse.ocl.common:1.4.0.v20160521-2033'
-    compile 'extra:org.eclipse.ocl.ecore:3.6.0.v20160523-1914'
-
-    compile 'extra:lpg.runtime.java:2.0.17.v201004271640'
-	
-	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
-	
-	compile 'org.antlr:antlr-runtime:3.5.2' 
-=======
 	compile 'extra:org.eclipse.ocl:3.6.0.v20160523-1914'
 	compile 'extra:org.eclipse.ocl.common:1.4.0.v20160521-2033'
 	compile 'extra:org.eclipse.ocl.ecore:3.6.0.v20160523-1914'
-	compile 'extra:lpg.runtime.java:2.0.17.v201004271640'
-	
-	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
-	compile 'org.apache.logging.log4j:log4j-core:2.6.2'
-	
-	compile 'extra:org.eclipse.ocl:3.6.0.v20160523-1914'
-	compile 'extra:org.eclipse.ocl.ecore:3.6.0.v20160523-1914'
-        compile 'extra:org.eclipse.ocl.common:1.4.0.v20160521-2033'
-	compile 'extra:lpg.runtime.java:2.0.17.v201004271640'
-
-	compile group: 'org.antlr', name: 'antlr-runtime', version: '3.5.2'
-
->>>>>>> origin/master
+	compile 'extra:lpg.runtime.java:2.0.17.v201004271640'	
 }
 
 sourceSets {
@@ -85,7 +66,7 @@ sourceSets {
 		java {
 			srcDir 'src/main/irl'
 		}
-    	}
+    }
     main {
     	java {
     		srcDir 'src/main/java'
@@ -115,7 +96,7 @@ artifacts {
 install {
     repositories.mavenInstaller {
         pom.version = version
-        pom.groupId = 'iobserve-analysis'
+        pom.groupId = 'org.iobserve'
         pom.artifactId = 'analysis'
     }
 }

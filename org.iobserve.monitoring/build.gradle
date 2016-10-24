@@ -1,3 +1,10 @@
+if (version.isEmpty()) {
+	System.err.println("version not set")
+}
+if (group.isEmpty()) {
+	System.err.println("group not set")
+}
+
 dependencies {
 	compile project(":org.iobserve.common")
 	compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
@@ -22,8 +29,8 @@ artifacts {
 
 install {
     repositories.mavenInstaller {
-        pom.version = "1.0"
-        pom.groupId = 'iobserve-analysis'
-        pom.artifactId = 'org.iobserve.monitoring'
+        pom.version = version
+        pom.groupId = 'org.iobserve'
+        pom.artifactId = 'monitoring'
     }
 }

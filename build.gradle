@@ -11,9 +11,6 @@ buildscript {
     }
 }
 
-version = '1.0-SNAPSHOT'
-
-
 // checking the presence of an Eclipse API baseline repositorsy
 if (project.properties['api.baseline'] == null || project.properties['api.baseline'].isEmpty()) {
 	System.err.println("Cannot find an Eclipse API baseline repository")
@@ -31,10 +28,13 @@ subprojects {
     apply plugin: 'maven'
     apply plugin: 'eclipse'
     // apply plugin: 'checkstyle'
+
+    version = '0.0.2-SNAPSHOT'
+    group = 'org.iobserve'
     
     // checkstyle {
     //	configFile = rootProject.file('cs-conf.xml')
-  	//}
+    //}
     
     ext {
         appName = "org.iobserve"
