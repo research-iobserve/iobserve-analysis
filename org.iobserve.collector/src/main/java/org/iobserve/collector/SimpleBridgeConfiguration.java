@@ -31,11 +31,16 @@ public class SimpleBridgeConfiguration extends Configuration {
 
     /**
      * Configure analysis.
+     *
+     * @param dataLocation
+     *            data location
+     * @param inputPort
+     *            input port
      */
-    public SimpleBridgeConfiguration() {
-        final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(9876, 1024);
+    public SimpleBridgeConfiguration(final String dataLocation, final int inputPort) {
+        final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort, 1024);
 
-        this.consumer = new WallStage();
+        this.consumer = new WallStage(dataLocation);
 
         this.connectPorts(reader.getOutputPort(), this.consumer.getInputPort());
     }

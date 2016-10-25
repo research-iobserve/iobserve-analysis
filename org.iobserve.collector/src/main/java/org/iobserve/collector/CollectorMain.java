@@ -38,8 +38,10 @@ public final class CollectorMain {
      *            arguments are ignored
      */
     public static void main(final String[] args) {
+        final String dataLocation = args[0];
+        final int inputPort = Integer.parseInt(args[1]);
         System.out.println("Receiver");
-        final SimpleBridgeConfiguration configuration = new SimpleBridgeConfiguration();
+        final SimpleBridgeConfiguration configuration = new SimpleBridgeConfiguration(dataLocation, inputPort);
         final Execution<SimpleBridgeConfiguration> analysis = new Execution<>(configuration);
 
         System.out.println("Running analysis");

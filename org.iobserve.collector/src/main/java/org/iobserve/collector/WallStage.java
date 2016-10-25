@@ -43,13 +43,12 @@ public class WallStage extends AbstractConsumerStage<IMonitoringRecord> {
     /**
      * Configure and setup the Kieker writer.
      */
-    public WallStage() {
+    public WallStage(final String dataLocation) {
         final Configuration configuration = ConfigurationFactory.createDefaultConfiguration();
         configuration.setProperty(ConfigurationFactory.CONTROLLER_NAME, "iObserve-Experiments");
         configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, WallStage.WRITER_NAME);
 
-        configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_PATH,
-                "/home/reiner/Projects/iObserve/data/");
+        configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_PATH, dataLocation);
         configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXENTRIESINFILE, "25000");
         configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXLOGSIZE, "-1");
         configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXLOGFILES, "-1");
