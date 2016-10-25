@@ -32,7 +32,7 @@ import teetime.framework.AbstractConsumerStage;
  * @author Reiner Jung
  *
  */
-public class WallStage extends AbstractConsumerStage<IMonitoringRecord> {
+public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
 
     private static final String WRITER_NAME = "kieker.monitoring.writer.filesystem.AsyncFsWriter";
 
@@ -42,23 +42,26 @@ public class WallStage extends AbstractConsumerStage<IMonitoringRecord> {
 
     /**
      * Configure and setup the Kieker writer.
+     *
+     * @param dataLocation
+     *            data location
      */
-    public WallStage(final String dataLocation) {
+    public DataDumpStage(final String dataLocation) {
         final Configuration configuration = ConfigurationFactory.createDefaultConfiguration();
         configuration.setProperty(ConfigurationFactory.CONTROLLER_NAME, "iObserve-Experiments");
-        configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, WallStage.WRITER_NAME);
+        configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, DataDumpStage.WRITER_NAME);
 
-        configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_PATH, dataLocation);
-        configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXENTRIESINFILE, "25000");
-        configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXLOGSIZE, "-1");
-        configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXLOGFILES, "-1");
-        configuration.setProperty(WallStage.WRITER_NAME + "." + AsyncFsWriter.CONFIG_FLUSH, "true");
-        configuration.setProperty(WallStage.WRITER_NAME + "." + AsyncFsWriter.CONFIG_BUFFER, "8192");
-        configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_QUEUESIZE, "10000");
-        configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_PRIORITIZED_QUEUESIZE,
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_PATH, dataLocation);
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXENTRIESINFILE, "25000");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXLOGSIZE, "-1");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXLOGFILES, "-1");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsyncFsWriter.CONFIG_FLUSH, "true");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsyncFsWriter.CONFIG_BUFFER, "8192");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_QUEUESIZE, "10000");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_PRIORITIZED_QUEUESIZE,
                 "100");
-        configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_BEHAVIOR, "1");
-        configuration.setProperty(WallStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_SHUTDOWNDELAY, "-1");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_BEHAVIOR, "1");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_SHUTDOWNDELAY, "-1");
 
         System.out.println("Configuration complete");
 

@@ -27,7 +27,7 @@ import org.iobserve.analysis.reader.MultipleConnectionTcpReaderStage;
  */
 public class SimpleBridgeConfiguration extends Configuration {
 
-    private final WallStage consumer;
+    private final DataDumpStage consumer;
 
     /**
      * Configure analysis.
@@ -40,12 +40,12 @@ public class SimpleBridgeConfiguration extends Configuration {
     public SimpleBridgeConfiguration(final String dataLocation, final int inputPort) {
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort, 1024);
 
-        this.consumer = new WallStage(dataLocation);
+        this.consumer = new DataDumpStage(dataLocation);
 
         this.connectPorts(reader.getOutputPort(), this.consumer.getInputPort());
     }
 
-    public WallStage getCounter() {
+    public DataDumpStage getCounter() {
         return this.consumer;
     }
 }
