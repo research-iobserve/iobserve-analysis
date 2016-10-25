@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-mainClassName='org.iobserve.collector.Receive'
+mainClassName='org.iobserve.collector.CollectorMain'
 
 dependencies {
 	compile project(":org.iobserve.analysis")
