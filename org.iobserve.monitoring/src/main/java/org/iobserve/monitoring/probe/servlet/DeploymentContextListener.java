@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,15 +27,13 @@ import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
 
 /**
- * This servlet listener allows to monitor the deployment and undeployment
- * of a war file and its containing servlets, which are seen as one
- * component of an application.
+ * This servlet listener allows to monitor the deployment and undeployment of a war file and its
+ * containing servlets, which are seen as one component of an application.
  *
- * The listener produces either a {@link org.spp.iobserve.common.record.ServletDeployedEvent}
- * or a {@link org.spp.iobserve.common.record.ServletUndeployedEvent}
- * record on deployment and undeployment respectively. It requires an
- * deploymentId value to identify the deployment which must be added to the
- * web.xml file.
+ * The listener produces either a {@link org.spp.iobserve.common.record.ServletDeployedEvent} or a
+ * {@link org.spp.iobserve.common.record.ServletUndeployedEvent} record on deployment and
+ * undeployment respectively. It requires an deploymentId value to identify the deployment which
+ * must be added to the web.xml file.
  *
  * {@code <context-param>
  * 		<param-name>deploymentId</param-name>
@@ -47,49 +45,49 @@ import org.iobserve.common.record.ServletUndeployedEvent;
  */
 public class DeploymentContextListener implements ServletContextListener {
 
-	/** deployment id constant. */
-	private static final String DEPLOYMENT_ID = "deploymentId";
+    /** deployment id constant. */
+    private static final String DEPLOYMENT_ID = "deploymentId";
 
-	/** Kieker monitoring controller. */
-	private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
-	/** Kieker time source. */
-	private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
+    /** Kieker monitoring controller. */
+    private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
+    /** Kieker time source. */
+    private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
 
-	/**
-	 * initialize context listener.
-	 */
-	public DeploymentContextListener() {
-		// nothing to be done here
-	}
+    /**
+     * initialize context listener.
+     */
+    public DeploymentContextListener() {
+        // nothing to be done here
+    }
 
-	@Override
-	public void contextInitialized(final ServletContextEvent event) {
-		if (this.monitoringCtrl.isMonitoringEnabled()) {
-			final ServletContext servletContext = event.getServletContext();
-			final String service = servletContext.getVirtualServerName();
-			final String context = servletContext.getServletContextName();
+    @Override
+    public void contextInitialized(final ServletContextEvent event) {
+        if (this.monitoringCtrl.isMonitoringEnabled()) {
+            final ServletContext servletContext = event.getServletContext();
+            final String service = servletContext.getVirtualServerName();
+            final String context = servletContext.getServletContextName();
 
-			// if (this.monitoringCtrl.isProbeActivated(signature)) {
-			final String deploymentId = servletContext.getInitParameter(DEPLOYMENT_ID);
-			this.monitoringCtrl.newMonitoringRecord(new ServletDeployedEvent(
-					this.timeSource.getTime(), service, context, deploymentId));
-			// }
-		}
-	}
+            // if (this.monitoringCtrl.isProbeActivated(signature)) {
+            final String deploymentId = servletContext.getInitParameter(DeploymentContextListener.DEPLOYMENT_ID);
+            this.monitoringCtrl.newMonitoringRecord(
+                    new ServletDeployedEvent(this.timeSource.getTime(), service, context, deploymentId));
+            // }
+        }
+    }
 
-	@Override
-	public void contextDestroyed(final ServletContextEvent event) {
-		if (this.monitoringCtrl.isMonitoringEnabled()) {
-			final ServletContext servletContext = event.getServletContext();
-			final String service = servletContext.getVirtualServerName();
-			final String context = servletContext.getServletContextName();
+    @Override
+    public void contextDestroyed(final ServletContextEvent event) {
+        if (this.monitoringCtrl.isMonitoringEnabled()) {
+            final ServletContext servletContext = event.getServletContext();
+            final String service = servletContext.getVirtualServerName();
+            final String context = servletContext.getServletContextName();
 
-			// if (this.monitoringCtrl.isProbeActivated(signature)) {
-			final String deploymentId = servletContext.getInitParameter(DEPLOYMENT_ID);
-			this.monitoringCtrl.newMonitoringRecord(new ServletUndeployedEvent(
-					this.timeSource.getTime(), service, context, deploymentId));
-			// }
-		}
-	}
+            // if (this.monitoringCtrl.isProbeActivated(signature)) {
+            final String deploymentId = servletContext.getInitParameter(DeploymentContextListener.DEPLOYMENT_ID);
+            this.monitoringCtrl.newMonitoringRecord(
+                    new ServletUndeployedEvent(this.timeSource.getTime(), service, context, deploymentId));
+            // }
+        }
+    }
 
 }

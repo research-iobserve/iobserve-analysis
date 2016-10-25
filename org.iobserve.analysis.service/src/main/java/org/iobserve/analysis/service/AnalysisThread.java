@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,16 @@ public class AnalysisThread extends Thread {
 
     private final Configuration configuration;
 
+    /**
+     * Configure analysis thread.
+     *
+     * @param daemon
+     *            back reference to the daemon main class.
+     * @param configuration
+     *            Kieker configuration
+     * @throws MalformedURLException
+     *             if configuration is broken
+     */
     public AnalysisThread(final AnalysisDaemon daemon, final Configuration configuration) throws MalformedURLException {
         this.daemon = daemon;
         this.configuration = configuration;

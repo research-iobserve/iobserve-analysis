@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2014 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -26,12 +29,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
-
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
@@ -48,7 +45,7 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class AnalysisMain {
+public final class AnalysisMain {
 
     private static final String VARIANCE_OF_USER_GROUPS = "variance-of-user-groups";
     private static final String THINK_TIME = "think-time";

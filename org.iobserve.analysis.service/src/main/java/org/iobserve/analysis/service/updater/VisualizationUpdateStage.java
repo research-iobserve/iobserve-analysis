@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.service.updater;
 
 import java.io.BufferedReader;
@@ -19,16 +34,22 @@ import teetime.framework.AbstractConsumerStage;
  */
 public class VisualizationUpdateStage extends AbstractConsumerStage<Object> {
 
-    private final static String USER_AGENT = "iObserve/0.0.1";
+    private static final String USER_AGENT = "iObserve/0.0.1";
 
     private final URL outputURL;
 
-    public VisualizationUpdateStage(URL outputURL) {
+    /**
+     * Output visualization configuration.
+     *
+     * @param outputURL
+     *            the output URL
+     */
+    public VisualizationUpdateStage(final URL outputURL) {
         this.outputURL = outputURL;
     }
 
     @Override
-    protected void execute(Object element) {
+    protected void execute(final Object element) {
         // TODO Auto-generated method stub
         try {
             this.sendPostRequest(element.toString());
@@ -52,7 +73,7 @@ public class VisualizationUpdateStage extends AbstractConsumerStage<Object> {
         // add request header
         connection.setRequestMethod("POST");
         connection.setRequestProperty("content-type", "application/json; charset=utf-8");
-        connection.setRequestProperty("User-Agent", USER_AGENT);
+        connection.setRequestProperty("User-Agent", VisualizationUpdateStage.USER_AGENT);
         connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
         // Send post request

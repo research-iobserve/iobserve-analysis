@@ -28,7 +28,7 @@
 
 
     <module name="SuppressionFilter">
-    	<property name="file" value="${basedir}/suppressions.xml" />
+    	<property name="file" value="${config_loc}/suppressions.xml" />
     </module>
 
     <!--

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2015 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,83 +36,73 @@ import kieker.monitoring.timer.ITimeSource;
 @Interceptor
 public class TraceInterceptor {
 
-	/** Kieker trace registry. */
-	private static final TraceRegistry TRACEREGISTRY = TraceRegistry.INSTANCE;
+    /** Kieker trace registry. */
+    private static final TraceRegistry TRACEREGISTRY = TraceRegistry.INSTANCE;
 
-	/** Kieker monitoring controller. */
-	private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
-	/** Kieker time source. */
-	private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
+    /** Kieker monitoring controller. */
+    private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
+    /** Kieker time source. */
+    private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
 
-	/**
-	 * Initialize trace interceptor.
-	 */
-	public TraceInterceptor() {
-		// nothing to be done here
-	}
+    /**
+     * Initialize trace interceptor.
+     */
+    public TraceInterceptor() {
+        // nothing to be done here
+    }
 
-	/**
-	 * Around advice configuration.
-	 *
-	 * @param context
-	 *            the invocation context of a bean call.
-	 * @return the return value of the next method in the chain
-	 * @throws Throwable
-	 */
-	@AroundInvoke
-	public Object interceptMethodCall(final InvocationContext context) throws Throwable { // NOCS (IllegalThrowsCheck)
-		if (this.monitoringCtrl.isMonitoringEnabled()) {
-			final String signature = context.getMethod().toString();
-			if (this.monitoringCtrl.isProbeActivated(signature)) {
-				// common fields
-				TraceMetadata trace = TRACEREGISTRY.getTrace();
-				final boolean newTrace = trace == null;
-				if (newTrace) {
-					trace = TRACEREGISTRY.registerTrace();
-					this.monitoringCtrl.newMonitoringRecord(trace);
-				}
-				final long traceId = trace.getTraceId();
-				final String clazz = context.getTarget().getClass()
-						.getCanonicalName();
+    /**
+     * Around advice configuration.
+     *
+     * @param context
+     *            the invocation context of a bean call.
+     * @return the return value of the next method in the chain
+     * @throws Throwable
+     */
+    @AroundInvoke
+    public Object interceptMethodCall(final InvocationContext context) throws Throwable { // NOCS
+                                                                                          // (IllegalThrowsCheck)
+        if (this.monitoringCtrl.isMonitoringEnabled()) {
+            final String signature = context.getMethod().toString();
+            if (this.monitoringCtrl.isProbeActivated(signature)) {
+                // common fields
+                TraceMetadata trace = TraceInterceptor.TRACEREGISTRY.getTrace();
+                final boolean newTrace = trace == null;
+                if (newTrace) {
+                    trace = TraceInterceptor.TRACEREGISTRY.registerTrace();
+                    this.monitoringCtrl.newMonitoringRecord(trace);
+                }
+                final long traceId = trace.getTraceId();
+                final String clazz = context.getTarget().getClass().getCanonicalName();
 
-				// measure before execution
-				this.monitoringCtrl
-						.newMonitoringRecord(new BeforeOperationEvent(
-								this.timeSource.getTime(), traceId, trace
-										.getNextOrderId(),
-								signature, clazz));
+                // measure before execution
+                this.monitoringCtrl.newMonitoringRecord(new BeforeOperationEvent(this.timeSource.getTime(), traceId,
+                        trace.getNextOrderId(), signature, clazz));
 
-				// execution of the called method
-				try {
-					final Object retval = context.proceed();
+                // execution of the called method
+                try {
+                    final Object retval = context.proceed();
 
-					// measure after successful execution
-					this.monitoringCtrl
-							.newMonitoringRecord(new AfterOperationEvent(
-									this.timeSource.getTime(), traceId, trace
-											.getNextOrderId(),
-									signature, clazz));
-					return retval;
-				} catch (final Throwable th) { // NOPMD NOCS (catch throw might
-												// ok here)
-					// measure after failed execution
-					this.monitoringCtrl
-							.newMonitoringRecord(new AfterOperationFailedEvent(
-									this.timeSource.getTime(), traceId, trace
-											.getNextOrderId(),
-									signature, clazz,
-									th.toString()));
-					throw th;
-				} finally {
-					if (newTrace) { // close the trace
-						TRACEREGISTRY.unregisterTrace();
-					}
-				}
-			} else {
-				return context.proceed();
-			}
-		} else {
-			return context.proceed();
-		}
-	}
+                    // measure after successful execution
+                    this.monitoringCtrl.newMonitoringRecord(new AfterOperationEvent(this.timeSource.getTime(), traceId,
+                            trace.getNextOrderId(), signature, clazz));
+                    return retval;
+                } catch (final Throwable th) { // NOPMD NOCS (catch throw might
+                                               // ok here)
+                    // measure after failed execution
+                    this.monitoringCtrl.newMonitoringRecord(new AfterOperationFailedEvent(this.timeSource.getTime(),
+                            traceId, trace.getNextOrderId(), signature, clazz, th.toString()));
+                    throw th;
+                } finally {
+                    if (newTrace) { // close the trace
+                        TraceInterceptor.TRACEREGISTRY.unregisterTrace();
+                    }
+                }
+            } else {
+                return context.proceed();
+            }
+        } else {
+            return context.proceed();
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 iObserve Project (http://dfg-spp1593.de/index.php?id=44)
+ * Copyright (C) 2015 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,12 @@ import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 
 /**
- * This interceptor class is called when a EJB is deployed and undeploy. In Glassfish
- * the invocation is delayed until the first invocation of a bean happens. It also
- * might be invoked more than once, if the service calls the interceptor for
- * every instance creation once.
+ * This interceptor class is called when a EJB is deployed and undeploy. In Glassfish the invocation
+ * is delayed until the first invocation of a bean happens. It also might be invoked more than once,
+ * if the service calls the interceptor for every instance creation once.
  *
- * The interceptor uses an deploymentId value for the {@code ejb-jar.xml} file which
- * must be defined as an {@code <eny-entry}. The two callbacks for the interceptor
- * must be defined as below.
+ * The interceptor uses an deploymentId value for the {@code ejb-jar.xml} file which must be defined
+ * as an {@code <eny-entry}. The two callbacks for the interceptor must be defined as below.
  *
  * {@code
  * <interceptor>
@@ -79,78 +77,78 @@ import org.iobserve.common.record.EJBUndeployedEvent;
  */
 @Interceptor
 public class DeploymentInterceptor {
-	// logger presently not used.
-	// private static final Log LOG = LogFactory.getLog(DeploymentInterceptor.class);
+    // logger presently not used.
+    // private static final Log LOG = LogFactory.getLog(DeploymentInterceptor.class);
 
-	/** Configuration value for the deployment id used for monitoring. */
-	@Resource(name = "deploymentId")
-	private String deploymentId;
+    /** Configuration value for the deployment id used for monitoring. */
+    @Resource(name = "deploymentId")
+    private String deploymentId;
 
-	/** Kieker monitoring controller. */
-	private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
-	/** Kieker time source. */
-	private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
-	/** Present system host name. */
-	private String hostname;
+    /** Kieker monitoring controller. */
+    private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
+    /** Kieker time source. */
+    private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
+    /** Present system host name. */
+    private String hostname;
 
-	/**
-	 * Deployment interceptor initialization. 
-	 */
-	public DeploymentInterceptor() {
-		// nothing to be done here
-		try {
-			hostname = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			try {
-				hostname = InetAddress.getLocalHost().getHostAddress();
-			} catch (UnknownHostException e1) {
-				hostname = "localhost";
-			}
-		}
-	}
+    /**
+     * Deployment interceptor initialization.
+     */
+    public DeploymentInterceptor() {
+        // nothing to be done here
+        try {
+            this.hostname = InetAddress.getLocalHost().getHostName();
+        } catch (final UnknownHostException e) {
+            try {
+                this.hostname = InetAddress.getLocalHost().getHostAddress();
+            } catch (final UnknownHostException e1) {
+                this.hostname = "localhost";
+            }
+        }
+    }
 
-	/**
-	 * Trigger event when container is deployed.
-	 *
-	 * @param context
-	 *            invocation context with the container
-	 * @return result of the filter chain
-	 * @throws Exception
-	 *             on any internal error
-	 */
-	@PostConstruct
-	public Object postConstruct(final InvocationContext context) throws Exception {
-		final Object result = context.proceed();
-		if (this.monitoringCtrl.isMonitoringEnabled()) {
-			final String signature = context.getTarget().getClass().getCanonicalName();
-				
-			// if (this.monitoringCtrl.isProbeActivated(signature)) {
-			this.monitoringCtrl.newMonitoringRecord(new EJBDeployedEvent(
-					this.timeSource.getTime(), this.hostname, signature, this.deploymentId));
-			// }
-		}
-		return result;
-	}
+    /**
+     * Trigger event when container is deployed.
+     *
+     * @param context
+     *            invocation context with the container
+     * @return result of the filter chain
+     * @throws Exception
+     *             on any internal error
+     */
+    @PostConstruct
+    public Object postConstruct(final InvocationContext context) throws Exception {
+        final Object result = context.proceed();
+        if (this.monitoringCtrl.isMonitoringEnabled()) {
+            final String signature = context.getTarget().getClass().getCanonicalName();
 
-	/**
-	 * Trigger event before container is undeployed.
-	 *
-	 * @param context
-	 *            invocation context with the container
-	 * @return result of the filter chain
-	 * @throws Exception
-	 *             on any internal error
-	 */
-	@PreDestroy
-	public Object preDestroy(final InvocationContext context) throws Exception {
-		final Object result = context.proceed();
-		if (this.monitoringCtrl.isMonitoringEnabled()) {
-			final String signature = context.getTarget().getClass().getCanonicalName();
-			// if (this.monitoringCtrl.isProbeActivated(signature)) {
-			this.monitoringCtrl.newMonitoringRecord(new EJBUndeployedEvent(
-					this.timeSource.getTime(), this.hostname, signature, this.deploymentId));
-			// }
-		}
-		return result;
-	}
+            // if (this.monitoringCtrl.isProbeActivated(signature)) {
+            this.monitoringCtrl.newMonitoringRecord(
+                    new EJBDeployedEvent(this.timeSource.getTime(), this.hostname, signature, this.deploymentId));
+            // }
+        }
+        return result;
+    }
+
+    /**
+     * Trigger event before container is undeployed.
+     *
+     * @param context
+     *            invocation context with the container
+     * @return result of the filter chain
+     * @throws Exception
+     *             on any internal error
+     */
+    @PreDestroy
+    public Object preDestroy(final InvocationContext context) throws Exception {
+        final Object result = context.proceed();
+        if (this.monitoringCtrl.isMonitoringEnabled()) {
+            final String signature = context.getTarget().getClass().getCanonicalName();
+            // if (this.monitoringCtrl.isProbeActivated(signature)) {
+            this.monitoringCtrl.newMonitoringRecord(
+                    new EJBUndeployedEvent(this.timeSource.getTime(), this.hostname, signature, this.deploymentId));
+            // }
+        }
+        return result;
+    }
 }
