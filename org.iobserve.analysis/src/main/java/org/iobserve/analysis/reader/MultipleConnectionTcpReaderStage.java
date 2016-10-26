@@ -18,6 +18,7 @@ package org.iobserve.analysis.reader;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.BufferUnderflowException;
+import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -100,6 +101,8 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
                     selectedKeys.clear();
                 }
             }
+        } catch (final ClosedByInterruptException e) {
+            this.logger.info("External shutdown called");
         } catch (final IOException e) {
             this.logger.error("Cannot establish listening port", e);
         } finally {

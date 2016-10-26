@@ -60,6 +60,19 @@ public final class CollectorMain {
             final SimpleBridgeConfiguration configuration = new SimpleBridgeConfiguration(dataLocation, inputPort);
             final Execution<SimpleBridgeConfiguration> analysis = new Execution<>(configuration);
 
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        synchronized (analysis) {
+                            analysis.abortEventually();
+                        }
+                    } catch (final Exception e) { // NOCS
+
+                    }
+                }
+            }));
+
             System.out.println("Running analysis");
 
             analysis.executeBlocking();
