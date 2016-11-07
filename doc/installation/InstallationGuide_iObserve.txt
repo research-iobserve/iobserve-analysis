@@ -1,7 +1,7 @@
 Installation of iObserve 
 (Date of creation 23.06.2016)
-Author: Alessandro Giusa
 Author: Nicolas Boltz
+Author: Alessandro Giusa
 
 0. General Notes:
 
@@ -107,12 +107,7 @@ Prior to importing the project we have to set user dependent properties. In orde
 
 	iobserve-analysis/gradle.properties
 
-5.1 Add Palladio-Installation path into created gradle.properties
-palladio.installation=ABSOLUTE PATH TO YOUR PALLADIO INSTALLATION/plugins
-
-Important: The path should point to the "plugins" folder of your palladio/eclipse installation.
-
-5.2 Add Supplementary Repository path
+5.1 Add Supplementary Repository path
 api.baseline=/PATH/iobserve-repository/mvn-repo
 
 Important: The path has to include the mvn-repo folder!
@@ -142,6 +137,9 @@ You should have 4 new projects:
 this should refresh all stuff like dependencies..and so on. 
 
 After this step, the projects should be clean from errors.
+
+Important: For information on setting up a run configuration and running iobserve-analysis, as well as some knowledge 
+about the data necessary to run it, check out doc/general/UsageGuide_iObserve.txt.
 
 -----------------------------------------------------------------------------------------------------------------------
 
