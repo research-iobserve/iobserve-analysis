@@ -3,6 +3,7 @@ package org.iobserve.analysis.utils;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -49,6 +50,7 @@ public class RacCreator {
 	
 	private Map<String, PcmEntityCorrespondent> correspondentMapping;
 	private Map<String, PcmEntity> entityMapping;
+	private List<String> unmappedCorrespondents;
 
 	public static void main(String[] args) {
 		RacCreator creator = new RacCreator();
@@ -62,6 +64,8 @@ public class RacCreator {
 		creator.mapCorrespondentsToEntitys();
 		
 		creator.createRac("rac_creator\\mapping.rac");
+		
+		creator.createUnmappedFile("rac_creator\\unmapped.txt");
 	}
 	
 	public RacCreator() {
@@ -72,6 +76,8 @@ public class RacCreator {
 		systemMapping = new HashMap<>();
 		correspondentMapping = new HashMap<>();
 		entityMapping = new HashMap<>();
+		
+		unmappedCorrespondents = new ArrayList<>();
 	}
 	
 	public void readRepository(String filePath) {
@@ -109,7 +115,6 @@ public class RacCreator {
 			}
 			in.close();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -126,6 +131,7 @@ public class RacCreator {
 			if(entityMapping.containsKey(key)) {
 				entityKey = key;
 			} else {
+				unmappedCorrespondents.add(key);
 				continue;
 			}
 			
@@ -140,6 +146,18 @@ public class RacCreator {
 		PcmMapping mapping = new PcmMapping();
 		mapping.setEntities(new ArrayList<PcmEntity>(entityMapping.values()));
 		JAXB.marshal(mapping, filePath);
+	}
+	
+	public void createUnmappedFile(String filePath) {
+		try {
+		    PrintWriter writer = new PrintWriter(filePath, "UTF-8");
+		    for(String correspondent : unmappedCorrespondents) {
+		    	writer.println(correspondent);
+		    }
+		    writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private Map<Integer, Set<List<String>>> parseMonitoringData(String filePath) {
@@ -174,6 +192,10 @@ public class RacCreator {
 			String corrName = correspondentData.get(6).replaceAll("\\s+","");
 			if(corrName.contains("$")) {
 				corrName = corrName.substring(0, corrName.lastIndexOf('$'));
+			}
+			
+			if(corrName.contains("cloud-web-frontend")) {
+				continue;
 			}
 			PcmEntityCorrespondent correspondent = getCorrespondent(corrName);
 			
@@ -278,8 +300,12 @@ public class RacCreator {
 			PcmEntityCorrespondent correspondent = new PcmEntityCorrespondent();
 			correspondent.setFilePath("No Path");
 			correspondent.setProjectName("No Project");
-			correspondent.setPackageName(corrName.substring(0, corrName.lastIndexOf('.')));
-			correspondent.setUnitName(corrName.substring(corrName.lastIndexOf('.') + 1));
+			try {
+				correspondent.setPackageName(corrName.substring(0, corrName.lastIndexOf('.')));
+				correspondent.setUnitName(corrName.substring(corrName.lastIndexOf('.') + 1));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			correspondentMapping.put(corrName, correspondent);	
 		}
 		
@@ -300,12 +326,19 @@ public class RacCreator {
 			else if(split.contentEquals("static")) {
 				method[0] = "public";
 			}
+			else if(split.contentEquals("transient")) {
+				continue;
+			}
 			else if(i >= 1 && method[1] == null) {
 				method[1] = split;
 			}
 			else if(i >= 2 && method[2] == null) {
+				try {
 				String methodSig = split.substring(0, split.indexOf('('));
 				method[2] = methodSig.substring(methodSig.lastIndexOf('.') + 1);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
