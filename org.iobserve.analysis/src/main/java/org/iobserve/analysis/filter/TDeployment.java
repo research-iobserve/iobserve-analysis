@@ -144,20 +144,6 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         Opt.of(optResourceContainer).ifPresent()
                 .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName))
                 .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n"));
-
-        // get the assembly context. Create it if necessary
-        AssemblyContext assemblyContext = SystemModelBuilder
-                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName).get();
-
-        // in case the assembly context is null, TDeployment should create it
-        if (assemblyContext == null) {
-            // create assembly context
-            this.systemModelProvider.loadModel();
-            SystemModelBuilder.createAssemblyContextsIfAbsent(this.systemModelProvider.getModel(), asmContextName);
-            this.systemModelProvider.save();
-            assemblyContext = SystemModelBuilder
-                    .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName).get();
-        }
     }
 
     /**
@@ -171,9 +157,14 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      */
     private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName) {
         // get assembly context by name or create it if necessary.
-        final AssemblyContext assemblyContext = SystemModelBuilder
-                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName)
-                .orElse(TDeployment.createAssemblyContextByName(this.systemModelProvider, asmContextName));
+    	final AssemblyContext assemblyContext;
+    	Optional<AssemblyContext> optAssCtx = SystemModelBuilder
+        .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName);
+    	if(optAssCtx.isPresent()) {
+    		assemblyContext = optAssCtx.get();
+    	} else {
+    		assemblyContext = TDeployment.createAssemblyContextByName(this.systemModelProvider, asmContextName);
+    	}
 
         // update the allocation model
         this.allocationModelProvider.loadModel();
