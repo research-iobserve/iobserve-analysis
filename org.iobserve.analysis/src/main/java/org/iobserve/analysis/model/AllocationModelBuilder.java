@@ -23,6 +23,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  *
+ * @author Robert Heinrich
  * @author Alessandro Giusa
  *
  */
