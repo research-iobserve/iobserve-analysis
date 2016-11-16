@@ -40,7 +40,7 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
  * UsageModelBuilder is able to build a {@link UsageModel}.
  *
  * @author Robert Heinrich
- * @author Alessandro
+ * @author Alessandro Giusa
  *
  */
 public final class UsageModelBuilder {
