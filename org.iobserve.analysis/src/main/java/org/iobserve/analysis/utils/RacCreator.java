@@ -205,6 +205,7 @@ public class RacCreator {
 				method.setVisibilityModifier(filteredMethod[0]);
 				method.setReturnType(filteredMethod[1]);
 				method.setName(filteredMethod[2]);
+				method.setParameters(filteredMethod[3]);
 				
 				addMethodToCorrespondent(method, correspondent);
 			}
@@ -315,7 +316,7 @@ public class RacCreator {
 	// Returns an array in the order: visibilityModifier, returnType, methodName
 	// or null if the given string is not a valid method
 	private String[] filterMethodString(String correspondentData) {
-		String[] method = new String[3];
+		String[] method = new String[4];
 		String[] splitMethod = correspondentData.split(" ");
 		
 		for(int i = 0; i < splitMethod.length; i++) {
@@ -335,14 +336,25 @@ public class RacCreator {
 			else if(i >= 2 && method[2] == null) {
 				try {
 				String methodSig = split.substring(0, split.indexOf('('));
-				method[2] = methodSig.substring(methodSig.lastIndexOf('.') + 1);
+				
+				methodSig = methodSig.substring(methodSig.lastIndexOf('.') + 1);
+				if(methodSig.contains("$")) {
+					methodSig = methodSig.substring(0, methodSig.lastIndexOf('$'));
+				}
+				
+				method[2] = methodSig;
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
 		}
 		
-		if(method[0] != null && method[1] != null && method[2] != null && !method[2].contentEquals("<init>")) {
+		int firstIndex = correspondentData.indexOf('(');
+		int lastIndex = correspondentData.lastIndexOf(')');
+		String parameters = correspondentData.substring(firstIndex + 1, lastIndex);
+		method[3] = parameters.replaceAll("\\s+", "");
+		
+		if(method[0] != null && method[1] != null && method[2] != null && method[3] != null) {
 			return method;
 		}
 		

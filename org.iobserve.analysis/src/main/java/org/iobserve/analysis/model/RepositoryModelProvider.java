@@ -147,6 +147,17 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
                     }
                 }
             }
+            for(final ProvidedRole providedRole : nextBasicCmp.getProvidedRoles_InterfaceProvidingEntity()) {
+            	if(providedRole instanceof OperationProvidedRole) {
+            		final OperationProvidedRole opProvRole = (OperationProvidedRole) providedRole;
+            		final OperationInterface opInterface = opProvRole.getProvidedInterface__OperationProvidedRole();
+            		for(OperationSignature interfaceSignature : opInterface.getSignatures__OperationInterface()) {
+            			if(operationSig.equalsIgnoreCase(interfaceSignature.getEntityName())) {
+            				return nextBasicCmp;
+            			}
+            		}
+            	}
+            }
         }
         return null;
     }

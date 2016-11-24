@@ -83,15 +83,18 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
     protected void execute(final EntryCallSequenceModel entryCallSequenceModel) {
         // Resets the current usage model
         this.usageModelProvider.loadModel();
-        this.usageModelProvider.resetModel();
-        final int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-
+        int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+        
         // Executes the user behavior modeling procedure
         final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(entryCallSequenceModel,
                 numberOfUserGroups, this.varianceOfUserGroups, this.closedWorkload, this.thinkTime,
                 this.repositoryModelProvider, this.correspondenceModel);
         try {
             behaviorModeling.modelUserBehavior();
+            this.usageModelProvider.resetModel();
+            this.usageModelProvider.updateModel(behaviorModeling.getPcmUsageModel());
+            
+            numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
         } catch (final IOException e) {
             e.printStackTrace();
         }

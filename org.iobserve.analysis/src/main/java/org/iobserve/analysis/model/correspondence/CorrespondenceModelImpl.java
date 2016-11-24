@@ -72,7 +72,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
     /**
      * Builds the signature like it would appear in the source code for instance void Get().
      */
-    private final IMethodSignatureBuilder mOnlyMethodName = new IMethodSignatureBuilder() {
+    private final IMethodSignatureBuilder mPackageAndMethod = new IMethodSignatureBuilder() {
 
         @Override
         public String build(final PcmCorrespondentMethod method) {
@@ -83,11 +83,17 @@ class CorrespondenceModelImpl implements ICorrespondence {
             builder.append(" ");
             builder.append(method.getReturnType());
             builder.append(" ");
+            builder.append(method.getParent().getPackageName());
+            builder.append(".");
+            builder.append(method.getParent().getUnitName());
+            builder.append(".");
             builder.append(method.getName());
             builder.append("(");
-            builder.append(method.getParameters().replaceAll("&lt;", "<").replaceAll("&gt;", ">"));
-            // TODO I do not know how to handle multiple parameters..since
-            // I did not see such after protocom build
+            if(method.getParameters() != null) {
+                builder.append(method.getParameters());
+                // TODO I do not know how to handle multiple parameters..since
+                // I did not see such after protocom build
+            }
             builder.append(")");
             // TODO <exception throws signature> is missing since this
             // is not retrievable from protocom-generation process so far.
@@ -185,7 +191,6 @@ class CorrespondenceModelImpl implements ICorrespondence {
             final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
             if (pcmEntityCorrespondent == null) {
                 CorrespondenceModelImpl.LOGGER.info("Mapping not available for class signature: " + classSig);
-
                 return ICorrespondence.NULL_CORRESPONDENZ;
             }
 
@@ -266,10 +271,14 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * @return pcm operation signature or null if operation signature not available
      */
     private PcmOperationSignature getPcmOperationSignature(final PcmEntityCorrespondent pcmEntityCorrespondent,
-            final String operationSig) {
+            String operationSig) {
         PcmOperationSignature opSig = null;
+        operationSig = operationSig.replaceFirst("static", "");
+        if (operationSig.contains("throws")) {
+        	operationSig = operationSig.substring(0, operationSig.indexOf("throws"));
+        }
         for (final PcmCorrespondentMethod nextCorresMethod : pcmEntityCorrespondent.getMethods()) {
-            final String methodSig = this.mPackageNameClassNameMethodName.build(nextCorresMethod);
+            final String methodSig = this.mPackageAndMethod.build(nextCorresMethod);
 
             if (operationSig.replaceAll(" ", "").equals(methodSig.replaceAll(" ", ""))) {
                 opSig = this.mapOperationSignature(nextCorresMethod);

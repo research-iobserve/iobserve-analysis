@@ -56,5 +56,11 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
         model.getUsageScenario_UsageModel().clear();
         model.getUserData_UsageModel().clear();
     }
-
+    
+    public void updateModel(UsageModel newModel) {
+    	this.resetModel();
+    	final UsageModel model = this.getModel();
+        model.getUsageScenario_UsageModel().addAll(newModel.getUsageScenario_UsageModel());
+        model.getUserData_UsageModel().addAll(newModel.getUserData_UsageModel());
+    }
 }
