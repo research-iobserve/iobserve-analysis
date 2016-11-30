@@ -26,7 +26,7 @@ import org.palladiosimulator.pcm.usagemodel.UserData;
  * Model provider to provide a {@link UsageModel}.
  *
  * @author Robert Heinrich
- * @author Alessandro
+ * @author Alessandro Giusa
  *
  */
 public final class UsageModelProvider extends AbstractModelProvider<UsageModel> {

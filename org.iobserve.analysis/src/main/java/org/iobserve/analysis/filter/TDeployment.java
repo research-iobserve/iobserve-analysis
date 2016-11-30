@@ -35,9 +35,8 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
- * It could be interesting to combine DeploymentEventTransformation and
- * UndeploymentEventTransformation. However, that would require two input ports. And I have not used
- * the API for multiple input ports.
+ * This class contains the transformation for updating the PCM allocation model with respect to deployment. 
+ * It processes deployment events and uses the correspondence information in the RAC to update the PCM allocation model.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
@@ -122,7 +121,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     }
 
     /**
-     * Update the system- and allocation-model by the given correspondent.
+     * Update the system model and allocation model by the given correspondent.
      *
      * @param serverName
      *            name of the server

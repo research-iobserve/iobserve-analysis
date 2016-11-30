@@ -27,10 +27,7 @@ import org.iobserve.common.record.ServletDeployedEvent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
- * It could be interesting to combine DeploymentEventTransformation and
- * UndeploymentEventTransformation. However, that would require two input ports. And I have not used
- * the API for multiple input ports. TAllocation creates new resource container if and only if there
- * not already available.
+ *  TAllocation creates a new resource container if and only if there is no corresponding container already available.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa

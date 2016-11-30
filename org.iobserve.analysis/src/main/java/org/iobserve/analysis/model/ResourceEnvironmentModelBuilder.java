@@ -25,7 +25,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 /**
  * Model builder for resource environment models.
  *
- * @author David Peter -- initial contribution
+ * @author Robert Heinrich
  *
  */
 public final class ResourceEnvironmentModelBuilder {
