@@ -38,6 +38,8 @@ public interface ICorrespondence {
      * Empty Correspondence.
      **/
     Optional<Correspondent> NULL_CORRESPONDENZ = Optional.empty();
+    
+    public boolean containsCorrespondent(String classSig, String funcionSig);
 
     /**
      * Get the correspondent object which contains all the information needed to get the actual

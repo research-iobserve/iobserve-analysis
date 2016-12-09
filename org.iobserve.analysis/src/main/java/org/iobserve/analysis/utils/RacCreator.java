@@ -27,7 +27,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-/**
+/**************************************************************************************************
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Important!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * This application is only for testing purposes and should never be used in working code!
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Important!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -41,7 +41,8 @@ import org.w3c.dom.NodeList;
  *                  Name/Path in monitoring data - Name/Path in repository
  * 
  * @author Nicolas Boltz
- */
+ * 
+ *************************************************************************************************/
 
 public class RacCreator {
 	

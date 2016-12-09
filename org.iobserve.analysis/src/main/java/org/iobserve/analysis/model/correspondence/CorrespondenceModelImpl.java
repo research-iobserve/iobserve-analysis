@@ -168,6 +168,10 @@ class CorrespondenceModelImpl implements ICorrespondence {
     // * MAPPING
     // ********************************************************************
 
+    public boolean containsCorrespondent(String classSig, String funcionSig) {
+    	return getCorrespondent(classSig, funcionSig).isPresent();
+    }
+    
     @Override
     public Optional<Correspondent> getCorrespondent(final String classSig, final String operationSig) {
         // TODO debug print, remove later
