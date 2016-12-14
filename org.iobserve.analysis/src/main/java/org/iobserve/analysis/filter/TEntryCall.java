@@ -24,11 +24,11 @@ import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and
@@ -42,6 +42,8 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     /** logger. */
     private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
 
+    /** reference to the correspondence model. */
+	private final ICorrespondence correspondenceModel;
     /* added by Alessandro Giusa see EntryCallEvent class for more information. */
     private final Map<Long, TraceMetadata> traceMetaDatas = new HashMap<>();
     /** map of before operation events. */
@@ -52,8 +54,8 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     /**
      * Does not need additional information.
      */
-    public TEntryCall() {
-        // empty constructor
+    public TEntryCall(final ICorrespondence correspondenceModel) {
+    	this.correspondenceModel = correspondenceModel;
     }
 
     /**
@@ -72,12 +74,15 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
             }
         } else if (event instanceof BeforeOperationEvent) {
             final BeforeOperationEvent operationEvent = (BeforeOperationEvent) event;
-            final TraceMetadata metaData = this.traceMetaDatas.get(operationEvent.getTraceId());
-            if (metaData != null) {
-                /** actually this is a valid trace */
-                /** Check whether the record is an entry call */
-                if (operationEvent.getOrderIndex() == 0) {
-                    this.beforeOperationEvents.put(metaData.getTraceId(), operationEvent);
+            /** check if operationEvent is from an known object */
+            if(correspondenceModel.containsCorrespondent(operationEvent.getClassSignature(), operationEvent.getOperationSignature())) {
+            	final TraceMetadata metaData = this.traceMetaDatas.get(operationEvent.getTraceId());
+                if (metaData != null) {
+                    /** actually this is a valid trace */
+                    /** Check whether the record is an entry call */
+                    if (operationEvent.getOrderIndex() == 0) {
+                        this.beforeOperationEvents.put(metaData.getTraceId(), operationEvent);
+                    }
                 }
             }
         } else if (event instanceof AfterOperationEvent) {
@@ -87,14 +92,19 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
             if (metaData != null) {
                 /** actually this is a valid trace */
                 final BeforeOperationEvent beforeOperationEvent = this.beforeOperationEvents.get(metaData.getTraceId());
-                /** check whether it matches an before operation event. */
-                if (beforeOperationEvent.getClassSignature().equals(afterOperationEvent.getClassSignature())
-                        && beforeOperationEvent.getOperationSignature()
-                                .equals(afterOperationEvent.getOperationSignature())) {
-
-                    this.outputPort.send(new EntryCallEvent(beforeOperationEvent.getTimestamp(),
-                            afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
-                            beforeOperationEvent.getClassSignature(), metaData.getSessionId(), metaData.getHostname()));
+                if(beforeOperationEvent != null) {
+	                /** check whether it matches an before operation event. */
+	                if (beforeOperationEvent.getClassSignature().equals(afterOperationEvent.getClassSignature())
+	                        && beforeOperationEvent.getOperationSignature()
+	                                .equals(afterOperationEvent.getOperationSignature())) {
+	                	/** if afterOperationEvent has a beforeOperationEvent counterpart remove beforeOperationEvent
+	                	 *  so a second afterOperationEvent with the same traceId does not send a call two times */
+	                	this.beforeOperationEvents.remove(metaData.getTraceId(), beforeOperationEvent );
+	
+	                    this.outputPort.send(new EntryCallEvent(beforeOperationEvent.getTimestamp(),
+	                            afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
+	                            beforeOperationEvent.getClassSignature(), metaData.getSessionId(), metaData.getHostname()));
+	                }
                 }
             }
         } else {

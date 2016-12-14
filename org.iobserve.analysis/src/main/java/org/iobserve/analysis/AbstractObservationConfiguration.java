@@ -86,7 +86,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 systemModelProvider, resourceEnvironmentModelProvider);
         final TUndeployment tUndeployment = new TUndeployment(correspondenceModel, allocationModelProvider,
                 systemModelProvider, resourceEnvironmentModelProvider);
-        final TEntryCall tEntryCall = new TEntryCall();
+        final TEntryCall tEntryCall = new TEntryCall(correspondenceModel);
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
         final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
                 repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);

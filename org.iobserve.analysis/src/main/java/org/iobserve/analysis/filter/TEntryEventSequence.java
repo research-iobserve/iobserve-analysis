@@ -16,14 +16,10 @@
 package org.iobserve.analysis.filter;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -89,62 +85,24 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 		this.usageModelProvider.loadModel();
 		int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
 		System.out.println("EntryEventSequence found: numberOfUserGroups before: "  + numberOfUserGroups);
-
-		// Pre-filter to filter out EntryCallEvents with operations that are unknown to the system
-
-		EntryCallSequenceModel filteredModel = this.filterModel(entryCallSequenceModel);  
-		if(filteredModel != null) {
 		
-			// Executes the user behavior modeling procedure
-			final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(filteredModel,
-					numberOfUserGroups, this.varianceOfUserGroups, this.closedWorkload, this.thinkTime,
-					this.repositoryModelProvider, this.correspondenceModel);
-			try {
-				behaviorModeling.modelUserBehavior();
-				this.usageModelProvider.resetModel();
-				this.usageModelProvider.updateModel(behaviorModeling.getPcmUsageModel());
-	
-				numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-				System.out.println("Model changed: numberOfUserGroups after: "  + numberOfUserGroups);
-	
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-	
-			// Sets the new usage model within iObserve
-			this.usageModelProvider.save();
+		// Executes the user behavior modeling procedure
+		final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(entryCallSequenceModel,
+				numberOfUserGroups, this.varianceOfUserGroups, this.closedWorkload, this.thinkTime,
+				this.repositoryModelProvider, this.correspondenceModel);
+		try {
+			behaviorModeling.modelUserBehavior();
+			this.usageModelProvider.resetModel();
+			this.usageModelProvider.updateModel(behaviorModeling.getPcmUsageModel());
 
-        } else {
-        	//TODO: reset and save model if needed
-        	System.out.println("No change to the model: No known operations in EntryCallSequences");
-        }
+			numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+			System.out.println("Model changed: numberOfUserGroups after: "  + numberOfUserGroups);
 
-		System.out.println("--------------------------------------------------------------------");
-	}
-
-	private EntryCallSequenceModel filterModel(EntryCallSequenceModel inModel) {
-		List<UserSession> newUserSessions = new ArrayList<>();
-
-		for(UserSession session : inModel.getUserSessions()) {
-			String[] hostSession = session.toString().split(",");
-			UserSession newSession = new UserSession(hostSession[0], hostSession[1]);
-
-			for(EntryCallEvent callEvent : session.getEvents()) {
-				if(this.correspondenceModel.containsCorrespondent(callEvent.getClassSignature(), callEvent.getOperationSignature())) {
-					newSession.add(callEvent, true);
-				}
-			}
-
-			if(!newSession.getEvents().isEmpty()) {
-				newUserSessions.add(newSession);
-			}
+		} catch (final IOException e) {
+			e.printStackTrace();
 		}
 
-		if(newUserSessions.isEmpty()) {
-			return null;
-		}
-
-		return new EntryCallSequenceModel(newUserSessions);
+		// Sets the new usage model within iObserve
+		this.usageModelProvider.save();
 	}
-
 }
