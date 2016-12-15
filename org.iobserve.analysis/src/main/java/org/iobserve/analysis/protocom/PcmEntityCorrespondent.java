@@ -16,7 +16,9 @@
 package org.iobserve.analysis.protocom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -37,6 +39,53 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "Correspondent", propOrder = { "filePath", "projectName", "packageName", "interfaces", "unitName",
         "methods" })
 public class PcmEntityCorrespondent {
+	
+    /**
+     * Builds the signature out of packagname.MethodName().
+     */
+    @SuppressWarnings("unused")
+	private final IMethodSignatureBuilder mPackageNameClassNameMethodName = new IMethodSignatureBuilder() {
+
+        @Override
+        public String build(final PcmCorrespondentMethod method) {
+            final String packageName = method.getParent().getPackageName();
+            final String className = method.getParent().getUnitName();
+            final String methodName = method.getName();
+            return packageName + "." + className + "." + methodName + "()";
+        }
+    };
+	
+    /**
+     * Builds the signature like it would appear in the source code for instance void Get().
+     */
+    private final IMethodSignatureBuilder mPackageAndMethod = new IMethodSignatureBuilder() {
+
+        @Override
+        public String build(final PcmCorrespondentMethod method) {
+            final StringBuilder builder = new StringBuilder();
+
+            // build method signature
+            builder.append(method.getVisibilityModifier());
+            builder.append(" ");
+            builder.append(method.getReturnType());
+            builder.append(" ");
+            builder.append(method.getParent().getPackageName());
+            builder.append(".");
+            builder.append(method.getParent().getUnitName());
+            builder.append(".");
+            builder.append(method.getName());
+            builder.append("(");
+            if(method.getParameters() != null) {
+                builder.append(method.getParameters());
+            }
+            builder.append(")");
+            // TODO <exception throws signature> is missing since this
+            // is not retrievable from protocom-generation process so far.
+
+            final String methodSig = builder.toString().trim();
+            return methodSig;
+        }
+    };
 
     private String filePath;
     private String projectName;
@@ -44,6 +93,7 @@ public class PcmEntityCorrespondent {
     private String unitName;
     private List<String> interfaces = new ArrayList<>();
     private List<PcmCorrespondentMethod> methods = new ArrayList<>();
+    private Map<String, PcmCorrespondentMethod> methodMap = new HashMap<>();
     private PcmEntity parent;
 
     /**
@@ -118,4 +168,28 @@ public class PcmEntityCorrespondent {
         this.parent = parent;
     }
 
+    public void initMethodMap() {
+    	for(PcmCorrespondentMethod method : methods) {
+    		final String methodSig = this.mPackageAndMethod.build(method).replaceAll(" ", "");
+    		methodMap.put(methodSig, method);
+    	}
+    }
+    
+    public PcmCorrespondentMethod getMethod(String methodSig) {
+    	return methodMap.get(methodSig);
+    }
+    
+    
+    /**
+     * String builder to build method signatures based on the given {@link PcmCorrespondentMethod}
+     * instance.
+     */
+    private interface IMethodSignatureBuilder {
+        /**
+         * @param method
+         *            method
+         * @return signature of the method based on the given {@link PcmCorrespondentMethod}
+         */
+        String build(PcmCorrespondentMethod method);
+    }
 }

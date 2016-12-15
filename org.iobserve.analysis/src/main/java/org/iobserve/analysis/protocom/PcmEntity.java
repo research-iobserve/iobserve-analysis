@@ -16,7 +16,9 @@
 package org.iobserve.analysis.protocom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -25,6 +27,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+
+import org.iobserve.analysis.utils.StringUtils;
 
 /**
  * Generic entity class.
@@ -40,6 +44,7 @@ public class PcmEntity {
     private String name;
     private String id;
     private List<PcmOperationSignature> operationSigs = new ArrayList<>();
+    private Map<String, PcmOperationSignature> operationSigMap = new HashMap<>();
     private List<PcmEntityCorrespondent> correspondents = new ArrayList<>();
     private PcmMapping parent;
 
@@ -95,5 +100,16 @@ public class PcmEntity {
 
     public void setParent(final PcmMapping parent) {
         this.parent = parent;
+    }
+    
+    public void initOperationMap() {
+    	for(PcmOperationSignature operation : operationSigs) {
+    		final String operationSig = StringUtils.modifyForOperationSigMatching(operation.getName()).get();
+    		operationSigMap.put(operationSig, operation);
+    	}
+    }
+    
+    public PcmOperationSignature getOperationSig(String operationSig) {
+    	return operationSigMap.get(operationSig);
     }
 }

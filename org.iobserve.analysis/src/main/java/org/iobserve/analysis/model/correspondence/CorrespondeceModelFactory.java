@@ -73,10 +73,9 @@ public final class CorrespondeceModelFactory {
      *            from a lot from the original operation signature.
      * @return a {@link Correspondent} instance representing the mapping file
      */
-    public ICorrespondence createCorrespondenceModel(final String pathMappingFile,
-            final IOperationSignatureSelector mapper) {
+    public ICorrespondence createCorrespondenceModel(final String pathMappingFile) {
         final PcmMapping mapping = this.getMapping(pathMappingFile);
-        final CorrespondenceModelImpl rac = new CorrespondenceModelImpl(mapping, mapper);
+        final CorrespondenceModelImpl rac = new CorrespondenceModelImpl(mapping);
         rac.initMapping();
         return rac;
     }

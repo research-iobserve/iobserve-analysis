@@ -29,6 +29,7 @@ import org.iobserve.analysis.protocom.PcmEntity;
 import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
 import org.iobserve.analysis.protocom.PcmMapping;
 import org.iobserve.analysis.protocom.PcmOperationSignature;
+import org.iobserve.analysis.utils.StringUtils;
 
 /**
  * Implementation of {@link ICorrespondence}.
@@ -46,62 +47,11 @@ class CorrespondenceModelImpl implements ICorrespondence {
     /** raw mapping objects created during ProtoCom artifacts generation. */
     private final PcmMapping rawMapping;
 
-    /** mapper for method signature to operation signature. */
-    private final IOperationSignatureSelector opSigMapper;
-
     /** fast access map for class-signature to object. */
     private Map<String, PcmEntityCorrespondent> mapping;
 
     /** namespace of current palladio framework. */
     // private static final String PROTOCOM_BASE_PACKAGE_NAME = "org.palladiosimulator.protocom";
-
-    /**
-     * Builds the signature out of packagname.MethodName().
-     */
-    private final IMethodSignatureBuilder mPackageNameClassNameMethodName = new IMethodSignatureBuilder() {
-
-        @Override
-        public String build(final PcmCorrespondentMethod method) {
-            final String packageName = method.getParent().getPackageName();
-            final String className = method.getParent().getUnitName();
-            final String methodName = method.getName();
-            return packageName + "." + className + "." + methodName + "()";
-        }
-    };
-
-    /**
-     * Builds the signature like it would appear in the source code for instance void Get().
-     */
-    private final IMethodSignatureBuilder mPackageAndMethod = new IMethodSignatureBuilder() {
-
-        @Override
-        public String build(final PcmCorrespondentMethod method) {
-            final StringBuilder builder = new StringBuilder();
-
-            // build method signature
-            builder.append(method.getVisibilityModifier());
-            builder.append(" ");
-            builder.append(method.getReturnType());
-            builder.append(" ");
-            builder.append(method.getParent().getPackageName());
-            builder.append(".");
-            builder.append(method.getParent().getUnitName());
-            builder.append(".");
-            builder.append(method.getName());
-            builder.append("(");
-            if(method.getParameters() != null) {
-                builder.append(method.getParameters());
-                // TODO I do not know how to handle multiple parameters..since
-                // I did not see such after protocom build
-            }
-            builder.append(")");
-            // TODO <exception throws signature> is missing since this
-            // is not retrievable from protocom-generation process so far.
-
-            final String methodSig = builder.toString().trim();
-            return methodSig;
-        }
-    };
 
     /**
      * Create correspondence model.
@@ -111,9 +61,8 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * @param mapper
      *            selector
      */
-    public CorrespondenceModelImpl(final PcmMapping theMapping, final IOperationSignatureSelector mapper) {
+    public CorrespondenceModelImpl(final PcmMapping theMapping) {
         this.rawMapping = theMapping;
-        this.opSigMapper = mapper;
     }
 
     /**
@@ -124,9 +73,8 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * @param mapper
      *            selector
      */
-    public CorrespondenceModelImpl(final InputStream mappingFile, final IOperationSignatureSelector mapper) {
+    public CorrespondenceModelImpl(final InputStream mappingFile) {
         this.rawMapping = JAXB.unmarshal(mappingFile, PcmMapping.class);
-        this.opSigMapper = mapper;
         this.initMapping();
     }
 
@@ -140,27 +88,31 @@ class CorrespondenceModelImpl implements ICorrespondence {
     public void initMapping() {
         this.mapping = new HashMap<>();
 
-        for (final PcmEntity nextPcmEntity : this.rawMapping.getEntities()) {
-            nextPcmEntity.setParent(this.rawMapping);
+        for (final PcmEntity pcmEntity : this.rawMapping.getEntities()) {
+            pcmEntity.setParent(this.rawMapping);
 
             // set the parent reference
-            for (final PcmOperationSignature nextOperation : nextPcmEntity.getOperationSigs()) {
-                nextOperation.setParent(nextPcmEntity);
+            for (final PcmOperationSignature entityOperation : pcmEntity.getOperationSigs()) {
+                entityOperation.setParent(pcmEntity);
             }
 
             // set parent reference and convert the mapping
-            for (final PcmEntityCorrespondent nextCorrespondent : nextPcmEntity.getCorrespondents()) {
-                nextCorrespondent.setParent(nextPcmEntity);
+            for (final PcmEntityCorrespondent entityCorrespondent : pcmEntity.getCorrespondents()) {
+                entityCorrespondent.setParent(pcmEntity);
 
-                final String qualifiedName = (nextCorrespondent.getPackageName() + "."
-                        + nextCorrespondent.getUnitName()).trim().replaceAll(" ", "");
-                this.mapping.put(qualifiedName, nextCorrespondent);
+                final String qualifiedName = (entityCorrespondent.getPackageName() + "."
+                        + entityCorrespondent.getUnitName()).trim().replaceAll(" ", "");
+                this.mapping.put(qualifiedName, entityCorrespondent);
 
                 // set parent reference
-                for (final PcmCorrespondentMethod nextCorresMethod : nextCorrespondent.getMethods()) {
-                    nextCorresMethod.setParent(nextCorrespondent);
+                for (final PcmCorrespondentMethod correspondentMethod : entityCorrespondent.getMethods()) {
+                    correspondentMethod.setParent(entityCorrespondent);
                 }
+                
+                entityCorrespondent.initMethodMap();
             }
+            
+            pcmEntity.initOperationMap();
         }
     }
 
@@ -168,8 +120,8 @@ class CorrespondenceModelImpl implements ICorrespondence {
     // * MAPPING
     // ********************************************************************
 
-    public boolean containsCorrespondent(String classSig, String funcionSig) {
-    	return getCorrespondent(classSig, funcionSig).isPresent();
+    public boolean containsCorrespondent(String classSig, String operationSig) {
+    	return getCorrespondent(classSig, operationSig).isPresent();
     }
     
     @Override
@@ -191,6 +143,9 @@ class CorrespondenceModelImpl implements ICorrespondence {
         Correspondent correspondent = this.cachedCorrespondents.get(requestKey);
 
         // in case the correspondent is not available it has to be mapped
+        // !!!!!
+        // this case should never occur, since the correspondents are created and cached in TEntryCall through containsCorrespondent(...)
+        // !!!!!
         if (correspondent == null) {
             final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
             if (pcmEntityCorrespondent == null) {
@@ -281,15 +236,12 @@ class CorrespondenceModelImpl implements ICorrespondence {
         if (operationSig.contains("throws")) {
         	operationSig = operationSig.substring(0, operationSig.indexOf("throws"));
         }
-        for (final PcmCorrespondentMethod nextCorresMethod : pcmEntityCorrespondent.getMethods()) {
-            final String methodSig = this.mPackageAndMethod.build(nextCorresMethod);
-
-            if (operationSig.replaceAll(" ", "").equals(methodSig.replaceAll(" ", ""))) {
-                opSig = this.mapOperationSignature(nextCorresMethod);
-                break;
-            }
+        
+        PcmCorrespondentMethod correspondentMethod = pcmEntityCorrespondent.getMethod(operationSig.replaceAll(" ", ""));
+        if(correspondentMethod != null) {
+        	opSig = this.mapOperationSignature(correspondentMethod);
         }
-
+        
         return opSig;
     }
 
@@ -305,38 +257,23 @@ class CorrespondenceModelImpl implements ICorrespondence {
      */
     private PcmOperationSignature mapOperationSignature(final PcmCorrespondentMethod method) {
         final PcmEntity pcmEntity = method.getParent().getParent();
-        PcmOperationSignature opSig = null;
-        for (final PcmOperationSignature nextOpSig : pcmEntity.getOperationSigs()) {
-            if (this.opSigMapper.select(method, nextOpSig)) {
-                opSig = nextOpSig;
-                break;
-            }
+        PcmOperationSignature opSig = pcmEntity.getOperationSig(StringUtils.modifyForOperationSigMatching(method.getName()).get());
+        if(opSig == null) {
+        	opSig = pcmEntity.getOperationSig(StringUtils.modifyForOperationSigMatching(method.getParent().getUnitName()).get());
         }
+
         return opSig;
     }
 
     /**
      * Test method to print all mappings.
      */
-    private void printAllMappings() {
+    @SuppressWarnings("unused")
+	private void printAllMappings() {
         for (final String nextMappingKey : this.mapping.keySet()) {
             System.out.println(nextMappingKey);
             final PcmEntityCorrespondent correspondent = this.mapping.get(nextMappingKey);
             System.out.println(correspondent);
         }
     }
-
-    /**
-     * String builder to build method signatures based on the given {@link PcmCorrespondentMethod}
-     * instance.
-     */
-    private interface IMethodSignatureBuilder {
-        /**
-         * @param method
-         *            method
-         * @return signature of the method based on the given {@link PcmCorrespondentMethod}
-         */
-        String build(PcmCorrespondentMethod method);
-    }
-
 }

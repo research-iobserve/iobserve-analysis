@@ -73,8 +73,7 @@ public final class InitializeModelProviders {
 
             } else if ("rac".equalsIgnoreCase(extension)) {
                 final String pathMappingFile = nextFile.getAbsolutePath();
-                this.correspondenceModel = CorrespondeceModelFactory.INSTANCE.createCorrespondenceModel(pathMappingFile,
-                        CorrespondeceModelFactory.DEFAULT_OPERATION_SIGNATURE_MAPPER_2);
+                this.correspondenceModel = CorrespondeceModelFactory.INSTANCE.createCorrespondenceModel(pathMappingFile);
             }
         }
     }

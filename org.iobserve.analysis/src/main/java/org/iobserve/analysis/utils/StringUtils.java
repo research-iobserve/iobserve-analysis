@@ -51,5 +51,9 @@ public final class StringUtils {
     public static Supplier<String> trimAndRemoveSpaces(final String str) {
         return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("");
     }
+    
+    public static Supplier<String> modifyForOperationSigMatching(final String str) {
+    	return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("").toLowerCase();
+    }
 
 }
