@@ -28,7 +28,6 @@ settings.xml
 target/**
 teetime.log
 **/*._trace
-*.txt
 **/**.xtendbin
 *.zip
 /build/
