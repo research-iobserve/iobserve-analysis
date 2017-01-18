@@ -34,6 +34,7 @@ import org.iobserve.analysis.utils.StringUtils;
  * Generic entity class.
  *
  * @author Alesanndro Guisa
+ * @author Nicolas Boltz
  *
  */
 @XmlRootElement(name = "PcmEntity")

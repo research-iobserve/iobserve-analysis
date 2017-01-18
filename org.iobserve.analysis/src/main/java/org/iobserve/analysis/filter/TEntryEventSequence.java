@@ -32,6 +32,7 @@ import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
  *
  * @author Robert Heinrich
  * @author Alessandro Guisa
+ * @author Nicolas Boltz
  * @author David Peter
  *
  * @version 1.0

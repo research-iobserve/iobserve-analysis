@@ -35,6 +35,7 @@ import org.iobserve.analysis.utils.StringUtils;
  * Implementation of {@link ICorrespondence}.
  *
  * @author Robert Heinrich
+ * @author Nicolas Boltz
  * @author Alessandro Giusa
  */
 class CorrespondenceModelImpl implements ICorrespondence {

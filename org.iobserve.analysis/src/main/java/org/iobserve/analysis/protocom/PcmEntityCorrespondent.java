@@ -29,9 +29,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * Correspondence between somthing.
+ * Correspondence between something.
  *
  * @author Alessandro Guisa
+ * @author Nicolas Boltz
  *
  */
 @XmlRootElement(name = "Correspondent")

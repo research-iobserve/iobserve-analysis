@@ -36,6 +36,7 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
  * the API for multiple input ports.
  *
  * @author Reiner Jung
+ * @author Nicolas Boltz
  * @version 1.0
  */
 public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
