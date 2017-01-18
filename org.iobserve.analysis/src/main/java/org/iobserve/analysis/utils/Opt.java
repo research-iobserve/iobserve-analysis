@@ -37,26 +37,12 @@ public final class Opt<T> {
     /**
      * Actual logic to do the if-else dispatch in case the value is available.
      */
-    private final BiFunction<Consumer<T>, Runnable, Void> ifPresent = (present, notPresent) -> {
-        if (this.optional.isPresent()) {
-            present.accept(this.optional.get());
-        } else {
-            notPresent.run();
-        }
-        return null;
-    };
+    private final BiFunction<Consumer<T>, Runnable, Void> ifPresent;
 
     /**
      * Actual logic to do the if-else dispatch in case the value is NOT available.
      */
-    private final BiFunction<Runnable, Consumer<T>, Void> ifNotPresent = (notPresent, present) -> {
-        if (!this.optional.isPresent()) {
-            notPresent.run();
-        } else {
-            present.accept(this.optional.get());
-        }
-        return null;
-    };
+    private final BiFunction<Runnable, Consumer<T>, Void> ifNotPresent;
 
     /**
      * Private constructor. Use the static methods to create Opt instances.
@@ -66,6 +52,24 @@ public final class Opt<T> {
      */
     private Opt(final Optional<T> theOptional) {
         this.optional = theOptional;
+
+        this.ifPresent = (present, notPresent) -> {
+            if (this.optional.isPresent()) {
+                present.accept(this.optional.get());
+            } else {
+                notPresent.run();
+            }
+            return null;
+        };
+
+        this.ifNotPresent = (notPresent, present) -> {
+            if (!this.optional.isPresent()) {
+                notPresent.run();
+            } else {
+                present.accept(this.optional.get());
+            }
+            return null;
+        };
     }
 
     /**
@@ -122,7 +126,8 @@ public final class Opt<T> {
      *
      * @param <T>
      *            type
-     * @return empty Opt instance
+     * @return empty Opt instance public Opt(Optional<T> optional) { super(); this.optional =
+     *         optional; }
      */
     public static <T> Opt<T> empty() {
         return new Opt<>(Optional.empty());

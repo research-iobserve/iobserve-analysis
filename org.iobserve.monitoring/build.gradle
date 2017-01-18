@@ -1,3 +1,6 @@
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
 if (version.isEmpty()) {
 	System.err.println("version not set")
 }
@@ -34,3 +37,4 @@ install {
         pom.artifactId = 'monitoring'
     }
 }
+
