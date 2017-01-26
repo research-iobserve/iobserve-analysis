@@ -19,9 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -37,6 +34,9 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
 
 /**
  * Main class for starting the iObserve application.

@@ -17,15 +17,12 @@ package org.iobserve.analysis;
 
 import java.io.IOException;
 
-import teetime.framework.Configuration;
-
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
+import org.iobserve.analysis.filter.TBehaviorModelPreperation;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
-import org.iobserve.analysis.filter.TEntryEventSequence;
-import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -33,6 +30,8 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+
+import teetime.framework.Configuration;
 
 /**
  * @author Reiner Jung
@@ -88,20 +87,26 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 systemModelProvider, resourceEnvironmentModelProvider);
         final TEntryCall tEntryCall = new TEntryCall();
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
-        final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
-                repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
-        final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
+        // final TEntryEventSequence tEntryEventSequence = new
+        // TEntryEventSequence(correspondenceModel, usageModelProvider,
+        // repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+        // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
+        // systemModelProvider,
+        // resourceEnvironmentModelProvider);
+        final TBehaviorModelPreperation tBehaviorModelPreperation = new TBehaviorModelPreperation();
 
         /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
         this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), tUndeployment.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
-        this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
+        // this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
         this.connectPorts(tAllocation.getDeploymentOutputPort(), tDeployment.getInputPort());
         this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
-        this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
+        // this.connectPorts(tEntryCallSequence.getOutputPort(),
+        // tEntryEventSequence.getInputPort());
+        this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
+                tBehaviorModelPreperation.getInputPort());
     }
 
     public RecordSwitch getRecordSwitch() {
