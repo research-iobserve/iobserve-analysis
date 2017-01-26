@@ -142,11 +142,16 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         // this can not happen since TAllocation should have created the resource container already.
         Opt.of(optResourceContainer).ifPresent()
                 .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName))
-                .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n"));
+                .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n", asmContextName));
 
         // get the assembly context. Create it if necessary
+        //AssemblyContext assemblyContext = SystemModelBuilder
+//        		.getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName).get();
+        
+        //Fix By Tobias Pöppke
+        //get the assembly context. Create it if necessary
         AssemblyContext assemblyContext = SystemModelBuilder
-                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName).get();
+                        .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName).orElse(null);
 
         // in case the assembly context is null, TDeployment should create it
         if (assemblyContext == null) {
