@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 
@@ -40,7 +40,7 @@ import teetime.framework.OutputPort;
  *
  * @version 1.0
  */
-public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEvent> {
+public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntryCallEvent> {
 
     /** threshold for user session elements until their are send to the next filter. */
     private static final int USER_SESSION_THRESHOLD = 0;
@@ -60,7 +60,7 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
     }
 
     @Override
-    protected void execute(final EntryCallEvent event) {
+    protected void execute(final ExtendedEntryCallEvent event) {
         // add the event to the corresponding user session
         // in case the user session is not yet available, create one
         final String userSessionId = UserSession.parseUserSessionId(event);

@@ -24,6 +24,9 @@ sourceCompatibility = 1.8
 dependencies {
 	compile gradleApi()
 	compile project(":org.iobserve.common")
+	
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'

@@ -18,17 +18,18 @@ package org.iobserve.analysis.filter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.iobserve.analysis.data.ExtendedAfterOperationEvent;
+import org.iobserve.analysis.data.ExtendedBeforeOperationEvent;
+import org.iobserve.analysis.data.ExtendedEntryCallEvent;
+
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
-
-import org.iobserve.analysis.data.EntryCallEvent;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and
@@ -47,7 +48,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     /** map of before operation events. */
     private final Map<Long, BeforeOperationEvent> beforeOperationEvents = new HashMap<>();
     /** output port. */
-    private final OutputPort<EntryCallEvent> outputPort = this.createOutputPort();
+    private final OutputPort<ExtendedEntryCallEvent> outputPort = this.createOutputPort();
 
     /**
      * Does not need additional information.
@@ -92,9 +93,30 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                         && beforeOperationEvent.getOperationSignature()
                                 .equals(afterOperationEvent.getOperationSignature())) {
 
-                    this.outputPort.send(new EntryCallEvent(beforeOperationEvent.getTimestamp(),
+                    /** check for extended events **/
+                    String callInformations = null;
+
+                    if (beforeOperationEvent instanceof ExtendedBeforeOperationEvent) {
+                        final ExtendedBeforeOperationEvent extendedBeforeOperationEvent = (ExtendedBeforeOperationEvent) beforeOperationEvent;
+                        callInformations = extendedBeforeOperationEvent.getInformations();
+
+                    }
+
+                    if (afterOperationEvent instanceof ExtendedAfterOperationEvent) {
+                        final ExtendedAfterOperationEvent extendedAfterOperationEvent = (ExtendedAfterOperationEvent) afterOperationEvent;
+                        final String newInformations = extendedAfterOperationEvent.getInformations();
+
+                        callInformations = callInformations == null ? newInformations
+                                : callInformations.replace("]", ",") + newInformations.replaceAll("[", "");
+
+                    }
+                    // TODO remove
+                    System.out.println("Added Information: \n" + callInformations);
+
+                    this.outputPort.send(new ExtendedEntryCallEvent(beforeOperationEvent.getTimestamp(),
                             afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
-                            beforeOperationEvent.getClassSignature(), metaData.getSessionId(), metaData.getHostname()));
+                            beforeOperationEvent.getClassSignature(), metaData.getSessionId(), metaData.getHostname(),
+                            callInformations));
                 }
             }
         } else {
@@ -105,7 +127,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     /**
      * @return output port
      */
-    public OutputPort<EntryCallEvent> getOutputPort() {
+    public OutputPort<ExtendedEntryCallEvent> getOutputPort() {
         return this.outputPort;
     }
 
