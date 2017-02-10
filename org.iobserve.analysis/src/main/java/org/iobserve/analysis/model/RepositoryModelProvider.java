@@ -15,10 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
@@ -32,8 +29,6 @@ import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
-import org.palladiosimulator.pcm.seff.ResourceDemandingSEFF;
-import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
 
 /**
  * Model provider to provide {@link Repository} model.
@@ -45,8 +40,6 @@ import org.palladiosimulator.pcm.seff.ServiceEffectSpecification;
  */
 public final class RepositoryModelProvider extends AbstractModelProvider<Repository> {
 
-    /** list of basic components. */
-    private List<BasicComponent> basicComponents;
     /** map of operation interfaces mapped by id. */
     private Map<String,OperationInterface> operationInterfaceMap;
     /** map of operation signatures mapped by id. */
@@ -65,28 +58,27 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
      */
     public RepositoryModelProvider(final URI uriRepositoryModel) {
         super(uriRepositoryModel);
-        this.loadAllBasicComponents();
-        this.loadAllOperationInterfaces();
+        loadData();
     }
 
     @Override
     public void resetModel() {
         // nothing to do
     }
-
+    
     /**
-     * Load all basic components.
+     * Loading and initializing the maps for data access.
      */
-    private void loadAllBasicComponents() {
-        this.basicComponents = new ArrayList<>();
-        
-        this.opInfToProvInfMap = new HashMap<>();
+    private void loadData() {
+    	this.opInfToProvInfMap = new HashMap<>();
         this.opProvidedRoleMap = new HashMap<>();
-        
+    	this.operationInterfaceMap = new HashMap<>();
+        this.operationSignatureMap = new HashMap<>();
+    	
+        // loading OperationProvidedRoles and OperationInterfaces in dedicated maps
         for (final RepositoryComponent nextRepoCmp : this.getModel().getComponents__Repository()) {
             if (nextRepoCmp instanceof BasicComponent) {
                 final BasicComponent basicCmp = (BasicComponent) nextRepoCmp;
-                this.basicComponents.add(basicCmp);
                 
                 for(final ProvidedRole providedRole : basicCmp.getProvidedRoles_InterfaceProvidingEntity()) {
                 	if(providedRole instanceof OperationProvidedRole) {
@@ -98,15 +90,8 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
                 }
             }
         }
-    }
-
-    /**
-     * Load all operation interfaces.
-     */
-    private void loadAllOperationInterfaces() {
-        this.operationInterfaceMap = new HashMap<>();
-        this.operationSignatureMap = new HashMap<>();
         
+    	// loading OperationInterfaces and OperationSignatures in dedicated maps
         for (final Interface nextInterface : this.getModel().getInterfaces__Repository()) {
             if (nextInterface instanceof OperationInterface) {
                 final OperationInterface opInf = (OperationInterface) nextInterface;
@@ -125,20 +110,6 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
     }
 
     /**
-     * @return list of basic components
-     */
-    public List<BasicComponent> getBasicComponents() {
-        return this.basicComponents;
-    }
-
-    /**
-     * @return list of all operation interfaces
-     */
-    public Collection<OperationInterface> getOperationInterfaces() {
-        return this.operationInterfaceMap.values();
-    }
-
-    /**
      * Get the {@link OperationSignature} with the given signature. The comparison is done by the
      * {@link OperationSignature#getEntityName()}.
      *
@@ -149,41 +120,6 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
      */
     public OperationSignature getOperationSignature(final String operationID) {
     	return this.operationSignatureMap.get(operationID);
-    }
-
-    /**
-     * Get the {@link BasicComponent} with the given operation signature.
-     *
-     * @param operationID
-     *            operation id
-     * @return basic component instance or null if no basic component with the given signature could
-     *         be found
-     *
-     */
-    public BasicComponent getBasicComponent(final String operationID) {
-        for (final BasicComponent nextBasicCmp : this.basicComponents) {
-            for (final ServiceEffectSpecification nextSerEffSpec : nextBasicCmp
-                    .getServiceEffectSpecifications__BasicComponent()) {
-                if (nextSerEffSpec instanceof ResourceDemandingSEFF) {
-                    final ResourceDemandingSEFF rdSeff = (ResourceDemandingSEFF) nextSerEffSpec;
-                    if (operationID.equalsIgnoreCase(rdSeff.getId())) {
-                        return nextBasicCmp;
-                    }
-                }
-            }
-            for(final ProvidedRole providedRole : nextBasicCmp.getProvidedRoles_InterfaceProvidingEntity()) {
-            	if(providedRole instanceof OperationProvidedRole) {
-            		final OperationProvidedRole opProvRole = (OperationProvidedRole) providedRole;
-            		final OperationInterface opInterface = opProvRole.getProvidedInterface__OperationProvidedRole();
-            		for(OperationSignature interfaceSignature : opInterface.getSignatures__OperationInterface()) {
-            			if(operationID.equalsIgnoreCase(interfaceSignature.getId())) {
-            				return nextBasicCmp;
-            			}
-            		}
-            	}
-            }
-        }
-        return null;
     }
 
     /**

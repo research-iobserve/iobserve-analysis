@@ -226,8 +226,8 @@ public final class UsageModelBuilder {
      *            operation id of the EntryLevelSystemCall
      * @return null, if the creation failed, the instance if not.
      */
-    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryModelProvider repositoryModelProvider,
-    		final String operationID) {
+    public static EntryLevelSystemCall createEntryLevelSystemCall(
+    		final RepositoryModelProvider repositoryModelProvider, final String operationID) {
     	
     	final OperationSignature opSig = repositoryModelProvider.getOperationSignature(operationID);
         final EntryLevelSystemCall eSysCall;
@@ -257,8 +257,8 @@ public final class UsageModelBuilder {
      *            correspondent containing operation signature
      * @return null, if the creation failed, the instance if not.
      */
-    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryModelProvider repositoryModelProvider,
-            final Correspondent correspondent) {
+    public static EntryLevelSystemCall createEntryLevelSystemCall(
+    		final RepositoryModelProvider repositoryModelProvider, final Correspondent correspondent) {
         return UsageModelBuilder.createEntryLevelSystemCall(repositoryModelProvider,
                 correspondent.getPcmOperationId());
     }

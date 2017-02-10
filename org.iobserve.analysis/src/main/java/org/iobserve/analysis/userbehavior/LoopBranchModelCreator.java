@@ -33,7 +33,9 @@ import org.iobserve.analysis.userbehavior.data.LoopElement;
  * This class contains all necessary methods to detect iterated behavior and to replace the iterated
  * segments by loop elements including the number of iterations as loop counts.
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter
+ * @author Robert Heinrich
+ * @author Nicolas Boltz
  */
 public class LoopBranchModelCreator {
 
@@ -53,6 +55,9 @@ public class LoopBranchModelCreator {
     public void detectLoopsInCallBranchModel(final BranchModel branchModel) {
         // Detects Loops within the branches, starting at the root branch
         this.detectLoopsWithinBranch(branchModel.getRootBranch());
+        
+        // Detects if only one big loop is in the models root branch
+        this.checkForOuterLoopInBranchModel(branchModel);
     }
 
     /**
@@ -162,6 +167,9 @@ public class LoopBranchModelCreator {
                     for (final LoopElement loopElement : loopElements) {
                         this.detectLoopsWithinBranchSequence(loopElement.getLoopSequence());
                     }
+                    
+                    
+                    
                     // Inserts the loops into the branch
                     this.insertLoopsIntoBranch(loopElements, branchSequence);
                 }
@@ -442,6 +450,34 @@ public class LoopBranchModelCreator {
         loopElement.setNumberOfReplacedElements(loopCount * loopElement.getLoopSequence().size());
         loopElement.setEndIndexInBranchSequence(
                 (loopElement.getStartIndexInBranchSequence() + loopElement.getNumberOfReplacedElements()) - 1);
+    }
+    
+    /**
+     * Checks whether the BranchModel consists only out of a loop. 
+     * Since this analysis would be wrong the outer loop will be substituted with its inner sequence 
+     * and the population of the workload is adjusted accordingly-
+     * 
+     * @param branchModel
+     * 			BranchModel of a single UserBehaviour
+     * 
+     * @deprecated the AvgNumberOfConcurrentUsers has to be calculated differently.
+     * 			mapping of login and logout events.
+     */
+    private void checkForOuterLoopInBranchModel(BranchModel branchModel) {
+        if(branchModel.getRootBranch().getBranchSequence().size() <= 2) {
+        	// only one element in user behavior sequence
+        	if(branchModel.getRootBranch().getBranchSequence().get(0).getClass().equals(LoopElement.class)) { 
+        		// user behavior consists of a loop which needs to be removed and settings altered accordingly
+        		
+        		LoopElement removeLoop = (LoopElement)branchModel.getRootBranch().getBranchSequence().get(0);
+        		
+        		// setting the population of the user group
+        		branchModel.getWorkloadIntensity().setAvgNumberOfConcurrentUsers(removeLoop.getLoopCount());
+        		
+        		// substituting the loop for its inner sequence
+        		branchModel.getRootBranch().setBranchSequence(removeLoop.getLoopSequence());
+        	}
+        }
     }
 
 }

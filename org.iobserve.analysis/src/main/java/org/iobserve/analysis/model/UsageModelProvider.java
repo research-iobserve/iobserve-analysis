@@ -26,6 +26,7 @@ import org.palladiosimulator.pcm.usagemodel.UserData;
  * Model provider to provide a {@link UsageModel}.
  *
  * @author Robert Heinrich
+ * @author Nicolas Boltz
  * @author Alessandro Giusa
  *
  */
@@ -48,7 +49,6 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
 
     /**
      * Reset the model. This will delete all {@link UsageScenario} and {@link UserData} instances.
-     *
      */
     @Override
     public void resetModel() {
@@ -57,6 +57,14 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
         model.getUserData_UsageModel().clear();
     }
     
+    /**
+     * Updates the values of the current model to the values of the passed model.
+     * 
+     * @param newModel
+     *            UsageModel with new {@link UsageScenario} and {@link UserData} to be set.
+     *            
+     * @see resetModel() 
+     */
     public void updateModel(UsageModel newModel) {
     	this.resetModel();
     	final UsageModel model = this.getModel();

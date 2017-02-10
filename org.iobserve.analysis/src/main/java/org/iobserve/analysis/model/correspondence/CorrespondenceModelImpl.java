@@ -37,6 +37,7 @@ import org.iobserve.analysis.utils.StringUtils;
  * @author Robert Heinrich
  * @author Nicolas Boltz
  * @author Alessandro Giusa
+ * 
  */
 class CorrespondenceModelImpl implements ICorrespondence {
 
@@ -121,6 +122,9 @@ class CorrespondenceModelImpl implements ICorrespondence {
     // * MAPPING
     // ********************************************************************
 
+    /**
+     * Returns whether or not a correspondent is contained in the model.
+     */
     public boolean containsCorrespondent(String classSig, String operationSig) {
     	return getCorrespondent(classSig, operationSig).isPresent();
     }
