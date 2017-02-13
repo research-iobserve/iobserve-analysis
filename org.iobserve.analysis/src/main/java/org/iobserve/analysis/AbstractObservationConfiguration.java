@@ -16,14 +16,17 @@
 package org.iobserve.analysis;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
-import org.iobserve.analysis.filter.TBehaviorModelPreperation;
+import org.iobserve.analysis.filter.TBehaviorModelTableGeneration;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
 import org.iobserve.analysis.filter.TUndeployment;
+import org.iobserve.analysis.filter.models.EditableBehaviorModelTable;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -93,7 +96,13 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
         // systemModelProvider,
         // resourceEnvironmentModelProvider);
-        final TBehaviorModelPreperation tBehaviorModelPreperation = new TBehaviorModelPreperation();
+
+        final List<String> filterBlackList = new ArrayList<>();
+        filterBlackList.add("(jpetstore\\.images).*\\)");
+        filterBlackList.add("(jpetstore\\.css).*\\)");
+
+        final EditableBehaviorModelTable modelTable = new EditableBehaviorModelTable(filterBlackList, true);
+        final TBehaviorModelTableGeneration tBehaviorModelGeneration = new TBehaviorModelTableGeneration(modelTable);
 
         /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
@@ -106,7 +115,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // this.connectPorts(tEntryCallSequence.getOutputPort(),
         // tEntryEventSequence.getInputPort());
         this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
-                tBehaviorModelPreperation.getInputPort());
+                tBehaviorModelGeneration.getInputPort());
     }
 
     public RecordSwitch getRecordSwitch() {

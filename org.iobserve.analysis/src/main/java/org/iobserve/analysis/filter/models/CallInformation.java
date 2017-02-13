@@ -23,15 +23,8 @@ package org.iobserve.analysis.filter.models;
  */
 
 public class CallInformation {
-    private String informationSignature;
-    private long informationCode;
-
-    /**
-     * base constructor
-     */
-    public CallInformation() {
-        // nothing
-    }
+    private final String informationSignature;
+    private final long informationCode;
 
     /**
      * constructor
@@ -57,32 +50,12 @@ public class CallInformation {
     }
 
     /**
-     * setter
-     *
-     * @param informationSignature
-     *            informationSignature
-     */
-    public void setInformationSignature(final String informationSignature) {
-        this.informationSignature = informationSignature;
-    }
-
-    /**
      * getter
      *
      * @return informationCode
      */
     public long getInformationCode() {
         return this.informationCode;
-    }
-
-    /**
-     * setter
-     *
-     * @param informationCode
-     *            informationCode
-     */
-    public void setInformationCode(final long informationCode) {
-        this.informationCode = informationCode;
     }
 
 }

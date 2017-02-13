@@ -29,6 +29,6 @@ public class EntryCallNode {
     List<EntryCallEdge> incommingEdges;
     List<EntryCallEdge> outgoingEdges;
 
-    List<AbstractEntryCallInformation> entryCallInformation;
+    List<CallInformation> entryCallInformation;
 
 }

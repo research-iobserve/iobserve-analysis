@@ -93,36 +93,64 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
     private static Map<String, Integer> codes;
 
     /** Category Codes **/
-    private static final int CATEGORY_FISH = 100;
-    private static final int CATEGORY_DOGS = 200;
-    private static final int CATEGORY_REPTILES = 300;
-    private static final int CATEGORY_CATS = 400;
-    private static final int CATEGORY_BIRDS = 500;
+    private static final int CATEGORY_FISH = 1000;
+    private static final int CATEGORY_DOGS = 2000;
+    private static final int CATEGORY_REPTILES = 3000;
+    private static final int CATEGORY_CATS = 4000;
+    private static final int CATEGORY_BIRDS = 5000;
 
     /** Product Codes **/
-    private static final int PRODUCT_FI_SW_01 = 100;
-    private static final int PRODUCT_FI_SW_02 = 101;
-    private static final int PRODUCT_FI_FW_01 = 110;
-    private static final int PRODUCT_FI_FW_02 = 111;
+    private static final int PRODUCT_FI_SW_01 = 1000;
+    private static final int ITEM_EST_1 = 1000;
+    private static final int ITEM_EST_2 = 1001;
+    private static final int PRODUCT_FI_SW_02 = 1010;
+    private static final int ITEM_EST_3 = 1010;
+    private static final int PRODUCT_FI_FW_01 = 1100;
+    private static final int ITEM_EST_4 = 1100;
+    private static final int ITEM_EST_5 = 1101;
+    private static final int PRODUCT_FI_FW_02 = 1110;
+    private static final int ITEM_EST_20 = 1110;
+    private static final int ITEM_EST_21 = 1111;
 
-    private static final int PRODUCT_K9_BD_01 = 200;
-    private static final int PRODUCT_K9_PO_02 = 203;
-    private static final int PRODUCT_K9_DL_01 = 206;
-    private static final int PRODUCT_K9_RT_01 = 209;
-    private static final int PRODUCT_K9_RT_02 = 210;
-    private static final int PRODUCT_K9_CW_01 = 213;
+    private static final int PRODUCT_K9_BD_01 = 2000;
+    private static final int ITEM_EST_6 = 2000;
+    private static final int ITEM_EST_7 = 2001;
+    private static final int PRODUCT_K9_PO_02 = 2030;
+    private static final int ITEM_EST_8 = 2030;
+    private static final int PRODUCT_K9_DL_01 = 2060;
+    private static final int ITEM_EST_9 = 2060;
+    private static final int ITEM_EST_10 = 2061;
+    private static final int PRODUCT_K9_RT_01 = 2090;
+    private static final int ITEM_EST_28 = 2090;
+    private static final int PRODUCT_K9_RT_02 = 2100;
+    private static final int ITEM_EST_22 = 2100;
+    private static final int ITEM_EST_23 = 2101;
+    private static final int ITEM_EST_24 = 2102;
+    private static final int ITEM_EST_25 = 2103;
+    private static final int PRODUCT_K9_CW_01 = 2130;
+    private static final int ITEM_EST_26 = 2130;
+    private static final int ITEM_EST_27 = 2131;
 
-    private static final int PRODUCT_RP_SN_01 = 300;
-    private static final int PRODUCT_RP_LI_02 = 320;
+    private static final int PRODUCT_RP_SN_01 = 3000;
+    private static final int ITEM_EST_11 = 3000;
+    private static final int ITEM_EST_12 = 3001;
+    private static final int PRODUCT_RP_LI_02 = 3200;
+    private static final int ITEM_EST_13 = 3200;
 
-    private static final int PRODUCT_FL_DSH_01 = 400;
-    private static final int PRODUCT_FL_DLH_02 = 401;
+    private static final int PRODUCT_FL_DSH_01 = 4000;
+    private static final int ITEM_EST_14 = 4000;
+    private static final int ITEM_EST_15 = 4001;
+    private static final int PRODUCT_FL_DLH_02 = 4010;
+    private static final int ITEM_EST_16 = 4010;
+    private static final int ITEM_EST_17 = 4011;
 
-    private static final int PRODUCT_AV_CB_01 = 500;
-    private static final int PRODUCT_AV_SB_02 = 505;
+    private static final int PRODUCT_AV_CB_01 = 5000;
+    private static final int ITEM_EST_18 = 5000;
+    private static final int PRODUCT_AV_SB_02 = 5050;
+    private static final int ITEM_EST_19 = 5050;
 
     /** boolean codes **/
-    private static final int BOOL_TRUE = 500;
+    private static final int BOOL_TRUE = 5000;
     private static final int BOOL_FALSE = 0;
 
     // private static final Log LOG =
@@ -181,6 +209,65 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                 SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_AV_CB_01);
         SessionAndTraceRegistrationFilterForJPetstore.codes.put("AV-SB-02",
                 SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_AV_SB_02);
+
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-1",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_1);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-2",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_2);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-3",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_3);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-4",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_4);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-5",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_5);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-6",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_6);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-7",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_7);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-8",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_8);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-9",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_9);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-10",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_10);
+
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-11",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_11);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-12",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_12);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-13",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_13);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-14",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_14);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-15",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_15);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-16",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_16);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-17",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_17);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-18",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_18);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-19",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_19);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-20",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_20);
+
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-21",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_21);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-22",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_22);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-23",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_23);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-24",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_24);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-25",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_25);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-26",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_26);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-27",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_27);
+        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-28",
+                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_28);
 
         SessionAndTraceRegistrationFilterForJPetstore.codes.put("true",
                 SessionAndTraceRegistrationFilterForJPetstore.BOOL_TRUE);

@@ -18,19 +18,18 @@ package org.iobserve.analysis.filter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import kieker.common.record.IMonitoringRecord;
-import kieker.common.record.flow.IFlowRecord;
-import kieker.common.record.flow.trace.TraceMetadata;
-import kieker.common.record.misc.KiekerMetadataRecord;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.IUndeploymentRecord;
 import org.iobserve.common.record.ServletTraceHelper;
+
+import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.flow.IFlowRecord;
+import kieker.common.record.flow.trace.TraceMetadata;
+import kieker.common.record.misc.KiekerMetadataRecord;
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 /**
  * The record switch filter is used to scan the event stream and send events based on their type to
@@ -91,13 +90,17 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             final String className = element.getClass().getCanonicalName();
             Integer hits = this.unknownRecords.get(className);
             if (hits == null) {
-                RecordSwitch.LOGGER.error("Configuration error: New unknown event type " + className);
+                // TODO uncomment
+                // RecordSwitch.LOGGER.error("Configuration error: New unknown event type " +
+                // className);
                 this.unknownRecords.put(className, Integer.valueOf(1));
             } else {
                 hits++;
                 this.unknownRecords.put(className, hits);
                 if ((hits % 100) == 0) {
-                    RecordSwitch.LOGGER.error("Event occurances " + hits + " of unknown event type " + className);
+                    // TODO uncomment
+                    // RecordSwitch.LOGGER.error("Event occurances " + hits + " of unknown event
+                    // type " + className);
                 }
             }
         }
