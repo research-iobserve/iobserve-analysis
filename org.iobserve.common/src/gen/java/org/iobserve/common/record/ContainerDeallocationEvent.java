@@ -1,48 +1,35 @@
-/***************************************************************************
- * Copyright 2016 iObserve Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ***************************************************************************/
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
-
 import org.iobserve.common.record.ContainerEvent;
+import kieker.common.util.registry.IRegistry;
+
 import org.iobserve.common.record.IDeallocationRecord;
 
 /**
- * @author Generic Kieker
+ * @author iObserve
  * 
- * @since 1.13
+ * @since 1.0
  */
 public class ContainerDeallocationEvent extends ContainerEvent implements IDeallocationRecord {
-	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_STRING // ContainerEvent.url
-	;
 	private static final long serialVersionUID = 4775916963006881196L;
+
+		/** Descriptive definition of the serialization size of the record. */
+		public static final int SIZE = TYPE_SIZE_STRING // ContainerEvent.url
+		;
 	
-	public static final Class<?>[] TYPES = {
-		String.class, // ContainerEvent.url
-	};
+		public static final Class<?>[] TYPES = {
+			String.class, // ContainerEvent.url
+		};
 	
-	/* user-defined constants */
-	/* default constants */
-	/* property declarations */
+	/** user-defined constants */
+
+	/** default constants */
+
+	/** property declarations */
 
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -64,7 +51,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	public ContainerDeallocationEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
 	}
-	
+
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
 	 * 
@@ -99,7 +86,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 			this.getUrl()
 		};
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -107,7 +94,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
 		stringRegistry.get(this.getUrl());
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -115,7 +102,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
 		buffer.putInt(stringRegistry.get(this.getUrl()));
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -123,7 +110,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	public Class<?>[] getValueTypes() {
 		return TYPES; // NOPMD
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -131,6 +118,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	public int getSize() {
 		return SIZE;
 	}
+
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -141,7 +129,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	public void initFromArray(final Object[] values) {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -152,7 +140,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -167,5 +155,5 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 		if (!this.getUrl().equals(castedRecord.getUrl())) return false;
 		return true;
 	}
-
+	
 }

@@ -7,5 +7,7 @@ import kieker.common.record.IMonitoringRecord;
  * 
  * @since 1.0
  */
-public interface IDeploymentRecord extends IMonitoringRecord {
+public interface ISessionEvent extends IMonitoringRecord {
+	public String getSessionId() ;
+	
 }

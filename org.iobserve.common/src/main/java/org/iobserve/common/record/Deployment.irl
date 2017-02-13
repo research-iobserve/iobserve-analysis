@@ -78,3 +78,10 @@ entity ServerGeoLocation extends AbstractEvent : GeoLocation {
 	string hostname
 	string address
 }
+
+template ISessionEvent {
+	string sessionId
+}
+
+entity SessionStartEvent : ISessionEvent
+entity SessionStopEvent : ISessionEvent
