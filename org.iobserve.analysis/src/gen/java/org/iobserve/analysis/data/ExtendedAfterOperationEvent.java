@@ -16,32 +16,32 @@ import kieker.common.util.registry.IRegistry;
 public class ExtendedAfterOperationEvent extends AfterOperationEvent  {
 	private static final long serialVersionUID = 3994979942290429866L;
 
-	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
-			 + TYPE_SIZE_LONG // ITraceRecord.traceId
-			 + TYPE_SIZE_INT // ITraceRecord.orderIndex
-			 + TYPE_SIZE_STRING // IOperationSignature.operationSignature
-			 + TYPE_SIZE_STRING // IClassSignature.classSignature
-			 + TYPE_SIZE_STRING // ExtendedAfterOperationEvent.informations
-	;
+		/** Descriptive definition of the serialization size of the record. */
+		public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
+				 + TYPE_SIZE_LONG // AbstractTraceEvent.traceId
+				 + TYPE_SIZE_INT // AbstractTraceEvent.orderIndex
+				 + TYPE_SIZE_STRING // AbstractOperationEvent.operationSignature
+				 + TYPE_SIZE_STRING // AbstractOperationEvent.classSignature
+				 + TYPE_SIZE_STRING // ExtendedAfterOperationEvent.informations
+		;
 	
-	public static final Class<?>[] TYPES = {
-		long.class, // IEventRecord.timestamp
-		long.class, // ITraceRecord.traceId
-		int.class, // ITraceRecord.orderIndex
-		String.class, // IOperationSignature.operationSignature
-		String.class, // IClassSignature.classSignature
-		String.class, // ExtendedAfterOperationEvent.informations
-	};
+		public static final Class<?>[] TYPES = {
+			long.class, // AbstractEvent.timestamp
+			long.class, // AbstractTraceEvent.traceId
+			int.class, // AbstractTraceEvent.orderIndex
+			String.class, // AbstractOperationEvent.operationSignature
+			String.class, // AbstractOperationEvent.classSignature
+			String.class, // ExtendedAfterOperationEvent.informations
+		};
 	
 	/** user-defined constants */
-	
+
 	/** default constants */
 	public static final String INFORMATIONS = "";
-	
+
 	/** property declarations */
 	private final String informations;
-	
+
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 

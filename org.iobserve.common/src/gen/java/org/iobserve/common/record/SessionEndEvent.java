@@ -4,8 +4,7 @@ import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import kieker.common.record.AbstractMonitoringRecord;
-import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.flow.AbstractEvent;
 import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.ISessionEvent;
@@ -15,14 +14,16 @@ import org.iobserve.common.record.ISessionEvent;
  * 
  * @since 1.0
  */
-public class SessionStopEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ISessionEvent {
-	private static final long serialVersionUID = -2100445756170635505L;
+public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
+	private static final long serialVersionUID = -2981998362744145083L;
 
 		/** Descriptive definition of the serialization size of the record. */
-		public static final int SIZE = TYPE_SIZE_STRING // ISessionEvent.sessionId
+		public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
+				 + TYPE_SIZE_STRING // ISessionEvent.sessionId
 		;
 	
 		public static final Class<?>[] TYPES = {
+			long.class, // AbstractEvent.timestamp
 			String.class, // ISessionEvent.sessionId
 		};
 	
@@ -37,10 +38,13 @@ public class SessionStopEvent extends AbstractMonitoringRecord implements IMonit
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
+	 * @param timestamp
+	 *            timestamp
 	 * @param sessionId
 	 *            sessionId
 	 */
-	public SessionStopEvent(final String sessionId) {
+	public SessionEndEvent(final long timestamp, final String sessionId) {
+		super(timestamp);
 		this.sessionId = sessionId == null?"":sessionId;
 	}
 
@@ -51,9 +55,9 @@ public class SessionStopEvent extends AbstractMonitoringRecord implements IMonit
 	 * @param values
 	 *            The values for the record.
 	 */
-	public SessionStopEvent(final Object[] values) { // NOPMD (direct store of values)
-		AbstractMonitoringRecord.checkArray(values, TYPES);
-		this.sessionId = (String) values[0];
+	public SessionEndEvent(final Object[] values) { // NOPMD (direct store of values)
+		super(values, TYPES);
+		this.sessionId = (String) values[1];
 	}
 
 	/**
@@ -64,9 +68,9 @@ public class SessionStopEvent extends AbstractMonitoringRecord implements IMonit
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 */
-	protected SessionStopEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.sessionId = (String) values[0];
+	protected SessionEndEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
+		super(values, valueTypes);
+		this.sessionId = (String) values[1];
 	}
 
 	/**
@@ -78,7 +82,8 @@ public class SessionStopEvent extends AbstractMonitoringRecord implements IMonit
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
 	 */
-	public SessionStopEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
+	public SessionEndEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
+		super(buffer, stringRegistry);
 		this.sessionId = stringRegistry.get(buffer.getInt());
 	}
 
@@ -88,6 +93,7 @@ public class SessionStopEvent extends AbstractMonitoringRecord implements IMonit
 	@Override
 	public Object[] toArray() {
 		return new Object[] {
+			this.getTimestamp(),
 			this.getSessionId()
 		};
 	}
@@ -105,6 +111,7 @@ public class SessionStopEvent extends AbstractMonitoringRecord implements IMonit
 	 */
 	@Override
 	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
+		buffer.putLong(this.getTimestamp());
 		buffer.putInt(stringRegistry.get(this.getSessionId()));
 	}
 	
@@ -155,8 +162,9 @@ public class SessionStopEvent extends AbstractMonitoringRecord implements IMonit
 		if (obj == this) return true;
 		if (obj.getClass() != this.getClass()) return false;
 		
-		final SessionStopEvent castedRecord = (SessionStopEvent) obj;
+		final SessionEndEvent castedRecord = (SessionEndEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
+		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
 		if (!this.getSessionId().equals(castedRecord.getSessionId())) return false;
 		return true;
 	}

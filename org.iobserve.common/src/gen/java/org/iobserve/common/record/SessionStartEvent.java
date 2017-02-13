@@ -4,8 +4,7 @@ import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import kieker.common.record.AbstractMonitoringRecord;
-import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.flow.AbstractEvent;
 import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.ISessionEvent;
@@ -15,14 +14,16 @@ import org.iobserve.common.record.ISessionEvent;
  * 
  * @since 1.0
  */
-public class SessionStartEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ISessionEvent {
-	private static final long serialVersionUID = 6762232905469701352L;
+public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
+	private static final long serialVersionUID = 8782471108840749134L;
 
 		/** Descriptive definition of the serialization size of the record. */
-		public static final int SIZE = TYPE_SIZE_STRING // ISessionEvent.sessionId
+		public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
+				 + TYPE_SIZE_STRING // ISessionEvent.sessionId
 		;
 	
 		public static final Class<?>[] TYPES = {
+			long.class, // AbstractEvent.timestamp
 			String.class, // ISessionEvent.sessionId
 		};
 	
@@ -37,10 +38,13 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
+	 * @param timestamp
+	 *            timestamp
 	 * @param sessionId
 	 *            sessionId
 	 */
-	public SessionStartEvent(final String sessionId) {
+	public SessionStartEvent(final long timestamp, final String sessionId) {
+		super(timestamp);
 		this.sessionId = sessionId == null?"":sessionId;
 	}
 
@@ -52,8 +56,8 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	 *            The values for the record.
 	 */
 	public SessionStartEvent(final Object[] values) { // NOPMD (direct store of values)
-		AbstractMonitoringRecord.checkArray(values, TYPES);
-		this.sessionId = (String) values[0];
+		super(values, TYPES);
+		this.sessionId = (String) values[1];
 	}
 
 	/**
@@ -65,8 +69,8 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	 *            The types of the elements in the first array.
 	 */
 	protected SessionStartEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.sessionId = (String) values[0];
+		super(values, valueTypes);
+		this.sessionId = (String) values[1];
 	}
 
 	/**
@@ -79,6 +83,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	 *             if buffer not sufficient
 	 */
 	public SessionStartEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
+		super(buffer, stringRegistry);
 		this.sessionId = stringRegistry.get(buffer.getInt());
 	}
 
@@ -88,6 +93,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	@Override
 	public Object[] toArray() {
 		return new Object[] {
+			this.getTimestamp(),
 			this.getSessionId()
 		};
 	}
@@ -105,6 +111,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	 */
 	@Override
 	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
+		buffer.putLong(this.getTimestamp());
 		buffer.putInt(stringRegistry.get(this.getSessionId()));
 	}
 	
@@ -157,6 +164,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 		
 		final SessionStartEvent castedRecord = (SessionStartEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
+		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
 		if (!this.getSessionId().equals(castedRecord.getSessionId())) return false;
 		return true;
 	}

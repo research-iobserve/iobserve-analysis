@@ -83,5 +83,5 @@ template ISessionEvent {
 	string sessionId
 }
 
-entity SessionStartEvent : ISessionEvent
-entity SessionStopEvent : ISessionEvent
+entity SessionStartEvent extends AbstractEvent : ISessionEvent
+entity SessionEndEvent extends AbstractEvent : ISessionEvent
