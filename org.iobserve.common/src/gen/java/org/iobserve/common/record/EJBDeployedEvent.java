@@ -1,54 +1,41 @@
-/***************************************************************************
- * Copyright 2016 iObserve Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ***************************************************************************/
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
-
 import org.iobserve.common.record.EJBDeploymentEvent;
+import kieker.common.util.registry.IRegistry;
+
 import org.iobserve.common.record.IDeploymentRecord;
 
 /**
- * @author Generic Kieker
+ * @author iObserve
  * 
- * @since 1.13
+ * @since 1.0
  */
 public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentRecord {
-	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
-			 + TYPE_SIZE_STRING // EJBDeploymentEvent.serivce
-			 + TYPE_SIZE_STRING // EJBDeploymentEvent.context
-			 + TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
-	;
 	private static final long serialVersionUID = -2608702278942937636L;
+
+		/** Descriptive definition of the serialization size of the record. */
+		public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
+				 + TYPE_SIZE_STRING // EJBDeploymentEvent.serivce
+				 + TYPE_SIZE_STRING // EJBDeploymentEvent.context
+				 + TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
+		;
 	
-	public static final Class<?>[] TYPES = {
-		long.class, // AbstractEvent.timestamp
-		String.class, // EJBDeploymentEvent.serivce
-		String.class, // EJBDeploymentEvent.context
-		String.class, // EJBDeploymentEvent.deploymentId
-	};
+		public static final Class<?>[] TYPES = {
+			long.class, // AbstractEvent.timestamp
+			String.class, // EJBDeploymentEvent.serivce
+			String.class, // EJBDeploymentEvent.context
+			String.class, // EJBDeploymentEvent.deploymentId
+		};
 	
-	/* user-defined constants */
-	/* default constants */
-	/* property declarations */
+	/** user-defined constants */
+
+	/** default constants */
+
+	/** property declarations */
 
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -76,7 +63,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	public EJBDeployedEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
 	}
-	
+
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
 	 * 
@@ -114,7 +101,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 			this.getDeploymentId()
 		};
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -124,7 +111,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		stringRegistry.get(this.getContext());
 		stringRegistry.get(this.getDeploymentId());
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -135,7 +122,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		buffer.putInt(stringRegistry.get(this.getContext()));
 		buffer.putInt(stringRegistry.get(this.getDeploymentId()));
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -143,7 +130,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	public Class<?>[] getValueTypes() {
 		return TYPES; // NOPMD
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -151,6 +138,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	public int getSize() {
 		return SIZE;
 	}
+
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -161,7 +149,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	public void initFromArray(final Object[] values) {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -172,7 +160,7 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -190,5 +178,5 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		return true;
 	}
-
+	
 }

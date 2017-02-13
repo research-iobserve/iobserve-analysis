@@ -4,53 +4,48 @@ import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import org.iobserve.common.record.EJBDeploymentEvent;
+import kieker.common.record.flow.AbstractEvent;
 import kieker.common.util.registry.IRegistry;
 
-import org.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.ISessionEvent;
 
 /**
  * @author iObserve
  * 
  * @since 1.0
  */
-public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploymentRecord {
-	private static final long serialVersionUID = 918721494471850423L;
+public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
+	private static final long serialVersionUID = -2981998362744145083L;
 
 		/** Descriptive definition of the serialization size of the record. */
 		public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
-				 + TYPE_SIZE_STRING // EJBDeploymentEvent.serivce
-				 + TYPE_SIZE_STRING // EJBDeploymentEvent.context
-				 + TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
+				 + TYPE_SIZE_STRING // ISessionEvent.sessionId
 		;
 	
 		public static final Class<?>[] TYPES = {
 			long.class, // AbstractEvent.timestamp
-			String.class, // EJBDeploymentEvent.serivce
-			String.class, // EJBDeploymentEvent.context
-			String.class, // EJBDeploymentEvent.deploymentId
+			String.class, // ISessionEvent.sessionId
 		};
 	
 	/** user-defined constants */
 
 	/** default constants */
+	public static final String SESSION_ID = "";
 
 	/** property declarations */
+	private final String sessionId;
 
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
 	 * @param timestamp
 	 *            timestamp
-	 * @param serivce
-	 *            serivce
-	 * @param context
-	 *            context
-	 * @param deploymentId
-	 *            deploymentId
+	 * @param sessionId
+	 *            sessionId
 	 */
-	public EJBUndeployedEvent(final long timestamp, final String serivce, final String context, final String deploymentId) {
-		super(timestamp, serivce, context, deploymentId);
+	public SessionEndEvent(final long timestamp, final String sessionId) {
+		super(timestamp);
+		this.sessionId = sessionId == null?"":sessionId;
 	}
 
 	/**
@@ -60,8 +55,9 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 	 * @param values
 	 *            The values for the record.
 	 */
-	public EJBUndeployedEvent(final Object[] values) { // NOPMD (direct store of values)
+	public SessionEndEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
+		this.sessionId = (String) values[1];
 	}
 
 	/**
@@ -72,8 +68,9 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 */
-	protected EJBUndeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
+	protected SessionEndEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
+		this.sessionId = (String) values[1];
 	}
 
 	/**
@@ -85,8 +82,9 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
 	 */
-	public EJBUndeployedEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
+	public SessionEndEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		super(buffer, stringRegistry);
+		this.sessionId = stringRegistry.get(buffer.getInt());
 	}
 
 	/**
@@ -96,9 +94,7 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTimestamp(),
-			this.getSerivce(),
-			this.getContext(),
-			this.getDeploymentId()
+			this.getSessionId()
 		};
 	}
 	
@@ -107,9 +103,7 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 	 */
 	@Override
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getSerivce());
-		stringRegistry.get(this.getContext());
-		stringRegistry.get(this.getDeploymentId());
+		stringRegistry.get(this.getSessionId());
 	}
 	
 	/**
@@ -118,9 +112,7 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 	@Override
 	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
 		buffer.putLong(this.getTimestamp());
-		buffer.putInt(stringRegistry.get(this.getSerivce()));
-		buffer.putInt(stringRegistry.get(this.getContext()));
-		buffer.putInt(stringRegistry.get(this.getDeploymentId()));
+		buffer.putInt(stringRegistry.get(this.getSessionId()));
 	}
 	
 	/**
@@ -170,13 +162,14 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 		if (obj == this) return true;
 		if (obj.getClass() != this.getClass()) return false;
 		
-		final EJBUndeployedEvent castedRecord = (EJBUndeployedEvent) obj;
+		final SessionEndEvent castedRecord = (SessionEndEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (!this.getSerivce().equals(castedRecord.getSerivce())) return false;
-		if (!this.getContext().equals(castedRecord.getContext())) return false;
-		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
+		if (!this.getSessionId().equals(castedRecord.getSessionId())) return false;
 		return true;
 	}
 	
+	public final String getSessionId() {
+		return this.sessionId;
+	}	
 }

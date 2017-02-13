@@ -73,8 +73,8 @@ sourceSets {
     main {
     	java {
     		srcDir 'src/main/java'
-		srcDir 'src/gen/java'
-//		srcDir 'src/gen/java-factory'
+			srcDir 'src/gen/java'
+			srcDir 'src/gen/java-factory'
 //    		srcDir 'src/main/aspectj'
     	}
     }
