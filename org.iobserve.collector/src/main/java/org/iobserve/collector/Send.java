@@ -52,7 +52,7 @@ public final class Send {
         configuration.setProperty(ConfigurationFactory.CONTROLLER_NAME, "Kieker-Test");
         configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, Send.WRITER_NAME);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_HOSTNAME, "localhost");
-        configuration.setProperty(SingleSocketTcpWriter.CONFIG_PORT1, "9876");
+        configuration.setProperty(SingleSocketTcpWriter.CONFIG_PORT, "9876");
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, "1024");
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_FLUSH, "true");
 

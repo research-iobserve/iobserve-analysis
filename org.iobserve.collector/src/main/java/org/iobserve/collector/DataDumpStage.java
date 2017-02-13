@@ -20,9 +20,7 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
-import kieker.monitoring.writer.AbstractAsyncWriter;
-import kieker.monitoring.writer.filesystem.AbstractAsyncFSWriter;
-import kieker.monitoring.writer.filesystem.AsyncFsWriter;
+import kieker.monitoring.writer.filesystem.AsciiFileWriter;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -51,18 +49,15 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
         configuration.setProperty(ConfigurationFactory.CONTROLLER_NAME, "iObserve-Experiments");
         configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, DataDumpStage.WRITER_NAME);
 
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_PATH, dataLocation);
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXENTRIESINFILE, "25000");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXLOGSIZE, "-1");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncFSWriter.CONFIG_MAXLOGFILES, "-1");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsyncFsWriter.CONFIG_FLUSH, "true");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsyncFsWriter.CONFIG_BUFFER, "8192");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_QUEUESIZE, "10000");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_PRIORITIZED_QUEUESIZE,
-                "100");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_BEHAVIOR, "1");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AbstractAsyncWriter.CONFIG_SHUTDOWNDELAY, "-1");
 
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_CHARSET_NAME, "UTF-8");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_FLUSH, "true");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_MAXENTRIESINFILE, "25000");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_MAXLOGFILES, "-1");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_MAXLOGSIZE, "-1");
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_PATH, dataLocation);
+        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_SHOULD_COMPRESS, "false");
+        
         System.out.println("Configuration complete");
 
         this.ctrl = MonitoringController.createInstance(configuration);
