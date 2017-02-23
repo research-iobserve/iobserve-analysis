@@ -32,8 +32,8 @@ import org.iobserve.analysis.data.EntryCallEvent;
 public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
     final Map<String, Pair<Integer, AbstractAggregatedCallInformation[]>> signatures;
-    final String[] reverseSignatures;
-    final long[][] transitions;
+    final String[] inverseSignatures;
+    final Integer[][] transitions;
 
     /**
      * constructor
@@ -43,14 +43,14 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
      */
     public BehaviorModelTable(final String[] signatures) {
         final int size = signatures.length;
-        this.reverseSignatures = signatures;
+        this.inverseSignatures = signatures;
 
         this.signatures = new HashMap<>();
         for (int i = 0; i < signatures.length; i++) {
             this.signatures.put(signatures[i], new Pair<>(i, new AbstractAggregatedCallInformation[0]));
         }
 
-        this.transitions = new long[size][size];
+        this.transitions = new Integer[size][size];
 
     }
 
@@ -66,13 +66,14 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
      */
 
     public BehaviorModelTable(final Map<String, Pair<Integer, AbstractAggregatedCallInformation[]>> signatures,
-            final String[] reverseSignatures, final long[][] transitions) {
+            final String[] reverseSignatures, final Integer[][] transitions) {
 
         // verify input
         final int length = signatures.size();
 
         if ((length == reverseSignatures.length) && (length == transitions.length)) {
-            for (final long[] transition : transitions) {
+
+            for (final Integer[] transition : transitions) {
                 if (length != transition.length) {
                     throw new IllegalArgumentException("input value size mismatch");
                 }
@@ -88,7 +89,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
         // assign values
         this.signatures = signatures;
-        this.reverseSignatures = reverseSignatures;
+        this.inverseSignatures = reverseSignatures;
         this.transitions = transitions;
     }
 
@@ -104,14 +105,13 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         final Integer fromIndex = this.signatures.get(fromSignature).getFirst();
         final Integer toIndex = this.signatures.get(toSignature).getFirst();
 
-        final long currentTransitionValue = this.transitions[fromIndex][toIndex];
+        final int currentTransitionValue = this.transitions[fromIndex][toIndex];
 
         if (currentTransitionValue == AbstractBehaviorModelTable.EMPTY_TRANSITION) {
             throw new IllegalArgumentException("transition not intended");
         }
 
         this.transitions[fromIndex][toIndex] = currentTransitionValue + 1;
-
     }
 
     @Override

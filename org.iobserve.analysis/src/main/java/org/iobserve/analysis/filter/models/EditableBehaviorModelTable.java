@@ -20,7 +20,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.data.EntryCallEvent;
@@ -37,13 +39,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 
-public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
+public class EditableBehaviorModelTable<T extends AbstractAggregatedCallInformation>
+        extends AbstractBehaviorModelTable {
 
     // a map for adding and updating transitions
-    private final Map<String, Pair<Integer, ArrayList<AbstractAggregatedCallInformation>>> signatures;
+    private final Map<String, Pair<Integer, ArrayList<T>>> signatures;
 
     // a list for getting transitions
-    private final ArrayList<String> signatureArray;
+    private final ArrayList<String> inverseSignatures;
 
     // transition matrix
     private final LinkedList<LinkedList<Integer>> transitions;
@@ -57,7 +60,7 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
      */
     public EditableBehaviorModelTable() {
         this.signatures = new HashMap<>();
-        this.signatureArray = new ArrayList<>();
+        this.inverseSignatures = new ArrayList<>();
         this.transitions = new LinkedList<>();
         this.filterList = new ArrayList<>();
         this.blacklistMode = true;
@@ -74,7 +77,7 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
 
     public EditableBehaviorModelTable(final Collection<String> filterList, final boolean blacklistMode) {
         this.signatures = new HashMap<>();
-        this.signatureArray = new ArrayList<>();
+        this.inverseSignatures = new ArrayList<>();
         this.transitions = new LinkedList<>();
         this.filterList = new ArrayList<>(filterList);
         this.blacklistMode = blacklistMode;
@@ -123,10 +126,11 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
     }
 
     /**
-     * add a callinformation to the aggregated callinformation
-     * 
+     * add a callinformation to the aggregated callinformation. information can only be added to
+     * exiting signatures unless there is no transition added yet
+     *
      * @param event
-     *            event
+     *            event containing information.
      */
     public void addInformation(final EntryCallEvent event) {
         if (event instanceof ExtendedEntryCallEvent) {
@@ -136,21 +140,24 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
             final ArrayList<CallInformation> newCallInformations;
 
             try {
+                // TODO remove
+                System.out.println(extFrom.getInformations());
                 newCallInformations = objectMapper.readValue(extFrom.getInformations(),
                         new TypeReference<ArrayList<CallInformation>>() {
                         });
-
-                final ArrayList<AbstractAggregatedCallInformation> aggCallInformations = this.signatures
-                        .get(eventSignature).getSecond();
+                // adding
+                if (this.signatures.size() == 0) {
+                    this.addSignature(eventSignature);
+                }
+                final ArrayList<T> aggCallInformations = this.signatures.get(eventSignature).getSecond();
 
                 // add new CallInfromation to the aggregation correctly
-                for (final AbstractAggregatedCallInformation aggCallInformation : aggCallInformations) {
-                    for (final CallInformation callInformation : newCallInformations) {
 
-                        if (aggCallInformation.belongsTo(callInformation)) {
-                            aggCallInformation.addCallInformation(callInformation);
-                        }
-                    }
+                for (final AbstractAggregatedCallInformation aggCallInformation : aggCallInformations) {
+
+                    final List<CallInformation> matches = newCallInformations.stream()
+                            .filter(callInformation -> aggCallInformation.belongsTo(callInformation))
+                            .collect(Collectors.toList());
 
                 }
 
@@ -177,12 +184,10 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
         final Integer size = this.signatures.size();
 
         this.signatures.put(signature, new Pair<>(size, new ArrayList<>()));
-        this.signatureArray.add(signature);
+        this.inverseSignatures.add(signature);
 
         // extend all columns
-        for (final LinkedList<Integer> transition : this.transitions) {
-            transition.addLast(0);
-        }
+        this.transitions.forEach(t -> t.addLast(0));
 
         // create a new row in the matrix
         final Integer[] newRowArray = new Integer[1 + size];
@@ -192,6 +197,35 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
         this.transitions.addLast(newRow);
 
         return size;
+    }
+
+    /**
+     *
+     * @return fixed size BehaviorModelTable
+     */
+    public BehaviorModelTable getFixedSizeBehaviorModelTable() {
+
+        // create fixed signatures
+        final Map<String, Pair<Integer, AbstractAggregatedCallInformation[]>> fixedSignatures = new HashMap<>();
+
+        for (final String signature : this.signatures.keySet()) {
+            final AbstractAggregatedCallInformation[] aggregatedCallInformations = (AbstractAggregatedCallInformation[]) this.signatures
+                    .get(signature).getSecond().toArray();
+            final Pair<Integer, AbstractAggregatedCallInformation[]> fixedPair = new Pair<>(
+                    this.signatures.get(signature).getFirst(), aggregatedCallInformations);
+            fixedSignatures.put(signature, fixedPair);
+        }
+
+        final String[] fixedInverseSignatures = this.inverseSignatures.stream().toArray(String[]::new);
+
+        // create transitions table
+        final Integer[][] fixedTransitions = this.transitions.stream().map(l -> l.stream().toArray(Integer[]::new))
+                .toArray(Integer[][]::new);
+
+        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(fixedSignatures,
+                fixedInverseSignatures, fixedTransitions);
+
+        return fixedBehaviorModelTable;
     }
 
     @Override
@@ -213,7 +247,7 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
         String string = "";
         String transitionString = "";
         try {
-            for (final String signature : this.signatureArray) {
+            for (final String signature : this.inverseSignatures) {
                 string += signature + "\n";
             }
 

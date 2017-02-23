@@ -28,19 +28,41 @@ import java.util.Set;
 public abstract class AbstractAggregatedCallInformation {
 
     protected Set<CallInformation> callInformations;
-
     private CallInformation representative;
 
+    /**
+     * basic constructor
+     */
     public AbstractAggregatedCallInformation() {
         this.callInformations = new HashSet<>();
         this.representative = null;
     }
 
     /**
+     * constructor
+     *
+     * @param callInformation
+     *            callInformation
+     */
+    public AbstractAggregatedCallInformation(final CallInformation callInformation) {
+        this.representative = callInformation;
+        this.callInformations = new HashSet<>();
+        this.callInformations.add(callInformation);
+
+    }
+
+    /**
+     * Find the representative of all aggregated call informations
      *
      * @return representative of callInformations
      */
     protected abstract CallInformation findRepresentative();
+
+    /**
+     *
+     * @return
+     */
+    public abstract <T extends AbstractAggregatedCallInformation> T INSTANCE();
 
     /**
      *
@@ -54,7 +76,7 @@ public abstract class AbstractAggregatedCallInformation {
     public void addCallInformation(final CallInformation callInformation) throws IllegalArgumentException {
         if (this.belongsTo(callInformation)) {
             this.callInformations.add(callInformation);
-            this.representative = this.findRepresentative();
+            this.representative = this.callInformations.isEmpty() ? callInformation : this.findRepresentative();
         } else {
             throw new IllegalArgumentException(
                     "callInformation signature does not match mit the aggregation signature");
@@ -99,6 +121,13 @@ public abstract class AbstractAggregatedCallInformation {
      */
     public CallInformation getRepresentative() {
         return this.representative;
+    }
+
+    /**
+     *
+     */
+    public void clearInformations() {
+        this.callInformations = new HashSet<>();
     }
 
 }
