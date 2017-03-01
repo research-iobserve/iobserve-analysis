@@ -75,6 +75,12 @@ public class CallInformation {
         return this.informationCode;
     }
 
+    /**
+     * setter
+     * 
+     * @param code
+     *            code
+     */
     public void setInformationCode(final long code) {
         this.informationCode = code;
 

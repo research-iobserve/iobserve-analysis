@@ -16,11 +16,20 @@
 
 package org.iobserve.analysis.filter.models.cdoruserbehavior;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.data.ExtendedEntryCallEvent;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * table representation of a behavior model
@@ -51,7 +60,6 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         }
 
         this.transitions = new Integer[size][size];
-
     }
 
     /**
@@ -117,6 +125,72 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     @Override
     public boolean isAllowedSignature(final String signature) {
         return this.signatures.containsKey(signature);
+    }
+
+    @Override
+    public void addInformation(final ExtendedEntryCallEvent event) {
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final String eventSignature = AbstractBehaviorModelTable.getSignatureFromEvent(event);
+        final ArrayList<CallInformation> newCallInformations;
+
+        try {
+            newCallInformations = objectMapper.readValue(event.getInformations(),
+                    new TypeReference<ArrayList<CallInformation>>() {
+                    });
+
+            final List<AggregatedCallInformation> aggCallInformations = Arrays
+                    .asList(this.signatures.get(eventSignature).getSecond());
+
+            for (final CallInformation newCallInformation : newCallInformations) {
+
+                // add new CallInfromation to the aggregation correctly
+                final List<AggregatedCallInformation> matches = aggCallInformations.stream()
+                        .filter(aggCallInformation -> aggCallInformation.belongsTo(newCallInformation))
+                        .collect(Collectors.toList());
+
+                if (matches.isEmpty()) {
+                    // TODO
+                } else if (matches.size() == 1) {
+                    matches.get(0).addCallInformation(newCallInformation);
+                } else {
+                    // TODO should not happen
+                    System.out.println(matches.size() + "  Callinformations matched");
+                }
+            }
+
+        } catch (final IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Creates a cleared Copy
+     * 
+     * @return cleared copy
+     */
+    public BehaviorModelTable getClearedCopy() {
+        final Map<String, Pair<Integer, AggregatedCallInformation[]>> clearedSignatures = new HashMap<>();
+
+        for (final String signature : this.signatures.keySet()) {
+
+            final Pair<Integer, AggregatedCallInformation[]> valuePair = this.signatures.get(signature);
+
+            final AggregatedCallInformation[] aggregatedCallInformations = Arrays.stream(valuePair.getSecond())
+                    .map(aggCallInformation -> aggCallInformation.getClearedCopy())
+                    .toArray(AggregatedCallInformation[]::new);
+
+            final Pair<Integer, AggregatedCallInformation[]> fixedPair = new Pair<>(valuePair.getFirst(),
+                    aggregatedCallInformations);
+            clearedSignatures.put(signature, fixedPair);
+        }
+        final Integer[][] clearedTransitions = new Integer[clearedSignatures.size()][clearedSignatures.size()];
+
+        return new BehaviorModelTable(clearedSignatures, this.inverseSignatures, clearedTransitions);
+
     }
 
 }

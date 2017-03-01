@@ -12,41 +12,43 @@
  * the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter;
+package org.iobserve.analysis.filter.cdoruserbehavior;
 
 import java.util.List;
 
 import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.filter.models.cdoruserbehavior.BehaviorModelTable;
-import org.iobserve.analysis.filter.models.cdoruserbehavior.EditableBehaviorModelTable;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
+import teetime.framework.InputPort;
 
 /**
- * auxiliary filter to generate the base of the BehaviorModelTable
+ * Prepares EntryCallSequenceModels for Clustering
  *
  * @author Christoph Dornieden
  *
  */
-public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<EntryCallSequenceModel> {
+
+public final class TBehaviorModelPreperation extends AbstractConsumerStage<EntryCallSequenceModel> {
     /** logger. */
     private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
 
-    private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
+    private final InputPort<BehaviorModelTable> behavioModelInputPort = this.createInputPort();
 
-    final EditableBehaviorModelTable modelTable;
+    final BehaviorModelTable modelTable;
+
+    // TODO better
 
     /**
-     * constructor
      *
      * @param modelTable
      */
-    public TBehaviorModelTableGeneration(final EditableBehaviorModelTable modelTable) {
+    public TBehaviorModelPreperation(final BehaviorModelTable modelTable) {
         super();
         this.modelTable = modelTable;
 
@@ -54,6 +56,7 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
 
     @Override
     protected void execute(final EntryCallSequenceModel entryCallSequenceModel) {
+
         final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
 
         for (final UserSession userSession : userSessions) {
@@ -78,11 +81,9 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
         }
 
         System.out.println(this.modelTable);
-
     }
 
-    public OutputPort<BehaviorModelTable> getOutputPort() {
-        return this.outputPort;
+    public InputPort<BehaviorModelTable> getBehaviorModelInputPort() {
+        return this.behavioModelInputPort;
     }
-
 }

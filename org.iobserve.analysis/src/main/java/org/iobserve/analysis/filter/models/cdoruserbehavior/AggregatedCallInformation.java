@@ -118,6 +118,11 @@ public class AggregatedCallInformation {
         this.representativeCode = this.strategy.findRepresentativeCode(this.signature, this.callInformationCodes);
     }
 
+    /**
+     * get the representative code of the aggregated call information
+     *
+     * @return representative code
+     */
     public Long getRepresentativeCode() {
         return this.representativeCode;
     }
@@ -132,11 +137,20 @@ public class AggregatedCallInformation {
     }
 
     /**
-     *
+     * delete all information of the aggregation
      */
     public void clearInformations() {
         this.callInformationCodes = new HashSet<>();
         this.representativeCode = null;
+    }
+
+    /**
+     * returns a cleared copy of this
+     *
+     * @return cleared copy
+     */
+    public AggregatedCallInformation getClearedCopy() {
+        return new AggregatedCallInformation(this.strategy, this.signature);
     }
 
 }

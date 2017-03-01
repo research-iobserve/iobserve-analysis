@@ -16,17 +16,17 @@
 package org.iobserve.analysis;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
-import org.iobserve.analysis.filter.TBehaviorModelTableGeneration;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
 import org.iobserve.analysis.filter.TUndeployment;
-import org.iobserve.analysis.filter.models.EditableBehaviorModelTable;
+import org.iobserve.analysis.filter.cdoruserbehavior.TBehaviorModelProcessing;
+import org.iobserve.analysis.filter.models.cdoruserbehavior.AggregatedCallInformation;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -96,13 +96,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
         // systemModelProvider,
         // resourceEnvironmentModelProvider);
-
-        final List<String> filterBlackList = new ArrayList<>();
-        filterBlackList.add("(jpetstore\\.images).*\\)");
-        filterBlackList.add("(jpetstore\\.css).*\\)");
-
-        final EditableBehaviorModelTable modelTable = new EditableBehaviorModelTable(filterBlackList, true);
-        final TBehaviorModelTableGeneration tBehaviorModelGeneration = new TBehaviorModelTableGeneration(modelTable);
+        final TBehaviorModelProcessing tBehaviorModelProcessing = new TBehaviorModelProcessing();
 
         /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
@@ -115,10 +109,12 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // this.connectPorts(tEntryCallSequence.getOutputPort(),
         // tEntryEventSequence.getInputPort());
         this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
-                tBehaviorModelGeneration.getInputPort());
+                tBehaviorModelProcessing.getInputPort());
     }
 
     public RecordSwitch getRecordSwitch() {
+        final Map<String, Pair<Integer, AggregatedCallInformation[]>> fixedSignatures;
+
         return this.recordSwitch;
     }
 

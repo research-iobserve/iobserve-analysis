@@ -12,37 +12,42 @@
  * the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter;
+package org.iobserve.analysis.filter.cdoruserbehavior;
 
 import java.util.List;
 
 import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.filter.models.cdoruserbehavior.BehaviorModelTable;
+import org.iobserve.analysis.filter.models.cdoruserbehavior.EditableBehaviorModelTable;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 /**
- * Prepares EntryCallSequenceModels for Clustering
+ * auxiliary filter to generate the base of the BehaviorModelTable
  *
  * @author Christoph Dornieden
  *
  */
-
-public final class TBehaviorModelPreperation extends AbstractConsumerStage<EntryCallSequenceModel> {
+public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<EntryCallSequenceModel> {
     /** logger. */
     private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
 
-    final BehaviorModelTable modelTable;
+    private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
+
+    final EditableBehaviorModelTable modelTable;
 
     /**
+     * constructor
      *
      * @param modelTable
      */
-    public TBehaviorModelPreperation(final BehaviorModelTable modelTable) {
+    public TBehaviorModelTableGeneration(final EditableBehaviorModelTable modelTable) {
         super();
         this.modelTable = modelTable;
 
@@ -50,7 +55,6 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Entry
 
     @Override
     protected void execute(final EntryCallSequenceModel entryCallSequenceModel) {
-
         final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
 
         for (final UserSession userSession : userSessions) {
@@ -63,7 +67,11 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Entry
 
                 if ((lastCall != null) && isAllowed) {
                     this.modelTable.addTransition(lastCall, eventCall);
+                    this.modelTable.addInformation(eventCall);
 
+                } else if (isAllowed) { // only called at first valid event (condition lastCall ==
+                                        // null is not needed)
+                    this.modelTable.addInformation(eventCall);
                 }
 
                 lastCall = isAllowed ? eventCall : lastCall;
@@ -71,7 +79,24 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Entry
         }
 
         System.out.println(this.modelTable);
+    }
 
+    @Override
+    public void onTerminating() throws Exception {
+
+        final BehaviorModelTable fixedTable = this.modelTable.getClearedFixedSizeBehaviorModelTable();
+        this.outputPort.send(fixedTable);
+
+        super.onTerminating();
+    }
+
+    /**
+     * getter
+     *
+     * @return output port
+     */
+    public OutputPort<BehaviorModelTable> getOutputPort() {
+        return this.outputPort;
     }
 
 }

@@ -15,6 +15,7 @@
 package org.iobserve.analysis.filter.models.cdoruserbehavior;
 
 import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 
 /**
  * table representation of a behavior model
@@ -65,5 +66,27 @@ public abstract class AbstractBehaviorModelTable {
      *            where the transition goes
      */
     public abstract void addTransition(final EntryCallEvent from, final EntryCallEvent to);
+
+    /**
+     * adds call information to the behavior table for existing signatures *
+     *
+     * @param event
+     *            event that could contain information.
+     */
+    public void addInformation(final EntryCallEvent event) {
+        if (event instanceof ExtendedEntryCallEvent) {
+            this.addInformation((ExtendedEntryCallEvent) event);
+        } else {
+            // TODO
+        }
+    }
+
+    /**
+     * adds call information to the behavior table for existing signatures *
+     *
+     * @param extendedEntryCallEvent
+     *            event containing information.
+     */
+    public abstract void addInformation(final ExtendedEntryCallEvent extendedEntryCallEvent);
 
 }
