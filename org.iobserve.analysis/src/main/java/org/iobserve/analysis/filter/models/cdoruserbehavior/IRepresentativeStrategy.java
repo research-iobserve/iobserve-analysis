@@ -1,5 +1,4 @@
-/***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+/* Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +12,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.filter.models;
 
-import java.util.List;
+package org.iobserve.analysis.filter.models.cdoruserbehavior;
+
+import java.util.Set;
 
 /**
- * Represents the an entry call
+ * strategy to find the representative of a list of callinformations
  *
  * @author Christoph Dornieden
  *
  */
+public interface IRepresentativeStrategy {
 
-public class EntryCallNode {
-
-    List<EntryCallEdge> incommingEdges;
-    List<EntryCallEdge> outgoingEdges;
-
-    List<CallInformation> entryCallInformation;
+    /**
+     * Find the representatives of all given callInformationCodes
+     *
+     * @param signature
+     *            signature of the aggregated call information
+     * @param callInformationCodes
+     *            code list of the aggregated information
+     * @return most representative code
+     */
+    public Long findRepresentativeCode(final String signature, final Set<Long> callInformationCodes);
 
 }

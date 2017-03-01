@@ -13,7 +13,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter.models;
+package org.iobserve.analysis.filter.models.cdoruserbehavior;
 
 /**
  * Represents a additional Information of a Call
@@ -43,7 +43,6 @@ public class CallInformation {
      *            informationCode
      */
     public CallInformation(final String informationSignature, final long informationCode) {
-        super();
         this.informationSignature = informationSignature;
         this.informationCode = informationCode;
     }

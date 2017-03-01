@@ -12,7 +12,7 @@
  * the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter.models;
+package org.iobserve.analysis.filter.models.cdoruserbehavior;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 

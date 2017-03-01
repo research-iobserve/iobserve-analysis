@@ -17,10 +17,10 @@ package org.iobserve.analysis.filter;
 import java.util.List;
 
 import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.filter.models.BehaviorModelTable;
-import org.iobserve.analysis.filter.models.EditableBehaviorModelTable;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
+import org.iobserve.analysis.filter.models.cdoruserbehavior.BehaviorModelTable;
+import org.iobserve.analysis.filter.models.cdoruserbehavior.EditableBehaviorModelTable;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;

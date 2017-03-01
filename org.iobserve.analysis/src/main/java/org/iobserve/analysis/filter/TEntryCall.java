@@ -110,8 +110,6 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                                 : callInformations.replace("]", ",") + newInformations.replaceAll("[", "");
 
                     }
-                    // TODO remove
-                    System.out.println("Added Information: \n" + callInformations);
 
                     this.outputPort.send(new ExtendedEntryCallEvent(beforeOperationEvent.getTimestamp(),
                             afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),

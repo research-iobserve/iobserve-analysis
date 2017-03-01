@@ -14,7 +14,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter.models;
+package org.iobserve.analysis.filter.models.cdoruserbehavior;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,7 +31,7 @@ import org.iobserve.analysis.data.EntryCallEvent;
 
 public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
-    final Map<String, Pair<Integer, AbstractAggregatedCallInformation[]>> signatures;
+    final Map<String, Pair<Integer, AggregatedCallInformation[]>> signatures;
     final String[] inverseSignatures;
     final Integer[][] transitions;
 
@@ -47,7 +47,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
         this.signatures = new HashMap<>();
         for (int i = 0; i < signatures.length; i++) {
-            this.signatures.put(signatures[i], new Pair<>(i, new AbstractAggregatedCallInformation[0]));
+            this.signatures.put(signatures[i], new Pair<>(i, new AggregatedCallInformation[0]));
         }
 
         this.transitions = new Integer[size][size];
@@ -65,7 +65,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
      *            transition matrix with marked EMPTY_TRANSITION fields
      */
 
-    public BehaviorModelTable(final Map<String, Pair<Integer, AbstractAggregatedCallInformation[]>> signatures,
+    public BehaviorModelTable(final Map<String, Pair<Integer, AggregatedCallInformation[]>> signatures,
             final String[] reverseSignatures, final Integer[][] transitions) {
 
         // verify input

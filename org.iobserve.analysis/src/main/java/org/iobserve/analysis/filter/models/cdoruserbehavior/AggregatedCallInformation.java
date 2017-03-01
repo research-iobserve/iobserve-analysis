@@ -13,10 +13,11 @@
  * limitations under the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter.models;
+package org.iobserve.analysis.filter.models.cdoruserbehavior;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * aggregates CallInformation with the same signature
@@ -25,44 +26,44 @@ import java.util.Set;
  *
  */
 
-public abstract class AbstractAggregatedCallInformation {
+public class AggregatedCallInformation {
 
-    protected Set<CallInformation> callInformations;
-    private CallInformation representative;
+    private final String signature;
+    private Set<Long> callInformationCodes;
+    private Long representativeCode;
+    private final IRepresentativeStrategy strategy;
 
     /**
-     * basic constructor
+     * constructor
+     *
+     * @param strategy
+     *            strategy
+     * @param signature
+     *            signature
      */
-    public AbstractAggregatedCallInformation() {
-        this.callInformations = new HashSet<>();
-        this.representative = null;
+    public AggregatedCallInformation(final IRepresentativeStrategy strategy, final String signature) {
+        this.signature = signature;
+        this.callInformationCodes = new HashSet<>();
+        this.representativeCode = null;
+        this.strategy = strategy;
     }
 
     /**
      * constructor
      *
+     * @param strategy
+     *            strategy
      * @param callInformation
-     *            callInformation
+     *            callInfoprmation
      */
-    public AbstractAggregatedCallInformation(final CallInformation callInformation) {
-        this.representative = callInformation;
-        this.callInformations = new HashSet<>();
-        this.callInformations.add(callInformation);
+    public AggregatedCallInformation(final IRepresentativeStrategy strategy, final CallInformation callInformation) {
+        this.signature = callInformation.getInformationSignature();
+        this.representativeCode = callInformation.getInformationCode();
+        this.callInformationCodes = new HashSet<>();
+        this.callInformationCodes.add(callInformation.getInformationCode());
+        this.strategy = strategy;
 
     }
-
-    /**
-     * Find the representative of all aggregated call informations
-     *
-     * @return representative of callInformations
-     */
-    protected abstract CallInformation findRepresentative();
-
-    /**
-     *
-     * @return
-     */
-    public abstract <T extends AbstractAggregatedCallInformation> T INSTANCE();
 
     /**
      *
@@ -75,8 +76,9 @@ public abstract class AbstractAggregatedCallInformation {
      */
     public void addCallInformation(final CallInformation callInformation) throws IllegalArgumentException {
         if (this.belongsTo(callInformation)) {
-            this.callInformations.add(callInformation);
-            this.representative = this.callInformations.isEmpty() ? callInformation : this.findRepresentative();
+            this.callInformationCodes.add(callInformation.getInformationCode());
+            this.representativeCode = this.callInformationCodes.isEmpty() ? callInformation.getInformationCode()
+                    : this.strategy.findRepresentativeCode(this.signature, this.callInformationCodes);
         } else {
             throw new IllegalArgumentException(
                     "callInformation signature does not match mit the aggregation signature");
@@ -100,7 +102,7 @@ public abstract class AbstractAggregatedCallInformation {
      * @return signature of the representative
      */
     public String getSignature() {
-        return this.representative.getInformationSignature();
+        return this.signature;
     }
 
     /**
@@ -110,8 +112,14 @@ public abstract class AbstractAggregatedCallInformation {
      *            the callInformations to set
      */
     public void setCallInformations(final Set<CallInformation> callInformations) {
-        this.callInformations = callInformations;
-        this.representative = this.findRepresentative();
+
+        this.callInformationCodes = callInformations.stream()
+                .map(callInformation -> callInformation.getInformationCode()).collect(Collectors.toSet());
+        this.representativeCode = this.strategy.findRepresentativeCode(this.signature, this.callInformationCodes);
+    }
+
+    public Long getRepresentativeCode() {
+        return this.representativeCode;
     }
 
     /**
@@ -120,14 +128,15 @@ public abstract class AbstractAggregatedCallInformation {
      * @return the representative
      */
     public CallInformation getRepresentative() {
-        return this.representative;
+        return new CallInformation(this.signature, this.representativeCode);
     }
 
     /**
      *
      */
     public void clearInformations() {
-        this.callInformations = new HashSet<>();
+        this.callInformationCodes = new HashSet<>();
+        this.representativeCode = null;
     }
 
 }

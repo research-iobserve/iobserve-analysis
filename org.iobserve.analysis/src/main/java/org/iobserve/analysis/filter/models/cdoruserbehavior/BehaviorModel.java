@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.filter.models;
+package org.iobserve.analysis.filter.models.cdoruserbehavior;
 
 import java.util.List;
+
+import org.iobserve.analysis.filter.models.UserSession;
 
 /**
  * Represents the user Behavior of a user or a group of users

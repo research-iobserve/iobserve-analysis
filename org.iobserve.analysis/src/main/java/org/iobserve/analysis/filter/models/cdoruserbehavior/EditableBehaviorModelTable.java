@@ -12,7 +12,7 @@
  * the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter.models;
+package org.iobserve.analysis.filter.models.cdoruserbehavior;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,11 +39,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 
-public class EditableBehaviorModelTable<T extends AbstractAggregatedCallInformation>
-        extends AbstractBehaviorModelTable {
+public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
 
     // a map for adding and updating transitions
-    private final Map<String, Pair<Integer, ArrayList<T>>> signatures;
+    private final Map<String, Pair<Integer, ArrayList<AggregatedCallInformation>>> signatures;
 
     // a list for getting transitions
     private final ArrayList<String> inverseSignatures;
@@ -84,17 +83,12 @@ public class EditableBehaviorModelTable<T extends AbstractAggregatedCallInformat
 
     }
 
-    // TODO constructor with signature set
-
-    // TODO update without adding
-
     /**
      *
      * @param from
      *            where the transition comes
      * @param to
-     *            where the transition goes
-     * @return true if transition is allowed
+     *            where the transition goes *
      */
     @Override
     public void addTransition(final EntryCallEvent from, final EntryCallEvent to) throws IllegalArgumentException {
@@ -149,16 +143,29 @@ public class EditableBehaviorModelTable<T extends AbstractAggregatedCallInformat
                 if (this.signatures.size() == 0) {
                     this.addSignature(eventSignature);
                 }
-                final ArrayList<T> aggCallInformations = this.signatures.get(eventSignature).getSecond();
+                final ArrayList<AggregatedCallInformation> aggCallInformations = this.signatures.get(eventSignature)
+                        .getSecond();
 
-                // add new CallInfromation to the aggregation correctly
+                for (final CallInformation newCallInformation : newCallInformations) {
 
-                for (final AbstractAggregatedCallInformation aggCallInformation : aggCallInformations) {
-
-                    final List<CallInformation> matches = newCallInformations.stream()
-                            .filter(callInformation -> aggCallInformation.belongsTo(callInformation))
+                    // add new CallInfromation to the aggregation correctly
+                    final List<AggregatedCallInformation> matches = aggCallInformations.stream()
+                            .filter(aggCallInformation -> aggCallInformation.belongsTo(newCallInformation))
                             .collect(Collectors.toList());
 
+                    if (matches.isEmpty()) {
+                        // add new Callinformation
+                        // TODO generalize
+                        final AggregatedCallInformation newAggregatedCallInformation = new AggregatedCallInformation(
+                                new JPetstoreStrategy(), newCallInformation);
+                        aggCallInformations.add(newAggregatedCallInformation);
+
+                    } else if (matches.size() == 1) {
+                        matches.get(0).addCallInformation(newCallInformation);
+                    } else {
+                        // TODO should not happen
+                        System.out.println(matches.size() + "  Callinformations matched");
+                    }
                 }
 
             } catch (final IOException e) {
@@ -206,12 +213,12 @@ public class EditableBehaviorModelTable<T extends AbstractAggregatedCallInformat
     public BehaviorModelTable getFixedSizeBehaviorModelTable() {
 
         // create fixed signatures
-        final Map<String, Pair<Integer, AbstractAggregatedCallInformation[]>> fixedSignatures = new HashMap<>();
+        final Map<String, Pair<Integer, AggregatedCallInformation[]>> fixedSignatures = new HashMap<>();
 
         for (final String signature : this.signatures.keySet()) {
-            final AbstractAggregatedCallInformation[] aggregatedCallInformations = (AbstractAggregatedCallInformation[]) this.signatures
+            final AggregatedCallInformation[] aggregatedCallInformations = (AggregatedCallInformation[]) this.signatures
                     .get(signature).getSecond().toArray();
-            final Pair<Integer, AbstractAggregatedCallInformation[]> fixedPair = new Pair<>(
+            final Pair<Integer, AggregatedCallInformation[]> fixedPair = new Pair<>(
                     this.signatures.get(signature).getFirst(), aggregatedCallInformations);
             fixedSignatures.put(signature, fixedPair);
         }

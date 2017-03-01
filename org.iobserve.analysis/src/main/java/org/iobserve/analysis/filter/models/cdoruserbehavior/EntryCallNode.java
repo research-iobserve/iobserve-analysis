@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.filter.models;
+package org.iobserve.analysis.filter.models.cdoruserbehavior;
+
+import java.util.List;
 
 /**
- * Represents the transition between an entry call
+ * Represents the an entry call
  *
  * @author Christoph Dornieden
  *
  */
 
-public class EntryCallEdge {
+public class EntryCallNode {
 
-    private EntryCallNode source;
-    private EntryCallNode target;
+    List<EntryCallEdge> incommingEdges;
+    List<EntryCallEdge> outgoingEdges;
 
-    private long calls;
+    List<CallInformation> entryCallInformation;
 
 }
