@@ -16,8 +16,6 @@
 
 package org.iobserve.monitoring.sampler.geolocation;
 
-import org.iobserve.common.record.ServerGeoLocation;
-
 import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.sampler.ISampler;
@@ -30,9 +28,9 @@ import kieker.monitoring.core.sampler.ISampler;
  * @since 1.13
  */
 public abstract class AbstractGeoLocationSampler implements ISampler {
-	
+
 	private ICountryInvestigator countryInvestigator;
-	
+
 	/**
 	 * Empty constructor.
 	 */
@@ -47,7 +45,8 @@ public abstract class AbstractGeoLocationSampler implements ISampler {
 	 *            The monitoring controller for this probe.
 	 *
 	 * @throws Exception
-	 *             depending on the concrete sampler different exceptions can be raised
+	 *             depending on the concrete sampler different exceptions can be
+	 *             raised
 	 */
 	@Override
 	public void sample(final IMonitoringController monitoringController) throws Exception {
@@ -60,7 +59,8 @@ public abstract class AbstractGeoLocationSampler implements ISampler {
 		final String hostname = monitoringController.getHostname();
 		short countryCode = this.countryInvestigator.getServerGeoLocationCountry();
 
-		final IMonitoringRecord geoLocationRecord = this.getGeoLocationRecord(timestamp, hostname, countryCode, monitoringController);
+		final IMonitoringRecord geoLocationRecord = this.getGeoLocationRecord(timestamp, hostname, countryCode,
+				monitoringController);
 
 		monitoringController.newMonitoringRecord(geoLocationRecord);
 	}
@@ -71,12 +71,14 @@ public abstract class AbstractGeoLocationSampler implements ISampler {
 	 * @param timestamp
 	 *            the current time.
 	 * @param hostname
-	 *            the hostname of the machine where this measurement is performed
+	 *            the hostname of the machine where this measurement is
+	 *            performed
 	 * @param monitoringCtr
 	 *            monitoring controller used in the measurement
 	 *
 	 * @return returns an a records containing the geolocation
 	 */
-	public abstract IMonitoringRecord getGeoLocationRecord(final long timestamp, final String hostname, short countryCode, final IMonitoringController monitoringCtr) throws Exception;
+	public abstract IMonitoringRecord getGeoLocationRecord(final long timestamp, final String hostname,
+			short countryCode, final IMonitoringController monitoringCtr) throws Exception;
 
 }
