@@ -54,15 +54,19 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
     private final ArrayList<String> filterList;
     private final boolean blacklistMode;
 
+    // Aggregation Strategy
+    IRepresentativeStrategy strategy;
+
     /**
      * simple constructor
      */
-    public EditableBehaviorModelTable() {
+    public EditableBehaviorModelTable(final IRepresentativeStrategy strategy) {
         this.signatures = new HashMap<>();
         this.inverseSignatures = new ArrayList<>();
         this.transitions = new LinkedList<>();
         this.filterList = new ArrayList<>();
         this.blacklistMode = true;
+        this.strategy = strategy;
     }
 
     /**
@@ -74,12 +78,14 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
      *            true if the filterList is a blacklist, else a whitelist
      */
 
-    public EditableBehaviorModelTable(final Collection<String> filterList, final boolean blacklistMode) {
+    public EditableBehaviorModelTable(final IRepresentativeStrategy strategy, final Collection<String> filterList,
+            final boolean blacklistMode) {
         this.signatures = new HashMap<>();
         this.inverseSignatures = new ArrayList<>();
         this.transitions = new LinkedList<>();
         this.filterList = new ArrayList<>(filterList);
         this.blacklistMode = blacklistMode;
+        this.strategy = strategy;
 
     }
 
@@ -119,62 +125,51 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
         return index;
     }
 
-    /**
-     * add a callinformation to the aggregated callinformation. information can only be added to
-     * exiting signatures unless there is no transition added yet
-     *
-     * @param event
-     *            event containing information.
-     */
-    public void addInformation(final EntryCallEvent event) {
-        if (event instanceof ExtendedEntryCallEvent) {
-            final ObjectMapper objectMapper = new ObjectMapper();
-            final String eventSignature = AbstractBehaviorModelTable.getSignatureFromEvent(event);
-            final ExtendedEntryCallEvent extFrom = (ExtendedEntryCallEvent) event;
-            final ArrayList<CallInformation> newCallInformations;
+    @Override
+    public void addInformation(final ExtendedEntryCallEvent event) {
+        final ObjectMapper objectMapper = new ObjectMapper();
+        final String eventSignature = AbstractBehaviorModelTable.getSignatureFromEvent(event);
+        final ArrayList<CallInformation> newCallInformations;
 
-            try {
-                // TODO remove
-                System.out.println(extFrom.getInformations());
-                newCallInformations = objectMapper.readValue(extFrom.getInformations(),
-                        new TypeReference<ArrayList<CallInformation>>() {
-                        });
-                // adding
-                if (this.signatures.size() == 0) {
-                    this.addSignature(eventSignature);
-                }
-                final ArrayList<AggregatedCallInformation> aggCallInformations = this.signatures.get(eventSignature)
-                        .getSecond();
-
-                for (final CallInformation newCallInformation : newCallInformations) {
-
-                    // add new CallInfromation to the aggregation correctly
-                    final List<AggregatedCallInformation> matches = aggCallInformations.stream()
-                            .filter(aggCallInformation -> aggCallInformation.belongsTo(newCallInformation))
-                            .collect(Collectors.toList());
-
-                    if (matches.isEmpty()) {
-                        // add new Callinformation
-                        // TODO generalize
-                        final AggregatedCallInformation newAggregatedCallInformation = new AggregatedCallInformation(
-                                new JPetstoreStrategy(), newCallInformation);
-                        aggCallInformations.add(newAggregatedCallInformation);
-
-                    } else if (matches.size() == 1) {
-                        matches.get(0).addCallInformation(newCallInformation);
-                    } else {
-                        // TODO should not happen
-                        System.out.println(matches.size() + "  Callinformations matched");
-                    }
-                }
-
-            } catch (final IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (final IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+        try {
+            newCallInformations = objectMapper.readValue(event.getInformations(),
+                    new TypeReference<ArrayList<CallInformation>>() {
+                    });
+            // adding if no transition added yet
+            if (this.signatures.size() == 0) {
+                this.addSignature(eventSignature);
             }
+            final ArrayList<AggregatedCallInformation> aggCallInformations = this.signatures.get(eventSignature)
+                    .getSecond();
+
+            for (final CallInformation newCallInformation : newCallInformations) {
+
+                // add new CallInfromation to the aggregation correctly
+                final List<AggregatedCallInformation> matches = aggCallInformations.stream()
+                        .filter(aggCallInformation -> aggCallInformation.belongsTo(newCallInformation))
+                        .collect(Collectors.toList());
+
+                if (matches.isEmpty()) {
+                    // add new Callinformation
+                    // TODO generalize
+                    final AggregatedCallInformation newAggregatedCallInformation = new AggregatedCallInformation(
+                            this.strategy, newCallInformation);
+                    aggCallInformations.add(newAggregatedCallInformation);
+
+                } else if (matches.size() == 1) {
+                    matches.get(0).addCallInformation(newCallInformation);
+                } else {
+                    // TODO should not happen
+                    System.out.println(matches.size() + "  Callinformations matched");
+                }
+            }
+
+        } catch (final IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (final IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
     }
@@ -216,8 +211,11 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
         final Map<String, Pair<Integer, AggregatedCallInformation[]>> fixedSignatures = new HashMap<>();
 
         for (final String signature : this.signatures.keySet()) {
-            final AggregatedCallInformation[] aggregatedCallInformations = (AggregatedCallInformation[]) this.signatures
-                    .get(signature).getSecond().toArray();
+
+            final List<AggregatedCallInformation> aggCallInfoList = this.signatures.get(signature).getSecond();
+            final AggregatedCallInformation[] aggregatedCallInformations = aggCallInfoList
+                    .toArray(new AggregatedCallInformation[aggCallInfoList.size()]);
+
             final Pair<Integer, AggregatedCallInformation[]> fixedPair = new Pair<>(
                     this.signatures.get(signature).getFirst(), aggregatedCallInformations);
             fixedSignatures.put(signature, fixedPair);
@@ -228,6 +226,39 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
         // create transitions table
         final Integer[][] fixedTransitions = this.transitions.stream().map(l -> l.stream().toArray(Integer[]::new))
                 .toArray(Integer[][]::new);
+
+        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(fixedSignatures,
+                fixedInverseSignatures, fixedTransitions);
+
+        return fixedBehaviorModelTable;
+    }
+
+    /**
+     *
+     * @return cleared fixed size BehaviorModelTable
+     */
+    public BehaviorModelTable getClearedFixedSizeBehaviorModelTable() {
+
+        // create fixed signatures
+        final Map<String, Pair<Integer, AggregatedCallInformation[]>> fixedSignatures = new HashMap<>();
+
+        for (final String signature : this.signatures.keySet()) {
+
+            final List<AggregatedCallInformation> aggCallInfoList = this.signatures.get(signature).getSecond();
+
+            final AggregatedCallInformation[] aggregatedCallInformations = aggCallInfoList.stream()
+                    .map(aggCallInformation -> aggCallInformation.getClearedCopy())
+                    .toArray(AggregatedCallInformation[]::new);
+
+            final Pair<Integer, AggregatedCallInformation[]> fixedPair = new Pair<>(
+                    this.signatures.get(signature).getFirst(), aggregatedCallInformations);
+            fixedSignatures.put(signature, fixedPair);
+        }
+
+        final String[] fixedInverseSignatures = this.inverseSignatures.stream().toArray(String[]::new);
+
+        // create transitions table
+        final Integer[][] fixedTransitions = new Integer[fixedSignatures.size()][fixedSignatures.size()];
 
         final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(fixedSignatures,
                 fixedInverseSignatures, fixedTransitions);

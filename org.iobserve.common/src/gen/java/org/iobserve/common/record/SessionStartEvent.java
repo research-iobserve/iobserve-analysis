@@ -17,24 +17,24 @@ import org.iobserve.common.record.ISessionEvent;
 public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	private static final long serialVersionUID = 8782471108840749134L;
 
-		/** Descriptive definition of the serialization size of the record. */
-		public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
-				 + TYPE_SIZE_STRING // ISessionEvent.sessionId
-		;
+	/** Descriptive definition of the serialization size of the record. */
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+			 + TYPE_SIZE_STRING // ISessionEvent.sessionId
+	;
 	
-		public static final Class<?>[] TYPES = {
-			long.class, // AbstractEvent.timestamp
-			String.class, // ISessionEvent.sessionId
-		};
+	public static final Class<?>[] TYPES = {
+		long.class, // IEventRecord.timestamp
+		String.class, // ISessionEvent.sessionId
+	};
 	
 	/** user-defined constants */
-
+	
 	/** default constants */
 	public static final String SESSION_ID = "";
-
+	
 	/** property declarations */
 	private final String sessionId;
-
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 

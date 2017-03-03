@@ -18,49 +18,74 @@ import java.util.List;
 
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.filter.models.cdoruserbehavior.BehaviorModelTable;
 import org.iobserve.analysis.filter.models.cdoruserbehavior.EditableBehaviorModelTable;
 import org.iobserve.analysis.filter.models.cdoruserbehavior.JPetstoreStrategy;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
+import teetime.stage.basic.distributor.Distributor;
+import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
+import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
+import teetime.stage.basic.merger.Merger;
+import teetime.stage.basic.merger.strategy.SkippingBusyWaitingRoundRobinStrategy;
 
 /**
  *
  * @author Christoph Dornieden
  */
 
-public class TBehaviorModelProcessing extends AbstractConsumerStage<EntryCallSequenceModel> {
+public class TBehaviorModelProcessing extends CompositeStage {
 
     /** logger. */
     private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
 
+    private final Distributor<EntryCallSequenceModel> distributor;
+    private final Merger<Object> merger;
     private final TBehaviorModelTableGeneration tBehaviorModelGeneration;
     private final TBehaviorModelPreperation tBehaviorModelPreperation;
-    /** output port. */
-    private final OutputPort<BehaviorModelTable> behaviorModelOutputPort = this.createOutputPort();
+
+    private final TInstanceTransformations tInstanceTransformations;
 
     /**
      * constructor
      */
     public TBehaviorModelProcessing() {
         final List<String> filterBlackList = new ArrayList<>();
+
+        final IDistributorStrategy strategy = new CopyByReferenceStrategy();
+        this.distributor = new Distributor<>(strategy);
+
+        this.merger = new Merger<>(new SkippingBusyWaitingRoundRobinStrategy());
+
         filterBlackList.add("(jpetstore\\.images).*\\)");
         filterBlackList.add("(jpetstore\\.css).*\\)");
 
         final EditableBehaviorModelTable modelTable = new EditableBehaviorModelTable(new JPetstoreStrategy(),
                 filterBlackList, true);
         this.tBehaviorModelGeneration = new TBehaviorModelTableGeneration(modelTable);
-        this.tBehaviorModelPreperation = new TBehaviorModelPreperation(
-                modelTable.getClearedFixedSizeBehaviorModelTable());
+        this.tBehaviorModelPreperation = new TBehaviorModelPreperation();
+
+        this.tInstanceTransformations = new TInstanceTransformations();
+
+        this.connectPorts(this.distributor.getNewOutputPort(), this.tBehaviorModelGeneration.getInputPort());
+        this.connectPorts(this.distributor.getNewOutputPort(), this.merger.getNewInputPort());
+
+        this.connectPorts(this.tBehaviorModelGeneration.getOutputPort(), this.merger.getNewInputPort());
+
+        this.connectPorts(this.merger.getOutputPort(), this.tBehaviorModelPreperation.getInputPort());
+        this.connectPorts(this.tBehaviorModelPreperation.getOutputPort(), this.tInstanceTransformations.getInputPort());
 
     }
 
-    @Override
-    protected void execute(final EntryCallSequenceModel element) {
-        // TODO Auto-generated method stub
+    /**
+     * getter
+     *
+     * @return input port
+     */
+    public InputPort<EntryCallSequenceModel> getInputPort() {
+        return this.distributor.getInputPort();
     }
 
 }

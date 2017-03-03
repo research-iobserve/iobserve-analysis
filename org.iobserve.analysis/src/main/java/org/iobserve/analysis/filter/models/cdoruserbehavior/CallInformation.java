@@ -24,7 +24,7 @@ package org.iobserve.analysis.filter.models.cdoruserbehavior;
 
 public class CallInformation {
     private String informationSignature;
-    private long informationCode;
+    private double informationCode;
 
     /*
      *
@@ -42,7 +42,7 @@ public class CallInformation {
      * @param informationCode
      *            informationCode
      */
-    public CallInformation(final String informationSignature, final long informationCode) {
+    public CallInformation(final String informationSignature, final double informationCode) {
         this.informationSignature = informationSignature;
         this.informationCode = informationCode;
     }
@@ -71,17 +71,17 @@ public class CallInformation {
      *
      * @return informationCode
      */
-    public long getInformationCode() {
+    public double getInformationCode() {
         return this.informationCode;
     }
 
     /**
      * setter
-     * 
+     *
      * @param code
      *            code
      */
-    public void setInformationCode(final long code) {
+    public void setInformationCode(final double code) {
         this.informationCode = code;
 
     }

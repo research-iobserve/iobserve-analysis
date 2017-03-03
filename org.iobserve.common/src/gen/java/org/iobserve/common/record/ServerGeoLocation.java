@@ -17,32 +17,32 @@ import org.iobserve.common.record.GeoLocation;
 public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	private static final long serialVersionUID = -9109740651531232541L;
 
-		/** Descriptive definition of the serialization size of the record. */
-		public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
-				 + TYPE_SIZE_SHORT // GeoLocation.countryCode
-				 + TYPE_SIZE_STRING // ServerGeoLocation.hostname
-				 + TYPE_SIZE_STRING // ServerGeoLocation.address
-		;
+	/** Descriptive definition of the serialization size of the record. */
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+			 + TYPE_SIZE_SHORT // GeoLocation.countryCode
+			 + TYPE_SIZE_STRING // ServerGeoLocation.hostname
+			 + TYPE_SIZE_STRING // ServerGeoLocation.address
+	;
 	
-		public static final Class<?>[] TYPES = {
-			long.class, // AbstractEvent.timestamp
-			short.class, // GeoLocation.countryCode
-			String.class, // ServerGeoLocation.hostname
-			String.class, // ServerGeoLocation.address
-		};
+	public static final Class<?>[] TYPES = {
+		long.class, // IEventRecord.timestamp
+		short.class, // GeoLocation.countryCode
+		String.class, // ServerGeoLocation.hostname
+		String.class, // ServerGeoLocation.address
+	};
 	
 	/** user-defined constants */
-
+	
 	/** default constants */
 	public static final short COUNTRY_CODE = 49;
 	public static final String HOSTNAME = "";
 	public static final String ADDRESS = "";
-
+	
 	/** property declarations */
 	private final short countryCode;
 	private final String hostname;
 	private final String address;
-
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 

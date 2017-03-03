@@ -17,26 +17,26 @@ import org.iobserve.common.record.IUndeploymentRecord;
 public class ServletUndeployedEvent extends ServletDeploymentEvent implements IUndeploymentRecord {
 	private static final long serialVersionUID = 5313323648401206208L;
 
-		/** Descriptive definition of the serialization size of the record. */
-		public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
-				 + TYPE_SIZE_STRING // ServletDeploymentEvent.serivce
-				 + TYPE_SIZE_STRING // ServletDeploymentEvent.context
-				 + TYPE_SIZE_STRING // ServletDeploymentEvent.deploymentId
-		;
+	/** Descriptive definition of the serialization size of the record. */
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+			 + TYPE_SIZE_STRING // ServletDeploymentEvent.serivce
+			 + TYPE_SIZE_STRING // ServletDeploymentEvent.context
+			 + TYPE_SIZE_STRING // ServletDeploymentEvent.deploymentId
+	;
 	
-		public static final Class<?>[] TYPES = {
-			long.class, // AbstractEvent.timestamp
-			String.class, // ServletDeploymentEvent.serivce
-			String.class, // ServletDeploymentEvent.context
-			String.class, // ServletDeploymentEvent.deploymentId
-		};
+	public static final Class<?>[] TYPES = {
+		long.class, // IEventRecord.timestamp
+		String.class, // ServletDeploymentEvent.serivce
+		String.class, // ServletDeploymentEvent.context
+		String.class, // ServletDeploymentEvent.deploymentId
+	};
 	
 	/** user-defined constants */
-
+	
 	/** default constants */
-
+	
 	/** property declarations */
-
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 

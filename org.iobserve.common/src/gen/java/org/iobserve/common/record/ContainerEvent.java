@@ -18,13 +18,13 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 
 	
 	/** user-defined constants */
-
+	
 	/** default constants */
 	public static final String URL = "";
-
+	
 	/** property declarations */
 	private final String url;
-
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 

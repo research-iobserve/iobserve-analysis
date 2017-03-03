@@ -27,10 +27,10 @@ import java.util.stream.Collectors;
 public class JPetstoreStrategy implements IRepresentativeStrategy {
 
     @Override
-    public Long findRepresentativeCode(final String signature, final Set<Long> callInformationCodes) {
+    public Double findRepresentativeCode(final String signature, final Set<Double> callInformationCodes) {
 
-        final Long representative;
-        final Map<Long, Integer> candidates;
+        final Double representative;
+        final Map<Double, Integer> candidates;
         final int informationQuotient;
 
         switch (signature) {

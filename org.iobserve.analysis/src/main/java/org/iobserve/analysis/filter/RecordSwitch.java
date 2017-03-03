@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeploymentRecord;
 import org.iobserve.common.record.ServletTraceHelper;
 
@@ -36,6 +37,7 @@ import teetime.framework.OutputPort;
  * different output ports.
  *
  * @author Reiner Jung
+ * @author Christoph Dornieden
  *
  */
 public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
@@ -50,6 +52,8 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     private final OutputPort<IFlowRecord> flowOutputPort = this.createOutputPort();
     /** output port for {@link TraceMetadata}. */
     private final OutputPort<TraceMetadata> traceMetaPort = this.createOutputPort();
+
+    private final OutputPort<ISessionEvent> sessionEventPort = this.createOutputPort();
 
     /** internal map to collect unknown record types. */
     private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<>();
@@ -69,6 +73,8 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
         this.recordCount++;
         if (element instanceof IDeploymentRecord) {
             this.deploymentOutputPort.send((IDeploymentRecord) element);
+        } else if (element instanceof ISessionEvent) {
+            this.sessionEventPort.send((ISessionEvent) element);
         } else if (element instanceof IUndeploymentRecord) {
             this.undeploymentOutputPort.send((IUndeploymentRecord) element);
         } else if (element instanceof ServletTraceHelper) { // NOCS
@@ -86,6 +92,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
                     + "\nnumber of records " + metadata.getNumberOfRecords() + "\nsize              "
                     + metadata.getSize() + "\ntime offset       " + metadata.getTimeOffset() + "\nunit              "
                     + metadata.getTimeUnit() + "\nversion           " + metadata.getVersion());
+
         } else {
             final String className = element.getClass().getCanonicalName();
             Integer hits = this.unknownRecords.get(className);
@@ -133,6 +140,14 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
      */
     public OutputPort<TraceMetadata> getTraceMetaPort() {
         return this.traceMetaPort;
+    }
+
+    /**
+     *
+     * @return sessionEventPort
+     */
+    public OutputPort<ISessionEvent> getSessionEventPort() {
+        return this.sessionEventPort;
     }
 
     public long getRecordCount() {

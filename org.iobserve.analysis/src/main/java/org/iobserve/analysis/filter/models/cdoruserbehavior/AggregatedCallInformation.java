@@ -29,8 +29,8 @@ import java.util.stream.Collectors;
 public class AggregatedCallInformation {
 
     private final String signature;
-    private Set<Long> callInformationCodes;
-    private Long representativeCode;
+    private Set<Double> callInformationCodes;
+    private Double representativeCode;
     private final IRepresentativeStrategy strategy;
 
     /**
@@ -123,7 +123,7 @@ public class AggregatedCallInformation {
      *
      * @return representative code
      */
-    public Long getRepresentativeCode() {
+    public Double getRepresentativeCode() {
         return this.representativeCode;
     }
 

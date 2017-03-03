@@ -17,26 +17,26 @@ import org.iobserve.common.record.IDeploymentRecord;
 public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentRecord {
 	private static final long serialVersionUID = -2608702278942937636L;
 
-		/** Descriptive definition of the serialization size of the record. */
-		public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
-				 + TYPE_SIZE_STRING // EJBDeploymentEvent.serivce
-				 + TYPE_SIZE_STRING // EJBDeploymentEvent.context
-				 + TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
-		;
+	/** Descriptive definition of the serialization size of the record. */
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+			 + TYPE_SIZE_STRING // EJBDeploymentEvent.serivce
+			 + TYPE_SIZE_STRING // EJBDeploymentEvent.context
+			 + TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
+	;
 	
-		public static final Class<?>[] TYPES = {
-			long.class, // AbstractEvent.timestamp
-			String.class, // EJBDeploymentEvent.serivce
-			String.class, // EJBDeploymentEvent.context
-			String.class, // EJBDeploymentEvent.deploymentId
-		};
+	public static final Class<?>[] TYPES = {
+		long.class, // IEventRecord.timestamp
+		String.class, // EJBDeploymentEvent.serivce
+		String.class, // EJBDeploymentEvent.context
+		String.class, // EJBDeploymentEvent.deploymentId
+	};
 	
 	/** user-defined constants */
-
+	
 	/** default constants */
-
+	
 	/** property declarations */
-
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 

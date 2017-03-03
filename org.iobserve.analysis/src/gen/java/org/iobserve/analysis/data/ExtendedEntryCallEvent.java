@@ -16,34 +16,34 @@ import kieker.common.util.registry.IRegistry;
 public class ExtendedEntryCallEvent extends EntryCallEvent  {
 	private static final long serialVersionUID = -5800400653208862798L;
 
-		/** Descriptive definition of the serialization size of the record. */
-		public static final int SIZE = TYPE_SIZE_LONG // EntryCallEvent.entryTime
-				 + TYPE_SIZE_LONG // EntryCallEvent.exitTime
-				 + TYPE_SIZE_STRING // EntryCallEvent.operationSignature
-				 + TYPE_SIZE_STRING // EntryCallEvent.classSignature
-				 + TYPE_SIZE_STRING // EntryCallEvent.sessionId
-				 + TYPE_SIZE_STRING // EntryCallEvent.hostname
-				 + TYPE_SIZE_STRING // ExtendedEntryCallEvent.informations
-		;
+	/** Descriptive definition of the serialization size of the record. */
+	public static final int SIZE = TYPE_SIZE_LONG // EntryCallEvent.entryTime
+			 + TYPE_SIZE_LONG // EntryCallEvent.exitTime
+			 + TYPE_SIZE_STRING // EntryCallEvent.operationSignature
+			 + TYPE_SIZE_STRING // EntryCallEvent.classSignature
+			 + TYPE_SIZE_STRING // EntryCallEvent.sessionId
+			 + TYPE_SIZE_STRING // EntryCallEvent.hostname
+			 + TYPE_SIZE_STRING // ExtendedEntryCallEvent.informations
+	;
 	
-		public static final Class<?>[] TYPES = {
-			long.class, // EntryCallEvent.entryTime
-			long.class, // EntryCallEvent.exitTime
-			String.class, // EntryCallEvent.operationSignature
-			String.class, // EntryCallEvent.classSignature
-			String.class, // EntryCallEvent.sessionId
-			String.class, // EntryCallEvent.hostname
-			String.class, // ExtendedEntryCallEvent.informations
-		};
+	public static final Class<?>[] TYPES = {
+		long.class, // EntryCallEvent.entryTime
+		long.class, // EntryCallEvent.exitTime
+		String.class, // EntryCallEvent.operationSignature
+		String.class, // EntryCallEvent.classSignature
+		String.class, // EntryCallEvent.sessionId
+		String.class, // EntryCallEvent.hostname
+		String.class, // ExtendedEntryCallEvent.informations
+	};
 	
 	/** user-defined constants */
-
+	
 	/** default constants */
 	public static final String INFORMATIONS = "";
-
+	
 	/** property declarations */
 	private final String informations;
-
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 

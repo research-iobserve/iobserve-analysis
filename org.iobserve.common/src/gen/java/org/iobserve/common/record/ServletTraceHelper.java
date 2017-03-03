@@ -19,32 +19,32 @@ import kieker.common.record.flow.IFlowRecord;
 public class ServletTraceHelper extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ITraceHelper, IFlowRecord {
 	private static final long serialVersionUID = 2363353535794190244L;
 
-		/** Descriptive definition of the serialization size of the record. */
-		public static final int SIZE = TYPE_SIZE_LONG // ITraceHelper.traceId
-				 + TYPE_SIZE_STRING // ITraceHelper.host
-				 + TYPE_SIZE_INT // ITraceHelper.port
-				 + TYPE_SIZE_STRING // ServletTraceHelper.requestURI
-		;
+	/** Descriptive definition of the serialization size of the record. */
+	public static final int SIZE = TYPE_SIZE_LONG // ITraceHelper.traceId
+			 + TYPE_SIZE_STRING // ITraceHelper.host
+			 + TYPE_SIZE_INT // ITraceHelper.port
+			 + TYPE_SIZE_STRING // ServletTraceHelper.requestURI
+	;
 	
-		public static final Class<?>[] TYPES = {
-			long.class, // ITraceHelper.traceId
-			String.class, // ITraceHelper.host
-			int.class, // ITraceHelper.port
-			String.class, // ServletTraceHelper.requestURI
-		};
+	public static final Class<?>[] TYPES = {
+		long.class, // ITraceHelper.traceId
+		String.class, // ITraceHelper.host
+		int.class, // ITraceHelper.port
+		String.class, // ServletTraceHelper.requestURI
+	};
 	
 	/** user-defined constants */
-
+	
 	/** default constants */
 	public static final String HOST = "";
 	public static final String REQUEST_URI = "";
-
+	
 	/** property declarations */
 	private final long traceId;
 	private final String host;
 	private final int port;
 	private final String requestURI;
-
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 

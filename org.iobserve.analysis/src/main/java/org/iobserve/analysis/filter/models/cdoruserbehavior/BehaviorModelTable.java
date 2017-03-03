@@ -169,7 +169,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
     /**
      * Creates a cleared Copy
-     * 
+     *
      * @return cleared copy
      */
     public BehaviorModelTable getClearedCopy() {
@@ -188,6 +188,10 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             clearedSignatures.put(signature, fixedPair);
         }
         final Integer[][] clearedTransitions = new Integer[clearedSignatures.size()][clearedSignatures.size()];
+
+        for (final Integer[] transitions : clearedTransitions) {
+            Arrays.fill(transitions, 0);
+        }
 
         return new BehaviorModelTable(clearedSignatures, this.inverseSignatures, clearedTransitions);
 

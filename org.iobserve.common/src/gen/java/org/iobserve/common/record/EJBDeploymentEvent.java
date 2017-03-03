@@ -17,17 +17,17 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 
 	
 	/** user-defined constants */
-
+	
 	/** default constants */
 	public static final String SERIVCE = "";
 	public static final String CONTEXT = "";
 	public static final String DEPLOYMENT_ID = "";
-
+	
 	/** property declarations */
 	private final String serivce;
 	private final String context;
 	private final String deploymentId;
-
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 

@@ -1,2 +1,2 @@
 
-include "org.iobserve.analysis", "org.iobserve.common", "org.iobserve.monitoring", "org.iobserve.analysis.service", "org.iobserve.analysis.cli", "org.iobserve.collector"
+include "org.iobserve.analysis", "org.iobserve.common", "org.iobserve.monitoring", "org.iobserve.analysis.service", "org.iobserve.analysis.cli"

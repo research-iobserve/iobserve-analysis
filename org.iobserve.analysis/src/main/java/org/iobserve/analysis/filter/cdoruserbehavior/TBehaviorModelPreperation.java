@@ -14,10 +14,11 @@
 
 package org.iobserve.analysis.filter.cdoruserbehavior;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.filter.models.cdoruserbehavior.BehaviorModelTable;
@@ -25,7 +26,7 @@ import org.iobserve.analysis.filter.models.cdoruserbehavior.BehaviorModelTable;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import teetime.framework.AbstractConsumerStage;
-import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 
 /**
  * Prepares EntryCallSequenceModels for Clustering
@@ -34,56 +35,96 @@ import teetime.framework.InputPort;
  *
  */
 
-public final class TBehaviorModelPreperation extends AbstractConsumerStage<EntryCallSequenceModel> {
+public final class TBehaviorModelPreperation extends AbstractConsumerStage<Object> {
     /** logger. */
-    private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
+    private static final Log LOG = LogFactory.getLog(TBehaviorModelPreperation.class);
 
-    private final InputPort<BehaviorModelTable> behavioModelInputPort = this.createInputPort();
-
-    final BehaviorModelTable modelTable;
-
-    // TODO better
-
-    /**
-     *
-     * @param modelTable
-     */
-    public TBehaviorModelPreperation(final BehaviorModelTable modelTable) {
-        super();
-        this.modelTable = modelTable;
-
-    }
+    private BehaviorModelTable behaviorModelTable = null;
+    private final Set<EntryCallSequenceModel> sequenceModelCache = new HashSet<>();
+    private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
 
     @Override
-    protected void execute(final EntryCallSequenceModel entryCallSequenceModel) {
+    protected void execute(final Object object) {
+        if (object instanceof EntryCallSequenceModel) {
+            final EntryCallSequenceModel entryCallSequenceModel = (EntryCallSequenceModel) object;
+            this.executeEntryCallSequenceModel(entryCallSequenceModel);
 
-        final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
+        } else if (object instanceof BehaviorModelTable) {
+            final BehaviorModelTable modelTable = (BehaviorModelTable) object;
+            this.executeBehaviorModelTable(modelTable);
 
-        for (final UserSession userSession : userSessions) {
-            final List<EntryCallEvent> entryCalls = userSession.getEvents();
+        } else {
+            TBehaviorModelPreperation.LOG
+                    .error("input is nether of type EntryCallSequenceModel nor BehaviorModelTable");
+        }
+    }
 
-            EntryCallEvent lastCall = null;
-            for (final EntryCallEvent eventCall : entryCalls) {
+    /**
+     * execute case object instanceof EntryCallSequenceModel
+     *
+     * @param entryCallSequenceModel
+     *            entryCallSequenceModel
+     */
+    private void executeEntryCallSequenceModel(final EntryCallSequenceModel entryCallSequenceModel) {
 
-                final boolean isAllowed = this.modelTable.isAllowedSignature(eventCall);
+        if (this.behaviorModelTable == null) {
+            this.sequenceModelCache.add(entryCallSequenceModel);
 
-                if ((lastCall != null) && isAllowed) {
-                    this.modelTable.addTransition(lastCall, eventCall);
-                    this.modelTable.addInformation(eventCall);
+        } else {
+            final BehaviorModelTable modelTable = this.behaviorModelTable.getClearedCopy();
+            final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
 
-                } else if (isAllowed) { // only called at first valid event (condition lastCall ==
-                                        // null is not needed)
-                    this.modelTable.addInformation(eventCall);
+            for (final UserSession userSession : userSessions) {
+                final List<EntryCallEvent> entryCalls = userSession.getEvents();
+
+                EntryCallEvent lastCall = null;
+                for (final EntryCallEvent eventCall : entryCalls) {
+
+                    final boolean isAllowed = modelTable.isAllowedSignature(eventCall);
+
+                    if ((lastCall != null) && isAllowed) {
+                        modelTable.addTransition(lastCall, eventCall);
+                        modelTable.addInformation(eventCall);
+
+                    } else if (isAllowed) { // only called at first valid event (condition lastCall
+                                            // ==
+                                            // null is not needed)
+                        modelTable.addInformation(eventCall);
+                    }
+
+                    lastCall = isAllowed ? eventCall : lastCall;
                 }
-
-                lastCall = isAllowed ? eventCall : lastCall;
             }
+
+            System.out.println(modelTable);
+            this.outputPort.send(modelTable);
         }
 
-        System.out.println(this.modelTable);
     }
 
-    public InputPort<BehaviorModelTable> getBehaviorModelInputPort() {
-        return this.behavioModelInputPort;
+    /**
+     * execute case object instanceof BehaviorModelTable
+     *
+     * @param behaviorModelTable
+     *            behaviorModelTable
+     */
+    private void executeBehaviorModelTable(final BehaviorModelTable behaviorModelTable) {
+        if (this.behaviorModelTable == null) {
+            this.behaviorModelTable = behaviorModelTable;
+            this.sequenceModelCache.forEach(this::executeEntryCallSequenceModel);
+            this.sequenceModelCache.clear();
+        } else {
+            TBehaviorModelPreperation.LOG.warn("behaviorModelTable already assigned");
+        }
     }
+
+    /**
+     * getter
+     * 
+     * @return the outputPort
+     */
+    public OutputPort<BehaviorModelTable> getOutputPort() {
+        return this.outputPort;
+    }
+
 }

@@ -17,20 +17,20 @@ import org.iobserve.common.record.IAllocationRecord;
 public class ContainerAllocationEvent extends ContainerEvent implements IAllocationRecord {
 	private static final long serialVersionUID = 5666865394947027540L;
 
-		/** Descriptive definition of the serialization size of the record. */
-		public static final int SIZE = TYPE_SIZE_STRING // ContainerEvent.url
-		;
+	/** Descriptive definition of the serialization size of the record. */
+	public static final int SIZE = TYPE_SIZE_STRING // ContainerEvent.url
+	;
 	
-		public static final Class<?>[] TYPES = {
-			String.class, // ContainerEvent.url
-		};
+	public static final Class<?>[] TYPES = {
+		String.class, // ContainerEvent.url
+	};
 	
 	/** user-defined constants */
-
+	
 	/** default constants */
-
+	
 	/** property declarations */
-
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 

@@ -77,8 +77,6 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
                 lastCall = isAllowed ? eventCall : lastCall;
             }
         }
-
-        System.out.println(this.modelTable);
     }
 
     @Override
