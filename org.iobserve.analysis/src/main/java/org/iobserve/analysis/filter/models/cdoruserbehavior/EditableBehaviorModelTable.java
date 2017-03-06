@@ -205,7 +205,7 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
      *
      * @return fixed size BehaviorModelTable
      */
-    public BehaviorModelTable getFixedSizeBehaviorModelTable() {
+    public BehaviorModelTable toFixedSizeBehaviorModelTable() {
 
         // create fixed signatures
         final Map<String, Pair<Integer, AggregatedCallInformation[]>> fixedSignatures = new HashMap<>();
@@ -237,7 +237,7 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
      *
      * @return cleared fixed size BehaviorModelTable
      */
-    public BehaviorModelTable getClearedFixedSizeBehaviorModelTable() {
+    public BehaviorModelTable toClearedFixedSizeBehaviorModelTable() {
 
         // create fixed signatures
         final Map<String, Pair<Integer, AggregatedCallInformation[]>> fixedSignatures = new HashMap<>();

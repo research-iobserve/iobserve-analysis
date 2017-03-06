@@ -29,7 +29,7 @@ import weka.core.Instances;
  */
 
 public class TInstanceTransformations extends AbstractConsumerStage<BehaviorModelTable> {
-    private final Instances instances;
+    private Instances instances;
 
     /**
      * constructor
@@ -39,10 +39,11 @@ public class TInstanceTransformations extends AbstractConsumerStage<BehaviorMode
     }
 
     @Override
-    protected void execute(final BehaviorModelTable element) {
+    protected void execute(final BehaviorModelTable behaviorModelTable) {
         if (this.instances == null) {
-
+            this.instances = behaviorModelTable.toInstances();
         } else {
+            this.instances.add(behaviorModelTable.toInstance());
 
         }
     }

@@ -31,6 +31,10 @@ import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import weka.core.FastVector;
+import weka.core.Instance;
+import weka.core.Instances;
+
 /**
  * table representation of a behavior model
  *
@@ -189,12 +193,75 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         }
         final Integer[][] clearedTransitions = new Integer[clearedSignatures.size()][clearedSignatures.size()];
 
-        for (final Integer[] transitions : clearedTransitions) {
-            Arrays.fill(transitions, 0);
-        }
+        Arrays.stream(clearedTransitions).forEach(t -> Arrays.fill(t, 0));
 
         return new BehaviorModelTable(clearedSignatures, this.inverseSignatures, clearedTransitions);
 
+    }
+
+    /**
+     * create an Instances object for clustering
+     *
+     * @return instance
+     */
+    public Instances toInstances() {
+        final FastVector fastVector = new FastVector();
+
+        for (int i = 0; i < this.signatures.size(); i++) {
+            for (int j = 0; j < this.signatures.size(); j++) {
+                if (this.transitions[i][j] > 0) {
+                    fastVector.addElement(this.inverseSignatures[i] + " -> " + this.inverseSignatures[j]);
+
+                } else {
+                    continue;
+                }
+            }
+        }
+
+        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond())
+                .forEach(callInformation -> fastVector.addElement(callInformation.getSignature())));
+
+        final Instances instances = new Instances("Test", fastVector, 0);
+        final Instance instance = this.toInstance();
+
+        instances.add(instance);
+        return instances;
+    }
+
+    /**
+     * returns an instance vector
+     *
+     * @return instance
+     */
+    public Instance toInstance() {
+        final List<Double> attValues = new ArrayList<>();
+
+        Arrays.stream(this.transitions).forEach(
+                row -> Arrays.stream(row).filter(entry -> entry > 0).map(Double.class::cast).map(attValues::add));
+
+        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond())
+                .forEach(callInformation -> attValues.add(callInformation.getRepresentativeCode())));
+
+        final double[] attArray = new double[attValues.size()];
+
+        for (int i = 0; i < attValues.size(); i++) {
+            attArray[i] = attValues.get(i);
+        }
+
+        final Instance instance = new Instance(1.0, attArray);
+        return instance;
+
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        final String string = this.signatures.keySet().stream().reduce("\n", (s1, s2) -> s1 + "\n" + s2) + "\n";
+        return string;
     }
 
 }
