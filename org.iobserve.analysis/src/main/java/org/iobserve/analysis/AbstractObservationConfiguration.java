@@ -25,6 +25,7 @@ import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
 import org.iobserve.analysis.filter.TUndeployment;
+import org.iobserve.analysis.filter.cdoruserbehavior.TAggregationProcessing;
 import org.iobserve.analysis.filter.cdoruserbehavior.TBehaviorModelProcessing;
 import org.iobserve.analysis.filter.models.cdoruserbehavior.AggregatedCallInformation;
 import org.iobserve.analysis.model.AllocationModelProvider;
@@ -97,6 +98,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // systemModelProvider,
         // resourceEnvironmentModelProvider);
         final TBehaviorModelProcessing tBehaviorModelProcessing = new TBehaviorModelProcessing();
+        final TAggregationProcessing tAggregationProcessing = new TAggregationProcessing();
 
         /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
@@ -110,11 +112,10 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // tEntryEventSequence.getInputPort());
         this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
                 tBehaviorModelProcessing.getInputPort());
+        this.connectPorts(tBehaviorModelProcessing.getOutputPort(), tAggregationProcessing.getInputPort());
     }
 
     public RecordSwitch getRecordSwitch() {
-        final Map<String, Pair<Integer, AggregatedCallInformation[]>> fixedSignatures;
-
         return this.recordSwitch;
     }
 

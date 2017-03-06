@@ -27,10 +27,13 @@ import java.util.stream.Collectors;
 import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
+import org.iobserve.analysis.filter.cdoruserbehavior.TBehaviorModelPreperation;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -48,6 +51,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     final Map<String, Pair<Integer, AggregatedCallInformation[]>> signatures;
     final String[] inverseSignatures;
     final Integer[][] transitions;
+    
 
     /**
      * constructor
@@ -151,15 +155,15 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
                 // add new CallInfromation to the aggregation correctly
                 final List<AggregatedCallInformation> matches = aggCallInformations.stream()
                         .filter(aggCallInformation -> aggCallInformation.belongsTo(newCallInformation))
-                        .collect(Collectors.toList());              
+                        .collect(Collectors.toList());             
 
                 if (matches.isEmpty()) {
                     // TODO
                 } else if (matches.size() == 1) {
                     matches.get(0).addCallInformation(newCallInformation);
                 } else {
-                    // TODO should not happen
-                    System.out.println(matches.size() + "  Callinformations matched");
+                    //TODO should not happen
+                	System.out.println(matches.size() + "  Callinformations matched");                   
                 }
             }
 

@@ -25,11 +25,13 @@ import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 import teetime.stage.basic.distributor.Distributor;
 import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
 import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import teetime.stage.basic.merger.Merger;
 import teetime.stage.basic.merger.strategy.SkippingBusyWaitingRoundRobinStrategy;
+import weka.core.Instances;
 
 /**
  *
@@ -39,7 +41,7 @@ import teetime.stage.basic.merger.strategy.SkippingBusyWaitingRoundRobinStrategy
 public class TBehaviorModelProcessing extends CompositeStage {
 
     /** logger. */
-    private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
+    private static final Log LOG = LogFactory.getLog(TBehaviorModelProcessing.class);
 
     private final Distributor<EntryCallSequenceModel> distributor;
     private final Merger<Object> merger;
@@ -87,5 +89,15 @@ public class TBehaviorModelProcessing extends CompositeStage {
     public InputPort<EntryCallSequenceModel> getInputPort() {
         return this.distributor.getInputPort();
     }
+    
+    /**
+     * getter
+     * 
+     * @return outputPort
+     */
+    public OutputPort<Instances> getOutputPort(){
+    	return tInstanceTransformations.getOutputPort();
+    }
+    
 
 }

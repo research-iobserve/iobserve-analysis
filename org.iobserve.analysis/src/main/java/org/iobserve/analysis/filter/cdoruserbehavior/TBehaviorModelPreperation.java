@@ -86,9 +86,8 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
                         modelTable.addTransition(lastCall, eventCall);
                         modelTable.addInformation(eventCall);
 
-                    } else if (isAllowed) { // only called at first valid event (condition lastCall
-                                            // ==
-                                            // null is not needed)
+                    } else if (isAllowed) { // only called at first valid event 
+                    						//(condition lastCall == null is not needed                                       
                         modelTable.addInformation(eventCall);
                     }
 

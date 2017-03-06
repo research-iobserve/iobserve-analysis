@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.iobserve.analysis.filter.cdoruserbehavior;
 import org.iobserve.analysis.filter.models.cdoruserbehavior.BehaviorModelTable;
 
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 import weka.core.Instances;
 
 /**
@@ -30,6 +31,7 @@ import weka.core.Instances;
 
 public class TInstanceTransformations extends AbstractConsumerStage<BehaviorModelTable> {
     private Instances instances;
+    private final OutputPort<Instances> outputPort = createOutputPort();
 
     /**
      * constructor
@@ -47,5 +49,18 @@ public class TInstanceTransformations extends AbstractConsumerStage<BehaviorMode
 
         }
     }
+    
+    /**
+     * getter
+     * 
+     * @return outputPort
+     */
+	public OutputPort<Instances> getOutputPort() {
+		return outputPort;
+	}
+    
+    
+    
+    
 
 }
