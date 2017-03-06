@@ -31,7 +31,10 @@ public class TAggregationProcessing extends CompositeStage {
     
     
     public TAggregationProcessing(){
-    	this.tClustering = new TClustering();      	
+    	final int userGroups = 1;
+    	final int variance = 1;
+    	
+    	this.tClustering = new TClustering(userGroups,variance);      	
     	
     	
     }
