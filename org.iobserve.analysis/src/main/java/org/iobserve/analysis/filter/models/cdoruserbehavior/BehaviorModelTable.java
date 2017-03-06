@@ -31,6 +31,7 @@ import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -150,7 +151,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
                 // add new CallInfromation to the aggregation correctly
                 final List<AggregatedCallInformation> matches = aggCallInformations.stream()
                         .filter(aggCallInformation -> aggCallInformation.belongsTo(newCallInformation))
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList());              
 
                 if (matches.isEmpty()) {
                     // TODO
@@ -184,7 +185,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             final Pair<Integer, AggregatedCallInformation[]> valuePair = this.signatures.get(signature);
 
             final AggregatedCallInformation[] aggregatedCallInformations = Arrays.stream(valuePair.getSecond())
-                    .map(aggCallInformation -> aggCallInformation.getClearedCopy())
+                    .map(AggregatedCallInformation::getClearedCopy)
                     .toArray(AggregatedCallInformation[]::new);
 
             final Pair<Integer, AggregatedCallInformation[]> fixedPair = new Pair<>(valuePair.getFirst(),
@@ -210,7 +211,9 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         for (int i = 0; i < this.signatures.size(); i++) {
             for (int j = 0; j < this.signatures.size(); j++) {
                 if (this.transitions[i][j] > 0) {
-                    fastVector.addElement(this.inverseSignatures[i] + " -> " + this.inverseSignatures[j]);
+                    final Attribute attribute = new Attribute(
+                            this.inverseSignatures[i] + " -> " + this.inverseSignatures[j]);
+                    fastVector.addElement(attribute);
 
                 } else {
                     continue;
@@ -218,8 +221,9 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             }
         }
 
-        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond())
-                .forEach(callInformation -> fastVector.addElement(callInformation.getSignature())));
+        this.signatures.values().stream()
+                .forEach(pair -> Arrays.stream(pair.getSecond()).forEach(callInformation -> fastVector
+                        .addElement(new Attribute(pair.getFirst() + " : " + callInformation.getSignature()))));
 
         final Instances instances = new Instances("Test", fastVector, 0);
         final Instance instance = this.toInstance();

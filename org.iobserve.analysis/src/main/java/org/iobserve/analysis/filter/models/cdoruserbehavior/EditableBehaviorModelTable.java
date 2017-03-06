@@ -32,6 +32,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+
 /**
  * table representation of a behavior model
  *
@@ -147,12 +149,12 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
                 // add new CallInfromation to the aggregation correctly
                 final List<AggregatedCallInformation> matches = aggCallInformations.stream()
                         .filter(aggCallInformation -> aggCallInformation.belongsTo(newCallInformation))
-                        .collect(Collectors.toList());
-
+                        .collect(Collectors.toList());              
+               
+                
                 if (matches.isEmpty()) {
                     // add new Callinformation
-                    // TODO generalize
-                    final AggregatedCallInformation newAggregatedCallInformation = new AggregatedCallInformation(
+                   final AggregatedCallInformation newAggregatedCallInformation = new AggregatedCallInformation(
                             this.strategy, newCallInformation);
                     aggCallInformations.add(newAggregatedCallInformation);
 

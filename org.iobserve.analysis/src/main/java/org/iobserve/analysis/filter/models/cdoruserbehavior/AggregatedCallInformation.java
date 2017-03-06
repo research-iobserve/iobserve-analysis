@@ -93,7 +93,7 @@ public class AggregatedCallInformation {
      * @return true if callInformation belongs to the aggregation, false else
      */
     public boolean belongsTo(final CallInformation callInformation) {
-        return this.getSignature().equals(callInformation);
+        return this.getSignature().equals(callInformation.getInformationSignature());
     }
 
     /**
