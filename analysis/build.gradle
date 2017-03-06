@@ -23,7 +23,7 @@ sourceCompatibility = 1.8
 
 dependencies {
 	compile gradleApi()
-	compile project(":org.iobserve.common")
+	compile project(":common")
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
