@@ -32,7 +32,7 @@ import teetime.framework.AbstractConsumerStage;
  */
 public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
 
-    private static final String WRITER_NAME = "kieker.monitoring.writer.filesystem.AsyncFsWriter";
+    private static final String WRITER_NAME = "kieker.monitoring.writer.AsciiFileWriter";
 
     private final IMonitoringController ctrl;
 
