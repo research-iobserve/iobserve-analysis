@@ -32,7 +32,7 @@ import teetime.framework.AbstractConsumerStage;
  */
 public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
 
-    private static final String WRITER_NAME = "kieker.monitoring.writer.AsciiFileWriter";
+    private static final String WRITER_NAME = AsciiFileWriter.class.getCanonicalName();
 
     private final IMonitoringController ctrl;
 
@@ -50,13 +50,13 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
         configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, DataDumpStage.WRITER_NAME);
 
 
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_CHARSET_NAME, "UTF-8");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_FLUSH, "true");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_MAXENTRIESINFILE, "25000");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_MAXLOGFILES, "-1");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_MAXLOGSIZE, "-1");
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_PATH, dataLocation);
-        configuration.setProperty(DataDumpStage.WRITER_NAME + "." + AsciiFileWriter.CONFIG_SHOULD_COMPRESS, "false");
+        configuration.setProperty(AsciiFileWriter.CONFIG_CHARSET_NAME, "UTF-8");
+        configuration.setProperty(AsciiFileWriter.CONFIG_FLUSH, "true");
+        configuration.setProperty(AsciiFileWriter.CONFIG_MAXENTRIESINFILE, "25000");
+        configuration.setProperty(AsciiFileWriter.CONFIG_MAXLOGFILES, "-1");
+        configuration.setProperty(AsciiFileWriter.CONFIG_MAXLOGSIZE, "-1");
+        configuration.setProperty(AsciiFileWriter.CONFIG_PATH, dataLocation);
+        configuration.setProperty(AsciiFileWriter.CONFIG_SHOULD_COMPRESS, "false");
         
         System.out.println("Configuration complete");
 
