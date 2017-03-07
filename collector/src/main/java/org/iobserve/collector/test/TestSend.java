@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.collector;
+package org.iobserve.collector.test;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.record.IMonitoringRecord;
@@ -25,19 +25,19 @@ import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
 
 /**
- * This is a test class used to test the Collector service.
+ * This is an integration test class used to test the Collector service.
  *
  * @author Reiner Jung
  *
  */
-public final class Send {
+public final class TestSend {
 
     private static final String WRITER_NAME = "kieker.monitoring.writer.tcp.SingleSocketTcpWriter";
 
     /**
      * This is only a integration test.
      */
-    private Send() {
+    private TestSend() {
     }
 
     /**
@@ -50,7 +50,7 @@ public final class Send {
         System.out.println("Sender");
         final Configuration configuration = ConfigurationFactory.createDefaultConfiguration();
         configuration.setProperty(ConfigurationFactory.CONTROLLER_NAME, "Kieker-Test");
-        configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, Send.WRITER_NAME);
+        configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, TestSend.WRITER_NAME);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_HOSTNAME, "localhost");
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_PORT, "9876");
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, "1024");
@@ -58,7 +58,7 @@ public final class Send {
 
         // add ignored values
         configuration.setProperty(ConfigurationFactory.PREFIX + "test", "true");
-        configuration.setProperty(Send.WRITER_NAME + ".test", "true");
+        configuration.setProperty(TestSend.WRITER_NAME + ".test", "true");
 
         System.out.println("Configuration complete");
 
