@@ -26,6 +26,10 @@ import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 public abstract class AbstractBehaviorModelTable {
     public static final int EMPTY_TRANSITION = -1;
     public static final int TRANSITION_THRESHOLD = -1;
+    public static final String EDGE_INDICATOR = "<->";
+    public static final String EDGE_DIVIDER = "-->";
+    public static final String INFORMATION_INDICATOR = "[|]";
+    public static final String INFORMATION_DIVIDER = ":::";
 
     /**
      *

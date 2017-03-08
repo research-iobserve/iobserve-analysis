@@ -49,6 +49,17 @@ public class TInstanceTransformations extends AbstractConsumerStage<BehaviorMode
         }
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see teetime.framework.AbstractStage#onTerminating()
+     */
+    @Override
+    public void onTerminating() throws Exception {
+        this.outputPort.send(this.instances);
+        super.onTerminating();
+    }
+
     /**
      * getter
      *

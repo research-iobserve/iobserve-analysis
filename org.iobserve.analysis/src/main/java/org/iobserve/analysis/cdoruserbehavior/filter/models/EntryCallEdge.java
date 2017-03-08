@@ -36,19 +36,36 @@ public class EntryCallEdge {
         this.source = null;
         this.target = null;
         this.calls = 0;
-        // empty
     }
 
     /**
      * constructor
      *
      * @param source
+     *            source node
      * @param target
+     *            target node
      */
     public EntryCallEdge(EntryCallNode source, EntryCallNode target) {
         this.source = source;
         this.target = target;
         this.calls = 1;
+    }
+
+    /**
+     * constructor
+     *
+     * @param source
+     *            source node
+     * @param target
+     *            target node
+     * @param calls
+     *            calls
+     */
+    public EntryCallEdge(EntryCallNode source, EntryCallNode target, int calls) {
+        this.source = source;
+        this.target = target;
+        this.calls = calls;
     }
 
     /**

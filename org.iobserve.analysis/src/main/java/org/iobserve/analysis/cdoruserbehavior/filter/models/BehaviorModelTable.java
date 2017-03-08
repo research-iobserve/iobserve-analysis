@@ -210,7 +210,9 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             for (int j = 0; j < this.signatures.size(); j++) {
                 if (this.transitions[i][j] > AbstractBehaviorModelTable.TRANSITION_THRESHOLD) {
                     final Attribute attribute = new Attribute(
-                            this.inverseSignatures[i] + " -> " + this.inverseSignatures[j]);
+                            AbstractBehaviorModelTable.EDGE_INDICATOR + this.inverseSignatures[i]
+                                    + AbstractBehaviorModelTable.EDGE_DIVIDER + this.inverseSignatures[j]);
+
                     fastVector.addElement(attribute);
 
                 } else {
@@ -220,9 +222,10 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         }
 
         // add informations
-        this.signatures.values().stream().forEach(
-                pair -> Arrays.stream(pair.getSecond()).forEach(callInformation -> fastVector.addElement(new Attribute(
-                        this.inverseSignatures[pair.getFirst()] + " : " + callInformation.getSignature()))));
+        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond())
+                .forEach(callInformation -> fastVector.addElement(new Attribute(
+                        AbstractBehaviorModelTable.INFORMATION_INDICATOR + this.inverseSignatures[pair.getFirst()]
+                                + AbstractBehaviorModelTable.INFORMATION_DIVIDER + callInformation.getSignature()))));
         // TODO name
         final Instances instances = new Instances("Test", fastVector, 0);
         final Instance instance = this.toInstance();

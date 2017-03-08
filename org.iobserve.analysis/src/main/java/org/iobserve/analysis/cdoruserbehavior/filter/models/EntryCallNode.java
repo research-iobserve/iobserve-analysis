@@ -16,7 +16,10 @@
 package org.iobserve.analysis.cdoruserbehavior.filter.models;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
+
+import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
 
 /**
  * Represents the an entry call
@@ -44,6 +47,34 @@ public class EntryCallNode {
         this.incommingEdges = new HashSet<>();
         this.outgoingEdges = new HashSet<>();
         this.entryCallInformations = new HashSet();
+    }
+
+    /**
+     * adds call information with signatures not present in the entry call information set
+     *
+     * @param callInformations
+     *            callInformations
+     */
+    public void mergeInformation(Set<CallInformation> callInformations) {
+        callInformations.stream().forEach(this::mergeInformation);
+    }
+
+    /**
+     * adds a call information with a signature not present in the entry call information set
+     *
+     * @param callInformation
+     *            callInformation
+     */
+    public void mergeInformation(CallInformation callInformation) {
+        final Optional<CallInformation> match = this.entryCallInformations.stream().filter(
+                information -> information.getInformationSignature().equals(callInformation.getInformationSignature()))
+                .collect(new SingleOrNoneCollector<>());
+
+        if (match.isPresent()) {
+            // do nothing
+        } else {
+            this.entryCallInformations.add(callInformation);
+        }
     }
 
     /*

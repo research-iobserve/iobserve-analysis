@@ -71,6 +71,16 @@ public class BehaviorModel {
     }
 
     /**
+     * add a node to the model
+     * 
+     * @param node
+     *            node
+     */
+    public void addNode(final EntryCallNode node) {
+        this.mergeNode(node);
+    }
+
+    /**
      * getter
      *
      * @return root entry call node
@@ -118,11 +128,12 @@ public class BehaviorModel {
         final Optional<EntryCallNode> matchingNode = this.entryCallNodes.stream().filter(node::equals)
                 .collect(new SingleOrNoneCollector<>());
 
+        matchingNode.ifPresent(match -> match.mergeInformation(node.getEntryCallInformation()));
         final EntryCallNode mergedNode = matchingNode.isPresent() ? matchingNode.get() : node;
+
         this.entryCallNodes.add(mergedNode);
 
         return mergedNode;
-
     }
 
 }
