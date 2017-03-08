@@ -12,7 +12,7 @@
  * the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter.models.cdoruserbehavior;
+package org.iobserve.analysis.cdoruserbehavior.filter.models;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,17 +22,16 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
+import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import ch.qos.logback.core.net.SyslogOutputStream;
 
 /**
  * table representation of a behavior model
@@ -147,22 +146,17 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
             for (final CallInformation newCallInformation : newCallInformations) {
 
                 // add new CallInfromation to the aggregation correctly
-                final List<AggregatedCallInformation> matches = aggCallInformations.stream()
+                final Optional<AggregatedCallInformation> match = aggCallInformations.stream()
                         .filter(aggCallInformation -> aggCallInformation.belongsTo(newCallInformation))
-                        .collect(Collectors.toList());              
-               
-                
-                if (matches.isEmpty()) {
+                        .collect(new SingleOrNoneCollector<AggregatedCallInformation>());
+
+                if (match.isPresent()) {
+                    match.get().addCallInformation(newCallInformation);
+                } else {
                     // add new Callinformation
-                   final AggregatedCallInformation newAggregatedCallInformation = new AggregatedCallInformation(
+                    final AggregatedCallInformation newAggregatedCallInformation = new AggregatedCallInformation(
                             this.strategy, newCallInformation);
                     aggCallInformations.add(newAggregatedCallInformation);
-
-                } else if (matches.size() == 1) {
-                    matches.get(0).addCallInformation(newCallInformation);
-                } else {
-                    // TODO should not happen
-                    System.out.println(matches.size() + "  Callinformations matched");
                 }
             }
 

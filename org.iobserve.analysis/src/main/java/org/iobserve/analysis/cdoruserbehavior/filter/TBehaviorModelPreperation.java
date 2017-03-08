@@ -12,16 +12,16 @@
  * the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter.cdoruserbehavior;
+package org.iobserve.analysis.cdoruserbehavior.filter;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModelTable;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
-import org.iobserve.analysis.filter.models.cdoruserbehavior.BehaviorModelTable;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;

@@ -12,7 +12,7 @@
  * the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter.models.cdoruserbehavior;
+package org.iobserve.analysis.cdoruserbehavior.filter.models;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
@@ -25,6 +25,7 @@ import org.iobserve.analysis.data.ExtendedEntryCallEvent;
  */
 public abstract class AbstractBehaviorModelTable {
     public static final int EMPTY_TRANSITION = -1;
+    public static final int TRANSITION_THRESHOLD = -1;
 
     /**
      *

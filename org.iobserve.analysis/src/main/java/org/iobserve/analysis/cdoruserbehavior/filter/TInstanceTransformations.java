@@ -14,9 +14,9 @@
  * limitations under the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter.cdoruserbehavior;
+package org.iobserve.analysis.cdoruserbehavior.filter;
 
-import org.iobserve.analysis.filter.models.cdoruserbehavior.BehaviorModelTable;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModelTable;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -31,7 +31,7 @@ import weka.core.Instances;
 
 public class TInstanceTransformations extends AbstractConsumerStage<BehaviorModelTable> {
     private Instances instances;
-    private final OutputPort<Instances> outputPort = createOutputPort();
+    private final OutputPort<Instances> outputPort = this.createOutputPort();
 
     /**
      * constructor
@@ -46,21 +46,16 @@ public class TInstanceTransformations extends AbstractConsumerStage<BehaviorMode
             this.instances = behaviorModelTable.toInstances();
         } else {
             this.instances.add(behaviorModelTable.toInstance());
-
         }
     }
-    
+
     /**
      * getter
-     * 
+     *
      * @return outputPort
      */
-	public OutputPort<Instances> getOutputPort() {
-		return outputPort;
-	}
-    
-    
-    
-    
+    public OutputPort<Instances> getOutputPort() {
+        return this.outputPort;
+    }
 
 }

@@ -11,7 +11,7 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  ***************************************************************************/
-package org.iobserve.analysis.filter.cdoruserbehavior;
+package org.iobserve.analysis.cdoruserbehavior.filter;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
@@ -20,35 +20,37 @@ import teetime.framework.InputPort;
 import weka.core.Instances;
 
 /**
-*
-* @author Christoph Dornieden
-*/
+ *
+ * @author Christoph Dornieden
+ */
 public class TAggregationProcessing extends CompositeStage {
     /** logger. */
     private static final Log LOG = LogFactory.getLog(TAggregationProcessing.class);
     private final TClustering tClustering;
-    
-    
-    
-    public TAggregationProcessing(){
-    	final int userGroups = 1;
-    	final int variance = 1;
-    	
-    	this.tClustering = new TClustering(userGroups,variance);      	
-    	
-    	
+    private final TBehaviorModelCreation tBehaviorModelCreation;
+
+    /**
+     * constructor configuratition of the aggregation filters
+     */
+    public TAggregationProcessing() {
+        final int userGroups = 1;
+        final int variance = 1;
+
+        this.tClustering = new TClustering(userGroups, variance);
+        this.tBehaviorModelCreation = new TBehaviorModelCreation();
+
+        this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
+
     }
-    
-    
-    
+
     /**
      * getter
-     * 
+     *
      * @return input port
      */
-    public InputPort<Instances> getInputPort(){
-    	return tClustering.getInputPort();   	
-    	
+    public InputPort<Instances> getInputPort() {
+        return this.tClustering.getInputPort();
+
     }
 
 }

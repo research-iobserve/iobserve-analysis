@@ -13,7 +13,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter.models.cdoruserbehavior;
+package org.iobserve.analysis.cdoruserbehavior.filter.models;
 
 /**
  * Represents a additional Information of a Call

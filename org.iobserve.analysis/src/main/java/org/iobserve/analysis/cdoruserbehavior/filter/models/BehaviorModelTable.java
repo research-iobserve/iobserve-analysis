@@ -14,7 +14,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.filter.models.cdoruserbehavior;
+package org.iobserve.analysis.cdoruserbehavior.filter.models;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,18 +22,16 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
+import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
-import org.iobserve.analysis.filter.cdoruserbehavior.TBehaviorModelPreperation;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -48,10 +46,9 @@ import weka.core.Instances;
 
 public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
-    final Map<String, Pair<Integer, AggregatedCallInformation[]>> signatures;
-    final String[] inverseSignatures;
-    final Integer[][] transitions;
-    
+    private final Map<String, Pair<Integer, AggregatedCallInformation[]>> signatures;
+    private final String[] inverseSignatures;
+    private final Integer[][] transitions;
 
     /**
      * constructor
@@ -153,17 +150,14 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             for (final CallInformation newCallInformation : newCallInformations) {
 
                 // add new CallInfromation to the aggregation correctly
-                final List<AggregatedCallInformation> matches = aggCallInformations.stream()
+                final Optional<AggregatedCallInformation> match = aggCallInformations.stream()
                         .filter(aggCallInformation -> aggCallInformation.belongsTo(newCallInformation))
-                        .collect(Collectors.toList());             
+                        .collect(new SingleOrNoneCollector<>());
 
-                if (matches.isEmpty()) {
-                    // TODO
-                } else if (matches.size() == 1) {
-                    matches.get(0).addCallInformation(newCallInformation);
+                if (match.isPresent()) {
+                    match.get().addCallInformation(newCallInformation);
                 } else {
-                    //TODO should not happen
-                	System.out.println(matches.size() + "  Callinformations matched");                   
+                    // TODO
                 }
             }
 
@@ -189,8 +183,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             final Pair<Integer, AggregatedCallInformation[]> valuePair = this.signatures.get(signature);
 
             final AggregatedCallInformation[] aggregatedCallInformations = Arrays.stream(valuePair.getSecond())
-                    .map(AggregatedCallInformation::getClearedCopy)
-                    .toArray(AggregatedCallInformation[]::new);
+                    .map(AggregatedCallInformation::getClearedCopy).toArray(AggregatedCallInformation[]::new);
 
             final Pair<Integer, AggregatedCallInformation[]> fixedPair = new Pair<>(valuePair.getFirst(),
                     aggregatedCallInformations);
@@ -212,9 +205,10 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     public Instances toInstances() {
         final FastVector fastVector = new FastVector();
 
+        // add transitions
         for (int i = 0; i < this.signatures.size(); i++) {
             for (int j = 0; j < this.signatures.size(); j++) {
-                if (this.transitions[i][j] > 0) {
+                if (this.transitions[i][j] > AbstractBehaviorModelTable.TRANSITION_THRESHOLD) {
                     final Attribute attribute = new Attribute(
                             this.inverseSignatures[i] + " -> " + this.inverseSignatures[j]);
                     fastVector.addElement(attribute);
@@ -225,14 +219,15 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             }
         }
 
-        this.signatures.values().stream()
-                .forEach(pair -> Arrays.stream(pair.getSecond()).forEach(callInformation -> fastVector
-                        .addElement(new Attribute(pair.getFirst() + " : " + callInformation.getSignature()))));
-        //TODO
+        // add informations
+        this.signatures.values().stream().forEach(
+                pair -> Arrays.stream(pair.getSecond()).forEach(callInformation -> fastVector.addElement(new Attribute(
+                        this.inverseSignatures[pair.getFirst()] + " : " + callInformation.getSignature()))));
+        // TODO name
         final Instances instances = new Instances("Test", fastVector, 0);
         final Instance instance = this.toInstance();
-
         instances.add(instance);
+
         return instances;
     }
 
@@ -244,8 +239,17 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     public Instance toInstance() {
         final List<Double> attValues = new ArrayList<>();
 
-        Arrays.stream(this.transitions).forEach(
-                row -> Arrays.stream(row).filter(entry -> entry > 0).map(Double.class::cast).map(attValues::add));
+        // add transitions
+        for (int i = 0; i < this.signatures.size(); i++) {
+            for (int j = 0; j < this.signatures.size(); j++) {
+
+                if (this.transitions[i][j] > AbstractBehaviorModelTable.TRANSITION_THRESHOLD) {
+                    attValues.add(Double.valueOf(this.transitions[i][j]));
+                } else {
+                    continue;
+                }
+            }
+        }
 
         this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond())
                 .forEach(callInformation -> attValues.add(callInformation.getRepresentativeCode())));

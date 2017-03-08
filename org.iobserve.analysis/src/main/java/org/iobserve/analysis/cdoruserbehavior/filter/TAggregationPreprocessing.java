@@ -11,15 +11,15 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  ***************************************************************************/
-package org.iobserve.analysis.filter.cdoruserbehavior;
+package org.iobserve.analysis.cdoruserbehavior.filter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iobserve.analysis.cdoruserbehavior.filter.models.EditableBehaviorModelTable;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.JPetstoreStrategy;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.filter.models.cdoruserbehavior.EditableBehaviorModelTable;
-import org.iobserve.analysis.filter.models.cdoruserbehavior.JPetstoreStrategy;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
@@ -38,10 +38,10 @@ import weka.core.Instances;
  * @author Christoph Dornieden
  */
 
-public class TBehaviorModelProcessing extends CompositeStage {
+public class TAggregationPreprocessing extends CompositeStage {
 
     /** logger. */
-    private static final Log LOG = LogFactory.getLog(TBehaviorModelProcessing.class);
+    private static final Log LOG = LogFactory.getLog(TAggregationPreprocessing.class);
 
     private final Distributor<EntryCallSequenceModel> distributor;
     private final Merger<Object> merger;
@@ -53,7 +53,7 @@ public class TBehaviorModelProcessing extends CompositeStage {
     /**
      * constructor
      */
-    public TBehaviorModelProcessing() {
+    public TAggregationPreprocessing() {
         final List<String> filterBlackList = new ArrayList<>();
 
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
