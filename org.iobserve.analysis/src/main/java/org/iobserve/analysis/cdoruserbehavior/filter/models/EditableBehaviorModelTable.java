@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
 import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;

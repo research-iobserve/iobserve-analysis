@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
+
 /**
  * aggregates CallInformation with the same signature
  *

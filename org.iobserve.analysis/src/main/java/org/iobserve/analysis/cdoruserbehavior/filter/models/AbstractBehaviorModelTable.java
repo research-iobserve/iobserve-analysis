@@ -28,7 +28,7 @@ public abstract class AbstractBehaviorModelTable {
     public static final int TRANSITION_THRESHOLD = -1;
     public static final String EDGE_INDICATOR = "<->";
     public static final String EDGE_DIVIDER = "-->";
-    public static final String INFORMATION_INDICATOR = "[|]";
+    public static final String INFORMATION_INDICATOR = "##";
     public static final String INFORMATION_DIVIDER = ":::";
 
     /**
@@ -39,7 +39,7 @@ public abstract class AbstractBehaviorModelTable {
      * @return signature of the event used by this class
      */
     public static String getSignatureFromEvent(final EntryCallEvent event) {
-        return event.getClassSignature() + " " + event.getOperationSignature();
+        return event.getClassSignature() + "-" + event.getOperationSignature();
     }
 
     /**

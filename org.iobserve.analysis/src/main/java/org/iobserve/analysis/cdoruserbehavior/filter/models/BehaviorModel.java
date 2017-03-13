@@ -30,7 +30,7 @@ import org.iobserve.analysis.filter.models.UserSession;
  */
 public class BehaviorModel {
 
-    private final EntryCallNode rootEntryCall;
+    private EntryCallNode rootEntryCall;
     private final Set<EntryCallNode> entryCallNodes;
     private final Set<EntryCallEdge> entryCallEdges;
     private final Set<UserSession> userSessions;
@@ -72,7 +72,7 @@ public class BehaviorModel {
 
     /**
      * add a node to the model
-     * 
+     *
      * @param node
      *            node
      */
@@ -124,16 +124,23 @@ public class BehaviorModel {
      * @return merged node
      */
     private EntryCallNode mergeNode(final EntryCallNode node) {
+        if (this.entryCallNodes.isEmpty()) {
+            this.rootEntryCall = node;
+            this.entryCallNodes.add(node);
+            return node;
 
-        final Optional<EntryCallNode> matchingNode = this.entryCallNodes.stream().filter(node::equals)
-                .collect(new SingleOrNoneCollector<>());
+        } else {
+            final Optional<EntryCallNode> matchingNode = this.entryCallNodes.stream().filter(node::equals)
+                    .collect(new SingleOrNoneCollector<>());
 
-        matchingNode.ifPresent(match -> match.mergeInformation(node.getEntryCallInformation()));
-        final EntryCallNode mergedNode = matchingNode.isPresent() ? matchingNode.get() : node;
+            matchingNode.ifPresent(match -> match.mergeInformation(node.getEntryCallInformation()));
+            final EntryCallNode mergedNode = matchingNode.isPresent() ? matchingNode.get() : node;
 
-        this.entryCallNodes.add(mergedNode);
+            this.entryCallNodes.add(mergedNode);
 
-        return mergedNode;
+            return mergedNode;
+        }
+
     }
 
 }

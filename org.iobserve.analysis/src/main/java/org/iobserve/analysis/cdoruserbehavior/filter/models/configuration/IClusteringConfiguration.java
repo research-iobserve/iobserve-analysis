@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter.models;
+package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
 /**
+ * interface for a clusterconfiguration
  *
  * @author Christoph Dornieden
  *
  */
-public class BehaviorModelConfiguration {
-    // TODO
+public interface IClusteringConfiguration {
 
 }

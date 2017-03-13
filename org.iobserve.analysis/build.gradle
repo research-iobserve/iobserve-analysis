@@ -27,7 +27,7 @@ dependencies {
 	
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
-
+	
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
 	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
@@ -62,6 +62,7 @@ dependencies {
 	compile 'extra:org.eclipse.ocl.common:1.4.0.v20160521-2033'
 	compile 'extra:org.eclipse.ocl.ecore:3.6.0.v20160523-1914'
 	compile 'extra:lpg.runtime.java:2.0.17.v201004271640'	
+	
 }
 
 sourceSets {

@@ -22,6 +22,7 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallEdge;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -33,6 +34,8 @@ import weka.core.Instances;
  */
 public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
 
+    private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
+
     @Override
     protected void execute(Instances instances) {
 
@@ -41,8 +44,17 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
         for (int i = 0; i < size; i++) {
             final Instance instance = instances.instance(i);
             final BehaviorModel behaviorModel = this.createBehaviorModel(instances, instance);
-
+            this.outputPort.send(behaviorModel);
         }
+    }
+
+    /**
+     * getter
+     *
+     * @return the outputPort
+     */
+    public OutputPort<BehaviorModel> getOutputPort() {
+        return this.outputPort;
     }
 
     /**
@@ -110,11 +122,12 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      */
     private EntryCallEdge createEdge(String name, Double value) {
 
-        name.replace(AbstractBehaviorModelTable.EDGE_INDICATOR, "");
-        final String[] nodeNames = name.split(AbstractBehaviorModelTable.EDGE_DIVIDER);
+        final String[] nodeNames = this.splitSignature(AbstractBehaviorModelTable.EDGE_INDICATOR,
+                AbstractBehaviorModelTable.EDGE_DIVIDER, name);
 
         if (nodeNames.length == 2) {
             final EntryCallNode from = new EntryCallNode(nodeNames[0]);
+
             final EntryCallNode to = new EntryCallNode(nodeNames[1]);
 
             final EntryCallEdge edge = new EntryCallEdge(from, to, value.intValue());
@@ -138,8 +151,8 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      */
     private EntryCallNode createNode(String name, Double value) {
 
-        name.replace(AbstractBehaviorModelTable.INFORMATION_INDICATOR, "");
-        final String[] signatures = name.split(AbstractBehaviorModelTable.INFORMATION_DIVIDER);
+        final String[] signatures = this.splitSignature(AbstractBehaviorModelTable.INFORMATION_INDICATOR,
+                AbstractBehaviorModelTable.INFORMATION_DIVIDER, name);
 
         if (signatures.length == 2) {
             final EntryCallNode node = new EntryCallNode(signatures[0]);
@@ -151,6 +164,23 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
         } else {
             return null;
         }
+    }
+
+    /**
+     * splits the signature
+     *
+     * @param indicator
+     *            indicator
+     * @param divider
+     *            divider
+     * @param signature
+     *            signature
+     * @return separate strings
+     */
+    private String[] splitSignature(String indicator, String divider, String signature) {
+
+        return signature.replaceAll(indicator, "").split(divider);
+
     }
 
 }

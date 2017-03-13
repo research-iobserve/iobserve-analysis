@@ -11,7 +11,11 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter;
+package org.iobserve.analysis.cdoruserbehavior.filter.composite;
+
+import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelCreation;
+import org.iobserve.analysis.cdoruserbehavior.filter.TClustering;
+import org.iobserve.analysis.cdoruserbehavior.filter.TIObserveUIServer;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
@@ -28,6 +32,7 @@ public class TAggregationProcessing extends CompositeStage {
     private static final Log LOG = LogFactory.getLog(TAggregationProcessing.class);
     private final TClustering tClustering;
     private final TBehaviorModelCreation tBehaviorModelCreation;
+    private final TIObserveUIServer tIObserveUIServer;
 
     /**
      * constructor configuratition of the aggregation filters
@@ -38,9 +43,10 @@ public class TAggregationProcessing extends CompositeStage {
 
         this.tClustering = new TClustering(userGroups, variance);
         this.tBehaviorModelCreation = new TBehaviorModelCreation();
+        this.tIObserveUIServer = new TIObserveUIServer();
 
         this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
-
+        this.connectPorts(this.tBehaviorModelCreation.getOutputPort(), this.tIObserveUIServer.getInputPort());
     }
 
     /**

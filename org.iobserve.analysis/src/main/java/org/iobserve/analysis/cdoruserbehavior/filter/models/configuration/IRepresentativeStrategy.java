@@ -13,7 +13,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-package org.iobserve.analysis.cdoruserbehavior.filter.models;
+package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
 import java.util.Set;
 

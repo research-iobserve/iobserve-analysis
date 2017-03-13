@@ -11,14 +11,16 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter;
+package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelPreperation;
+import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelTableGeneration;
+import org.iobserve.analysis.cdoruserbehavior.filter.TInstanceTransformations;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EditableBehaviorModelTable;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.JPetstoreStrategy;
-import org.iobserve.analysis.filter.RecordSwitch;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.JPetstoreStrategy;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 
 import kieker.common.logging.Log;
@@ -61,8 +63,8 @@ public class TAggregationPreprocessing extends CompositeStage {
 
         this.merger = new Merger<>(new SkippingBusyWaitingRoundRobinStrategy());
 
-        filterBlackList.add("(jpetstore\\.images).*\\)");
-        filterBlackList.add("(jpetstore\\.css).*\\)");
+        filterBlackList.add("(.*jpetstore\\.images).*\\)");
+        filterBlackList.add("(.*jpetstore\\.css).*\\)");
 
         final EditableBehaviorModelTable modelTable = new EditableBehaviorModelTable(new JPetstoreStrategy(),
                 filterBlackList, true);
@@ -89,15 +91,14 @@ public class TAggregationPreprocessing extends CompositeStage {
     public InputPort<EntryCallSequenceModel> getInputPort() {
         return this.distributor.getInputPort();
     }
-    
+
     /**
      * getter
-     * 
+     *
      * @return outputPort
      */
-    public OutputPort<Instances> getOutputPort(){
-    	return tInstanceTransformations.getOutputPort();
+    public OutputPort<Instances> getOutputPort() {
+        return this.tInstanceTransformations.getOutputPort();
     }
-    
 
 }

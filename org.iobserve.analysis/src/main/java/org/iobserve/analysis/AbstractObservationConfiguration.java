@@ -17,8 +17,8 @@ package org.iobserve.analysis;
 
 import java.io.IOException;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModel;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModelConfiguration;
+import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModel;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;

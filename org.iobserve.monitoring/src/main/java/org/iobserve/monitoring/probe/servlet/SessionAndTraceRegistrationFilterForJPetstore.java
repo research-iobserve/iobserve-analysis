@@ -306,8 +306,8 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
         if (SessionAndTraceRegistrationFilterForJPetstore.CTRLINST.isMonitoringEnabled()) {
             // if (CTRLINST.isProbeActivated(this.filterOperationSignatureString)) {
 
-            final String operationSignature;
-            final String componentSignature;
+            String operationSignature;
+            String componentSignature;
             final String method;
             final String path;
             final String sessionId;
@@ -335,7 +335,12 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                 query = "";
             }
 
-            componentSignature = path.replaceAll("\\.[A-Za-z0-9]*$", "");
+            final String trimmedPath = path.replaceAll("\\.[A-Za-z0-9]*$", "");
+            // final int lastComponentSignatureIndex = trimmedPath.lastIndexOf("actions.");
+
+            componentSignature = "jpetstore.actions"; // lastComponentSignatureIndex < 0 ?
+                                                      // trimmedPath: trimmedPath.substring(0,
+                                                      // lastComponentSignatureIndex - 1);
 
             TraceMetadata trace = SessionAndTraceRegistrationFilterForJPetstore.TRACEREGISTRY.getTrace();
             final boolean newTrace = trace == null;
@@ -349,7 +354,12 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
             if ("GET".equals(method)) {
                 if ((queryParameters != null) && (queryParameters.length == 2)) {
 
-                    operationSignature = path + "(" + queryParameters[0] + ")";
+                    operationSignature = trimmedPath.replaceAll("jpetstore\\.actions\\.", "") + "."
+                            + queryParameters[0].replace("=", "") + "()"; // "("
+                    // +
+                    // queryParameters[0]
+                    // +
+                    // ")";
 
                     final String[] queryParameterSplit = queryParameters[1].split("=");
 
@@ -361,11 +371,17 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                     callInformations.add(new CallInformation(queryParameterSplit[0], code));
 
                 } else {
-                    operationSignature = path + "(" + query.replace(';', ':') + ")";
+                    operationSignature = trimmedPath.replaceAll("jpetstore\\.actions\\.", "") + "("
+                            + query.replace(';', ':') + ")";
                 }
 
+                operationSignature = operationSignature.replaceAll("\\.action\\(", "(");
+                operationSignature = operationSignature.replaceAll("action\\.", "");
+
             } else if ("POST".equals(method)) {
-                operationSignature = path + "()";
+                operationSignature = trimmedPath.replaceAll("jpetstore\\.actions\\.", "") + "()";
+                operationSignature = operationSignature.replaceAll("\\.action\\(", "(");
+                operationSignature = operationSignature.replaceAll("action\\.", "");
             } else {
                 chain.doFilter(request, response);
                 return;

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter;
+package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModelConfiguration;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 
 import teetime.framework.CompositeStage;
