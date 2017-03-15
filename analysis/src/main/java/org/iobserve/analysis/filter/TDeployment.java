@@ -17,8 +17,7 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import teetime.framework.AbstractConsumerStage;
-
+import org.iobserve.analysis.data.AddAllocationContextEvent;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
@@ -34,9 +33,13 @@ import org.iobserve.common.record.ServletDeployedEvent;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 /**
- * This class contains the transformation for updating the PCM allocation model with respect to deployment. 
- * It processes deployment events and uses the correspondence information in the RAC to update the PCM allocation model.
+ * This class contains the transformation for updating the PCM allocation model with respect to
+ * deployment. It processes deployment events and uses the correspondence information in the RAC to
+ * update the PCM allocation model.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
@@ -51,6 +54,8 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     private final SystemModelProvider systemModelProvider;
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
+
+    private final OutputPort<AddAllocationContextEvent> outputPort = this.createOutputPort();
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -89,6 +94,13 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         } else if (event instanceof EJBDeployedEvent) {
             this.process((EJBDeployedEvent) event);
         }
+    }
+
+    /**
+     * @return output port
+     */
+    public OutputPort<AddAllocationContextEvent> getOutputPort() {
+        return this.outputPort;
     }
 
     /**
@@ -156,20 +168,21 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      */
     private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName) {
         // get assembly context by name or create it if necessary.
-    	final AssemblyContext assemblyContext;
-    	Optional<AssemblyContext> optAssCtx = SystemModelBuilder
-        .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName);
-    	if(optAssCtx.isPresent()) {
-    		assemblyContext = optAssCtx.get();
-    	} else {
-    		assemblyContext = TDeployment.createAssemblyContextByName(this.systemModelProvider, asmContextName);
-    	}
+        final AssemblyContext assemblyContext;
+        final Optional<AssemblyContext> optAssCtx = SystemModelBuilder
+                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName);
+        if (optAssCtx.isPresent()) {
+            assemblyContext = optAssCtx.get();
+        } else {
+            assemblyContext = TDeployment.createAssemblyContextByName(this.systemModelProvider, asmContextName);
+        }
 
         // update the allocation model
         this.allocationModelProvider.loadModel();
         AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
                 assemblyContext);
         this.allocationModelProvider.save();
+        this.outputPort.send(new AddAllocationContextEvent(resourceContainer));
     }
 
     /**

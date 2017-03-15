@@ -81,7 +81,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
 
         final VisualizationUpdateStage visualizationUpdateStage = new VisualizationUpdateStage(url);
-
+        this.connectPorts(this.deployment.getOutputPort(), visualizationUpdateStage.getDeploymentInputPort());
+        this.connectPorts(this.undeployment.getOutputPort(), visualizationUpdateStage.getUndeploymentInputPort());
     }
 
 }

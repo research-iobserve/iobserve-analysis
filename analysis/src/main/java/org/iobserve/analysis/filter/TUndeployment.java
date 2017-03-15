@@ -17,8 +17,7 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import teetime.framework.AbstractConsumerStage;
-
+import org.iobserve.analysis.data.RemoveAllocationContextEvent;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
@@ -34,9 +33,13 @@ import org.iobserve.common.record.ServletUndeployedEvent;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 /**
- * This class contains the transformation for updating the PCM allocation model with respect to undeployment. 
- * It processes undeployment events and uses the correspondence information in the RAC to update the PCM allocation model.
+ * This class contains the transformation for updating the PCM allocation model with respect to
+ * undeployment. It processes undeployment events and uses the correspondence information in the RAC
+ * to update the PCM allocation model.
  *
  * @author Robert Heinrich
  * @author Reiner Jung
@@ -52,6 +55,8 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     private final SystemModelProvider systemModelProvider;
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+
+    private final OutputPort<RemoveAllocationContextEvent> outputPort = this.createOutputPort();
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -159,12 +164,17 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
         if (optAssemblyContext.isPresent()) {
             this.allocationModelProvider.loadModel();
+            this.outputPort.send(new RemoveAllocationContextEvent(resourceContainer));
             AllocationModelBuilder.removeAllocationContext(this.allocationModelProvider.getModel(), resourceContainer,
                     optAssemblyContext.get());
             this.allocationModelProvider.save();
         } else {
             System.out.printf("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n");
         }
+    }
+
+    public OutputPort<RemoveAllocationContextEvent> getOutputPort() {
+        return this.outputPort;
     }
 
 }

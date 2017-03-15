@@ -16,13 +16,20 @@
 package org.iobserve.analysis.service.updater;
 
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import teetime.framework.AbstractConsumerStage;
+import javax.json.Json;
+import javax.json.JsonObject;
+import javax.json.JsonWriter;
+
+import org.iobserve.analysis.data.AddAllocationContextEvent;
+import org.iobserve.analysis.data.RemoveAllocationContextEvent;
+
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
 
 // TODO the data type of the input element must be clarified
 
@@ -32,11 +39,15 @@ import teetime.framework.AbstractConsumerStage;
  * @author Reiner Jung
  *
  */
-public class VisualizationUpdateStage extends AbstractConsumerStage<Object> {
+public class VisualizationUpdateStage extends AbstractStage {
 
-    private static final String USER_AGENT = "iObserve/0.0.1";
+    private static final String USER_AGENT = "iObserve/0.0.2";
 
     private final URL outputURL;
+
+    private final InputPort<AddAllocationContextEvent> deploymentInputPort = super.createInputPort();
+
+    private final InputPort<RemoveAllocationContextEvent> undeploymentInputPort = super.createInputPort();
 
     /**
      * Output visualization configuration.
@@ -49,14 +60,32 @@ public class VisualizationUpdateStage extends AbstractConsumerStage<Object> {
     }
 
     @Override
-    protected void execute(final Object element) {
-        // TODO Auto-generated method stub
+    protected void execute() {
         try {
-            this.sendPostRequest(element.toString());
+            final AddAllocationContextEvent allocate = this.deploymentInputPort.receive();
+            final RemoveAllocationContextEvent deallocate = this.undeploymentInputPort.receive();
+            if (allocate != null) {
+                this.sendPostRequest(this.deployment(allocate));
+            }
+            if (deallocate != null) {
+                this.sendPostRequest(this.undeployment(deallocate));
+            }
         } catch (final IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    private JsonObject deployment(final AddAllocationContextEvent allocate) {
+        final JsonObject data = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE").build();
+
+        return data;
+    }
+
+    private JsonObject undeployment(final RemoveAllocationContextEvent unallocate) {
+        final JsonObject data = Json.createObjectBuilder().add("type", "changelog").add("operation", "DELETE").build();
+
+        return data;
     }
 
     /**
@@ -66,7 +95,7 @@ public class VisualizationUpdateStage extends AbstractConsumerStage<Object> {
      * @param message
      * @throws IOException
      */
-    private void sendPostRequest(final String message) throws IOException {
+    private void sendPostRequest(final JsonObject message) throws IOException {
 
         final HttpURLConnection connection = (HttpURLConnection) this.outputURL.openConnection();
 
@@ -78,10 +107,11 @@ public class VisualizationUpdateStage extends AbstractConsumerStage<Object> {
 
         // Send post request
         connection.setDoOutput(true);
-        final DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-        wr.writeBytes(message);
-        wr.flush();
-        wr.close();
+
+        final JsonWriter jsonWriter = Json.createWriter(connection.getOutputStream());
+
+        jsonWriter.writeObject(message);
+        jsonWriter.close();
 
         final int responseCode = connection.getResponseCode();
         System.out.println("\nSending 'POST' request to URL : " + this.outputURL);
@@ -100,5 +130,13 @@ public class VisualizationUpdateStage extends AbstractConsumerStage<Object> {
         // print result
         System.out.println(response.toString());
 
+    }
+
+    public InputPort<AddAllocationContextEvent> getDeploymentInputPort() {
+        return this.deploymentInputPort;
+    }
+
+    public InputPort<RemoveAllocationContextEvent> getUndeploymentInputPort() {
+        return this.undeploymentInputPort;
     }
 }
