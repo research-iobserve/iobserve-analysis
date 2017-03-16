@@ -13,14 +13,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelPreperation;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelTableGeneration;
 import org.iobserve.analysis.cdoruserbehavior.filter.TInstanceTransformations;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EditableBehaviorModelTable;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.JPetstoreStrategy;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 
 import kieker.common.logging.Log;
@@ -40,10 +37,12 @@ import weka.core.Instances;
  * @author Christoph Dornieden
  */
 
-public class TAggregationPreprocessing extends CompositeStage {
+public class TBehaviorModelPreprocessing extends CompositeStage {
 
     /** logger. */
-    private static final Log LOG = LogFactory.getLog(TAggregationPreprocessing.class);
+    private static final Log LOG = LogFactory.getLog(TBehaviorModelPreprocessing.class);
+
+    private final BehaviorModelConfiguration configuration;
 
     private final Distributor<EntryCallSequenceModel> distributor;
     private final Merger<Object> merger;
@@ -55,19 +54,17 @@ public class TAggregationPreprocessing extends CompositeStage {
     /**
      * constructor
      */
-    public TAggregationPreprocessing() {
-        final List<String> filterBlackList = new ArrayList<>();
+    public TBehaviorModelPreprocessing(BehaviorModelConfiguration configuration) {
+        this.configuration = configuration;
 
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         this.distributor = new Distributor<>(strategy);
 
         this.merger = new Merger<>(new SkippingBusyWaitingRoundRobinStrategy());
 
-        filterBlackList.add("(.*jpetstore\\.images).*\\)");
-        filterBlackList.add("(.*jpetstore\\.css).*\\)");
+        final EditableBehaviorModelTable modelTable = new EditableBehaviorModelTable(
+                this.configuration.getRepresentativeStrategy(), this.configuration.getModelGenerationFilter());
 
-        final EditableBehaviorModelTable modelTable = new EditableBehaviorModelTable(new JPetstoreStrategy(),
-                filterBlackList, true);
         this.tBehaviorModelGeneration = new TBehaviorModelTableGeneration(modelTable);
         this.tBehaviorModelPreperation = new TBehaviorModelPreperation();
 

@@ -40,10 +40,10 @@ public class TBehaviorModel extends CompositeStage {
     public TBehaviorModel(final BehaviorModelConfiguration configuration) {
         this.configuration = configuration;
         // TODO
-        final TAggregationPreprocessing tBehaviorModelProcessing = new TAggregationPreprocessing();
+        final TBehaviorModelPreprocessing tBehaviorModelProcessing = new TBehaviorModelPreprocessing(configuration);
         this.inputPort = tBehaviorModelProcessing.getInputPort();
 
-        final TAggregationProcessing tAggregationProcessing = new TAggregationProcessing();
+        final TBehaviorModelAggregation tAggregationProcessing = new TBehaviorModelAggregation(configuration);
 
         this.connectPorts(tBehaviorModelProcessing.getOutputPort(), tAggregationProcessing.getInputPort());
 
@@ -51,7 +51,7 @@ public class TBehaviorModel extends CompositeStage {
 
     /**
      * getter
-     * 
+     *
      * @return the inputPort
      */
     public InputPort<EntryCallSequenceModel> getInputPort() {

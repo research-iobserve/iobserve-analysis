@@ -13,63 +13,41 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter;
 
-import java.util.Random;
+import java.util.Optional;
+
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
-import weka.clusterers.XMeans;
 import weka.core.Instances;
-import weka.core.ManhattanDistance;
-import weka.core.NormalizableDistance;
 
 /**
+ * aggregate the given user behavior
+ *
  * @author Christoph Dornieden
  */
 
 public class TClustering extends AbstractConsumerStage<Instances> {
     private final OutputPort<Instances> outputPort = this.createOutputPort();
-
-    private final int minClusters;
-    private final int maxClusters;
+    private final IClustering clustering;
 
     /**
      * constructor
      *
-     * @param userGroups
-     *            number of user groups
-     * @param variance
-     *            variance
+     * @param clustering
+     *            clustering used
      */
-    public TClustering(final int userGroups, final int variance) {
-        this.minClusters = (userGroups - variance) < 2 ? 1 : userGroups - variance;
-        this.maxClusters = (userGroups + variance) < 2 ? 2 : userGroups - variance;
+    public TClustering(IClustering clustering) {
+        this.clustering = clustering;
     }
 
     @Override
     protected void execute(Instances instances) {
+        final Optional<Instances> centroids = this.clustering.getClusterCenters(instances);
 
-        final XMeans xMeansClusterer = new XMeans();
-        xMeansClusterer.setSeed(new Random().nextInt(Integer.MAX_VALUE));
-
-        final NormalizableDistance manhattenDistance = new ManhattanDistance();
-        manhattenDistance.setDontNormalize(false);
-        manhattenDistance.setInstances(instances);
-        xMeansClusterer.setDistanceF(manhattenDistance);
-
-        xMeansClusterer.setMinNumClusters(this.minClusters);
-        xMeansClusterer.setMaxNumClusters(this.maxClusters);
-
-        try {
-            xMeansClusterer.buildClusterer(instances);
-
-            final Instances centroids = xMeansClusterer.getClusterCenters();
-            this.outputPort.send(centroids);
-
-        } catch (final Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        if (centroids.isPresent()) {
+            this.outputPort.send(centroids.get());
         }
-
     }
 
     /**

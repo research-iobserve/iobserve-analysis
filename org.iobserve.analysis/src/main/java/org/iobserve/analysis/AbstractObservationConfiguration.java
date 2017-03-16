@@ -19,6 +19,10 @@ import java.io.IOException;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModel;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.JPetstoreStrategy;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.XMeansClustering;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
@@ -33,6 +37,7 @@ import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 import teetime.framework.Configuration;
+import weka.core.ManhattanDistance;
 
 /**
  * @author Reiner Jung
@@ -94,7 +99,20 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
         // systemModelProvider,
         // resourceEnvironmentModelProvider);
-        final TBehaviorModel tBehaviorModel = new TBehaviorModel(new BehaviorModelConfiguration());
+
+        final ModelGenerationFilter modelGenerationFilter = new ModelGenerationFilter(true);
+        modelGenerationFilter.addFilterRule("(.*jpetstore\\.images).*\\)");
+        modelGenerationFilter.addFilterRule("(.*jpetstore\\.css).*\\)");
+
+        final int expectedUserGroups = 5;
+        final int userGroupVariance = 2;
+        final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, userGroupVariance,
+                new ManhattanDistance());
+
+        final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration(
+                modelGenerationFilter, new JPetstoreStrategy(), behaviorModelClustering);
+
+        final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
 
         /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());

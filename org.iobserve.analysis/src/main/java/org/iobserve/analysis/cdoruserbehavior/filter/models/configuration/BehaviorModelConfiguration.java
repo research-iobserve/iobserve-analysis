@@ -23,8 +23,56 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
  */
 public class BehaviorModelConfiguration {
     // table generation configuration
+    private final ModelGenerationFilter modelGenerationFilter;
+
+    private final IRepresentativeStrategy representativeStrategy;
 
     // clustering configuration
-    IClusteringConfiguration clusteringConfiguration;
+    private final IClustering clustering;
+
+    /**
+     * constructor
+     *
+     * @param modelGenerationFilter
+     *            modelGenerationFilter
+     * @param representativeStrategy
+     *            representative Strategy
+     * @param clustering
+     *            clustering
+     */
+    public BehaviorModelConfiguration(ModelGenerationFilter modelGenerationFilter,
+            IRepresentativeStrategy representativeStrategy, IClustering clustering) {
+        super();
+        this.modelGenerationFilter = modelGenerationFilter;
+        this.representativeStrategy = representativeStrategy;
+        this.clustering = clustering;
+    }
+
+    /**
+     * getter
+     *
+     * @return the modelGenerationFilter
+     */
+    public ModelGenerationFilter getModelGenerationFilter() {
+        return this.modelGenerationFilter;
+    }
+
+    /**
+     * getter
+     *
+     * @return the representativeStrategy
+     */
+    public IRepresentativeStrategy getRepresentativeStrategy() {
+        return this.representativeStrategy;
+    }
+
+    /**
+     * getter
+     *
+     * @return the clustering
+     */
+    public IClustering getClustering() {
+        return this.clustering;
+    }
 
 }

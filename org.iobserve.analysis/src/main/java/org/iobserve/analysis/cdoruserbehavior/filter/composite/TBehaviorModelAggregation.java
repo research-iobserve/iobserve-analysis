@@ -16,6 +16,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelCreation;
 import org.iobserve.analysis.cdoruserbehavior.filter.TClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.TIObserveUIServer;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
@@ -27,21 +28,21 @@ import weka.core.Instances;
  *
  * @author Christoph Dornieden
  */
-public class TAggregationProcessing extends CompositeStage {
+public class TBehaviorModelAggregation extends CompositeStage {
     /** logger. */
-    private static final Log LOG = LogFactory.getLog(TAggregationProcessing.class);
+    private static final Log LOG = LogFactory.getLog(TBehaviorModelAggregation.class);
     private final TClustering tClustering;
     private final TBehaviorModelCreation tBehaviorModelCreation;
     private final TIObserveUIServer tIObserveUIServer;
+    private final BehaviorModelConfiguration configuration;
 
     /**
      * constructor configuratition of the aggregation filters
      */
-    public TAggregationProcessing() {
-        final int userGroups = 1;
-        final int variance = 1;
+    public TBehaviorModelAggregation(BehaviorModelConfiguration configuration) {
+        this.configuration = configuration;
 
-        this.tClustering = new TClustering(userGroups, variance);
+        this.tClustering = new TClustering(this.configuration.getClustering());
         this.tBehaviorModelCreation = new TBehaviorModelCreation();
         this.tIObserveUIServer = new TIObserveUIServer();
 

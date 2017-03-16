@@ -17,7 +17,6 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +25,7 @@ import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
@@ -53,41 +53,27 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
     private final LinkedList<LinkedList<Integer>> transitions;
 
     // filter list of regex expressions
-    private final ArrayList<String> filterList;
-    private final boolean blacklistMode;
+    private final ModelGenerationFilter modelGenerationFilter;
 
     // Aggregation Strategy
-    IRepresentativeStrategy strategy;
-
-    /**
-     * simple constructor
-     */
-    public EditableBehaviorModelTable(final IRepresentativeStrategy strategy) {
-        this.signatures = new HashMap<>();
-        this.inverseSignatures = new ArrayList<>();
-        this.transitions = new LinkedList<>();
-        this.filterList = new ArrayList<>();
-        this.blacklistMode = true;
-        this.strategy = strategy;
-    }
+    private final IRepresentativeStrategy strategy;
 
     /**
      * advanced constructor
      *
-     * @param filterList
-     *            list of regex expressions to filter the signatures
-     * @param blacklistMode
-     *            true if the filterList is a blacklist, else a whitelist
+     * @param strategy
+     *            strategy
+     * @param modelGenerationFilter
+     *            modelGenerationFilter
      */
 
-    public EditableBehaviorModelTable(final IRepresentativeStrategy strategy, final Collection<String> filterList,
-            final boolean blacklistMode) {
+    public EditableBehaviorModelTable(final IRepresentativeStrategy strategy,
+            final ModelGenerationFilter modelGenerationFilter) {
         this.signatures = new HashMap<>();
         this.inverseSignatures = new ArrayList<>();
         this.transitions = new LinkedList<>();
-        this.filterList = new ArrayList<>(filterList);
-        this.blacklistMode = blacklistMode;
         this.strategy = strategy;
+        this.modelGenerationFilter = modelGenerationFilter;
 
     }
 
@@ -265,14 +251,7 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
 
     @Override
     public boolean isAllowedSignature(final String signature) {
-        boolean isAllowed = true;
-
-        for (final String filterRule : this.filterList) {
-
-            final boolean isMatch = signature.matches(filterRule);
-            isAllowed = isAllowed && this.blacklistMode ? !isMatch : isMatch;
-        }
-        return isAllowed;
+        return this.modelGenerationFilter.isAllowed(signature);
     }
 
     @Override
