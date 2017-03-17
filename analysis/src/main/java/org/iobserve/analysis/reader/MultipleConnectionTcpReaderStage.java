@@ -16,6 +16,7 @@
 package org.iobserve.analysis.reader;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.nio.BufferUnderflowException;
 import java.nio.channels.ClosedByInterruptException;
@@ -25,7 +26,9 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import kieker.common.exception.RecordInstantiationException;
@@ -33,7 +36,8 @@ import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.factory.CachedRecordFactoryCatalog;
 import kieker.common.record.factory.IRecordFactory;
-
+import kieker.common.record.flow.ITraceRecord;
+import kieker.common.record.flow.trace.TraceMetadata;
 import teetime.framework.AbstractProducerStage;
 
 /**
@@ -51,6 +55,9 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
     /** server input port. */
     private final int inputPort;
     private final int bufferSize;
+
+    private long traceId = 0;
+    private final Map<String, Map<Long, TraceMetadata>> metadatamap = new HashMap<>();
 
     /**
      * Create a single threaded multi connection tcp reader stage.
@@ -134,7 +141,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
         }
     }
 
-    private void processBuffer(final Connection connection) {
+    private void processBuffer(final Connection connection) throws IOException {
         connection.getBuffer().flip();
 
         try {
@@ -154,7 +161,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
         }
     }
 
-    private boolean onBufferReceived(final Connection connection) {
+    private boolean onBufferReceived(final Connection connection) throws IOException {
         // identify record class
         if (connection.getBuffer().remaining() < MultipleConnectionTcpReaderStage.INT_BYTES) {
             return false;
@@ -170,8 +177,8 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
 
     private boolean registerRegistryEntry(final Connection connection, final int clazzId) {
         // identify string identifier and string length
-        if (connection.getBuffer().remaining() < (MultipleConnectionTcpReaderStage.INT_BYTES
-                + MultipleConnectionTcpReaderStage.INT_BYTES)) {
+        if (connection.getBuffer().remaining() < MultipleConnectionTcpReaderStage.INT_BYTES
+                + MultipleConnectionTcpReaderStage.INT_BYTES) {
             return false;
         } else {
             final int id = connection.getBuffer().getInt();
@@ -190,7 +197,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
         }
     }
 
-    private boolean deserializeRecord(final Connection connection, final int clazzId) {
+    private boolean deserializeRecord(final Connection connection, final int clazzId) throws IOException {
         final String recordClassName = connection.getRegistry().get(clazzId);
 
         // identify logging timestamp
@@ -209,13 +216,61 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
                             connection.getStringRegistryWrapper());
                     record.setLoggingTimestamp(loggingTimestamp);
 
-                    this.outputPort.send(record);
+                    this.outputPort.send(this.recordRewrite(connection, record));
                     return true;
                 } catch (final RecordInstantiationException ex) {
                     super.logger.error("Failed to create: " + recordClassName, ex);
                     return false;
                 }
             }
+        }
+    }
+
+    /**
+     * Trace data records use unique ids for their respective host. However, in a multi read stage
+     * these ids may be used on different hosts. Therefore, they have to be mapped.
+     *
+     * @param record
+     * @return
+     * @throws IOException
+     */
+    private IMonitoringRecord recordRewrite(final Connection connection, final IMonitoringRecord record)
+            throws IOException {
+        if (record instanceof TraceMetadata) {
+
+            final TraceMetadata traceMetadata = (TraceMetadata) record;
+            final TraceMetadata newMetadata = new TraceMetadata(this.traceId, traceMetadata.getThreadId(),
+                    traceMetadata.getSessionId(), connection.getChannel().getRemoteAddress().toString(),
+                    traceMetadata.getParentTraceId(), traceMetadata.getParentOrderId());
+
+            Map<Long, TraceMetadata> map = this.metadatamap.get(newMetadata.getHostname());
+            if (map == null) {
+                map = new HashMap<>();
+                this.metadatamap.put(newMetadata.getHostname(), map);
+            }
+            map.put(this.traceId, newMetadata);
+            this.traceId++;
+            return newMetadata;
+        } else if (record instanceof ITraceRecord) {
+            try {
+                final Field f = record.getClass().getDeclaredField("traceId");
+                f.setAccessible(true);
+
+                final TraceMetadata metaData = this.metadatamap
+                        .get(connection.getChannel().getRemoteAddress().toString())
+                        .get(((ITraceRecord) record).getTraceId());
+
+                f.set(record, metaData.getTraceId());
+            } catch (NoSuchFieldException | SecurityException e) {
+                e.printStackTrace();
+            } catch (final IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (final IllegalAccessException e) {
+                e.printStackTrace();
+            }
+            return record;
+        } else {
+            return record;
         }
     }
 
