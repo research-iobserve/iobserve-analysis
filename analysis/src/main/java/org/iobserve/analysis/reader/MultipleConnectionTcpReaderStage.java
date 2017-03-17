@@ -16,7 +16,6 @@
 package org.iobserve.analysis.reader;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.nio.BufferUnderflowException;
 import java.nio.channels.ClosedByInterruptException;
@@ -37,7 +36,27 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.factory.CachedRecordFactoryCatalog;
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.flow.ITraceRecord;
+import kieker.common.record.flow.trace.ConstructionEvent;
 import kieker.common.record.flow.trace.TraceMetadata;
+import kieker.common.record.flow.trace.operation.AfterOperationEvent;
+import kieker.common.record.flow.trace.operation.AfterOperationFailedEvent;
+import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
+import kieker.common.record.flow.trace.operation.CallOperationEvent;
+import kieker.common.record.flow.trace.operation.constructor.AfterConstructorEvent;
+import kieker.common.record.flow.trace.operation.constructor.AfterConstructorFailedEvent;
+import kieker.common.record.flow.trace.operation.constructor.BeforeConstructorEvent;
+import kieker.common.record.flow.trace.operation.constructor.CallConstructorEvent;
+import kieker.common.record.flow.trace.operation.constructor.object.AfterConstructorFailedObjectEvent;
+import kieker.common.record.flow.trace.operation.constructor.object.AfterConstructorObjectEvent;
+import kieker.common.record.flow.trace.operation.constructor.object.BeforeConstructorObjectEvent;
+import kieker.common.record.flow.trace.operation.constructor.object.BeforeConstructorObjectInterfaceEvent;
+import kieker.common.record.flow.trace.operation.constructor.object.CallConstructorObjectEvent;
+import kieker.common.record.flow.trace.operation.object.AfterOperationFailedObjectEvent;
+import kieker.common.record.flow.trace.operation.object.AfterOperationObjectEvent;
+import kieker.common.record.flow.trace.operation.object.BeforeOperationObjectEvent;
+import kieker.common.record.flow.trace.operation.object.BeforeOperationObjectInterfaceEvent;
+import kieker.common.record.flow.trace.operation.object.CallOperationObjectEvent;
+import kieker.common.record.misc.KiekerMetadataRecord;
 import teetime.framework.AbstractProducerStage;
 
 /**
@@ -56,7 +75,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
     private final int inputPort;
     private final int bufferSize;
 
-    private long traceId = 0;
+    private volatile long traceId = 0;
     private final Map<String, Map<Long, TraceMetadata>> metadatamap = new HashMap<>();
 
     /**
@@ -216,7 +235,10 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
                             connection.getStringRegistryWrapper());
                     record.setLoggingTimestamp(loggingTimestamp);
 
-                    this.outputPort.send(this.recordRewrite(connection, record));
+                    final IMonitoringRecord rewrittenRecord = this.recordRewrite(connection, record);
+                    if (rewrittenRecord != null) {
+                        this.outputPort.send(rewrittenRecord);
+                    }
                     return true;
                 } catch (final RecordInstantiationException ex) {
                     super.logger.error("Failed to create: " + recordClassName, ex);
@@ -237,38 +259,141 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
     private IMonitoringRecord recordRewrite(final Connection connection, final IMonitoringRecord record)
             throws IOException {
         if (record instanceof TraceMetadata) {
+            System.err.println("METADATA ADD " + record);
 
             final TraceMetadata traceMetadata = (TraceMetadata) record;
             final TraceMetadata newMetadata = new TraceMetadata(this.traceId, traceMetadata.getThreadId(),
                     traceMetadata.getSessionId(), connection.getChannel().getRemoteAddress().toString(),
                     traceMetadata.getParentTraceId(), traceMetadata.getParentOrderId());
-
+            System.out.println("meta " + newMetadata.toString());
             Map<Long, TraceMetadata> map = this.metadatamap.get(newMetadata.getHostname());
             if (map == null) {
                 map = new HashMap<>();
                 this.metadatamap.put(newMetadata.getHostname(), map);
             }
-            map.put(this.traceId, newMetadata);
+            map.put(traceMetadata.getTraceId(), newMetadata);
             this.traceId++;
             return newMetadata;
         } else if (record instanceof ITraceRecord) {
-            try {
-                final Field f = record.getClass().getDeclaredField("traceId");
-                f.setAccessible(true);
+            final TraceMetadata metaData = this.metadatamap.get(connection.getChannel().getRemoteAddress().toString())
+                    .get(((ITraceRecord) record).getTraceId());
 
-                final TraceMetadata metaData = this.metadatamap
-                        .get(connection.getChannel().getRemoteAddress().toString())
-                        .get(((ITraceRecord) record).getTraceId());
+            System.err.println("METADATA READ " + connection.getChannel().getRemoteAddress().toString() + " "
+                    + ((ITraceRecord) record).getTraceId() + " " + metaData);
 
-                f.set(record, metaData.getTraceId());
-            } catch (NoSuchFieldException | SecurityException e) {
-                e.printStackTrace();
-            } catch (final IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (final IllegalAccessException e) {
-                e.printStackTrace();
+            /** this mess could be avoided with setters in Kieker records. */
+            if (record instanceof ConstructionEvent) {
+                final ConstructionEvent event = (ConstructionEvent) record;
+                return new ConstructionEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
+                        event.getClassSignature(), event.getObjectId());
+            } else if (record instanceof AfterOperationEvent) {
+                final AfterOperationEvent event = (AfterOperationEvent) record;
+                return new AfterOperationEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
+                        event.getOperationSignature(), event.getClassSignature());
+
+            } else if (record instanceof AfterOperationFailedEvent) {
+                final AfterOperationFailedEvent event = (AfterOperationFailedEvent) record;
+                return new AfterOperationFailedEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
+                        event.getOperationSignature(), event.getClassSignature(), event.getCause());
+
+            } else if (record instanceof BeforeOperationEvent) {
+                final BeforeOperationEvent event = (BeforeOperationEvent) record;
+                return new BeforeOperationEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
+                        event.getOperationSignature(), event.getClassSignature());
+
+            } else if (record instanceof CallOperationEvent) {
+                final CallOperationEvent event = (CallOperationEvent) record;
+                return new CallOperationEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
+                        event.getOperationSignature(), event.getClassSignature(), event.getCalleeOperationSignature(),
+                        event.getCalleeClassSignature());
+
+            } else if (record instanceof AfterOperationFailedObjectEvent) {
+                final AfterOperationFailedObjectEvent event = (AfterOperationFailedObjectEvent) record;
+                return new AfterOperationFailedObjectEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
+                        event.getCause(), event.getObjectId());
+
+            } else if (record instanceof AfterOperationObjectEvent) {
+                final AfterOperationObjectEvent event = (AfterOperationObjectEvent) record;
+                return new AfterOperationObjectEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
+                        event.getOperationSignature(), event.getClassSignature(), event.getObjectId());
+
+            } else if (record instanceof BeforeOperationObjectEvent) {
+                final BeforeOperationObjectEvent event = (BeforeOperationObjectEvent) record;
+                return new BeforeOperationObjectEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
+                        event.getObjectId());
+
+            } else if (record instanceof BeforeOperationObjectInterfaceEvent) {
+                final BeforeOperationObjectInterfaceEvent event = (BeforeOperationObjectInterfaceEvent) record;
+                return new BeforeOperationObjectInterfaceEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
+                        event.getObjectId(), event.getInterface());
+
+            } else if (record instanceof CallOperationObjectEvent) {
+                final CallOperationObjectEvent event = (CallOperationObjectEvent) record;
+                return new CallOperationObjectEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
+                        event.getOperationSignature(), event.getClassSignature(), event.getCalleeOperationSignature(),
+                        event.getCalleeClassSignature(), event.getCallerObjectId(), event.getCalleeObjectId());
+
+            } else if (record instanceof AfterConstructorEvent) {
+                final AfterConstructorEvent event = (AfterConstructorEvent) record;
+                return new AfterConstructorEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
+                        event.getOperationSignature(), event.getClassSignature());
+
+            } else if (record instanceof AfterConstructorFailedEvent) {
+                final AfterConstructorFailedEvent event = (AfterConstructorFailedEvent) record;
+                return new AfterConstructorFailedEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
+                        event.getCause());
+
+            } else if (record instanceof BeforeConstructorEvent) {
+                final BeforeConstructorEvent event = (BeforeConstructorEvent) record;
+                return new BeforeConstructorEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
+                        event.getOperationSignature(), event.getClassSignature());
+
+            } else if (record instanceof CallConstructorEvent) {
+                final CallConstructorEvent event = (CallConstructorEvent) record;
+                return new CallConstructorEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
+                        event.getCallerOperationSignature(), event.getCallerClassSignature(),
+                        event.getCalleeOperationSignature(), event.getCalleeOperationSignature());
+
+            } else if (record instanceof AfterConstructorFailedObjectEvent) {
+                final AfterConstructorFailedObjectEvent event = (AfterConstructorFailedObjectEvent) record;
+                return new AfterConstructorFailedObjectEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
+                        event.getCause(), event.getObjectId());
+
+            } else if (record instanceof AfterConstructorObjectEvent) {
+                final AfterConstructorObjectEvent event = (AfterConstructorObjectEvent) record;
+                return new AfterConstructorObjectEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
+                        event.getObjectId());
+
+            } else if (record instanceof BeforeConstructorObjectEvent) {
+                final BeforeConstructorObjectEvent event = (BeforeConstructorObjectEvent) record;
+                return new BeforeConstructorObjectEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
+                        event.getObjectId());
+
+            } else if (record instanceof BeforeConstructorObjectInterfaceEvent) {
+                final BeforeConstructorObjectInterfaceEvent event = (BeforeConstructorObjectInterfaceEvent) record;
+                return new BeforeConstructorObjectInterfaceEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
+                        event.getObjectId(), event.getInterface());
+
+            } else if (record instanceof CallConstructorObjectEvent) {
+                final CallConstructorObjectEvent event = (CallConstructorObjectEvent) record;
+                return new CallConstructorObjectEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getCallerOperationSignature(), event.getCallerClassSignature(),
+                        event.getCalleeOperationSignature(), event.getCalleeClassSignature(), event.getObjectId(),
+                        event.getCalleeObjectId());
+
+            } else {
+                return record;
             }
-            return record;
+        } else if (record instanceof KiekerMetadataRecord) {
+            return null;
         } else {
             return record;
         }
