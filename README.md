@@ -16,6 +16,8 @@ some parts are still located in other SVN repositories.
   installation is in `${ECLIPSE}`.
 - Your Eclipse Installation requires Palladio installed.
 
+'Note: This is outdated, we switched to gradle'
+
 ## Setup Build Environment
 
 Normally maven can pull all archives from a remote repository. However,

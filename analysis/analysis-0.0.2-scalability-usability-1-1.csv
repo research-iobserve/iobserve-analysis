@@ -1,0 +1,21 @@
+analysis;size of observed system;36
+analysis;lines of code (LOC);3361
+analysis;cyclomatic complexity bucket 1;197
+analysis;cyclomatic complexity bucket 2;12
+analysis;cyclomatic complexity bucket 3;9
+analysis;cyclomatic complexity bucket 4;7
+analysis;cyclomatic complexity bucket 5;0
+analysis;cyclomatic complexity bucket 6;1
+analysis;cyclomatic complexity bucket 7;2
+analysis;cyclomatic complexity bucket 8;0
+analysis;cyclomatic complexity bucket 9;1
+analysis;cyclomatic complexity bucket 10;0
+analysis;cyclomatic complexity bucket 11;0
+analysis;cyclomatic complexity bucket 12;1
+analysis;number of modules;133
+analysis;number of nodes;430
+analysis;number of edges;484
+analysis;hypergraph size;3226.558283860747
+analysis;hypergraph complexity;1238.7856447931135
+analysis;inter module coupling;902.3913256906781
+analysis;graph cohesion;7.65263556556506E-4
