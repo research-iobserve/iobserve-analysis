@@ -10,6 +10,7 @@ dependencies {
 	compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
 	compile 'javax.interceptor:javax.interceptor-api:1.2'
 	compile 'javax.servlet:javax.servlet-api:3.1.0'
+	compile 'com.neovisionaries:nv-i18n:1.20'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

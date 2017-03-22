@@ -72,9 +72,8 @@ public final class AllocationModelBuilder {
     public static void addAllocationContextIfAbsent(final Allocation model, final ResourceContainer resContainer,
             final AssemblyContext asmCtx) {
         if (!model.getAllocationContexts_Allocation().stream().filter(
-                context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName())
-                        && context.getResourceContainer_AllocationContext().getEntityName()
-                                .equals(resContainer.getEntityName()))
+        		context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName())
+                        && context.getResourceContainer_AllocationContext().getEntityName().equals(resContainer.getEntityName()))
                 .findAny().isPresent()) {
             AllocationModelBuilder.addAllocationContext(model, resContainer, asmCtx);
         }
@@ -97,8 +96,7 @@ public final class AllocationModelBuilder {
         // could be inefficient on big models and high recurrences of undeployments
         model.getAllocationContexts_Allocation().stream().filter(
                 context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName())
-                        && context.getResourceContainer_AllocationContext().getEntityName()
-                                .equals(resContainer.getEntityName()))
+                        && context.getResourceContainer_AllocationContext().getEntityName().equals(resContainer.getEntityName()))
                 .findFirst().ifPresent(ctx -> model.getAllocationContexts_Allocation().remove(ctx));
     }
 

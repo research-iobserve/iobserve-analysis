@@ -19,6 +19,8 @@ import java.util.Optional;
 
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
+import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceenvironmentPrivacyFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
@@ -50,8 +52,8 @@ public final class ResourceEnvironmentModelBuilder {
      *            name of the new container
      * @return builder
      */
-    public static ResourceContainer createResourceContainer(final ResourceEnvironment model, final String name) {
-        final ResourceContainer resContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+    public static ResourceContainerPrivacy createResourceContainer(final ResourceEnvironment model, final String name) {
+        final ResourceContainerPrivacy resContainer = ResourceenvironmentPrivacyFactory.eINSTANCE.createResourceContainerPrivacy();
         resContainer.setEntityName(name);
         model.getResourceContainer_ResourceEnvironment().add(resContainer);
         return resContainer;
@@ -69,7 +71,7 @@ public final class ResourceEnvironmentModelBuilder {
      * @return link instance, already added to the model
      */
     public static LinkingResource connectResourceContainer(final ResourceEnvironment model,
-            final ResourceContainer res1, final ResourceContainer res2) {
+            final ResourceContainerPrivacy res1, final ResourceContainerPrivacy res2) {
         final LinkingResource link = ResourceenvironmentFactory.eINSTANCE.createLinkingResource();
         link.getConnectedResourceContainers_LinkingResource().add(res1);
         link.getConnectedResourceContainers_LinkingResource().add(res2);
@@ -90,8 +92,8 @@ public final class ResourceEnvironmentModelBuilder {
      */
     public static Optional<ResourceContainer> getResourceContainerByName(final ResourceEnvironment resourceEnvironment,
             final String name) {
+    	//TODO: Change to ResourceContainerPrivacy
         return resourceEnvironment.getResourceContainer_ResourceEnvironment().stream()
                 .filter(container -> container.getEntityName().equals(name)).findFirst();
     }
-
 }

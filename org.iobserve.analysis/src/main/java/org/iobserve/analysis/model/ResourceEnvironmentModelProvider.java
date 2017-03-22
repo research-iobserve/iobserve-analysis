@@ -19,6 +19,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
+import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceenvironmentPrivacyPackage;
 
 /**
  * Model provider to provide {@link ResourceEnvironment} model.
@@ -48,7 +49,7 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
 
     @Override
     protected EPackage getPackage() {
-        return ResourceenvironmentPackage.eINSTANCE;
+        return ResourceenvironmentPrivacyPackage.eINSTANCE;
     }
 
 }
