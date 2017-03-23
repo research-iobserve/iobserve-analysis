@@ -18,16 +18,16 @@ package org.iobserve.analysis;
 import java.io.File;
 import java.util.Collection;
 
-import teetime.stage.InitialElementProducer;
-import teetime.stage.className.ClassNameRegistryRepository;
-import teetime.stage.io.filesystem.Dir2RecordsFilter;
-
+import org.iobserve.analysis.filter.Dir2RecordsFilter;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+
+import teetime.stage.InitialElementProducer;
+import teetime.stage.className.ClassNameRegistryRepository;
 
 /**
  *
