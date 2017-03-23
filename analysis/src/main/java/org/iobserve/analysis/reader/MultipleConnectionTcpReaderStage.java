@@ -17,6 +17,7 @@ package org.iobserve.analysis.reader;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.BufferUnderflowException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.SelectionKey;
@@ -259,13 +260,10 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
     private IMonitoringRecord recordRewrite(final Connection connection, final IMonitoringRecord record)
             throws IOException {
         if (record instanceof TraceMetadata) {
-            System.err.println("METADATA ADD " + record);
-
             final TraceMetadata traceMetadata = (TraceMetadata) record;
             final TraceMetadata newMetadata = new TraceMetadata(this.traceId, traceMetadata.getThreadId(),
-                    traceMetadata.getSessionId(), connection.getChannel().getRemoteAddress().toString(),
+                    traceMetadata.getSessionId(), this.getIP(connection.getChannel().getRemoteAddress()),
                     traceMetadata.getParentTraceId(), traceMetadata.getParentOrderId());
-            System.out.println("meta " + newMetadata.toString());
             Map<Long, TraceMetadata> map = this.metadatamap.get(newMetadata.getHostname());
             if (map == null) {
                 map = new HashMap<>();
@@ -275,11 +273,8 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
             this.traceId++;
             return newMetadata;
         } else if (record instanceof ITraceRecord) {
-            final TraceMetadata metaData = this.metadatamap.get(connection.getChannel().getRemoteAddress().toString())
+            final TraceMetadata metaData = this.metadatamap.get(this.getIP(connection.getChannel().getRemoteAddress()))
                     .get(((ITraceRecord) record).getTraceId());
-
-            System.err.println("METADATA READ " + connection.getChannel().getRemoteAddress().toString() + " "
-                    + ((ITraceRecord) record).getTraceId() + " " + metaData);
 
             /** this mess could be avoided with setters in Kieker records. */
             if (record instanceof ConstructionEvent) {
@@ -397,6 +392,12 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
         } else {
             return record;
         }
+    }
+
+    private String getIP(final SocketAddress remoteAddress) {
+        final InetSocketAddress sockaddr = (InetSocketAddress) remoteAddress;
+
+        return sockaddr.getHostString();
     }
 
 }
