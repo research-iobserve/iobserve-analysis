@@ -49,8 +49,8 @@ public final class SplitterMain {
         // final CommandLineParser parser = new DefaultParser();
         // try {
         System.out.println("Receiver");
-        final SimpleSplitterConfiguration configuration = new SimpleSplitterConfiguration(args[0],
-                Integer.parseInt(args[1]), args[2], args[3], args[4], args[5]);
+        final SimpleSplitterConfiguration configuration = new SimpleSplitterConfiguration(args[0], args[1], args[2],
+                args[3], args[4], args[5], args[6]);
         final Execution<SimpleSplitterConfiguration> analysis = new Execution<>(configuration);
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {

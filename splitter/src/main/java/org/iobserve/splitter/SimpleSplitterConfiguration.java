@@ -19,10 +19,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.iobserve.analysis.filter.Dir2RecordsFilter;
+
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
-import teetime.stage.io.filesystem.Dir2RecordsFilter;
 
 /**
  * Analysis configuration for the data collector.
@@ -37,8 +38,10 @@ public class SimpleSplitterConfiguration extends Configuration {
     private final DataDumpStage adapterConsumer;
     private final DataDumpStage enterpriseConsumer;
     private final DataDumpStage storeConsumer;
+    private final DataDumpStage registryConsumer;
     private final DataDumpStage webFrontendConsumer;
     private final Splitter splitter;
+    private final Filter filter;
 
     /**
      * Configure analysis.
@@ -48,26 +51,46 @@ public class SimpleSplitterConfiguration extends Configuration {
      * @param inputPort
      *            input port
      */
-    public SimpleSplitterConfiguration(final String dataLocation, final int inputPort, final String adapter,
-            final String enterprise, final String store, final String webfrontend) {
+    public SimpleSplitterConfiguration(final String dataLocation, final String outputLocation, final String adapter,
+            final String enterprise, final String store, final String registry, final String webfrontend) {
+
+        System.out.println("Read from " + dataLocation);
 
         final Collection<File> directories = new ArrayList<>();
+
+        final File directory = new File(dataLocation);
+
+        if (directory.isDirectory()) {
+            for (final File file : directory.listFiles()) {
+                if (file.isDirectory()) {
+                    directories.add(file);
+                }
+            }
+
+        } else {
+            System.out.println(dataLocation + " is not a directory containing Kieker directories.");
+        }
 
         this.files = new InitialElementProducer<>(directories);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
 
-        this.splitter = new Splitter(adapter, enterprise, store, webfrontend);
+        this.filter = new Filter();
 
-        this.adapterConsumer = new DataDumpStage(dataLocation, adapter);
-        this.enterpriseConsumer = new DataDumpStage(dataLocation, enterprise);
-        this.storeConsumer = new DataDumpStage(dataLocation, store);
-        this.webFrontendConsumer = new DataDumpStage(dataLocation, webfrontend);
+        this.splitter = new Splitter(adapter, enterprise, store, registry, webfrontend);
+
+        this.adapterConsumer = new DataDumpStage(outputLocation, adapter);
+        this.enterpriseConsumer = new DataDumpStage(outputLocation, enterprise);
+        this.storeConsumer = new DataDumpStage(outputLocation, store);
+        this.registryConsumer = new DataDumpStage(outputLocation, registry);
+        this.webFrontendConsumer = new DataDumpStage(outputLocation, webfrontend);
 
         this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
-        this.connectPorts(this.reader.getOutputPort(), this.splitter.getInputPort());
+        this.connectPorts(this.reader.getOutputPort(), this.filter.getInputPort());
+        this.connectPorts(this.filter.getOutputPort(), this.splitter.getInputPort());
         this.connectPorts(this.splitter.getAdapterOutputPort(), this.adapterConsumer.getInputPort());
         this.connectPorts(this.splitter.getEnterpriseOutputPort(), this.enterpriseConsumer.getInputPort());
         this.connectPorts(this.splitter.getStoreOutputPort(), this.storeConsumer.getInputPort());
+        this.connectPorts(this.splitter.getRegistryOutputPort(), this.registryConsumer.getInputPort());
         this.connectPorts(this.splitter.getWebFrontendOutputPort(), this.webFrontendConsumer.getInputPort());
 
     }

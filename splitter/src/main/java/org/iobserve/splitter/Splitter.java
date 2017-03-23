@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.ITraceRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
+import kieker.common.record.misc.KiekerMetadataRecord;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -41,6 +42,7 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
     private final OutputPort<IMonitoringRecord> adapterOutputPort = this.createOutputPort();
     private final OutputPort<IMonitoringRecord> enterpriseOutputPort = this.createOutputPort();
     private final OutputPort<IMonitoringRecord> storeOutputPort = this.createOutputPort();
+    private final OutputPort<IMonitoringRecord> registryOutputPort = this.createOutputPort();
     private final OutputPort<IMonitoringRecord> webFrontendMetaPort = this.createOutputPort();
 
     private final Map<Long, TraceMetadata> traceRegisterMap = new HashMap<>();
@@ -54,15 +56,19 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
 
     private final String store;
 
+    private final String registry;
+
     private final String webFrontend;
 
     /**
      * Empty default constructor.
      */
-    public Splitter(final String adapter, final String enterprise, final String store, final String webFrontend) {
+    public Splitter(final String adapter, final String enterprise, final String store, final String registry,
+            final String webFrontend) {
         this.adapter = adapter;
         this.enterprise = enterprise;
         this.store = store;
+        this.registry = registry;
         this.webFrontend = webFrontend;
     }
 
@@ -72,6 +78,22 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
         if (element instanceof TraceMetadata) {
             final TraceMetadata traceMetadata = (TraceMetadata) element;
             this.traceRegisterMap.put(traceMetadata.getTraceId(), traceMetadata);
+            if (this.adapter.equals(traceMetadata.getHostname())) {
+                this.getAdapterOutputPort().send(element);
+            } else if (this.enterprise.equals(traceMetadata.getHostname())) {
+                this.getEnterpriseOutputPort().send(element);
+            } else if (this.store.equals(traceMetadata.getHostname())) {
+                this.getStoreOutputPort().send(element);
+            } else if (this.registry.equals(traceMetadata.getHostname())) {
+                this.getRegistryOutputPort().send(element);
+            } else if (this.webFrontend.equals(traceMetadata.getHostname())) {
+                this.getWebFrontendOutputPort().send(element);
+            } else {
+                this.getAdapterOutputPort().send(element);
+                this.getEnterpriseOutputPort().send(element);
+                this.getStoreOutputPort().send(element);
+                this.getWebFrontendOutputPort().send(element);
+            }
         } else if (element instanceof ITraceRecord) {
             final TraceMetadata metadata = this.traceRegisterMap.get(((ITraceRecord) element).getTraceId());
             if (this.adapter.equals(metadata.getHostname())) {
@@ -80,6 +102,8 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
                 this.getEnterpriseOutputPort().send(element);
             } else if (this.store.equals(metadata.getHostname())) {
                 this.getStoreOutputPort().send(element);
+            } else if (this.registry.equals(metadata.getHostname())) {
+                this.getRegistryOutputPort().send(element);
             } else if (this.webFrontend.equals(metadata.getHostname())) {
                 this.getWebFrontendOutputPort().send(element);
             } else {
@@ -88,6 +112,9 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
                 this.getStoreOutputPort().send(element);
                 this.getWebFrontendOutputPort().send(element);
             }
+        } else if (element instanceof KiekerMetadataRecord) {
+            /** ignore. */
+            System.out.println("Metadata record " + element);
         } else {
             this.getAdapterOutputPort().send(element);
             this.getEnterpriseOutputPort().send(element);
@@ -115,6 +142,13 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
      */
     public final OutputPort<IMonitoringRecord> getStoreOutputPort() {
         return this.storeOutputPort;
+    }
+
+    /**
+     * @return the flowOutputPort
+     */
+    public final OutputPort<IMonitoringRecord> getRegistryOutputPort() {
+        return this.registryOutputPort;
     }
 
     /**
