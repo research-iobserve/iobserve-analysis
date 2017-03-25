@@ -1,0 +1,141 @@
+project.ext {
+    aspectjVersion = '1.8.4'
+}
+
+ext {
+	working_dir = 'res/working_dir/'
+	original_dir = 'res/original_dir/'
+}
+
+buildscript {
+    repositories {
+        maven {url "https://maven.eveoh.nl/content/repositories/releases"}
+    }
+
+    dependencies {
+        classpath "nl.eveoh:gradle-aspectj:1.6"
+    }
+}
+
+//apply plugin: 'aspectj'
+
+sourceCompatibility = 1.8
+
+dependencies {
+	compile gradleApi()
+	compile project(":org.iobserve.common")
+
+	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
+	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
+	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
+	compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
+    
+	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
+	compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
+	compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
+		
+	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
+	compile 'org.apache.logging.log4j:log4j-core:2.6.2'
+	
+	compile 'junit:junit:4.11'
+	
+	compile 'org.antlr:antlr-runtime:3.5.2' 
+
+	compile 'nz.ac.waikato.cms.weka:weka-stable:3.6.13'
+		
+	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
+	compile 'extra:org.palladiosimulator.pcm:4.0.0.201511051135'
+
+	compile 'extra:de.uka.ipd.sdq.stoex:2.2.0+'
+	compile 'extra:de.uka.ipd.sdq.units:2.1.0.201511050934'
+	compile 'extra:de.uka.ipd.sdq.probfunction:2.1.0.201511050934'
+
+	compile 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
+	compile 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
+	compile 'extra:org.eclipse.net4j:4.5.0.v20160607-1254'
+	compile 'extra:org.eclipse.net4j.util:3.6.0.v20160607-1254'
+	compile 'extra:org.eclipse.equinox.common:3.8.0.v20160509-1230'
+	compile 'extra:org.eclipse.ocl:3.6.0.v20160523-1914'
+	compile 'extra:org.eclipse.ocl.common:1.4.0.v20160521-2033'
+	compile 'extra:org.eclipse.ocl.ecore:3.6.0.v20160523-1914'
+	compile 'extra:lpg.runtime.java:2.0.17.v201004271640'	
+}
+
+sourceSets {
+	irl {
+		java {
+			srcDir 'src/main/irl'
+		}
+    }
+    main {
+    	java {
+    		srcDir 'src/main/java'
+		srcDir 'src/gen/java'
+//		srcDir 'src/gen/java-factory'
+//    		srcDir 'src/main/aspectj'
+    	}
+    }
+    
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    //archives javadocJar
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.version = version
+        pom.groupId = 'org.iobserve'
+        pom.artifactId = 'analysis'
+    }
+}
+
+//********************************************************************************************
+//
+//********************************************************************************************
+
+//create a single Jar with all dependencies
+task fatJar(type: Jar) {
+	manifest {
+        attributes 'Main-Class' : 'org.iobserve.analysis.AnalysisMain'
+    }
+    baseName = project.name + '-snapshot'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+}
+
+task cleanPcmWorkingDir(type: Delete) {
+	delete working_dir
+}
+
+task copyPcmToWorkingDir(type: Copy) {
+	dependsOn << cleanPcmWorkingDir
+	from original_dir
+	into working_dir
+}
+
+task cleanDebug {
+	dependsOn << copyPcmToWorkingDir
+}
+
+task runAnalysis(type: JavaExec) {
+	dependsOn << build
+	dependsOn << copyPcmToWorkingDir
+	String appArgs = "--dirMonitoring=res/working_dir/kieker --dirPcm=res/working_dir/pcm --dirLogging=output/logging"
+	args = [appArgs]
+	classpath = files("build/libs/org.iobserve.analysis-1.0.jar")
+	main = 'org.iobserve.analysis.AnalysisMain'
+}
+

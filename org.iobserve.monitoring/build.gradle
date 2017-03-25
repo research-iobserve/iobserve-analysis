@@ -1,0 +1,37 @@
+if (version.isEmpty()) {
+	System.err.println("version not set")
+}
+if (group.isEmpty()) {
+	System.err.println("group not set")
+}
+
+dependencies {
+	compile project(":org.iobserve.common")
+	compile 'net.kieker-monitoring:kieker:1.13-SNAPSHOT'
+	compile 'javax.interceptor:javax.interceptor-api:1.2'
+	compile 'javax.servlet:javax.servlet-api:3.1.0'
+	compile 'com.neovisionaries:nv-i18n:1.20'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    //archives javadocJar
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.version = version
+        pom.groupId = 'org.iobserve'
+        pom.artifactId = 'monitoring'
+    }
+}

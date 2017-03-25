@@ -4,6 +4,7 @@
 *.class
 *.classpath
 **/.classpath
+*.csv
 *.dat
 .gradle/**
 **/.gradle/**
@@ -27,6 +28,7 @@ settings.xml
 target/**
 teetime.log
 **/*._trace
+*.txt
 **/**.xtendbin
 *.zip
 /build/
