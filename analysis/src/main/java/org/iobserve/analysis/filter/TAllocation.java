@@ -20,6 +20,7 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
@@ -65,6 +66,8 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
      */
     @Override
     protected void execute(final IDeploymentRecord event) {
+    	ExecutionTimeLogger.getInstance().startLogging(event);
+    	
         if (event instanceof ServletDeployedEvent) {
             final String serivce = ((ServletDeployedEvent) event).getSerivce();
             this.updateModel(serivce);
@@ -72,6 +75,8 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
             final String service = ((EJBDeployedEvent) event).getSerivce();
             this.updateModel(service);
         }
+        
+        ExecutionTimeLogger.getInstance().stopLogging(event);
 
         // forward the event
         this.deploymentOutputPort.send(event);

@@ -26,6 +26,7 @@ import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeploymentRecord;
@@ -85,12 +86,16 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      */
     @Override
     protected void execute(final IUndeploymentRecord event) {
+    	ExecutionTimeLogger.getInstance().startLogging(event);
+    	
         if (event instanceof ServletUndeployedEvent) {
             this.process((ServletUndeployedEvent) event);
 
         } else if (event instanceof EJBUndeployedEvent) {
             this.process((EJBUndeployedEvent) event);
         }
+        
+        ExecutionTimeLogger.getInstance().stopLogging(event);
     }
 
     /**

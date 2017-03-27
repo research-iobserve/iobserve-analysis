@@ -26,6 +26,7 @@ import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
@@ -88,12 +89,16 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      */
     @Override
     protected void execute(final IDeploymentRecord event) {
+    	ExecutionTimeLogger.getInstance().startLogging(event);
+    	
         if (event instanceof ServletDeployedEvent) {
             this.process((ServletDeployedEvent) event);
 
         } else if (event instanceof EJBDeployedEvent) {
             this.process((EJBDeployedEvent) event);
         }
+        
+        ExecutionTimeLogger.getInstance().stopLogging(event);
     }
 
     /**

@@ -29,6 +29,7 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and
@@ -87,8 +88,10 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                 }
             }
         } else if (event instanceof AfterOperationEvent) {
-            // System.out.println(event.toString());
             final AfterOperationEvent afterOperationEvent = (AfterOperationEvent) event;
+            
+            ExecutionTimeLogger.getInstance().startLogging(afterOperationEvent);
+            
             final TraceMetadata metaData = this.traceMetaDatas.get(afterOperationEvent.getTraceId());
             if (metaData != null) {
                 /** actually this is a valid trace */
@@ -100,7 +103,9 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 	                                .equals(afterOperationEvent.getOperationSignature())) {
 	                	/** if afterOperationEvent has a beforeOperationEvent counterpart remove beforeOperationEvent
 	                	 *  so a second afterOperationEvent with the same traceId does not send a call two times */
-	                	this.beforeOperationEvents.remove(metaData.getTraceId(), beforeOperationEvent );
+	                	this.beforeOperationEvents.remove(metaData.getTraceId(), beforeOperationEvent);
+	                	
+	                	ExecutionTimeLogger.getInstance().stopLogging(afterOperationEvent);
 	
 	                    this.outputPort.send(new EntryCallEvent(beforeOperationEvent.getTimestamp(),
 	                            afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),

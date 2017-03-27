@@ -37,6 +37,7 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 /**
  * Main class for starting the iObserve application.
@@ -114,6 +115,7 @@ public final class AnalysisMain {
                         System.out.println("Analysis start");
                         analysis.executeBlocking();
                         System.out.println("Anaylsis complete");
+                        ExecutionTimeLogger.getInstance().exportAsCsv();
                     } else {
                         System.err.println(String.format("the pcm dir %s does not exist?!", pcmModelsDirectory));
                     }

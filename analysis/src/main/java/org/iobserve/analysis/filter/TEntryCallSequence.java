@@ -26,6 +26,7 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 /**
  * Represents the TEntryCallSequence Transformation in the paper <i>Run-time Architecture Models for
@@ -54,6 +55,8 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
 
     @Override
     protected void execute(final EntryCallEvent event) {
+    	ExecutionTimeLogger.getInstance().startLogging(event);
+    	
         // add the event to the corresponding user session
         // in case the user session is not yet available, create one
         final String userSessionId = UserSession.parseUserSessionId(event);
@@ -70,6 +73,9 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
         final List<UserSession> listToSend = this.sessions.values().stream()
                 .filter(session -> session.size() > TEntryCallSequence.USER_SESSION_THRESHOLD)
                 .collect(Collectors.toList());
+        
+        ExecutionTimeLogger.getInstance().stopLogging(event);
+        
         if (!listToSend.isEmpty()) {
             this.outputPort.send(new EntryCallSequenceModel(listToSend));
         }
