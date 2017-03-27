@@ -18,7 +18,6 @@ package org.iobserve.analysis.model;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceenvironmentPrivacyPackage;
 
 /**
@@ -26,7 +25,7 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceenvironmentP
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
- *
+ * @author Philipp Weimann
  */
 public final class ResourceEnvironmentModelProvider extends AbstractModelProvider<ResourceEnvironment> {
 

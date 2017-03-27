@@ -28,72 +28,73 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
  * Model builder for resource environment models.
  *
  * @author Robert Heinrich
- *
+ * @author Philipp Weimann
  */
 public final class ResourceEnvironmentModelBuilder {
 
-    /**
-     * Constructor for resource models with a start model.
-     *
-     * @param modelToStartWith
-     *            model provider.
-     */
-    private ResourceEnvironmentModelBuilder() {
-    }
+	/**
+	 * Constructor for resource models with a start model.
+	 *
+	 * @param modelToStartWith
+	 *            model provider.
+	 */
+	private ResourceEnvironmentModelBuilder() {
+	}
 
-    /**
-     * Create a {@link ResourceContainer} with the given name, without checking if it already
-     * exists. Use {@link #createResourceContainerIfAbsent(String)} instead if you wont create the
-     * container if it is already available.
-     *
-     * @param model
-     *            resource environment model
-     * @param name
-     *            name of the new container
-     * @return builder
-     */
-    public static ResourceContainerPrivacy createResourceContainer(final ResourceEnvironment model, final String name) {
-        final ResourceContainerPrivacy resContainer = ResourceenvironmentPrivacyFactory.eINSTANCE.createResourceContainerPrivacy();
-        resContainer.setEntityName(name);
-        model.getResourceContainer_ResourceEnvironment().add(resContainer);
-        return resContainer;
-    }
+	/**
+	 * Create a {@link ResourceContainer} with the given name, without checking
+	 * if it already exists. Use
+	 * {@link #createResourceContainerIfAbsent(String)} instead if you wont
+	 * create the container if it is already available.
+	 *
+	 * @param model
+	 *            resource environment model
+	 * @param name
+	 *            name of the new container
+	 * @return builder
+	 */
+	public static ResourceContainerPrivacy createResourceContainer(final ResourceEnvironment model, final String name) {
+		final ResourceContainerPrivacy resContainer = ResourceenvironmentPrivacyFactory.eINSTANCE.createResourceContainerPrivacy();
+		resContainer.setEntityName(name);
+		model.getResourceContainer_ResourceEnvironment().add(resContainer);
+		return resContainer;
+	}
 
-    /**
-     * Creates a link between the given two container.
-     *
-     * @param model
-     *            resource environment model
-     * @param res1
-     *            first container
-     * @param res2
-     *            second container
-     * @return link instance, already added to the model
-     */
-    public static LinkingResource connectResourceContainer(final ResourceEnvironment model,
-            final ResourceContainerPrivacy res1, final ResourceContainerPrivacy res2) {
-        final LinkingResource link = ResourceenvironmentFactory.eINSTANCE.createLinkingResource();
-        link.getConnectedResourceContainers_LinkingResource().add(res1);
-        link.getConnectedResourceContainers_LinkingResource().add(res2);
-        model.getLinkingResources__ResourceEnvironment().add(link);
+	/**
+	 * Creates a link between the given two container.
+	 *
+	 * @param model
+	 *            resource environment model
+	 * @param res1
+	 *            first container
+	 * @param res2
+	 *            second container
+	 * @return link instance, already added to the model
+	 */
+	public static LinkingResource connectResourceContainer(final ResourceEnvironment model, final ResourceContainer res1,
+			final ResourceContainer res2) {
+		final LinkingResource link = ResourceenvironmentFactory.eINSTANCE.createLinkingResource();
+		link.getConnectedResourceContainers_LinkingResource().add(res1);
+		link.getConnectedResourceContainers_LinkingResource().add(res2);
+		model.getLinkingResources__ResourceEnvironment().add(link);
 
-        return link;
-    }
+		return link;
+	}
 
-    /**
-     * Get the {@link ResourceContainer} by its {@link ResourceContainer#getEntityName()}.
-     *
-     * @param resourceEnvironment
-     *            the resource environment model
-     * @param name
-     *            name
-     * @return resource container instance or null if no resource container available with the given
-     *         name.
-     */
-    public static Optional<ResourceContainer> getResourceContainerByName(final ResourceEnvironment resourceEnvironment,
-            final String name) {
-    	//TODO: Change to ResourceContainerPrivacy
-        return resourceEnvironment.getResourceContainer_ResourceEnvironment().stream()
-                .filter(container -> container.getEntityName().equals(name)).findFirst();
-    }
+	/**
+	 * Get the {@link ResourceContainer} by its
+	 * {@link ResourceContainer#getEntityName()}.
+	 *
+	 * @param resourceEnvironment
+	 *            the resource environment model
+	 * @param name
+	 *            name
+	 * @return resource container instance or null if no resource container
+	 *         available with the given name.
+	 */
+	public static Optional<ResourceContainer> getResourceContainerByName(final ResourceEnvironment resourceEnvironment, final String name) {
+		// TODO: Change to ResourceContainerPrivacy
+		return resourceEnvironment.getResourceContainer_ResourceEnvironment().stream().filter(container -> container.getEntityName().equals(name))
+				.findFirst();
+	}
 }

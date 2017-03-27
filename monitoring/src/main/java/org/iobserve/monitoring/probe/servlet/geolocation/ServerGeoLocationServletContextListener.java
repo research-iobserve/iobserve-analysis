@@ -9,21 +9,21 @@ import kieker.monitoring.probe.servlet.AbstractRegularSamplingServletContextList
  * <p>
  * Starts and stops the periodic logging of the JIT compilation. <br/>
  * The initial delay and the sampling period use the default values.
-
+ * 
  * 
  * @author Philipp Weimann
  * 
  * @since 1.30
  */
 public class ServerGeoLocationServletContextListener extends AbstractRegularSamplingServletContextListener {
-	
+
 	/**
 	 * Empty Constructor
 	 */
 	public ServerGeoLocationServletContextListener() {
-		
+
 	}
-	
+
 	@Override
 	protected String getContextParameterNameSamplingIntervalSeconds() {
 		return "";

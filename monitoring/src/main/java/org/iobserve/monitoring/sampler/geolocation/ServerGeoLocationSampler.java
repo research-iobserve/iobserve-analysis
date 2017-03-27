@@ -39,8 +39,8 @@ public class ServerGeoLocationSampler extends AbstractGeoLocationSampler {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public IMonitoringRecord getGeoLocationRecord(long timestamp, String hostname, short countryCode,
-			IMonitoringController monitoringCtr) throws Exception {
+	public IMonitoringRecord getGeoLocationRecord(long timestamp, String hostname, short countryCode, IMonitoringController monitoringCtr)
+			throws Exception {
 
 		Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
 		ServerGeoLocation record = null;
