@@ -281,7 +281,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestProperty("Content-Type", "application/json");
             con.setRequestProperty("Accept", "application/json");
-            con.setRequestMethod("POST");
+            con.setRequestMethod("GET");
             con.disconnect();
         } catch (final Exception ex) {
             ex.printStackTrace();
@@ -319,7 +319,6 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
 
             final URL url = new URL(this.changelogUrl);
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setDoOutput(true);
             con.setRequestProperty("Content-Type", "application/json");
             con.setRequestMethod("POST");
             con.setDoOutput(true);

@@ -319,8 +319,13 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
             if (request instanceof HttpServletRequest) {
                 final HttpServletRequest httpRequest = (HttpServletRequest) request;
                 method = httpRequest.getMethod();
-                path = httpRequest.getRequestURI().replace('/', '.').substring(1);
+                final String requestPath = httpRequest.getRequestURI().replace('/', '.').substring(1);
+
+                // remove sessionId from request Path
+                path = requestPath.contains(";") ? requestPath.substring(0, requestPath.indexOf(";")) : requestPath;
+
                 sessionId = httpRequest.getSession().getId();
+
                 query = httpRequest.getQueryString();
 
                 if (query == null) {

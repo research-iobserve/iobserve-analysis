@@ -15,6 +15,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelCreation;
 import org.iobserve.analysis.cdoruserbehavior.filter.TClustering;
+import org.iobserve.analysis.cdoruserbehavior.filter.TIObserveUBM;
 import org.iobserve.analysis.cdoruserbehavior.filter.TIObserveUIServer;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 
@@ -34,6 +35,7 @@ public class TBehaviorModelAggregation extends CompositeStage {
     private final TClustering tClustering;
     private final TBehaviorModelCreation tBehaviorModelCreation;
     private final TIObserveUIServer tIObserveUIServer;
+    private final TIObserveUBM tIObserveUBM;
     private final BehaviorModelConfiguration configuration;
 
     /**
@@ -45,9 +47,12 @@ public class TBehaviorModelAggregation extends CompositeStage {
         this.tClustering = new TClustering(this.configuration.getClustering());
         this.tBehaviorModelCreation = new TBehaviorModelCreation();
         this.tIObserveUIServer = new TIObserveUIServer();
+        this.tIObserveUBM = new TIObserveUBM();
 
         this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
-        this.connectPorts(this.tBehaviorModelCreation.getOutputPort(), this.tIObserveUIServer.getInputPort());
+        // this.connectPorts(this.tBehaviorModelCreation.getOutputPort(),
+        // this.tIObserveUIServer.getInputPort());
+        this.connectPorts(this.tBehaviorModelCreation.getOutputPort(), this.tIObserveUBM.getInputPort());
     }
 
     /**
