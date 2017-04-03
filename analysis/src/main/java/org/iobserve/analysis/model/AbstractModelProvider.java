@@ -17,6 +17,7 @@ package org.iobserve.analysis.model;
 
 import java.io.IOException;
 import java.util.Map;
+import java.io.File;
 
 import de.uka.ipd.sdq.identifier.Identifier;
 
@@ -40,7 +41,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 public abstract class AbstractModelProvider<T extends EObject> {
 
     /** uri to the pcm model. */
-    private final URI uriModelInstance;
+    private URI uriModelInstance;
     /** parent where this provider belongs to. */
     /** save strategy of model. */
     private ModelSaveStrategy saveStrategy = ModelSaveStrategy.OVERRIDE;
@@ -85,6 +86,27 @@ public abstract class AbstractModelProvider<T extends EObject> {
             break;
         }
     }
+    
+    
+    /**
+     * Saves the current model instance at the given location. Old files will be overwritten.
+     * 
+     * @param snapshotLocation
+     * 			location to save the current model instance to
+     */
+    public final void save(final URI snapshotLocation)
+    {
+    	URI backupUIRI =  this.uriModelInstance;
+    	ModelSaveStrategy saveStrategyBackup = this.saveStrategy;
+    	this.uriModelInstance = snapshotLocation;
+    	this.setSaveStrategy(ModelSaveStrategy.OVERRIDE);
+    	
+    	this.save();
+    	
+    	this.uriModelInstance = backupUIRI;
+    	this.setSaveStrategy(saveStrategyBackup);
+    }
+    
 
     /**
      * Override existing model content.
