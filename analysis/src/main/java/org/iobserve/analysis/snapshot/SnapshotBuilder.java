@@ -7,10 +7,7 @@ import javax.imageio.IIOException;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.data.AddAllocationContextEvent;
-import org.iobserve.analysis.data.RemoveAllocationContextEvent;
 import org.iobserve.analysis.model.AbstractModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
@@ -22,8 +19,8 @@ public class SnapshotBuilder extends AbstractStage {
 	private final URI snapshotURI;
 	private final InitializeModelProviders modelProviders;
 	
-    private final InputPort inputPort = super.createInputPort();
-    private final OutputPort outputPort = super.createOutputPort();
+    private final InputPort<?> inputPort = super.createInputPort();
+    private final OutputPort<?> outputPort = super.createOutputPort();
 
     
 	public SnapshotBuilder(final URI snapshotURI, final InitializeModelProviders modelProviders) {
@@ -49,7 +46,8 @@ public class SnapshotBuilder extends AbstractStage {
 		}
 	}
 
-	private void createModelSnapshot(AbstractModelProvider modelProvider) throws IOException {
+
+	private void createModelSnapshot(AbstractModelProvider<?> modelProvider) throws IOException {
 		URI modelURI = modelProvider.getModelUri();
 
 		File modelFile = new File(modelURI.path());
@@ -67,7 +65,7 @@ public class SnapshotBuilder extends AbstractStage {
 	}
 	
 	
-	public InputPort getInputPort()
+	public InputPort<?> getInputPort()
 	{
 		return this.inputPort;
 	}
