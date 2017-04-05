@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import kieker.common.record.flow.trace.TraceMetadata;
 
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -57,6 +58,8 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private final SystemModelProvider systemModelProvider;
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+    
+    private final OutputPort<Object> outputPortSnapshot = this.createOutputPort();
 
     /**
      * Create new TNetworkLink filter.
@@ -101,6 +104,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
         // build the model
         this.resourceEnvironmentModelProvider.save();
+        this.outputPortSnapshot.send(null);
     }
 
     /**
@@ -267,4 +271,12 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private static Optional<AssemblyConnector> tryCast(final Connector connector) {
         return connector instanceof AssemblyConnector ? Optional.of((AssemblyConnector) connector) : Optional.empty();
     }
+
+    
+    /**
+     * @return output port for snapshot filter stage
+     */
+	public OutputPort<Object> getOutputPortSnapshot() {
+		return this.outputPortSnapshot;
+	}
 }

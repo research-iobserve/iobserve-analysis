@@ -19,8 +19,8 @@ public class SnapshotBuilder extends AbstractStage {
 	private final URI snapshotURI;
 	private final InitializeModelProviders modelProviders;
 	
-    private final InputPort<?> inputPort = super.createInputPort();
-    private final OutputPort<?> outputPort = super.createOutputPort();
+    private final InputPort<Object> inputPort = super.createInputPort();
+    private final OutputPort<URI> outputPort = super.createOutputPort();
 
     
 	public SnapshotBuilder(final URI snapshotURI, final InitializeModelProviders modelProviders) {
@@ -42,7 +42,7 @@ public class SnapshotBuilder extends AbstractStage {
 			// this.createModelSnapshot(modelProviders.getCorrespondenceModel());
 			SnapshotBuilder.createSnapshot = false;
 			
-			outputPort.send(null);
+			outputPort.send(this.snapshotURI);
 		}
 	}
 
@@ -65,7 +65,7 @@ public class SnapshotBuilder extends AbstractStage {
 	}
 	
 	
-	public InputPort<?> getInputPort()
+	public InputPort<Object> getInputPort()
 	{
 		return this.inputPort;
 	}

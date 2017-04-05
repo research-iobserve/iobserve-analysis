@@ -18,6 +18,7 @@ package org.iobserve.analysis.filter;
 import java.io.IOException;
 
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -51,6 +52,8 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 	private final boolean closedWorkload;
 
 	private final RepositoryModelProvider repositoryModelProvider;
+	
+	private final OutputPort<Object> outputPortSnapshot = this.createOutputPort();
 
 	/**
 	 * Create a entry event sequence filter.
@@ -105,5 +108,14 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 
 		// Sets the new usage model within iObserve
 		this.usageModelProvider.save();
+		this.outputPortSnapshot.send(null);
+	}
+
+	
+	/**
+	 * @return output port for snapshot stage
+	 */
+	public OutputPort<Object> getOutputPortSnapshot() {
+		return this.outputPortSnapshot;
 	}
 }

@@ -22,6 +22,7 @@ import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.reader.MultipleConnectionTcpReaderStage;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -61,9 +62,10 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+            final SnapshotBuilder snapshotBuilder,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+                allocationModelProvider, systemModelProvider, snapshotBuilder, varianceOfUserGroups, thinkTime, closedWorkload);
 
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
                 MultiInputObservationConfiguration.CAPACITY);

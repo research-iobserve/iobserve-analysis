@@ -31,6 +31,7 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
 
 import teetime.framework.Configuration;
 
@@ -81,6 +82,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+            final SnapshotBuilder snapshotBuilder,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
@@ -98,14 +100,21 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 resourceEnvironmentModelProvider);
 
         /** dispatch different monitoring data. */
+        //Path Allocation => Deployment => Snapshot
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
-        this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), this.undeployment.getInputPort());
-        this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
-        this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
-
         this.connectPorts(tAllocation.getDeploymentOutputPort(), this.deployment.getInputPort());
+        this.connectPorts(this.deployment.getOutputPortSnapshot(), snapshotBuilder.getInputPort());
+        
+        this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), this.undeployment.getInputPort());
+        this.connectPorts(this.undeployment.getOutputPortSnapshot(), snapshotBuilder.getInputPort());
+        
+        this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
         this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
-        this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
+        this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort()); 
+        this.connectPorts(tEntryEventSequence.getOutputPortSnapshot(), snapshotBuilder.getInputPort());
+        
+        this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
+        this.connectPorts(tNetworkLink.getOutputPortSnapshot(), snapshotBuilder.getInputPort());
     }
 
     public RecordSwitch getRecordSwitch() {

@@ -28,6 +28,7 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
 
 /**
  *
@@ -67,9 +68,10 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+            final SnapshotBuilder snapshotBuilder,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+                allocationModelProvider, systemModelProvider, snapshotBuilder, varianceOfUserGroups, thinkTime, closedWorkload);
 
         this.files = new InitialElementProducer<>(directories);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());

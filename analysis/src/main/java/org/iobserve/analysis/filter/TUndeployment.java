@@ -57,6 +57,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
 
     private final OutputPort<RemoveAllocationContextEvent> outputPort = this.createOutputPort();
+    private final OutputPort<Object> outputPortSnapshot = this.createOutputPort();
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -91,6 +92,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         } else if (event instanceof EJBUndeployedEvent) {
             this.process((EJBUndeployedEvent) event);
         }
+        this.outputPortSnapshot.send(null);
     }
 
     /**
@@ -173,8 +175,16 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         }
     }
 
+    /**
+     * @return outputPort for visualization
+     */
     public OutputPort<RemoveAllocationContextEvent> getOutputPort() {
         return this.outputPort;
+    }
+    
+    public OutputPort<Object> getOutputPortSnapshot()
+    {
+    	return this.outputPortSnapshot;
     }
 
 }
