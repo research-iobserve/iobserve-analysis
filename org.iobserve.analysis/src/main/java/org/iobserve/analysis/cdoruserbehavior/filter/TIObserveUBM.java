@@ -21,7 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
+import java.util.Scanner;
 import java.util.Set;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModel;
@@ -29,6 +29,7 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallEdge;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -44,7 +45,7 @@ import teetime.framework.AbstractConsumerStage;
 public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
     private final String modelName = "JPetstore Behavior Model";
     private final String baseUrl = "http://localhost:8080/ubm-backend/v1";
-    private final Map<String, Long> idMap;
+    private final Map<String, JsonNode> nodeMap;
 
     private final ObjectMapper objectMapper;
 
@@ -53,7 +54,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      */
     public TIObserveUBM() {
         this.objectMapper = new ObjectMapper();
-        this.idMap = new HashMap<>();
+        this.nodeMap = new HashMap<>();
         // TODO remove
         this.resetVisualization();
 
@@ -61,8 +62,8 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
 
     @Override
     protected void execute(BehaviorModel model) {
-        this.idMap.clear();
-        final long modelId = this.createGraph("jpetstore");
+        this.nodeMap.clear();
+        final long modelId = this.createGraph(this.modelName);
         this.createNodes(model.getEntryCallNodes(), modelId);
         this.createEdges(model.getEntryCallEdges(), modelId);
 
@@ -82,14 +83,17 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
 
         final String targetUrl = this.baseUrl + "/applications";
 
-        return this.postElement(graph, targetUrl);
+        final JsonNode json = this.postElement(graph, targetUrl);
+        final String id = json.get("id").asText();
+
+        return Long.valueOf(id);
     }
 
     /**
      * reset the visualisation
      */
     private void resetVisualization() {
-        for (int i = 0; i < 500; i++) {
+        for (int i = 900; i < 1200; i++) {
             this.sendDelete("http://localhost:8080/ubm-backend/v1/applications/" + i);
         }
     }
@@ -147,8 +151,8 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
 
             // TODO visualisations doesn't accept lists
             nodes.add(json);
-            final Long id = this.postElement(json, this.getNodeUrl(modelId));
-            this.idMap.put(entryCallNode.getSignature(), id);
+            final JsonNode node = this.postElement(json, this.getNodeUrl(modelId));
+            this.nodeMap.put(entryCallNode.getSignature(), node);
         }
 
     }
@@ -170,11 +174,10 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
             final String targetSignature = entryCallEdge.getTarget().getSignature();
 
             json.put("id", 0);
-            json.put("start", this.idMap.get(sourceSignature));
-            json.put("end", this.idMap.get(targetSignature));
+            json.put("start", this.nodeMap.get(sourceSignature));
+            json.put("end", this.nodeMap.get(targetSignature));
             json.put("action", sourceSignature + "->" + targetSignature);
             json.put("count", entryCallEdge.getCalls());
-            json.put("extra", this.objectMapper.createObjectNode());
 
             this.postElement(json, this.getEdgeUrl(modelId));
             edges.add(json);
@@ -191,12 +194,10 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      *            targetUrl
      * @return id
      */
-    private Long postElement(final ObjectNode elem, final String targetUrl) {
+    private JsonNode postElement(final ObjectNode elem, final String targetUrl) {
 
         try {
             final String json = this.objectMapper.writeValueAsString(elem);
-            System.out.println(targetUrl);
-            // TODO System.out.println(json);
 
             final URL url = new URL(targetUrl);
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -204,26 +205,25 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
             con.setRequestMethod("POST");
             con.setDoOutput(true);
 
-            System.out.println(json);
             final OutputStream os = con.getOutputStream();
             final byte[] outputBytes = json.getBytes("UTF-8");
             os.write(outputBytes);
             os.flush();
 
             final InputStream response = con.getInputStream();
-            final Map<String, Object> jsonMap = this.objectMapper.readValue(response, Map.class);
-            final Long id = Long.valueOf(jsonMap.get("id").toString());
+            @SuppressWarnings("resource")
+            final Scanner scanner = new Scanner(response).useDelimiter("\\A");
+            final String content = scanner.next().replaceAll("\\\"@id\\\":\\\"1\\\",", "");
 
-            System.out.println(con.getResponseCode());
-            System.out.println(con.getResponseMessage());
+            final JsonNode contendNode = this.objectMapper.readTree(content);
 
             con.disconnect();
-            return id;
+            return contendNode;
 
         } catch (final Exception ex) {
             ex.printStackTrace();
         }
-        return 0L;
+        return this.objectMapper.createObjectNode();
     }
 
     /**
@@ -257,16 +257,6 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      */
     private String getEdgeUrl(long modelId) {
         return this.getGraphUrl(modelId) + "/visits";
-    }
-
-    /**
-     * generate id
-     *
-     * @return id
-     */
-    private long generateModelId() {
-        final Random random = new Random();
-        return random.nextInt(500);
     }
 
 }
