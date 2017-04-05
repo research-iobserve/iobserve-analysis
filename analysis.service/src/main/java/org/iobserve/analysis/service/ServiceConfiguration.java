@@ -26,6 +26,7 @@ import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.service.updater.VisualizationUpdateStage;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
 
 /**
  * @author Reiner Jung
@@ -33,7 +34,7 @@ import org.iobserve.analysis.service.updater.VisualizationUpdateStage;
  */
 public class ServiceConfiguration extends MultiInputObservationConfiguration {
 
-    /**
+	/**
      * Setup service configuration.
      *
      * @param inputPort
@@ -69,12 +70,11 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
     public ServiceConfiguration(final int inputPort, final String outputHostname, final String outputPort,
             final String systemId, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
-            final RepositoryModelProvider repositoryModelProvider,
-            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider)
+            final RepositoryModelProvider repositoryModelProvider, final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
+            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider, final SnapshotBuilder snapshotBuilder)
             throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
-                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
+                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, varianceOfUserGroups,
                 thinkTime, closedWorkload);
 
         final URL url = new URL(
