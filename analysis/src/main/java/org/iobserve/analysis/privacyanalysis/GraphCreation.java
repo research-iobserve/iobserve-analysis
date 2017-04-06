@@ -36,9 +36,9 @@ public class GraphCreation extends AbstractTransformation<URI, SystemPrivacyGrap
 	private Map<String, DataPrivacyLvl> assemblyContextPrivacyLvl;
 	private Map<String, ResourceContainerPrivacy> resourceContainers;
 	private Map<String, String> ac2rcMap;
-
 	private Map<String, AssemblyConnectorPrivacy> assemblyConnectors;
 
+	
 	public GraphCreation(InitializeModelProviders modelProviders) {
 		this.assemblyContexts = new HashMap<String, AssemblyContext>();
 		this.assemblyContextPrivacyLvl = new HashMap<String, DataPrivacyLvl>();
@@ -51,15 +51,21 @@ public class GraphCreation extends AbstractTransformation<URI, SystemPrivacyGrap
 	protected void execute(URI element) throws Exception {
 		this.assemblyContexts.clear();
 		this.assemblyContextPrivacyLvl.clear();
+		this.resourceContainers.clear();
+		this.ac2rcMap.clear();
 		this.assemblyConnectors.clear();
+		
 		File pcmDirectory = new File(element.path());
 		this.modelProviders = new InitializeModelProviders(pcmDirectory);
 
 		this.extractAssemblyContexts(this.modelProviders.getSystemModelProvider());
 		this.extractAssemblyConnectors(this.modelProviders.getSystemModelProvider());
+		this.extractResourceContainers(this.modelProviders.getResourceEnvironmentModelProvider());
 		this.adaptPrivacyLvl();
-		// TODO Auto-generated method stub
-
+		this.extractAllocations(this.modelProviders.getAllocationModelProvider());
+		
+		HashMap<String, ModelGraphNode> graph = this.createModelGraph();
+		//TODO Add Send(graph)
 	}
 
 	/*
