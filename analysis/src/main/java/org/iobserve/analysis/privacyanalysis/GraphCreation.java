@@ -13,6 +13,9 @@ import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.privacy.graph.ComponentNode;
+import org.iobserve.analysis.privacy.graph.DeploymentNode;
+import org.iobserve.analysis.privacy.graph.PrivacyAnalysisModel;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyConnectorPrivacy;
@@ -28,7 +31,12 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPri
 
 import teetime.stage.basic.AbstractTransformation;
 
-public class GraphCreation extends AbstractTransformation<URI, SystemPrivacyGraph> {
+/**
+ * This class extracts the required information from the pcm models and re-assembles them to a PrivacyAnalysisModel for privacy analysis purposes.
+ * 
+ * @author Philipp Weimann
+ */
+public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisModel> {
 
 	private InitializeModelProviders modelProviders;
 
@@ -37,6 +45,8 @@ public class GraphCreation extends AbstractTransformation<URI, SystemPrivacyGrap
 	private Map<String, ResourceContainerPrivacy> resourceContainers;
 	private Map<String, String> ac2rcMap;
 	private Map<String, AssemblyConnectorPrivacy> assemblyConnectors;
+	
+	private PrivacyAnalysisModel graph;
 
 	
 	public GraphCreation(InitializeModelProviders modelProviders) {
@@ -64,7 +74,7 @@ public class GraphCreation extends AbstractTransformation<URI, SystemPrivacyGrap
 		this.adaptPrivacyLvl();
 		this.extractAllocations(this.modelProviders.getAllocationModelProvider());
 		
-		HashMap<String, ModelGraphNode> graph = this.createModelGraph();
+		this.graph = this.createModelGraph();
 		//TODO Add Send(graph)
 	}
 
@@ -166,17 +176,28 @@ public class GraphCreation extends AbstractTransformation<URI, SystemPrivacyGrap
 	/*
 	 * Build Graph Helpers
 	 */
-	private HashMap<String, ModelGraphNode> createModelGraph() {
-		HashMap<String, ModelGraphNode> nodes = new HashMap<String, ModelGraphNode>();
+	private PrivacyAnalysisModel createModelGraph() {
+		HashMap<String, DeploymentNode> servers = new HashMap<String, DeploymentNode>();
+		HashMap<String, ComponentNode> components = new HashMap<String, ComponentNode>();
+		
+		//Build Servers
+		for (ResourceContainerPrivacy resContainer : this.resourceContainers.values())
+		{
+			DeploymentNode server = new DeploymentNode(resContainer.getId(), resContainer.getGeolocation());
+			servers.put(resContainer.getId(), server);
+		}
+		
 
 		//Build Nodes
 		for (AssemblyContext ac : this.assemblyContexts.values()) {
 			
-			ResourceContainerPrivacy rc = this.resourceContainers.get(this.ac2rcMap.get(ac.getId()));
+			DeploymentNode hostServer = servers.get(this.ac2rcMap.get(ac.getId()));
 			DataPrivacyLvl acPrivacyLvl = this.assemblyContextPrivacyLvl.get(ac.getId());
 			
-			ModelGraphNode node = new ModelGraphNode(ac.getId(), rc.getId(), acPrivacyLvl, rc.getGeolocation());
-			nodes.put(ac.getId(), node);
+			ComponentNode component = new ComponentNode(ac.getId(), acPrivacyLvl, hostServer);
+			hostServer.addComponent(component);
+			
+			components.put(ac.getId(), component);
 		}
 		
 		//Set Edges
@@ -185,14 +206,14 @@ public class GraphCreation extends AbstractTransformation<URI, SystemPrivacyGrap
 			String provAC_ID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
 			String reqAC_ID = acp.getRequiredRole_AssemblyConnector().getId();
 			
-			ModelGraphNode provNode = nodes.get(provAC_ID);
-			ModelGraphNode reqNode = nodes.get(reqAC_ID);
+			ComponentNode provNode = components.get(provAC_ID);
+			ComponentNode reqNode = components.get(reqAC_ID);
 			
-			provNode.addEdge(reqNode);
-			reqNode.addEdge(provNode);
+			provNode.addCommunicationEdge(reqNode);
+			reqNode.addCommunicationEdge(provNode);
 		}
 		
-		return nodes;
+		return new PrivacyAnalysisModel(servers.values(), components.values());
 	}
 
 }

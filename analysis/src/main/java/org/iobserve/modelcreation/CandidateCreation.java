@@ -1,8 +1,6 @@
 package org.iobserve.modelcreation;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.privacyanalysis.SystemPrivacyGraph;
-
 import teetime.stage.basic.AbstractTransformation;
 
 public class CandidateCreation extends AbstractTransformation<Boolean, CandidateInformations> {
