@@ -1,52 +1,74 @@
 # iObserve Monitoring and Analysis
 
 This repository contains the sources for the iobserve analysis including
-- org.iobserve.common for the monitoring records (event types)
-- org.iobserve.monitoring for the monitoring probes
-- org.iobserve.analysis for the analysis plugins on basis of teetime
-- org.iobserve.releng for release engineering stuff of the project
+- common for the monitoring records (event types)
+- monitoring for the monitoring probes
+- analysis for the analysis plugins on basis of teetime
+- analysis.cli command line version of the analysis
+- analysis.service the service version of the analysis
+- splitter separates monitoring data streams by host
 
 The code is in a prototype stage and not fully functional, especially, as
 some parts are still located in other SVN repositories.
-# Setting up iObserve Maven Build
+
+# Setting up iObserve gradle build
 
 ## Prerequisites 
 
-- You need a local installation of Eclipse. We assume that the
-  installation is in `${ECLIPSE}`.
-- Your Eclipse Installation requires Palladio installed.
-
-'Note: This is outdated, we switched to gradle'
+- We use Java 8. you need an Java 8 JDK installed on your machine.
+- You need additional packages which are compiled in iobserve-repository.
+  Checkout the `iobserve-repository` git repository alongside 
+  `iobserve-analysis`
+  `git clone git@github.com:research-iobserve/iobserve-repository.git`
 
 ## Setup Build Environment
 
-Normally maven can pull all archives from a remote repository. However,
-PCM and Eclipse package might not be available from such repository.
-Therefore, you must create a local maven backup repository. Fortunately,
-we put an script in the root directory fo the project to create such
-repository.
+In the `iobserve-analysis` directory, create a file `gradle.properties`.
+Add the following variable declaration to that file and save it.
 
-Before running the maven build you have to run
+`apt.baseline=PATH_TO_IOBSERVE_REPOSITORY/mvn-repo/`
 
-`./make-local-repo.sh ${ECLIPSE}`
+Substitute PATH_TO_IOBSERVE_REPOSITORY with the actual absolute path on
+your computer to the `iobserve-repository` directory.
 
-located in the root directory of the project. The script creates the
-`mvn-repo` directory containing the local maven repository of the
-required Eclipse libraries, and a `settings.xml` file. The 
-`settings.xml` file must be used to build the project. For Eclipse you
-must also copy it to `${HOME}/.m2/settings.xml`. If you already have
-such `settings.xml` you must merge both files.
+## Compile
 
-## Compile the Project
+Depending on your local setup you may use:
+- `./gradlew build`  (linux, mac, etc.)
+- `gradlew.bat build` (windows)
+- `gradle build` (in case you have gradle 3.2.1 installed on your system)
 
-Run maven in the release engineering directory called
-`org.iobserve.releng`. In this directory execute maven as follows:
+## Execution
 
-`mvn -s ../settings.xml compile`
+After compilation, you may find in `analysis.cli/build/distributions/`
+Archives containing executables.
+- `analysis.cli-0.0.2-SNAPSHOT.tar`
+- `analysis.cli-0.0.2-SNAPSHOT.zip`
+Choose your preferred kind of archive and extract it in our analysis
+directory (preferably outside of the directory of the git repository).
+After extraction you can start the analysis with:
+- `analysis.cli-0.0.2-SNAPSHOT/bin/analysis.cli`  (linux, mac, etc.)
+- `analysis.cli-0.0.2-SNAPSHOT/bin/analysis.cli.bat` (windows)
 
-You may clean the project with
+usage: iobserve-analysis
+ -h,--help                            show usage information
+ -i,--input <arg>                     a Kieker logfile directory
+ -p,--pcm <arg>                       directory containing all PCM models
+ -t,--think-time <arg>                Variance of user groups for the
+                                      clustering
+ -V,--variance-of-user-groups <arg>   Variance of user groups for the
+                                      clustering
+ -w,--closed-workload                 Closed workload
 
-`mvn -s ../settings.xml clean`
+For a minimal analysis, type:
+`analysis.cli-0.0.2-SNAPSHOT/bin/analysis.cli -i example-kieker-data -p palladio-directory -t 1 -V 2 -w`
+
+
+
+
+
+
+
 
 
 
