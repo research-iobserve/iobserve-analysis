@@ -53,7 +53,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 
 	private final RepositoryModelProvider repositoryModelProvider;
 	
-	private final OutputPort<Object> outputPortSnapshot = this.createOutputPort();
+	private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
 
 	/**
 	 * Create a entry event sequence filter.
@@ -108,14 +108,14 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 
 		// Sets the new usage model within iObserve
 		this.usageModelProvider.save();
-		this.outputPortSnapshot.send(null);
+		this.outputPortSnapshot.send(false);
 	}
 
 	
 	/**
 	 * @return output port for snapshot stage
 	 */
-	public OutputPort<Object> getOutputPortSnapshot() {
+	public OutputPort<Boolean> getOutputPortSnapshot() {
 		return this.outputPortSnapshot;
 	}
 }

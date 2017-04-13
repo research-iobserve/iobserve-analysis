@@ -2,6 +2,7 @@ package org.iobserve.analysis.snapshot;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.imageio.IIOException;
 
@@ -19,13 +20,14 @@ public class SnapshotBuilder extends AbstractStage {
 	private final URI snapshotURI;
 	private final InitializeModelProviders modelProviders;
 	
-    private final InputPort<Object> inputPort = super.createInputPort();
+//    private final InputPort<Boolean> inputPort = super.createInputPort();
     private final OutputPort<URI> outputPort = super.createOutputPort();
 
     
 	public SnapshotBuilder(final URI snapshotURI, final InitializeModelProviders modelProviders) {
 		super();
 
+		SnapshotBuilder.createSnapshot = false;
 		this.snapshotURI = snapshotURI;
 		this.modelProviders = modelProviders;
 
@@ -33,6 +35,10 @@ public class SnapshotBuilder extends AbstractStage {
 
 	@Override
 	protected void execute() throws Exception {
+		//TODO fix this and make .recieve() possible!
+//		List<InputPort<?>> inputPorts = super.getInputPorts();
+//		Boolean createSnapshot = this.inputPort.receive();
+		
 		if (SnapshotBuilder.createSnapshot) {
 			this.createModelSnapshot(modelProviders.getAllocationModelProvider());
 			this.createModelSnapshot(modelProviders.getRepositoryModelProvider());
@@ -65,9 +71,9 @@ public class SnapshotBuilder extends AbstractStage {
 	}
 	
 	
-	public InputPort<Object> getInputPort()
+	public InputPort<Boolean> getInputPort()
 	{
-		return this.inputPort;
+		return super.createInputPort();
 	}
 
 }

@@ -59,7 +59,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
     
-    private final OutputPort<Object> outputPortSnapshot = this.createOutputPort();
+    private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
 
     /**
      * Create new TNetworkLink filter.
@@ -104,7 +104,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
         // build the model
         this.resourceEnvironmentModelProvider.save();
-        this.outputPortSnapshot.send(null);
+        this.outputPortSnapshot.send(false);
     }
 
     /**
@@ -276,7 +276,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     /**
      * @return output port for snapshot filter stage
      */
-	public OutputPort<Object> getOutputPortSnapshot() {
+	public OutputPort<Boolean> getOutputPortSnapshot() {
 		return this.outputPortSnapshot;
 	}
 }

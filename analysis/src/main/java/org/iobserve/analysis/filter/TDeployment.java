@@ -56,7 +56,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 	private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
 
 	private final OutputPort<AddAllocationContextEvent> outputPort = this.createOutputPort();
-	private final OutputPort<?> outputPortSnapshot = this.createOutputPort(); 
+	private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort(); 
 
 	/**
 	 * Most likely the constructor needs an additional field for the PCM access.
@@ -95,7 +95,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 			this.process((EJBDeployedEvent) event);
 		}
 		
-		this.outputPortSnapshot.send(null);;
+		this.outputPortSnapshot.send(false);;
 	}
 
 	/**
@@ -108,7 +108,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 	/**
 	 * @return output port for snapshot
 	 */
-	public OutputPort<?> getOutputPortSnapshot()
+	public OutputPort<Boolean> getOutputPortSnapshot()
 	{
 		return this.outputPortSnapshot;
 	}
