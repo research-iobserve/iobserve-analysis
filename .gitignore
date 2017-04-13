@@ -33,3 +33,4 @@ teetime.log
 gradle.properties
 repos/
 *.log
+/analysis/res/working_dir/
