@@ -19,7 +19,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.iobserve.analysis.filter.Dir2RecordsFilter;
+import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
 
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;

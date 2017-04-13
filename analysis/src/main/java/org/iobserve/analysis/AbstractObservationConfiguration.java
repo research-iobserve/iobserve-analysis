@@ -90,8 +90,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 resourceEnvironmentModelProvider);
         this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
-        final TEntryCall tEntryCall = new TEntryCall(correspondenceModel);
-        final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
+        final TEntryCall tEntryCall = new TEntryCall();
+        final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence(correspondenceModel);
         final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
                 repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
         final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,

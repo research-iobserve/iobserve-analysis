@@ -17,7 +17,8 @@ package org.iobserve.collector;
 
 import teetime.framework.Configuration;
 
-import org.iobserve.analysis.reader.MultipleConnectionTcpReaderStage;
+import org.iobserve.analysis.filter.reader.MultipleConnectionTcpReaderStage;
+import org.iobserve.analysis.filter.writer.DataDumpStage;
 
 /**
  * Analysis configuration for the data collector.

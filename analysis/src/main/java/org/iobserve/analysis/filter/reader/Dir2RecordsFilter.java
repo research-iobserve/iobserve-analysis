@@ -1,5 +1,5 @@
 /** this is a temporary measure, the real filter is available in teetime/kieker. */
-package org.iobserve.analysis.filter;
+package org.iobserve.analysis.filter.reader;
 
 import java.io.File;
 import java.io.IOException;

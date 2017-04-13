@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.reader;
+package org.iobserve.analysis.filter.reader;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
