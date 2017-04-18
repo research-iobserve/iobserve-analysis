@@ -7,6 +7,7 @@ import org.iobserve.common.record.ServerGeoLocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
+import org.palladiosimulator.pcm.resourceenvironmentprivacy.impl.ResourceContainerPrivacyImpl;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -28,11 +29,11 @@ public class TGeoLocation extends AbstractConsumerStage<ServerGeoLocation> {
 		Boolean makeSnapshot = false;
 
 		for (ResourceContainer resContainer : resContainers) {
-			if (resContainer.getEntityName().equals(element.getHostname()) && resContainer instanceof ResourceContainerPrivacy) {
+			String entityName = resContainer.getEntityName();
+			if (entityName.equals(element.getHostname()) && resContainer instanceof ResourceContainerPrivacyImpl) {
 				
-				ResourceContainerPrivacy resContainerPrivacy = (ResourceContainerPrivacy) resContainer;
-				int geolocation = resContainerPrivacy.getGeolocation();
-				if (geolocation != element.getCountryCode()) {
+				ResourceContainerPrivacyImpl resContainerPrivacy = (ResourceContainerPrivacyImpl) resContainer;
+				if (resContainerPrivacy.getGeolocation() != element.getCountryCode()) {
 					resContainerPrivacy.setGeolocation(element.getCountryCode());
 					makeSnapshot = true;
 					SnapshotBuilder.setSnapshotFlag();
