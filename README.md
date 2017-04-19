@@ -26,7 +26,7 @@ some parts are still located in other SVN repositories.
 In the `iobserve-analysis` directory, create a file `gradle.properties`.
 Add the following variable declaration to that file and save it.
 
-`apt.baseline=PATH_TO_IOBSERVE_REPOSITORY/mvn-repo/`
+`api.baseline=PATH_TO_IOBSERVE_REPOSITORY/mvn-repo/`
 
 Substitute PATH_TO_IOBSERVE_REPOSITORY with the actual absolute path on
 your computer to the `iobserve-repository` directory.
