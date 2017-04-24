@@ -18,9 +18,7 @@ package org.iobserve.monitoring.probe.servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -74,7 +72,7 @@ import kieker.monitoring.timer.ITimeSource;
  * @author Reiner Jung
  * @author Christoph Dornieden
  */
-public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IMonitoringProbe {
+public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implements Filter, IMonitoringProbe {
     /** constant for a property name. */
     public static final String CONFIG_PROPERTY_NAME_LOG_FILTER_EXECUTION = "logFilterExecution";
 
@@ -84,22 +82,17 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
     protected static final SessionRegistry SESSION_REGISTRY = SessionRegistry.INSTANCE;
 
     /** Kieker time source. */
-    protected static final ITimeSource TIMESOURCE = SessionAndTraceRegistrationFilterForJPetstore.CTRLINST
+    protected static final ITimeSource TIMESOURCE = SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST
             .getTimeSource();
     /** Host name of the host the code is running on. */
-    protected static final String VM_NAME = SessionAndTraceRegistrationFilterForJPetstore.CTRLINST.getHostname();
+    protected static final String VM_NAME = SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST.getHostname();
     /** Kieker trace registry. */
     private static final TraceRegistry TRACEREGISTRY = TraceRegistry.INSTANCE;
 
     /** Code Map **/
     private static Map<String, Integer> codes;
 
-    private static Set<String> categoryCodes;
-    private static Set<String> productCodes;
-    private static Set<String> itemCodes;
-
     /** Category Codes **/
-    private static final int CATEGORY_VALUE = 1;
     private static final int CATEGORY_FISH = 1000;
     private static final int CATEGORY_DOGS = 2000;
     private static final int CATEGORY_REPTILES = 3000;
@@ -167,157 +160,119 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
      * Create an SessionAndTraceRegistrationFilterForJPetstore and initialize the filter operation
      * signature.
      */
-    public SessionAndTraceRegistrationFilterForJPetstore() {
-        SessionAndTraceRegistrationFilterForJPetstore.codes = new HashMap<>();
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes = new HashSet<>();
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes = new HashSet<>();
-        SessionAndTraceRegistrationFilterForJPetstore.itemCodes = new HashSet<>();
+    public SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding() {
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes = new HashMap<>();
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("FISH",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CATEGORY_FISH);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("CATS",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CATEGORY_CATS);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("DOGS",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CATEGORY_DOGS);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("REPTILES",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CATEGORY_REPTILES);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("BIRDS",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CATEGORY_BIRDS);
 
-        // ** categorys
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FISH",
-                SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_FISH);
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.add("FISH");
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("FI-SW-01",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_FI_SW_01);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("FI-SW-02",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_FI_SW_02);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("FI-FW-01",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_FI_FW_01);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("FI-FW-02",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_FI_FW_02);
 
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("CATS",
-                SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_CATS);
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.add("CATS");
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("K9-BD-01",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_K9_BD_01);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("K9-PO-02",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_K9_PO_02);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("K9-DL-01",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_K9_DL_01);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("K9-RT-01",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_K9_RT_01);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("K9-RT-02",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_K9_RT_02);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("K9-CW-01",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_K9_CW_01);
 
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("DOGS",
-                SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_DOGS);
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.add("DOGS");
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("RP-SN-01",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_RP_SN_01);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("RP-LI-02",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_RP_LI_02);
 
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("REPTILES",
-                SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_REPTILES);
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.add("REPTILES");
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("FL-DSH-01",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_FL_DSH_01);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("FL-DLH-02",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_FL_DLH_02);
 
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("BIRDS",
-                SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_BIRDS);
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.add("BIRDS");
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("AV-CB-01",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_AV_CB_01);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("AV-SB-02",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.PRODUCT_AV_SB_02);
 
-        // ** products
-        // fish
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FI-SW-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FI_SW_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("FI-SW-01");
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-1",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_1);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-2",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_2);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-3",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_3);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-4",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_4);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-5",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_5);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-6",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_6);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-7",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_7);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-8",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_8);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-9",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_9);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-10",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_10);
 
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FI-SW-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FI_SW_02);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("FI-SW-02");
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-11",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_11);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-12",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_12);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-13",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_13);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-14",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_14);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-15",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_15);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-16",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_16);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-17",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_17);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-18",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_18);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-19",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_19);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-20",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_20);
 
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FI-FW-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FI_FW_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("FI-FW-01");
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-21",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_21);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-22",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_22);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-23",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_23);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-24",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_24);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-25",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_25);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-26",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_26);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-27",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_27);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("EST-28",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.ITEM_EST_28);
 
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FI-FW-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FI_FW_02);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("FI-FW-02");
-
-        // dogs
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-BD-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_BD_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-BD-01");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-PO-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_PO_02);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-PO-02");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-DL-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_DL_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-DL-01");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-RT-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_RT_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-RT-01");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-RT-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_RT_02);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-RT-02");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-CW-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_CW_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-CW-01");
-
-        // reptiles
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("RP-SN-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_RP_SN_01);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("RP-LI-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_RP_LI_02);
-
-        // cats
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FL-DSH-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FL_DSH_01);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FL-DLH-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FL_DLH_02);
-
-        // birds
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("AV-CB-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_AV_CB_01);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("AV-SB-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_AV_SB_02);
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-1",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_1);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-2",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_2);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-3",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_3);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-4",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_4);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-5",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_5);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-6",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_6);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-7",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_7);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-8",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_8);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-9",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_9);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-10",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_10);
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-11",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_11);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-12",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_12);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-13",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_13);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-14",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_14);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-15",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_15);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-16",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_16);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-17",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_17);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-18",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_18);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-19",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_19);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-20",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_20);
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-21",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_21);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-22",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_22);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-23",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_23);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-24",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_24);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-25",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_25);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-26",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_26);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-27",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_27);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-28",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_28);
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("true",
-                SessionAndTraceRegistrationFilterForJPetstore.BOOL_TRUE);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("false",
-                SessionAndTraceRegistrationFilterForJPetstore.BOOL_FALSE);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("true",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.BOOL_TRUE);
+        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.put("false",
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.BOOL_FALSE);
 
     }
 
@@ -348,7 +303,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
     @Override
     public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
             throws IOException, ServletException {
-        if (SessionAndTraceRegistrationFilterForJPetstore.CTRLINST.isMonitoringEnabled()) {
+        if (SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST.isMonitoringEnabled()) {
             // if (CTRLINST.isProbeActivated(this.filterOperationSignatureString)) {
 
             String operationSignature;
@@ -392,13 +347,13 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                                                       // trimmedPath: trimmedPath.substring(0,
                                                       // lastComponentSignatureIndex - 1);
 
-            TraceMetadata trace = SessionAndTraceRegistrationFilterForJPetstore.TRACEREGISTRY.getTrace();
+            TraceMetadata trace = SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TRACEREGISTRY.getTrace();
             final boolean newTrace = trace == null;
 
             if (newTrace) {
                 SessionRegistry.INSTANCE.storeThreadLocalSessionId(sessionId);
-                trace = SessionAndTraceRegistrationFilterForJPetstore.TRACEREGISTRY.registerTrace();
-                SessionAndTraceRegistrationFilterForJPetstore.CTRLINST.newMonitoringRecord(trace);
+                trace = SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TRACEREGISTRY.registerTrace();
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST.newMonitoringRecord(trace);
             }
 
             if ("GET".equals(method)) {
@@ -413,24 +368,12 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
 
                     final String[] queryParameterSplit = queryParameters[1].split("=");
 
-                    callInformations.add(new CallInformation(queryParameterSplit[1],
-                            SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_VALUE));
+                    final Long code = SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes
+                            .containsKey(queryParameterSplit[1])
+                                    ? SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.get(queryParameterSplit[1])
+                                    : -100L;
 
-                    // if
-                    // (SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.contains(queryParameterSplit[1]))
-                    // {
-                    // callInformations.add(new CallInformation(queryParameterSplit[1],
-                    // SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_VALUE));
-                    //
-                    // } else {
-                    // final Long code = SessionAndTraceRegistrationFilterForJPetstore.codes
-                    // .containsKey(queryParameterSplit[1])
-                    // ? SessionAndTraceRegistrationFilterForJPetstore.codes
-                    // .get(queryParameterSplit[1])
-                    // : -100L;
-                    //
-                    // callInformations.add(new CallInformation(queryParameterSplit[0], code));
-                    // }
+                    callInformations.add(new CallInformation(queryParameterSplit[0], code));
 
                 } else {
                     operationSignature = trimmedPath.replaceAll("jpetstore\\.actions\\.", "") + "("
@@ -455,30 +398,30 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                 // mapps Object to String
                 final ObjectMapper objectMapper = new ObjectMapper();
 
-                SessionAndTraceRegistrationFilterForJPetstore.CTRLINST.newMonitoringRecord(
-                        new BeforeOperationEvent(SessionAndTraceRegistrationFilterForJPetstore.TIMESOURCE.getTime(),
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST.newMonitoringRecord(
+                        new BeforeOperationEvent(SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TIMESOURCE.getTime(),
                                 traceId, trace.getNextOrderId(), operationSignature, componentSignature));
 
                 chain.doFilter(request, response);
 
-                SessionAndTraceRegistrationFilterForJPetstore.CTRLINST
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST
                         .newMonitoringRecord(new ExtendedAfterOperationEvent(
-                                SessionAndTraceRegistrationFilterForJPetstore.TIMESOURCE.getTime(), traceId,
+                                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TIMESOURCE.getTime(), traceId,
                                 trace.getNextOrderId(), operationSignature, componentSignature,
                                 objectMapper.writeValueAsString(callInformations)));
 
             } catch (final Throwable th) { // NOPMD NOCS (catch throw is ok here)
-                SessionAndTraceRegistrationFilterForJPetstore.CTRLINST
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST
                         .newMonitoringRecord(new AfterOperationFailedEvent(
-                                SessionAndTraceRegistrationFilterForJPetstore.TIMESOURCE.getTime(), traceId,
+                                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TIMESOURCE.getTime(), traceId,
                                 trace.getNextOrderId(), operationSignature, componentSignature, th.toString()));
                 throw new ServletException(th);
             } finally {
                 // is this correct?
-                SessionAndTraceRegistrationFilterForJPetstore.SESSION_REGISTRY.unsetThreadLocalSessionId();
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.SESSION_REGISTRY.unsetThreadLocalSessionId();
                 // Reset the thread-local trace information
                 if (newTrace) { // close the trace
-                    SessionAndTraceRegistrationFilterForJPetstore.TRACEREGISTRY.unregisterTrace();
+                    SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TRACEREGISTRY.unregisterTrace();
                 }
 
             }
@@ -519,7 +462,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
         final HttpSession session = ((HttpServletRequest) request).getSession(false);
         if (session != null) {
             sessionId = session.getId();
-            SessionAndTraceRegistrationFilterForJPetstore.SESSION_REGISTRY.storeThreadLocalSessionId(sessionId);
+            SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.SESSION_REGISTRY.storeThreadLocalSessionId(sessionId);
         }
 
         return sessionId;

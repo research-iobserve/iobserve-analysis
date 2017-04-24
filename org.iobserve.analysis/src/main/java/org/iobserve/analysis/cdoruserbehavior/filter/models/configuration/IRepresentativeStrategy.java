@@ -15,7 +15,7 @@
 
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * strategy to find the representative of a list of callinformations
@@ -34,6 +34,6 @@ public interface IRepresentativeStrategy {
      *            code list of the aggregated information
      * @return most representative code
      */
-    public Double findRepresentativeCode(final String signature, final Set<Double> callInformationCodes);
+    public Double findRepresentativeCode(final String signature, List<Double> callInformationCodes);
 
 }

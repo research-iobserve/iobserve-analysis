@@ -14,6 +14,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -25,10 +27,54 @@ import java.util.stream.Collectors;
  *
  */
 public class JPetstoreStrategy implements IRepresentativeStrategy {
+    private final Set<String> categoryCodes;
+
+    /**
+     * constructor
+     */
+    public JPetstoreStrategy() {
+        this.categoryCodes = new HashSet<>();
+        this.categoryCodes.add("FISH");
+        this.categoryCodes.add("CATS");
+        this.categoryCodes.add("DOGS");
+        this.categoryCodes.add("REPTILES");
+        this.categoryCodes.add("BIRDS");
+    }
 
     @Override
-    public Double findRepresentativeCode(final String signature, final Set<Double> callInformationCodes) {
+    public Double findRepresentativeCode(final String signature, List<Double> callInformationCodes) {
 
+        return this.categoryStrategy(callInformationCodes);
+        // if (this.categoryCodes.contains(signature)) {
+        // return this.categoryStrategy(callInformationCodes);
+        // } else {
+        // return this.defaultStratey(signature, callInformationCodes);
+        // }
+
+    }
+
+    /**
+     * find the representatives for categories by summing up all elements
+     *
+     * @param callInformationCodes
+     *            callInformationCodes
+     * @return representative value
+     */
+    private final Double categoryStrategy(List<Double> callInformationCodes) {
+        final int num = callInformationCodes.size();
+        return Double.valueOf(num);
+    }
+
+    /**
+     * default representative strategy for jpetstore
+     *
+     * @param signature
+     *            signature
+     * @param callInformationCodes
+     *            callInformationCodes
+     * @return representative code
+     */
+    private final Double defaultStratey(String signature, List<Double> callInformationCodes) {
         final Double representative;
         final Map<Double, Integer> candidates;
         final int informationQuotient;
