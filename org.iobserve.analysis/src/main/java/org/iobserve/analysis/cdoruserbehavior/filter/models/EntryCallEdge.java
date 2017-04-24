@@ -27,7 +27,7 @@ public class EntryCallEdge {
     private EntryCallNode source;
     private EntryCallNode target;
 
-    private long calls;
+    private double calls;
 
     /**
      * constructor
@@ -62,7 +62,7 @@ public class EntryCallEdge {
      * @param calls
      *            calls
      */
-    public EntryCallEdge(EntryCallNode source, EntryCallNode target, int calls) {
+    public EntryCallEdge(EntryCallNode source, EntryCallNode target, double calls) {
         this.source = source;
         this.target = target;
         this.calls = calls;
@@ -142,7 +142,7 @@ public class EntryCallEdge {
      *
      * @return calls
      */
-    public long getCalls() {
+    public double getCalls() {
         return this.calls;
     }
 
@@ -152,8 +152,19 @@ public class EntryCallEdge {
      * @param calls
      *            calls
      */
-    public void setCalls(long calls) {
+    public void setCalls(double calls) {
         this.calls = calls < 0 ? 0 : calls;
+    }
+
+    /**
+     * add calls to the edge
+     *
+     * @param calls
+     *            calls
+     */
+    public void addCalls(double calls) {
+        this.calls = this.calls + calls;
+        this.calls = this.calls < 0 ? 0 : this.calls;
     }
 
 }

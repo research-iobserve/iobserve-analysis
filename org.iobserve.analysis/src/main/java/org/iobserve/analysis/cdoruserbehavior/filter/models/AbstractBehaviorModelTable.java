@@ -78,7 +78,8 @@ public abstract class AbstractBehaviorModelTable {
      * @param event
      *            event that could contain information.
      */
-    public void addInformation(final EntryCallEvent event) {
+    public void addInformation(EntryCallEvent event) {
+
         if (event instanceof ExtendedEntryCallEvent) {
             this.addInformation((ExtendedEntryCallEvent) event);
         } else {

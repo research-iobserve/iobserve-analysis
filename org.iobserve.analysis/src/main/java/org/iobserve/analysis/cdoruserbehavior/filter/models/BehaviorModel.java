@@ -57,7 +57,7 @@ public class BehaviorModel {
                 .collect(new SingleOrNoneCollector<>());
 
         if (matchedEdge.isPresent()) {
-            final long currentCalls = matchedEdge.get().getCalls();
+            final double currentCalls = matchedEdge.get().getCalls();
             matchedEdge.get().setCalls(currentCalls + edge.getCalls());
         } else {
             // add edge and check for doubled nodes
@@ -71,13 +71,27 @@ public class BehaviorModel {
     }
 
     /**
+     * Checks if a similar node is already present in the behavior model and returns it
+     *
+     * @param node
+     *            node to check
+     * @return matching node if present
+     */
+    public Optional<EntryCallNode> findNode(EntryCallNode node) {
+        final Optional<EntryCallNode> matchingNode = this.entryCallNodes.stream().filter(node::equals)
+                .collect(new SingleOrNoneCollector<>());
+        return matchingNode;
+    }
+
+    /**
      * add a node to the model
      *
      * @param node
      *            node
+     * @return input node if no node with the same signature is added, merged node else
      */
-    public void addNode(final EntryCallNode node) {
-        this.mergeNode(node);
+    public EntryCallNode addNode(final EntryCallNode node) {
+        return this.mergeNode(node);
     }
 
     /**
@@ -140,7 +154,6 @@ public class BehaviorModel {
 
             return mergedNode;
         }
-
     }
 
 }

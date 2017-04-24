@@ -124,7 +124,7 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
                     new TypeReference<ArrayList<CallInformation>>() {
                     });
             // adding if no transition added yet
-            if (this.signatures.size() == 0) {
+            if (!this.signatures.containsKey(eventSignature)) {
                 this.addSignature(eventSignature);
             }
             final ArrayList<AggregatedCallInformation> aggCallInformations = this.signatures.get(eventSignature)

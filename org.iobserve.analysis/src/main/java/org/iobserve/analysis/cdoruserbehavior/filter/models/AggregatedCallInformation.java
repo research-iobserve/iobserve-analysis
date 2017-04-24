@@ -15,8 +15,8 @@
 
 package org.iobserve.analysis.cdoruserbehavior.filter.models;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
@@ -31,7 +31,7 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepre
 public class AggregatedCallInformation {
 
     private final String signature;
-    private Set<Double> callInformationCodes;
+    private List<Double> callInformationCodes;
     private Double representativeCode;
     private final IRepresentativeStrategy strategy;
 
@@ -45,7 +45,7 @@ public class AggregatedCallInformation {
      */
     public AggregatedCallInformation(final IRepresentativeStrategy strategy, final String signature) {
         this.signature = signature;
-        this.callInformationCodes = new HashSet<>();
+        this.callInformationCodes = new ArrayList<>();
         this.representativeCode = null;
         this.strategy = strategy;
     }
@@ -61,7 +61,7 @@ public class AggregatedCallInformation {
     public AggregatedCallInformation(final IRepresentativeStrategy strategy, final CallInformation callInformation) {
         this.signature = callInformation.getInformationSignature();
         this.representativeCode = callInformation.getInformationCode();
-        this.callInformationCodes = new HashSet<>();
+        this.callInformationCodes = new ArrayList<>();
         this.callInformationCodes.add(callInformation.getInformationCode());
         this.strategy = strategy;
 
@@ -113,10 +113,10 @@ public class AggregatedCallInformation {
      * @param callInformations
      *            the callInformations to set
      */
-    public void setCallInformations(final Set<CallInformation> callInformations) {
+    public void setCallInformations(final List<CallInformation> callInformations) {
 
         this.callInformationCodes = callInformations.stream()
-                .map(callInformation -> callInformation.getInformationCode()).collect(Collectors.toSet());
+                .map(callInformation -> callInformation.getInformationCode()).collect(Collectors.toList());
         this.representativeCode = this.strategy.findRepresentativeCode(this.signature, this.callInformationCodes);
     }
 
@@ -142,7 +142,7 @@ public class AggregatedCallInformation {
      * delete all information of the aggregation
      */
     public void clearInformations() {
-        this.callInformationCodes = new HashSet<>();
+        this.callInformationCodes = new ArrayList<>();
         this.representativeCode = null;
     }
 
@@ -153,6 +153,15 @@ public class AggregatedCallInformation {
      */
     public AggregatedCallInformation getClearedCopy() {
         return new AggregatedCallInformation(this.strategy, this.signature);
+    }
+
+    /**
+     * size of the aggregatedCallInformation
+     *
+     * @return number of callInformationCodes
+     */
+    public int size() {
+        return this.callInformationCodes.size();
     }
 
 }

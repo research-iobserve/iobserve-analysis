@@ -154,11 +154,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
                         .filter(aggCallInformation -> aggCallInformation.belongsTo(newCallInformation))
                         .collect(new SingleOrNoneCollector<>());
 
-                if (match.isPresent()) {
-                    match.get().addCallInformation(newCallInformation);
-                } else {
-                    // TODO
-                }
+                match.ifPresent(aggCallInformation -> aggCallInformation.addCallInformation(newCallInformation));
             }
 
         } catch (final IOException e) {
