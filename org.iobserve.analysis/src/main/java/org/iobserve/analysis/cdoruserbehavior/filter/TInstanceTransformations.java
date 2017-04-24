@@ -18,6 +18,8 @@ package org.iobserve.analysis.cdoruserbehavior.filter;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModelTable;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 import weka.core.Instances;
@@ -30,6 +32,9 @@ import weka.core.Instances;
  */
 
 public class TInstanceTransformations extends AbstractConsumerStage<BehaviorModelTable> {
+    /** logger. */
+    private static final Log LOG = LogFactory.getLog(TInstanceTransformations.class);
+
     private Instances instances;
     private final OutputPort<Instances> outputPort = this.createOutputPort();
 
@@ -51,12 +56,17 @@ public class TInstanceTransformations extends AbstractConsumerStage<BehaviorMode
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see teetime.framework.AbstractStage#onTerminating()
      */
     @Override
     public void onTerminating() throws Exception {
-        this.outputPort.send(this.instances);
+        if (this.instances == null) {
+            TInstanceTransformations.LOG.error("No instances created!");
+        } else {
+            this.outputPort.send(this.instances);
+        }
+
         super.onTerminating();
     }
 
