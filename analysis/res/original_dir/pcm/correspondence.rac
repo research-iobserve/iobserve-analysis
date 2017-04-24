@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="ASCII"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:cm="http://www.example.eclipse.org/CorrespondenceModel">
+  <cm:HighLevelModel>
+    <elements name="middlewarerepository" Id="_yQk9oIX1EdyWta7nHuXiHQ"/>
+    <elements name="Glassfish J2EE Server" Id="_26-3Q4X1EdyWta7nHuXiHQ" parent="/0/@elements.0"/>
+    <elements name="IMiddleware" Id="_1luUhIX1EdyWta7nHuXiHQ" parent="/0/@elements.0"/>
+    <elements name="encrypt" Id="_uweoubweovo79265497bc" parent="/0/@elements.2"/>
+    <elements name="decrypt" Id="_uweoubweovo7orfub065497bc" parent="/0/@elements.2"/>
+    <elements name="marshall" Id="_uweoubbu39tg265497bc" parent="/0/@elements.2"/>
+    <elements name="demarshall" Id="_uweounboep9h4b32g97bc" parent="/0/@elements.2"/>
+    <elements name="createCredentials" Id="_bf297f29gfweovo79265497bc" parent="/0/@elements.2"/>
+    <elements name="checkCredentials" Id="_uweojvbu20t33bc265497bc" parent="/0/@elements.2"/>
+    <elements name="defaultRepository" Id="_HZJnoJSbEd-mVsWhjZHqXg"/>
+    <elements name="TradingSystem.Inventory.Data.Enterprise" Id="_-3VggNCgEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="EnterpriseQueryIf" Id="_Eldg8NChEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="queryEnterpriseById" Id="_2NLSRFcvEeGI_ZRmqWdpYA" parent="/0/@elements.11"/>
+    <elements name="getMeanTimeToDelivery" Id="_2NL5UlcvEeGI_ZRmqWdpYA" parent="/0/@elements.11"/>
+    <elements name="TradingSystem.Inventory.Data.Persistence" Id="_B8esgNChEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="PersistenceIf" Id="_F8ovQNChEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="getPersistenceContext" Id="_2NL5V1cvEeGI_ZRmqWdpYA" parent="/0/@elements.15"/>
+    <elements name="TradingSystem.Inventory.Data.Store" Id="_C7qRkNChEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="StoreQueryIf" Id="_HSKXwNChEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="queryStoreById" Id="_2NL5WlcvEeGI_ZRmqWdpYA" parent="/0/@elements.18"/>
+    <elements name="queryProducts" Id="_2NMgYlcvEeGI_ZRmqWdpYA" parent="/0/@elements.18"/>
+    <elements name="queryLowStockItems" Id="_2NMgZVcvEeGI_ZRmqWdpYA" parent="/0/@elements.18"/>
+    <elements name="queryLowStockItemsWithRespectToIncomingProducts" Id="_2NNHclcvEeGI_ZRmqWdpYA" parent="/0/@elements.18"/>
+    <elements name="queryAllStockItems" Id="_2NNHdVcvEeGI_ZRmqWdpYA" parent="/0/@elements.18"/>
+    <elements name="queryOrderById" Id="_2NNHeFcvEeGI_ZRmqWdpYA" parent="/0/@elements.18"/>
+    <elements name="queryStockItem" Id="_2NNuglcvEeGI_ZRmqWdpYA" parent="/0/@elements.18"/>
+    <elements name="queryStockItemById" Id="_2NNuhVcvEeGI_ZRmqWdpYA" parent="/0/@elements.18"/>
+    <elements name="queryProductById" Id="_2NOVklcvEeGI_ZRmqWdpYA" parent="/0/@elements.18"/>
+    <elements name="getStockItems" Id="_2NOVlVcvEeGI_ZRmqWdpYA" parent="/0/@elements.18"/>
+    <elements name="TradingSystem.Inventory.GUI.Reporting" Id="_sGEvA9CiEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="TradingSystem.Inventory.GUI.Store" Id="_zokQE9CiEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="TradingSystem.Inventory.Application.ProductDispatcher" Id="_XDTf09CiEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="ProductDispatcherIf" Id="_dbS8pNCiEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="orderProductsAvailableAtOtherStores" Id="_2NO8o1cvEeGI_ZRmqWdpYA" parent="/0/@elements.32"/>
+    <elements name="TradingSystem.Inventory.Application.Reporting" Id="_URW_1dCmEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="ReportingIf" Id="_vebx9NCiEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="getStockReport" Id="_2NO8qVcvEeGI_ZRmqWdpYA" parent="/0/@elements.35"/>
+    <elements name="getStockReport" Id="_2NPjslcvEeGI_ZRmqWdpYA" parent="/0/@elements.35"/>
+    <elements name="getMeanTimeToDeliveryReport" Id="_2NPjtVcvEeGI_ZRmqWdpYA" parent="/0/@elements.35"/>
+    <elements name="TradingSystem.Inventory.Application.Store" Id="_6tZA5dCmEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="StoreIf" Id="_4153pNCiEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="getStore" Id="_2NPjuVcvEeGI_ZRmqWdpYA" parent="/0/@elements.40"/>
+    <elements name="getProductsWithLowStock" Id="_2NPju1cvEeGI_ZRmqWdpYA" parent="/0/@elements.40"/>
+    <elements name="getAllProducts" Id="_2NQKwVcvEeGI_ZRmqWdpYA" parent="/0/@elements.40"/>
+    <elements name="getAllProductsWithOptionalStockItem" Id="_2NQKw1cvEeGI_ZRmqWdpYA" parent="/0/@elements.40"/>
+    <elements name="orderProducts" Id="_2NQKxVcvEeGI_ZRmqWdpYA" parent="/0/@elements.40"/>
+    <elements name="getOrder" Id="_2NQKyFcvEeGI_ZRmqWdpYA" parent="/0/@elements.40"/>
+    <elements name="rollInReceivedOrder" Id="_2NQKylcvEeGI_ZRmqWdpYA" parent="/0/@elements.40"/>
+    <elements name="changePrice" Id="_2NQx0FcvEeGI_ZRmqWdpYA" parent="/0/@elements.40"/>
+    <elements name="markProductsUnavailableInStock" Id="_2NQx01cvEeGI_ZRmqWdpYA" parent="/0/@elements.40"/>
+    <elements name="flushDatabase" Id="_2NQx1VcvEeGI_ZRmqWdpYA" parent="/0/@elements.40"/>
+    <elements name="CashDeskConnectorIf" Id="_WoD42tCjEduC9O_qbthgAg" parent="/0/@elements.9"/>
+    <elements name="bookSale" Id="_2NKrM1cvEeGI_ZRmqWdpYA" parent="/0/@elements.51"/>
+    <elements name="getProductWithStockItem" Id="_2NLSQVcvEeGI_ZRmqWdpYA" parent="/0/@elements.51"/>
+    <elements name="TradingSystem.Inventory" Id="_3Sgb8FcmEd23wcZsd06DZg"/>
+  </cm:HighLevelModel>
+  <cm:LowLevelModel>
+    <elements name="IGlassfish_J2EE_Server" Id="glassfish_j2ee_server.ejb.IGlassfish_J2EE_Server"/>
+    <elements name="IMiddleware_Glassfish_J2EE_Server" Id="glassfish_j2ee_server.ejb.IMiddleware_Glassfish_J2EE_Server"/>
+    <elements name="IMiddleware" Id="glassfish_j2ee_server.interfaces.ejb.IMiddleware"/>
+    <elements name="encrypt0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.ejb.IMiddleware_Glassfish_J2EE_Server.encrypt0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.1"/>
+    <elements name="decrypt1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.ejb.IMiddleware_Glassfish_J2EE_Server.decrypt1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.1"/>
+    <elements name="marshall2" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.ejb.IMiddleware_Glassfish_J2EE_Server.marshall2(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.1"/>
+    <elements name="demarshall3" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.ejb.IMiddleware_Glassfish_J2EE_Server.demarshall3(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.1"/>
+    <elements name="createCredentials4" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.ejb.IMiddleware_Glassfish_J2EE_Server.createCredentials4(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.1"/>
+    <elements name="checkCredentials5" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.ejb.IMiddleware_Glassfish_J2EE_Server.checkCredentials5(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.1"/>
+    <elements name="encrypt0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.interfaces.ejb.IMiddleware.encrypt0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.2"/>
+    <elements name="decrypt1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.interfaces.ejb.IMiddleware.decrypt1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.2"/>
+    <elements name="marshall2" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.interfaces.ejb.IMiddleware.marshall2(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.2"/>
+    <elements name="demarshall3" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.interfaces.ejb.IMiddleware.demarshall3(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.2"/>
+    <elements name="createCredentials4" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.interfaces.ejb.IMiddleware.createCredentials4(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.2"/>
+    <elements name="checkCredentials5" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> glassfish_j2ee_server.interfaces.ejb.IMiddleware.checkCredentials5(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.2"/>
+    <elements name="ITradingSystem_Inventory_Data_Enterprise" Id="tradingsystem_inventory_data_enterprise.ejb.ITradingSystem_Inventory_Data_Enterprise"/>
+    <elements name="EnterpriseQueryIf_TradingSystem_Inventory_Data_Enterprise" Id="tradingsystem_inventory_data_enterprise.ejb.EnterpriseQueryIf_TradingSystem_Inventory_Data_Enterprise"/>
+    <elements name="EnterpriseQueryIf" Id="tradingsystem_inventory_data_enterprise.interfaces.ejb.EnterpriseQueryIf"/>
+    <elements name="queryEnterpriseById0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_enterprise.ejb.EnterpriseQueryIf_TradingSystem_Inventory_Data_Enterprise.queryEnterpriseById0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.16"/>
+    <elements name="getMeanTimeToDelivery1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_enterprise.ejb.EnterpriseQueryIf_TradingSystem_Inventory_Data_Enterprise.getMeanTimeToDelivery1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.16"/>
+    <elements name="queryEnterpriseById0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_enterprise.interfaces.ejb.EnterpriseQueryIf.queryEnterpriseById0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.17"/>
+    <elements name="getMeanTimeToDelivery1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_enterprise.interfaces.ejb.EnterpriseQueryIf.getMeanTimeToDelivery1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.17"/>
+    <elements name="ITradingSystem_Inventory_Data_Persistence" Id="tradingsystem_inventory_data_persistence.ejb.ITradingSystem_Inventory_Data_Persistence"/>
+    <elements name="PersistenceIf_TradingSystem_Inventory_Data_Persistence" Id="tradingsystem_inventory_data_persistence.ejb.PersistenceIf_TradingSystem_Inventory_Data_Persistence"/>
+    <elements name="PersistenceIf" Id="tradingsystem_inventory_data_persistence.interfaces.ejb.PersistenceIf"/>
+    <elements name="getPersistenceContext0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_persistence.ejb.PersistenceIf_TradingSystem_Inventory_Data_Persistence.getPersistenceContext0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.23"/>
+    <elements name="getPersistenceContext0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_persistence.interfaces.ejb.PersistenceIf.getPersistenceContext0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.24"/>
+    <elements name="ITradingSystem_Inventory_Data_Store" Id="tradingsystem_inventory_data_store.ejb.ITradingSystem_Inventory_Data_Store"/>
+    <elements name="StoreQueryIf_TradingSystem_Inventory_Data_Store" Id="tradingsystem_inventory_data_store.ejb.StoreQueryIf_TradingSystem_Inventory_Data_Store"/>
+    <elements name="StoreQueryIf" Id="tradingsystem_inventory_data_store.interfaces.ejb.StoreQueryIf"/>
+    <elements name="queryStoreById0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.ejb.StoreQueryIf_TradingSystem_Inventory_Data_Store.queryStoreById0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.28"/>
+    <elements name="queryProducts1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.ejb.StoreQueryIf_TradingSystem_Inventory_Data_Store.queryProducts1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.28"/>
+    <elements name="queryLowStockItems2" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.ejb.StoreQueryIf_TradingSystem_Inventory_Data_Store.queryLowStockItems2(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.28"/>
+    <elements name="queryLowStockItemsWithRespectToIncomingProducts3" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.ejb.StoreQueryIf_TradingSystem_Inventory_Data_Store.queryLowStockItemsWithRespectToIncomingProducts3(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.28"/>
+    <elements name="queryAllStockItems4" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.ejb.StoreQueryIf_TradingSystem_Inventory_Data_Store.queryAllStockItems4(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.28"/>
+    <elements name="queryOrderById5" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.ejb.StoreQueryIf_TradingSystem_Inventory_Data_Store.queryOrderById5(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.28"/>
+    <elements name="queryStockItem6" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.ejb.StoreQueryIf_TradingSystem_Inventory_Data_Store.queryStockItem6(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.28"/>
+    <elements name="queryStockItemById7" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.ejb.StoreQueryIf_TradingSystem_Inventory_Data_Store.queryStockItemById7(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.28"/>
+    <elements name="queryProductById8" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.ejb.StoreQueryIf_TradingSystem_Inventory_Data_Store.queryProductById8(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.28"/>
+    <elements name="getStockItems9" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.ejb.StoreQueryIf_TradingSystem_Inventory_Data_Store.getStockItems9(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.28"/>
+    <elements name="queryStoreById0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.interfaces.ejb.StoreQueryIf.queryStoreById0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.29"/>
+    <elements name="queryProducts1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.interfaces.ejb.StoreQueryIf.queryProducts1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.29"/>
+    <elements name="queryLowStockItems2" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.interfaces.ejb.StoreQueryIf.queryLowStockItems2(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.29"/>
+    <elements name="queryLowStockItemsWithRespectToIncomingProducts3" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.interfaces.ejb.StoreQueryIf.queryLowStockItemsWithRespectToIncomingProducts3(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.29"/>
+    <elements name="queryAllStockItems4" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.interfaces.ejb.StoreQueryIf.queryAllStockItems4(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.29"/>
+    <elements name="queryOrderById5" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.interfaces.ejb.StoreQueryIf.queryOrderById5(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.29"/>
+    <elements name="queryStockItem6" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.interfaces.ejb.StoreQueryIf.queryStockItem6(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.29"/>
+    <elements name="queryStockItemById7" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.interfaces.ejb.StoreQueryIf.queryStockItemById7(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.29"/>
+    <elements name="queryProductById8" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.interfaces.ejb.StoreQueryIf.queryProductById8(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.29"/>
+    <elements name="getStockItems9" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_data_store.interfaces.ejb.StoreQueryIf.getStockItems9(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.29"/>
+    <elements name="ITradingSystem_Inventory_GUI_Reporting" Id="tradingsystem_inventory_gui_reporting.ejb.ITradingSystem_Inventory_GUI_Reporting"/>
+    <elements name="ITradingSystem_Inventory_GUI_Store" Id="tradingsystem_inventory_gui_store.ejb.ITradingSystem_Inventory_GUI_Store"/>
+    <elements name="ITradingSystem_Inventory_Application_ProductDispatcher" Id="tradingsystem_inventory_application_productdispatcher.ejb.ITradingSystem_Inventory_Application_ProductDispatcher"/>
+    <elements name="ProductDispatcherIf_TradingSystem_Inventory_Application_ProductDispatcher" Id="tradingsystem_inventory_application_productdispatcher.ejb.ProductDispatcherIf_TradingSystem_Inventory_Application_ProductDispatcher"/>
+    <elements name="ProductDispatcherIf" Id="tradingsystem_inventory_application_productdispatcher.interfaces.ejb.ProductDispatcherIf"/>
+    <elements name="orderProductsAvailableAtOtherStores0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_productdispatcher.ejb.ProductDispatcherIf_TradingSystem_Inventory_Application_ProductDispatcher.orderProductsAvailableAtOtherStores0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.53"/>
+    <elements name="orderProductsAvailableAtOtherStores0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_productdispatcher.interfaces.ejb.ProductDispatcherIf.orderProductsAvailableAtOtherStores0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.54"/>
+    <elements name="ITradingSystem_Inventory_Application_Reporting" Id="tradingsystem_inventory_application_reporting.ejb.ITradingSystem_Inventory_Application_Reporting"/>
+    <elements name="ReportingIf_TradingSystem_Inventory_Application_Reporting" Id="tradingsystem_inventory_application_reporting.ejb.ReportingIf_TradingSystem_Inventory_Application_Reporting"/>
+    <elements name="ReportingIf" Id="tradingsystem_inventory_application_reporting.interfaces.ejb.ReportingIf"/>
+    <elements name="getStockReport0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_reporting.ejb.ReportingIf_TradingSystem_Inventory_Application_Reporting.getStockReport0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.58"/>
+    <elements name="getStockReport1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_reporting.ejb.ReportingIf_TradingSystem_Inventory_Application_Reporting.getStockReport1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.58"/>
+    <elements name="getMeanTimeToDeliveryReport2" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_reporting.ejb.ReportingIf_TradingSystem_Inventory_Application_Reporting.getMeanTimeToDeliveryReport2(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.58"/>
+    <elements name="getStockReport0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_reporting.interfaces.ejb.ReportingIf.getStockReport0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.59"/>
+    <elements name="getStockReport1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_reporting.interfaces.ejb.ReportingIf.getStockReport1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.59"/>
+    <elements name="getMeanTimeToDeliveryReport2" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_reporting.interfaces.ejb.ReportingIf.getMeanTimeToDeliveryReport2(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.59"/>
+    <elements name="ITradingSystem_Inventory_Application_Store" Id="tradingsystem_inventory_application_store.ejb.ITradingSystem_Inventory_Application_Store"/>
+    <elements name="StoreIf_TradingSystem_Inventory_Application_Store" Id="tradingsystem_inventory_application_store.ejb.StoreIf_TradingSystem_Inventory_Application_Store"/>
+    <elements name="CashDeskConnectorIf_TradingSystem_Inventory_Application_Store" Id="tradingsystem_inventory_application_store.ejb.CashDeskConnectorIf_TradingSystem_Inventory_Application_Store"/>
+    <elements name="StoreIf" Id="tradingsystem_inventory_application_store.interfaces.ejb.StoreIf"/>
+    <elements name="CashDeskConnectorIf" Id="tradingsystem_inventory_application_store.interfaces.ejb.CashDeskConnectorIf"/>
+    <elements name="getStore0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.StoreIf_TradingSystem_Inventory_Application_Store.getStore0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.67"/>
+    <elements name="getProductsWithLowStock1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.StoreIf_TradingSystem_Inventory_Application_Store.getProductsWithLowStock1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.67"/>
+    <elements name="getAllProducts2" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.StoreIf_TradingSystem_Inventory_Application_Store.getAllProducts2(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.67"/>
+    <elements name="getAllProductsWithOptionalStockItem3" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.StoreIf_TradingSystem_Inventory_Application_Store.getAllProductsWithOptionalStockItem3(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.67"/>
+    <elements name="orderProducts4" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.StoreIf_TradingSystem_Inventory_Application_Store.orderProducts4(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.67"/>
+    <elements name="getOrder5" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.StoreIf_TradingSystem_Inventory_Application_Store.getOrder5(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.67"/>
+    <elements name="rollInReceivedOrder6" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.StoreIf_TradingSystem_Inventory_Application_Store.rollInReceivedOrder6(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.67"/>
+    <elements name="changePrice7" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.StoreIf_TradingSystem_Inventory_Application_Store.changePrice7(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.67"/>
+    <elements name="markProductsUnavailableInStock8" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.StoreIf_TradingSystem_Inventory_Application_Store.markProductsUnavailableInStock8(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.67"/>
+    <elements name="flushDatabase9" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.StoreIf_TradingSystem_Inventory_Application_Store.flushDatabase9(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.67"/>
+    <elements name="bookSale0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.CashDeskConnectorIf_TradingSystem_Inventory_Application_Store.bookSale0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.68"/>
+    <elements name="getProductWithStockItem1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.ejb.CashDeskConnectorIf_TradingSystem_Inventory_Application_Store.getProductWithStockItem1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.68"/>
+    <elements name="getStore0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.StoreIf.getStore0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.69"/>
+    <elements name="getProductsWithLowStock1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.StoreIf.getProductsWithLowStock1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.69"/>
+    <elements name="getAllProducts2" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.StoreIf.getAllProducts2(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.69"/>
+    <elements name="getAllProductsWithOptionalStockItem3" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.StoreIf.getAllProductsWithOptionalStockItem3(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.69"/>
+    <elements name="orderProducts4" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.StoreIf.orderProducts4(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.69"/>
+    <elements name="getOrder5" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.StoreIf.getOrder5(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.69"/>
+    <elements name="rollInReceivedOrder6" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.StoreIf.rollInReceivedOrder6(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.69"/>
+    <elements name="changePrice7" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.StoreIf.changePrice7(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.69"/>
+    <elements name="markProductsUnavailableInStock8" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.StoreIf.markProductsUnavailableInStock8(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.69"/>
+    <elements name="flushDatabase9" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.StoreIf.flushDatabase9(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.69"/>
+    <elements name="bookSale0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.CashDeskConnectorIf.bookSale0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.70"/>
+    <elements name="getProductWithStockItem1" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> tradingsystem_inventory_application_store.interfaces.ejb.CashDeskConnectorIf.getProductWithStockItem1(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.70"/>
+    <elements name="TradingSystem_Inventory_GUI_Reporting" Id="tradingsystem_inventory_gui_reporting.ejb.TradingSystem_Inventory_GUI_Reporting"/>
+    <elements name="TradingSystem_Inventory_GUI_Store" Id="tradingsystem_inventory_gui_store.ejb.TradingSystem_Inventory_GUI_Store"/>
+    <elements name="TradingSystem_Inventory_Application_Store" Id="tradingsystem_inventory_application_store.ejb.TradingSystem_Inventory_Application_Store"/>
+    <elements name="TradingSystem_Inventory_Application_ProductDispatcher" Id="tradingsystem_inventory_application_productdispatcher.ejb.TradingSystem_Inventory_Application_ProductDispatcher"/>
+    <elements name="TradingSystem_Inventory_Application_Reporting" Id="tradingsystem_inventory_application_reporting.ejb.TradingSystem_Inventory_Application_Reporting"/>
+    <elements name="TradingSystem_Inventory_Data_Persistence" Id="tradingsystem_inventory_data_persistence.ejb.TradingSystem_Inventory_Data_Persistence"/>
+    <elements name="TradingSystem_Inventory_Data_Store" Id="tradingsystem_inventory_data_store.ejb.TradingSystem_Inventory_Data_Store"/>
+    <elements name="TradingSystem_Inventory_Data_Enterprise" Id="tradingsystem_inventory_data_enterprise.ejb.TradingSystem_Inventory_Data_Enterprise"/>
+  </cm:LowLevelModel>
+  <cm:CorrespondenceModel highLevelModel="/0" lowLevelModel="/1">
+    <correspondences debugStr="Glassfish J2EE Server#IGlassfish_J2EE_Server" from="/0/@elements.1" to="/1/@elements.0"/>
+    <correspondences debugStr="Glassfish J2EE Server#IMiddleware_Glassfish_J2EE_Server" from="/0/@elements.1" to="/1/@elements.1"/>
+    <correspondences debugStr="Glassfish J2EE Server#IMiddleware" from="/0/@elements.1" to="/1/@elements.2"/>
+    <correspondences debugStr="encrypt#encrypt0" from="/0/@elements.3" to="/1/@elements.3"/>
+    <correspondences debugStr="decrypt#decrypt1" from="/0/@elements.4" to="/1/@elements.4"/>
+    <correspondences debugStr="marshall#marshall2" from="/0/@elements.5" to="/1/@elements.5"/>
+    <correspondences debugStr="demarshall#demarshall3" from="/0/@elements.6" to="/1/@elements.6"/>
+    <correspondences debugStr="createCredentials#createCredentials4" from="/0/@elements.7" to="/1/@elements.7"/>
+    <correspondences debugStr="checkCredentials#checkCredentials5" from="/0/@elements.8" to="/1/@elements.8"/>
+    <correspondences debugStr="encrypt#encrypt0" from="/0/@elements.3" to="/1/@elements.9"/>
+    <correspondences debugStr="decrypt#decrypt1" from="/0/@elements.4" to="/1/@elements.10"/>
+    <correspondences debugStr="marshall#marshall2" from="/0/@elements.5" to="/1/@elements.11"/>
+    <correspondences debugStr="demarshall#demarshall3" from="/0/@elements.6" to="/1/@elements.12"/>
+    <correspondences debugStr="createCredentials#createCredentials4" from="/0/@elements.7" to="/1/@elements.13"/>
+    <correspondences debugStr="checkCredentials#checkCredentials5" from="/0/@elements.8" to="/1/@elements.14"/>
+    <correspondences debugStr="TradingSystem.Inventory.Data.Enterprise#ITradingSystem_Inventory_Data_Enterprise" from="/0/@elements.10" to="/1/@elements.15"/>
+    <correspondences debugStr="TradingSystem.Inventory.Data.Enterprise#EnterpriseQueryIf_TradingSystem_Inventory_Data_Enterprise" from="/0/@elements.10" to="/1/@elements.16"/>
+    <correspondences debugStr="TradingSystem.Inventory.Data.Enterprise#EnterpriseQueryIf" from="/0/@elements.10" to="/1/@elements.17"/>
+    <correspondences debugStr="queryEnterpriseById#queryEnterpriseById0" from="/0/@elements.12" to="/1/@elements.18"/>
+    <correspondences debugStr="getMeanTimeToDelivery#getMeanTimeToDelivery1" from="/0/@elements.13" to="/1/@elements.19"/>
+    <correspondences debugStr="queryEnterpriseById#queryEnterpriseById0" from="/0/@elements.12" to="/1/@elements.20"/>
+    <correspondences debugStr="getMeanTimeToDelivery#getMeanTimeToDelivery1" from="/0/@elements.13" to="/1/@elements.21"/>
+    <correspondences debugStr="TradingSystem.Inventory.Data.Persistence#ITradingSystem_Inventory_Data_Persistence" from="/0/@elements.14" to="/1/@elements.22"/>
+    <correspondences debugStr="TradingSystem.Inventory.Data.Persistence#PersistenceIf_TradingSystem_Inventory_Data_Persistence" from="/0/@elements.14" to="/1/@elements.23"/>
+    <correspondences debugStr="TradingSystem.Inventory.Data.Persistence#PersistenceIf" from="/0/@elements.14" to="/1/@elements.24"/>
+    <correspondences debugStr="getPersistenceContext#getPersistenceContext0" from="/0/@elements.16" to="/1/@elements.25"/>
+    <correspondences debugStr="getPersistenceContext#getPersistenceContext0" from="/0/@elements.16" to="/1/@elements.26"/>
+    <correspondences debugStr="TradingSystem.Inventory.Data.Store#ITradingSystem_Inventory_Data_Store" from="/0/@elements.17" to="/1/@elements.27"/>
+    <correspondences debugStr="TradingSystem.Inventory.Data.Store#StoreQueryIf_TradingSystem_Inventory_Data_Store" from="/0/@elements.17" to="/1/@elements.28"/>
+    <correspondences debugStr="TradingSystem.Inventory.Data.Store#StoreQueryIf" from="/0/@elements.17" to="/1/@elements.29"/>
+    <correspondences debugStr="queryStoreById#queryStoreById0" from="/0/@elements.19" to="/1/@elements.30"/>
+    <correspondences debugStr="queryProducts#queryProducts1" from="/0/@elements.20" to="/1/@elements.31"/>
+    <correspondences debugStr="queryLowStockItems#queryLowStockItems2" from="/0/@elements.21" to="/1/@elements.32"/>
+    <correspondences debugStr="queryLowStockItemsWithRespectToIncomingProducts#queryLowStockItemsWithRespectToIncomingProducts3" from="/0/@elements.22" to="/1/@elements.33"/>
+    <correspondences debugStr="queryAllStockItems#queryAllStockItems4" from="/0/@elements.23" to="/1/@elements.34"/>
+    <correspondences debugStr="queryOrderById#queryOrderById5" from="/0/@elements.24" to="/1/@elements.35"/>
+    <correspondences debugStr="queryStockItem#queryStockItem6" from="/0/@elements.25" to="/1/@elements.36"/>
+    <correspondences debugStr="queryStockItemById#queryStockItemById7" from="/0/@elements.26" to="/1/@elements.37"/>
+    <correspondences debugStr="queryProductById#queryProductById8" from="/0/@elements.27" to="/1/@elements.38"/>
+    <correspondences debugStr="getStockItems#getStockItems9" from="/0/@elements.28" to="/1/@elements.39"/>
+    <correspondences debugStr="queryStoreById#queryStoreById0" from="/0/@elements.19" to="/1/@elements.40"/>
+    <correspondences debugStr="queryProducts#queryProducts1" from="/0/@elements.20" to="/1/@elements.41"/>
+    <correspondences debugStr="queryLowStockItems#queryLowStockItems2" from="/0/@elements.21" to="/1/@elements.42"/>
+    <correspondences debugStr="queryLowStockItemsWithRespectToIncomingProducts#queryLowStockItemsWithRespectToIncomingProducts3" from="/0/@elements.22" to="/1/@elements.43"/>
+    <correspondences debugStr="queryAllStockItems#queryAllStockItems4" from="/0/@elements.23" to="/1/@elements.44"/>
+    <correspondences debugStr="queryOrderById#queryOrderById5" from="/0/@elements.24" to="/1/@elements.45"/>
+    <correspondences debugStr="queryStockItem#queryStockItem6" from="/0/@elements.25" to="/1/@elements.46"/>
+    <correspondences debugStr="queryStockItemById#queryStockItemById7" from="/0/@elements.26" to="/1/@elements.47"/>
+    <correspondences debugStr="queryProductById#queryProductById8" from="/0/@elements.27" to="/1/@elements.48"/>
+    <correspondences debugStr="getStockItems#getStockItems9" from="/0/@elements.28" to="/1/@elements.49"/>
+    <correspondences debugStr="TradingSystem.Inventory.GUI.Reporting#ITradingSystem_Inventory_GUI_Reporting" from="/0/@elements.29" to="/1/@elements.50"/>
+    <correspondences debugStr="TradingSystem.Inventory.GUI.Store#ITradingSystem_Inventory_GUI_Store" from="/0/@elements.30" to="/1/@elements.51"/>
+    <correspondences debugStr="TradingSystem.Inventory.Application.ProductDispatcher#ITradingSystem_Inventory_Application_ProductDispatcher" from="/0/@elements.31" to="/1/@elements.52"/>
+    <correspondences debugStr="TradingSystem.Inventory.Application.ProductDispatcher#ProductDispatcherIf_TradingSystem_Inventory_Application_ProductDispatcher" from="/0/@elements.31" to="/1/@elements.53"/>
+    <correspondences debugStr="TradingSystem.Inventory.Application.ProductDispatcher#ProductDispatcherIf" from="/0/@elements.31" to="/1/@elements.54"/>
+    <correspondences debugStr="orderProductsAvailableAtOtherStores#orderProductsAvailableAtOtherStores0" from="/0/@elements.33" to="/1/@elements.55"/>
+    <correspondences debugStr="orderProductsAvailableAtOtherStores#orderProductsAvailableAtOtherStores0" from="/0/@elements.33" to="/1/@elements.56"/>
+    <correspondences debugStr="TradingSystem.Inventory.Application.Reporting#ITradingSystem_Inventory_Application_Reporting" from="/0/@elements.34" to="/1/@elements.57"/>
+    <correspondences debugStr="TradingSystem.Inventory.Application.Reporting#ReportingIf_TradingSystem_Inventory_Application_Reporting" from="/0/@elements.34" to="/1/@elements.58"/>
+    <correspondences debugStr="TradingSystem.Inventory.Application.Reporting#ReportingIf" from="/0/@elements.34" to="/1/@elements.59"/>
+    <correspondences debugStr="getStockReport#getStockReport0" from="/0/@elements.36" to="/1/@elements.60"/>
+    <correspondences debugStr="getStockReport#getStockReport1" from="/0/@elements.37" to="/1/@elements.61"/>
+    <correspondences debugStr="getMeanTimeToDeliveryReport#getMeanTimeToDeliveryReport2" from="/0/@elements.38" to="/1/@elements.62"/>
+    <correspondences debugStr="getStockReport#getStockReport0" from="/0/@elements.36" to="/1/@elements.63"/>
+    <correspondences debugStr="getStockReport#getStockReport1" from="/0/@elements.37" to="/1/@elements.64"/>
+    <correspondences debugStr="getMeanTimeToDeliveryReport#getMeanTimeToDeliveryReport2" from="/0/@elements.38" to="/1/@elements.65"/>
+    <correspondences debugStr="TradingSystem.Inventory.Application.Store#ITradingSystem_Inventory_Application_Store" from="/0/@elements.39" to="/1/@elements.66"/>
+    <correspondences debugStr="TradingSystem.Inventory.Application.Store#StoreIf_TradingSystem_Inventory_Application_Store" from="/0/@elements.39" to="/1/@elements.67"/>
+    <correspondences debugStr="TradingSystem.Inventory.Application.Store#CashDeskConnectorIf_TradingSystem_Inventory_Application_Store" from="/0/@elements.39" to="/1/@elements.68"/>
+    <correspondences debugStr="TradingSystem.Inventory.Application.Store#StoreIf" from="/0/@elements.39" to="/1/@elements.69"/>
+    <correspondences debugStr="TradingSystem.Inventory.Application.Store#CashDeskConnectorIf" from="/0/@elements.39" to="/1/@elements.70"/>
+    <correspondences debugStr="getStore#getStore0" from="/0/@elements.41" to="/1/@elements.71"/>
+    <correspondences debugStr="getProductsWithLowStock#getProductsWithLowStock1" from="/0/@elements.42" to="/1/@elements.72"/>
+    <correspondences debugStr="getAllProducts#getAllProducts2" from="/0/@elements.43" to="/1/@elements.73"/>
+    <correspondences debugStr="getAllProductsWithOptionalStockItem#getAllProductsWithOptionalStockItem3" from="/0/@elements.44" to="/1/@elements.74"/>
+    <correspondences debugStr="orderProducts#orderProducts4" from="/0/@elements.45" to="/1/@elements.75"/>
+    <correspondences debugStr="getOrder#getOrder5" from="/0/@elements.46" to="/1/@elements.76"/>
+    <correspondences debugStr="rollInReceivedOrder#rollInReceivedOrder6" from="/0/@elements.47" to="/1/@elements.77"/>
+    <correspondences debugStr="changePrice#changePrice7" from="/0/@elements.48" to="/1/@elements.78"/>
+    <correspondences debugStr="markProductsUnavailableInStock#markProductsUnavailableInStock8" from="/0/@elements.49" to="/1/@elements.79"/>
+    <correspondences debugStr="flushDatabase#flushDatabase9" from="/0/@elements.50" to="/1/@elements.80"/>
+    <correspondences debugStr="bookSale#bookSale0" from="/0/@elements.52" to="/1/@elements.81"/>
+    <correspondences debugStr="getProductWithStockItem#getProductWithStockItem1" from="/0/@elements.53" to="/1/@elements.82"/>
+    <correspondences debugStr="getStore#getStore0" from="/0/@elements.41" to="/1/@elements.83"/>
+    <correspondences debugStr="getProductsWithLowStock#getProductsWithLowStock1" from="/0/@elements.42" to="/1/@elements.84"/>
+    <correspondences debugStr="getAllProducts#getAllProducts2" from="/0/@elements.43" to="/1/@elements.85"/>
+    <correspondences debugStr="getAllProductsWithOptionalStockItem#getAllProductsWithOptionalStockItem3" from="/0/@elements.44" to="/1/@elements.86"/>
+    <correspondences debugStr="orderProducts#orderProducts4" from="/0/@elements.45" to="/1/@elements.87"/>
+    <correspondences debugStr="getOrder#getOrder5" from="/0/@elements.46" to="/1/@elements.88"/>
+    <correspondences debugStr="rollInReceivedOrder#rollInReceivedOrder6" from="/0/@elements.47" to="/1/@elements.89"/>
+    <correspondences debugStr="changePrice#changePrice7" from="/0/@elements.48" to="/1/@elements.90"/>
+    <correspondences debugStr="markProductsUnavailableInStock#markProductsUnavailableInStock8" from="/0/@elements.49" to="/1/@elements.91"/>
+    <correspondences debugStr="flushDatabase#flushDatabase9" from="/0/@elements.50" to="/1/@elements.92"/>
+    <correspondences debugStr="bookSale#bookSale0" from="/0/@elements.52" to="/1/@elements.93"/>
+    <correspondences debugStr="getProductWithStockItem#getProductWithStockItem1" from="/0/@elements.53" to="/1/@elements.94"/>
+    <correspondences debugStr="TradingSystem.Inventory#TradingSystem_Inventory_GUI_Reporting" from="/0/@elements.54" to="/1/@elements.95"/>
+    <correspondences debugStr="TradingSystem.Inventory#TradingSystem_Inventory_GUI_Store" from="/0/@elements.54" to="/1/@elements.96"/>
+    <correspondences debugStr="TradingSystem.Inventory#TradingSystem_Inventory_Application_Store" from="/0/@elements.54" to="/1/@elements.97"/>
+    <correspondences debugStr="TradingSystem.Inventory#TradingSystem_Inventory_Application_ProductDispatcher" from="/0/@elements.54" to="/1/@elements.98"/>
+    <correspondences debugStr="TradingSystem.Inventory#TradingSystem_Inventory_Application_Reporting" from="/0/@elements.54" to="/1/@elements.99"/>
+    <correspondences debugStr="TradingSystem.Inventory#TradingSystem_Inventory_Data_Persistence" from="/0/@elements.54" to="/1/@elements.100"/>
+    <correspondences debugStr="TradingSystem.Inventory#TradingSystem_Inventory_Data_Store" from="/0/@elements.54" to="/1/@elements.101"/>
+    <correspondences debugStr="TradingSystem.Inventory#TradingSystem_Inventory_Data_Enterprise" from="/0/@elements.54" to="/1/@elements.102"/>
+  </cm:CorrespondenceModel>
+</xmi:XMI>
