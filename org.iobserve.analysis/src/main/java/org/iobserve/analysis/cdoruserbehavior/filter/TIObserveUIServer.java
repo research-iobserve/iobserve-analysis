@@ -315,7 +315,6 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
 
         try {
             final String json = this.objectMapper.writeValueAsString(changelogs);
-            // TODO System.out.println(json);
 
             final URL url = new URL(this.changelogUrl);
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -332,9 +331,6 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
             final byte[] outputBytes = json.getBytes("UTF-8");
             os.write(outputBytes);
             os.flush();
-
-            System.out.println(con.getResponseCode());
-            System.out.println(con.getResponseMessage());
 
             con.disconnect();
 

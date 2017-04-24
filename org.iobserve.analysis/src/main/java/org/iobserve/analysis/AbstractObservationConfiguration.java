@@ -17,7 +17,7 @@ package org.iobserve.analysis;
 
 import java.io.IOException;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModel;
+import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelComparison;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.JPetstoreStrategy;
@@ -93,9 +93,11 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 systemModelProvider, resourceEnvironmentModelProvider);
         final TEntryCall tEntryCall = new TEntryCall();
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
+
         // final TEntryEventSequence tEntryEventSequence = new
         // TEntryEventSequence(correspondenceModel, usageModelProvider,
         // repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+
         // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
         // systemModelProvider,
         // resourceEnvironmentModelProvider);
@@ -104,15 +106,18 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         modelGenerationFilter.addFilterRule("(.*jpetstore\\.images).*\\)");
         modelGenerationFilter.addFilterRule("(.*jpetstore\\.css).*\\)");
 
-        final int expectedUserGroups = 5;
-        final int userGroupVariance = 2;
-        final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, userGroupVariance,
+        final int expectedUserGroups = 5; // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+        final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
                 new ManhattanDistance());
 
         final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration(
                 modelGenerationFilter, new JPetstoreStrategy(), behaviorModelClustering);
 
-        final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
+        // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
+
+        final TBehaviorModelComparison tBehaviorModelComparison = new TBehaviorModelComparison(
+                behaviorModelConfiguration, correspondenceModel, usageModelProvider, repositoryModelProvider,
+                varianceOfUserGroups, thinkTime, closedWorkload);
 
         /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
@@ -124,7 +129,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
         // this.connectPorts(tEntryCallSequence.getOutputPort(),
         // tEntryEventSequence.getInputPort());
-        this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(), tBehaviorModel.getInputPort());
+        this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
+                tBehaviorModelComparison.getInputPort());
 
     }
 

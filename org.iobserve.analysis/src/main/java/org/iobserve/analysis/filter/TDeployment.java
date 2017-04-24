@@ -17,8 +17,6 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import teetime.framework.AbstractConsumerStage;
-
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
@@ -34,9 +32,12 @@ import org.iobserve.common.record.ServletDeployedEvent;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+import teetime.framework.AbstractConsumerStage;
+
 /**
- * This class contains the transformation for updating the PCM allocation model with respect to deployment. 
- * It processes deployment events and uses the correspondence information in the RAC to update the PCM allocation model.
+ * This class contains the transformation for updating the PCM allocation model with respect to
+ * deployment. It processes deployment events and uses the correspondence information in the RAC to
+ * update the PCM allocation model.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
@@ -142,14 +143,17 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         // this can not happen since TAllocation should have created the resource container already.
         Opt.of(optResourceContainer).ifPresent()
                 .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName))
-                .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n"));
+                .elseApply(() -> System.out.printf("AssemblyContext was not available?!\n"));
 
         // get the assembly context. Create it if necessary
-        AssemblyContext assemblyContext = SystemModelBuilder
-                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName).get();
+        AssemblyContext assemblyContext;
+        final Optional<AssemblyContext> optAssemblyContext = SystemModelBuilder
+                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName);
 
         // in case the assembly context is null, TDeployment should create it
-        if (assemblyContext == null) {
+        if (optAssemblyContext.isPresent()) {
+            assemblyContext = optAssemblyContext.get();
+        } else {
             // create assembly context
             this.systemModelProvider.loadModel();
             SystemModelBuilder.createAssemblyContextsIfAbsent(this.systemModelProvider.getModel(), asmContextName);

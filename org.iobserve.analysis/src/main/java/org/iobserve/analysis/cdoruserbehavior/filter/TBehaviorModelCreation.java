@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter;
 
+import java.util.Optional;
+
 import org.iobserve.analysis.cdoruserbehavior.filter.models.AbstractBehaviorModelTable;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModel;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
@@ -77,12 +79,19 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
             final Double attributeValue = instance.value(attribute);
 
             if (this.matchEdge(attributeName)) {
-                final EntryCallEdge edge = this.createEdge(attributeName, attributeValue);
-                behaviorModel.addEdge(edge);
+                final Optional<EntryCallEdge> edge = this.createEdge(attributeName, attributeValue);
+
+                if (edge.isPresent()) {
+                    behaviorModel.addEdge(edge.get());
+                }
 
             } else if (this.matchNode(attributeName)) {
-                final EntryCallNode node = this.createNode(attributeName, attributeValue);
-                behaviorModel.addNode(node);
+                final Optional<EntryCallNode> node = this.createNode(attributeName, attributeValue);
+
+                if (node.isPresent()) {
+                    behaviorModel.addNode(node.get());
+                }
+
             }
         }
         return behaviorModel;
@@ -120,22 +129,24 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      *
      * @return EntryCallEdge
      */
-    private EntryCallEdge createEdge(String name, Double value) {
+    private Optional<EntryCallEdge> createEdge(String name, Double value) {
 
-        final String[] nodeNames = this.splitSignature(AbstractBehaviorModelTable.EDGE_INDICATOR,
-                AbstractBehaviorModelTable.EDGE_DIVIDER, name);
+        if (value > 0) {
 
-        if (nodeNames.length == 2) {
-            final EntryCallNode from = new EntryCallNode(nodeNames[0]);
+            final String[] nodeNames = this.splitSignature(AbstractBehaviorModelTable.EDGE_INDICATOR,
+                    AbstractBehaviorModelTable.EDGE_DIVIDER, name);
 
-            final EntryCallNode to = new EntryCallNode(nodeNames[1]);
+            if (nodeNames.length == 2) {
+                final EntryCallNode from = new EntryCallNode(nodeNames[0]);
+                final EntryCallNode to = new EntryCallNode(nodeNames[1]);
 
-            final EntryCallEdge edge = new EntryCallEdge(from, to, value.intValue());
+                final EntryCallEdge edge = new EntryCallEdge(from, to, value.intValue());
 
-            return edge;
-        } else {
-            return null;
+                return Optional.of(edge);
+            }
         }
+
+        return Optional.empty();
 
     }
 
@@ -149,7 +160,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      *
      * @return EntryCallNode
      */
-    private EntryCallNode createNode(String name, Double value) {
+    private Optional<EntryCallNode> createNode(String name, Double value) {
 
         final String[] signatures = this.splitSignature(AbstractBehaviorModelTable.INFORMATION_INDICATOR,
                 AbstractBehaviorModelTable.INFORMATION_DIVIDER, name);
@@ -160,9 +171,9 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
 
             node.getEntryCallInformation().add(callInformation);
 
-            return node;
+            return Optional.of(node);
         } else {
-            return null;
+            return Optional.empty();
         }
     }
 

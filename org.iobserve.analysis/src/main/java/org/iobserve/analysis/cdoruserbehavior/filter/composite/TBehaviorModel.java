@@ -27,7 +27,6 @@ import teetime.framework.InputPort;
  *
  */
 public class TBehaviorModel extends CompositeStage {
-    private final BehaviorModelConfiguration configuration;
 
     private final InputPort<EntryCallSequenceModel> inputPort;
 
@@ -38,7 +37,6 @@ public class TBehaviorModel extends CompositeStage {
      *            configuration
      */
     public TBehaviorModel(final BehaviorModelConfiguration configuration) {
-        this.configuration = configuration;
         // TODO
         final TBehaviorModelPreprocessing tBehaviorModelProcessing = new TBehaviorModelPreprocessing(configuration);
         this.inputPort = tBehaviorModelProcessing.getInputPort();

@@ -94,7 +94,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                                 .equals(afterOperationEvent.getOperationSignature())) {
 
                     /** check for extended events **/
-                    String callInformations = null;
+                    String callInformations = "[]";
 
                     if (beforeOperationEvent instanceof ExtendedBeforeOperationEvent) {
                         final ExtendedBeforeOperationEvent extendedBeforeOperationEvent = (ExtendedBeforeOperationEvent) beforeOperationEvent;
@@ -106,8 +106,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                         final ExtendedAfterOperationEvent extendedAfterOperationEvent = (ExtendedAfterOperationEvent) afterOperationEvent;
                         final String newInformations = extendedAfterOperationEvent.getInformations();
 
-                        callInformations = callInformations == null ? newInformations
-                                : callInformations.replace("]", ",") + newInformations.replaceAll("[", "");
+                        callInformations = callInformations.replace("]", ",") + newInformations.replaceAll("[", "");
 
                     }
 

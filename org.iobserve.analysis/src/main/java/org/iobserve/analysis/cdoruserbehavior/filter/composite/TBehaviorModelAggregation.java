@@ -34,8 +34,8 @@ public class TBehaviorModelAggregation extends CompositeStage {
     private static final Log LOG = LogFactory.getLog(TBehaviorModelAggregation.class);
     private final TClustering tClustering;
     private final TBehaviorModelCreation tBehaviorModelCreation;
-    private final TIObserveUIServer tIObserveUIServer;
     private final TIObserveUBM tIObserveUBM;
+
     private final BehaviorModelConfiguration configuration;
 
     /**
@@ -46,7 +46,6 @@ public class TBehaviorModelAggregation extends CompositeStage {
 
         this.tClustering = new TClustering(this.configuration.getClustering());
         this.tBehaviorModelCreation = new TBehaviorModelCreation();
-        this.tIObserveUIServer = new TIObserveUIServer();
         this.tIObserveUBM = new TIObserveUBM();
 
         this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());

@@ -19,7 +19,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -43,7 +45,7 @@ import teetime.framework.AbstractConsumerStage;
  *
  */
 public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
-    private final String modelName = "JPetstore Behavior Model";
+    private final String modelName = "JPetstore Behavior Model - cdo mixr";
     private final String baseUrl = "http://localhost:8080/ubm-backend/v1";
     private final Map<String, JsonNode> nodeMap;
 
@@ -84,18 +86,58 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
         final String targetUrl = this.baseUrl + "/applications";
 
         final JsonNode json = this.postElement(graph, targetUrl);
-        final String id = json.get("id").asText();
-
-        return Long.valueOf(id);
+        final Long id = json.get("id").asLong();
+        return id;
     }
 
     /**
      * reset the visualisation
      */
     private void resetVisualization() {
-        for (int i = 900; i < 1200; i++) {
-            this.sendDelete("http://localhost:8080/ubm-backend/v1/applications/" + i);
+        final List<Long> ids = this.getAllGraphsFromUI(this.baseUrl + "/applications");
+
+        for (final Long id : ids) {
+            this.sendDelete(this.baseUrl + "/applications/" + id);
         }
+    }
+
+    /**
+     * get all graph ids present in the ui
+     *
+     * @param targetUrl
+     *            targetUrl
+     * @return ids as List
+     */
+    private List<Long> getAllGraphsFromUI(String targetUrl) {
+        URL url;
+        try {
+            url = new URL(targetUrl);
+            final HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            con.setRequestMethod("GET");
+
+            con.setDoInput(true);
+
+            final InputStream response = con.getInputStream();
+            @SuppressWarnings("resource")
+            final Scanner scanner = new Scanner(response).useDelimiter("\\A");
+            final String content = scanner.next().replaceAll("\\\"@id\\\":\\\"1\\\",", "");
+
+            final JsonNode contendNode = this.objectMapper.readTree(content);
+
+            final List<Long> graphIds = new ArrayList<>();
+            if (contendNode.isArray()) {
+                for (final JsonNode graph : contendNode) {
+                    graphIds.add(graph.get("id").asLong());
+                }
+                return graphIds;
+            }
+
+        } catch (final Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -135,19 +177,11 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
             json.put("id", 0);
             json.put("name", entryCallNode.getSignature());
 
-            final ArrayNode extras = this.objectMapper.createArrayNode();
+            final ObjectNode extras = this.objectMapper.createObjectNode();
             for (final CallInformation callInformation : entryCallNode.getEntryCallInformation()) {
-                final ObjectNode information = this.objectMapper.createObjectNode();
-                information.put("key", callInformation.getInformationSignature());
-                information.put("key2", callInformation.getInformationCode());
-                extras.add(information);
+                extras.put(callInformation.getInformationSignature(), callInformation.getInformationCode());
             }
-            // TODO caused by ui - not relevant for petstore
-            if (extras.has(0)) {
-                json.put("extra", extras.get(0));
-            } else {
-                json.put("extra", this.objectMapper.createObjectNode());
-            }
+            json.put("extra", extras);
 
             // TODO visualisations doesn't accept lists
             nodes.add(json);
@@ -182,6 +216,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
             this.postElement(json, this.getEdgeUrl(modelId));
             edges.add(json);
         }
+        // TODO remove
         // this.postElements(edges, this.getNodeUrl(modelId));
     }
 
