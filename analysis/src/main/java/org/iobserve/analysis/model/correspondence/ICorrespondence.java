@@ -62,28 +62,5 @@ public interface ICorrespondence {
      * @return option of a correspondent in model
      */
 
-    public Optional<Correspondent> getCorrespondent(String classSig);
-
-    /**
-     * Note: Alessandro I would recommend to defines this interface as follows. However,
-     * IMonitoringRecord is very general. Therefore, we could make this more specific with different
-     * types: - IOperationRecord (class and operation signature) - IObjectRecord (class signature
-     * and object id) - IInterfaceRecord (interface name??) - ICallRecord (class and operation
-     * signature of caller and callee)
-     *
-     * The famous - BeforeOperationEvent - AfterOperationEvent are also available with object id -
-     * BeforeOperationObjectEvent - AfterOperationObjectEvent
-     *
-     * And these are the main events necessary to find entry level calls. However, you could also
-     * just use EntryCallEvent for the user profile mapping when you intend to perform your mapping
-     * after the EntryEventConstructionFilter
-     */
-
-    /**
-     * Get corresponding node for a specific monitoring record.
-     *
-     * @param record
-     * @return
-     */
-    // public NamedElement getCorrespondingNode(IMonitoringRecord record);
+    public Optional<Correspondent> getCorrespondent(String classSig);    
 }
