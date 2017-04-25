@@ -38,8 +38,17 @@ public interface ICorrespondence {
      * Empty Correspondence.
      **/
     Optional<Correspondent> NULL_CORRESPONDENZ = Optional.empty();
-    
-    public boolean containsCorrespondent(String classSig, String funcionSig);
+
+    /**
+     * Checks whether a specific class and function signature exists.
+     *
+     * @param classSig
+     *            class signature
+     * @param functionSig
+     *            function signature
+     * @return return TRUE on match
+     */
+    public boolean containsCorrespondent(String classSig, String functionSig);
 
     /**
      * Get the correspondent object which contains all the information needed to get the actual

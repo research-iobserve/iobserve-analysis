@@ -47,9 +47,19 @@ public class SimpleSplitterConfiguration extends Configuration {
      * Configure analysis.
      *
      * @param dataLocation
-     *            data location
-     * @param inputPort
-     *            input port
+     *            location of a Kieker data log
+     * @param outputLocation
+     *            output location
+     * @param adapter
+     *            name of the adapter node
+     * @param enterprise
+     *            name of the enterprise node
+     * @param store
+     *            name of the store node
+     * @param registry
+     *            name of the registry node
+     * @param webfrontend
+     *            name of the webfrontend node
      */
     public SimpleSplitterConfiguration(final String dataLocation, final String outputLocation, final String adapter,
             final String enterprise, final String store, final String registry, final String webfrontend) {

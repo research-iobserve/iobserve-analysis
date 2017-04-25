@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import java.io.IOException;
-
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
@@ -71,11 +69,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            think time, configuration for entry event filter
      * @param closedWorkload
      *            kind of workload, configuration for entry event filter
-     *
-     * @throws ClassNotFoundException
-     *             when a record type could not be loaded by class loader
-     * @throws IOException
-     *             for all file reading errors
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,

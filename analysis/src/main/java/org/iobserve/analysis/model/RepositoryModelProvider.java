@@ -41,64 +41,63 @@ import org.palladiosimulator.pcm.repository.RepositoryPackage;
 public final class RepositoryModelProvider extends AbstractModelProvider<Repository> {
 
     /** map of operation interfaces mapped by id. */
-    private Map<String,OperationInterface> operationInterfaceMap;
+    private Map<String, OperationInterface> operationInterfaceMap;
     /** map of operation signatures mapped by id. */
-    private Map<String,OperationSignature> operationSignatureMap;
+    private Map<String, OperationSignature> operationSignatureMap;
     /** map between operation interface id and the provided interface id that implements it. */
-    private Map<String,String> opInfToProvInfMap;
+    private Map<String, String> opInfToProvInfMap;
     /** map of operation provided roles mapped by id. */
-    private Map<String,OperationProvidedRole> opProvidedRoleMap;
-    
+    private Map<String, OperationProvidedRole> opProvidedRoleMap;
 
     /**
      * Create model provider to provide {@link Repository} model.
      *
-     * @param uriUsageModel
+     * @param uriRepositoryModel
      *            uri to the model
      */
     public RepositoryModelProvider(final URI uriRepositoryModel) {
         super(uriRepositoryModel);
-        loadData();
+        this.loadData();
     }
 
     @Override
     public void resetModel() {
         // nothing to do
     }
-    
+
     /**
      * Loading and initializing the maps for data access.
      */
     private void loadData() {
-    	this.opInfToProvInfMap = new HashMap<>();
+        this.opInfToProvInfMap = new HashMap<>();
         this.opProvidedRoleMap = new HashMap<>();
-    	this.operationInterfaceMap = new HashMap<>();
+        this.operationInterfaceMap = new HashMap<>();
         this.operationSignatureMap = new HashMap<>();
-    	
+
         // loading OperationProvidedRoles and OperationInterfaces in dedicated maps
         for (final RepositoryComponent nextRepoCmp : this.getModel().getComponents__Repository()) {
             if (nextRepoCmp instanceof BasicComponent) {
                 final BasicComponent basicCmp = (BasicComponent) nextRepoCmp;
-                
-                for(final ProvidedRole providedRole : basicCmp.getProvidedRoles_InterfaceProvidingEntity()) {
-                	if(providedRole instanceof OperationProvidedRole) {
-                		final OperationProvidedRole opProvRole = (OperationProvidedRole) providedRole;
-                		final OperationInterface opInterface = opProvRole.getProvidedInterface__OperationProvidedRole();
-                		this.opInfToProvInfMap.put(opInterface.getId(), opProvRole.getId());
-                		this.opProvidedRoleMap.put(opProvRole.getId(), opProvRole);
-                	}
+
+                for (final ProvidedRole providedRole : basicCmp.getProvidedRoles_InterfaceProvidingEntity()) {
+                    if (providedRole instanceof OperationProvidedRole) {
+                        final OperationProvidedRole opProvRole = (OperationProvidedRole) providedRole;
+                        final OperationInterface opInterface = opProvRole.getProvidedInterface__OperationProvidedRole();
+                        this.opInfToProvInfMap.put(opInterface.getId(), opProvRole.getId());
+                        this.opProvidedRoleMap.put(opProvRole.getId(), opProvRole);
+                    }
                 }
             }
         }
-        
-    	// loading OperationInterfaces and OperationSignatures in dedicated maps
+
+        // loading OperationInterfaces and OperationSignatures in dedicated maps
         for (final Interface nextInterface : this.getModel().getInterfaces__Repository()) {
             if (nextInterface instanceof OperationInterface) {
                 final OperationInterface opInf = (OperationInterface) nextInterface;
                 this.operationInterfaceMap.put(opInf.getId(), opInf);
-                
+
                 for (final OperationSignature opSig : opInf.getSignatures__OperationInterface()) {
-                	this.operationSignatureMap.put(opSig.getId(), opSig);
+                    this.operationSignatureMap.put(opSig.getId(), opSig);
                 }
             }
         }
@@ -119,7 +118,7 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
      *         could be found
      */
     public OperationSignature getOperationSignature(final String operationID) {
-    	return this.operationSignatureMap.get(operationID);
+        return this.operationSignatureMap.get(operationID);
     }
 
     /**
@@ -131,7 +130,7 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
      *         interface
      */
     public OperationProvidedRole getOperationProvidedRole(final OperationInterface operationInterface) {
-    	String provRoleId = this.opInfToProvInfMap.get(operationInterface.getId());
-    	return this.opProvidedRoleMap.get(provRoleId);
+        final String provRoleId = this.opInfToProvInfMap.get(operationInterface.getId());
+        return this.opProvidedRoleMap.get(provRoleId);
     }
 }

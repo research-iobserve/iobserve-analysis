@@ -17,6 +17,17 @@ package org.iobserve.analysis.data;
 
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-public interface AllocationContextEvent {
+/**
+ *
+ * @author unknown
+ *
+ */
+public interface IAllocationContextEvent {
+
+    /**
+     * Return the allocation context.
+     *
+     * @return returns the allocation context
+     */
     public ResourceContainer getAllocationContext();
 }

@@ -52,6 +52,9 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
 
     /**
      * Create this filter.
+     *
+     * @param correspondenceModel
+     *            reference to the correspondence model
      */
     public TEntryCallSequence(final ICorrespondence correspondenceModel) {
         this.correspondenceModel = correspondenceModel;

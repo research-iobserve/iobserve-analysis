@@ -56,18 +56,18 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
         model.getUsageScenario_UsageModel().clear();
         model.getUserData_UsageModel().clear();
     }
-    
+
     /**
      * Updates the values of the current model to the values of the passed model.
-     * 
+     *
      * @param newModel
      *            UsageModel with new {@link UsageScenario} and {@link UserData} to be set.
-     *            
-     * @see resetModel() 
+     *
+     * @see resetModel()
      */
-    public void updateModel(UsageModel newModel) {
-    	this.resetModel();
-    	final UsageModel model = this.getModel();
+    public void updateModel(final UsageModel newModel) {
+        this.resetModel();
+        final UsageModel model = this.getModel();
         model.getUsageScenario_UsageModel().addAll(newModel.getUsageScenario_UsageModel());
         model.getUserData_UsageModel().addAll(newModel.getUserData_UsageModel());
     }

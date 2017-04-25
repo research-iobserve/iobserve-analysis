@@ -46,8 +46,9 @@ public class ObservationConfiguration extends Configuration {
      * Create a configuration with a ASCII file reader.
      *
      * @param directories
+     *            input logs
      * @param dataLocation
-     * @param correspondenceModel
+     *            output directory
      */
     public ObservationConfiguration(final Collection<File> directories, final File dataLocation) {
 
