@@ -37,6 +37,12 @@ subprojects {
     	configProperties = [config_loc: "${rootDir}"]
     }
     
+    tasks.withType(Checkstyle) {
+	    reports {
+	        xml.enabled true
+	    }
+	}
+    
     ext {
         appName = "org.iobserve"
     }
