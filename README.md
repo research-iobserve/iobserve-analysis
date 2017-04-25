@@ -20,6 +20,7 @@ some parts are still located in other SVN repositories.
   Checkout the `iobserve-repository` git repository alongside 
   `iobserve-analysis`
   `git clone git@github.com:research-iobserve/iobserve-repository.git`
+- You need Kieker example data, a RAC and a corresponding palladio model
 
 ## Setup Build Environment
 
@@ -62,8 +63,6 @@ usage: iobserve-analysis
 
 For a minimal analysis, type:
 `analysis.cli-0.0.2-SNAPSHOT/bin/analysis.cli -i example-kieker-data -p palladio-directory -t 1 -V 2 -w`
-
-
 
 
 
