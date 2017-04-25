@@ -42,6 +42,8 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
      *
      * @param dataLocation
      *            data location
+     * @param hostname
+     *            selected hostname
      */
     public DataDumpStage(final String dataLocation, final String hostname) {
         final Configuration configuration = ConfigurationFactory.createDefaultConfiguration();
@@ -67,7 +69,7 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
     protected void execute(final IMonitoringRecord record) {
         this.count++;
         this.ctrl.newMonitoringRecord(record);
-        if (this.count % 1000 == 0) {
+        if ((this.count % 1000) == 0) {
             System.out.println("Saved " + this.count + " records");
         }
     }

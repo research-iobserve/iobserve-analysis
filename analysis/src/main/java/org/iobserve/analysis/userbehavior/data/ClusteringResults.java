@@ -36,7 +36,9 @@ public class ClusteringResults {
      * @param numberOfClusters
      *            number of clusters
      * @param assignments
+     *            what is this for
      * @param clusteringMetrics
+     *            selection of clustering metric by name
      */
     public ClusteringResults(final String clusteringMethod, final int numberOfClusters, final int[] assignments,
             final ClusteringMetrics clusteringMetrics) {

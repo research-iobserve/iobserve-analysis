@@ -40,22 +40,22 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "Correspondent", propOrder = { "filePath", "projectName", "packageName", "interfaces", "unitName",
         "methods" })
 public class PcmEntityCorrespondent {
-	
+
     /**
      * Builds the signature out of packagname.MethodName().
      */
     @SuppressWarnings("unused")
-	private final IMethodSignatureBuilder mPackageNameClassNameMethodName = new IMethodSignatureBuilder() {
+    private final IMethodSignatureBuilder mPackageNameClassNameMethodName = new IMethodSignatureBuilder() {
 
         @Override
         public String build(final PcmCorrespondentMethod method) {
-            final String packageName = method.getParent().getPackageName();
+            final String localPackageName = method.getParent().getPackageName();
             final String className = method.getParent().getUnitName();
             final String methodName = method.getName();
-            return packageName + "." + className + "." + methodName + "()";
+            return localPackageName + "." + className + "." + methodName + "()";
         }
     };
-	
+
     /**
      * Builds the signature like it would appear in the source code for instance void Get().
      */
@@ -76,7 +76,7 @@ public class PcmEntityCorrespondent {
             builder.append(".");
             builder.append(method.getName());
             builder.append("(");
-            if(method.getParameters() != null) {
+            if (method.getParameters() != null) {
                 builder.append(method.getParameters());
             }
             builder.append(")");
@@ -94,7 +94,7 @@ public class PcmEntityCorrespondent {
     private String unitName;
     private List<String> interfaces = new ArrayList<>();
     private List<PcmCorrespondentMethod> methods = new ArrayList<>();
-    private Map<String, PcmCorrespondentMethod> methodMap = new HashMap<>();
+    private final Map<String, PcmCorrespondentMethod> methodMap = new HashMap<>();
     private PcmEntity parent;
 
     /**
@@ -169,18 +169,27 @@ public class PcmEntityCorrespondent {
         this.parent = parent;
     }
 
+    /**
+     * Create method map.
+     */
     public void initMethodMap() {
-    	for(PcmCorrespondentMethod method : methods) {
-    		final String methodSig = this.mPackageAndMethod.build(method).replaceAll(" ", "");
-    		methodMap.put(methodSig, method);
-    	}
+        for (final PcmCorrespondentMethod method : this.methods) {
+            final String methodSig = this.mPackageAndMethod.build(method).replaceAll(" ", "");
+            this.methodMap.put(methodSig, method);
+        }
     }
-    
-    public PcmCorrespondentMethod getMethod(String methodSig) {
-    	return methodMap.get(methodSig);
+
+    /**
+     * Get mapping for a method.
+     *
+     * @param methodSig
+     *            method signature
+     * @return returns the matching operation or null
+     */
+    public PcmCorrespondentMethod getMethod(final String methodSig) {
+        return this.methodMap.get(methodSig);
     }
-    
-    
+
     /**
      * String builder to build method signatures based on the given {@link PcmCorrespondentMethod}
      * instance.

@@ -27,14 +27,15 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'eclipse'
-    // apply plugin: 'checkstyle'
+    apply plugin: 'checkstyle'
 
     version = '0.0.2-SNAPSHOT'
     group = 'org.iobserve'
     
-    // checkstyle {
-    //	configFile = rootProject.file('cs-conf.xml')
-    //}
+    checkstyle {
+    	configFile = rootProject.file('iobserve-checkstyle-rules.xml')
+    	configProperties = [config_loc: "${rootDir}"]
+    }
     
     ext {
         appName = "org.iobserve"

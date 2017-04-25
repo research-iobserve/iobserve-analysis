@@ -1,4 +1,18 @@
-/** this is a temporary measure, the real filter is available in teetime/kieker. */
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.filter.reader;
 
 import java.io.File;
@@ -20,6 +34,7 @@ import teetime.stage.io.Directory2FilesFilter;
 import teetime.stage.io.filesystem.format.binary.file.BinaryFile2RecordFilter;
 import teetime.stage.io.filesystem.format.text.file.DatFile2RecordFilter;
 
+/** Note: This is a temporary measure, the real filter is available in teetime/kieker. */
 /**
  * @author Christian Wulf
  *
@@ -33,19 +48,25 @@ public final class Dir2RecordsFilter extends CompositeStage {
     private ClassNameRegistryRepository classNameRegistryRepository;
 
     /**
-     * Default constructor using a new instance of {@link ClassNameRegistryRepository}
+     * Default constructor using a new instance of {@link ClassNameRegistryRepository}.
      */
     public Dir2RecordsFilter() {
         this(new ClassNameRegistryRepository());
     }
 
+    /**
+     * Constructor for an external class name registry.
+     *
+     * @param classNameRegistryRepository
+     *            a class name registry
+     */
     public Dir2RecordsFilter(final ClassNameRegistryRepository classNameRegistryRepository) {
         this.classNameRegistryRepository = classNameRegistryRepository;
 
-        // FIXME does not yet work with more than one thread due to classNameRegistryRepository:
+        // TODO does not yet work with more than one thread due to classNameRegistryRepository:
         // classNameRegistryRepository is set after the ctor
         // create stages
-        final ClassNameRegistryCreationFilter classNameRegistryCreationFilter = new ClassNameRegistryCreationFilter(
+        final ClassNameRegistryCreationFilter localClassNameRegistryCreationFilter = new ClassNameRegistryCreationFilter(
                 this.classNameRegistryRepository);
         final Directory2FilesFilter directory2FilesFilter = new Directory2FilesFilter(new Comparator<File>() {
 
@@ -77,7 +98,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
                 .addFileExtension(BinaryCompressionMethod.NONE.getFileExtension());
 
         // connect ports by pipes
-        this.connectPorts(classNameRegistryCreationFilter.getOutputPort(), directory2FilesFilter.getInputPort());
+        this.connectPorts(localClassNameRegistryCreationFilter.getOutputPort(), directory2FilesFilter.getInputPort());
         this.connectPorts(directory2FilesFilter.getOutputPort(), fileExtensionSwitch.getInputPort());
 
         this.connectPorts(normalFileOutputPort, datFile2RecordFilter.getInputPort());
@@ -87,7 +108,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
         this.connectPorts(binaryFile2RecordFilter.getOutputPort(), this.recordMerger.getNewInputPort());
 
         // prepare pipeline
-        this.classNameRegistryCreationFilter = classNameRegistryCreationFilter;
+        this.classNameRegistryCreationFilter = localClassNameRegistryCreationFilter;
     }
 
     public AbstractStage getFirstStage() {

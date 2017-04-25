@@ -17,10 +17,21 @@ package org.iobserve.analysis.data;
 
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-public class AddAllocationContextEvent implements AllocationContextEvent {
+/**
+ *
+ * @author unknown
+ *
+ */
+public class AddAllocationContextEvent implements IAllocationContextEvent {
 
     private final ResourceContainer resourceContainer;
 
+    /**
+     * Construct and allocation event.
+     *
+     * @param resourceContainer
+     *            corresponding container to deploy
+     */
     public AddAllocationContextEvent(final ResourceContainer resourceContainer) {
         this.resourceContainer = resourceContainer;
     }

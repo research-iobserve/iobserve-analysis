@@ -17,10 +17,21 @@ package org.iobserve.analysis.data;
 
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-public class RemoveAllocationContextEvent implements AllocationContextEvent {
+/**
+ *
+ * @author unknown
+ *
+ */
+public class RemoveAllocationContextEvent implements IAllocationContextEvent {
 
     private final ResourceContainer resourceContainer;
 
+    /**
+     * Constructor of the event for deallocation.
+     *
+     * @param resourceContainer
+     *            the resource container to be deallocated
+     */
     public RemoveAllocationContextEvent(final ResourceContainer resourceContainer) {
         this.resourceContainer = resourceContainer;
     }

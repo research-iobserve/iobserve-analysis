@@ -18,9 +18,6 @@ package org.iobserve.splitter;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.ITraceRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
@@ -37,7 +34,7 @@ import teetime.framework.OutputPort;
  */
 public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
 
-    private static final Logger LOGGER = LogManager.getLogger(Splitter.class);
+    // private static final Logger LOGGER = LogManager.getLogger(Splitter.class);
 
     private final OutputPort<IMonitoringRecord> adapterOutputPort = this.createOutputPort();
     private final OutputPort<IMonitoringRecord> enterpriseOutputPort = this.createOutputPort();
@@ -61,7 +58,18 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
     private final String webFrontend;
 
     /**
-     * Empty default constructor.
+     * Splitter constructor.
+     *
+     * @param adapter
+     *            name of the adapter node
+     * @param enterprise
+     *            name of the enterprise node
+     * @param store
+     *            name of the store node
+     * @param registry
+     *            name of the registry node
+     * @param webFrontend
+     *            name of the webfrontend node
      */
     public Splitter(final String adapter, final String enterprise, final String store, final String registry,
             final String webFrontend) {

@@ -45,7 +45,7 @@ public class PcmEntity {
     private String name;
     private String id;
     private List<PcmOperationSignature> operationSigs = new ArrayList<>();
-    private Map<String, PcmOperationSignature> operationSigMap = new HashMap<>();
+    private final Map<String, PcmOperationSignature> operationSigMap = new HashMap<>();
     private List<PcmEntityCorrespondent> correspondents = new ArrayList<>();
     private PcmMapping parent;
 
@@ -102,15 +102,25 @@ public class PcmEntity {
     public void setParent(final PcmMapping parent) {
         this.parent = parent;
     }
-    
+
+    /**
+     * initialize operation map.
+     */
     public void initOperationMap() {
-    	for(PcmOperationSignature operation : operationSigs) {
-    		final String operationSig = StringUtils.modifyForOperationSigMatching(operation.getName()).get();
-    		operationSigMap.put(operationSig, operation);
-    	}
+        for (final PcmOperationSignature operation : this.operationSigs) {
+            final String operationSig = StringUtils.modifyForOperationSigMatching(operation.getName()).get();
+            this.operationSigMap.put(operationSig, operation);
+        }
     }
-    
-    public PcmOperationSignature getOperationSig(String operationSig) {
-    	return operationSigMap.get(operationSig);
+
+    /**
+     * Find PCM operation signature.
+     *
+     * @param operationSig
+     *            java signature
+     * @return returns the proper PCM signature or NULL
+     */
+    public PcmOperationSignature getOperationSig(final String operationSig) {
+        return this.operationSigMap.get(operationSig);
     }
 }
