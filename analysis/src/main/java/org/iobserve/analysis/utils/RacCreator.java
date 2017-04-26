@@ -50,7 +50,7 @@ import org.w3c.dom.NodeList;
  * The RacCreator creates a rac file in the context of the provided pcm repository model, monitoring
  * data and system mapping.
  *
- * For the rac to be constructed right it is nessesary that the names of the entities in the
+ * For the rac to be constructed right it is necessary that the names of the entities in the
  * repository model match with the names of the classes called in the monitoring data. Exceptions
  * from this convention have to be explicitly declared in the system mapping like this: Name/Path in
  * monitoring data - Name/Path in repository
@@ -76,15 +76,19 @@ public class RacCreator {
     public static void main(final String[] args) {
         final RacCreator creator = new RacCreator();
 
+        // Setting input paths
         creator.readRepository("rac_creator\\cocome-cloud.repository");
 
         creator.createCorrespondentMapping("rac_creator\\kieker-input.dat");
 
-        creator.readSystemMapping("rac_creator\\kiana_mapping.txt");
+        creator.readModelMapping("rac_creator\\model_mapping.txt");
 
         creator.mapCorrespondentsToEntitys();
 
+        // Setting output paths
         creator.createRac("rac_creator\\mapping.rac");
+
+        creator.createMappedFile("rac_creator\\mapped.txt");
 
         creator.createUnmappedFile("rac_creator\\unmapped.txt");
     }
@@ -118,12 +122,14 @@ public class RacCreator {
 
     public void createCorrespondentMapping(final String filePath) {
         final Map<Integer, Set<List<String>>> localMonitoringData = this.parseMonitoringData(filePath);
+        // Reading the calls with shortcut for BeforeOperationObjectInterfaceEvent, BeforeOperationObjectEvent 
+        // and AfterOperationObjectEvent
         this.createCorrespondents(localMonitoringData, 4);
         this.createCorrespondents(localMonitoringData, 5);
         this.createCorrespondents(localMonitoringData, 6);
     }
 
-    public void readSystemMapping(final String filePath) {
+    public void readModelMapping(final String filePath) {
         try {
             final FileReader reader = new FileReader(filePath);
             final BufferedReader in = new BufferedReader(reader);
@@ -167,6 +173,25 @@ public class RacCreator {
         final PcmMapping mapping = new PcmMapping();
         mapping.setEntities(new ArrayList<>(this.entityMapping.values()));
         JAXB.marshal(mapping, filePath);
+    }
+
+    public void createMappedFile(final String filePath) {
+        Set<String> methodCorrespondentPairs = new HashSet<>();
+        for (PcmEntity entity : entityMapping.values()) {
+            for (PcmEntityCorrespondent correspondent : entity.getCorrespondents()) {
+                methodCorrespondentPairs.addAll(findMutualMethodAndCorrPairs(entity, correspondent));
+            }
+        }
+
+        try {
+            PrintWriter writer = new PrintWriter(filePath, "UTF-8");
+            for (String methodCorrespondentPair : methodCorrespondentPairs) {
+                writer.println(methodCorrespondentPair);
+            }
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void createUnmappedFile(final String filePath) {
@@ -393,5 +418,21 @@ public class RacCreator {
         }
 
         correspondent.getMethods().add(method);
+    }
+
+    private Set<String> findMutualMethodAndCorrPairs(final PcmEntity entity, final PcmEntityCorrespondent correspondent) {
+        Set<String> foundMutualMethods = new HashSet<>();
+
+        for (PcmOperationSignature sig : entity.getOperationSigs()) {
+            for (PcmCorrespondentMethod met : correspondent.getMethods()) {
+                if (sig.getName().compareTo(met.getName()) == 0 && sig.getSeffName().compareTo(met.getName()) == 0) {
+                    String correspondentPath = correspondent.getPackageName() + "." + correspondent.getUnitName();
+                    String signature = met.getVisibilityModifier() + " " + met.getReturnType() + " " + correspondentPath + "." + met.getName() + "(" + met.getParameters() + ")" + ";" + correspondentPath;
+                    foundMutualMethods.add(signature);
+                }
+            }
+        }
+
+        return foundMutualMethods;
     }
 }
