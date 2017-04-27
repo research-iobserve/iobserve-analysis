@@ -191,4 +191,10 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 		return true;
 	}
 
+	@Override
+	public String[] getValueNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

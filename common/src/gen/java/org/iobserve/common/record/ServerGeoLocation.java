@@ -217,5 +217,11 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	public final String getAddress() {
 		return this.address;
 	}
+
+	@Override
+	public String[] getValueNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

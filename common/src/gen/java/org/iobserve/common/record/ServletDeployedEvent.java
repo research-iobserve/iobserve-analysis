@@ -191,4 +191,10 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 		return true;
 	}
 
+	@Override
+	public String[] getValueNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

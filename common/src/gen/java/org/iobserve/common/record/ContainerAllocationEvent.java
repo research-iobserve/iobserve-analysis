@@ -168,4 +168,10 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 		return true;
 	}
 
+	@Override
+	public String[] getValueNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

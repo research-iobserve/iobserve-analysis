@@ -225,5 +225,11 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	public final String getRequestURI() {
 		return this.requestURI;
 	}
+
+	@Override
+	public String[] getValueNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

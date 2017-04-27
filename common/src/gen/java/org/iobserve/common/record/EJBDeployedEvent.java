@@ -191,4 +191,10 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		return true;
 	}
 
+	@Override
+	public String[] getValueNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

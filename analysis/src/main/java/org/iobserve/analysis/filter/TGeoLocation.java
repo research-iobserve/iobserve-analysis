@@ -31,7 +31,8 @@ public class TGeoLocation extends AbstractConsumerStage<ServerGeoLocation> {
 			if (resContainer.getEntityName().equals(element.getHostname()) && resContainer instanceof ResourceContainerPrivacy) {
 				
 				ResourceContainerPrivacy resContainerPrivacy = (ResourceContainerPrivacy) resContainer;
-				if (resContainerPrivacy.getGeolocation() != element.getCountryCode()) {
+				int geolocation = resContainerPrivacy.getGeolocation();
+				if (geolocation != element.getCountryCode()) {
 					resContainerPrivacy.setGeolocation(element.getCountryCode());
 					makeSnapshot = true;
 					SnapshotBuilder.setSnapshotFlag();
