@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-mainClassName='org.iobserve.generic.analysis.cli.AnalysisMain'
+mainClassName='org.iobserve.analysis.test.cli.AnalysisMain'
 
 dependencies {
 	compile project(":analysis")
