@@ -41,12 +41,8 @@ public class UniqueFilter extends AbstractConsumerStage<String> {
     @Override
     protected void execute(final String element) throws Exception {
         if (!this.stringCollection.contains(element)) {
-            System.out.println("new " + element);
-
             this.stringCollection.add(element);
             this.outputPort.send(element);
-        } else {
-            System.out.println("duplicate " + element);
         }
     }
 }
