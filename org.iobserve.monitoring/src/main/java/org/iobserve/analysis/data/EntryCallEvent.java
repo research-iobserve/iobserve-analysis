@@ -248,5 +248,11 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	
 	public final String getHostname() {
 		return this.hostname;
-	}	
+	}
+
+    @Override
+    public String[] getValueNames() {
+        // TODO Auto-generated method stub
+        return null;
+    }	
 }

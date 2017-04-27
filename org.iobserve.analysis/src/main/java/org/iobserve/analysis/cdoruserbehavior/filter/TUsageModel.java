@@ -131,8 +131,7 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
 
             if (optPreviousNodes.isPresent()) {
                 optPreviousNodes.get().keySet().stream().map(previousNode -> new EntryCallEdge(previousNode,
-                        entryCallNode, optPreviousNodes.get().get(previousNode))).forEach(behaviorModel::addEdge);
-                System.out.println("Node Created" + entryCallNode.getSignature());
+                        entryCallNode, optPreviousNodes.get().get(previousNode))).forEach(behaviorModel::addEdge);                
             }
             endNodes.put(entryCallNode, 1.0);
             return this.traverseAction(behaviorModel, Optional.of(endNodes), action.getSuccessor());

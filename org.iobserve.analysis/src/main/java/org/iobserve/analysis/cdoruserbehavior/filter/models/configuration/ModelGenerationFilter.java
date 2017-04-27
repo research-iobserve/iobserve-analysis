@@ -59,12 +59,12 @@ public class ModelGenerationFilter {
      * @return true if signature is allowed, false else
      */
     public boolean isAllowed(String signature) {
-        boolean isAllowed = true;
+        boolean isAllowed = this.blackListMode;
 
         for (final String filterRule : this.filterList) {
-
-            final boolean isMatch = signature.matches(filterRule);
-            isAllowed = isAllowed && this.blackListMode ? !isMatch : isMatch;
+            
+            final boolean isMatch = signature.matches(filterRule);        
+            isAllowed = blackListMode ? !isMatch && isAllowed : isAllowed || isMatch;
         }
         return isAllowed;
     }

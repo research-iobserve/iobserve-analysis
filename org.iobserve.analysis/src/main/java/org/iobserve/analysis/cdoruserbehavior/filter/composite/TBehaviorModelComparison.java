@@ -75,7 +75,7 @@ public class TBehaviorModelComparison extends CompositeStage {
         final TUsageModel tUsageModel = new TUsageModel();
         final TIObserveUBM tIObserveUBM = new TIObserveUBM();
 
-        // this.connectPorts(this.distributor.getNewOutputPort(), tBehaviorModel.getInputPort());
+        this.connectPorts(this.distributor.getNewOutputPort(), tBehaviorModel.getInputPort());
         this.connectPorts(this.distributor.getNewOutputPort(), tEntryEventSequence.getInputPort());
         this.connectPorts(tEntryEventSequence.getOutputPort(), tUsageModel.getInputPort());
         this.connectPorts(tUsageModel.getOutputPort(), tIObserveUBM.getInputPort());

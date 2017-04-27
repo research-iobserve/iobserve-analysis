@@ -102,9 +102,13 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // systemModelProvider,
         // resourceEnvironmentModelProvider);
 
-        final ModelGenerationFilter modelGenerationFilter = new ModelGenerationFilter(true);
+        ModelGenerationFilter modelGenerationFilter;
+        modelGenerationFilter= new ModelGenerationFilter(true);
         modelGenerationFilter.addFilterRule("(.*jpetstore\\.images).*\\)");
         modelGenerationFilter.addFilterRule("(.*jpetstore\\.css).*\\)");
+        
+        modelGenerationFilter= new ModelGenerationFilter(false);        
+        modelGenerationFilter.addFilterRule(".*org\\.cocome\\.cloud\\.logic\\.webservice\\.cashdeskline\\.cashdesk\\.CashDesk\\.\\w.*");
 
         final int expectedUserGroups = 5; // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
         final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,

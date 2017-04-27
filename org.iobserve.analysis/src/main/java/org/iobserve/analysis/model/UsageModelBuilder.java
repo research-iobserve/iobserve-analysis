@@ -18,7 +18,6 @@ package org.iobserve.analysis.model;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
-import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationSignature;
@@ -40,6 +39,7 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
  * UsageModelBuilder is able to build a {@link UsageModel}.
  *
  * @author Robert Heinrich
+ * @author Nicolas Boltz
  * @author Alessandro Giusa
  *
  */
@@ -222,28 +222,28 @@ public final class UsageModelBuilder {
      *
      * @param repositoryModelProvider
      *            provider for a repository model
-     * @param operationSignature
-     *            operation signature of the EntryLevelSystemCall
+     * @param operationID
+     *            operation id of the EntryLevelSystemCall
      * @return null, if the creation failed, the instance if not.
      */
-    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryModelProvider repositoryModelProvider,
-            final String operationSignature) {
-        final OperationSignature opSig = repositoryModelProvider.getOperationSignature(operationSignature);
-        final BasicComponent bCmp = repositoryModelProvider.getBasicComponent(operationSignature);
+    public static EntryLevelSystemCall createEntryLevelSystemCall(
+    		final RepositoryModelProvider repositoryModelProvider, final String operationID) {
+    	
+    	final OperationSignature opSig = repositoryModelProvider.getOperationSignature(operationID);
         final EntryLevelSystemCall eSysCall;
 
-        if ((opSig != null) && (bCmp != null)) {
+        if (opSig != null) {
             eSysCall = UsagemodelFactory.eINSTANCE.createEntryLevelSystemCall();
             eSysCall.setEntityName(opSig.getEntityName());
             eSysCall.setOperationSignature__EntryLevelSystemCall(opSig);
 
             final OperationInterface opInf = opSig.getInterface__OperationSignature();
-            final OperationProvidedRole providedRole = repositoryModelProvider.getOperationProvidedRole(opInf, bCmp);
+            final OperationProvidedRole providedRole = repositoryModelProvider.getOperationProvidedRole(opInf);
             eSysCall.setProvidedRole_EntryLevelSystemCall(providedRole);
         } else {
             eSysCall = null;
-            System.err.printf("%s caused Nullpointer since OperationSignature=% or BasicComponent=%s is null?!",
-                    operationSignature, String.valueOf(opSig), String.valueOf(bCmp));
+            System.err.printf("%s caused Nullpointer since OperationSignature=% is null?!",
+            		operationID, String.valueOf(opSig));
         }
         return eSysCall;
     }
@@ -257,10 +257,10 @@ public final class UsageModelBuilder {
      *            correspondent containing operation signature
      * @return null, if the creation failed, the instance if not.
      */
-    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryModelProvider repositoryModelProvider,
-            final Correspondent correspondent) {
+    public static EntryLevelSystemCall createEntryLevelSystemCall(
+    		final RepositoryModelProvider repositoryModelProvider, final Correspondent correspondent) {
         return UsageModelBuilder.createEntryLevelSystemCall(repositoryModelProvider,
-                correspondent.getPcmOperationName());
+                correspondent.getPcmOperationId());
     }
 
     /**

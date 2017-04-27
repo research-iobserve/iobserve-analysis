@@ -8,7 +8,7 @@ import kieker.common.util.registry.IRegistry;
 /**
  * @author iObserve
  * 
- * @since 1.0
+ * @since 1.10
  */
 public final class ServerGeoLocationFactory implements IRecordFactory<ServerGeoLocation> {
 	

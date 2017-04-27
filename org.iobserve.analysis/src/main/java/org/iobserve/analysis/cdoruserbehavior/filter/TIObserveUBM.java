@@ -25,7 +25,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import org.eclipse.emf.ecore.xml.type.internal.RegEx;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModel;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallEdge;
@@ -176,6 +179,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
             final ObjectNode json = this.objectMapper.createObjectNode();
             json.put("id", 0);
             json.put("name", entryCallNode.getSignature());
+            System.out.println("Node Created: " + entryCallNode.getSignature());           
 
             final ObjectNode extras = this.objectMapper.createObjectNode();
             for (final CallInformation callInformation : entryCallNode.getEntryCallInformation()) {
