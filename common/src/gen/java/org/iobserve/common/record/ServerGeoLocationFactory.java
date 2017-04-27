@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project
+ * Copyright 2017 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,23 +21,23 @@ import kieker.common.record.factory.IRecordFactory;
 import kieker.common.util.registry.IRegistry;
 
 /**
- * @author Reiner Jung
+ * @author Generic Kieker
  * 
- * @since 1.0
+ * @since 1.13
  */
-public final class ServletTraceHelperFactory implements IRecordFactory<ServletTraceHelper> {
+public final class ServerGeoLocationFactory implements IRecordFactory<ServerGeoLocation> {
 	
 	@Override
-	public ServletTraceHelper create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new ServletTraceHelper(buffer, stringRegistry);
+	public ServerGeoLocation create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
+		return new ServerGeoLocation(buffer, stringRegistry);
 	}
 	
 	@Override
-	public ServletTraceHelper create(final Object[] values) {
-		return new ServletTraceHelper(values);
+	public ServerGeoLocation create(final Object[] values) {
+		return new ServerGeoLocation(values);
 	}
 	
 	public int getRecordSizeInBytes() {
-		return ServletTraceHelper.SIZE;
+		return ServerGeoLocation.SIZE;
 	}
 }

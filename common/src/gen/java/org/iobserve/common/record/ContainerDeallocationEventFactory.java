@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project
+ * Copyright 2017 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,19 +25,19 @@ import kieker.common.util.registry.IRegistry;
  * 
  * @since 1.13
  */
-public final class EJBDeployedEventFactory implements IRecordFactory<EJBDeployedEvent> {
+public final class ContainerDeallocationEventFactory implements IRecordFactory<ContainerDeallocationEvent> {
 	
 	@Override
-	public EJBDeployedEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new EJBDeployedEvent(buffer, stringRegistry);
+	public ContainerDeallocationEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
+		return new ContainerDeallocationEvent(buffer, stringRegistry);
 	}
 	
 	@Override
-	public EJBDeployedEvent create(final Object[] values) {
-		return new EJBDeployedEvent(values);
+	public ContainerDeallocationEvent create(final Object[] values) {
+		return new ContainerDeallocationEvent(values);
 	}
 	
 	public int getRecordSizeInBytes() {
-		return EJBDeployedEvent.SIZE;
+		return ContainerDeallocationEvent.SIZE;
 	}
 }

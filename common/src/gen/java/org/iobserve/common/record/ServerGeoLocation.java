@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project
+ * Copyright 2017 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@ import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
-
 import kieker.common.record.flow.AbstractEvent;
+import kieker.common.util.registry.IRegistry;
+
 import org.iobserve.common.record.GeoLocation;
 
 /**
@@ -31,29 +30,41 @@ import org.iobserve.common.record.GeoLocation;
  * @since 1.13
  */
 public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
+	private static final long serialVersionUID = -9109740651531232541L;
+
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_SHORT // GeoLocation.countryCode
 			 + TYPE_SIZE_STRING // ServerGeoLocation.hostname
 			 + TYPE_SIZE_STRING // ServerGeoLocation.address
 	;
-	private static final long serialVersionUID = -9109740651531232541L;
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // AbstractEvent.timestamp
+		long.class, // IEventRecord.timestamp
 		short.class, // GeoLocation.countryCode
 		String.class, // ServerGeoLocation.hostname
 		String.class, // ServerGeoLocation.address
 	};
 	
-	/* user-defined constants */
-	/* default constants */
+	
+	/** default constants. */
 	public static final short COUNTRY_CODE = 49;
-	/* property declarations */
-	private final short countryCode;
-	private final String hostname;
-	private final String address;
-
+	public static final String HOSTNAME = "";
+	public static final String ADDRESS = "";
+	
+	/** property name array. */
+	private static final String[] PROPERTY_NAMES = {
+		"timestamp",
+		"countryCode",
+		"hostname",
+		"address",
+	};
+	
+	/** property declarations. */
+	private short countryCode;
+	private String hostname;
+	private String address;
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
@@ -86,7 +97,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		this.hostname = (String) values[2];
 		this.address = (String) values[3];
 	}
-	
+
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
 	 * 
@@ -103,10 +114,12 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	}
 
 	/**
-	 * This constructor converts the given array into a record.
+	 * This constructor converts the given buffer into a record.
 	 * 
 	 * @param buffer
-	 *            The bytes for the record.
+	 *            The bytes for the record
+	 * @param stringRegistry
+	 *            The string registry for deserialization
 	 * 
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
@@ -117,7 +130,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		this.hostname = stringRegistry.get(buffer.getInt());
 		this.address = stringRegistry.get(buffer.getInt());
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -130,7 +143,6 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 			this.getAddress()
 		};
 	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -139,7 +151,6 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		stringRegistry.get(this.getHostname());
 		stringRegistry.get(this.getAddress());
 	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -150,7 +161,6 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		buffer.putInt(stringRegistry.get(this.getHostname()));
 		buffer.putInt(stringRegistry.get(this.getAddress()));
 	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -158,7 +168,15 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	public Class<?>[] getValueTypes() {
 		return TYPES; // NOPMD
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String[] getValueNames() {
+		return PROPERTY_NAMES; // NOPMD
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -166,6 +184,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	public int getSize() {
 		return SIZE;
 	}
+
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -176,7 +195,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	public void initFromArray(final Object[] values) {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -187,7 +206,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -205,17 +224,28 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		if (!this.getAddress().equals(castedRecord.getAddress())) return false;
 		return true;
 	}
-
+	
 	public final short getCountryCode() {
 		return this.countryCode;
+	}
+	
+	public final void setCountryCode(short countryCode) {
+		this.countryCode = countryCode;
 	}
 	
 	public final String getHostname() {
 		return this.hostname;
 	}
 	
+	public final void setHostname(String hostname) {
+		this.hostname = hostname;
+	}
+	
 	public final String getAddress() {
 		return this.address;
 	}
 	
+	public final void setAddress(String address) {
+		this.address = address;
+	}
 }

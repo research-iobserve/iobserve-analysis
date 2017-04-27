@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project
+ * Copyright 2017 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,19 +25,19 @@ import kieker.common.util.registry.IRegistry;
  * 
  * @since 1.13
  */
-public final class ContainerAllocationEventFactory implements IRecordFactory<ContainerAllocationEvent> {
+public final class ServletDeployedEventFactory implements IRecordFactory<ServletDeployedEvent> {
 	
 	@Override
-	public ContainerAllocationEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new ContainerAllocationEvent(buffer, stringRegistry);
+	public ServletDeployedEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
+		return new ServletDeployedEvent(buffer, stringRegistry);
 	}
 	
 	@Override
-	public ContainerAllocationEvent create(final Object[] values) {
-		return new ContainerAllocationEvent(values);
+	public ServletDeployedEvent create(final Object[] values) {
+		return new ServletDeployedEvent(values);
 	}
 	
 	public int getRecordSizeInBytes() {
-		return ContainerAllocationEvent.SIZE;
+		return ServletDeployedEvent.SIZE;
 	}
 }

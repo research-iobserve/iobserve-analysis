@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project
+ * Copyright 2017 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,9 @@ package org.iobserve.common.record;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
-
 import kieker.common.record.flow.AbstractEvent;
+import kieker.common.util.registry.IRegistry;
+
 
 /**
  * @author Generic Kieker
@@ -30,15 +29,20 @@ import kieker.common.record.flow.AbstractEvent;
  */
 public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	private static final long serialVersionUID = 5051017441001857971L;
-	
-	
-	/* user-defined constants */
-	/* default constants */
-	/* property declarations */
-	private final String serivce;
-	private final String context;
-	private final String deploymentId;
 
+	
+	
+	/** default constants. */
+	public static final String SERIVCE = "";
+	public static final String CONTEXT = "";
+	public static final String DEPLOYMENT_ID = "";
+	
+		
+	/** property declarations. */
+	private String serivce;
+	private String context;
+	private String deploymentId;
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
@@ -58,7 +62,7 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 		this.deploymentId = deploymentId == null?"":deploymentId;
 	}
 
-	
+
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
 	 * 
@@ -75,10 +79,12 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	}
 
 	/**
-	 * This constructor converts the given array into a record.
+	 * This constructor converts the given buffer into a record.
 	 * 
 	 * @param buffer
-	 *            The bytes for the record.
+	 *            The bytes for the record
+	 * @param stringRegistry
+	 *            The string registry for deserialization
 	 * 
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
@@ -89,6 +95,7 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 		this.context = stringRegistry.get(buffer.getInt());
 		this.deploymentId = stringRegistry.get(buffer.getInt());
 	}
+	
 
 	/**
 	 * {@inheritDoc}
@@ -100,7 +107,7 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	public void initFromArray(final Object[] values) {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -111,7 +118,7 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -129,17 +136,28 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		return true;
 	}
-
+	
 	public final String getSerivce() {
 		return this.serivce;
+	}
+	
+	public final void setSerivce(String serivce) {
+		this.serivce = serivce;
 	}
 	
 	public final String getContext() {
 		return this.context;
 	}
 	
+	public final void setContext(String context) {
+		this.context = context;
+	}
+	
 	public final String getDeploymentId() {
 		return this.deploymentId;
 	}
 	
+	public final void setDeploymentId(String deploymentId) {
+		this.deploymentId = deploymentId;
+	}
 }
