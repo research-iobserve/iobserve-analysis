@@ -12,13 +12,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
+package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
 
 /**
  * strategy to find the representative of a list of callinformations for jPetstore

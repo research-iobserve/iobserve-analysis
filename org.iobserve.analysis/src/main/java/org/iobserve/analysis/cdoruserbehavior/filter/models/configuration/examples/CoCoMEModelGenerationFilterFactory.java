@@ -13,22 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
+package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples;
+
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IModelGenerationFilterFactory;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 
 /**
- * factory for creating a filter for JPetStore call events
+ * factory class for creating a filter for CoCoME data
  *
  * @author christoph
  *
  */
-public class JPetStoreModelGenerationFilterFactory implements IModelGenerationFilterFactory {
+public class CoCoMEModelGenerationFilterFactory implements IModelGenerationFilterFactory {
 
     @Override
     public ModelGenerationFilter createFilter() {
-        ModelGenerationFilter modelGenerationFilter;
-        modelGenerationFilter = new ModelGenerationFilter(true);
-        modelGenerationFilter.addFilterRule("(.*jpetstore\\.images).*\\)");
-        modelGenerationFilter.addFilterRule("(.*jpetstore\\.css).*\\)");
+        final ModelGenerationFilter modelGenerationFilter = new ModelGenerationFilter(false);
+        modelGenerationFilter.addFilterRule(
+                ".*org\\.cocome\\.cloud\\.logic\\.webservice\\.cashdeskline\\.cashdesk\\.CashDesk\\.\\w.*");
 
         return modelGenerationFilter;
     }

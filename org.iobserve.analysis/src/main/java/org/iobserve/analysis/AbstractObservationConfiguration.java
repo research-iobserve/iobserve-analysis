@@ -19,11 +19,11 @@ import java.io.IOException;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelComparison;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.CoCoMEModelGenerationFilterFactory;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.JPetstoreStrategy;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.XMeansClustering;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.CoCoMEModelGenerationFilterFactory;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetstoreStrategy;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
