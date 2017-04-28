@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelComparison;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.CoCoMEModelGenerationFilterFactory;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.JPetstoreStrategy;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
@@ -102,13 +103,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // systemModelProvider,
         // resourceEnvironmentModelProvider);
 
-        ModelGenerationFilter modelGenerationFilter;
-        modelGenerationFilter= new ModelGenerationFilter(true);
-        modelGenerationFilter.addFilterRule("(.*jpetstore\\.images).*\\)");
-        modelGenerationFilter.addFilterRule("(.*jpetstore\\.css).*\\)");
-        
-        modelGenerationFilter= new ModelGenerationFilter(false);        
-        modelGenerationFilter.addFilterRule(".*org\\.cocome\\.cloud\\.logic\\.webservice\\.cashdeskline\\.cashdesk\\.CashDesk\\.\\w.*");
+        final ModelGenerationFilter modelGenerationFilter = new CoCoMEModelGenerationFilterFactory().createFilter();
 
         final int expectedUserGroups = 5; // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
         final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,

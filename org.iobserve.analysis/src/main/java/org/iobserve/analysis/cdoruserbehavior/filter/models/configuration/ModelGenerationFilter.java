@@ -18,7 +18,6 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 /**
@@ -36,7 +35,7 @@ public class ModelGenerationFilter {
      * @param blackListMode
      *            blackListMode
      */
-    public ModelGenerationFilter(boolean blackListMode) {
+    public ModelGenerationFilter(final boolean blackListMode) {
         this.filterList = new ArrayList<>();
         this.blackListMode = blackListMode;
     }
@@ -61,13 +60,13 @@ public class ModelGenerationFilter {
      *            signature
      * @return true if signature is allowed, false else
      */
-    public boolean isAllowed(String signature) {
+    public boolean isAllowed(final String signature) {
         boolean isAllowed = this.blackListMode;
 
         for (final Pattern filterRule : this.filterList) {
-            
-            final boolean isMatch = filterRule.matcher(signature).matches();        
-            isAllowed = blackListMode ? !isMatch && isAllowed : isAllowed || isMatch;
+
+            final boolean isMatch = filterRule.matcher(signature).matches();
+            isAllowed = this.blackListMode ? !isMatch && isAllowed : isAllowed || isMatch;
         }
         return isAllowed;
     }
@@ -79,7 +78,7 @@ public class ModelGenerationFilter {
      *            regex matching signatures
      * @return true if regex could be added, false else
      */
-    public boolean addFilterRule(String regex) {
+    public boolean addFilterRule(final String regex) {
         return this.filterList.add(Pattern.compile(regex));
     }
 
