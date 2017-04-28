@@ -18,7 +18,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 /**
  * interface for factories creating {@link ModelGenerationFilter}
  *
- * @author christoph
+ * @author Christoph Dornieden
  *
  */
 public interface IModelGenerationFilterFactory {

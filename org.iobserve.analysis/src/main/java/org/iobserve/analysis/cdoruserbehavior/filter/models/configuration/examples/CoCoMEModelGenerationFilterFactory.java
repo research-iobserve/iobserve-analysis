@@ -21,7 +21,7 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelG
 /**
  * factory class for creating a filter for CoCoME data
  *
- * @author christoph
+ * @author Christoph Dornieden
  *
  */
 public class CoCoMEModelGenerationFilterFactory implements IModelGenerationFilterFactory {

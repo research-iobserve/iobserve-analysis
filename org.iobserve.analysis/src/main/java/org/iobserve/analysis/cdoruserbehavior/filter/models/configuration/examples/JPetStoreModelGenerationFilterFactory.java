@@ -21,7 +21,7 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelG
 /**
  * factory for creating a filter for JPetStore call events
  *
- * @author christoph
+ * @author Christoph Dornieden
  *
  */
 public class JPetStoreModelGenerationFilterFactory implements IModelGenerationFilterFactory {
