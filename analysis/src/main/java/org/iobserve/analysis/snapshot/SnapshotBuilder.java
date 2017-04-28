@@ -62,7 +62,7 @@ public class SnapshotBuilder extends AbstractStage {
 		}
 		String fileName = modelFile.getName();
 
-		URI reModelUri = URI.createFileURI(this.snapshotURI.path() + File.separator + fileName);
+		URI reModelUri = URI.createFileURI(this.snapshotURI.toFileString() + File.separator + fileName);
 		modelProvider.save(reModelUri);
 	}
 

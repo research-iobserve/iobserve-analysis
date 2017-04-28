@@ -101,7 +101,9 @@ public final class AnalysisMain {
 								.getResourceEnvironmentModelProvider();
 						final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
 						final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
-						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(URI.createURI(commandLine.getOptionValue("s")), modelProviderPlatform);
+						
+						String snapshotPath = commandLine.getOptionValue("s");
+						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(URI.createFileURI(snapshotPath), modelProviderPlatform);
 
 						final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel,
 								usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
