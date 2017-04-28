@@ -73,5 +73,10 @@ public class SnapshotBuilder extends AbstractStage {
 	{
 		return super.createInputPort();
 	}
+	
+	public OutputPort<URI> getOutputPort()
+	{
+		return this.outputPort;
+	}
 
 }

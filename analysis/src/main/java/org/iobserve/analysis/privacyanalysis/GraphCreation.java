@@ -49,7 +49,13 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 	private PrivacyAnalysisModel graph;
 
 	
-	public GraphCreation(InitializeModelProviders modelProviders) {
+	public GraphCreation() {
+	}
+	
+	private void init(URI initialModelLocation)
+	{
+		this.modelProviders = new InitializeModelProviders(new File(initialModelLocation.toFileString()));
+		
 		this.assemblyContexts = new HashMap<String, AssemblyContext>();
 		this.assemblyContextPrivacyLvl = new HashMap<String, DataPrivacyLvl>();
 		this.assemblyConnectors = new HashMap<String, AssemblyConnectorPrivacy>();
@@ -59,6 +65,8 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 
 	@Override
 	protected void execute(URI element) throws Exception {
+		this.init(element);
+		
 		this.assemblyContexts.clear();
 		this.assemblyContextPrivacyLvl.clear();
 		this.resourceContainers.clear();
