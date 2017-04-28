@@ -19,14 +19,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
-import org.iobserve.analysis.utils.ExecutionTimeLogger;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.FileConverter;
 
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
@@ -38,12 +34,13 @@ import teetime.framework.Execution;
  */
 public final class AnalysisMain {
 
-    /**
-     * Default constructor.
-     */
-    private AnalysisMain() {
-        // do nothing here
-    }
+    @Parameter(names = { "-i",
+            "--input" }, required = true, description = "Directory containing monitoring data.", converter = FileConverter.class)
+    private File monitoringDataDirectory;
+
+    @Parameter(names = { "-o",
+            "--output" }, required = true, description = "Output directory.", converter = FileConverter.class)
+    private File outputLocation;
 
     /**
      * Main function.
@@ -52,92 +49,41 @@ public final class AnalysisMain {
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        final CommandLineParser parser = new DefaultParser();
+        final AnalysisMain main = new AnalysisMain();
+        final JCommander commander = new JCommander(main);
         try {
-            CommandLine commandLine = parser.parse(AnalysisMain.createHelpOptions(), args);
+            commander.parse(args);
+            main.execute(commander);
+        } catch (final ParameterException e) {
+            System.err.println(e.getLocalizedMessage());
+            commander.usage();
+        }
+    }
 
-            if (commandLine.hasOption("h")) {
-                final HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("iobserve-analysis", AnalysisMain.createOptions());
+    private void execute(final JCommander commander) {
+        if (this.outputLocation.isDirectory()) {
+            if (this.monitoringDataDirectory.isDirectory()) {
+                final Collection<File> monitoringDataDirectories = new ArrayList<>();
+                monitoringDataDirectories.add(this.monitoringDataDirectory);
+
+                final Configuration configuration = new ObservationConfiguration(monitoringDataDirectories,
+                        this.outputLocation);
+
+                System.out.println("Analysis configuration");
+                final Execution<Configuration> analysis = new Execution<>(configuration);
+                System.out.println("Analysis start");
+                analysis.executeBlocking();
+                System.out.println("Anaylsis complete");
             } else {
-                commandLine = parser.parse(AnalysisMain.createOptions(), args);
-
-                /** process parameter. */
-                final File monitoringDataDirectory = new File(commandLine.getOptionValue("i"));
-                final File outputLocation = new File(commandLine.getOptionValue("o"));
-
-                if (outputLocation.isDirectory()) {
-                    if (monitoringDataDirectory.isDirectory()) {
-                        /** create and run application */
-                        final Collection<File> monitoringDataDirectories = new ArrayList<>();
-                        AnalysisMain.findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
-
-                        final Configuration configuration = new ObservationConfiguration(monitoringDataDirectories,
-                                outputLocation);
-
-                        System.out.println("Analysis configuration");
-                        final Execution<Configuration> analysis = new Execution<>(configuration);
-                        System.out.println("Analysis start");
-                        analysis.executeBlocking();
-                        System.out.println("Anaylsis complete");
-                        ExecutionTimeLogger.getInstance().exportAsCsv();
-                    } else {
-                        System.err.println(
-                                "CLI error: Input path " + monitoringDataDirectory.getName() + " is not a directory.");
-                    }
-                } else {
-                    System.err.println("CLI error: Output path " + outputLocation.getName() + " is not a directory.");
-                }
+                System.err.println(
+                        "CLI error: Input path " + this.monitoringDataDirectory.getName() + " is not a directory.");
+                commander.usage();
             }
-        } catch (final ParseException exp) {
-            System.err.println("CLI error: " + exp.getMessage());
-            final HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("iobserve-analysis", AnalysisMain.createOptions());
+        } else {
+            System.err.println("CLI error: Output path " + this.outputLocation.getName() + " is not a directory.");
+            commander.usage();
         }
+
     }
 
-    private static void findDirectories(final File[] listFiles, final Collection<File> monitoringDataDirectories) {
-        for (final File file : listFiles) {
-            if (file.isDirectory()) {
-                monitoringDataDirectories.add(file);
-                AnalysisMain.findDirectories(file.listFiles(), monitoringDataDirectories);
-            }
-        }
-    }
-
-    /**
-     * Create the command line parameter setup.
-     *
-     * @return options for the command line parser
-     */
-    private static Options createOptions() {
-        final Options options = new Options();
-
-        options.addOption(Option.builder("i").required(true).longOpt("input").hasArg()
-                .desc("a Kieker logfile directory").build());
-        options.addOption(
-                Option.builder("o").required(true).longOpt("output").hasArg().desc("the output directory").build());
-        /** help */
-        options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
-
-        return options;
-    }
-
-    /**
-     * Create a command line setup with only the help option.
-     *
-     * @return returns simplified options
-     */
-    private static Options createHelpOptions() {
-        final Options options = new Options();
-
-        options.addOption(Option.builder("i").required(false).longOpt("input").hasArg()
-                .desc("a Kieker logfile directory").build());
-        options.addOption(
-                Option.builder("o").required(false).longOpt("output").hasArg().desc("the output directory").build());
-        /** help */
-        options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
-
-        return options;
-    }
 }

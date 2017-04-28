@@ -18,8 +18,6 @@ package org.iobserve.analysis.test.cli;
 import java.io.File;
 import java.util.Collection;
 
-import org.iobserve.analysis.filter.RecordSwitch;
-import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
 import org.iobserve.analysis.filter.writer.DataDumpStage;
 
@@ -34,15 +32,6 @@ import teetime.stage.className.ClassNameRegistryRepository;
 public class ObservationConfiguration extends Configuration {
 
     /**
-     * record switch filter. Is required to be global so we can cheat and get measurements from the
-     * filter.
-     */
-    protected final RecordSwitch recordSwitch;
-
-    private final InitialElementProducer<File> files;
-    private final Dir2RecordsFilter reader;
-
-    /**
      * Create a configuration with a ASCII file reader.
      *
      * @param directories
@@ -53,23 +42,16 @@ public class ObservationConfiguration extends Configuration {
     public ObservationConfiguration(final Collection<File> directories, final File dataLocation) {
 
         /** configure filter. */
-        this.files = new InitialElementProducer<>(directories);
-        this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
-        this.recordSwitch = new RecordSwitch();
-
-        final TEntryCall tEntryCall = new TEntryCall();
+        final InitialElementProducer<File> files = new InitialElementProducer<>(directories);
+        final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
+        final RecordTypeFilter filter = new RecordTypeFilter();
 
         final DataDumpStage dumpStage = new DataDumpStage(dataLocation.getAbsolutePath());
 
         /** connections. */
-        this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
-        this.connectPorts(this.reader.getOutputPort(), this.recordSwitch.getInputPort());
-        this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
-        this.connectPorts(tEntryCall.getOutputPort(), dumpStage.getInputPort());
-    }
-
-    public RecordSwitch getRecordSwitch() {
-        return this.recordSwitch;
+        this.connectPorts(files.getOutputPort(), reader.getInputPort());
+        this.connectPorts(reader.getOutputPort(), filter.getInputPort());
+        this.connectPorts(filter.getOutputPort(), dumpStage.getInputPort());
     }
 
 }
