@@ -121,7 +121,7 @@ public class PcmUsageModelBuilder {
                     .get(callBranchModel.getRootBranch().getBranchId()));
             usageModel.getUsageScenario_UsageModel().add(usageScenario);
         }
-        
+
         return usageModel;
     }
 
@@ -191,14 +191,13 @@ public class PcmUsageModelBuilder {
             // Element is a entryLevelSystemCall
             if (branchElement.getClass().equals(CallElement.class)) {
                 EntryLevelSystemCall eSysCall = null;
-                
-                
-              //Workaround TODO
+
+                // Workaround TODO
                 final String operationSignature = branchElement.getOperationSignature().replaceAll("\\(.*\\)", "()");
-                final String[] operationSplit = operationSignature.split(" ");               
+                final String[] operationSplit = operationSignature.split(" ");
 
                 final Optional<Correspondent> optionCorrespondent = this.correspondenceModel
-                        .getCorrespondent(branchElement.getClassSignature(),operationSplit[operationSplit.length-1]);
+                        .getCorrespondent(branchElement.getClassSignature(), operationSplit[operationSplit.length - 1]);
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
                     eSysCall = UsageModelBuilder.createEntryLevelSystemCall(this.repositoryModelProvider,

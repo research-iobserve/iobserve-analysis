@@ -25,10 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import org.eclipse.emf.ecore.xml.type.internal.RegEx;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModel;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallEdge;
@@ -66,7 +63,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
     }
 
     @Override
-    protected void execute(BehaviorModel model) {
+    protected void execute(final BehaviorModel model) {
         this.nodeMap.clear();
         final long modelId = this.createGraph(this.modelName);
         this.createNodes(model.getEntryCallNodes(), modelId);
@@ -82,7 +79,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      *
      * @return modelId
      */
-    private long createGraph(String name) {
+    private long createGraph(final String name) {
         final ObjectNode graph = this.objectMapper.createObjectNode();
         graph.put("name", name);
 
@@ -111,7 +108,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      *            targetUrl
      * @return ids as List
      */
-    private List<Long> getAllGraphsFromUI(String targetUrl) {
+    private List<Long> getAllGraphsFromUI(final String targetUrl) {
         URL url;
         try {
             url = new URL(targetUrl);
@@ -149,7 +146,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      * @param targetUrl
      *            targetUrl
      */
-    private void sendDelete(String targetUrl) {
+    private void sendDelete(final String targetUrl) {
         URL url;
         try {
             url = new URL(targetUrl);
@@ -172,14 +169,14 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      * @param entryCallNodes
      *            entryCallNodes
      */
-    private void createNodes(Set<EntryCallNode> entryCallNodes, long modelId) {
+    private void createNodes(final Set<EntryCallNode> entryCallNodes, final long modelId) {
         final ArrayNode nodes = this.objectMapper.createArrayNode();
         for (final EntryCallNode entryCallNode : entryCallNodes) {
 
             final ObjectNode json = this.objectMapper.createObjectNode();
             json.put("id", 0);
             json.put("name", entryCallNode.getSignature());
-            System.out.println("Node Created: " + entryCallNode.getSignature());           
+            System.out.println("Node Created: " + entryCallNode.getSignature());
 
             final ObjectNode extras = this.objectMapper.createObjectNode();
             for (final CallInformation callInformation : entryCallNode.getEntryCallInformation()) {
@@ -203,7 +200,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      * @param modelId
      *            modelId
      */
-    private void createEdges(Set<EntryCallEdge> entryCallEdges, long modelId) {
+    private void createEdges(final Set<EntryCallEdge> entryCallEdges, final long modelId) {
         final ArrayNode edges = this.objectMapper.createArrayNode();
         for (final EntryCallEdge entryCallEdge : entryCallEdges) {
 
@@ -272,7 +269,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      *            modelId
      * @return graph url
      */
-    private String getGraphUrl(long modelId) {
+    private String getGraphUrl(final long modelId) {
         return this.baseUrl + "/applications/" + modelId;
     }
 
@@ -283,7 +280,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      *            modelId
      * @return node url
      */
-    private String getNodeUrl(long modelId) {
+    private String getNodeUrl(final long modelId) {
         return this.getGraphUrl(modelId) + "/pages";
     }
 
@@ -294,7 +291,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      *            modelId
      * @return edge url
      */
-    private String getEdgeUrl(long modelId) {
+    private String getEdgeUrl(final long modelId) {
         return this.getGraphUrl(modelId) + "/visits";
     }
 

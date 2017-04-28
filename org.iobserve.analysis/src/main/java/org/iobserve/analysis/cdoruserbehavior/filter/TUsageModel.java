@@ -67,7 +67,7 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
     }
 
     @Override
-    protected void execute(UsageModel element) {
+    protected void execute(final UsageModel element) {
 
         element.getUsageScenario_UsageModel().stream().map(UsageScenario::getScenarioBehaviour_UsageScenario)
                 .map(this::createBehaviorModel).filter(Optional::isPresent).map(Optional::get)
@@ -83,7 +83,7 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
      *
      * @return behaviorModel
      */
-    private Optional<BehaviorModel> createBehaviorModel(ScenarioBehaviour behavior) {
+    private Optional<BehaviorModel> createBehaviorModel(final ScenarioBehaviour behavior) {
 
         if (!behavior.getActions_ScenarioBehaviour().isEmpty()) {
             final BehaviorModel behaviorModel = new BehaviorModel();
@@ -95,8 +95,8 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
         }
     }
 
-    private Map<EntryCallNode, Double> traverseScenarioBehavior(ScenarioBehaviour behavior, BehaviorModel behaviorModel,
-            Optional<Map<EntryCallNode, Double>> optPreviousNodes) {
+    private Map<EntryCallNode, Double> traverseScenarioBehavior(final ScenarioBehaviour behavior,
+            final BehaviorModel behaviorModel, final Optional<Map<EntryCallNode, Double>> optPreviousNodes) {
 
         // get start node
         final Optional<Start> startAction = behavior.getActions_ScenarioBehaviour().stream()
@@ -111,8 +111,8 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
         return new HashMap<>();
     }
 
-    private Map<EntryCallNode, Double> traverseAction(BehaviorModel behaviorModel,
-            Optional<Map<EntryCallNode, Double>> optPreviousNodes, AbstractUserAction action) {
+    private Map<EntryCallNode, Double> traverseAction(final BehaviorModel behaviorModel,
+            final Optional<Map<EntryCallNode, Double>> optPreviousNodes, final AbstractUserAction action) {
 
         if (action instanceof Branch) {
             final Branch branch = (Branch) action;
@@ -131,7 +131,7 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
 
             if (optPreviousNodes.isPresent()) {
                 optPreviousNodes.get().keySet().stream().map(previousNode -> new EntryCallEdge(previousNode,
-                        entryCallNode, optPreviousNodes.get().get(previousNode))).forEach(behaviorModel::addEdge);                
+                        entryCallNode, optPreviousNodes.get().get(previousNode))).forEach(behaviorModel::addEdge);
             }
             endNodes.put(entryCallNode, 1.0);
             return this.traverseAction(behaviorModel, Optional.of(endNodes), action.getSuccessor());
@@ -144,8 +144,8 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
 
     }
 
-    private Map<EntryCallNode, Double> traverseBranch(BehaviorModel behaviorModel,
-            Optional<Map<EntryCallNode, Double>> optPreviousNodes, Branch branch) {
+    private Map<EntryCallNode, Double> traverseBranch(final BehaviorModel behaviorModel,
+            final Optional<Map<EntryCallNode, Double>> optPreviousNodes, final Branch branch) {
 
         // assign new probabilities to the nodes
         final Map<BranchTransition, Map<EntryCallNode, Double>> transitionMap = new HashMap<>();
@@ -167,8 +167,8 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
         return endNodes;
     }
 
-    private Map<EntryCallNode, Double> traverseLoop(BehaviorModel behaviorModel,
-            Optional<Map<EntryCallNode, Double>> optPreviousNodes, Loop loop) {
+    private Map<EntryCallNode, Double> traverseLoop(final BehaviorModel behaviorModel,
+            final Optional<Map<EntryCallNode, Double>> optPreviousNodes, final Loop loop) {
 
         final Map<EntryCallNode, Double> loopEnds = this.traverseScenarioBehavior(loop.getBodyBehaviour_Loop(),
                 behaviorModel, optPreviousNodes);
@@ -195,7 +195,7 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
      *            loop
      * @return first found {@link EntryLevelSystemCall}, if found
      */
-    private Optional<EntryCallNode> findLoopStart(Loop loop, BehaviorModel behaviorModel) {
+    private Optional<EntryCallNode> findLoopStart(final Loop loop, final BehaviorModel behaviorModel) {
         final Optional<EntryLevelSystemCall> entryLevelSystemCall = loop.getBodyBehaviour_Loop()
                 .getActions_ScenarioBehaviour().stream().filter(EntryLevelSystemCall.class::isInstance)
                 .map(EntryLevelSystemCall.class::cast).findFirst();
@@ -213,7 +213,7 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
      *            {@link EntryLevelSystemCall}
      * @return entryCallNode
      */
-    private EntryCallNode createEntryCallNode(EntryLevelSystemCall entryLevelSystemCall) {
+    private EntryCallNode createEntryCallNode(final EntryLevelSystemCall entryLevelSystemCall) {
         final String signature = entryLevelSystemCall.getOperationSignature__EntryLevelSystemCall().getEntityName();
 
         final EntryCallNode entryCallNode = new EntryCallNode(signature);
