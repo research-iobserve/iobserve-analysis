@@ -66,7 +66,7 @@ public class CorrespondenceModelImpl implements ICorrespondence {
 			final LowLevelModelElement llElem = c.getTo();
 			if (llElem.getId().equals(classSig)) {
 				final HighLevelModelElement hlElem = c.getFrom();
-				return Optional.of(new Correspondent(null, null, hlElem.getName(), hlElem.getId()));
+				return Optional.of(new Correspondent(hlElem.getName(), hlElem.getId(), hlElem.getName(), hlElem.getId()));
 			}
 		}
 		return Optional.empty();
