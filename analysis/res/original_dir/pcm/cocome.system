@@ -6,7 +6,7 @@
   <assemblyContexts__ComposedStructure id="_nf0w4FcnEd23wcZsd06DZg" entityName="GUI.Store_Store_1_Client">
     <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_zokQE9CiEduC9O_qbthgAg"/>
   </assemblyContexts__ComposedStructure>
-  <assemblyContexts__ComposedStructure id="_3AwvMFcnEd23wcZsd06DZg" entityName="Application.Store_Store_1_Server">
+  <assemblyContexts__ComposedStructure id="_3AwvMFcnEd23wcZsd06DZg" entityName="TradingSystem.Inventory.Application.Store_server">
     <encapsulatedComponent__AssemblyContext xsi:type="repository:BasicComponent" href="cocome.repository#_6tZA5dCmEduC9O_qbthgAg"/>
   </assemblyContexts__ComposedStructure>
   <assemblyContexts__ComposedStructure id="_-W_gcFcoEd23wcZsd06DZg" entityName="Application.ProductDispatcher_EnterpriseServer">

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="ASCII"?>
 <allocation:Allocation xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:allocation="http://palladiosimulator.org/PalladioComponentModel/Allocation/5.1" id="_pY23oFc-Ed23wcZsd06DZg" entityName="defaultAllocation">
   <targetResourceEnvironment_Allocation href="cocome.resourceenvironment#/"/>
   <system_Allocation href="cocome.system#_3Sgb8FcmEd23wcZsd06DZg"/>
@@ -81,5 +81,9 @@
   <allocationContexts_Allocation id="_d-oBAFfjEd26K8JlmYJ10w" entityName="Data.Enterprise_EnterpriseServer">
     <resourceContainer_AllocationContext href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
     <assemblyContext_AllocationContext href="cocome.system#_LoXbYFfjEd26K8JlmYJ10w"/>
+  </allocationContexts_Allocation>
+  <allocationContexts_Allocation id="_mAiZ4C8nEeemAP6m0owO7Q" entityName="TradingSystem.Inventory.Application.Store_server">
+    <resourceContainer_AllocationContext href="cocome.resourceenvironment#_bTYxAOEhEduBSuO8WivxSA"/>
+    <assemblyContext_AllocationContext href="cocome.system#_3AwvMFcnEd23wcZsd06DZg"/>
   </allocationContexts_Allocation>
 </allocation:Allocation>

@@ -70,7 +70,7 @@
       <processingRate_ProcessingResourceSpecification specification="1.0"/>
     </activeResourceSpecifications_ResourceContainer>
   </resourceContainer_ResourceEnvironment>
-  <resourceContainer_ResourceEnvironment id="_bTYxAOEhEduBSuO8WivxSA" entityName="server">
+  <resourceContainer_ResourceEnvironment id="_bTYxAOEhEduBSuO8WivxSA" entityName="EnterpriseServer">
     <activeResourceSpecifications_ResourceContainer id="_OZb2oKmdEeG2WaQbVgWVRw">
       <schedulingPolicy href="pathmap://PCM_MODELS/Palladio.resourcetype#ProcessorSharing"/>
       <activeResourceType_ActiveResourceSpecification href="pathmap://PCM_MODELS/Palladio.resourcetype#_oro4gG3fEdy4YaaT-RYrLQ"/>
