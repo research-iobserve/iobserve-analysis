@@ -14,6 +14,7 @@
 
 package org.iobserve.analysis.cdoruserbehavior.filter.models;
 
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 
@@ -31,6 +32,18 @@ public abstract class AbstractBehaviorModelTable {
     public static final String INFORMATION_INDICATOR = "##";
     public static final String INFORMATION_DIVIDER = ":::";
 
+    private final ISignatureCreationStrategy signatureCreationStrategy;
+
+    /**
+     * constructor
+     *
+     * @param signatureCreationStrategy
+     *            strategy defining the signature string format
+     */
+    public AbstractBehaviorModelTable(final ISignatureCreationStrategy signatureCreationStrategy) {
+        this.signatureCreationStrategy = signatureCreationStrategy;
+    }
+
     /**
      *
      * @param event
@@ -38,8 +51,8 @@ public abstract class AbstractBehaviorModelTable {
      *
      * @return signature of the event used by this class
      */
-    public static String getSignatureFromEvent(final EntryCallEvent event) {
-        return event.getClassSignature() + "-" + event.getOperationSignature();
+    public String getSignatureFromEvent(final EntryCallEvent event) {
+        return this.signatureCreationStrategy.getSignature(event);
     }
 
     /**
@@ -50,7 +63,7 @@ public abstract class AbstractBehaviorModelTable {
      * @return true if signature is allowed, false else
      */
     public boolean isAllowedSignature(final EntryCallEvent event) {
-        final String signature = AbstractBehaviorModelTable.getSignatureFromEvent(event);
+        final String signature = this.getSignatureFromEvent(event);
         return this.isAllowedSignature(signature);
     }
 
@@ -78,13 +91,22 @@ public abstract class AbstractBehaviorModelTable {
      * @param event
      *            event that could contain information.
      */
-    public void addInformation(EntryCallEvent event) {
+    public void addInformation(final EntryCallEvent event) {
 
         if (event instanceof ExtendedEntryCallEvent) {
             this.addInformation((ExtendedEntryCallEvent) event);
         } else {
             // TODO
         }
+    }
+
+    /**
+     * getter
+     * 
+     * @return signatureCreationStrategy
+     */
+    public ISignatureCreationStrategy getSignatureCreationStrategy() {
+        return this.signatureCreationStrategy;
     }
 
     /**

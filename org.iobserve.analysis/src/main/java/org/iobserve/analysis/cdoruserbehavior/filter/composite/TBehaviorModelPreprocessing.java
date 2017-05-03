@@ -54,7 +54,7 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
     /**
      * constructor
      */
-    public TBehaviorModelPreprocessing(BehaviorModelConfiguration configuration) {
+    public TBehaviorModelPreprocessing(final BehaviorModelConfiguration configuration) {
         this.configuration = configuration;
 
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
@@ -63,7 +63,8 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
         this.merger = new Merger<>(new SkippingBusyWaitingRoundRobinStrategy());
 
         final EditableBehaviorModelTable modelTable = new EditableBehaviorModelTable(
-                this.configuration.getRepresentativeStrategy(), this.configuration.getModelGenerationFilter());
+                configuration.getSignatureCreationStrategy(), this.configuration.getRepresentativeStrategy(),
+                this.configuration.getModelGenerationFilter());
 
         this.tBehaviorModelGeneration = new TBehaviorModelTableGeneration(modelTable);
         this.tBehaviorModelPreperation = new TBehaviorModelPreperation();

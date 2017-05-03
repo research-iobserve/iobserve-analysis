@@ -25,6 +25,7 @@ import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
 import org.iobserve.analysis.data.EntryCallEvent;
@@ -67,8 +68,9 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
      *            modelGenerationFilter
      */
 
-    public EditableBehaviorModelTable(final IRepresentativeStrategy strategy,
-            final ModelGenerationFilter modelGenerationFilter) {
+    public EditableBehaviorModelTable(final ISignatureCreationStrategy signatureCreationStrategy,
+            final IRepresentativeStrategy strategy, final ModelGenerationFilter modelGenerationFilter) {
+        super(signatureCreationStrategy);
         this.signatures = new HashMap<>();
         this.inverseSignatures = new ArrayList<>();
         this.transitions = new LinkedList<>();
@@ -87,8 +89,8 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
     @Override
     public void addTransition(final EntryCallEvent from, final EntryCallEvent to) throws IllegalArgumentException {
 
-        final String fromSignature = AbstractBehaviorModelTable.getSignatureFromEvent(from);
-        final String toSignature = AbstractBehaviorModelTable.getSignatureFromEvent(to);
+        final String fromSignature = this.getSignatureFromEvent(from);
+        final String toSignature = this.getSignatureFromEvent(to);
 
         if (!(this.isAllowedSignature(fromSignature) && this.isAllowedSignature(toSignature))) {
             throw new IllegalArgumentException("event signature not allowed");
@@ -116,7 +118,7 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
     @Override
     public void addInformation(final ExtendedEntryCallEvent event) {
         final ObjectMapper objectMapper = new ObjectMapper();
-        final String eventSignature = AbstractBehaviorModelTable.getSignatureFromEvent(event);
+        final String eventSignature = this.getSignatureFromEvent(event);
         final ArrayList<CallInformation> newCallInformations;
 
         try {
@@ -210,8 +212,8 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
         final Integer[][] fixedTransitions = this.transitions.stream().map(l -> l.stream().toArray(Integer[]::new))
                 .toArray(Integer[][]::new);
 
-        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(fixedSignatures,
-                fixedInverseSignatures, fixedTransitions);
+        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(this.getSignatureCreationStrategy(),
+                fixedSignatures, fixedInverseSignatures, fixedTransitions);
 
         return fixedBehaviorModelTable;
     }
@@ -243,8 +245,8 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
         // create transitions table
         final Integer[][] fixedTransitions = new Integer[fixedSignatures.size()][fixedSignatures.size()];
 
-        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(fixedSignatures,
-                fixedInverseSignatures, fixedTransitions);
+        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(this.getSignatureCreationStrategy(),
+                fixedSignatures, fixedInverseSignatures, fixedTransitions);
 
         return fixedBehaviorModelTable;
     }

@@ -27,6 +27,8 @@ public class BehaviorModelConfiguration {
 
     private final IRepresentativeStrategy representativeStrategy;
 
+    private final ISignatureCreationStrategy signatureCreationStrategy;
+
     // clustering configuration
     private final IClustering clustering;
 
@@ -40,9 +42,11 @@ public class BehaviorModelConfiguration {
      * @param clustering
      *            clustering
      */
-    public BehaviorModelConfiguration(ModelGenerationFilter modelGenerationFilter,
-            IRepresentativeStrategy representativeStrategy, IClustering clustering) {
+    public BehaviorModelConfiguration(final ModelGenerationFilter modelGenerationFilter,
+            final IRepresentativeStrategy representativeStrategy,
+            final ISignatureCreationStrategy signatureCreationStrategy, final IClustering clustering) {
         super();
+        this.signatureCreationStrategy = signatureCreationStrategy;
         this.modelGenerationFilter = modelGenerationFilter;
         this.representativeStrategy = representativeStrategy;
         this.clustering = clustering;
@@ -73,6 +77,15 @@ public class BehaviorModelConfiguration {
      */
     public IClustering getClustering() {
         return this.clustering;
+    }
+
+    /**
+     * getter
+     * 
+     * @return the signatureCreationStrategy
+     */
+    public ISignatureCreationStrategy getSignatureCreationStrategy() {
+        return this.signatureCreationStrategy;
     }
 
 }

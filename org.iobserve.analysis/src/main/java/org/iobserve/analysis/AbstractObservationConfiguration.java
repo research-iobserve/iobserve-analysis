@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelComparison;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.FunctionNameOnlySignatureStrategy;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.XMeansClustering;
@@ -110,7 +111,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 new ManhattanDistance());
 
         final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration(
-                modelGenerationFilter, new JPetstoreStrategy(), behaviorModelClustering);
+                modelGenerationFilter, new JPetstoreStrategy(), new FunctionNameOnlySignatureStrategy(),
+                behaviorModelClustering);
 
         // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
 
