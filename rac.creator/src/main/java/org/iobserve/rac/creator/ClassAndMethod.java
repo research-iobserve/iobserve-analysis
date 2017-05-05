@@ -18,7 +18,8 @@ package org.iobserve.rac.creator;
 import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
 
 /**
- * We must pass method and class signature in one event.
+ * We must pass method and class signature in one event. Therefore, this class bundles the class
+ * signature and the method together.
  *
  * @author Reiner Jung
  *
@@ -28,6 +29,14 @@ public class ClassAndMethod {
     private final PcmCorrespondentMethod method;
     private final String classSignature;
 
+    /**
+     * Create a container for class signature and method.
+     *
+     * @param classSignature
+     *            class signature for the method
+     * @param method
+     *            method object
+     */
     public ClassAndMethod(final String classSignature, final PcmCorrespondentMethod method) {
         this.classSignature = classSignature;
         this.method = method;

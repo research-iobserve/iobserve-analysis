@@ -23,6 +23,7 @@ import java.io.UnsupportedEncodingException;
 import teetime.framework.AbstractConsumerStage;
 
 /**
+ * Write a list of strings in a text file.
  *
  * @author Reiner Jung
  *
@@ -31,6 +32,16 @@ public class ListWriter extends AbstractConsumerStage<String> {
 
     private final PrintWriter writer;
 
+    /**
+     * Construct a list writer for the specified file.
+     *
+     * @param file
+     *            specifies in which file to write the strings.
+     * @throws FileNotFoundException
+     *             when the file cannot be created.
+     * @throws UnsupportedEncodingException
+     *             when the specified encoding is not supported
+     */
     public ListWriter(final File file) throws FileNotFoundException, UnsupportedEncodingException {
         this.writer = new PrintWriter(file, "UTF-8");
     }
