@@ -15,8 +15,13 @@
  ***************************************************************************/
 package org.iobserve.splitter;
 
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
+import java.io.File;
+import java.io.IOException;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.FileConverter;
 
 import teetime.framework.Execution;
 
@@ -27,10 +32,16 @@ import teetime.framework.Execution;
  */
 public final class SplitterMain {
 
-    private static final String DATA_DIR_OPTION = "data";
-    private static final String INPUT_PORT_OPTION = "port";
-    private static final String DATA_DIR_OPTION_SHORT = "d";
-    private static final String INPUT_PORT_OPTION_SHORT = "p";
+    @Parameter(names = { "-i",
+            "--input" }, required = true, description = "Input directory.", converter = FileConverter.class)
+    private File sourceLocation;
+
+    @Parameter(names = { "-o",
+            "--output" }, required = true, description = "Output directory.", converter = FileConverter.class)
+    private File targetLocation;
+
+    @Parameter(names = { "-H", "--hosts" }, required = true, description = "List of hosts.")
+    private String[] hostnames;
 
     /**
      * This is a simple main class which does not need to be instantiated.
@@ -40,17 +51,35 @@ public final class SplitterMain {
     }
 
     /**
-     * Configure and execute the TCP Kieker data collector.
+     * Configure and execute the splitter.
      *
      * @param args
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        // final CommandLineParser parser = new DefaultParser();
-        // try {
-        System.out.println("Receiver");
-        final SimpleSplitterConfiguration configuration = new SimpleSplitterConfiguration(args[0], args[1], args[2],
-                args[3], args[4], args[5], args[6]);
+
+        System.out.println("Splitter");
+
+        final SplitterMain main = new SplitterMain();
+        final JCommander commander = new JCommander(main);
+        try {
+            commander.parse(args);
+            main.execute(commander);
+        } catch (final ParameterException e) {
+            System.err.println(e.getLocalizedMessage());
+            commander.usage();
+        } catch (final IOException e) {
+            System.err.println(e.getLocalizedMessage());
+            commander.usage();
+        }
+    }
+
+    private void execute(final JCommander commander) throws IOException {
+        this.checkDirectory(this.sourceLocation, "Source", commander);
+        this.checkDirectory(this.targetLocation, "Target", commander);
+
+        final SimpleSplitterConfiguration configuration = new SimpleSplitterConfiguration(this.sourceLocation,
+                this.targetLocation, this.hostnames);
         final Execution<SimpleSplitterConfiguration> analysis = new Execution<>(configuration);
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
@@ -71,30 +100,22 @@ public final class SplitterMain {
         analysis.executeBlocking();
 
         System.out.println("Done");
-        // } catch (final ParseException exp) {
-        // System.err.println("CLI error: " + exp.getMessage());
-        // final HelpFormatter formatter = new HelpFormatter();
-        // formatter.printHelp("collector", SplitterMain.createOptions());
-        // }
+
     }
 
-    /**
-     * Create the command line parameter setup.
-     *
-     * @return options for the command line parser
-     */
-    private static Options createOptions() {
-        final Options options = new Options();
+    private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
+            throws IOException {
+        if (!location.exists()) {
+            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            commander.usage();
+            System.exit(1);
+        }
+        if (!location.isDirectory()) {
+            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            commander.usage();
+            System.exit(1);
+        }
 
-        options.addOption(Option.builder(SplitterMain.INPUT_PORT_OPTION_SHORT).required(true)
-                .longOpt(SplitterMain.INPUT_PORT_OPTION).hasArg().desc("input TCP port").build());
-        options.addOption(Option.builder(SplitterMain.DATA_DIR_OPTION_SHORT).required(true)
-                .longOpt(SplitterMain.DATA_DIR_OPTION).hasArg().desc("Kieker directory location").build());
-
-        /** help */
-        options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
-
-        return options;
     }
 
 }
