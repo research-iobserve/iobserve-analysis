@@ -50,6 +50,20 @@ public class DoAllFilter extends AbstractConsumerStage<ClassAndMethod> {
     private final Map<String, PcmEntity> repositoryMapping;
     private final Map<String, String> modelMapping;
 
+    /**
+     * Create filter.
+     *
+     * @param repositoryFileReader
+     *            PCM repository file reader
+     * @param modelMappingReader
+     *            readef for the model mapping
+     * @throws ParserConfigurationException
+     *             on broken XML
+     * @throws SAXException
+     *             on broken XMl
+     * @throws IOException
+     *             on read errors
+     */
     public DoAllFilter(final RepositoryFileReader repositoryFileReader, final ModelMappingReader modelMappingReader)
             throws ParserConfigurationException, SAXException, IOException {
         this.repositoryMapping = repositoryFileReader.computeMapping();

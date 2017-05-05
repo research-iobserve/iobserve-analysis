@@ -36,8 +36,6 @@ import teetime.framework.OutputPort;
  */
 public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
 
-    // private static final Logger LOGGER = LogManager.getLogger(Splitter.class);
-
     private final List<OutputPort<IMonitoringRecord>> outputPorts = new ArrayList<>();
 
     private final Map<Long, TraceMetadata> traceRegisterMap = new HashMap<>();
@@ -55,7 +53,8 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
      */
     public Splitter(final String[] hostnames) {
         this.hostnames = hostnames;
-        for (final String hostname : hostnames) {
+        final int numOfPorts = hostnames.length;
+        for (int i = 0; i < numOfPorts; i++) {
             this.outputPorts.add(this.createOutputPort());
         }
     }
