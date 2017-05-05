@@ -1,2 +1,2 @@
 
-include "analysis", "common", "monitoring", "analysis.service", "analysis.cli", "collector", "splitter", "generic.analysis"
+include "analysis", "common", "monitoring", "analysis.service", "analysis.cli", "collector", "splitter", "test.setup", "rac.creator"

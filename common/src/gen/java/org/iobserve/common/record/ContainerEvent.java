@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project
+ * Copyright 2017 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.nio.ByteBuffer;
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
 
 
 /**
@@ -30,14 +29,17 @@ import kieker.common.util.Version;
  * @since 1.13
  */
 public abstract class ContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {
-		private static final long serialVersionUID = -2037622396753518154L;
-	
-	
-	/* user-defined constants */
-	/* default constants */
-	/* property declarations */
-	private final String url;
+	private static final long serialVersionUID = -2037622396753518154L;
 
+	
+	
+	/** default constants. */
+	public static final String URL = "";
+	
+		
+	/** property declarations. */
+	private String url;
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
@@ -48,7 +50,7 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 		this.url = url == null?"":url;
 	}
 
-	
+
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
 	 * 
@@ -63,10 +65,12 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	}
 
 	/**
-	 * This constructor converts the given array into a record.
+	 * This constructor converts the given buffer into a record.
 	 * 
 	 * @param buffer
-	 *            The bytes for the record.
+	 *            The bytes for the record
+	 * @param stringRegistry
+	 *            The string registry for deserialization
 	 * 
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
@@ -74,6 +78,7 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	public ContainerEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		this.url = stringRegistry.get(buffer.getInt());
 	}
+	
 
 	/**
 	 * {@inheritDoc}
@@ -85,7 +90,7 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	public void initFromArray(final Object[] values) {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -96,7 +101,7 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -111,9 +116,12 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 		if (!this.getUrl().equals(castedRecord.getUrl())) return false;
 		return true;
 	}
-
+	
 	public final String getUrl() {
 		return this.url;
 	}
 	
+	public final void setUrl(String url) {
+		this.url = url;
+	}
 }

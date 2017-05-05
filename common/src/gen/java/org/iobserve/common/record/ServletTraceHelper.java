@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project
+ * Copyright 2017 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import java.nio.ByteBuffer;
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
 
 import org.iobserve.common.record.ITraceHelper;
 import kieker.common.record.flow.IFlowRecord;
@@ -33,13 +32,14 @@ import kieker.common.record.flow.IFlowRecord;
  * @since 1.0
  */
 public class ServletTraceHelper extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ITraceHelper, IFlowRecord {
+	private static final long serialVersionUID = 2363353535794190244L;
+
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // ITraceHelper.traceId
 			 + TYPE_SIZE_STRING // ITraceHelper.host
 			 + TYPE_SIZE_INT // ITraceHelper.port
 			 + TYPE_SIZE_STRING // ServletTraceHelper.requestURI
 	;
-	private static final long serialVersionUID = 2363353535794190244L;
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // ITraceHelper.traceId
@@ -48,14 +48,25 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		String.class, // ServletTraceHelper.requestURI
 	};
 	
-	/* user-defined constants */
-	/* default constants */
-	/* property declarations */
-	private final long traceId;
-	private final String host;
-	private final int port;
-	private final String requestURI;
-
+	
+	/** default constants. */
+	public static final String HOST = "";
+	public static final String REQUEST_URI = "";
+	
+	/** property name array. */
+	private static final String[] PROPERTY_NAMES = {
+		"traceId",
+		"host",
+		"port",
+		"requestURI",
+	};
+	
+	/** property declarations. */
+	private long traceId;
+	private String host;
+	private int port;
+	private String requestURI;
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
@@ -89,7 +100,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		this.port = (Integer) values[2];
 		this.requestURI = (String) values[3];
 	}
-	
+
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
 	 * 
@@ -107,10 +118,12 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	}
 
 	/**
-	 * This constructor converts the given array into a record.
+	 * This constructor converts the given buffer into a record.
 	 * 
 	 * @param buffer
-	 *            The bytes for the record.
+	 *            The bytes for the record
+	 * @param stringRegistry
+	 *            The string registry for deserialization
 	 * 
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
@@ -121,7 +134,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		this.port = buffer.getInt();
 		this.requestURI = stringRegistry.get(buffer.getInt());
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -134,7 +147,6 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 			this.getRequestURI()
 		};
 	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -143,7 +155,6 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		stringRegistry.get(this.getHost());
 		stringRegistry.get(this.getRequestURI());
 	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -154,7 +165,6 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		buffer.putInt(this.getPort());
 		buffer.putInt(stringRegistry.get(this.getRequestURI()));
 	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -162,7 +172,15 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	public Class<?>[] getValueTypes() {
 		return TYPES; // NOPMD
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String[] getValueNames() {
+		return PROPERTY_NAMES; // NOPMD
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -170,6 +188,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	public int getSize() {
 		return SIZE;
 	}
+
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -180,7 +199,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	public void initFromArray(final Object[] values) {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -191,7 +210,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -209,21 +228,36 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		if (!this.getRequestURI().equals(castedRecord.getRequestURI())) return false;
 		return true;
 	}
-
+	
 	public final long getTraceId() {
 		return this.traceId;
+	}
+	
+	public final void setTraceId(long traceId) {
+		this.traceId = traceId;
 	}
 	
 	public final String getHost() {
 		return this.host;
 	}
 	
+	public final void setHost(String host) {
+		this.host = host;
+	}
+	
 	public final int getPort() {
 		return this.port;
+	}
+	
+	public final void setPort(int port) {
+		this.port = port;
 	}
 	
 	public final String getRequestURI() {
 		return this.requestURI;
 	}
 	
+	public final void setRequestURI(String requestURI) {
+		this.requestURI = requestURI;
+	}
 }

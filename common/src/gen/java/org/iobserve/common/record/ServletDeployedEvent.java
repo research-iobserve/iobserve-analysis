@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2016 iObserve Project
+ * Copyright 2017 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@ import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
-
 import org.iobserve.common.record.ServletDeploymentEvent;
+import kieker.common.util.registry.IRegistry;
+
 import org.iobserve.common.record.IDeploymentRecord;
 
 /**
@@ -31,25 +30,33 @@ import org.iobserve.common.record.IDeploymentRecord;
  * @since 1.13
  */
 public class ServletDeployedEvent extends ServletDeploymentEvent implements IDeploymentRecord {
+	private static final long serialVersionUID = 1551640482018403329L;
+
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // AbstractEvent.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_STRING // ServletDeploymentEvent.serivce
 			 + TYPE_SIZE_STRING // ServletDeploymentEvent.context
 			 + TYPE_SIZE_STRING // ServletDeploymentEvent.deploymentId
 	;
-	private static final long serialVersionUID = 1551640482018403329L;
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // AbstractEvent.timestamp
+		long.class, // IEventRecord.timestamp
 		String.class, // ServletDeploymentEvent.serivce
 		String.class, // ServletDeploymentEvent.context
 		String.class, // ServletDeploymentEvent.deploymentId
 	};
 	
-	/* user-defined constants */
-	/* default constants */
-	/* property declarations */
-
+	
+	
+	/** property name array. */
+	private static final String[] PROPERTY_NAMES = {
+		"timestamp",
+		"serivce",
+		"context",
+		"deploymentId",
+	};
+	
+	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
@@ -76,7 +83,7 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 	public ServletDeployedEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
 	}
-	
+
 	/**
 	 * This constructor uses the given array to initialize the fields of this record.
 	 * 
@@ -90,10 +97,12 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 	}
 
 	/**
-	 * This constructor converts the given array into a record.
+	 * This constructor converts the given buffer into a record.
 	 * 
 	 * @param buffer
-	 *            The bytes for the record.
+	 *            The bytes for the record
+	 * @param stringRegistry
+	 *            The string registry for deserialization
 	 * 
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
@@ -101,7 +110,7 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 	public ServletDeployedEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		super(buffer, stringRegistry);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -114,7 +123,6 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 			this.getDeploymentId()
 		};
 	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -124,7 +132,6 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 		stringRegistry.get(this.getContext());
 		stringRegistry.get(this.getDeploymentId());
 	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -135,7 +142,6 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 		buffer.putInt(stringRegistry.get(this.getContext()));
 		buffer.putInt(stringRegistry.get(this.getDeploymentId()));
 	}
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -143,7 +149,15 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 	public Class<?>[] getValueTypes() {
 		return TYPES; // NOPMD
 	}
-
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String[] getValueNames() {
+		return PROPERTY_NAMES; // NOPMD
+	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -151,6 +165,7 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 	public int getSize() {
 		return SIZE;
 	}
+
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -161,7 +176,7 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 	public void initFromArray(final Object[] values) {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -172,7 +187,7 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -190,5 +205,5 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		return true;
 	}
-
+	
 }
