@@ -16,7 +16,9 @@ public class ComponentNode {
 	private String assemblyContextID;
 	private DataPrivacyLvl privacyLvl;
 	private DeploymentNode hostServer;
-	private Set<ComponentNode> communcationEdges;
+	private Set<ComponentNode> personalEdges;
+	private Set<ComponentNode> dePersonalEdges;
+	private Set<ComponentNode> anonymEdges;
 
 	/**
 	 * The constructor
@@ -33,7 +35,9 @@ public class ComponentNode {
 		this.assemblyContextID = assemblyContextID;
 		this.privacyLvl = privacyLvl;
 		this.hostServer = hostContext;
-		this.communcationEdges = new HashSet<ComponentNode>();
+		this.personalEdges = new HashSet<ComponentNode>();
+		this.dePersonalEdges = new HashSet<ComponentNode>();
+		this.anonymEdges = new HashSet<ComponentNode>();
 	}
 
 	/**
@@ -43,8 +47,23 @@ public class ComponentNode {
 	 *            the communication partner
 	 * @return whether the add was successful
 	 */
-	public boolean addCommunicationEdge(ComponentNode communicationEge) {
-		return this.communcationEdges.add(communicationEge);
+	public boolean addCommunicationEdge(ComponentNode communicationEge, DataPrivacyLvl privacyLvl) {
+		
+		boolean added = false;
+		switch (privacyLvl) {
+		case ANONYMIZED:
+			added = this.anonymEdges.add(communicationEge);
+			break;
+		case DEPERSONALIZED:
+			added = this.dePersonalEdges.add(communicationEge);
+			break;
+		case PERSONAL:
+		default:
+			added = this.personalEdges.add(communicationEge);
+			break;
+		}
+		
+		return added;
 	}
 
 	/*
@@ -69,6 +88,20 @@ public class ComponentNode {
 	 */
 	public DeploymentNode getHostServer() {
 		return hostServer;
+	}
+	
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.getAssemblyContextID() + "\t" + this.privacyLvl.toString() + "\t");
+		
+		sb.append(this.personalEdges.size() + "\t");
+		sb.append(this.dePersonalEdges.size()+ "\t");
+		sb.append(this.anonymEdges.size()+ "\n");
+
+		return sb.toString();
 	}
 
 }

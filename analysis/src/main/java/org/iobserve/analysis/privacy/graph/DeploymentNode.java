@@ -59,4 +59,20 @@ public class DeploymentNode {
 	public String getResourceContainerID() {
 		return resourceContainerID;
 	}
+
+	
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Server: " + this.resourceContainerID + " -- Location: " + this.isoCountryCode + "\n");
+		sb.append("-Comp:\t ID \t\t\tCompPrivayLvl \tPers \tDeP \t Anonym\n");
+		
+		for (ComponentNode component : this.containingComponents) {
+			sb.append("\t" + component.toString());
+		}
+
+		return sb.toString();
+	}
+	
+	
 }

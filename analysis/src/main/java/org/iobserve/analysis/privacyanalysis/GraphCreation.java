@@ -29,6 +29,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
 
+import groovy.ui.Console;
 import teetime.stage.basic.AbstractTransformation;
 
 /**
@@ -66,15 +67,6 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 	@Override
 	protected void execute(URI element) throws Exception {
 		this.init(element);
-		
-		this.assemblyContexts.clear();
-		this.assemblyContextPrivacyLvl.clear();
-		this.resourceContainers.clear();
-		this.ac2rcMap.clear();
-		this.assemblyConnectors.clear();
-		
-		File pcmDirectory = new File(element.path());
-		this.modelProviders = new InitializeModelProviders(pcmDirectory);
 
 		this.extractAssemblyContexts(this.modelProviders.getSystemModelProvider());
 		this.extractAssemblyConnectors(this.modelProviders.getSystemModelProvider());
@@ -143,7 +135,7 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 			currentDataLevelPrivacy = assemblyConnectorPrivacyLvl;
 		}
 
-		this.assemblyContextPrivacyLvl.put(assemblyContext_ID, assemblyConnectorPrivacyLvl);
+		this.assemblyContextPrivacyLvl.put(assemblyContext_ID, currentDataLevelPrivacy);
 	}
 
 	private void extractResourceContainers(ResourceEnvironmentModelProvider resEnvModelProv) {
@@ -153,7 +145,7 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 			if (resourceContainer instanceof ResourceContainerPrivacy) {
 				this.resourceContainers.put(resourceContainer.getId(), (ResourceContainerPrivacy) resourceContainer);
 			} else {
-				System.err.printf("A ResourceContainer (ID: %s) was found which has no privacy extention", resourceContainer.getId());
+				System.err.printf("A ResourceContainer (ID: %s) was found which has no privacy extention\n", resourceContainer.getId());
 			}
 		}
 	}
@@ -167,12 +159,15 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 			AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
 
 			boolean correctIDs = true;
-			if (!this.resourceContainers.containsKey(resContainer.getId())) {
-				System.err.printf("A ResourceContainer (ID: %s) was found during allocation context analysis.", resContainer.getId());
+			String resContainerID = resContainer.getId();
+			if (!this.resourceContainers.containsKey(resContainerID)) {
+				System.err.printf("A unknown ResourceContainer (ID: %s) was found during allocation context analysis.\n", resContainer.getId());
 				correctIDs = false;
 			}
-			if (!this.assemblyContexts.containsKey(assemblyContext.getId())) {
-				System.err.printf("An AssemblyContext (ID: %s) was found during allocation context analysis.", assemblyContext.getId());
+			
+			String assemblyContextID = assemblyContext.getId();
+			if (!this.assemblyContexts.containsKey(assemblyContextID)) {
+				System.err.printf("An unknown AssemblyContext (ID: %s) was found during allocation context analysis.\n", assemblyContext.getId());
 				correctIDs = false;
 			}
 
@@ -188,7 +183,7 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 		HashMap<String, DeploymentNode> servers = new HashMap<String, DeploymentNode>();
 		HashMap<String, ComponentNode> components = new HashMap<String, ComponentNode>();
 		
-		//Build Servers
+		//Build Servers Nodes
 		for (ResourceContainerPrivacy resContainer : this.resourceContainers.values())
 		{
 			DeploymentNode server = new DeploymentNode(resContainer.getId(), resContainer.getGeolocation());
@@ -196,7 +191,7 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 		}
 		
 
-		//Build Nodes
+		//Build Component Nodes
 		for (AssemblyContext ac : this.assemblyContexts.values()) {
 			
 			DeploymentNode hostServer = servers.get(this.ac2rcMap.get(ac.getId()));
@@ -212,14 +207,15 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 		for (AssemblyConnectorPrivacy acp : this.assemblyConnectors.values())
 		{
 			String provAC_ID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
-			String reqAC_ID = acp.getRequiredRole_AssemblyConnector().getId();
+			String reqAC_ID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
 			
 			ComponentNode provNode = components.get(provAC_ID);
 			ComponentNode reqNode = components.get(reqAC_ID);
 			
-			provNode.addCommunicationEdge(reqNode);
-			reqNode.addCommunicationEdge(provNode);
+			provNode.addCommunicationEdge(reqNode, acp.getPrivacyLevel());
+			reqNode.addCommunicationEdge(provNode, acp.getPrivacyLevel());
 		}
+		
 		
 		return new PrivacyAnalysisModel(servers.values(), components.values());
 	}
