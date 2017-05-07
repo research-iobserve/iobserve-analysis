@@ -20,16 +20,28 @@ public class PrivacyAnalysisModel {
 	public PrivacyAnalysisModel(Collection<DeploymentNode> servers, Collection<ComponentNode> components) {
 		this.servers = new HashSet<DeploymentNode>(servers);
 		this.components = new HashSet<ComponentNode>(components);
-		
-		this.printGraph();
+
+//		this.printGraph();
 	}
-	
-	
+
 	public void printGraph() {
-		for (DeploymentNode server : servers)
-		{
+		for (DeploymentNode server : getServers()) {
 			System.out.println(server.toString());
 		}
+	}
+
+	/**
+	 * @return the servers
+	 */
+	private Set<DeploymentNode> getServers() {
+		return servers;
+	}
+
+	/**
+	 * @return the components
+	 */
+	public Set<ComponentNode> getComponents() {
+		return components;
 	}
 
 }

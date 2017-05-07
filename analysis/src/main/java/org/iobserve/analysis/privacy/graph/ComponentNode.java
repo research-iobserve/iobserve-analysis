@@ -1,6 +1,7 @@
 package org.iobserve.analysis.privacy.graph;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
@@ -16,9 +17,7 @@ public class ComponentNode {
 	private String assemblyContextID;
 	private DataPrivacyLvl privacyLvl;
 	private DeploymentNode hostServer;
-	private Set<ComponentNode> personalEdges;
-	private Set<ComponentNode> dePersonalEdges;
-	private Set<ComponentNode> anonymEdges;
+	private Set<ComponentEdge> edges;
 
 	/**
 	 * The constructor
@@ -35,9 +34,7 @@ public class ComponentNode {
 		this.assemblyContextID = assemblyContextID;
 		this.privacyLvl = privacyLvl;
 		this.hostServer = hostContext;
-		this.personalEdges = new HashSet<ComponentNode>();
-		this.dePersonalEdges = new HashSet<ComponentNode>();
-		this.anonymEdges = new HashSet<ComponentNode>();
+		this.edges = new LinkedHashSet<ComponentEdge>();
 	}
 
 	/**
@@ -47,23 +44,9 @@ public class ComponentNode {
 	 *            the communication partner
 	 * @return whether the add was successful
 	 */
-	public boolean addCommunicationEdge(ComponentNode communicationEge, DataPrivacyLvl privacyLvl) {
-		
-		boolean added = false;
-		switch (privacyLvl) {
-		case ANONYMIZED:
-			added = this.anonymEdges.add(communicationEge);
-			break;
-		case DEPERSONALIZED:
-			added = this.dePersonalEdges.add(communicationEge);
-			break;
-		case PERSONAL:
-		default:
-			added = this.personalEdges.add(communicationEge);
-			break;
-		}
-		
-		return added;
+	public boolean addCommunicationEdge(ComponentEdge communicationEdge) {
+
+		return this.edges.add(communicationEdge);
 	}
 
 	/*
@@ -84,22 +67,32 @@ public class ComponentNode {
 	}
 
 	/**
+	 * @param privacyLvl
+	 *            the privacyLvl to set
+	 */
+	public void setPrivacyLvl(DataPrivacyLvl privacyLvl) {
+		this.privacyLvl = privacyLvl;
+	}
+
+	/**
 	 * @return the DeplyomentNode, the component ist deployed on
 	 */
 	public DeploymentNode getHostServer() {
 		return hostServer;
 	}
-	
-	
+
+	public ComponentEdge[] getEdges() {
+		return this.edges.toArray(new ComponentEdge[this.edges.size()]);
+	}
+
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append(this.getAssemblyContextID() + "\t" + this.privacyLvl.toString() + "\t");
-		
-		sb.append(this.personalEdges.size() + "\t");
-		sb.append(this.dePersonalEdges.size()+ "\t");
-		sb.append(this.anonymEdges.size()+ "\n");
+
+		sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.PERSONAL).count() + "\t");
+		sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED).count() + "\t");
+		sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.ANONYMIZED).count() + "\n");
 
 		return sb.toString();
 	}

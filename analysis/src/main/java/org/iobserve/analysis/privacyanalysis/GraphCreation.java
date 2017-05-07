@@ -13,6 +13,7 @@ import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.privacy.graph.ComponentEdge;
 import org.iobserve.analysis.privacy.graph.ComponentNode;
 import org.iobserve.analysis.privacy.graph.DeploymentNode;
 import org.iobserve.analysis.privacy.graph.PrivacyAnalysisModel;
@@ -74,8 +75,8 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 		this.adaptPrivacyLvl();
 		this.extractAllocations(this.modelProviders.getAllocationModelProvider());
 		
-		this.graph = this.createModelGraph();
-		//TODO Add Send(graph)
+		PrivacyAnalysisModel model = this.graph = this.createModelGraph();
+		outputPort.send(model);
 	}
 
 	/*
@@ -212,8 +213,10 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 			ComponentNode provNode = components.get(provAC_ID);
 			ComponentNode reqNode = components.get(reqAC_ID);
 			
-			provNode.addCommunicationEdge(reqNode, acp.getPrivacyLevel());
-			reqNode.addCommunicationEdge(provNode, acp.getPrivacyLevel());
+			ComponentEdge edge = new ComponentEdge(acp.getId(), provNode, reqNode, acp.getPrivacyLevel());
+			
+			provNode.addCommunicationEdge(edge);
+			reqNode.addCommunicationEdge(edge);
 		}
 		
 		
