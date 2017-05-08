@@ -198,7 +198,7 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 			DeploymentNode hostServer = servers.get(this.ac2rcMap.get(ac.getId()));
 			DataPrivacyLvl acPrivacyLvl = this.assemblyContextPrivacyLvl.get(ac.getId());
 			
-			ComponentNode component = new ComponentNode(ac.getId(), acPrivacyLvl, hostServer);
+			ComponentNode component = new ComponentNode(ac.getId(), ac.getEntityName(), acPrivacyLvl, hostServer);
 			hostServer.addComponent(component);
 			
 			components.put(ac.getId(), component);
@@ -213,7 +213,7 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 			ComponentNode provNode = components.get(provAC_ID);
 			ComponentNode reqNode = components.get(reqAC_ID);
 			
-			ComponentEdge edge = new ComponentEdge(acp.getId(), provNode, reqNode, acp.getPrivacyLevel());
+			ComponentEdge edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode, acp.getPrivacyLevel());
 			
 			provNode.addCommunicationEdge(edge);
 			reqNode.addCommunicationEdge(edge);

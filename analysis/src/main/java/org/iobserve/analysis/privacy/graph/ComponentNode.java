@@ -15,6 +15,7 @@ import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 public class ComponentNode {
 
 	private String assemblyContextID;
+	private String assemblyName;
 	private DataPrivacyLvl privacyLvl;
 	private DeploymentNode hostServer;
 	private Set<ComponentEdge> edges;
@@ -30,8 +31,9 @@ public class ComponentNode {
 	 *            the model representation of the resource container the
 	 *            component is deployed on
 	 */
-	public ComponentNode(String assemblyContextID, DataPrivacyLvl privacyLvl, DeploymentNode hostContext) {
+	public ComponentNode(String assemblyContextID, String assemblyName, DataPrivacyLvl privacyLvl, DeploymentNode hostContext) {
 		this.assemblyContextID = assemblyContextID;
+		this.assemblyName = assemblyName;
 		this.privacyLvl = privacyLvl;
 		this.hostServer = hostContext;
 		this.edges = new LinkedHashSet<ComponentEdge>();
@@ -57,6 +59,13 @@ public class ComponentNode {
 	 */
 	public String getAssemblyContextID() {
 		return assemblyContextID;
+	}
+
+	/**
+	 * @return the assemblyName
+	 */
+	public String getAssemblyName() {
+		return assemblyName;
 	}
 
 	/**

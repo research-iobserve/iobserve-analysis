@@ -31,10 +31,13 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<PrivacyAnalysis
 			System.err.println("Privacy Analysis Model is null. Aborting!");
 			return;
 		}
+		System.out.println("Starting Privacy Analysis ...");
 
 		this.init();
 		element.printGraph();
+		System.out.println("Communication analysis ...");
 		this.startPrivacyAnalysis(element);
+		// System.out.println("Deployment analysis ...");
 		element.printGraph();
 	}
 
@@ -64,27 +67,34 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<PrivacyAnalysis
 	private Set<ComponentEdge> usedEges;
 
 	private ComponentNode traverseNode(ComponentNode currentComp) {
+//		System.out.println("Traversing: " + currentComp.getAssemblyName());
 		ComponentNode reachingPersonalComponent = null;
 
 		if (this.startingNode == null) {
 			this.startingNode = currentComp;
 		} else if (currentComp.getPrivacyLvl() == DataPrivacyLvl.PERSONAL) {
+//			System.out.println("---Joining Data Streams!!!!!");
 			return currentComp;
 		}
 
 		ComponentEdge[] edges = currentComp.getEdges();
 		for (ComponentEdge edge : edges) {
+//			System.out.println("-Analysing Edge: " + edge.getAssemblyConnectorName());
 
+			// Jump over edge if
+			// 1. anonymous connection
+			// 2. personal edge, while in personal component
 			if (edge.getPrivacyLvl() == DataPrivacyLvl.ANONYMIZED
 					|| (currentComp.getPrivacyLvl() == DataPrivacyLvl.PERSONAL && edge.getPrivacyLvl() == DataPrivacyLvl.PERSONAL)) {
 				continue;
 			}
 
+			// Don't use already used edges!
 			if (!usedEges.contains(edge)) {
 				this.usedEges.add(edge);
 				reachingPersonalComponent = this.traverseNode(edge.getEdgePartner(currentComp));
 
-				if (reachingPersonalComponent != null) {
+				if (reachingPersonalComponent != null && currentComp.getPrivacyLvl() != DataPrivacyLvl.PERSONAL) {
 					currentComp.setPrivacyLvl(DataPrivacyLvl.PERSONAL);
 					this.personalComponents.add(currentComp);
 					break;

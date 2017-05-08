@@ -11,12 +11,14 @@ import groovy.ui.Console;
 public class ComponentEdge {
 
 	private String id;
+	private String assemblyConnectorName;
 	private ComponentNode providingNode;
 	private ComponentNode requiringNode;
 	private DataPrivacyLvl privacyLvl;
 
-	public ComponentEdge(String id, ComponentNode providingNode, ComponentNode requiringNode, DataPrivacyLvl privacyLvl) {
+	public ComponentEdge(String id, String assemblyConnectorName, ComponentNode providingNode, ComponentNode requiringNode, DataPrivacyLvl privacyLvl) {
 		this.id = id;
+		this.assemblyConnectorName = assemblyConnectorName;
 		this.providingNode = providingNode;
 		this.requiringNode = requiringNode;
 		this.privacyLvl = privacyLvl;
@@ -59,5 +61,12 @@ public class ComponentEdge {
 	 */
 	public DataPrivacyLvl getPrivacyLvl() {
 		return privacyLvl;
+	}
+	
+	/**
+	 * @return the assemblyConnectorName
+	 */
+	public String getAssemblyConnectorName() {
+		return assemblyConnectorName;
 	}
 }
