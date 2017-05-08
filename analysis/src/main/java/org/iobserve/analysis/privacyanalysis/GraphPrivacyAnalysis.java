@@ -15,8 +15,6 @@ import teetime.stage.basic.AbstractTransformation;
 
 public class GraphPrivacyAnalysis extends AbstractTransformation<PrivacyAnalysisModel, Boolean> {
 
-	
-
 	@Override
 	protected void execute(PrivacyAnalysisModel element) throws Exception {
 
@@ -24,15 +22,24 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<PrivacyAnalysis
 			System.err.println("Privacy Analysis Model is null. Aborting!");
 			return;
 		}
-		System.out.println("Starting Privacy Analysis ...");
+		
+//		element.printGraph();
 
-		element.printGraph();
-
-		System.out.println("Component PrivacyLvl analysis ...");
+		System.out.print("Starting Privacy Analysis ... ");
+		System.out.print("Component PrivacyLvl analysis ...");
+		
 		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(element);
 		classificationAnalysis.start();
 
-		// System.out.println("Deployment analysis ...");
+		System.out.println("Deployment analysis ... ");
+		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(element);
+		boolean legalDeployment = deploymentAnalysis.start();
+
+		if (legalDeployment)
+			System.out.println("The deployment is LEGAL");
+		else
+			System.err.println("The deployment is ILLEGAL");
+
 		element.printGraph();
 	}
 

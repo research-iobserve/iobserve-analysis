@@ -33,7 +33,7 @@ public class PrivacyAnalysisModel {
 	/**
 	 * @return the servers
 	 */
-	private Set<DeploymentNode> getServers() {
+	public Set<DeploymentNode> getServers() {
 		return servers;
 	}
 

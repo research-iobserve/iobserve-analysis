@@ -3,6 +3,8 @@ package org.iobserve.analysis.privacy.graph;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.neovisionaries.i18n.CountryCode;
+
 /**
  * This class is a model of a fully specified pcm resource container for the
  * purpose of privacy analysis.
@@ -54,6 +56,14 @@ public class DeploymentNode {
 	public int getIsoCountryCode() {
 		return isoCountryCode;
 	}
+	
+	/**
+	 * @return the Iso Alpha3 Country Code
+	 */
+	public String getIso3CountryCode()
+	{
+		return CountryCode.getByCode(this.getIsoCountryCode()).getAlpha3();
+	}
 
 	/**
 	 * @return resource container id
@@ -69,13 +79,21 @@ public class DeploymentNode {
 		return resourceContainerName;
 	}
 
+	/**
+	 * @return the containingComponents
+	 */
+	public Set<ComponentNode> getContainingComponents() {
+		return containingComponents;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Server: " + this.resourceContainerID);
 		sb.append("\t-- Location: " + this.isoCountryCode);
+		sb.append(" (" + this.getIso3CountryCode() +")");
 		sb.append("\t-- Name: " + this.getResourceContainerName() + "\n");
-		
+
 		sb.append("-Comp:\t ID \t\t\tCompPrivayLvl \tPers \tDeP \tAnonym \tComponent Name\n");
 
 		for (ComponentNode component : this.containingComponents) {

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
@@ -16,7 +17,8 @@ import teetime.stage.basic.AbstractTransformation;
 public class PrivacyAnalysis extends AbstractLinearComposition<URI, Boolean> {
 
 	private static URI legalPersonalGeoLocationFile;
-	private static int[] legalPersonalGeoLocations;
+	private static HashSet<Integer> legalPersonalGeoLocations;
+	
 	private AbstractTransformation<URI, Boolean>[] compositionStages;
 
 	public PrivacyAnalysis(GraphCreation creation, GraphPrivacyAnalysis analysis) {
@@ -44,17 +46,14 @@ public class PrivacyAnalysis extends AbstractLinearComposition<URI, Boolean> {
 	public static void setLegalPersonalGeoLocationFile(URI legalPersonalGeoLocationFile) {
 		PrivacyAnalysis.legalPersonalGeoLocationFile = legalPersonalGeoLocationFile;
 
-		ArrayList<Integer> legalCountryCodes = new ArrayList<Integer>();
+		HashSet<Integer> legalCountryCodes =  new HashSet<Integer>();
 		if (legalPersonalGeoLocationFile.isFile()) {
+			
 			File file = new File(legalPersonalGeoLocationFile.toFileString());
 			try (Stream<String> stream = Files.lines(file.toPath())) {
-				stream.forEach((s) -> legalCountryCodes.add(Integer.parseInt(s)));
 				
-				PrivacyAnalysis.legalPersonalGeoLocations = new int[legalCountryCodes.size()];
-				for (int i = 0; i < PrivacyAnalysis.legalPersonalGeoLocations.length; i++)
-				{
-					PrivacyAnalysis.legalPersonalGeoLocations[i] = (int) legalCountryCodes.get(i);
-				}
+				stream.forEach((s) -> legalCountryCodes.add(Integer.parseInt(s)));
+				PrivacyAnalysis.legalPersonalGeoLocations = legalCountryCodes;
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -70,7 +69,7 @@ public class PrivacyAnalysis extends AbstractLinearComposition<URI, Boolean> {
 	/**
 	 * @return the legalPersonalGeoLocations
 	 */
-	public static int[] getLegalPersonalGeoLocations() {
+	public static HashSet<Integer> getLegalPersonalGeoLocations() {
 		return legalPersonalGeoLocations;
 	}
 }
