@@ -1,5 +1,11 @@
 package org.iobserve.analysis.privacyanalysis;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
+
+import org.iobserve.analysis.privacy.graph.ComponentEdge;
 import org.iobserve.analysis.privacy.graph.ComponentNode;
 import org.iobserve.analysis.privacy.graph.DeploymentNode;
 import org.iobserve.analysis.privacy.graph.PrivacyAnalysisModel;
@@ -76,17 +82,60 @@ public class DeploymentAnalysis {
 			// data streams"
 			return true;
 		} else {
-			return this.makeExtensiveJoiningDataStreamAnalysis();
+			return this.makeExtensiveJoiningDataStreamAnalysis(server);
 		}
 
 	}
 
+	private ComponentEdge dataSourceEdge;
+	private HashSet<ComponentNode> componetsToReach;
+	private HashSet<ComponentEdge> usedEdges;
+
 	/*
 	 * Checks if the JoiningDataStreams-case is present!
 	 */
-	private boolean makeExtensiveJoiningDataStreamAnalysis() {
-		// TODO Auto-generated method stub
-		return true;
+	private boolean makeExtensiveJoiningDataStreamAnalysis(DeploymentNode server) {
+
+		componetsToReach = server.getContainingComponents().stream().filter(s -> s.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED)
+				.collect(Collectors.toCollection(HashSet::new));
+
+		this.usedEdges = new HashSet<ComponentEdge>();
+		ComponentNode startNode = componetsToReach.iterator().next();
+		boolean singleDataSource = this.traverseComponentNode(startNode);
+
+		return singleDataSource && this.componetsToReach.size() == 0;
+	}
+
+	private boolean traverseComponentNode(ComponentNode currentComp) {
+		this.componetsToReach.remove(currentComp);
+		boolean singleDataSourceEdge = true;
+
+		for (ComponentEdge currentEdge : currentComp.getEdges()) {
+
+			if (currentEdge.getPrivacyLvl() != DataPrivacyLvl.DEPERSONALIZED || this.usedEdges.contains(currentEdge)) {
+
+				// 1. Edge is not interesting for analysis
+				// 2. Edge was already traversed during analysis
+				// 3. Edge leads to dataSource (already covered by 2)
+				// 3. == this.dataSourceEdge == currentEdge
+				continue;
+			}
+
+			this.usedEdges.add(currentEdge);
+			ComponentNode edgePartner = currentEdge.getEdgePartner(currentComp);
+
+			if (edgePartner.getPrivacyLvl() == DataPrivacyLvl.PERSONAL) {
+				if (this.dataSourceEdge == null) {
+					this.dataSourceEdge = currentEdge;
+				} else {
+					return false;
+				}
+			} else if (edgePartner.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED) {
+				singleDataSourceEdge = this.traverseComponentNode(edgePartner);
+			}
+		}
+
+		return singleDataSourceEdge;
 	}
 
 }
