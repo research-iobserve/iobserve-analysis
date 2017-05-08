@@ -44,13 +44,13 @@ public class XMeansClustering implements IClustering {
     public XMeansClustering(final int expectedUserGroups, final int variance,
             final NormalizableDistance distanceMetric) {
         this.minClusters = (expectedUserGroups - variance) < 2 ? 1 : expectedUserGroups - variance;
-        this.maxClusters = (expectedUserGroups + variance) < 2 ? 2 : expectedUserGroups - variance;
+        this.maxClusters = (expectedUserGroups + variance) < 2 ? 2 : expectedUserGroups + variance;
         this.distanceMetric = distanceMetric;
 
     }
 
     @Override
-    public Optional<Instances> getClusterCenters(Instances instances) {
+    public Optional<Instances> getClusterCenters(final Instances instances) {
         final XMeans xMeansClusterer = new XMeans();
         xMeansClusterer.setSeed(new Random().nextInt(Integer.MAX_VALUE));
         xMeansClusterer.setDistanceF(this.distanceMetric);
