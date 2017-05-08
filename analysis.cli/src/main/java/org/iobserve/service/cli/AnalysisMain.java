@@ -38,6 +38,7 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.privacyanalysis.PrivacyAnalysis;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 
 /**
@@ -101,10 +102,12 @@ public final class AnalysisMain {
 								.getResourceEnvironmentModelProvider();
 						final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
 						final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
-						
+
 						String snapshotPath = commandLine.getOptionValue("s");
 						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(URI.createFileURI(snapshotPath), modelProviderPlatform);
 
+						String legalPrivacyGeoLocationsPath = commandLine.getOptionValue("l");
+						PrivacyAnalysis.setLegalPersonalGeoLocationFile(URI.createFileURI(legalPrivacyGeoLocationsPath));
 						final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel,
 								usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
 								systemModelProvider, snapshotBuilder, varianceOfUserGroups, thinkTime, closedWorkload);
@@ -154,6 +157,9 @@ public final class AnalysisMain {
 		options.addOption(Option.builder("w").required(true).longOpt("closed-workload").desc("Closed workload").build());
 		options.addOption(Option.builder("s").required(true).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
 
+		options.addOption(Option.builder("l").required(true).longOpt("legal-geo-locations").hasArg()
+				.desc("the geo-locations, where personal data can be stored").build());
+
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
 
@@ -176,7 +182,9 @@ public final class AnalysisMain {
 				Option.builder("t").required(true).longOpt("think-time").hasArg().desc("Variance of user groups for the clustering").build());
 		options.addOption(Option.builder("w").required(true).longOpt("closed-workload").desc("Closed workload").build());
 		options.addOption(Option.builder("s").required(false).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
-		
+		options.addOption(Option.builder("l").required(false).longOpt("legal-geo-locations").hasArg()
+				.desc("the geo-locations, where personal data can be stored").build());
+
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
 
