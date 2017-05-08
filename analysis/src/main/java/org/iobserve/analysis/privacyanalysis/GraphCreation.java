@@ -187,7 +187,7 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 		//Build Servers Nodes
 		for (ResourceContainerPrivacy resContainer : this.resourceContainers.values())
 		{
-			DeploymentNode server = new DeploymentNode(resContainer.getId(), resContainer.getGeolocation());
+			DeploymentNode server = new DeploymentNode(resContainer.getId(), resContainer.getEntityName(), resContainer.getGeolocation());
 			servers.put(resContainer.getId(), server);
 		}
 		

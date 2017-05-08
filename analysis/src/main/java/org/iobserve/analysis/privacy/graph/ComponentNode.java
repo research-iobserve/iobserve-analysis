@@ -101,8 +101,9 @@ public class ComponentNode {
 
 		sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.PERSONAL).count() + "\t");
 		sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED).count() + "\t");
-		sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.ANONYMIZED).count() + "\n");
+		sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.ANONYMIZED).count() + "\t");
 
+		sb.append(this.getAssemblyName() + "\n");
 		return sb.toString();
 	}
 
