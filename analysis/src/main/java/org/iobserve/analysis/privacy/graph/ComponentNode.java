@@ -1,6 +1,5 @@
 package org.iobserve.analysis.privacy.graph;
 
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 

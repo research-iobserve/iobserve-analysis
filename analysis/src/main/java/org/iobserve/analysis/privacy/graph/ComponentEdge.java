@@ -2,9 +2,9 @@ package org.iobserve.analysis.privacy.graph;
 
 import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 
-import groovy.ui.Console;
-
 /**
+ * This class is a model of a fully specified pcm assembly connector for the
+ * purpose of privacy analysis.
  * 
  * @author Philipp Weimann
  */
@@ -16,7 +16,22 @@ public class ComponentEdge {
 	private ComponentNode requiringNode;
 	private DataPrivacyLvl privacyLvl;
 
-	public ComponentEdge(String id, String assemblyConnectorName, ComponentNode providingNode, ComponentNode requiringNode, DataPrivacyLvl privacyLvl) {
+	/**
+	 * The constructor for the edge.
+	 * 
+	 * @param id
+	 *            the assembly connector privacy id
+	 * @param assemblyConnectorName
+	 *            the entity name
+	 * @param providingNode
+	 *            the edges providing component
+	 * @param requiringNode
+	 *            the edges requiring component
+	 * @param privacyLvl
+	 *            the edges DataPrivacyLvl
+	 */
+	public ComponentEdge(String id, String assemblyConnectorName, ComponentNode providingNode, ComponentNode requiringNode,
+			DataPrivacyLvl privacyLvl) {
 		this.id = id;
 		this.assemblyConnectorName = assemblyConnectorName;
 		this.providingNode = providingNode;
@@ -44,9 +59,16 @@ public class ComponentEdge {
 	public ComponentNode getRequiringNode() {
 		return requiringNode;
 	}
-	
-	public ComponentNode getEdgePartner(ComponentNode firstNode)
-	{
+
+	/**
+	 * This method returns the according edge partner.
+	 * 
+	 * @param firstNode
+	 *            a component at either end of the edge
+	 * @return the component not given as a firstNode, completing the edge
+	 *         partners. Returns null if firstNode is not a edge partner.
+	 */
+	public ComponentNode getEdgePartner(ComponentNode firstNode) {
 		if (firstNode == this.providingNode)
 			return this.requiringNode;
 		else if (firstNode == this.requiringNode)
@@ -62,7 +84,7 @@ public class ComponentEdge {
 	public DataPrivacyLvl getPrivacyLvl() {
 		return privacyLvl;
 	}
-	
+
 	/**
 	 * @return the assemblyConnectorName
 	 */
