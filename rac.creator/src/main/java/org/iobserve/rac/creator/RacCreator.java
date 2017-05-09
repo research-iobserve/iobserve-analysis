@@ -284,7 +284,7 @@ public class RacCreator {
             /** name is in field 6. */
             String classSignature = correspondentData.get(6).replaceAll("\\s+", "");
             if (classSignature.contains("$")) {
-                classSignature = classSignature.substring(0, classSignature.lastIndexOf('$'));
+                classSignature = classSignature.substring(0, classSignature.indexOf('$'));
             }
 
             /** ignore web front end. */
@@ -352,6 +352,8 @@ public class RacCreator {
             } else if (token.contentEquals("static")) {
                 method.setVisibilityModifier("public");
             } else if (token.contentEquals("transient")) {
+                continue;
+            } else if (token.contentEquals("synchronized")) {
                 continue;
             } else if ((i >= 1) && (method.getReturnType() == null)) {
                 method.setReturnType(token);
