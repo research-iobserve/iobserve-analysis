@@ -16,6 +16,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter;
 import java.util.Optional;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
+import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -37,17 +38,29 @@ public class TClustering extends AbstractConsumerStage<Instances> {
      * @param clustering
      *            clustering used
      */
-    public TClustering(IClustering clustering) {
+    public TClustering(final IClustering clustering) {
         this.clustering = clustering;
     }
 
     @Override
-    protected void execute(Instances instances) {
-        final Optional<Instances> centroids = this.clustering.getClusterCenters(instances);
+    protected void execute(final Instances instances) {
 
-        if (centroids.isPresent()) {
-            this.outputPort.send(centroids.get());
+        Optional<ClusteringResults> clusteringResults = Optional.empty();
+
+        for (int i = 0; i < 5; i++) {
+
+            final Optional<ClusteringResults> tempClusteringResults = this.clustering.clusterInstances(instances);
+            if (clusteringResults.isPresent() && tempClusteringResults.isPresent()) {
+                clusteringResults = tempClusteringResults.get().getClusteringMetrics()
+                        .getSumOfSquaredErrors() < clusteringResults.get().getClusteringMetrics()
+                                .getSumOfSquaredErrors() ? clusteringResults : tempClusteringResults;
+            } else if (tempClusteringResults.isPresent() && !clusteringResults.isPresent()) {
+                clusteringResults = tempClusteringResults;
+            }
         }
+
+        clusteringResults.ifPresent(results -> this.outputPort.send(results.getClusteringMetrics().getCentroids()));
+
     }
 
     /**

@@ -16,6 +16,9 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 import java.util.Optional;
 import java.util.Random;
 
+import org.iobserve.analysis.userbehavior.data.ClusteringMetrics;
+import org.iobserve.analysis.userbehavior.data.ClusteringResults;
+
 import weka.clusterers.XMeans;
 import weka.core.Instances;
 import weka.core.NormalizableDistance;
@@ -46,12 +49,12 @@ public class XMeansClustering implements IClustering {
         this.minClusters = (expectedUserGroups - variance) < 2 ? 1 : expectedUserGroups - variance;
         this.maxClusters = (expectedUserGroups + variance) < 2 ? 2 : expectedUserGroups + variance;
         this.distanceMetric = distanceMetric;
-
     }
 
     @Override
-    public Optional<Instances> getClusterCenters(final Instances instances) {
+    public Optional<ClusteringResults> clusterInstances(final Instances instances) {
         final XMeans xMeansClusterer = new XMeans();
+
         xMeansClusterer.setSeed(new Random().nextInt(Integer.MAX_VALUE));
         xMeansClusterer.setDistanceF(this.distanceMetric);
 
@@ -60,7 +63,27 @@ public class XMeansClustering implements IClustering {
 
         try {
             xMeansClusterer.buildClusterer(instances);
-            return Optional.of(xMeansClusterer.getClusterCenters());
+
+            // ****
+            // Code used from org.iobserve.analysis.userbehavior.XMeansClustering
+            // to use org.iobserve.analysis.userbehavior.ClusteringResults
+            int[] clustersize = null;
+            final int[] assignments = new int[instances.numInstances()];
+            clustersize = new int[xMeansClusterer.getClusterCenters().numInstances()];
+            for (int s = 0; s < instances.numInstances(); s++) {
+                assignments[s] = xMeansClusterer.clusterInstance(instances.instance(s));
+                clustersize[xMeansClusterer.clusterInstance(instances.instance(s))]++;
+            }
+
+            final ClusteringMetrics clusteringMetrics = new ClusteringMetrics(xMeansClusterer.getClusterCenters(),
+                    instances, assignments);
+            clusteringMetrics.calculateSimilarityMetrics();
+
+            final ClusteringResults xMeansClusteringResults = new ClusteringResults("X-Means",
+                    xMeansClusterer.getClusterCenters().numInstances(), assignments, clusteringMetrics);
+            // ****
+
+            return Optional.of(xMeansClusteringResults);
 
         } catch (final Exception e) {
             // TODO Auto-generated catch block

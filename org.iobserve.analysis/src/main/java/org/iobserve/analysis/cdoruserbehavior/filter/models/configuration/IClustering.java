@@ -16,6 +16,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 import java.util.Optional;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.TClustering;
+import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 
 import weka.core.Instances;
 
@@ -33,6 +34,6 @@ public interface IClustering {
      *            instances to be clustered
      * @return cluster centers as instances
      */
-    public Optional<Instances> getClusterCenters(Instances instances);
+    public Optional<ClusteringResults> clusterInstances(Instances instances);
 
 }
