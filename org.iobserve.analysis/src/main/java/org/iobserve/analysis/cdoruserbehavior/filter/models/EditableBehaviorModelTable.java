@@ -92,7 +92,8 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
         final String fromSignature = this.getSignatureFromEvent(from);
         final String toSignature = this.getSignatureFromEvent(to);
 
-        if (!(this.isAllowedSignature(fromSignature) && this.isAllowedSignature(toSignature))) {
+        if (!(this.isAllowedSignature(from.getOperationSignature())
+                && this.isAllowedSignature(to.getOperationSignature()))) {
             throw new IllegalArgumentException("event signature not allowed");
         }
 

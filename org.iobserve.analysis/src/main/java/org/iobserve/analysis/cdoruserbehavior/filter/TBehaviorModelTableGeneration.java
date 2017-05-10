@@ -53,12 +53,12 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
         final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
 
         for (final UserSession userSession : userSessions) {
+
             final List<EntryCallEvent> entryCalls = userSession.getEvents();
 
             EntryCallEvent lastCall = null;
             for (final EntryCallEvent eventCall : entryCalls) {
-
-                final boolean isAllowed = this.modelTable.isAllowedSignature(eventCall);
+                final boolean isAllowed = this.modelTable.isAllowedSignature(eventCall.getOperationSignature());
 
                 if ((lastCall != null) && isAllowed) {
                     this.modelTable.addTransition(lastCall, eventCall);

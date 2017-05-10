@@ -106,7 +106,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         final ModelGenerationFilter modelGenerationFilter = new CoCoMEModelGenerationFilterFactory().createFilter();
 
-        final int expectedUserGroups = 5; // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+        final int expectedUserGroups = 4; // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
         final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
                 new ManhattanDistance());
 

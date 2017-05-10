@@ -29,8 +29,10 @@ public class CoCoMEModelGenerationFilterFactory implements IModelGenerationFilte
     @Override
     public ModelGenerationFilter createFilter() {
         final ModelGenerationFilter modelGenerationFilter = new ModelGenerationFilter(false);
-        modelGenerationFilter.addFilterRule(
-                ".*org\\.cocome\\.cloud\\.logic\\.webservice\\.cashdeskline\\.cashdesk\\.CashDesk\\.\\w.*");
+        modelGenerationFilter.addFilterRule( // allow all operations of the package
+                                             // org.cocome.cloud.logic.webservice.cashdeskline.cashdesk
+                                             // except init operations
+                "(p\\w* )(\\w*\\.)*\\w* org\\.cocome\\.cloud\\.logic\\.webservice\\.cashdeskline\\.cashdesk\\.(\\w*\\.)*\\w*\\(.*");
 
         return modelGenerationFilter;
     }

@@ -76,21 +76,21 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
             final RepositoryModelProvider repositoryModelProvider, final int varianceOfUserGroups, final int thinkTime,
             final boolean closedWorkload) {
         this.correspondenceModel = correspondenceModel;
-        this.usageModelProvider = usageModelProvider;        
+        this.usageModelProvider = usageModelProvider;
         this.repositoryModelProvider = repositoryModelProvider;
 
         this.varianceOfUserGroups = varianceOfUserGroups;
         this.thinkTime = thinkTime;
         this.closedWorkload = closedWorkload;
 
-        this.outputPort = this.createOutputPort();       
+        this.outputPort = this.createOutputPort();
     }
 
     @Override
     protected void execute(final EntryCallSequenceModel entryCallSequenceModel) {
         // Resets the current usage model
         this.usageModelProvider.loadModel();
-        UsageModel um = usageModelProvider.getModel();
+        final UsageModel um = this.usageModelProvider.getModel();
         this.outputPort.send(um);
         this.usageModelProvider.resetModel();
         final int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
@@ -106,8 +106,9 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
         }
         this.outputPort.send(behaviorModeling.getPcmUsageModel());
         // Sets the new usage model within iObserve
+        System.out.println(
+                "Models equal?:" + this.usageModelProvider.getModel().equals(behaviorModeling.getPcmUsageModel()));
         this.usageModelProvider.save();
-       
 
     }
 
