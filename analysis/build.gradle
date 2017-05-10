@@ -45,7 +45,7 @@ dependencies {
 		
 	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
 	compile 'extra:org.palladiosimulator.pcm:4.0.0.201511051135'
-	compile 'extra:org.palladiosimulator.pcm.privacy:4.0.0.2017-04-27'
+	compile 'extra:org.palladiosimulator.pcm.privacy:4.0.0.2017-05-10'
 
 	compile 'extra:de.uka.ipd.sdq.stoex:2.2.0+'
 	compile 'extra:de.uka.ipd.sdq.units:2.1.0.201511050934'

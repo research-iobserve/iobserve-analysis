@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.iobserve.analysis.InitializeModelProviders;
 import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 
 /**
@@ -16,12 +17,13 @@ public class PrivacyAnalysisModel {
 
 	private Set<DeploymentNode> servers;
 	private Set<ComponentNode> components;
+	private InitializeModelProviders pcmModels;
 
-	public PrivacyAnalysisModel(Collection<DeploymentNode> servers, Collection<ComponentNode> components) {
+	public PrivacyAnalysisModel(Collection<DeploymentNode> servers, Collection<ComponentNode> components, InitializeModelProviders pcmModels) {
 		this.servers = new HashSet<DeploymentNode>(servers);
 		this.components = new HashSet<ComponentNode>(components);
-
-//		this.printGraph();
+		this.pcmModels = pcmModels;
+		// this.printGraph();
 	}
 
 	public void printGraph() {
@@ -42,6 +44,13 @@ public class PrivacyAnalysisModel {
 	 */
 	public Set<ComponentNode> getComponents() {
 		return components;
+	}
+
+	/**
+	 * @return the pcmModels
+	 */
+	public InitializeModelProviders getPcmModels() {
+		return pcmModels;
 	}
 
 }

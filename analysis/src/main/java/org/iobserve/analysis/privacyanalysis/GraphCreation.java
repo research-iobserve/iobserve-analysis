@@ -220,7 +220,7 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 		}
 		
 		
-		return new PrivacyAnalysisModel(servers.values(), components.values());
+		return new PrivacyAnalysisModel(servers.values(), components.values(), this.modelProviders);
 	}
 
 }
