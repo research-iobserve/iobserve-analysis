@@ -71,10 +71,10 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
             this.sequenceModelCache.add(entryCallSequenceModel);
 
         } else {
-            final BehaviorModelTable modelTable = this.behaviorModelTable.getClearedCopy();
             final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
 
             for (final UserSession userSession : userSessions) {
+                final BehaviorModelTable modelTable = this.behaviorModelTable.getClearedCopy();
                 final List<EntryCallEvent> entryCalls = userSession.getEvents();
 
                 EntryCallEvent lastCall = null;
@@ -93,8 +93,9 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
 
                     lastCall = isAllowed ? eventCall : lastCall;
                 }
+                this.outputPort.send(modelTable);
             }
-            this.outputPort.send(modelTable);
+
         }
 
     }
