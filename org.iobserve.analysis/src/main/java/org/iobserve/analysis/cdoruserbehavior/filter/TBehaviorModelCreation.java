@@ -35,17 +35,23 @@ import weka.core.Instances;
  *
  */
 public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
+    private final String namePrefix;
 
     private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
 
+    public TBehaviorModelCreation(final String namePrefix) {
+        this.namePrefix = namePrefix;
+    }
+
     @Override
-    protected void execute(Instances instances) {
+    protected void execute(final Instances instances) {
 
         final int size = instances.numInstances();
 
         for (int i = 0; i < size; i++) {
             final Instance instance = instances.instance(i);
             final BehaviorModel behaviorModel = this.createBehaviorModel(instances, instance);
+            behaviorModel.setName(this.namePrefix + i);
             this.outputPort.send(behaviorModel);
         }
     }
@@ -104,7 +110,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      *            attribute name
      * @return true if the name represents an edge, false else
      */
-    private boolean matchEdge(String name) {
+    private boolean matchEdge(final String name) {
         return name.startsWith(AbstractBehaviorModelTable.EDGE_INDICATOR);
     }
 
@@ -115,7 +121,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      *            attribute name
      * @return true if the name represents an node, false else
      */
-    private boolean matchNode(String name) {
+    private boolean matchNode(final String name) {
         return name.startsWith(AbstractBehaviorModelTable.INFORMATION_INDICATOR);
     }
 
@@ -129,7 +135,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      *
      * @return EntryCallEdge
      */
-    private Optional<EntryCallEdge> createEdge(String name, Double value) {
+    private Optional<EntryCallEdge> createEdge(final String name, final Double value) {
 
         if (value > 0) {
 
@@ -160,7 +166,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      *
      * @return EntryCallNode
      */
-    private Optional<EntryCallNode> createNode(String name, Double value) {
+    private Optional<EntryCallNode> createNode(final String name, final Double value) {
 
         final String[] signatures = this.splitSignature(AbstractBehaviorModelTable.INFORMATION_INDICATOR,
                 AbstractBehaviorModelTable.INFORMATION_DIVIDER, name);
@@ -188,7 +194,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      *            signature
      * @return separate strings
      */
-    private String[] splitSignature(String indicator, String divider, String signature) {
+    private String[] splitSignature(final String indicator, final String divider, final String signature) {
 
         return signature.replaceAll(indicator, "").split(divider);
 

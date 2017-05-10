@@ -17,6 +17,7 @@
 package org.iobserve.analysis.cdoruserbehavior.filter;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -88,6 +89,7 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
         if (!behavior.getActions_ScenarioBehaviour().isEmpty()) {
             final BehaviorModel behaviorModel = new BehaviorModel();
             this.traverseScenarioBehavior(behavior, behaviorModel, Optional.empty());
+            behaviorModel.setName("mpe-behavior");
             return Optional.of(behaviorModel);
         } else {
 
@@ -101,9 +103,6 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
         // get start node
         final Optional<Start> startAction = behavior.getActions_ScenarioBehaviour().stream()
                 .filter(Start.class::isInstance).map(Start.class::cast).collect(new SingleOrNoneCollector<>());
-
-        // behavior.getActions_ScenarioBehaviour().stream().map(a ->
-        // a.getClass()).forEach(System.out::println);
 
         if (startAction.isPresent()) {
             return this.traverseAction(behaviorModel, optPreviousNodes, startAction.get().getSuccessor());
@@ -173,7 +172,7 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
         final Map<EntryCallNode, Double> loopEnds = this.traverseScenarioBehavior(loop.getBodyBehaviour_Loop(),
                 behaviorModel, optPreviousNodes);
 
-        final Optional<EntryCallNode> loopStart = this.findLoopStart(loop, behaviorModel);
+        final Optional<EntryCallNode> loopStart = this.findLoopStart(loop);
 
         if (loopStart.isPresent()) {
             final Map<EntryCallNode, Double> endNodes = new HashMap<>();
@@ -195,15 +194,33 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
      *            loop
      * @return first found {@link EntryLevelSystemCall}, if found
      */
-    private Optional<EntryCallNode> findLoopStart(final Loop loop, final BehaviorModel behaviorModel) {
-        final Optional<EntryLevelSystemCall> entryLevelSystemCall = loop.getBodyBehaviour_Loop()
-                .getActions_ScenarioBehaviour().stream().filter(EntryLevelSystemCall.class::isInstance)
-                .map(EntryLevelSystemCall.class::cast).findFirst();
+    private Optional<EntryCallNode> findLoopStart(final AbstractUserAction action) {
+        if (action instanceof Stop) { // LoopStart not found
+            return Optional.empty();
 
-        final Optional<EntryCallNode> entryCallNode = entryLevelSystemCall.isPresent()
-                ? Optional.of(this.createEntryCallNode(entryLevelSystemCall.get())) : Optional.empty();
+        } else if (action instanceof EntryLevelSystemCall) {// found loop start
+            final EntryLevelSystemCall entryLevelSystemCall = (EntryLevelSystemCall) action;
+            final EntryCallNode entryCallNode = this.createEntryCallNode(entryLevelSystemCall);
+            return Optional.of(entryCallNode);
 
-        return entryCallNode;
+        } else if (action instanceof Loop) {// search nested scenario
+            final Loop loop = (Loop) action;
+            final List<AbstractUserAction> userActions = loop.getBodyBehaviour_Loop().getActions_ScenarioBehaviour();
+
+            if (userActions.size() > 0) {
+                return this.findLoopStart(userActions.get(0));
+            } else {
+                return Optional.empty();
+            }
+
+        } else if (action instanceof Branch) {// not possibleble in theory, a ENtryCallSystemCall
+                                              // will allways found before
+            return Optional.empty();
+
+        } else {// next action
+            return this.findLoopStart(action.getSuccessor());
+        }
+
     }
 
     /**

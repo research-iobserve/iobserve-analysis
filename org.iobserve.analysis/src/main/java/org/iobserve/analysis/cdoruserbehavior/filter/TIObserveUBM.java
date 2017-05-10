@@ -45,7 +45,6 @@ import teetime.framework.AbstractConsumerStage;
  *
  */
 public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
-    private final String modelName = "JPetstore Behavior Model - cdo mixr";
     private final String baseUrl = "http://localhost:8080/ubm-backend/v1";
     private final Map<String, JsonNode> nodeMap;
 
@@ -65,7 +64,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
     @Override
     protected void execute(final BehaviorModel model) {
         this.nodeMap.clear();
-        final long modelId = this.createGraph(this.modelName);
+        final long modelId = this.createGraph(model.getName());
         this.createNodes(model.getEntryCallNodes(), modelId);
         this.createEdges(model.getEntryCallEdges(), modelId);
 
@@ -176,7 +175,6 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
             final ObjectNode json = this.objectMapper.createObjectNode();
             json.put("id", 0);
             json.put("name", entryCallNode.getSignature());
-            System.out.println("Node Created: " + entryCallNode.getSignature());
 
             final ObjectNode extras = this.objectMapper.createObjectNode();
             for (final CallInformation callInformation : entryCallNode.getEntryCallInformation()) {

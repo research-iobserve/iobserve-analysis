@@ -110,7 +110,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
                 new ManhattanDistance());
 
-        final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration(
+        final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration("cdor-",
                 modelGenerationFilter, new JPetstoreStrategy(), new FunctionNameOnlySignatureStrategy(),
                 behaviorModelClustering);
 

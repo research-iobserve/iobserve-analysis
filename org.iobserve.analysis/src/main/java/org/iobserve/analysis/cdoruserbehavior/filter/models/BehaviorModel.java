@@ -29,7 +29,7 @@ import org.iobserve.analysis.filter.models.UserSession;
  *
  */
 public class BehaviorModel {
-
+    private String name;
     private EntryCallNode rootEntryCall;
     private final Set<EntryCallNode> entryCallNodes;
     private final Set<EntryCallEdge> entryCallEdges;
@@ -50,7 +50,7 @@ public class BehaviorModel {
      *
      * @param edge
      */
-    public void addEdge(EntryCallEdge edge) {
+    public void addEdge(final EntryCallEdge edge) {
 
         // edge already existing?
         final Optional<EntryCallEdge> matchedEdge = this.entryCallEdges.stream().filter(edge::equals)
@@ -77,7 +77,7 @@ public class BehaviorModel {
      *            node to check
      * @return matching node if present
      */
-    public Optional<EntryCallNode> findNode(EntryCallNode node) {
+    public Optional<EntryCallNode> findNode(final EntryCallNode node) {
         final Optional<EntryCallNode> matchingNode = this.entryCallNodes.stream().filter(node::equals)
                 .collect(new SingleOrNoneCollector<>());
         return matchingNode;
@@ -128,6 +128,24 @@ public class BehaviorModel {
      */
     public Set<UserSession> getUserSessions() {
         return this.userSessions;
+    }
+
+    /**
+     * getter
+     *
+     * @return name
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * setter
+     * 
+     * @param name
+     */
+    public void setName(final String name) {
+        this.name = name;
     }
 
     /**

@@ -22,6 +22,9 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
  *
  */
 public class BehaviorModelConfiguration {
+
+    private final String behaviorModelNamePrefix;
+
     // table generation configuration
     private final ModelGenerationFilter modelGenerationFilter;
 
@@ -42,10 +45,11 @@ public class BehaviorModelConfiguration {
      * @param clustering
      *            clustering
      */
-    public BehaviorModelConfiguration(final ModelGenerationFilter modelGenerationFilter,
+    public BehaviorModelConfiguration(final String namePrefix, final ModelGenerationFilter modelGenerationFilter,
             final IRepresentativeStrategy representativeStrategy,
             final ISignatureCreationStrategy signatureCreationStrategy, final IClustering clustering) {
         super();
+        this.behaviorModelNamePrefix = namePrefix;
         this.signatureCreationStrategy = signatureCreationStrategy;
         this.modelGenerationFilter = modelGenerationFilter;
         this.representativeStrategy = representativeStrategy;
@@ -81,11 +85,21 @@ public class BehaviorModelConfiguration {
 
     /**
      * getter
-     * 
+     *
      * @return the signatureCreationStrategy
      */
     public ISignatureCreationStrategy getSignatureCreationStrategy() {
         return this.signatureCreationStrategy;
+    }
+
+    /**
+     * getter
+     * 
+     * @return nameprefix
+     */
+    public String getNamePrefix() {
+        return this.behaviorModelNamePrefix;
+
     }
 
 }

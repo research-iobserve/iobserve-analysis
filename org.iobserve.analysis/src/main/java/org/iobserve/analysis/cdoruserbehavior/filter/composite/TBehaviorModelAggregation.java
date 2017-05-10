@@ -16,7 +16,6 @@ package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelCreation;
 import org.iobserve.analysis.cdoruserbehavior.filter.TClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.TIObserveUBM;
-import org.iobserve.analysis.cdoruserbehavior.filter.TIObserveUIServer;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 
 import kieker.common.logging.Log;
@@ -41,11 +40,11 @@ public class TBehaviorModelAggregation extends CompositeStage {
     /**
      * constructor configuratition of the aggregation filters
      */
-    public TBehaviorModelAggregation(BehaviorModelConfiguration configuration) {
+    public TBehaviorModelAggregation(final BehaviorModelConfiguration configuration) {
         this.configuration = configuration;
 
         this.tClustering = new TClustering(this.configuration.getClustering());
-        this.tBehaviorModelCreation = new TBehaviorModelCreation();
+        this.tBehaviorModelCreation = new TBehaviorModelCreation(configuration.getNamePrefix());
         this.tIObserveUBM = new TIObserveUBM();
 
         this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
