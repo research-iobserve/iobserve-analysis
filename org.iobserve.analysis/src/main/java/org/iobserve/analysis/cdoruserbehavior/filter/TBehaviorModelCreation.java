@@ -16,6 +16,8 @@
 package org.iobserve.analysis.cdoruserbehavior.filter;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.models.AbstractBehaviorModelTable;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModel;
@@ -111,7 +113,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      * @return true if the name represents an edge, false else
      */
     private boolean matchEdge(final String name) {
-        return name.startsWith(AbstractBehaviorModelTable.EDGE_INDICATOR);
+        return this.matchStart(AbstractBehaviorModelTable.EDGE_INDICATOR_PATTERN, name);
     }
 
     /**
@@ -122,7 +124,22 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      * @return true if the name represents an node, false else
      */
     private boolean matchNode(final String name) {
-        return name.startsWith(AbstractBehaviorModelTable.INFORMATION_INDICATOR);
+        return this.matchStart(AbstractBehaviorModelTable.INFORMATION_INDICATOR_PATTERN, name);
+    }
+
+    /**
+     * does the pattern matches the start of the string
+     *
+     * @param pattern
+     *            pattern
+     * @param string
+     *            string
+     * @return true if pattern is found at the beginning of the string, false else
+     */
+    private boolean matchStart(final Pattern pattern, final String string) {
+        final Matcher matcher = pattern.matcher(string);
+        final boolean match = matcher.find() ? matcher.start() == 0 : false;
+        return match;
     }
 
     /**
@@ -136,11 +153,10 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      * @return EntryCallEdge
      */
     private Optional<EntryCallEdge> createEdge(final String name, final Double value) {
+        if (value >= 1) { // we want no values like 0.6
 
-        if (value > 0) {
-
-            final String[] nodeNames = this.splitSignature(AbstractBehaviorModelTable.EDGE_INDICATOR,
-                    AbstractBehaviorModelTable.EDGE_DIVIDER, name);
+            final String[] nodeNames = this.splitSignature(AbstractBehaviorModelTable.EDGE_INDICATOR_PATTERN,
+                    AbstractBehaviorModelTable.EDGE_DIVIDER_PATTERN, name);
 
             if (nodeNames.length == 2) {
                 final EntryCallNode from = new EntryCallNode(nodeNames[0]);
@@ -168,8 +184,8 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      */
     private Optional<EntryCallNode> createNode(final String name, final Double value) {
 
-        final String[] signatures = this.splitSignature(AbstractBehaviorModelTable.INFORMATION_INDICATOR,
-                AbstractBehaviorModelTable.INFORMATION_DIVIDER, name);
+        final String[] signatures = this.splitSignature(AbstractBehaviorModelTable.INFORMATION_INDICATOR_PATTERN,
+                AbstractBehaviorModelTable.INFORMATION_DIVIDER_PATTERN, name);
 
         if (signatures.length == 2) {
             final EntryCallNode node = new EntryCallNode(signatures[0]);
@@ -194,9 +210,11 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      *            signature
      * @return separate strings
      */
-    private String[] splitSignature(final String indicator, final String divider, final String signature) {
-
-        return signature.replaceAll(indicator, "").split(divider);
+    private String[] splitSignature(final Pattern indicatorPattern, final Pattern dividerPattern,
+            final String signature) {
+        final String removedIndicator = indicatorPattern.matcher(signature).replaceAll("");
+        final String[] dividerSplit = dividerPattern.split(removedIndicator);
+        return dividerSplit;
 
     }
 

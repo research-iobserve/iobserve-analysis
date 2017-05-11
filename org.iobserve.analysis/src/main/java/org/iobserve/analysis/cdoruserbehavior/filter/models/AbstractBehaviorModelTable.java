@@ -14,6 +14,8 @@
 
 package org.iobserve.analysis.cdoruserbehavior.filter.models;
 
+import java.util.regex.Pattern;
+
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
@@ -27,10 +29,17 @@ import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 public abstract class AbstractBehaviorModelTable {
     public static final int EMPTY_TRANSITION = -1;
     public static final int TRANSITION_THRESHOLD = -1;
-    public static final String EDGE_INDICATOR = "<->";
-    public static final String EDGE_DIVIDER = "-->";
+    public static final String EDGE_INDICATOR = "><";
+    public static final String EDGE_DIVIDER = "->";
     public static final String INFORMATION_INDICATOR = "##";
-    public static final String INFORMATION_DIVIDER = ":::";
+    public static final String INFORMATION_DIVIDER = "~~";
+
+    public static final Pattern EDGE_INDICATOR_PATTERN = Pattern.compile(AbstractBehaviorModelTable.EDGE_INDICATOR);
+    public static final Pattern EDGE_DIVIDER_PATTERN = Pattern.compile(AbstractBehaviorModelTable.EDGE_DIVIDER);
+    public static final Pattern INFORMATION_INDICATOR_PATTERN = Pattern
+            .compile(AbstractBehaviorModelTable.INFORMATION_INDICATOR);
+    public static final Pattern INFORMATION_DIVIDER_PATTERN = Pattern
+            .compile(AbstractBehaviorModelTable.INFORMATION_DIVIDER);
 
     private final ISignatureCreationStrategy signatureCreationStrategy;
 
@@ -102,7 +111,7 @@ public abstract class AbstractBehaviorModelTable {
 
     /**
      * getter
-     * 
+     *
      * @return signatureCreationStrategy
      */
     public ISignatureCreationStrategy getSignatureCreationStrategy() {
