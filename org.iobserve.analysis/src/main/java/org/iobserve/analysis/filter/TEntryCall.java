@@ -17,6 +17,7 @@ package org.iobserve.analysis.filter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.iobserve.analysis.data.ExtendedAfterOperationEvent;
 import org.iobserve.analysis.data.ExtendedBeforeOperationEvent;
@@ -37,6 +38,7 @@ import teetime.framework.OutputPort;
  * the API for multiple input ports.
  *
  * @author Reiner Jung
+ * @author Christoph Dornieden
  * @version 1.0
  */
 public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
@@ -49,6 +51,9 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     private final Map<Long, BeforeOperationEvent> beforeOperationEvents = new HashMap<>();
     /** output port. */
     private final OutputPort<ExtendedEntryCallEvent> outputPort = this.createOutputPort();
+    private final Pattern openBracket = Pattern.compile("\\[");
+    private final Pattern closedBracket = Pattern.compile("\\]");
+    private final Pattern emptyBrackets = Pattern.compile("\\[\\]");
 
     /**
      * Does not need additional information.
@@ -106,7 +111,10 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                         final ExtendedAfterOperationEvent extendedAfterOperationEvent = (ExtendedAfterOperationEvent) afterOperationEvent;
                         final String newInformations = extendedAfterOperationEvent.getInformations();
 
-                        callInformations = callInformations.replace("]", ",") + newInformations.replaceAll("[", "");
+                        callInformations = this.emptyBrackets.matcher(callInformations).matches() ? newInformations
+                                : this.closedBracket.matcher(callInformations).replaceAll(",")
+                                        + this.openBracket.matcher(newInformations).replaceAll("");
+                        System.out.println(callInformations);
 
                     }
 
