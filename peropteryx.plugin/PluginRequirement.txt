@@ -1,0 +1,9 @@
+///// Neon Update Site ////
+E4 Developer Tools
+XText Complete SDK
+
+//// http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest/ ////
+E4 Context Spy
+E4 CSS Spy (Both)
+Eclipse 4 - Event Spy	(Both)
+Eclipse 4 - Preference Spy	
