@@ -1,4 +1,4 @@
-package org.iobserve.modelcreation;
+package org.iobserve.planning;
 
 public class CandidateInformations {
 

@@ -1,4 +1,4 @@
-package org.iobserve.modelcreation;
+package org.iobserve.planning;
 
 import org.eclipse.emf.common.util.URI;
 import teetime.stage.basic.AbstractTransformation;
