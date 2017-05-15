@@ -1,32 +1,29 @@
 package org.iobserve.planning.peropteryx.plugin;
 
-import java.io.File;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 public class ModelFileHelper {
+	private static final Logger LOG = LogManager.getLogger(ModelFileHelper.class);
 
 	public static IPath getModelFilePath(String modelDir, String extension) {
 		IPath modelDirPath = new Path(modelDir);
+		IFolder modelDirFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(modelDirPath);
 
-		for (File file : modelDirPath.toFile().listFiles()) {
-			if (getFileExtension(file.getName()).equals(extension)) {
-				return new Path(file.getPath());
+		try {
+			for (IResource resource : modelDirFolder.members()) {
+				if ((resource.getType() == IResource.FILE) && resource.getFileExtension().equals(extension)) {
+					return resource.getLocation();
+				}
 			}
+		} catch (CoreException e) {
 		}
-
 		return null;
-	}
-
-	/**
-	 * Get file extension of the given path.
-	 *
-	 * @param path
-	 *            path
-	 * @return file extension
-	 */
-	private static String getFileExtension(final String path) {
-		return path.substring(path.lastIndexOf(".") + 1, path.length());
 	}
 }

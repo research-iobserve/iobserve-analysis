@@ -59,15 +59,14 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		// String modelFile;
 		//
 		// if (modelDir.endsWith("/")) {
-		// modelFile = "platform:/resource/" + modelDir + modelName +
-		// fileExtension;
+		// modelFile = "platform:/resource/" + modelDir.substring(0,
+		// modelDir.length() - 1);
 		// } else {
-		// modelFile = "platform:/resource/" + modelDir + "/" + modelName +
-		// fileExtension;
+		// modelFile = "platform:/resource/" + modelDir;
 		// }
 
 		IPath filePath = ModelFileHelper.getModelFilePath(modelDir, fileExtension);
-		LOG.info(String.format("Retrieved model file with path %s", filePath.toString()));
+		LOG.info(String.format("Retrieved model file with path %s", filePath));
 		return filePath;
 	}
 
