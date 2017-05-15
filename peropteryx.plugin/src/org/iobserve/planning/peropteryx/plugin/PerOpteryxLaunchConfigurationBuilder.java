@@ -50,30 +50,32 @@ public class PerOpteryxLaunchConfigurationBuilder {
 	 * @param modelDir
 	 *            - The directory relative to the workspace root where the model
 	 *            is stored. May end with a '/' or without.
-	 * @param modelName
 	 * @param fileExtension
 	 *            - The file extension of the specific model including a dot,
 	 *            e.g. .allocation for an allocation model file.
 	 * @return
 	 */
-	private static IPath getModelFilePath(String modelDir, String modelName, String fileExtension) {
-		String modelFile;
+	private static IPath getModelFilePath(String modelDir, String fileExtension) {
+		// String modelFile;
+		//
+		// if (modelDir.endsWith("/")) {
+		// modelFile = "platform:/resource/" + modelDir + modelName +
+		// fileExtension;
+		// } else {
+		// modelFile = "platform:/resource/" + modelDir + "/" + modelName +
+		// fileExtension;
+		// }
 
-		if (modelDir.endsWith("/")) {
-			modelFile = "platform:/resource/" + modelDir + modelName + fileExtension;
-		} else {
-			modelFile = "platform:/resource/" + modelDir + "/" + modelName + fileExtension;
-		}
-
-		IPath filePath = new Path(modelFile);
+		IPath filePath = ModelFileHelper.getModelFilePath(modelDir, fileExtension);
+		LOG.info(String.format("Retrieved model file with path %s", filePath.toString()));
 		return filePath;
 	}
 
-	public static ILaunchConfiguration getDefaultLaunchConfiguration(String projectModelDir, String modelName,
-			String sourceModelDir) throws CoreException {
+	public static ILaunchConfiguration getDefaultLaunchConfiguration(String projectModelDir, String sourceModelDir)
+			throws CoreException {
 		final Map<String, Object> attr = new HashMap<>();
 
-		setDefaultConfigFiles(projectModelDir, modelName, attr);
+		setDefaultConfigFiles(projectModelDir, attr);
 
 		setDefaultGeneralOptions(attr);
 
@@ -301,9 +303,9 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.INDIVIDUALS_PER_GENERATION, "3");
 	}
 
-	private static void setDefaultConfigFiles(String modelDir, String modelName, final Map<String, Object> attr) {
+	private static void setDefaultConfigFiles(String modelDir, final Map<String, Object> attr) {
 		// Standard PCM settings
-		IPath allocationFile = getModelFilePath(modelDir, modelName, ".allocation");
+		IPath allocationFile = getModelFilePath(modelDir, "allocation");
 		LOG.info("Allocation file: " + allocationFile);
 		attr.put(ConstantsContainer.ALLOCATION_FILE, allocationFile.toString());
 
@@ -311,15 +313,15 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		LOG.info("Output folder: " + outputFolder);
 		attr.put(ConstantsContainer.CLIENTOUT_PATH, outputFolder.toString());
 
-		IPath repositoryFile = getModelFilePath(modelDir, modelName, ".repository");
+		IPath repositoryFile = getModelFilePath(modelDir, "repository");
 		LOG.info("Repository file: " + repositoryFile);
 		attr.put(ConstantsContainer.REPOSITORY_FILE, repositoryFile.toString());
 
-		IPath resourceEnvFile = getModelFilePath(modelDir, modelName, ".resourceenvironment");
+		IPath resourceEnvFile = getModelFilePath(modelDir, "resourceenvironment");
 		LOG.info("Resourceenvironment file: " + resourceEnvFile);
 		attr.put(ConstantsContainer.RESOURCEENVIRONMENT_FILE, resourceEnvFile.toString());
 
-		IPath systemFile = getModelFilePath(modelDir, modelName, ".system");
+		IPath systemFile = getModelFilePath(modelDir, "system");
 		LOG.info("System file: " + systemFile);
 		attr.put(ConstantsContainer.SYSTEM_FILE, systemFile.toString());
 
@@ -329,7 +331,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		LOG.info("Temp folder: " + tempFolder);
 		attr.put(ConstantsContainer.TEMPORARY_DATA_LOCATION, tempFolder.toString());
 
-		IPath usageFile = getModelFilePath(modelDir, modelName, ".usagemodel");
+		IPath usageFile = getModelFilePath(modelDir, "usagemodel");
 		LOG.info("Usage file: " + usageFile);
 		attr.put(ConstantsContainer.USAGE_FILE, usageFile.toString());
 
@@ -341,15 +343,15 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(ConstantsContainer.FEATURE_CONFIG, ConstantsContainer.DEFAULT_FEATURE_CONFIGURATION_FILE);
 
 		// PerOpteryx specific settings
-		IPath costFile = getModelFilePath(modelDir, modelName, ".cost");
+		IPath costFile = getModelFilePath(modelDir, "cost");
 		LOG.info("Cost file: " + costFile);
 		attr.put(DSEConstantsContainer.COST_FILE, costFile.toString());
 
-		IPath decisionFile = getModelFilePath(modelDir, modelName, ".designdecision");
+		IPath decisionFile = getModelFilePath(modelDir, "designdecision");
 		LOG.info("Designdecision file: " + decisionFile);
 		attr.put(DSEConstantsContainer.DESIGN_DECISION_FILE, decisionFile.toString());
 
-		IPath qmlFile = getModelFilePath(modelDir, modelName, ".qmldeclarations");
+		IPath qmlFile = getModelFilePath(modelDir, "qmldeclarations");
 		LOG.info("QMLDeclarations file: " + qmlFile);
 		attr.put(DSEConstantsContainer.QML_DEFINITION_FILE, qmlFile.toString());
 	}
