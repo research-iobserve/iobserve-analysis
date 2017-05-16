@@ -17,6 +17,7 @@ package org.iobserve.analysis;
 
 import java.io.IOException;
 
+import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
@@ -85,7 +86,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 	public AbstractObservationConfiguration(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
 			final RepositoryModelProvider repositoryModelProvider, final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-			final SnapshotBuilder snapshotBuilder, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, 
+			final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
 		/** configure filter. */
 		this.recordSwitch = new RecordSwitch();
 
@@ -98,7 +100,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 				varianceOfUserGroups, thinkTime, closedWorkload);
 		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
 		final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
-		final ModelCreation modelCreation = new ModelCreation(new CandidateCreation(), new CandidateSelector());
+		final ModelCreation modelCreation = new ModelCreation(new CandidateCreation(perOpteryxHeadless), new CandidateSelector());
 
 		/** dispatch different monitoring data. */
 		// Path Allocation => Deployment => Snapshot

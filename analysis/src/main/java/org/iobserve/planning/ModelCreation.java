@@ -10,7 +10,8 @@ public class ModelCreation extends AbstractLinearComposition<URI, URI> {
 
 	public ModelCreation(CandidateCreation candidateCreator, CandidateSelector candidateSelector) {
 		super(candidateCreator.getInputPort(), candidateSelector.getOutputPort());
-		// TODO Auto-generated constructor stub
+		
+		this.connectPorts(candidateCreator.getOutputPort(), candidateSelector.getInputPort());
 	}
 
 }

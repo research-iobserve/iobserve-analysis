@@ -101,13 +101,15 @@ public final class AnalysisMain {
 								.getResourceEnvironmentModelProvider();
 						final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
 						final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
-						
+
 						String snapshotPath = commandLine.getOptionValue("s");
 						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(URI.createFileURI(snapshotPath), modelProviderPlatform);
+						
+						final URI perOpteryxUri = URI.createFileURI(commandLine.getOptionValue("po"));
 
 						final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel,
 								usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
-								systemModelProvider, snapshotBuilder, varianceOfUserGroups, thinkTime, closedWorkload);
+								systemModelProvider, snapshotBuilder, perOpteryxUri, varianceOfUserGroups, thinkTime, closedWorkload);
 
 						System.out.println("Analysis configuration");
 						final Execution<Configuration> analysis = new Execution<>(configuration);
@@ -153,6 +155,8 @@ public final class AnalysisMain {
 				.desc("Variance of user groups for the clustering").build());
 		options.addOption(Option.builder("w").required(true).longOpt("closed-workload").desc("Closed workload").build());
 		options.addOption(Option.builder("s").required(true).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
+		options.addOption(Option.builder("po").required(true).longOpt("perOpteryx-headless-location").hasArg()
+				.desc("the location of the PerOpteryx headless plugin").build());
 
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
@@ -176,7 +180,9 @@ public final class AnalysisMain {
 				Option.builder("t").required(true).longOpt("think-time").hasArg().desc("Variance of user groups for the clustering").build());
 		options.addOption(Option.builder("w").required(true).longOpt("closed-workload").desc("Closed workload").build());
 		options.addOption(Option.builder("s").required(false).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
-		
+		options.addOption(Option.builder("po").required(false).longOpt("perOpteryx-headless-location").hasArg()
+				.desc("the location of the PerOpteryx headless plugin").build());
+
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
 
