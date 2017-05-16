@@ -33,6 +33,9 @@ import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.planning.CandidateCreation;
+import org.iobserve.planning.CandidateSelector;
+import org.iobserve.planning.ModelCreation;
 
 import teetime.framework.Configuration;
 
@@ -95,6 +98,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 				varianceOfUserGroups, thinkTime, closedWorkload);
 		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
 		final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
+		final ModelCreation modelCreation = new ModelCreation(new CandidateCreation(), new CandidateSelector());
 
 		/** dispatch different monitoring data. */
 		// Path Allocation => Deployment => Snapshot
@@ -116,6 +120,9 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		// Path GeoLocation => Snapshot
 		this.connectPorts(this.recordSwitch.getGeoLocationPort(), tGeoLocation.getInputPort());
 		this.connectPorts(tGeoLocation.getOutputPortSnapshot(), snapshotBuilder.getInputPort());
+		
+		// Path Snapshot => Planning
+		this.connectPorts(snapshotBuilder.getOutputPort(), modelCreation.getInputPort());
 	}
 
 	public RecordSwitch getRecordSwitch() {
