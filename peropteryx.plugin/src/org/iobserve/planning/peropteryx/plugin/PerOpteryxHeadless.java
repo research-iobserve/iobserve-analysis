@@ -52,10 +52,11 @@ public class PerOpteryxHeadless implements IApplication {
 		try {
 			final CommandLine commandLine = parser.parse(PerOpteryxHeadless.createOptions(), args);
 			final String workingDir = commandLine.getOptionValue(INPUT_WORKING_DIR_OPTION);
-			final String modelName = commandLine.getOptionValue(INPUT_MODEL_NAME_OPTION);
-			LOG.info("Working dir: " + workingDir + ", model name: " + modelName);
+			// final String modelName =
+			// commandLine.getOptionValue(INPUT_MODEL_NAME_OPTION);
+			LOG.info("Working dir: " + workingDir);
 
-			this.launchPeropteryx(workingDir, modelName);
+			this.launchPeropteryx(workingDir);
 		} catch (final ParseException exp) {
 			// LOG.error("CLI error: " + exp.getMessage());
 			final HelpFormatter formatter = new HelpFormatter();
@@ -68,7 +69,7 @@ public class PerOpteryxHeadless implements IApplication {
 		return IApplication.EXIT_OK;
 	}
 
-	private void launchPeropteryx(String workingDir, String modelName) throws CoreException {
+	private void launchPeropteryx(String workingDir) throws CoreException {
 		LOG.info("Configuring PerOpteryx run...");
 		DSELaunch launch = new DSELaunch();
 
@@ -78,7 +79,7 @@ public class PerOpteryxHeadless implements IApplication {
 				+ PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_WORKING_DIR;
 
 		ILaunchConfiguration launchConfig = PerOpteryxLaunchConfigurationBuilder
-				.getDefaultLaunchConfiguration(projectDir, modelName, workingDir);
+				.getDefaultLaunchConfiguration(projectDir, workingDir);
 		ILaunch currentLaunch = new Launch(launchConfig, ILaunchManager.RUN_MODE, null);
 
 		DebugPlugin.getDefault().getLaunchManager().addLaunch(currentLaunch);
@@ -134,16 +135,17 @@ public class PerOpteryxHeadless implements IApplication {
 				"Working directory containing the model files. Note that the files may be changed in the process.");
 		workDirOption.setRequired(true);
 
-		final Option modelNameOption = new Option(INPUT_MODEL_NAME_OPTION_SHORT, INPUT_MODEL_NAME_OPTION, true,
-				"The name of the model contained in the working directory.");
-		modelNameOption.setRequired(true);
+		// final Option modelNameOption = new
+		// Option(INPUT_MODEL_NAME_OPTION_SHORT, INPUT_MODEL_NAME_OPTION, true,
+		// "The name of the model contained in the working directory.");
+		// modelNameOption.setRequired(true);
 
 		final Option productOption = new Option(INPUT_PRODUCT_OPTION, true, "Eclipse product description");
 
 		final Option helpOption = new Option("h", "help", false, "Show usage information");
 
 		options.addOption(workDirOption);
-		options.addOption(modelNameOption);
+		// options.addOption(modelNameOption);
 		options.addOption(productOption);
 
 		/** help */
