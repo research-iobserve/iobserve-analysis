@@ -33,3 +33,4 @@ teetime.log
 gradle.properties
 repos/
 *.log
+**/neo4jdb/**
