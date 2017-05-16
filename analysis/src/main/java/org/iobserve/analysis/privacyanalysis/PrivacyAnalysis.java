@@ -14,7 +14,7 @@ import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 import teetime.stage.basic.AbstractTransformation;
 
-public class PrivacyAnalysis extends AbstractLinearComposition<URI, Boolean> {
+public class PrivacyAnalysis extends AbstractLinearComposition<URI, URI> {
 
 	private static URI legalPersonalGeoLocationFile;
 	private static HashSet<Integer> legalPersonalGeoLocations;

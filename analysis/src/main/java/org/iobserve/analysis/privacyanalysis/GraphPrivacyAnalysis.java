@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.privacy.graph.ComponentEdge;
 import org.iobserve.analysis.privacy.graph.ComponentNode;
 import org.iobserve.analysis.privacy.graph.ComponentNode;
@@ -17,7 +18,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 import teetime.stage.basic.AbstractTransformation;
 
-public class GraphPrivacyAnalysis extends AbstractTransformation<PrivacyAnalysisModel, Boolean> {
+public class GraphPrivacyAnalysis extends AbstractTransformation<PrivacyAnalysisModel, URI> {
 
 	@Override
 	protected void execute(PrivacyAnalysisModel element) throws Exception {
@@ -46,6 +47,9 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<PrivacyAnalysis
 		element.printGraph();
 		
 		this.writeComponentClassificationToPCM(element);
+		
+		if (!legalDeployment)
+			this.outputPort.send(element.getPcmModelsURI());
 	}
 
 	private void writeComponentClassificationToPCM(PrivacyAnalysisModel model) {

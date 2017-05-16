@@ -75,7 +75,7 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 		this.adaptPrivacyLvl();
 		this.extractAllocations(this.modelProviders.getAllocationModelProvider());
 		
-		PrivacyAnalysisModel model = this.graph = this.createModelGraph();
+		PrivacyAnalysisModel model = this.graph = this.createModelGraph(element);
 		outputPort.send(model);
 	}
 
@@ -180,7 +180,7 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 	/*
 	 * Build Graph Helpers
 	 */
-	private PrivacyAnalysisModel createModelGraph() {
+	private PrivacyAnalysisModel createModelGraph(URI pcmModelUri) {
 		HashMap<String, DeploymentNode> servers = new HashMap<String, DeploymentNode>();
 		HashMap<String, ComponentNode> components = new HashMap<String, ComponentNode>();
 		
@@ -220,7 +220,7 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 		}
 		
 		
-		return new PrivacyAnalysisModel(servers.values(), components.values(), this.modelProviders);
+		return new PrivacyAnalysisModel(servers.values(), components.values(), this.modelProviders, pcmModelUri);
 	}
 
 }

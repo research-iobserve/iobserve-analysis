@@ -114,7 +114,6 @@ public final class AnalysisMain {
 						final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel,
 								usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
 								systemModelProvider, snapshotBuilder, perOpteryxUri, varianceOfUserGroups, thinkTime, closedWorkload);
-								systemModelProvider, snapshotBuilder, varianceOfUserGroups, thinkTime, closedWorkload);
 
 						System.out.println("Analysis configuration");
 						final Execution<Configuration> analysis = new Execution<>(configuration);

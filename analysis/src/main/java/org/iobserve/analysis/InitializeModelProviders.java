@@ -138,7 +138,7 @@ public final class InitializeModelProviders {
      *            file
      * @return uri
      */
-    private URI getUri(final File file) {
+    public URI getUri(final File file) {
         return URI.createFileURI(file.getAbsolutePath());
     }
 
