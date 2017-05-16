@@ -97,10 +97,11 @@ public class AnalysisDaemon implements Daemon {
 						final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
 						final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
 						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(URI.createURI(commandLine.getOptionValue("s")), modelProvider);
+						final URI perOpteryxDir = URI.createURI(commandLine.getOptionValue("po"));
 
 						final Configuration configuration = new ServiceConfiguration(listenPort, outputHostname, outputPort, systemId,
 								varianceOfUserGroups, thinkTime, closedWorkload, correspondenceModel, usageModelProvider, repositoryModelProvider,
-								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder);
+								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxDir);
 
 						this.thread = new AnalysisThread(this, configuration);
 					} else {
@@ -158,6 +159,8 @@ public class AnalysisDaemon implements Daemon {
 		options.addOption(Option.builder("s").required(true).longOpt("system").hasArg().desc("system").build());
 		options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg().desc("directory containing all PCM models").build());
 		options.addOption(Option.builder("s").required(true).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
+		options.addOption(Option.builder("po").required(true).longOpt("perOpteryx-headless-location").hasArg()
+				.desc("the location of the PerOpteryx headless plugin").build());
 
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());

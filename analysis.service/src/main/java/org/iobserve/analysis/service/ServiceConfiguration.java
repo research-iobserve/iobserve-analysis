@@ -18,6 +18,7 @@ package org.iobserve.analysis.service;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.MultiInputObservationConfiguration;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -71,10 +72,10 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final String systemId, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
             final RepositoryModelProvider repositoryModelProvider, final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider, final SnapshotBuilder snapshotBuilder)
+            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider, final SnapshotBuilder snapshotBuilder, final URI perOpteryxDir)
             throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
-                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, varianceOfUserGroups,
+                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxDir, varianceOfUserGroups,
                 thinkTime, closedWorkload);
 
         final URL url = new URL(
