@@ -96,8 +96,9 @@ public class SnapshotBuilder extends AbstractStage {
 	/**
 	 * @return the input port for the teetime framework
 	 */
-	public InputPort<Boolean> getInputPort() {
-		return this.getInputPort();
+	public InputPort<Boolean> getInputPort()
+	{
+		return super.createInputPort();
 	}
 
 	/**
