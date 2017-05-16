@@ -14,7 +14,7 @@ import org.eclipse.emf.common.util.URI;
 /**
  * Linux specific wrapper, uses bash to call headless PerOpteryx.
  *
- * @author Tobias PÃ¶ppke
+ * @author Tobias Pöppke
  *
  */
 public class ExecutionWrapper {
@@ -37,8 +37,7 @@ public class ExecutionWrapper {
 
 		ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", perOpteryxCommand + " -w " + workingDir);
 
-		LOG.info(String.format("PerOpteryx start parameters: {Command: '/bin/bash -c %s', working-dir: '%s'}",
-				perOpteryxCommand, workingDir));
+		LOG.info(String.format("PerOpteryx start parameters: {Command: '/bin/bash -c %s', working-dir: '%s'}", perOpteryxCommand, workingDir));
 
 		builder.directory(new File(this.perOpteryxDir.path()));
 		builder.redirectErrorStream(true);

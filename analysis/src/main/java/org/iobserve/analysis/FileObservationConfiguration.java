@@ -22,6 +22,7 @@ import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
 import teetime.stage.io.filesystem.Dir2RecordsFilter;
 
+import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -68,10 +69,10 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-            final SnapshotBuilder snapshotBuilder,
+            final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                allocationModelProvider, systemModelProvider, snapshotBuilder, varianceOfUserGroups, thinkTime, closedWorkload);
+                allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxHeadless, varianceOfUserGroups, thinkTime, closedWorkload);
 
         this.files = new InitialElementProducer<>(directories);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());

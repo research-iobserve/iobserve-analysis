@@ -29,6 +29,11 @@ public class SnapshotBuilder extends AbstractStage {
 	private final URI snapshotURI;
 	private final InitializeModelProviders modelProviders;
 
+<<<<<<< HEAD
+	// private final InputPort<Boolean> inputPort = super.createInputPort();
+	private final OutputPort<URI> outputPort = super.createOutputPort();
+
+=======
 	private final OutputPort<URI> outputPort = super.createOutputPort();
 
 	/**
@@ -39,6 +44,7 @@ public class SnapshotBuilder extends AbstractStage {
 	 * @param modelProviders
 	 *            the source pcm models
 	 */
+>>>>>>> migration_base
 	public SnapshotBuilder(final URI snapshotURI, final InitializeModelProviders modelProviders) {
 		super();
 
@@ -66,9 +72,12 @@ public class SnapshotBuilder extends AbstractStage {
 		}
 	}
 
+<<<<<<< HEAD
+=======
 	/*
 	 * Creates the actual copy
 	 */
+>>>>>>> migration_base
 	private void createModelSnapshot(AbstractModelProvider<?> modelProvider) throws IOException {
 		modelProvider.save();
 
@@ -93,11 +102,21 @@ public class SnapshotBuilder extends AbstractStage {
 		SnapshotBuilder.createSnapshot = true;
 	}
 
+<<<<<<< HEAD
+	public InputPort<Boolean> getInputPort() {
+		return super.createInputPort();
+	}
+	
+	public OutputPort<URI> getOutputPort()
+	{
+		return this.outputPort;
+=======
 	/**
 	 * @return the input port for the teetime framework
 	 */
 	public InputPort<Boolean> getInputPort() {
-		return this.outputPort;
+		return super.createInputPort();
+>>>>>>> migration_base
 	}
 
 	/**

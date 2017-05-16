@@ -130,7 +130,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		
 		// Path Snapshot => Privacy Analysis
 		this.connectPorts(snapshotBuilder.getOutputPort(), privacyAnalysis.getInputPort());
-		
 		// Path Snapshot => Planning
 		this.connectPorts(privacyAnalysis.getOutputPort(), modelCreation.getInputPort());
 	}
