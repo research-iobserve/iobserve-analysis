@@ -13,21 +13,17 @@ import teetime.stage.basic.AbstractTransformation;
 public class CandidateCreation extends AbstractTransformation<URI, CandidateInformations> {
 
 	private final URI perOpteryxDir;
-	
+
 	public CandidateCreation(final URI perOpteryxDir) {
 		this.perOpteryxDir = perOpteryxDir;
 	}
-	
-	
+
 	@Override
 	protected void execute(URI element) throws Exception {
-		
-		
+
 		ExecutionWrapper exec = new ExecutionWrapper(element, this.perOpteryxDir);
-		
-		int result = exec.startPerOpteryxProcess();
-		
-		
+
+		int result = exec.startModelGeneration();
 	}
 
 }

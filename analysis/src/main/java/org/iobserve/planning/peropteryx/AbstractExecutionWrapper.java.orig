@@ -20,7 +20,11 @@ import org.eclipse.emf.common.util.URI;
  */
 public abstract class AbstractExecutionWrapper {
 
+<<<<<<< HEAD
+	private static final Logger LOG = LogManager.getLogger(ExecutionWrapper.class);
+=======
 	protected static final Logger LOG = LogManager.getLogger(ExecutionWrapper.class);
+>>>>>>> migration_base
 
 	private final URI inputModelDir;
 	private final URI perOpteryxDir;
@@ -43,6 +47,10 @@ public abstract class AbstractExecutionWrapper {
 	 * @return the process exit value
 	 */
 	public int startModelGeneration() {
+<<<<<<< HEAD
+		final Process process = this.createProcess();
+		this.watch(process);
+=======
 		final ProcessBuilder processBuilder = this.createProcess();
 		Process process = null;
 		try {
@@ -52,6 +60,7 @@ public abstract class AbstractExecutionWrapper {
 			LOG.error("Could not start PerOpteryx executable process. Check the parameters and the log files!", e);
 			return -1;
 		}
+>>>>>>> migration_base
 		return process.exitValue();
 	}
 
@@ -61,7 +70,11 @@ public abstract class AbstractExecutionWrapper {
 	 * 
 	 * @return the PerOpteryx process
 	 */
+<<<<<<< HEAD
+	public abstract Process createProcess();
+=======
 	public abstract ProcessBuilder createProcess();
+>>>>>>> migration_base
 
 	/**
 	 * This method watches the process, writes the process output into the
@@ -70,6 +83,9 @@ public abstract class AbstractExecutionWrapper {
 	 * @param process
 	 *            the process executing the PerOpteryx headless
 	 */
+<<<<<<< HEAD
+	public abstract void watch(final Process process);
+=======
 	public abstract void watch(final Process process) throws InterruptedException;
 	
 	
@@ -89,4 +105,5 @@ public abstract class AbstractExecutionWrapper {
 	protected URI getPerOpteryxDir() {
 		return perOpteryxDir;
 	}
+>>>>>>> migration_base
 }
