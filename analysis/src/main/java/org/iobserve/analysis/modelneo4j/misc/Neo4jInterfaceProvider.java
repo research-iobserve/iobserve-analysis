@@ -19,6 +19,11 @@ import org.eclipse.emf.common.util.EList;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.palladiosimulator.pcm.repository.Interface;
 
+/**
+ *
+ * @author Lars Bluemke
+ *
+ */
 public class Neo4jInterfaceProvider {
 
     private final GraphDatabaseService graph;
