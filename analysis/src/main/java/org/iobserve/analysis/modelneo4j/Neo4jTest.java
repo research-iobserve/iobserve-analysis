@@ -46,7 +46,14 @@ public class Neo4jTest {
         final Repository repository = repositoryModelProvider.getModel();
         System.out.println("Loaded model");
 
+        System.out.println("Writing to db");
         new RepositoryProvider(graph).createComponent(repository);
+
+        // System.out.println("Reading from db");
+        // final Repository repository2 = new
+        // RepositoryProvider(graph).readComponent("org.cocome.cloud");
+        //
+        // System.out.println(repository2);
 
         graph.shutdown();
         System.out.print("Shut down db");

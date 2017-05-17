@@ -36,13 +36,13 @@ public abstract class AbstractPcmComponentProvider<T extends EObject> {
         this.graph = graph;
     }
 
-    public abstract Node createComponent(T component);
+    public abstract Node createComponent(final T component);
 
-    public abstract T readComponent();
+    public abstract T readComponent(final String entityName);
 
-    public abstract void updateComponent(T component);
+    public abstract void updateComponent(final T component);
 
-    public abstract void deleteComponent(T component);
+    public abstract void deleteComponent(final T component);
 
     public GraphDatabaseService getGraph() {
         return this.graph;

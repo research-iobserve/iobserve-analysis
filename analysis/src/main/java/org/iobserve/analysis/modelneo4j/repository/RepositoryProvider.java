@@ -16,12 +16,17 @@
 package org.iobserve.analysis.modelneo4j.repository;
 
 import org.iobserve.analysis.modelneo4j.AbstractPcmComponentProvider;
+import org.iobserve.analysis.modelneo4j.PcmRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
+import org.palladiosimulator.pcm.repository.InfrastructureInterface;
 import org.palladiosimulator.pcm.repository.Interface;
+import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
 /**
  *
@@ -46,8 +51,15 @@ public class RepositoryProvider extends AbstractPcmComponentProvider<Repository>
                 rnode.setProperty("repositoryDescription", repositoryDecription);
             }
 
+            final AbstractInterfaceProvider iiProvider = new InfrastructureInterfaceProvider(this.getGraph());
+            final AbstractInterfaceProvider oiProvider = new OperationInterfaceProvider(this.getGraph());
+
             for (final Interface i : component.getInterfaces__Repository()) {
-                new InterfaceProvider(this.getGraph()).createComponent(i);
+                if (i instanceof InfrastructureInterface) {
+                    iiProvider.createComponent(i);
+                } else if (i instanceof OperationInterface) {
+                    oiProvider.createComponent(i);
+                }
             }
             tx.success();
 
@@ -56,9 +68,34 @@ public class RepositoryProvider extends AbstractPcmComponentProvider<Repository>
     }
 
     @Override
-    public Repository readComponent() {
-        // TODO Auto-generated method stub
-        return null;
+    public Repository readComponent(final String entityName) {
+        final Repository repo = RepositoryFactory.eINSTANCE.createRepository();
+
+        try (Transaction tx = this.getGraph().beginTx()) {
+            final Node rNode = this.getGraph().findNode(Label.label("Repository"),
+                    AbstractPcmComponentProvider.ENTITY_NAME, entityName);
+            final AbstractInterfaceProvider iiProvider = new InfrastructureInterfaceProvider(this.getGraph());
+            final AbstractInterfaceProvider oiProvider = new OperationInterfaceProvider(this.getGraph());
+
+            for (final Relationship r : rNode.getRelationships(PcmRelationshipType.CONTAINS)) {
+                final Node eNode = r.getEndNode();
+
+                if (eNode.hasLabel(Label.label("InfrastructureInterface"))) {
+                    final Interface i = iiProvider
+                            .readComponent(eNode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
+                    repo.getInterfaces__Repository().add(i);
+                } else if (eNode.hasLabel(Label.label("OperationInterface"))) {
+                    final Interface i = oiProvider
+                            .readComponent(eNode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
+                    System.out.println("DEBUG " + i);
+                    repo.getInterfaces__Repository().add(i);
+                }
+
+            }
+            tx.success();
+        }
+
+        return repo;
     }
 
     @Override

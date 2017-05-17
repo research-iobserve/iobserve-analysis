@@ -22,26 +22,31 @@ import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.protocol.Protocol;
+import org.palladiosimulator.pcm.repository.InfrastructureInterface;
 import org.palladiosimulator.pcm.repository.Interface;
+import org.palladiosimulator.pcm.repository.OperationInterface;
 
 /**
  *
  * @author Lars Bluemke
  *
  */
-public class InterfaceProvider extends AbstractPcmComponentProvider<Interface> {
+public abstract class AbstractInterfaceProvider extends AbstractPcmComponentProvider<Interface> {
 
-    public InterfaceProvider(final GraphDatabaseService graph) {
-        super(graph);
+    private Label interfaceLabel;
+
+    public Label getInterfaceLabel() {
+        return this.interfaceLabel;
     }
 
     @Override
     public Node createComponent(final Interface component) {
+
         try (Transaction tx = this.getGraph().beginTx()) {
-            Node inode = this.getGraph().findNode(Label.label("Interface"), AbstractPcmComponentProvider.ID,
+            Node inode = this.getGraph().findNode(this.interfaceLabel, AbstractPcmComponentProvider.ID,
                     component.getId());
             if (inode == null) {
-                inode = this.getGraph().createNode(Label.label("Interface"));
+                inode = this.getGraph().createNode(this.interfaceLabel);
                 inode.setProperty(AbstractPcmComponentProvider.ID, component.getId());
                 inode.setProperty(AbstractPcmComponentProvider.ENTITY_NAME, component.getEntityName());
 
@@ -49,9 +54,17 @@ public class InterfaceProvider extends AbstractPcmComponentProvider<Interface> {
                         component.getRepository__Interface().getId());
                 rnode.createRelationshipTo(inode, PcmRelationshipType.CONTAINS);
 
+                final AbstractInterfaceProvider iiProvider = new InfrastructureInterfaceProvider(this.getGraph());
+                final AbstractInterfaceProvider oiProvider = new OperationInterfaceProvider(this.getGraph());
+
                 for (final Interface i : component.getParentInterfaces__Interface()) {
-                    final Node inode2 = new InterfaceProvider(this.getGraph()).createComponent(i);
-                    inode.createRelationshipTo(inode2, PcmRelationshipType.PARENT_INTERFACE);
+                    if (i instanceof InfrastructureInterface) {
+                        final Node inode2 = iiProvider.createComponent(i);
+                        inode.createRelationshipTo(inode2, PcmRelationshipType.PARENT_INTERFACE);
+                    } else if (i instanceof OperationInterface) {
+                        final Node inode2 = oiProvider.createComponent(i);
+                        inode.createRelationshipTo(inode2, PcmRelationshipType.PARENT_INTERFACE);
+                    }
                 }
 
                 for (final Protocol p : component.getProtocols__Interface()) {
@@ -67,12 +80,6 @@ public class InterfaceProvider extends AbstractPcmComponentProvider<Interface> {
     }
 
     @Override
-    public Interface readComponent() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public void updateComponent(final Interface component) {
         // TODO Auto-generated method stub
 
@@ -84,4 +91,11 @@ public class InterfaceProvider extends AbstractPcmComponentProvider<Interface> {
 
     }
 
+    public void setInterfaceLabel(final Label interfaceLabel) {
+        this.interfaceLabel = interfaceLabel;
+    }
+
+    public AbstractInterfaceProvider(final GraphDatabaseService graph) {
+        super(graph);
+    }
 }
