@@ -30,24 +30,24 @@ import org.palladiosimulator.pcm.repository.Repository;
  */
 public class RepositoryProvider extends AbstractPcmComponentProvider<Repository> {
 
-    public RepositoryProvider(final GraphDatabaseService graph, final Repository component) {
-        super(graph, component);
+    public RepositoryProvider(final GraphDatabaseService graph) {
+        super(graph);
     }
 
     @Override
-    public Node createComponent() {
+    public Node createComponent(final Repository component) {
         try (Transaction tx = this.getGraph().beginTx()) {
             final Node rnode = this.getGraph().createNode(Label.label("Repository"));
-            rnode.setProperty(AbstractPcmComponentProvider.ID, this.getComponent().getId());
-            rnode.setProperty(AbstractPcmComponentProvider.ENTITY_NAME, this.getComponent().getEntityName());
+            rnode.setProperty(AbstractPcmComponentProvider.ID, component.getId());
+            rnode.setProperty(AbstractPcmComponentProvider.ENTITY_NAME, component.getEntityName());
 
-            final String repositoryDecription = this.getComponent().getRepositoryDescription();
+            final String repositoryDecription = component.getRepositoryDescription();
             if (repositoryDecription != null) {
                 rnode.setProperty("repositoryDescription", repositoryDecription);
             }
 
-            for (final Interface i : this.getComponent().getInterfaces__Repository()) {
-                new InterfaceProvider(this.getGraph(), i).createComponent();
+            for (final Interface i : component.getInterfaces__Repository()) {
+                new InterfaceProvider(this.getGraph()).createComponent(i);
             }
             tx.success();
 
@@ -68,7 +68,7 @@ public class RepositoryProvider extends AbstractPcmComponentProvider<Repository>
     }
 
     @Override
-    public void deleteComponent() {
+    public void deleteComponent(final Repository component) {
         // TODO Auto-generated method stub
 
     }

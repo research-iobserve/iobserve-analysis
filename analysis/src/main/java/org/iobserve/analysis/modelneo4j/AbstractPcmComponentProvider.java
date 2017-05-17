@@ -31,24 +31,18 @@ public abstract class AbstractPcmComponentProvider<T extends EObject> {
     public static final String ENTITY_NAME = "entityName";
 
     private final GraphDatabaseService graph;
-    private final T component;
 
-    public AbstractPcmComponentProvider(final GraphDatabaseService graph, final T component) {
+    public AbstractPcmComponentProvider(final GraphDatabaseService graph) {
         this.graph = graph;
-        this.component = component;
     }
 
-    public abstract Node createComponent();
+    public abstract Node createComponent(T component);
 
     public abstract T readComponent();
 
     public abstract void updateComponent(T component);
 
-    public abstract void deleteComponent();
-
-    public T getComponent() {
-        return this.component;
-    }
+    public abstract void deleteComponent(T component);
 
     public GraphDatabaseService getGraph() {
         return this.graph;

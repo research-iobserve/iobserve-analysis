@@ -46,7 +46,7 @@ public class Neo4jTest {
         final Repository repository = repositoryModelProvider.getModel();
         System.out.println("Loaded model");
 
-        new RepositoryProvider(graph, repository).createComponent();
+        new RepositoryProvider(graph).createComponent(repository);
 
         graph.shutdown();
         System.out.print("Shut down db");

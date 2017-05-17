@@ -29,15 +29,15 @@ import org.palladiosimulator.pcm.protocol.Protocol;
  */
 public class ProtocolProvider extends AbstractPcmComponentProvider<Protocol> {
 
-    public ProtocolProvider(final GraphDatabaseService graph, final Protocol component) {
-        super(graph, component);
+    public ProtocolProvider(final GraphDatabaseService graph) {
+        super(graph);
     }
 
     @Override
-    public Node createComponent() {
+    public Node createComponent(final Protocol component) {
         try (Transaction tx = this.getGraph().beginTx()) {
             final Node pnode = this.getGraph().createNode(Label.label("Protocol"));
-            pnode.setProperty("protocolTypeID", this.getComponent().getProtocolTypeID());
+            pnode.setProperty("protocolTypeID", component.getProtocolTypeID());
             tx.success();
 
             return pnode;
@@ -57,7 +57,7 @@ public class ProtocolProvider extends AbstractPcmComponentProvider<Protocol> {
     }
 
     @Override
-    public void deleteComponent() {
+    public void deleteComponent(final Protocol component) {
         // TODO Auto-generated method stub
 
     }

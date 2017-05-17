@@ -31,31 +31,31 @@ import org.palladiosimulator.pcm.repository.Interface;
  */
 public class InterfaceProvider extends AbstractPcmComponentProvider<Interface> {
 
-    public InterfaceProvider(final GraphDatabaseService graph, final Interface component) {
-        super(graph, component);
+    public InterfaceProvider(final GraphDatabaseService graph) {
+        super(graph);
     }
 
     @Override
-    public Node createComponent() {
+    public Node createComponent(final Interface component) {
         try (Transaction tx = this.getGraph().beginTx()) {
             Node inode = this.getGraph().findNode(Label.label("Interface"), AbstractPcmComponentProvider.ID,
-                    this.getComponent().getId());
+                    component.getId());
             if (inode == null) {
                 inode = this.getGraph().createNode(Label.label("Interface"));
-                inode.setProperty(AbstractPcmComponentProvider.ID, this.getComponent().getId());
-                inode.setProperty(AbstractPcmComponentProvider.ENTITY_NAME, this.getComponent().getEntityName());
+                inode.setProperty(AbstractPcmComponentProvider.ID, component.getId());
+                inode.setProperty(AbstractPcmComponentProvider.ENTITY_NAME, component.getEntityName());
 
                 final Node rnode = this.getGraph().findNode(Label.label("Repository"), AbstractPcmComponentProvider.ID,
-                        this.getComponent().getRepository__Interface().getId());
+                        component.getRepository__Interface().getId());
                 rnode.createRelationshipTo(inode, PcmRelationshipType.CONTAINS);
 
-                for (final Interface i : this.getComponent().getParentInterfaces__Interface()) {
-                    final Node inode2 = new InterfaceProvider(this.getGraph(), i).createComponent();
+                for (final Interface i : component.getParentInterfaces__Interface()) {
+                    final Node inode2 = new InterfaceProvider(this.getGraph()).createComponent(i);
                     inode.createRelationshipTo(inode2, PcmRelationshipType.PARENT_INTERFACE);
                 }
 
-                for (final Protocol p : this.getComponent().getProtocols__Interface()) {
-                    new ProtocolProvider(this.getGraph(), p).createComponent();
+                for (final Protocol p : component.getProtocols__Interface()) {
+                    new ProtocolProvider(this.getGraph()).createComponent(p);
                 }
             }
 
@@ -79,7 +79,7 @@ public class InterfaceProvider extends AbstractPcmComponentProvider<Interface> {
     }
 
     @Override
-    public void deleteComponent() {
+    public void deleteComponent(final Interface component) {
         // TODO Auto-generated method stub
 
     }
