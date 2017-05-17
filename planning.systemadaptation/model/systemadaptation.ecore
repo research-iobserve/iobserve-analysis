@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="systemadaptation" nsURI="http://iobserve.org/SystemAdaptation"
+    nsPrefix="org.iobserve">
+  <eClassifiers xsi:type="ecore:EClass" name="SystemAdaptation">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="actions" upperBound="-1"
+        eType="#//Action" containment="true"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="Action">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="resourceContainer" lowerBound="1"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AssemblyContextAction" eSuperTypes="#//Action"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ResourceContainerAction" eSuperTypes="#//Action"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ChangeRepositoryComponentAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AllocateAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DeallocateAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="MigrateAction" eSuperTypes="#//AssemblyContextAction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="migrationTargetContainer"
+        lowerBound="1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ReplicateAction" eSuperTypes="#//ResourceContainerAction">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="newCount" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" defaultValueLiteral="0"/>
+    <eStructuralFeatures xsi:type="ecore:EAttribute" name="oldCount" upperBound="-1"
+        eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt" defaultValueLiteral="0"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="TerminateAction" eSuperTypes="#//ResourceContainerAction"/>
+</ecore:EPackage>
