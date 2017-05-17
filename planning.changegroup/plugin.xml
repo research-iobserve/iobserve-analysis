@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated changegroup -->
+      <package
+            uri="http://iobserve.org/ChangeGroup"
+            class="org.iobserve.planning.changegroup.ChangegroupPackage"
+            genModel="model/changegroup.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated changegroup -->
+      <parser
+            type="changegroup"
+            class="org.iobserve.planning.changegroup.util.ChangegroupResourceFactoryImpl"/>
+   </extension>
+
+</plugin>

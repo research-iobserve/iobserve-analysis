@@ -1,2 +1,2 @@
 
-include "analysis", "common", "monitoring", "analysis.service", "analysis.cli", "collector", "splitter"
+include "analysis", "common", "monitoring", "analysis.service", "analysis.cli", "collector", "splitter", "planning.changegroup"
