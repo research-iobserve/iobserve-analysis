@@ -51,19 +51,12 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 	private PrivacyAnalysisModel graph;
 
 	
+	/**
+	 * Empty Constructor
+	 */
 	public GraphCreation() {
 	}
 	
-	private void init(URI initialModelLocation)
-	{
-		this.modelProviders = new InitializeModelProviders(new File(initialModelLocation.toFileString()));
-		
-		this.assemblyContexts = new HashMap<String, AssemblyContext>();
-		this.assemblyContextPrivacyLvl = new HashMap<String, DataPrivacyLvl>();
-		this.assemblyConnectors = new HashMap<String, AssemblyConnectorPrivacy>();
-		this.resourceContainers = new HashMap<String, ResourceContainerPrivacy>();
-		this.ac2rcMap = new HashMap<String, String>();
-	}
 
 	@Override
 	protected void execute(URI element) throws Exception {
@@ -78,6 +71,21 @@ public class GraphCreation extends AbstractTransformation<URI, PrivacyAnalysisMo
 		PrivacyAnalysisModel model = this.graph = this.createModelGraph(element);
 		outputPort.send(model);
 	}
+
+	/*
+	 * Prepare all data structures.
+	 */
+	private void init(URI initialModelLocation)
+	{
+		this.modelProviders = new InitializeModelProviders(new File(initialModelLocation.toFileString()));
+		
+		this.assemblyContexts = new HashMap<String, AssemblyContext>();
+		this.assemblyContextPrivacyLvl = new HashMap<String, DataPrivacyLvl>();
+		this.assemblyConnectors = new HashMap<String, AssemblyConnectorPrivacy>();
+		this.resourceContainers = new HashMap<String, ResourceContainerPrivacy>();
+		this.ac2rcMap = new HashMap<String, String>();
+	}
+
 
 	/*
 	 * Extract Information Helpers

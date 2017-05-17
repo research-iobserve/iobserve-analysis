@@ -18,15 +18,16 @@ public class PrivacyAnalysis extends AbstractLinearComposition<URI, URI> {
 
 	private static URI legalPersonalGeoLocationFile;
 	private static HashSet<Integer> legalPersonalGeoLocations;
-	
-	private AbstractTransformation<URI, Boolean>[] compositionStages;
+
+	// private AbstractTransformation<URI, Boolean>[] compositionStages;
 
 	public PrivacyAnalysis(GraphCreation creation, GraphPrivacyAnalysis analysis) {
 		super(creation.getInputPort(), analysis.getOutputPort());
 
 		this.connectPorts(creation.getOutputPort(), analysis.getInputPort());
 
-		this.compositionStages = new AbstractTransformation[] { creation, analysis };
+		// this.compositionStages = new AbstractTransformation[] { creation,
+		// analysis };
 	}
 
 	/*
@@ -46,12 +47,12 @@ public class PrivacyAnalysis extends AbstractLinearComposition<URI, URI> {
 	public static void setLegalPersonalGeoLocationFile(URI legalPersonalGeoLocationFile) {
 		PrivacyAnalysis.legalPersonalGeoLocationFile = legalPersonalGeoLocationFile;
 
-		HashSet<Integer> legalCountryCodes =  new HashSet<Integer>();
+		HashSet<Integer> legalCountryCodes = new HashSet<Integer>();
 		if (legalPersonalGeoLocationFile.isFile()) {
-			
+
 			File file = new File(legalPersonalGeoLocationFile.toFileString());
 			try (Stream<String> stream = Files.lines(file.toPath())) {
-				
+
 				stream.forEach((s) -> legalCountryCodes.add(Integer.parseInt(s)));
 				PrivacyAnalysis.legalPersonalGeoLocations = legalCountryCodes;
 			} catch (IOException e) {
@@ -59,9 +60,8 @@ public class PrivacyAnalysis extends AbstractLinearComposition<URI, URI> {
 			}
 		}
 	}
-	
-	private static String extractCountryCode(String line)
-	{
+
+	private static String extractCountryCode(String line) {
 		String[] lineParts = line.split(",");
 		return lineParts[1];
 	}
