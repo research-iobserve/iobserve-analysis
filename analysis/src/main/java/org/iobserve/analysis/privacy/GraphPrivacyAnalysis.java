@@ -1,4 +1,4 @@
-package org.iobserve.analysis.privacyanalysis;
+package org.iobserve.analysis.privacy;
 
 import org.iobserve.analysis.privacy.graph.PrivacyAnalysisModel;
 
