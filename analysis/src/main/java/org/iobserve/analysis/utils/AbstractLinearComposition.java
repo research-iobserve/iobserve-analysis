@@ -1,4 +1,4 @@
-package org.iobserve.analysis.privacy;
+package org.iobserve.analysis.utils;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;

@@ -2,7 +2,7 @@ package org.iobserve.adaption;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaption.data.AdapdationData;
-import org.iobserve.analysis.privacy.AbstractLinearComposition;
+import org.iobserve.analysis.utils.AbstractLinearComposition;
 
 public class SystemMigration extends AbstractLinearComposition<AdapdationData, AdapdationData> {
 
