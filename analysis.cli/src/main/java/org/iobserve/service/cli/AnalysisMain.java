@@ -38,7 +38,7 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.privacyanalysis.PrivacyAnalysis;
+import org.iobserve.analysis.privacy.PrivacyAnalysis;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 
 /**

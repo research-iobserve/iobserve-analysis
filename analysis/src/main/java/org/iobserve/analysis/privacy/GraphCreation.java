@@ -1,4 +1,4 @@
-package org.iobserve.analysis.privacyanalysis;
+package org.iobserve.analysis.privacy;
 
 import java.io.File;
 import java.util.Collection;
@@ -9,14 +9,14 @@ import java.util.Set;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.analysis.graph.ComponentEdge;
+import org.iobserve.analysis.graph.ComponentNode;
+import org.iobserve.analysis.graph.DeploymentNode;
+import org.iobserve.analysis.graph.PrivacyAnalysisModel;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.privacy.graph.ComponentEdge;
-import org.iobserve.analysis.privacy.graph.ComponentNode;
-import org.iobserve.analysis.privacy.graph.DeploymentNode;
-import org.iobserve.analysis.privacy.graph.PrivacyAnalysisModel;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyConnectorPrivacy;

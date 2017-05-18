@@ -1,4 +1,4 @@
-package org.iobserve.analysis.privacyanalysis;
+package org.iobserve.analysis.privacy;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,10 +8,9 @@ import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.privacy.graph.ComponentEdge;
-import org.iobserve.analysis.privacy.graph.ComponentNode;
-import org.iobserve.analysis.privacy.graph.ComponentNode;
-import org.iobserve.analysis.privacy.graph.PrivacyAnalysisModel;
+import org.iobserve.analysis.graph.ComponentEdge;
+import org.iobserve.analysis.graph.ComponentNode;
+import org.iobserve.analysis.graph.PrivacyAnalysisModel;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyContextPrivacy;
 import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;

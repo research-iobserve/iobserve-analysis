@@ -1,13 +1,13 @@
-package org.iobserve.analysis.privacyanalysis;
+package org.iobserve.analysis.privacy;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.iobserve.analysis.privacy.graph.ComponentEdge;
-import org.iobserve.analysis.privacy.graph.ComponentNode;
-import org.iobserve.analysis.privacy.graph.PrivacyAnalysisModel;
+import org.iobserve.analysis.graph.ComponentEdge;
+import org.iobserve.analysis.graph.ComponentNode;
+import org.iobserve.analysis.graph.PrivacyAnalysisModel;
 import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 
 /**

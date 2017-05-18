@@ -1,4 +1,4 @@
-package org.iobserve.analysis.privacy.graph;
+package org.iobserve.analysis.graph;
 
 import java.util.HashSet;
 import java.util.Set;

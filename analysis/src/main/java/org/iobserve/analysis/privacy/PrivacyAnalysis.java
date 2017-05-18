@@ -1,4 +1,4 @@
-package org.iobserve.analysis.privacyanalysis;
+package org.iobserve.analysis.privacy;
 
 import java.io.File;
 import java.io.IOException;
