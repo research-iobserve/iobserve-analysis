@@ -2,7 +2,7 @@
  */
 package org.iobserve.planning.systemadaptation;
 
-import org.eclipse.emf.common.util.EList;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  * <!-- begin-user-doc -->
@@ -13,8 +13,7 @@ import org.eclipse.emf.common.util.EList;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.planning.systemadaptation.ReplicateAction#getNewCount <em>New Count</em>}</li>
- *   <li>{@link org.iobserve.planning.systemadaptation.ReplicateAction#getOldCount <em>Old Count</em>}</li>
+ *   <li>{@link org.iobserve.planning.systemadaptation.ReplicateAction#getNewResourceContainer <em>New Resource Container</em>}</li>
  * </ul>
  *
  * @see org.iobserve.planning.systemadaptation.systemadaptationPackage#getReplicateAction()
@@ -23,35 +22,29 @@ import org.eclipse.emf.common.util.EList;
  */
 public interface ReplicateAction extends ResourceContainerAction {
 	/**
-	 * Returns the value of the '<em><b>New Count</b></em>' attribute list.
-	 * The list contents are of type {@link java.lang.Integer}.
+	 * Returns the value of the '<em><b>New Resource Container</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>New Count</em>' attribute list isn't clear,
+	 * If the meaning of the '<em>New Resource Container</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>New Count</em>' attribute list.
-	 * @see org.iobserve.planning.systemadaptation.systemadaptationPackage#getReplicateAction_NewCount()
-	 * @model default="0"
+	 * @return the value of the '<em>New Resource Container</em>' reference.
+	 * @see #setNewResourceContainer(ResourceContainer)
+	 * @see org.iobserve.planning.systemadaptation.systemadaptationPackage#getReplicateAction_NewResourceContainer()
+	 * @model required="true"
 	 * @generated
 	 */
-	EList<Integer> getNewCount();
+	ResourceContainer getNewResourceContainer();
 
 	/**
-	 * Returns the value of the '<em><b>Old Count</b></em>' attribute list.
-	 * The list contents are of type {@link java.lang.Integer}.
+	 * Sets the value of the '{@link org.iobserve.planning.systemadaptation.ReplicateAction#getNewResourceContainer <em>New Resource Container</em>}' reference.
 	 * <!-- begin-user-doc -->
-	 * <p>
-	 * If the meaning of the '<em>Old Count</em>' attribute list isn't clear,
-	 * there really should be more of a description here...
-	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Old Count</em>' attribute list.
-	 * @see org.iobserve.planning.systemadaptation.systemadaptationPackage#getReplicateAction_OldCount()
-	 * @model default="0"
+	 * @param value the new value of the '<em>New Resource Container</em>' reference.
+	 * @see #getNewResourceContainer()
 	 * @generated
 	 */
-	EList<Integer> getOldCount();
+	void setNewResourceContainer(ResourceContainer value);
 
 } // ReplicateAction

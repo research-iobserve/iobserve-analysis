@@ -2,7 +2,7 @@
  */
 package org.iobserve.planning.systemadaptation;
 
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * <!-- begin-user-doc -->
@@ -13,7 +13,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.planning.systemadaptation.MigrateAction#getMigrationTargetContainer <em>Migration Target Container</em>}</li>
+ *   <li>{@link org.iobserve.planning.systemadaptation.MigrateAction#getNewAllocatinContext <em>New Allocatin Context</em>}</li>
  * </ul>
  *
  * @see org.iobserve.planning.systemadaptation.systemadaptationPackage#getMigrateAction()
@@ -22,29 +22,29 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  */
 public interface MigrateAction extends AssemblyContextAction {
 	/**
-	 * Returns the value of the '<em><b>Migration Target Container</b></em>' reference.
+	 * Returns the value of the '<em><b>New Allocatin Context</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Migration Target Container</em>' reference isn't clear,
+	 * If the meaning of the '<em>New Allocatin Context</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>Migration Target Container</em>' reference.
-	 * @see #setMigrationTargetContainer(ResourceContainer)
-	 * @see org.iobserve.planning.systemadaptation.systemadaptationPackage#getMigrateAction_MigrationTargetContainer()
+	 * @return the value of the '<em>New Allocatin Context</em>' reference.
+	 * @see #setNewAllocatinContext(AllocationContext)
+	 * @see org.iobserve.planning.systemadaptation.systemadaptationPackage#getMigrateAction_NewAllocatinContext()
 	 * @model required="true"
 	 * @generated
 	 */
-	ResourceContainer getMigrationTargetContainer();
+	AllocationContext getNewAllocatinContext();
 
 	/**
-	 * Sets the value of the '{@link org.iobserve.planning.systemadaptation.MigrateAction#getMigrationTargetContainer <em>Migration Target Container</em>}' reference.
+	 * Sets the value of the '{@link org.iobserve.planning.systemadaptation.MigrateAction#getNewAllocatinContext <em>New Allocatin Context</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>Migration Target Container</em>' reference.
-	 * @see #getMigrationTargetContainer()
+	 * @param value the new value of the '<em>New Allocatin Context</em>' reference.
+	 * @see #getNewAllocatinContext()
 	 * @generated
 	 */
-	void setMigrationTargetContainer(ResourceContainer value);
+	void setNewAllocatinContext(AllocationContext value);
 
 } // MigrateAction

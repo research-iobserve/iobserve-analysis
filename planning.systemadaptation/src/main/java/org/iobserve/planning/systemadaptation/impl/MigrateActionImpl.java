@@ -7,7 +7,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.systemadaptationPackage;
 
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * <!-- begin-user-doc -->
@@ -17,7 +17,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.planning.systemadaptation.impl.MigrateActionImpl#getMigrationTargetContainer <em>Migration Target Container</em>}</li>
+ *   <li>{@link org.iobserve.planning.systemadaptation.impl.MigrateActionImpl#getNewAllocatinContext <em>New Allocatin Context</em>}</li>
  * </ul>
  *
  * @generated
@@ -47,8 +47,8 @@ public class MigrateActionImpl extends AssemblyContextActionImpl implements Migr
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ResourceContainer getMigrationTargetContainer() {
-		return (ResourceContainer)eGet(systemadaptationPackage.Literals.MIGRATE_ACTION__MIGRATION_TARGET_CONTAINER, true);
+	public AllocationContext getNewAllocatinContext() {
+		return (AllocationContext)eGet(systemadaptationPackage.Literals.MIGRATE_ACTION__NEW_ALLOCATIN_CONTEXT, true);
 	}
 
 	/**
@@ -56,8 +56,8 @@ public class MigrateActionImpl extends AssemblyContextActionImpl implements Migr
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setMigrationTargetContainer(ResourceContainer newMigrationTargetContainer) {
-		eSet(systemadaptationPackage.Literals.MIGRATE_ACTION__MIGRATION_TARGET_CONTAINER, newMigrationTargetContainer);
+	public void setNewAllocatinContext(AllocationContext newNewAllocatinContext) {
+		eSet(systemadaptationPackage.Literals.MIGRATE_ACTION__NEW_ALLOCATIN_CONTEXT, newNewAllocatinContext);
 	}
 
 } //MigrateActionImpl

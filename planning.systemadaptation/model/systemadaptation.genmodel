@@ -8,28 +8,35 @@
     testsDirectory="/planning.systemadaptation.tests/src/main/java" testSuiteClass="org.iobserve.planning.systemadaptation.tests.systemadaptationAllTests"
     importerID="org.eclipse.emf.importer.ecore" featureDelegation="Reflective" complianceLevel="8.0"
     copyrightFields="false" editPluginID="planning.systemadaptation.edit" editorPluginID="planning.systemadaptation.editor"
-    usedGenPackages="../../de.uka.ipd.sdq.identifier/model/identifier.genmodel#//identifier ../../org.palladiosimulator.pcm/model/pcm.genmodel#//pcm ../../org.palladiosimulator.pcm.privacy/model/pcmprivacy.genmodel#//pcmprivacy ../../de.uka.ipd.sdq.probfunction/model/ProbabilityFunction.genmodel#//probfunction ../../de.uka.ipd.sdq.stoex/model/stoex.genmodel#//stoex ../../de.uka.ipd.sdq.units/model/Units.genmodel#//units"
+    usedGenPackages="../../de.uka.ipd.sdq.identifier/model/identifier.genmodel#//identifier ../../org.palladiosimulator.pcm/model/pcm.genmodel#//pcm ../../de.uka.ipd.sdq.probfunction/model/ProbabilityFunction.genmodel#//probfunction ../../de.uka.ipd.sdq.stoex/model/stoex.genmodel#//stoex ../../de.uka.ipd.sdq.units/model/Units.genmodel#//units"
     importOrganizing="true" pluginKey="systemadaptation">
   <foreignModel>systemadaptation.ecore</foreignModel>
   <genPackages prefix="systemadaptation" basePackage="org.iobserve.planning" resource="XMI"
       disposableProviderFactory="true" ecorePackage="systemadaptation.ecore#/" publicationLocation="">
     <genClasses ecoreClass="systemadaptation.ecore#//SystemAdaptation">
-      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//ChangeGroup/actions"/>
+      <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//SystemAdaptation/actions"/>
     </genClasses>
     <genClasses ecoreClass="systemadaptation.ecore#//Action">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//Action/resourceContainer"/>
     </genClasses>
-    <genClasses ecoreClass="systemadaptation.ecore#//AssemblyContextAction"/>
-    <genClasses ecoreClass="systemadaptation.ecore#//ResourceContainerAction"/>
-    <genClasses ecoreClass="systemadaptation.ecore#//ChangeRepositoryComponentAction"/>
-    <genClasses ecoreClass="systemadaptation.ecore#//AllocateAction"/>
+    <genClasses ecoreClass="systemadaptation.ecore#//AssemblyContextAction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//AssemblyContextAction/sourceAssemblyContext"/>
+    </genClasses>
+    <genClasses ecoreClass="systemadaptation.ecore#//ResourceContainerAction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//ResourceContainerAction/sourceResourceContainer"/>
+    </genClasses>
+    <genClasses ecoreClass="systemadaptation.ecore#//ChangeRepositoryComponentAction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//ChangeRepositoryComponentAction/newRepositoryComponent"/>
+    </genClasses>
+    <genClasses ecoreClass="systemadaptation.ecore#//AllocateAction">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//AllocateAction/newAllocatinContext"/>
+    </genClasses>
     <genClasses ecoreClass="systemadaptation.ecore#//DeallocateAction"/>
     <genClasses ecoreClass="systemadaptation.ecore#//MigrateAction">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//MigrateAction/migrationTargetContainer"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//MigrateAction/newAllocatinContext"/>
     </genClasses>
     <genClasses ecoreClass="systemadaptation.ecore#//ReplicateAction">
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemadaptation.ecore#//ReplicateAction/newCount"/>
-      <genFeatures createChild="false" ecoreFeature="ecore:EAttribute systemadaptation.ecore#//ReplicateAction/oldCount"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//ReplicateAction/newResourceContainer"/>
     </genClasses>
     <genClasses ecoreClass="systemadaptation.ecore#//TerminateAction"/>
   </genPackages>

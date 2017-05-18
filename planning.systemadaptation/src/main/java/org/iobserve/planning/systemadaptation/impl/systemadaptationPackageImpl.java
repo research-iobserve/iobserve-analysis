@@ -2,7 +2,6 @@
  */
 package org.iobserve.planning.systemadaptation.impl;
 
-import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
@@ -22,11 +21,11 @@ import org.iobserve.planning.systemadaptation.TerminateAction;
 import org.iobserve.planning.systemadaptation.systemadaptationFactory;
 import org.iobserve.planning.systemadaptation.systemadaptationPackage;
 
-import org.palladiosimulator.pcm.compositionprivacy.CompositionPrivacyPackage;
-
+import org.palladiosimulator.pcm.PcmPackage;
+import org.palladiosimulator.pcm.allocation.AllocationPackage;
+import org.palladiosimulator.pcm.core.composition.CompositionPackage;
+import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
-
-import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceenvironmentPrivacyPackage;
 
 /**
  * <!-- begin-user-doc -->
@@ -152,8 +151,7 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 		isInited = true;
 
 		// Initialize simple dependencies
-		ResourceenvironmentPrivacyPackage.eINSTANCE.eClass();
-		CompositionPrivacyPackage.eINSTANCE.eClass();
+		PcmPackage.eINSTANCE.eClass();
 
 		// Create package meta-data objects
 		thesystemadaptationPackage.createPackageContents();
@@ -220,8 +218,26 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getAssemblyContextAction_SourceAssemblyContext() {
+		return (EReference)assemblyContextActionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getResourceContainerAction() {
 		return resourceContainerActionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getResourceContainerAction_SourceResourceContainer() {
+		return (EReference)resourceContainerActionEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -238,8 +254,26 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getChangeRepositoryComponentAction_NewRepositoryComponent() {
+		return (EReference)changeRepositoryComponentActionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getAllocateAction() {
 		return allocateActionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getAllocateAction_NewAllocatinContext() {
+		return (EReference)allocateActionEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -265,7 +299,7 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getMigrateAction_MigrationTargetContainer() {
+	public EReference getMigrateAction_NewAllocatinContext() {
 		return (EReference)migrateActionEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -283,17 +317,8 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EAttribute getReplicateAction_NewCount() {
-		return (EAttribute)replicateActionEClass.getEStructuralFeatures().get(0);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EAttribute getReplicateAction_OldCount() {
-		return (EAttribute)replicateActionEClass.getEStructuralFeatures().get(1);
+	public EReference getReplicateAction_NewResourceContainer() {
+		return (EReference)replicateActionEClass.getEStructuralFeatures().get(0);
 	}
 
 	/**
@@ -340,21 +365,24 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 		createEReference(actionEClass, ACTION__RESOURCE_CONTAINER);
 
 		assemblyContextActionEClass = createEClass(ASSEMBLY_CONTEXT_ACTION);
+		createEReference(assemblyContextActionEClass, ASSEMBLY_CONTEXT_ACTION__SOURCE_ASSEMBLY_CONTEXT);
 
 		resourceContainerActionEClass = createEClass(RESOURCE_CONTAINER_ACTION);
+		createEReference(resourceContainerActionEClass, RESOURCE_CONTAINER_ACTION__SOURCE_RESOURCE_CONTAINER);
 
 		changeRepositoryComponentActionEClass = createEClass(CHANGE_REPOSITORY_COMPONENT_ACTION);
+		createEReference(changeRepositoryComponentActionEClass, CHANGE_REPOSITORY_COMPONENT_ACTION__NEW_REPOSITORY_COMPONENT);
 
 		allocateActionEClass = createEClass(ALLOCATE_ACTION);
+		createEReference(allocateActionEClass, ALLOCATE_ACTION__NEW_ALLOCATIN_CONTEXT);
 
 		deallocateActionEClass = createEClass(DEALLOCATE_ACTION);
 
 		migrateActionEClass = createEClass(MIGRATE_ACTION);
-		createEReference(migrateActionEClass, MIGRATE_ACTION__MIGRATION_TARGET_CONTAINER);
+		createEReference(migrateActionEClass, MIGRATE_ACTION__NEW_ALLOCATIN_CONTEXT);
 
 		replicateActionEClass = createEClass(REPLICATE_ACTION);
-		createEAttribute(replicateActionEClass, REPLICATE_ACTION__NEW_COUNT);
-		createEAttribute(replicateActionEClass, REPLICATE_ACTION__OLD_COUNT);
+		createEReference(replicateActionEClass, REPLICATE_ACTION__NEW_RESOURCE_CONTAINER);
 
 		terminateActionEClass = createEClass(TERMINATE_ACTION);
 	}
@@ -384,6 +412,9 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 
 		// Obtain other dependent packages
 		ResourceenvironmentPackage theResourceenvironmentPackage = (ResourceenvironmentPackage)EPackage.Registry.INSTANCE.getEPackage(ResourceenvironmentPackage.eNS_URI);
+		CompositionPackage theCompositionPackage = (CompositionPackage)EPackage.Registry.INSTANCE.getEPackage(CompositionPackage.eNS_URI);
+		RepositoryPackage theRepositoryPackage = (RepositoryPackage)EPackage.Registry.INSTANCE.getEPackage(RepositoryPackage.eNS_URI);
+		AllocationPackage theAllocationPackage = (AllocationPackage)EPackage.Registry.INSTANCE.getEPackage(AllocationPackage.eNS_URI);
 
 		// Create type parameters
 
@@ -407,21 +438,24 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 		initEReference(getAction_ResourceContainer(), theResourceenvironmentPackage.getResourceContainer(), null, "resourceContainer", null, 1, 1, Action.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(assemblyContextActionEClass, AssemblyContextAction.class, "AssemblyContextAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getAssemblyContextAction_SourceAssemblyContext(), theCompositionPackage.getAssemblyContext(), null, "sourceAssemblyContext", null, 0, 1, AssemblyContextAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(resourceContainerActionEClass, ResourceContainerAction.class, "ResourceContainerAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getResourceContainerAction_SourceResourceContainer(), theResourceenvironmentPackage.getResourceContainer(), null, "sourceResourceContainer", null, 0, 1, ResourceContainerAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(changeRepositoryComponentActionEClass, ChangeRepositoryComponentAction.class, "ChangeRepositoryComponentAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getChangeRepositoryComponentAction_NewRepositoryComponent(), theRepositoryPackage.getRepositoryComponent(), null, "newRepositoryComponent", null, 1, 1, ChangeRepositoryComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		initEClass(allocateActionEClass, AllocateAction.class, "AllocateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getAllocateAction_NewAllocatinContext(), theAllocationPackage.getAllocationContext(), null, "newAllocatinContext", null, 0, 1, AllocateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(deallocateActionEClass, DeallocateAction.class, "DeallocateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(migrateActionEClass, MigrateAction.class, "MigrateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getMigrateAction_MigrationTargetContainer(), theResourceenvironmentPackage.getResourceContainer(), null, "migrationTargetContainer", null, 1, 1, MigrateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getMigrateAction_NewAllocatinContext(), theAllocationPackage.getAllocationContext(), null, "newAllocatinContext", null, 1, 1, MigrateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(replicateActionEClass, ReplicateAction.class, "ReplicateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEAttribute(getReplicateAction_NewCount(), ecorePackage.getEInt(), "newCount", "0", 0, -1, ReplicateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-		initEAttribute(getReplicateAction_OldCount(), ecorePackage.getEInt(), "oldCount", "0", 0, -1, ReplicateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_UNSETTABLE, !IS_ID, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getReplicateAction_NewResourceContainer(), theResourceenvironmentPackage.getResourceContainer(), null, "newResourceContainer", null, 1, 1, ReplicateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(terminateActionEClass, TerminateAction.class, "TerminateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
