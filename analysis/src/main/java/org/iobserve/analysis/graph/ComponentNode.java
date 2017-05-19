@@ -16,6 +16,7 @@ public class ComponentNode {
 	private String assemblyContextID;
 	private String assemblyName;
 	private String repositoryComponentID;
+	private String allocationContextID;
 	private DataPrivacyLvl privacyLvl;
 	private DeploymentNode hostServer;
 	private Set<ComponentEdge> edges;
@@ -31,10 +32,11 @@ public class ComponentNode {
 	 *            the model representation of the resource container the
 	 *            component is deployed on
 	 */
-	public ComponentNode(String assemblyContextID, String assemblyName, DataPrivacyLvl privacyLvl, DeploymentNode hostContext, String repositoryComponentID) {
+	public ComponentNode(String assemblyContextID, String assemblyName, DataPrivacyLvl privacyLvl, DeploymentNode hostContext, String repositoryComponentID, String allocationContextID) {
 		this.assemblyContextID = assemblyContextID;
 		this.assemblyName = assemblyName;
 		this.repositoryComponentID = repositoryComponentID;
+		this.allocationContextID = allocationContextID;
 		this.privacyLvl = privacyLvl;
 		this.hostServer = hostContext;
 		this.edges = new LinkedHashSet<ComponentEdge>();
@@ -74,6 +76,13 @@ public class ComponentNode {
 	 */
 	public String getRepositoryComponentID() {
 		return repositoryComponentID;
+	}
+	
+	/**
+	 * @return the allocationContextID
+	 */
+	public String getAllocationContextID() {
+		return allocationContextID;
 	}
 
 	/**
@@ -117,6 +126,7 @@ public class ComponentNode {
 			if (this.assemblyContextID.equals(compObj.assemblyContextID)
 					&& this.assemblyName.equals(compObj.assemblyName)
 					&& this.repositoryComponentID.equals(compObj.repositoryComponentID)
+					&& this.allocationContextID.equals(compObj.allocationContextID)
 					&& this.hostServer.equals(compObj.hostServer)) {
 
 				return true;
