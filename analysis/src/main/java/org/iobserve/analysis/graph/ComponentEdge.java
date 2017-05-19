@@ -85,6 +85,21 @@ public class ComponentEdge {
 		return privacyLvl;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ComponentEdge) {
+			ComponentEdge compObj = (ComponentEdge) obj;
+			if (this.id.equals(compObj.id) 
+					&& this.assemblyConnectorName.equals(compObj.assemblyConnectorName)
+					&& this.privacyLvl == compObj.privacyLvl
+					&& this.providingNode.getAssemblyContextID().contentEquals(compObj.providingNode.getAssemblyContextID())
+					&& this.requiringNode.getAssemblyContextID().contentEquals(compObj.requiringNode.getAssemblyContextID())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	/**
 	 * @return the assemblyConnectorName
 	 */

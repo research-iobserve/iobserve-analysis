@@ -182,7 +182,7 @@ public class GraphFactory {
 			DeploymentNode hostServer = servers.get(this.ac2rcMap.get(ac.getId()));
 			DataPrivacyLvl acPrivacyLvl = this.assemblyContextPrivacyLvl.get(ac.getId());
 			
-			ComponentNode component = new ComponentNode(ac.getId(), ac.getEntityName(), acPrivacyLvl, hostServer);
+			ComponentNode component = new ComponentNode(ac.getId(), ac.getEntityName(), acPrivacyLvl, hostServer, ac.getEncapsulatedComponent__AssemblyContext().getId());
 			hostServer.addComponent(component);
 			
 			components.put(ac.getId(), component);
