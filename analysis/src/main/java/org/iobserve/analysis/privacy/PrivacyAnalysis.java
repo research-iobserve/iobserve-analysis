@@ -3,19 +3,14 @@ package org.iobserve.analysis.privacy;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
+import org.iobserve.adaption.data.AdapdationData;
 import org.iobserve.analysis.utils.AbstractLinearComposition;
 
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
-import teetime.stage.basic.AbstractTransformation;
-
-public class PrivacyAnalysis extends AbstractLinearComposition<URI, URI> {
+public class PrivacyAnalysis extends AbstractLinearComposition<URI, AdapdationData> {
 
 	private static URI legalPersonalGeoLocationFile;
 	private static HashSet<Integer> legalPersonalGeoLocations;

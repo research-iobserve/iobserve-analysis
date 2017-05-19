@@ -11,7 +11,7 @@ import teetime.stage.basic.AbstractTransformation;
  * 
  * @author Philipp Weimann
  */
-public class CandidateCreation extends AbstractTransformation<URI, CandidateInformations> {
+public class CandidateCreation extends AbstractTransformation<AdapdationData, CandidateInformations> {
 	
 	private final static int EXEC_SUCCESS = 0;
 	private final static int EXEC_ERROR = 1;
@@ -23,7 +23,7 @@ public class CandidateCreation extends AbstractTransformation<URI, CandidateInfo
 	}
 
 	@Override
-	protected void execute(URI element) throws Exception {
+	protected void execute(AdapdationData element) throws Exception {
 		
 		AdapdationData adapdationData = new AdapdationData();
 		adapdationData.setRuntimeModelURI(element);

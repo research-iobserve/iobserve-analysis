@@ -1,41 +1,38 @@
 package org.iobserve.analysis.privacy;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.graph.ComponentEdge;
+import org.iobserve.adaption.data.AdapdationData;
 import org.iobserve.analysis.graph.ComponentNode;
-import org.iobserve.analysis.graph.PrivacyAnalysisModel;
+import org.iobserve.analysis.graph.ModelGraph;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyContextPrivacy;
-import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 import teetime.stage.basic.AbstractTransformation;
 
-public class GraphPrivacyAnalysis extends AbstractTransformation<PrivacyAnalysisModel, URI> {
+public class GraphPrivacyAnalysis extends AbstractTransformation<AdapdationData, AdapdationData> {
 
 	@Override
-	protected void execute(PrivacyAnalysisModel element) throws Exception {
+	protected void execute(AdapdationData element) throws Exception {
 
-		if (element == null) {
+		if (element == null || element.getRuntimeGraph() == null) {
 			System.err.println("Privacy Analysis Model is null. Aborting!");
 			return;
 		}
+		
+		ModelGraph graph = element.getRuntimeGraph();
+		
 
 		System.out.print("Starting Privacy Analysis ... ");
 		System.out.println("Component PrivacyLvl analysis ...");
-		element.printGraph();
+		graph.printGraph();
 
-		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(element);
+		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(graph);
 		classificationAnalysis.start();
 
 		System.out.println("Deployment analysis ... ");
-		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(element);
+		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(graph);
 		boolean legalDeployment = deploymentAnalysis.start();
 
 		if (legalDeployment)
@@ -43,15 +40,15 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<PrivacyAnalysis
 		else
 			System.err.println("The deployment is ILLEGAL");
 
-		element.printGraph();
+		graph.printGraph();
 		
-		this.writeComponentClassificationToPCM(element);
+		this.writeComponentClassificationToPCM(graph);
 		
 		if (!legalDeployment)
-			this.outputPort.send(element.getPcmModelsURI());
+			this.outputPort.send(element);
 	}
 
-	private void writeComponentClassificationToPCM(PrivacyAnalysisModel model) {
+	private void writeComponentClassificationToPCM(ModelGraph model) {
 		EList<AssemblyContext> acs = model.getPcmModels().getSystemModelProvider().getModel().getAssemblyContexts__ComposedStructure();
 
 		for (AssemblyContext ac : acs) {

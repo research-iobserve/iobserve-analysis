@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.iobserve.analysis.graph.ComponentEdge;
 import org.iobserve.analysis.graph.ComponentNode;
-import org.iobserve.analysis.graph.PrivacyAnalysisModel;
+import org.iobserve.analysis.graph.ModelGraph;
 import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 
 /**
@@ -20,7 +20,7 @@ import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
  */
 public class ComponentClassificationAnalysis {
 
-	private PrivacyAnalysisModel model;
+	private ModelGraph model;
 
 	private List<ComponentNode> personalComponents;
 	private HashSet<ComponentNode> dePersonalComponents;
@@ -33,7 +33,7 @@ public class ComponentClassificationAnalysis {
 	 * 
 	 * @param model
 	 */
-	public ComponentClassificationAnalysis(PrivacyAnalysisModel model) {
+	public ComponentClassificationAnalysis(ModelGraph model) {
 		this.model = model;
 
 		this.personalComponents = new ArrayList<ComponentNode>();
@@ -42,7 +42,8 @@ public class ComponentClassificationAnalysis {
 	}
 
 	/**
-	 * Starts the component classification analysis and adjusts the DataPrivacyLvl.
+	 * Starts the component classification analysis and adjusts the
+	 * DataPrivacyLvl.
 	 */
 	public void start() {
 
