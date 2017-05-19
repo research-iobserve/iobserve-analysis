@@ -3,7 +3,7 @@ package org.iobserve.adaption.data;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.graph.ModelGraph;
 
-public class AdapdationData {
+public class AdaptationData {
 
 	private URI runtimeModelURI;
 	private ModelGraph runtimeGraph;

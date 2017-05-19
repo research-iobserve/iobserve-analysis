@@ -18,6 +18,10 @@ package org.iobserve.analysis;
 import java.io.IOException;
 
 import org.eclipse.emf.common.util.URI;
+import org.iobserve.adaption.ModelComparision;
+import org.iobserve.adaption.ModelTransformationExecution;
+import org.iobserve.adaption.ModelTransformationPlanning;
+import org.iobserve.adaption.SystemAdaptation;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
@@ -101,6 +105,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
 		final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
 		final ModelCreation modelCreation = new ModelCreation(new CandidateCreation(perOpteryxHeadless), new CandidateSelector());
+		final SystemAdaptation systemAdaptor = new SystemAdaptation(new ModelComparision(), new ModelTransformationPlanning(), new ModelTransformationExecution());
 
 		/** dispatch different monitoring data. */
 		// Path Allocation => Deployment => Snapshot
@@ -125,6 +130,9 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		
 		// Path Snapshot => Planning
 		this.connectPorts(snapshotBuilder.getOutputPort(), modelCreation.getInputPort());
+		
+		// Path Planning => Adapdation
+		this.connectPorts(modelCreation.getOutputPort(), systemAdaptor.getInputPort());
 	}
 
 	public RecordSwitch getRecordSwitch() {
