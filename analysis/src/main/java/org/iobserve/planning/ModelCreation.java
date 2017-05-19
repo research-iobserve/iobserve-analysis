@@ -1,7 +1,7 @@
 package org.iobserve.planning;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.privacy.AbstractLinearComposition;
+import org.iobserve.analysis.utils.AbstractLinearComposition;
 
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;

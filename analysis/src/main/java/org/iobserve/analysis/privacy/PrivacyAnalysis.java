@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
+import org.iobserve.analysis.utils.AbstractLinearComposition;
 
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;

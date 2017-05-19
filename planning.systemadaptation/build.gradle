@@ -24,12 +24,34 @@ dependencies {
     compile 'org.eclipse.emf:org.eclipse.emf.common:2.12.0+'
     compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.12.0+'
     compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.12.0+'
-    compile 'org.eclipse.emf:org.eclipse.emf.query:1.7.0+'
+    //compile 'org.eclipse.emf:org.eclipse.emf.query:1.7.0+'
     
    	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
 	compile 'extra:org.palladiosimulator.pcm:4.0.0+'
-	compile 'extra:org.palladiosimulator.pcm.resources:4.0.0+'
-	compile 'extra:org.palladiosimulator.pcm.privacy:4.0.0.2017-04-27'
+	//compile 'extra:org.palladiosimulator.pcm.resources:4.0.0+'
+	//compile 'extra:org.palladiosimulator.pcm.privacy:4.0.0.2017-05-10'
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src/main/java'
+		}
+	}
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
 }
 
 install {
