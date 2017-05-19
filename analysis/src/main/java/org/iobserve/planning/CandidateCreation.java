@@ -1,6 +1,7 @@
 package org.iobserve.planning;
 
 import org.eclipse.emf.common.util.URI;
+import org.iobserve.adaption.data.AdapdationData;
 import org.iobserve.planning.peropteryx.ExecutionWrapper;
 
 import teetime.stage.basic.AbstractTransformation;
@@ -11,7 +12,10 @@ import teetime.stage.basic.AbstractTransformation;
  * @author Philipp Weimann
  */
 public class CandidateCreation extends AbstractTransformation<URI, CandidateInformations> {
-
+	
+	private final static int EXEC_SUCCESS = 0;
+	private final static int EXEC_ERROR = 1;
+	
 	private final URI perOpteryxDir;
 
 	public CandidateCreation(final URI perOpteryxDir) {
@@ -20,6 +24,9 @@ public class CandidateCreation extends AbstractTransformation<URI, CandidateInfo
 
 	@Override
 	protected void execute(URI element) throws Exception {
+		
+		AdapdationData adapdationData = new AdapdationData();
+		adapdationData.setRuntimeModelURI(element);
 
 		ExecutionWrapper exec = new ExecutionWrapper(element, this.perOpteryxDir);
 

@@ -14,14 +14,14 @@ import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
  * @author Philipp Weimann
  *
  */
-public class PrivacyAnalysisModel {
+public class ModelGraph {
 
 	private Set<DeploymentNode> servers;
 	private Set<ComponentNode> components;
 	private InitializeModelProviders pcmModels;
 	private final URI pcmModelsURI;
 
-	public PrivacyAnalysisModel(Collection<DeploymentNode> servers, Collection<ComponentNode> components, InitializeModelProviders pcmModels,
+	public ModelGraph(Collection<DeploymentNode> servers, Collection<ComponentNode> components, InitializeModelProviders pcmModels,
 			final URI pcmModelsURI) {
 		this.servers = new HashSet<DeploymentNode>(servers);
 		this.components = new HashSet<ComponentNode>(components);
