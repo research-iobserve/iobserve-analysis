@@ -24,11 +24,8 @@ public class CandidateCreation extends AbstractTransformation<AdapdationData, Ca
 
 	@Override
 	protected void execute(AdapdationData element) throws Exception {
-		
-		AdapdationData adapdationData = new AdapdationData();
-		adapdationData.setRuntimeModelURI(element);
 
-		ExecutionWrapper exec = new ExecutionWrapper(element, this.perOpteryxDir);
+		ExecutionWrapper exec = new ExecutionWrapper(element.getRuntimeModelURI(), this.perOpteryxDir);
 
 		int result = exec.startModelGeneration();
 	}

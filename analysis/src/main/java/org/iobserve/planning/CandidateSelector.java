@@ -1,10 +1,10 @@
 package org.iobserve.planning;
 
-import org.eclipse.emf.common.util.URI;
+import org.iobserve.adaption.data.AdapdationData;
 
 import teetime.stage.basic.AbstractTransformation;
 
-public class CandidateSelector extends AbstractTransformation<CandidateInformations, URI> {
+public class CandidateSelector extends AbstractTransformation<CandidateInformations, AdapdationData> {
 
 	@Override
 	protected void execute(CandidateInformations element) throws Exception {
