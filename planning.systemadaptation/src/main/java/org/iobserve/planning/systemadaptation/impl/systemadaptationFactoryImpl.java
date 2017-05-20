@@ -64,8 +64,9 @@ public class systemadaptationFactoryImpl extends EFactoryImpl implements systema
 			case systemadaptationPackage.ALLOCATE_ACTION: return createAllocateAction();
 			case systemadaptationPackage.DEALLOCATE_ACTION: return createDeallocateAction();
 			case systemadaptationPackage.MIGRATE_ACTION: return createMigrateAction();
-			case systemadaptationPackage.REPLICATE_ACTION: return createReplicateAction();
+			case systemadaptationPackage.ACQUIRE_ACTION: return createAcquireAction();
 			case systemadaptationPackage.TERMINATE_ACTION: return createTerminateAction();
+			case systemadaptationPackage.REPLICATE_ACTION: return createReplicateAction();
 			default:
 				throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
 		}
@@ -149,6 +150,16 @@ public class systemadaptationFactoryImpl extends EFactoryImpl implements systema
 	public MigrateAction createMigrateAction() {
 		MigrateActionImpl migrateAction = new MigrateActionImpl();
 		return migrateAction;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public AcquireAction createAcquireAction() {
+		AcquireActionImpl acquireAction = new AcquireActionImpl();
+		return acquireAction;
 	}
 
 	/**

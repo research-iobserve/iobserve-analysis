@@ -360,14 +360,14 @@ public interface systemadaptationPackage extends EPackage {
 	int MIGRATE_ACTION_FEATURE_COUNT = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 1;
 
 	/**
-	 * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl <em>Replicate Action</em>}' class.
+	 * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.AcquireActionImpl <em>Acquire Action</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @see org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl
-	 * @see org.iobserve.planning.systemadaptation.impl.systemadaptationPackageImpl#getReplicateAction()
+	 * @see org.iobserve.planning.systemadaptation.impl.AcquireActionImpl
+	 * @see org.iobserve.planning.systemadaptation.impl.systemadaptationPackageImpl#getAcquireAction()
 	 * @generated
 	 */
-	int REPLICATE_ACTION = 8;
+	int ACQUIRE_ACTION = 8;
 
 	/**
 	 * The feature id for the '<em><b>Resource Container</b></em>' reference.
@@ -376,7 +376,7 @@ public interface systemadaptationPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int REPLICATE_ACTION__RESOURCE_CONTAINER = RESOURCE_CONTAINER_ACTION__RESOURCE_CONTAINER;
+	int ACQUIRE_ACTION__RESOURCE_CONTAINER = RESOURCE_CONTAINER_ACTION__RESOURCE_CONTAINER;
 
 	/**
 	 * The feature id for the '<em><b>Source Resource Container</b></em>' reference.
@@ -385,25 +385,26 @@ public interface systemadaptationPackage extends EPackage {
 	 * @generated
 	 * @ordered
 	 */
-	int REPLICATE_ACTION__SOURCE_RESOURCE_CONTAINER = RESOURCE_CONTAINER_ACTION__SOURCE_RESOURCE_CONTAINER;
+	int ACQUIRE_ACTION__SOURCE_RESOURCE_CONTAINER = RESOURCE_CONTAINER_ACTION__SOURCE_RESOURCE_CONTAINER;
 
 	/**
-	 * The feature id for the '<em><b>New Resource Container</b></em>' reference.
+	 * The number of structural features of the '<em>Acquire Action</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int REPLICATE_ACTION__NEW_RESOURCE_CONTAINER = RESOURCE_CONTAINER_ACTION_FEATURE_COUNT + 0;
+	int ACQUIRE_ACTION_FEATURE_COUNT = RESOURCE_CONTAINER_ACTION_FEATURE_COUNT + 0;
 
 	/**
-	 * The number of structural features of the '<em>Replicate Action</em>' class.
+	 * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl <em>Replicate Action</em>}' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
+	 * @see org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl
+	 * @see org.iobserve.planning.systemadaptation.impl.systemadaptationPackageImpl#getReplicateAction()
 	 * @generated
-	 * @ordered
 	 */
-	int REPLICATE_ACTION_FEATURE_COUNT = RESOURCE_CONTAINER_ACTION_FEATURE_COUNT + 1;
+	int REPLICATE_ACTION = 10;
 
 	/**
 	 * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.TerminateActionImpl <em>Terminate Action</em>}' class.
@@ -441,6 +442,60 @@ public interface systemadaptationPackage extends EPackage {
 	 * @ordered
 	 */
 	int TERMINATE_ACTION_FEATURE_COUNT = RESOURCE_CONTAINER_ACTION_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Resource Container</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REPLICATE_ACTION__RESOURCE_CONTAINER = RESOURCE_CONTAINER_ACTION__RESOURCE_CONTAINER;
+
+	/**
+	 * The feature id for the '<em><b>Source Resource Container</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REPLICATE_ACTION__SOURCE_RESOURCE_CONTAINER = RESOURCE_CONTAINER_ACTION__SOURCE_RESOURCE_CONTAINER;
+
+	/**
+	 * The feature id for the '<em><b>New Resource Container</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REPLICATE_ACTION__NEW_RESOURCE_CONTAINER = RESOURCE_CONTAINER_ACTION_FEATURE_COUNT + 0;
+
+	/**
+	 * The feature id for the '<em><b>Source Allocation Context</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REPLICATE_ACTION__SOURCE_ALLOCATION_CONTEXT = RESOURCE_CONTAINER_ACTION_FEATURE_COUNT + 1;
+
+	/**
+	 * The feature id for the '<em><b>New Allocation Context</b></em>' reference list.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT = RESOURCE_CONTAINER_ACTION_FEATURE_COUNT + 2;
+
+	/**
+	 * The number of structural features of the '<em>Replicate Action</em>' class.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int REPLICATE_ACTION_FEATURE_COUNT = RESOURCE_CONTAINER_ACTION_FEATURE_COUNT + 3;
 
 
 	/**
@@ -601,6 +656,16 @@ public interface systemadaptationPackage extends EPackage {
 	EReference getMigrateAction_NewAllocatinContext();
 
 	/**
+	 * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.AcquireAction <em>Acquire Action</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for class '<em>Acquire Action</em>'.
+	 * @see org.iobserve.planning.systemadaptation.AcquireAction
+	 * @generated
+	 */
+	EClass getAcquireAction();
+
+	/**
 	 * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.ReplicateAction <em>Replicate Action</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -620,6 +685,28 @@ public interface systemadaptationPackage extends EPackage {
 	 * @generated
 	 */
 	EReference getReplicateAction_NewResourceContainer();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.iobserve.planning.systemadaptation.ReplicateAction#getSourceAllocationContext <em>Source Allocation Context</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>Source Allocation Context</em>'.
+	 * @see org.iobserve.planning.systemadaptation.ReplicateAction#getSourceAllocationContext()
+	 * @see #getReplicateAction()
+	 * @generated
+	 */
+	EReference getReplicateAction_SourceAllocationContext();
+
+	/**
+	 * Returns the meta object for the reference list '{@link org.iobserve.planning.systemadaptation.ReplicateAction#getNewAllocationContext <em>New Allocation Context</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference list '<em>New Allocation Context</em>'.
+	 * @see org.iobserve.planning.systemadaptation.ReplicateAction#getNewAllocationContext()
+	 * @see #getReplicateAction()
+	 * @generated
+	 */
+	EReference getReplicateAction_NewAllocationContext();
 
 	/**
 	 * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.TerminateAction <em>Terminate Action</em>}'.
@@ -790,6 +877,16 @@ public interface systemadaptationPackage extends EPackage {
 		EReference MIGRATE_ACTION__NEW_ALLOCATIN_CONTEXT = eINSTANCE.getMigrateAction_NewAllocatinContext();
 
 		/**
+		 * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.AcquireActionImpl <em>Acquire Action</em>}' class.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @see org.iobserve.planning.systemadaptation.impl.AcquireActionImpl
+		 * @see org.iobserve.planning.systemadaptation.impl.systemadaptationPackageImpl#getAcquireAction()
+		 * @generated
+		 */
+		EClass ACQUIRE_ACTION = eINSTANCE.getAcquireAction();
+
+		/**
 		 * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl <em>Replicate Action</em>}' class.
 		 * <!-- begin-user-doc -->
 		 * <!-- end-user-doc -->
@@ -806,6 +903,22 @@ public interface systemadaptationPackage extends EPackage {
 		 * @generated
 		 */
 		EReference REPLICATE_ACTION__NEW_RESOURCE_CONTAINER = eINSTANCE.getReplicateAction_NewResourceContainer();
+
+		/**
+		 * The meta object literal for the '<em><b>Source Allocation Context</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference REPLICATE_ACTION__SOURCE_ALLOCATION_CONTEXT = eINSTANCE.getReplicateAction_SourceAllocationContext();
+
+		/**
+		 * The meta object literal for the '<em><b>New Allocation Context</b></em>' reference list feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT = eINSTANCE.getReplicateAction_NewAllocationContext();
 
 		/**
 		 * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.TerminateActionImpl <em>Terminate Action</em>}' class.
