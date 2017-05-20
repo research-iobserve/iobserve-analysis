@@ -30,7 +30,7 @@ public class AssemblyContextActionFactory extends ActionFactory {
 
 		Repository repositoryModel = redeploymentModels.getRepositoryModelProvider().getModel();
 		RepositoryComponent repositoryComponent = repositoryModel.getComponents__Repository().stream()
-				.filter(s -> s.getId() == reDeploymentNode.getRepositoryComponentID()).findFirst().get();
+				.filter(s -> s.getId().equals(reDeploymentNode.getRepositoryComponentID())).findFirst().get();
 		action.setNewRepositoryComponent(repositoryComponent);
 
 		return action;
@@ -43,7 +43,7 @@ public class AssemblyContextActionFactory extends ActionFactory {
 		AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
 
 		Allocation allocation = ActionFactory.redeploymentModels.getAllocationModelProvider().getModel();
-		action.setNewAllocatinContext(ActionFactory.getAllocationContext(runtimeNode.getAssemblyContextID(), allocation));
+		action.setNewAllocatinContext(ActionFactory.getAllocationContext(reDeploymentNode.getAllocationContextID(), allocation));
 		return action;
 	}
 
@@ -64,7 +64,7 @@ public class AssemblyContextActionFactory extends ActionFactory {
 		// AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
 
 		Allocation allocation = ActionFactory.redeploymentModels.getAllocationModelProvider().getModel();
-		action.setNewAllocatinContext(ActionFactory.getAllocationContext(runtimeNode.getAssemblyContextID(), allocation));
+		action.setNewAllocatinContext(ActionFactory.getAllocationContext(reDeploymentNode.getAllocationContextID(), allocation));
 		return action;
 	}
 }
