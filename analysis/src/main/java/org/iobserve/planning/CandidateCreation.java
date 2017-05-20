@@ -30,12 +30,12 @@ public class CandidateCreation extends AbstractTransformation<URI, CandidateInfo
 
 		ExecutionWrapper exec = new ExecutionWrapper(element, this.perOpteryxDir);
 
-		int result = exec.startModelGeneration();
+		int result = EXEC_SUCCESS;//exec.startModelGeneration();
 		
 		if (result == EXEC_ERROR){
-			adapdationData.setReDeploymentURI(URI.createFileURI("C:\\"));
+			adapdationData.setReDeploymentURI(URI.createFileURI("C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\AssemblyContextActionModel"));
 		} else if (result == EXEC_SUCCESS) {
-			adapdationData.setReDeploymentURI(URI.createFileURI("C:\\"));
+			adapdationData.setReDeploymentURI(URI.createFileURI("C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\AssemblyContextActionModel"));
 		}
 		else
 		{
