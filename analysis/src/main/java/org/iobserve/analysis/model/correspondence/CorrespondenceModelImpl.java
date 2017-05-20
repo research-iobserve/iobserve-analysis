@@ -18,6 +18,7 @@ package org.iobserve.analysis.model.correspondence;
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.URI;
+import org.ipd.sdq.cmg.CorrespondenceModelProvider;
 import org.ipd.sdq.cmg.impl.CorrespondenceModelProviderImpl;
 
 import edu.kit.ipd.cm.Correspondence;
@@ -26,17 +27,25 @@ import edu.kit.ipd.cm.HighLevelModelElement;
 import edu.kit.ipd.cm.LowLevelModelElement;
 
 /**
- * Implementation of {@link ICorrespondence}.
+ * Implementation of {@link ICorrespondence}. This implementation uses the
+ * {@link CorrespondenceModel} as EMF model to provide the correspondences.
  *
  * @author Robert Heinrich
- * @author Nicolas Boltz
  * @author Alessandro Giusa
- * 
  */
 public class CorrespondenceModelImpl implements ICorrespondence {
 
+	/**EMF model instance.*/
     private final CorrespondenceModel model;
     
+	/**
+	 * Constructor which takes the path to a {@link CorrespondenceModel}
+	 * instance which is available in a way, that the
+	 * {@link CorrespondenceModelProvider} can load it.
+	 * 
+	 * @param pathToCM
+	 *            path to model instance.
+	 */
     public CorrespondenceModelImpl(final URI pathToCM) {
 		this.model = new CorrespondenceModelProviderImpl().load(pathToCM).orElseThrow(() -> new IllegalArgumentException(String.format("CM uri might be wrong %s", pathToCM.toFileString())));
 	}
@@ -71,5 +80,4 @@ public class CorrespondenceModelImpl implements ICorrespondence {
 		}
 		return Optional.empty();
 	}
-    
 }
