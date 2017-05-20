@@ -13,6 +13,13 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 
+/**
+ * This class provides a factory for system adaption Actions. It provides all
+ * basic functions. Initialize the static fields {@value runtimeModels} and
+ * {@value redeploymentModels} before using this class.
+ * 
+ * @author Philipp Weimann
+ */
 public class AssemblyContextActionFactory extends ActionFactory {
 
 	private static AssemblyContextAction setSourceAssemblyContext(AssemblyContextAction action, String assemblyContextID) {
@@ -61,7 +68,8 @@ public class AssemblyContextActionFactory extends ActionFactory {
 		AllocateAction action = factory.createAllocateAction();
 
 		// Allcotaion has no runtime component
-		// AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
+		// AssemblyContextActionFactory.setSourceAssemblyContext(action,
+		// runtimeNode.getAssemblyContextID());
 
 		Allocation allocation = ActionFactory.redeploymentModels.getAllocationModelProvider().getModel();
 		action.setNewAllocatinContext(ActionFactory.getAllocationContext(reDeploymentNode.getAllocationContextID(), allocation));

@@ -30,9 +30,14 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="newAllocatinContext" lowerBound="1"
         eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="AcquireAction" eSuperTypes="#//ResourceContainerAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="TerminateAction" eSuperTypes="#//ResourceContainerAction"/>
   <eClassifiers xsi:type="ecore:EClass" name="ReplicateAction" eSuperTypes="#//ResourceContainerAction">
     <eStructuralFeatures xsi:type="ecore:EReference" name="newResourceContainer" lowerBound="1"
         eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceAllocationContext"
+        lowerBound="1" upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="newAllocationContext" lowerBound="1"
+        upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="TerminateAction" eSuperTypes="#//ResourceContainerAction"/>
 </ecore:EPackage>

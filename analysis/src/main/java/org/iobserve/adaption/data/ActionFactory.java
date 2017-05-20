@@ -8,6 +8,15 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
+/**
+ * This class provides a factory for system adaption Actions. It provides all
+ * basic functions. Initialize the static fields {@value runtimeModels} and {@value redeploymentModels} before using
+ * this class. It is recommended not to use this class directly, but
+ * {@link AssemblyContextActionFactory} and
+ * {@link ResourceContainerActionFactory} directly.
+ * 
+ * @author Philipp Weimann
+ */
 public class ActionFactory {
 
 	public static InitializeModelProviders runtimeModels;

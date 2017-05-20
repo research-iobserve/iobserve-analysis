@@ -35,9 +35,12 @@
     <genClasses ecoreClass="systemadaptation.ecore#//MigrateAction">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//MigrateAction/newAllocatinContext"/>
     </genClasses>
+    <genClasses ecoreClass="systemadaptation.ecore#//AcquireAction"/>
+    <genClasses ecoreClass="systemadaptation.ecore#//TerminateAction"/>
     <genClasses ecoreClass="systemadaptation.ecore#//ReplicateAction">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//ReplicateAction/newResourceContainer"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//ReplicateAction/sourceAllocationContext"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//ReplicateAction/newAllocationContext"/>
     </genClasses>
-    <genClasses ecoreClass="systemadaptation.ecore#//TerminateAction"/>
   </genPackages>
 </genmodel:GenModel>

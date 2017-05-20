@@ -32,7 +32,7 @@ public class CandidateCreation extends AbstractTransformation<AdaptationData, Ca
 		if (result == EXEC_ERROR){
 			adapdationData.setReDeploymentURI(URI.createFileURI("C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\AssemblyContextActionModel"));
 		} else if (result == EXEC_SUCCESS) {
-			adapdationData.setReDeploymentURI(URI.createFileURI("C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\AssemblyContextActionModel"));
+			adapdationData.setReDeploymentURI(URI.createFileURI("C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\ResourceContainerActionModel"));
 		}
 		else
 		{

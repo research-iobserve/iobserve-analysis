@@ -8,6 +8,7 @@ import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
+import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
@@ -89,6 +90,13 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 * @generated
 	 */
 	private EClass migrateActionEClass = null;
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	private EClass acquireActionEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -308,6 +316,15 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EClass getAcquireAction() {
+		return acquireActionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getReplicateAction() {
 		return replicateActionEClass;
 	}
@@ -319,6 +336,24 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 */
 	public EReference getReplicateAction_NewResourceContainer() {
 		return (EReference)replicateActionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getReplicateAction_SourceAllocationContext() {
+		return (EReference)replicateActionEClass.getEStructuralFeatures().get(1);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getReplicateAction_NewAllocationContext() {
+		return (EReference)replicateActionEClass.getEStructuralFeatures().get(2);
 	}
 
 	/**
@@ -381,10 +416,14 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 		migrateActionEClass = createEClass(MIGRATE_ACTION);
 		createEReference(migrateActionEClass, MIGRATE_ACTION__NEW_ALLOCATIN_CONTEXT);
 
-		replicateActionEClass = createEClass(REPLICATE_ACTION);
-		createEReference(replicateActionEClass, REPLICATE_ACTION__NEW_RESOURCE_CONTAINER);
+		acquireActionEClass = createEClass(ACQUIRE_ACTION);
 
 		terminateActionEClass = createEClass(TERMINATE_ACTION);
+
+		replicateActionEClass = createEClass(REPLICATE_ACTION);
+		createEReference(replicateActionEClass, REPLICATE_ACTION__NEW_RESOURCE_CONTAINER);
+		createEReference(replicateActionEClass, REPLICATE_ACTION__SOURCE_ALLOCATION_CONTEXT);
+		createEReference(replicateActionEClass, REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT);
 	}
 
 	/**
@@ -427,8 +466,9 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 		allocateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
 		deallocateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
 		migrateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
-		replicateActionEClass.getESuperTypes().add(this.getResourceContainerAction());
+		acquireActionEClass.getESuperTypes().add(this.getResourceContainerAction());
 		terminateActionEClass.getESuperTypes().add(this.getResourceContainerAction());
+		replicateActionEClass.getESuperTypes().add(this.getResourceContainerAction());
 
 		// Initialize classes and features; add operations and parameters
 		initEClass(systemAdaptationEClass, SystemAdaptation.class, "SystemAdaptation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
@@ -454,10 +494,14 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 		initEClass(migrateActionEClass, MigrateAction.class, "MigrateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getMigrateAction_NewAllocatinContext(), theAllocationPackage.getAllocationContext(), null, "newAllocatinContext", null, 1, 1, MigrateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-		initEClass(replicateActionEClass, ReplicateAction.class, "ReplicateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getReplicateAction_NewResourceContainer(), theResourceenvironmentPackage.getResourceContainer(), null, "newResourceContainer", null, 1, 1, ReplicateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEClass(acquireActionEClass, AcquireAction.class, "AcquireAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(terminateActionEClass, TerminateAction.class, "TerminateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+
+		initEClass(replicateActionEClass, ReplicateAction.class, "ReplicateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getReplicateAction_NewResourceContainer(), theResourceenvironmentPackage.getResourceContainer(), null, "newResourceContainer", null, 1, 1, ReplicateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getReplicateAction_SourceAllocationContext(), theAllocationPackage.getAllocationContext(), null, "sourceAllocationContext", null, 1, -1, ReplicateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getReplicateAction_NewAllocationContext(), theAllocationPackage.getAllocationContext(), null, "newAllocationContext", null, 1, -1, ReplicateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		// Create resource
 		createResource(eNS_URI);

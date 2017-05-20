@@ -94,6 +94,15 @@ public interface systemadaptationFactory extends EFactory {
 	MigrateAction createMigrateAction();
 
 	/**
+	 * Returns a new object of class '<em>Acquire Action</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Acquire Action</em>'.
+	 * @generated
+	 */
+	AcquireAction createAcquireAction();
+
+	/**
 	 * Returns a new object of class '<em>Replicate Action</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->

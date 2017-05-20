@@ -7,6 +7,11 @@ import org.iobserve.analysis.graph.ModelGraph;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 
+/**
+ * This class provides all data required for planning and adapting the system.
+ * 
+ * @author Philipp Weimann
+ */
 public class AdaptationData {
 
 	private URI runtimeModelURI;
