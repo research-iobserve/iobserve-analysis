@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.iobserve.adaption.data.ActionFactory;
 import org.iobserve.adaption.data.AdaptationData;
 import org.iobserve.adaption.data.AssemblyContextActionFactory;
-import org.iobserve.adaption.data.RessourceContainerActionFactory;
+import org.iobserve.adaption.data.ResourceContainerActionFactory;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.ComponentNode;
 import org.iobserve.analysis.graph.DeploymentNode;
@@ -107,7 +107,7 @@ public class ModelComparision extends AbstractTransformation<AdaptationData, Ada
 			DeploymentNode runServer = this.runtimeDeploymentNodes.get(reDeplServer.getResourceContainerID());
 
 			if (runServer == null) {
-				AcquireAction action = RessourceContainerActionFactory.generateAcquireAction(reDeplServer);
+				AcquireAction action = ResourceContainerActionFactory.generateAcquireAction(reDeplServer);
 			} else if (!runServer.equals(reDeplServer)) {
 				// unkown what to do!
 			}
@@ -117,7 +117,7 @@ public class ModelComparision extends AbstractTransformation<AdaptationData, Ada
 
 		for (DeploymentNode runServer : this.runtimeDeploymentNodes.values()) {
 			// AssemblyContext does not exist anymore in redeployment model!
-			TerminateAction action = RessourceContainerActionFactory.generateTerminateAction(runServer);
+			TerminateAction action = ResourceContainerActionFactory.generateTerminateAction(runServer);
 			this.rcActions.add(action);
 		}
 	}

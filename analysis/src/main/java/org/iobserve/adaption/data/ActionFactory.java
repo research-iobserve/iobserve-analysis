@@ -13,7 +13,7 @@ import org.palladiosimulator.pcm.system.System;
  * basic functions. Initialize the static fields {@value runtimeModels} and {@value redeploymentModels} before using
  * this class. It is recommended not to use this class directly, but
  * {@link AssemblyContextActionFactory} and
- * {@link RessourceContainerActionFactory} directly.
+ * {@link ResourceContainerActionFactory} directly.
  * 
  * @author Philipp Weimann
  */

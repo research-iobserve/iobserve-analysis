@@ -25,7 +25,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  * 
  * @author Philipp Weimann
  */
-public class RessourceContainerActionFactory extends ActionFactory {
+public class ResourceContainerActionFactory extends ActionFactory {
 
 	private static ResourceContainerAction setSourceResourceContainer(ResourceContainerAction action, String resourceContainerID) {
 		ResourceEnvironment resEnvModel = ActionFactory.runtimeModels.getResourceEnvironmentModelProvider().getModel();
@@ -38,7 +38,7 @@ public class RessourceContainerActionFactory extends ActionFactory {
 		systemadaptationFactory factory = systemadaptationFactoryImpl.eINSTANCE;
 		TerminateAction action = factory.createTerminateAction();
 
-		RessourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
+		ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
 
 		return action;
 	}
@@ -47,7 +47,7 @@ public class RessourceContainerActionFactory extends ActionFactory {
 		systemadaptationFactory factory = systemadaptationFactoryImpl.eINSTANCE;
 		AcquireAction action = factory.createAcquireAction();
 
-		RessourceContainerActionFactory.setSourceResourceContainer(action, reDeploymentServer.getResourceContainerID());
+		ResourceContainerActionFactory.setSourceResourceContainer(action, reDeploymentServer.getResourceContainerID());
 
 		return action;
 	}
@@ -56,7 +56,7 @@ public class RessourceContainerActionFactory extends ActionFactory {
 		systemadaptationFactory factory = systemadaptationFactoryImpl.eINSTANCE;
 		ReplicateAction action = factory.createReplicateAction();
 
-		RessourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
+		ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
 
 		Allocation runtimeAllocModel = ActionFactory.runtimeModels.getAllocationModelProvider().getModel();
 		for (ComponentNode component : runtimeServer.getContainingComponents()) {
