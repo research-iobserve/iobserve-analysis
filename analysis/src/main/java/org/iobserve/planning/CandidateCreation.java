@@ -25,7 +25,7 @@ public class CandidateCreation extends AbstractTransformation<AdaptationData, Ca
 	@Override
 	protected void execute(AdaptationData element) throws Exception {
 
-		AdaptationData adapdationData = new AdaptationData();
+		AdaptationData adapdationData = element;//new AdaptationData();
 
 		int result = EXEC_SUCCESS;//exec.startModelGeneration();
 		
