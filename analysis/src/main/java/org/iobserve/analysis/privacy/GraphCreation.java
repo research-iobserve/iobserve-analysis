@@ -3,7 +3,7 @@ package org.iobserve.analysis.privacy;
 import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaption.data.AdapdationData;
+import org.iobserve.adaption.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.GraphFactory;
 import org.iobserve.analysis.graph.ModelGraph;
@@ -15,7 +15,7 @@ import teetime.stage.basic.AbstractTransformation;
  * 
  * @author Philipp Weimann
  */
-public class GraphCreation extends AbstractTransformation<URI, AdapdationData> {
+public class GraphCreation extends AbstractTransformation<URI, AdaptationData> {
 	
 	private GraphFactory graphFactory;
 	
@@ -29,7 +29,7 @@ public class GraphCreation extends AbstractTransformation<URI, AdapdationData> {
 
 	@Override
 	protected void execute(URI element) throws Exception {
-		AdapdationData adaptionData = new AdapdationData();
+		AdaptationData adaptionData = new AdaptationData();
 		adaptionData.setRuntimeModelURI(element);
 		
 		InitializeModelProviders modelProvider = new InitializeModelProviders(new File(element.toFileString()));

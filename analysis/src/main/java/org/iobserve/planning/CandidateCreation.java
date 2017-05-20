@@ -11,7 +11,7 @@ import teetime.stage.basic.AbstractTransformation;
  * 
  * @author Philipp Weimann
  */
-public class CandidateCreation extends AbstractTransformation<AdapdationData, CandidateInformations> {
+public class CandidateCreation extends AbstractTransformation<AdaptationData, CandidateInformations> {
 	
 	private final static int EXEC_SUCCESS = 0;
 	private final static int EXEC_ERROR = 1;
@@ -23,7 +23,7 @@ public class CandidateCreation extends AbstractTransformation<AdapdationData, Ca
 	}
 
 	@Override
-	protected void execute(AdapdationData element) throws Exception {
+	protected void execute(AdaptationData element) throws Exception {
 
 		AdaptationData adapdationData = new AdaptationData();
 

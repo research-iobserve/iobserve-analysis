@@ -3,7 +3,7 @@ package org.iobserve.analysis.privacy;
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.EList;
-import org.iobserve.adaption.data.AdapdationData;
+import org.iobserve.adaption.data.AdaptationData;
 import org.iobserve.analysis.graph.ComponentNode;
 import org.iobserve.analysis.graph.ModelGraph;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyContextPrivacy;
@@ -11,10 +11,10 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 import teetime.stage.basic.AbstractTransformation;
 
-public class GraphPrivacyAnalysis extends AbstractTransformation<AdapdationData, AdapdationData> {
+public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData, AdaptationData> {
 
 	@Override
-	protected void execute(AdapdationData element) throws Exception {
+	protected void execute(AdaptationData element) throws Exception {
 
 		if (element == null || element.getRuntimeGraph() == null) {
 			System.err.println("Privacy Analysis Model is null. Aborting!");

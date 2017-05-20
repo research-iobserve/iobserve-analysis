@@ -7,10 +7,10 @@ import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaption.data.AdapdationData;
+import org.iobserve.adaption.data.AdaptationData;
 import org.iobserve.analysis.utils.AbstractLinearComposition;
 
-public class PrivacyAnalysis extends AbstractLinearComposition<URI, AdapdationData> {
+public class PrivacyAnalysis extends AbstractLinearComposition<URI, AdaptationData> {
 
 	private static URI legalPersonalGeoLocationFile;
 	private static HashSet<Integer> legalPersonalGeoLocations;
