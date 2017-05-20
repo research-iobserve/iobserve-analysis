@@ -20,8 +20,8 @@ import org.palladiosimulator.pcm.system.System;
 
 public class ActionFactory {
 
-	protected static InitializeModelProviders runtimeModels;
-	protected static InitializeModelProviders redeploymentModels;
+	public static InitializeModelProviders runtimeModels;
+	public static InitializeModelProviders redeploymentModels;
 
 	/*
 	 * ////////// HELPERS //////////

@@ -1,7 +1,11 @@
 package org.iobserve.adaption.data;
 
+import java.util.List;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.graph.ModelGraph;
+import org.iobserve.planning.systemadaptation.AssemblyContextAction;
+import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 
 public class AdaptationData {
 
@@ -11,7 +15,9 @@ public class AdaptationData {
 	private URI reDeploymentURI;
 	private ModelGraph reDeploymentGraph;
 
-	
+	private List<AssemblyContextAction> acActions;
+	private List<ResourceContainerAction> rcActions;
+
 	////////////////////// GETTERS & SETTERS //////////////////////
 	/**
 	 * @return the runtimeModelURI
@@ -71,6 +77,36 @@ public class AdaptationData {
 	 */
 	public void setReDeploymentGraph(ModelGraph reDeploymentGraph) {
 		this.reDeploymentGraph = reDeploymentGraph;
+	}
+
+	/**
+	 * @return the acActions
+	 */
+	public List<AssemblyContextAction> getAcActions() {
+		return acActions;
+	}
+
+	/**
+	 * @param acActions
+	 *            the acActions to set
+	 */
+	public void setAcActions(List<AssemblyContextAction> acActions) {
+		this.acActions = acActions;
+	}
+
+	/**
+	 * @return the rcActions
+	 */
+	public List<ResourceContainerAction> getRcActions() {
+		return rcActions;
+	}
+
+	/**
+	 * @param rcActions
+	 *            the rcActions to set
+	 */
+	public void setRcActions(List<ResourceContainerAction> rcActions) {
+		this.rcActions = rcActions;
 	}
 
 }
