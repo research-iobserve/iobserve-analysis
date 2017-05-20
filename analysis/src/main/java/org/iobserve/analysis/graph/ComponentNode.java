@@ -15,6 +15,8 @@ public class ComponentNode {
 
 	private String assemblyContextID;
 	private String assemblyName;
+	private String repositoryComponentID;
+	private String allocationContextID;
 	private DataPrivacyLvl privacyLvl;
 	private DeploymentNode hostServer;
 	private Set<ComponentEdge> edges;
@@ -30,9 +32,11 @@ public class ComponentNode {
 	 *            the model representation of the resource container the
 	 *            component is deployed on
 	 */
-	public ComponentNode(String assemblyContextID, String assemblyName, DataPrivacyLvl privacyLvl, DeploymentNode hostContext) {
+	public ComponentNode(String assemblyContextID, String assemblyName, DataPrivacyLvl privacyLvl, DeploymentNode hostContext, String repositoryComponentID, String allocationContextID) {
 		this.assemblyContextID = assemblyContextID;
 		this.assemblyName = assemblyName;
+		this.repositoryComponentID = repositoryComponentID;
+		this.allocationContextID = allocationContextID;
 		this.privacyLvl = privacyLvl;
 		this.hostServer = hostContext;
 		this.edges = new LinkedHashSet<ComponentEdge>();
@@ -66,6 +70,20 @@ public class ComponentNode {
 	public String getAssemblyName() {
 		return assemblyName;
 	}
+	
+	/**
+	 * @return the repositoryComponentID
+	 */
+	public String getRepositoryComponentID() {
+		return repositoryComponentID;
+	}
+	
+	/**
+	 * @return the allocationContextID
+	 */
+	public String getAllocationContextID() {
+		return allocationContextID;
+	}
 
 	/**
 	 * @return the data privacy level
@@ -83,14 +101,39 @@ public class ComponentNode {
 	}
 
 	/**
-	 * @return the DeplyomentNode, the component ist deployed on
+	 * @return the DeplyomentNode, the component is deployed on
 	 */
 	public DeploymentNode getHostServer() {
 		return hostServer;
 	}
 
+	/**
+	 * @return the Edges {@link ComponentEdge} of the component
+	 */
 	public ComponentEdge[] getEdges() {
 		return this.edges.toArray(new ComponentEdge[this.edges.size()]);
+	}
+
+	/**
+	 * Checks whether the given object and the current ComponentNode are equal.
+	 * Some properties don't get compared since they can differ based on
+	 * previously performed operations on the graph.
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ComponentNode) {
+			ComponentNode compObj = (ComponentNode) obj;
+			if (this.assemblyContextID.equals(compObj.assemblyContextID)
+					&& this.assemblyName.equals(compObj.assemblyName)
+					&& this.repositoryComponentID.equals(compObj.repositoryComponentID)
+					&& this.allocationContextID.equals(compObj.allocationContextID)
+					&& this.hostServer.equals(compObj.hostServer)) {
+
+				return true;
+			}
+		}
+		return false;
+
 	}
 
 	@Override

@@ -27,14 +27,13 @@ public class GraphFactory {
 	private Map<String, ResourceContainerPrivacy> resourceContainers;
 	private Map<String, String> ac2rcMap;
 	private Map<String, AssemblyConnectorPrivacy> assemblyConnectors;
+	private Map<String, String> assemblyID2allocID;
 
-	
 	/**
 	 * Empty Constructor
 	 */
 	public GraphFactory() {
 	}
-	
 
 	public ModelGraph buildGraph(InitializeModelProviders modelProvider) throws Exception {
 		this.init(modelProvider);
@@ -44,24 +43,23 @@ public class GraphFactory {
 		this.extractResourceContainers(this.modelProvider.getResourceEnvironmentModelProvider());
 		this.adaptPrivacyLvl();
 		this.extractAllocations(this.modelProvider.getAllocationModelProvider());
-		
+
 		return this.createModelGraph();
 	}
 
 	/*
 	 * Prepare all data structures.
 	 */
-	private void init(InitializeModelProviders modelProvider)
-	{
+	private void init(InitializeModelProviders modelProvider) {
 		this.modelProvider = modelProvider;
-		
+
 		this.assemblyContexts = new HashMap<String, AssemblyContext>();
 		this.assemblyContextPrivacyLvl = new HashMap<String, DataPrivacyLvl>();
 		this.assemblyConnectors = new HashMap<String, AssemblyConnectorPrivacy>();
 		this.resourceContainers = new HashMap<String, ResourceContainerPrivacy>();
 		this.ac2rcMap = new HashMap<String, String>();
+		this.assemblyID2allocID = new HashMap<String, String>();
 	}
-
 
 	/*
 	 * Extract Information Helpers
@@ -143,13 +141,15 @@ public class GraphFactory {
 			ResourceContainer resContainer = allocationContext.getResourceContainer_AllocationContext();
 			AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
 
+			this.assemblyID2allocID.put(assemblyContext.getId(), allocationContext.getId());
+
 			boolean correctIDs = true;
 			String resContainerID = resContainer.getId();
 			if (!this.resourceContainers.containsKey(resContainerID)) {
 				System.err.printf("A unknown ResourceContainer (ID: %s) was found during allocation context analysis.\n", resContainer.getId());
 				correctIDs = false;
 			}
-			
+
 			String assemblyContextID = assemblyContext.getId();
 			if (!this.assemblyContexts.containsKey(assemblyContextID)) {
 				System.err.printf("An unknown AssemblyContext (ID: %s) was found during allocation context analysis.\n", assemblyContext.getId());
@@ -167,43 +167,40 @@ public class GraphFactory {
 	private ModelGraph createModelGraph() {
 		HashMap<String, DeploymentNode> servers = new HashMap<String, DeploymentNode>();
 		HashMap<String, ComponentNode> components = new HashMap<String, ComponentNode>();
-		
-		//Build Servers Nodes
-		for (ResourceContainerPrivacy resContainer : this.resourceContainers.values())
-		{
+
+		// Build Servers Nodes
+		for (ResourceContainerPrivacy resContainer : this.resourceContainers.values()) {
 			DeploymentNode server = new DeploymentNode(resContainer.getId(), resContainer.getEntityName(), resContainer.getGeolocation());
 			servers.put(resContainer.getId(), server);
 		}
-		
 
-		//Build Component Nodes
+		// Build Component Nodes
 		for (AssemblyContext ac : this.assemblyContexts.values()) {
-			
+
 			DeploymentNode hostServer = servers.get(this.ac2rcMap.get(ac.getId()));
 			DataPrivacyLvl acPrivacyLvl = this.assemblyContextPrivacyLvl.get(ac.getId());
-			
-			ComponentNode component = new ComponentNode(ac.getId(), ac.getEntityName(), acPrivacyLvl, hostServer);
+
+			ComponentNode component = new ComponentNode(ac.getId(), ac.getEntityName(), acPrivacyLvl, hostServer,
+					ac.getEncapsulatedComponent__AssemblyContext().getId(), this.assemblyID2allocID.get(ac.getId()));
 			hostServer.addComponent(component);
-			
+
 			components.put(ac.getId(), component);
 		}
-		
-		//Set Edges
-		for (AssemblyConnectorPrivacy acp : this.assemblyConnectors.values())
-		{
+
+		// Set Edges
+		for (AssemblyConnectorPrivacy acp : this.assemblyConnectors.values()) {
 			String provAC_ID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
 			String reqAC_ID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
-			
+
 			ComponentNode provNode = components.get(provAC_ID);
 			ComponentNode reqNode = components.get(reqAC_ID);
-			
+
 			ComponentEdge edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode, acp.getPrivacyLevel());
-			
+
 			provNode.addCommunicationEdge(edge);
 			reqNode.addCommunicationEdge(edge);
 		}
-		
-		
+
 		return new ModelGraph(servers.values(), components.values(), this.modelProvider);
 	}
 }

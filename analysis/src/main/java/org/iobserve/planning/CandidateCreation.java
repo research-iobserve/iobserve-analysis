@@ -1,7 +1,7 @@
 package org.iobserve.planning;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaption.data.AdapdationData;
+import org.iobserve.adaption.data.AdaptationData;
 import org.iobserve.planning.peropteryx.ExecutionWrapper;
 
 import teetime.stage.basic.AbstractTransformation;
@@ -25,9 +25,24 @@ public class CandidateCreation extends AbstractTransformation<AdapdationData, Ca
 	@Override
 	protected void execute(AdapdationData element) throws Exception {
 
-		ExecutionWrapper exec = new ExecutionWrapper(element.getRuntimeModelURI(), this.perOpteryxDir);
+		AdaptationData adapdationData = new AdaptationData();
 
-		int result = exec.startModelGeneration();
+		int result = EXEC_SUCCESS;//exec.startModelGeneration();
+		
+		if (result == EXEC_ERROR){
+			adapdationData.setReDeploymentURI(URI.createFileURI("C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\AssemblyContextActionModel"));
+		} else if (result == EXEC_SUCCESS) {
+			adapdationData.setReDeploymentURI(URI.createFileURI("C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\AssemblyContextActionModel"));
+		}
+		else
+		{
+			throw new RuntimeException("PerOpteryx exited with unkown result/exec code");
+		}
+		
+		CandidateInformations candidateInfos = new CandidateInformations();
+		candidateInfos.adapdationData = adapdationData;
+		
+		this.outputPort.send(candidateInfos);
 	}
 
 }

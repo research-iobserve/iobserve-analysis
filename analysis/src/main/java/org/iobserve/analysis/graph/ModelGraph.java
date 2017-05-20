@@ -4,9 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 
 /**
  * This class contains a model for privacy analysis purposes.

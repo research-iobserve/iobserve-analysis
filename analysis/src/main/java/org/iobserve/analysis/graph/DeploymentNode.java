@@ -56,12 +56,11 @@ public class DeploymentNode {
 	public int getIsoCountryCode() {
 		return isoCountryCode;
 	}
-	
+
 	/**
 	 * @return the Iso Alpha3 Country Code
 	 */
-	public String getIso3CountryCode()
-	{
+	public String getIso3CountryCode() {
 		return CountryCode.getByCode(this.getIsoCountryCode()).getAlpha3();
 	}
 
@@ -87,11 +86,24 @@ public class DeploymentNode {
 	}
 
 	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof DeploymentNode) {
+			DeploymentNode compObj = (DeploymentNode) obj;
+			if (this.resourceContainerID.equals(compObj.resourceContainerID) 
+					&& this.resourceContainerName.equals(compObj.resourceContainerName)
+					&& this.isoCountryCode == compObj.isoCountryCode) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Server: " + this.resourceContainerID);
 		sb.append("\t-- Location: " + this.isoCountryCode);
-		sb.append(" (" + this.getIso3CountryCode() +")");
+		sb.append(" (" + this.getIso3CountryCode() + ")");
 		sb.append("\t-- Name: " + this.getResourceContainerName() + "\n");
 
 		sb.append("-Comp:\t ID \t\t\tCompPrivayLvl \tPers \tDeP \tAnonym \tComponent Name\n");
