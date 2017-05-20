@@ -34,7 +34,7 @@ public class RessourceContainerActionFactory extends ActionFactory {
 		return action;
 	}
 
-	public static TerminateAction generateTerminateAction(DeploymentNode runtimeServer, DeploymentNode reDeploymentServer) {
+	public static TerminateAction generateTerminateAction(DeploymentNode runtimeServer) {
 		systemadaptationFactory factory = systemadaptationFactoryImpl.eINSTANCE;
 		TerminateAction action = factory.createTerminateAction();
 
@@ -43,7 +43,7 @@ public class RessourceContainerActionFactory extends ActionFactory {
 		return action;
 	}
 	
-	public static AcquireAction generateTerminateAction(DeploymentNode reDeploymentServer) {
+	public static AcquireAction generateAcquireAction(DeploymentNode reDeploymentServer) {
 		systemadaptationFactory factory = systemadaptationFactoryImpl.eINSTANCE;
 		AcquireAction action = factory.createAcquireAction();
 

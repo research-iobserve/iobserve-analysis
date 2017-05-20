@@ -8,12 +8,15 @@ import java.util.stream.Collectors;
 import org.iobserve.adaption.data.ActionFactory;
 import org.iobserve.adaption.data.AdaptationData;
 import org.iobserve.adaption.data.AssemblyContextActionFactory;
+import org.iobserve.adaption.data.RessourceContainerActionFactory;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.ComponentNode;
 import org.iobserve.analysis.graph.DeploymentNode;
 import org.iobserve.analysis.graph.ModelGraph;
+import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
+import org.iobserve.planning.systemadaptation.TerminateAction;
 
 import teetime.stage.basic.AbstractTransformation;
 
@@ -31,7 +34,7 @@ public class ModelComparision extends AbstractTransformation<AdaptationData, Ada
 
 		this.acActions = new HashSet<AssemblyContextAction>();
 		this.rcActions = new HashSet<ResourceContainerAction>();
-		
+
 		ActionFactory.runtimeModels = data.getRuntimeGraph().getPcmModels();
 		ActionFactory.redeploymentModels = data.getReDeploymentGraph().getPcmModels();
 	}
@@ -45,7 +48,7 @@ public class ModelComparision extends AbstractTransformation<AdaptationData, Ada
 		this.init(element);
 		this.addRuntimeData(element.getRuntimeGraph());
 		this.startComparison(element.getReDeploymentGraph());
-		
+
 		element.setAcActions(this.acActions.stream().collect(Collectors.toList()));
 		element.setRcActions(this.rcActions.stream().collect(Collectors.toList()));
 	}
@@ -99,8 +102,23 @@ public class ModelComparision extends AbstractTransformation<AdaptationData, Ada
 	}
 
 	private void compareServers(Set<DeploymentNode> servers) {
-		for (DeploymentNode server : servers) {
+		for (DeploymentNode reDeplServer : servers) {
 
+			DeploymentNode runServer = this.runtimeDeploymentNodes.get(reDeplServer.getResourceContainerID());
+
+			if (runServer == null) {
+				AcquireAction action = RessourceContainerActionFactory.generateAcquireAction(reDeplServer);
+			} else if (!runServer.equals(reDeplServer)) {
+				// unkown what to do!
+			}
+
+			this.runtimeComponentNodes.remove(runServer.getResourceContainerID(), runServer);
+		}
+
+		for (DeploymentNode runServer : this.runtimeDeploymentNodes.values()) {
+			// AssemblyContext does not exist anymore in redeployment model!
+			TerminateAction action = RessourceContainerActionFactory.generateTerminateAction(runServer);
+			this.rcActions.add(action);
 		}
 	}
 }
