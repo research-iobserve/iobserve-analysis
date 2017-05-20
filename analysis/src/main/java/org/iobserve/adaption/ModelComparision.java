@@ -59,7 +59,9 @@ public class ModelComparision extends AbstractTransformation<AdaptationData, Ada
 		}
 
 		for (DeploymentNode server : graph.getServers()) {
-			this.runtimeDeploymentNodes.put(server.getResourceContainerID(), server);
+			if (server.getContainingComponents().size() > 0) {
+				this.runtimeDeploymentNodes.put(server.getResourceContainerID(), server);
+			}
 		}
 	}
 
@@ -103,16 +105,25 @@ public class ModelComparision extends AbstractTransformation<AdaptationData, Ada
 
 	private void compareServers(Set<DeploymentNode> servers) {
 		for (DeploymentNode reDeplServer : servers) {
+			
+			if (reDeplServer.getContainingComponents().size() == 0)
+			{
+				continue;
+			}
 
 			DeploymentNode runServer = this.runtimeDeploymentNodes.get(reDeplServer.getResourceContainerID());
 
 			if (runServer == null) {
 				AcquireAction action = ResourceContainerActionFactory.generateAcquireAction(reDeplServer);
-			} else if (!runServer.equals(reDeplServer)) {
+				this.rcActions.add(action);
+			} else {
+				// if (!runServer.equals(reDeplServer)) {
 				// unkown what to do!
+				// }
+
+				this.runtimeDeploymentNodes.remove(runServer.getResourceContainerID(), runServer);
 			}
 
-			this.runtimeComponentNodes.remove(runServer.getResourceContainerID(), runServer);
 		}
 
 		for (DeploymentNode runServer : this.runtimeDeploymentNodes.values()) {

@@ -47,7 +47,9 @@ public class ResourceContainerActionFactory extends ActionFactory {
 		systemadaptationFactory factory = systemadaptationFactoryImpl.eINSTANCE;
 		AcquireAction action = factory.createAcquireAction();
 
-		ResourceContainerActionFactory.setSourceResourceContainer(action, reDeploymentServer.getResourceContainerID());
+		ResourceEnvironment reDeplResEnvModel = ActionFactory.redeploymentModels.getResourceEnvironmentModelProvider().getModel();
+		ResourceContainer resourceContainer = ActionFactory.getResourceContainer(reDeploymentServer.getResourceContainerID(), reDeplResEnvModel);
+		action.setSourceResourceContainer(resourceContainer);
 
 		return action;
 	}
