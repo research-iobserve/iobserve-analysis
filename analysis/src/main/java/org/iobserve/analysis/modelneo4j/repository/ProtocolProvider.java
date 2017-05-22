@@ -45,9 +45,8 @@ public class ProtocolProvider extends AbstractPcmComponentProvider<Protocol> {
     }
 
     @Override
-    public Protocol readComponent(final String entityName) {
-        final Node pnode = this.getGraph().findNode(Label.label("Protocol"), AbstractPcmComponentProvider.ENTITY_NAME,
-                entityName);
+    public Protocol readComponent(final String id) {
+        final Node pnode = this.getGraph().findNode(Label.label("Protocol"), AbstractPcmComponentProvider.ID, id);
 
         // TODO instantiate a protocol class
         return null;

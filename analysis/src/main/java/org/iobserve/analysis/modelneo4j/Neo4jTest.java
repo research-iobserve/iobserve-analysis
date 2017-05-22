@@ -17,6 +17,7 @@ package org.iobserve.analysis.modelneo4j;
 
 import java.io.File;
 
+import org.gradle.internal.impldep.org.testng.Assert;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.modelneo4j.repository.RepositoryProvider;
@@ -50,9 +51,9 @@ public class Neo4jTest {
         // new RepositoryProvider(graph).createComponent(repository);
 
         System.out.println("Reading from db");
-        final Repository repository2 = new RepositoryProvider(graph).readComponent("org.cocome.cloud");
+        final Repository repository2 = new RepositoryProvider(graph).readComponent(repository.getId());
 
-        System.out.println(repository2);
+        Assert.assertEquals(repository, repository2);
 
         graph.shutdown();
         System.out.print("Shut down db");

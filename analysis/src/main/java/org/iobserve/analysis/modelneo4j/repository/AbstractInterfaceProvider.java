@@ -58,10 +58,10 @@ public abstract class AbstractInterfaceProvider extends AbstractPcmComponentProv
                 for (final Interface i : component.getParentInterfaces__Interface()) {
                     if (i instanceof InfrastructureInterface) {
                         final Node inode2 = iiProvider.createComponent(i);
-                        inode.createRelationshipTo(inode2, PcmRelationshipType.PARENT_INTERFACE);
+                        inode.createRelationshipTo(inode2, PcmRelationshipType.REFERENCES);
                     } else if (i instanceof OperationInterface) {
                         final Node inode2 = oiProvider.createComponent(i);
-                        inode.createRelationshipTo(inode2, PcmRelationshipType.PARENT_INTERFACE);
+                        inode.createRelationshipTo(inode2, PcmRelationshipType.REFERENCES);
                     }
                 }
 
@@ -79,40 +79,34 @@ public abstract class AbstractInterfaceProvider extends AbstractPcmComponentProv
     }
 
     @Override
-    public Interface readComponent(final String entityName) {
+    public Interface readComponent(final String id) {
         try (Transaction tx = this.getGraph().beginTx()) {
             final Interface inter = this.getInfrastructureOrOperationInterface();
             final AbstractInterfaceProvider iiProvider = new InfrastructureInterfaceProvider(this.getGraph());
             final AbstractInterfaceProvider oiProvider = new OperationInterfaceProvider(this.getGraph());
             final ProtocolProvider pProvider = new ProtocolProvider(this.getGraph());
-            final Node iNode = this.getGraph().findNode(this.getInterfaceLabel(),
-                    AbstractPcmComponentProvider.ENTITY_NAME, entityName);
+            final Node iNode = this.getGraph().findNode(this.getInterfaceLabel(), AbstractPcmComponentProvider.ID, id);
 
             inter.setId(iNode.getProperty(AbstractPcmComponentProvider.ID).toString());
             inter.setEntityName(iNode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
 
             Node eNode;
-            for (final Relationship r : iNode.getRelationships(Direction.OUTGOING,
-                    PcmRelationshipType.PARENT_INTERFACE)) {
+            for (final Relationship r : iNode.getRelationships(Direction.OUTGOING, PcmRelationshipType.REFERENCES)) {
                 eNode = r.getEndNode();
 
                 if (eNode.hasLabel(Label.label("InfrastructureInterface"))) {
                     final Interface i = iiProvider
-                            .readComponent(eNode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
+                            .readComponent(eNode.getProperty(AbstractPcmComponentProvider.ID).toString());
                     inter.getParentInterfaces__Interface().add(i);
                 } else if (eNode.hasLabel(Label.label("OperationInterface"))) {
                     final Interface i = oiProvider
-                            .readComponent(eNode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
+                            .readComponent(eNode.getProperty(AbstractPcmComponentProvider.ID).toString());
                     inter.getParentInterfaces__Interface().add(i);
+                } else if (eNode.hasLabel(Label.label("Protocol"))) {
+                    final Protocol p = pProvider
+                            .readComponent(eNode.getProperty(AbstractPcmComponentProvider.ID).toString());
+                    inter.getProtocols__Interface().add(p);
                 }
-            }
-
-            for (final Relationship r : iNode.getRelationships(Direction.OUTGOING, PcmRelationshipType.PROTOCOL)) {
-                eNode = r.getEndNode();
-
-                final Protocol p = pProvider
-                        .readComponent(eNode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
-                inter.getProtocols__Interface().add(p);
             }
             tx.success();
 

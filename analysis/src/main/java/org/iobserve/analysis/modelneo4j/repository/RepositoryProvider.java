@@ -44,28 +44,29 @@ public class RepositoryProvider extends AbstractPcmComponentProvider<Repository>
     public Node createComponent(final Repository component) {
         try (Transaction tx = this.getGraph().beginTx()) {
             final Node rnode = this.getGraph().createNode(Label.label("Repository"));
+            final AbstractInterfaceProvider iiProvider = new InfrastructureInterfaceProvider(this.getGraph());
+            final AbstractInterfaceProvider oiProvider = new OperationInterfaceProvider(this.getGraph());
+
+            // Create attributes
             rnode.setProperty(AbstractPcmComponentProvider.ID, component.getId());
             rnode.setProperty(AbstractPcmComponentProvider.ENTITY_NAME, component.getEntityName());
-
             final String repositoryDecription = component.getRepositoryDescription();
             if (repositoryDecription != null) {
                 rnode.setProperty("repositoryDescription", repositoryDecription);
             }
 
-            final AbstractInterfaceProvider iiProvider = new InfrastructureInterfaceProvider(this.getGraph());
-            final AbstractInterfaceProvider oiProvider = new OperationInterfaceProvider(this.getGraph());
-
+            // Create sub-interfaces
             Node inode;
             for (final Interface i : component.getInterfaces__Repository()) {
                 if (i instanceof InfrastructureInterface) {
                     inode = iiProvider.createComponent(i);
-                    rnode.createRelationshipTo(inode, PcmRelationshipType.CONTAINS);
+                    rnode.createRelationshipTo(inode, PcmRelationshipType.REFERENCES);
                 } else if (i instanceof OperationInterface) {
                     inode = oiProvider.createComponent(i);
-                    rnode.createRelationshipTo(inode, PcmRelationshipType.CONTAINS);
+                    rnode.createRelationshipTo(inode, PcmRelationshipType.REFERENCES);
                 }
-
             }
+
             tx.success();
 
             return rnode;
@@ -73,26 +74,24 @@ public class RepositoryProvider extends AbstractPcmComponentProvider<Repository>
     }
 
     @Override
-    public Repository readComponent(final String entityName) {
+    public Repository readComponent(final String id) {
         final Repository repo = RepositoryFactory.eINSTANCE.createRepository();
 
         try (Transaction tx = this.getGraph().beginTx()) {
-            final Node rnode = this.getGraph().findNode(Label.label("Repository"),
-                    AbstractPcmComponentProvider.ENTITY_NAME, entityName);
+            final Node rnode = this.getGraph().findNode(Label.label("Repository"), AbstractPcmComponentProvider.ID, id);
             final AbstractInterfaceProvider iiProvider = new InfrastructureInterfaceProvider(this.getGraph());
             final AbstractInterfaceProvider oiProvider = new OperationInterfaceProvider(this.getGraph());
 
-            for (final Relationship r : rnode.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS)) {
+            for (final Relationship r : rnode.getRelationships(Direction.OUTGOING, PcmRelationshipType.REFERENCES)) {
                 final Node enode = r.getEndNode();
 
                 if (enode.hasLabel(Label.label("InfrastructureInterface"))) {
                     final Interface i = iiProvider
-                            .readComponent(enode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
+                            .readComponent(enode.getProperty(AbstractPcmComponentProvider.ID).toString());
                     repo.getInterfaces__Repository().add(i);
                 } else if (enode.hasLabel(Label.label("OperationInterface"))) {
-                    System.out.println("DEBUG " + enode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME));
                     final Interface i = oiProvider
-                            .readComponent(enode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
+                            .readComponent(enode.getProperty(AbstractPcmComponentProvider.ID).toString());
                     repo.getInterfaces__Repository().add(i);
                 }
 

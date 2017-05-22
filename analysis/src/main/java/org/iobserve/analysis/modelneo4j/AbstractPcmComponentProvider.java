@@ -38,7 +38,7 @@ public abstract class AbstractPcmComponentProvider<T extends EObject> {
 
     public abstract Node createComponent(final T component);
 
-    public abstract T readComponent(final String entityName);
+    public abstract T readComponent(final String id);
 
     public abstract void updateComponent(final T component);
 
