@@ -4,7 +4,6 @@ package org.iobserve.planning.systemadaptation;
 
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>Resource Container Action</b></em>'.
@@ -22,7 +21,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @generated
  */
 public interface ResourceContainerAction extends Action {
-
 	/**
 	 * Returns the value of the '<em><b>Source Resource Container</b></em>' reference.
 	 * <!-- begin-user-doc -->
@@ -48,4 +46,5 @@ public interface ResourceContainerAction extends Action {
 	 * @generated
 	 */
 	void setSourceResourceContainer(ResourceContainer value);
+
 } // ResourceContainerAction

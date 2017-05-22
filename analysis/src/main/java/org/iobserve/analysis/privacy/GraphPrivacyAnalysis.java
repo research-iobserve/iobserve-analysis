@@ -26,7 +26,7 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 
 		System.out.print("Starting Privacy Analysis ... ");
 		System.out.println("Component PrivacyLvl analysis ...");
-		graph.printGraph();
+//		graph.printGraph();
 
 		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(graph);
 		classificationAnalysis.start();
@@ -40,7 +40,7 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 		else
 			System.err.println("The deployment is ILLEGAL");
 
-		graph.printGraph();
+//		graph.printGraph();
 		
 		this.writeComponentClassificationToPCM(graph);
 		

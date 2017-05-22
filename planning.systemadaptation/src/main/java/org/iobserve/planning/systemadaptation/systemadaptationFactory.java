@@ -103,15 +103,6 @@ public interface systemadaptationFactory extends EFactory {
 	AcquireAction createAcquireAction();
 
 	/**
-	 * Returns a new object of class '<em>Replicate Action</em>'.
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return a new object of class '<em>Replicate Action</em>'.
-	 * @generated
-	 */
-	ReplicateAction createReplicateAction();
-
-	/**
 	 * Returns a new object of class '<em>Terminate Action</em>'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -119,6 +110,15 @@ public interface systemadaptationFactory extends EFactory {
 	 * @generated
 	 */
 	TerminateAction createTerminateAction();
+
+	/**
+	 * Returns a new object of class '<em>Replicate Action</em>'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return a new object of class '<em>Replicate Action</em>'.
+	 * @generated
+	 */
+	ReplicateAction createReplicateAction();
 
 	/**
 	 * Returns the package supported by this factory.

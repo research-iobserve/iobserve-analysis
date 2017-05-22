@@ -4,7 +4,6 @@ package org.iobserve.planning.systemadaptation;
 
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>Change Repository Component Action</b></em>'.
@@ -22,7 +21,6 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
  * @generated
  */
 public interface ChangeRepositoryComponentAction extends AssemblyContextAction {
-
 	/**
 	 * Returns the value of the '<em><b>New Repository Component</b></em>' reference.
 	 * <!-- begin-user-doc -->
@@ -48,4 +46,5 @@ public interface ChangeRepositoryComponentAction extends AssemblyContextAction {
 	 * @generated
 	 */
 	void setNewRepositoryComponent(RepositoryComponent value);
+
 } // ChangeRepositoryComponentAction

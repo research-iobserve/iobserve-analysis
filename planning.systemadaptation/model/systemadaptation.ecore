@@ -23,12 +23,15 @@
         ordered="false" lowerBound="1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//repository/RepositoryComponent"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AllocateAction" eSuperTypes="#//AssemblyContextAction">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="newAllocatinContext" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="newAllocationContext" lowerBound="1"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DeallocateAction" eSuperTypes="#//AssemblyContextAction"/>
   <eClassifiers xsi:type="ecore:EClass" name="MigrateAction" eSuperTypes="#//AssemblyContextAction">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="newAllocatinContext" lowerBound="1"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="newAllocationContext" lowerBound="1"
         eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceAllocationContext"
+        lowerBound="1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="AcquireAction" eSuperTypes="#//ResourceContainerAction"/>
   <eClassifiers xsi:type="ecore:EClass" name="TerminateAction" eSuperTypes="#//ResourceContainerAction"/>

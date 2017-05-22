@@ -14,7 +14,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.planning.systemadaptation.AllocateAction#getNewAllocatinContext <em>New Allocatin Context</em>}</li>
+ *   <li>{@link org.iobserve.planning.systemadaptation.AllocateAction#getNewAllocationContext <em>New Allocation Context</em>}</li>
  * </ul>
  *
  * @see org.iobserve.planning.systemadaptation.systemadaptationPackage#getAllocateAction()
@@ -24,28 +24,28 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 public interface AllocateAction extends AssemblyContextAction {
 
 	/**
-	 * Returns the value of the '<em><b>New Allocatin Context</b></em>' reference.
+	 * Returns the value of the '<em><b>New Allocation Context</b></em>' reference.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>New Allocatin Context</em>' reference isn't clear,
+	 * If the meaning of the '<em>New Allocation Context</em>' reference isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
-	 * @return the value of the '<em>New Allocatin Context</em>' reference.
-	 * @see #setNewAllocatinContext(AllocationContext)
-	 * @see org.iobserve.planning.systemadaptation.systemadaptationPackage#getAllocateAction_NewAllocatinContext()
-	 * @model
+	 * @return the value of the '<em>New Allocation Context</em>' reference.
+	 * @see #setNewAllocationContext(AllocationContext)
+	 * @see org.iobserve.planning.systemadaptation.systemadaptationPackage#getAllocateAction_NewAllocationContext()
+	 * @model required="true"
 	 * @generated
 	 */
-	AllocationContext getNewAllocatinContext();
+	AllocationContext getNewAllocationContext();
 
 	/**
-	 * Sets the value of the '{@link org.iobserve.planning.systemadaptation.AllocateAction#getNewAllocatinContext <em>New Allocatin Context</em>}' reference.
+	 * Sets the value of the '{@link org.iobserve.planning.systemadaptation.AllocateAction#getNewAllocationContext <em>New Allocation Context</em>}' reference.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param value the new value of the '<em>New Allocatin Context</em>' reference.
-	 * @see #getNewAllocatinContext()
+	 * @param value the new value of the '<em>New Allocation Context</em>' reference.
+	 * @see #getNewAllocationContext()
 	 * @generated
 	 */
-	void setNewAllocatinContext(AllocationContext value);
+	void setNewAllocationContext(AllocationContext value);
 } // AllocateAction
