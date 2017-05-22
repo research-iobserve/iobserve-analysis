@@ -3,7 +3,7 @@ package org.iobserve.analysis.privacy;
 import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaption.data.AdaptationData;
+import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.GraphFactory;
 import org.iobserve.analysis.graph.ModelGraph;

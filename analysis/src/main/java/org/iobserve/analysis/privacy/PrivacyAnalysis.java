@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaption.data.AdaptationData;
+import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.utils.AbstractLinearComposition;
 
 public class PrivacyAnalysis extends AbstractLinearComposition<URI, AdaptationData> {

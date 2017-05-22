@@ -1,8 +1,15 @@
-package org.iobserve.adaption;
+package org.iobserve.adaptation;
 
-import org.iobserve.adaption.data.AdaptationData;
+import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.utils.AbstractLinearComposition;
 
+/**
+ * This class encapsulates the system adaption filter in the teetime framework.
+ * It contains the sub-stages: compare/action generation, execution planning and
+ * actual execution.
+ * 
+ * @author Philipp Weimann
+ */
 public class SystemAdaptation extends AbstractLinearComposition<AdaptationData, AdaptationData> {
 
 	/**

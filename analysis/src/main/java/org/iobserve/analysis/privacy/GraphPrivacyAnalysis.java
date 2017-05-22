@@ -3,7 +3,7 @@ package org.iobserve.analysis.privacy;
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.EList;
-import org.iobserve.adaption.data.AdaptationData;
+import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.graph.ComponentNode;
 import org.iobserve.analysis.graph.ModelGraph;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyContextPrivacy;
