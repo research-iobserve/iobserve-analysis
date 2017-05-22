@@ -9,7 +9,6 @@ import org.iobserve.adaption.data.ActionFactory;
 import org.iobserve.adaption.data.AdaptationData;
 import org.iobserve.adaption.data.AssemblyContextActionFactory;
 import org.iobserve.adaption.data.ResourceContainerActionFactory;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.ComponentNode;
 import org.iobserve.analysis.graph.DeploymentNode;
 import org.iobserve.analysis.graph.ModelGraph;
