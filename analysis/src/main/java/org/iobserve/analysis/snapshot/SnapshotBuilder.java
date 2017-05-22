@@ -26,10 +26,13 @@ public class SnapshotBuilder extends AbstractStage {
 	private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES };
 
 	private static boolean createSnapshot;
+	private static boolean evaluationMode;
+
 	private final URI snapshotURI;
 	private final InitializeModelProviders modelProviders;
 
 	private final OutputPort<URI> outputPort = super.createOutputPort();
+	private final OutputPort<URI> evaluationOutputPort = super.createOutputPort();
 
 	/**
 	 * The constructor.
@@ -62,7 +65,12 @@ public class SnapshotBuilder extends AbstractStage {
 			// this.createModelSnapshot(modelProviders.getCorrespondenceModel());
 			SnapshotBuilder.createSnapshot = false;
 
-			outputPort.send(this.snapshotURI);
+			if (SnapshotBuilder.evaluationMode) {
+				this.evaluationOutputPort.send(this.snapshotURI);
+			} else {
+				this.outputPort.send(this.snapshotURI);
+			}
+
 		}
 	}
 
@@ -94,6 +102,14 @@ public class SnapshotBuilder extends AbstractStage {
 	}
 
 	/**
+	 * @param evaluationMode
+	 *            the evaluationMode to set
+	 */
+	public static void setEvaluationMode(boolean evaluationMode) {
+		SnapshotBuilder.evaluationMode = evaluationMode;
+	}
+
+	/**
 	 * @return the input port for the teetime framework
 	 */
 	public InputPort<Boolean> getInputPort() {
@@ -101,10 +117,18 @@ public class SnapshotBuilder extends AbstractStage {
 	}
 
 	/**
-	 * @return the output port for the teetime framework, transmitting the snapshot location as URI
+	 * @return the output port for the teetime framework, transmitting the
+	 *         snapshot location as URI
 	 */
 	public OutputPort<URI> getOutputPort() {
 		return this.outputPort;
+	}
+
+	/**
+	 * @return the evaluationOutputPort
+	 */
+	public OutputPort<URI> getEvaluationOutputPort() {
+		return evaluationOutputPort;
 	}
 
 }

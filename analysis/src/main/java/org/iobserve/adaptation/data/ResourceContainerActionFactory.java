@@ -3,8 +3,6 @@ package org.iobserve.adaptation.data;
 import org.iobserve.analysis.graph.ComponentNode;
 import org.iobserve.analysis.graph.DeploymentNode;
 import org.iobserve.planning.systemadaptation.AcquireAction;
-import org.iobserve.planning.systemadaptation.AssemblyContextAction;
-import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.TerminateAction;
@@ -12,9 +10,6 @@ import org.iobserve.planning.systemadaptation.systemadaptationFactory;
 import org.iobserve.planning.systemadaptation.impl.systemadaptationFactoryImpl;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 

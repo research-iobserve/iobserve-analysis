@@ -38,6 +38,8 @@ import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.evaluation.ModelComparer;
+import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.planning.CandidateCreation;
 import org.iobserve.planning.CandidateSelector;
 import org.iobserve.planning.ModelCreation;
@@ -106,6 +108,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
 		final ModelCreation modelCreation = new ModelCreation(new CandidateCreation(perOpteryxHeadless), new CandidateSelector());
 		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(), new AdaptationPlanning(), new AdaptationExecution());
+		final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
 
 		/** dispatch different monitoring data. */
 		// Path Allocation => Deployment => Snapshot
@@ -130,8 +133,10 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		
 		// Path Snapshot => Planning
 		this.connectPorts(snapshotBuilder.getOutputPort(), modelCreation.getInputPort());
+		// Path Snapshot => Evaluation
+		this.connectPorts(snapshotBuilder.getEvaluationOutputPort(), systemEvaluator.getInputPort());
 		
-		// Path Planning => Adapdation
+		// Path Planning => Adaptation
 		this.connectPorts(modelCreation.getOutputPort(), systemAdaptor.getInputPort());
 	}
 

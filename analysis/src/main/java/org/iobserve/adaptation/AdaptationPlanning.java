@@ -16,7 +16,6 @@ import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.TerminateAction;
 
-import groovy.ui.Console;
 import teetime.stage.basic.AbstractTransformation;
 
 /**
