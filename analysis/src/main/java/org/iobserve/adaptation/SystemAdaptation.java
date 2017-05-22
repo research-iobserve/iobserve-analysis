@@ -20,7 +20,7 @@ public class SystemAdaptation extends AbstractLinearComposition<AdaptationData, 
 	 * @param planner
 	 *            orders the actions into a executable sequence
 	 * @param executer
-	 *            executes the ordered actins
+	 *            executes the ordered actions
 	 */
 	public SystemAdaptation(AdaptationCalculation comparer, AdaptationPlanning planner, AdaptationExecution executer) {
 		super(comparer.getInputPort(), executer.getOutputPort());

@@ -41,6 +41,8 @@ import org.iobserve.analysis.privacy.GraphCreation;
 import org.iobserve.analysis.privacy.GraphPrivacyAnalysis;
 import org.iobserve.analysis.privacy.PrivacyAnalysis;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.evaluation.ModelComparer;
+import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.planning.CandidateCreation;
 import org.iobserve.planning.CandidateSelector;
 import org.iobserve.planning.ModelCreation;
@@ -110,6 +112,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		final PrivacyAnalysis privacyAnalysis = new PrivacyAnalysis(new GraphCreation(), new GraphPrivacyAnalysis());
 		final ModelCreation modelCreation = new ModelCreation(new CandidateCreation(perOpteryxHeadless), new CandidateSelector());
 		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(), new AdaptationPlanning(), new AdaptationExecution());
+		final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
 
 		/** dispatch different monitoring data. */
 		// Path Allocation => Deployment => Snapshot
@@ -138,8 +141,10 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		
 		// Path Snapshot => Planning
 		this.connectPorts(privacyAnalysis.getOutputPort(), modelCreation.getInputPort());
+		// Path Snapshot => Evaluation
+		this.connectPorts(snapshotBuilder.getEvaluationOutputPort(), systemEvaluator.getInputPort());
 		
-		// Path Planning => Adapdation
+		// Path Planning => Adaptation
 		this.connectPorts(modelCreation.getOutputPort(), systemAdaptor.getInputPort());
 	}
 

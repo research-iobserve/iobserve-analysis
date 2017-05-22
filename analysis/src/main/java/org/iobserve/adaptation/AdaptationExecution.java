@@ -3,6 +3,7 @@ package org.iobserve.adaptation;
 
 
 import org.iobserve.adaptation.data.AdaptationData;
+import org.iobserve.evaluation.SystemEvaluation;
 
 import teetime.stage.basic.AbstractTransformation;
 
@@ -15,8 +16,10 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 
 	@Override
 	protected void execute(AdaptationData element) throws Exception {
-		// TODO Auto-generated method stub
 		
+		SystemEvaluation.enableEvaluation(element);
+		// TODO Finish, by adding execution. Maybe Async?
+		SystemEvaluation.disableEvaluation();
 	}
 
 }
