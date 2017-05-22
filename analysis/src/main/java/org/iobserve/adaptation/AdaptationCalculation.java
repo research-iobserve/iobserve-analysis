@@ -1,14 +1,14 @@
-package org.iobserve.adaption;
+package org.iobserve.adaptation;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.iobserve.adaption.data.ActionFactory;
-import org.iobserve.adaption.data.AdaptationData;
-import org.iobserve.adaption.data.AssemblyContextActionFactory;
-import org.iobserve.adaption.data.ResourceContainerActionFactory;
+import org.iobserve.adaptation.data.ActionFactory;
+import org.iobserve.adaptation.data.AdaptationData;
+import org.iobserve.adaptation.data.AssemblyContextActionFactory;
+import org.iobserve.adaptation.data.ResourceContainerActionFactory;
 import org.iobserve.analysis.graph.ComponentNode;
 import org.iobserve.analysis.graph.DeploymentNode;
 import org.iobserve.analysis.graph.ModelGraph;

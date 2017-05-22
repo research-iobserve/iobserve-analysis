@@ -1,4 +1,4 @@
-package org.iobserve.adaption.data;
+package org.iobserve.adaptation.data;
 
 import java.util.List;
 

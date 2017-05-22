@@ -18,10 +18,10 @@ package org.iobserve.analysis;
 import java.io.IOException;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaption.AdaptationCalculation;
-import org.iobserve.adaption.AdaptationExecution;
-import org.iobserve.adaption.AdaptationPlanning;
-import org.iobserve.adaption.SystemAdaptation;
+import org.iobserve.adaptation.AdaptationCalculation;
+import org.iobserve.adaptation.AdaptationExecution;
+import org.iobserve.adaptation.AdaptationPlanning;
+import org.iobserve.adaptation.SystemAdaptation;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;

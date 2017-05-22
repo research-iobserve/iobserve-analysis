@@ -1,6 +1,6 @@
-package org.iobserve.adaption;
+package org.iobserve.adaptation;
 
-import org.iobserve.adaption.data.AdaptationData;
+import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.utils.AbstractLinearComposition;
 
 /**

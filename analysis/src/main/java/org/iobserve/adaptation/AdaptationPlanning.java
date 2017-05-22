@@ -1,11 +1,11 @@
-package org.iobserve.adaption;
+package org.iobserve.adaptation;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.iobserve.adaption.data.AdaptationData;
+import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;

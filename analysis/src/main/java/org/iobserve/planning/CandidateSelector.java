@@ -2,7 +2,7 @@ package org.iobserve.planning;
 
 import java.io.File;
 
-import org.iobserve.adaption.data.AdaptationData;
+import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.GraphFactory;
 import org.iobserve.analysis.graph.ModelGraph;

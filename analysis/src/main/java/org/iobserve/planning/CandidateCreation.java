@@ -1,7 +1,7 @@
 package org.iobserve.planning;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaption.data.AdaptationData;
+import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.peropteryx.ExecutionWrapper;
 
 import teetime.stage.basic.AbstractTransformation;
