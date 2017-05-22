@@ -23,5 +23,5 @@ import org.neo4j.graphdb.RelationshipType;
  *
  */
 public enum PcmRelationshipType implements RelationshipType {
-    CONTAINS, PARENT_INTERFACE
+    CONTAINS, PARENT_INTERFACE, PROTOCOL
 }

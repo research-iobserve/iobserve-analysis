@@ -17,9 +17,11 @@ package org.iobserve.analysis.modelneo4j.repository;
 
 import org.iobserve.analysis.modelneo4j.AbstractPcmComponentProvider;
 import org.iobserve.analysis.modelneo4j.PcmRelationshipType;
+import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.protocol.Protocol;
 import org.palladiosimulator.pcm.repository.InfrastructureInterface;
@@ -33,11 +35,11 @@ import org.palladiosimulator.pcm.repository.OperationInterface;
  */
 public abstract class AbstractInterfaceProvider extends AbstractPcmComponentProvider<Interface> {
 
-    private Label interfaceLabel;
-
-    public Label getInterfaceLabel() {
-        return this.interfaceLabel;
+    public AbstractInterfaceProvider(final GraphDatabaseService graph) {
+        super(graph);
     }
+
+    private Label interfaceLabel;
 
     @Override
     public Node createComponent(final Interface component) {
@@ -49,10 +51,6 @@ public abstract class AbstractInterfaceProvider extends AbstractPcmComponentProv
                 inode = this.getGraph().createNode(this.interfaceLabel);
                 inode.setProperty(AbstractPcmComponentProvider.ID, component.getId());
                 inode.setProperty(AbstractPcmComponentProvider.ENTITY_NAME, component.getEntityName());
-
-                final Node rnode = this.getGraph().findNode(Label.label("Repository"), AbstractPcmComponentProvider.ID,
-                        component.getRepository__Interface().getId());
-                rnode.createRelationshipTo(inode, PcmRelationshipType.CONTAINS);
 
                 final AbstractInterfaceProvider iiProvider = new InfrastructureInterfaceProvider(this.getGraph());
                 final AbstractInterfaceProvider oiProvider = new OperationInterfaceProvider(this.getGraph());
@@ -68,6 +66,7 @@ public abstract class AbstractInterfaceProvider extends AbstractPcmComponentProv
                 }
 
                 for (final Protocol p : component.getProtocols__Interface()) {
+                    // TODO create relationship!
                     new ProtocolProvider(this.getGraph()).createComponent(p);
                 }
             }
@@ -78,6 +77,50 @@ public abstract class AbstractInterfaceProvider extends AbstractPcmComponentProv
         }
 
     }
+
+    @Override
+    public Interface readComponent(final String entityName) {
+        try (Transaction tx = this.getGraph().beginTx()) {
+            final Interface inter = this.getInfrastructureOrOperationInterface();
+            final AbstractInterfaceProvider iiProvider = new InfrastructureInterfaceProvider(this.getGraph());
+            final AbstractInterfaceProvider oiProvider = new OperationInterfaceProvider(this.getGraph());
+            final ProtocolProvider pProvider = new ProtocolProvider(this.getGraph());
+            final Node iNode = this.getGraph().findNode(this.getInterfaceLabel(),
+                    AbstractPcmComponentProvider.ENTITY_NAME, entityName);
+
+            inter.setId(iNode.getProperty(AbstractPcmComponentProvider.ID).toString());
+            inter.setEntityName(iNode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
+
+            Node eNode;
+            for (final Relationship r : iNode.getRelationships(Direction.OUTGOING,
+                    PcmRelationshipType.PARENT_INTERFACE)) {
+                eNode = r.getEndNode();
+
+                if (eNode.hasLabel(Label.label("InfrastructureInterface"))) {
+                    final Interface i = iiProvider
+                            .readComponent(eNode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
+                    inter.getParentInterfaces__Interface().add(i);
+                } else if (eNode.hasLabel(Label.label("OperationInterface"))) {
+                    final Interface i = oiProvider
+                            .readComponent(eNode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
+                    inter.getParentInterfaces__Interface().add(i);
+                }
+            }
+
+            for (final Relationship r : iNode.getRelationships(Direction.OUTGOING, PcmRelationshipType.PROTOCOL)) {
+                eNode = r.getEndNode();
+
+                final Protocol p = pProvider
+                        .readComponent(eNode.getProperty(AbstractPcmComponentProvider.ENTITY_NAME).toString());
+                inter.getProtocols__Interface().add(p);
+            }
+            tx.success();
+
+            return inter;
+        }
+    }
+
+    protected abstract Interface getInfrastructureOrOperationInterface();
 
     @Override
     public void updateComponent(final Interface component) {
@@ -91,11 +134,12 @@ public abstract class AbstractInterfaceProvider extends AbstractPcmComponentProv
 
     }
 
-    public void setInterfaceLabel(final Label interfaceLabel) {
+    public Label getInterfaceLabel() {
+        return this.interfaceLabel;
+    }
+
+    protected void setInterfaceLabel(final Label interfaceLabel) {
         this.interfaceLabel = interfaceLabel;
     }
 
-    public AbstractInterfaceProvider(final GraphDatabaseService graph) {
-        super(graph);
-    }
 }
