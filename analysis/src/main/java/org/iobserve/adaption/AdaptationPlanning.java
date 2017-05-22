@@ -4,7 +4,13 @@ import org.iobserve.adaption.data.AdaptationData;
 
 import teetime.stage.basic.AbstractTransformation;
 
-public class ModelTransformationPlanning extends AbstractTransformation<AdaptationData, AdaptationData> {
+/**
+ * This stage orderes the adaptation {@link Action}s into an executable sequence.
+ * 
+ * @author Philipp Weimann
+ *
+ */
+public class AdaptationPlanning extends AbstractTransformation<AdaptationData, AdaptationData> {
 
 	@Override
 	protected void execute(AdaptationData element) throws Exception {

@@ -5,7 +5,17 @@ import org.iobserve.analysis.utils.AbstractLinearComposition;
 
 public class SystemAdaptation extends AbstractLinearComposition<AdaptationData, AdaptationData> {
 
-	public SystemAdaptation(ModelComparision comparer, ModelTransformationPlanning planner, ModelTransformationExecution executer) {
+	/**
+	 * This class encapsulates the major system adaption filter stage.
+	 * 
+	 * @param comparer
+	 *            computes action which need to be done for migration/adaption
+	 * @param planner
+	 *            orders the actions into a executable sequence
+	 * @param executer
+	 *            executes the ordered actins
+	 */
+	public SystemAdaptation(AdaptationCalculation comparer, AdaptationPlanning planner, AdaptationExecution executer) {
 		super(comparer.getInputPort(), executer.getOutputPort());
 
 		this.connectPorts(comparer.getOutputPort(), planner.getInputPort());
