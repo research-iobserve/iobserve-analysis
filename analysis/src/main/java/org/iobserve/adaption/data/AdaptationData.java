@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.graph.ModelGraph;
+import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 
@@ -22,6 +23,8 @@ public class AdaptationData {
 
 	private List<AssemblyContextAction> acActions;
 	private List<ResourceContainerAction> rcActions;
+
+	private List<Action> executionOrder;
 
 	////////////////////// GETTERS & SETTERS //////////////////////
 	/**
@@ -112,6 +115,21 @@ public class AdaptationData {
 	 */
 	public void setRcActions(List<ResourceContainerAction> rcActions) {
 		this.rcActions = rcActions;
+	}
+
+	/**
+	 * @return the executionOrder
+	 */
+	public List<Action> getExecutionOrder() {
+		return executionOrder;
+	}
+
+	/**
+	 * @param executionOrder
+	 *            the executionOrder to set
+	 */
+	public void setExecutionOrder(List<Action> executionOrder) {
+		this.executionOrder = executionOrder;
 	}
 
 }

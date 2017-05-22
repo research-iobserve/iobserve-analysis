@@ -9,18 +9,27 @@ import org.iobserve.adaption.data.ActionFactory;
 import org.iobserve.adaption.data.AdaptationData;
 import org.iobserve.adaption.data.AssemblyContextActionFactory;
 import org.iobserve.adaption.data.ResourceContainerActionFactory;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.ComponentNode;
 import org.iobserve.analysis.graph.DeploymentNode;
 import org.iobserve.analysis.graph.ModelGraph;
 import org.iobserve.planning.systemadaptation.AcquireAction;
+import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.TerminateAction;
 
 import teetime.stage.basic.AbstractTransformation;
 
-public class ModelComparision extends AbstractTransformation<AdaptationData, AdaptationData> {
+/**
+ * This class is the inital phase of the adaption filter stage. It compares a
+ * runtime PCM to a redeployment PCM and calculates systemadaption
+ * {@link Action}s to transform the deployed system towards the redeployment
+ * model.
+ * 
+ * @author Philipp Weimann
+ *
+ */
+public class AdaptationCalculation extends AbstractTransformation<AdaptationData, AdaptationData> {
 
 	private HashMap<String, ComponentNode> runtimeComponentNodes;
 	private HashMap<String, DeploymentNode> runtimeDeploymentNodes;
@@ -60,6 +69,7 @@ public class ModelComparision extends AbstractTransformation<AdaptationData, Ada
 
 		for (DeploymentNode server : graph.getServers()) {
 			if (server.getContainingComponents().size() > 0) {
+				// Don't add servers which don't host any components
 				this.runtimeDeploymentNodes.put(server.getResourceContainerID(), server);
 			}
 		}
@@ -106,24 +116,24 @@ public class ModelComparision extends AbstractTransformation<AdaptationData, Ada
 	private void compareServers(Set<DeploymentNode> servers) {
 		for (DeploymentNode reDeplServer : servers) {
 			
-			if (reDeplServer.getContainingComponents().size() == 0)
-			{
+			if (reDeplServer.getContainingComponents().size() == 0) {
+				// If the server dosn't contain any components => IGNORE
 				continue;
 			}
 
 			DeploymentNode runServer = this.runtimeDeploymentNodes.get(reDeplServer.getResourceContainerID());
 
 			if (runServer == null) {
+				// It is an so far unused server!
 				AcquireAction action = ResourceContainerActionFactory.generateAcquireAction(reDeplServer);
 				this.rcActions.add(action);
 			} else {
-				// if (!runServer.equals(reDeplServer)) {
-				// unkown what to do!
+				// Server was and is still in use
+				this.runtimeDeploymentNodes.remove(runServer.getResourceContainerID(), runServer);
 				// }
 
 				this.runtimeDeploymentNodes.remove(runServer.getResourceContainerID(), runServer);
 			}
-
 		}
 
 		for (DeploymentNode runServer : this.runtimeDeploymentNodes.values()) {

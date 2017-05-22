@@ -18,9 +18,9 @@ package org.iobserve.analysis;
 import java.io.IOException;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaption.ModelComparision;
-import org.iobserve.adaption.ModelTransformationExecution;
-import org.iobserve.adaption.ModelTransformationPlanning;
+import org.iobserve.adaption.AdaptationCalculation;
+import org.iobserve.adaption.AdaptationExecution;
+import org.iobserve.adaption.AdaptationPlanning;
 import org.iobserve.adaption.SystemAdaptation;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
@@ -109,7 +109,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
 		final PrivacyAnalysis privacyAnalysis = new PrivacyAnalysis(new GraphCreation(), new GraphPrivacyAnalysis());
 		final ModelCreation modelCreation = new ModelCreation(new CandidateCreation(perOpteryxHeadless), new CandidateSelector());
-		final SystemAdaptation systemAdaptor = new SystemAdaptation(new ModelComparision(), new ModelTransformationPlanning(), new ModelTransformationExecution());
+		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(), new AdaptationPlanning(), new AdaptationExecution());
 
 		/** dispatch different monitoring data. */
 		// Path Allocation => Deployment => Snapshot
