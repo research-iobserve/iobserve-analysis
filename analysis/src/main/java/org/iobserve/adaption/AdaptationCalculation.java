@@ -60,6 +60,8 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 
 		element.setAcActions(this.acActions.stream().collect(Collectors.toList()));
 		element.setRcActions(this.rcActions.stream().collect(Collectors.toList()));
+		
+		this.outputPort.send(element);
 	}
 
 	private void addRuntimeData(ModelGraph graph) {

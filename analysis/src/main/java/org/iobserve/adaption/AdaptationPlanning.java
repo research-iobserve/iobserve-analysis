@@ -39,7 +39,7 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 	@Override
 	protected void execute(AdaptationData element) throws Exception {
 		init(element);
-		
+
 		List<Action> adaptionSteps = new ArrayList<Action>();
 		adaptionSteps.addAll(aquires);
 		adaptionSteps.addAll(allocations);
@@ -49,7 +49,7 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 		adaptionSteps.addAll(terminates);
 
 		element.setExecutionOrder(adaptionSteps);
-		
+
 		this.printAdaptionSequence(adaptionSteps);
 		this.outputPort.send(element);
 	}
@@ -63,19 +63,63 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 		this.changes = data.getAcActions().stream().filter(s -> s instanceof ChangeRepositoryComponentAction).collect(Collectors.toSet());
 		this.deallocations = data.getAcActions().stream().filter(s -> s instanceof DeallocateAction).collect(Collectors.toSet());
 	}
-	
-	
-	private void printAdaptionSequence(List<Action> adaptionSteps)
-	{
+
+	private void printAdaptionSequence(List<Action> adaptionSteps) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Adaption sequence:\n");
-		
-		for (int i = 0; i < adaptionSteps.size(); i++)
-		{
-			sb.append("\t" + i + "\t" + adaptionSteps.get(i).getClass().toString() + "\n");
+
+		for (int i = 0; i < adaptionSteps.size(); i++) {
+			sb.append(i + "\t" + this.printAction(adaptionSteps.get(i)) + "\n");
 		}
-		
+
 		System.out.println(sb.toString());
+	}
+
+	private String printAction(Action action) {
+		StringBuilder sb = new StringBuilder();
+
+		if (action instanceof AcquireAction) {
+			AcquireAction acquire = (AcquireAction) action;
+			sb.append("Acquire:\t" + acquire.getSourceResourceContainer().getEntityName());
+			sb.append("\tID: " + acquire.getSourceResourceContainer().getId());
+
+		} else if (action instanceof TerminateAction) {
+			TerminateAction terminate = (TerminateAction) action;
+			sb.append("Terminate:\t" + terminate.getSourceResourceContainer().getEntityName());
+			sb.append("\tID: " + terminate.getSourceResourceContainer().getId());
+
+		} else if (action instanceof AllocateAction) {
+			AllocateAction allocate = (AllocateAction) action;
+			sb.append("Allocate:\t" + allocate.getSourceAssemblyContext().getEntityName());
+			sb.append("\tID: " + allocate.getSourceAssemblyContext().getId());
+			sb.append("\t" + " ------- ");
+			sb.append("\t->\t" + allocate.getNewAllocationContext().getEntityName());
+
+		} else if (action instanceof MigrateAction) {
+			MigrateAction migrate = (MigrateAction) action;
+			sb.append("Migrate:\t" + migrate.getSourceAssemblyContext().getEntityName());
+			sb.append("\tID: " + migrate.getSourceAssemblyContext().getId());
+			sb.append("\t" + migrate.getSourceAllocationContext().getResourceContainer_AllocationContext().getEntityName());
+			sb.append("\t->\t" + migrate.getNewAllocationContext().getResourceContainer_AllocationContext().getEntityName());
+
+		} else if (action instanceof ChangeRepositoryComponentAction) {
+			ChangeRepositoryComponentAction change = (ChangeRepositoryComponentAction) action;
+			sb.append("ChangeComp:\t" + change.getSourceAssemblyContext().getEntityName());
+			sb.append("\tID: " + change.getSourceAssemblyContext().getId());
+			sb.append("\t" + change.getSourceAssemblyContext().getEncapsulatedComponent__AssemblyContext().getEntityName());
+			sb.append("\t->\t" + change.getNewRepositoryComponent().getEntityName());
+
+		} else if (action instanceof DeallocateAction) {
+			DeallocateAction deAllocate = (DeallocateAction) action;
+			sb.append("Deallocate:\t" + deAllocate.getSourceAssemblyContext().getEntityName());
+			sb.append("\tID: " + deAllocate.getSourceAssemblyContext().getId());
+
+		} else {
+			sb.append("UNKOWN:\t" + " ------------------------------------ ");
+			sb.append("\tID: " + " ------------------------------------ ");
+		}
+
+		return sb.toString();
 	}
 
 }

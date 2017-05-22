@@ -17,7 +17,8 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.planning.systemadaptation.impl.MigrateActionImpl#getNewAllocatinContext <em>New Allocatin Context</em>}</li>
+ *   <li>{@link org.iobserve.planning.systemadaptation.impl.MigrateActionImpl#getNewAllocationContext <em>New Allocation Context</em>}</li>
+ *   <li>{@link org.iobserve.planning.systemadaptation.impl.MigrateActionImpl#getSourceAllocationContext <em>Source Allocation Context</em>}</li>
  * </ul>
  *
  * @generated
@@ -47,8 +48,8 @@ public class MigrateActionImpl extends AssemblyContextActionImpl implements Migr
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public AllocationContext getNewAllocatinContext() {
-		return (AllocationContext)eGet(systemadaptationPackage.Literals.MIGRATE_ACTION__NEW_ALLOCATIN_CONTEXT, true);
+	public AllocationContext getNewAllocationContext() {
+		return (AllocationContext)eGet(systemadaptationPackage.Literals.MIGRATE_ACTION__NEW_ALLOCATION_CONTEXT, true);
 	}
 
 	/**
@@ -56,8 +57,26 @@ public class MigrateActionImpl extends AssemblyContextActionImpl implements Migr
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setNewAllocatinContext(AllocationContext newNewAllocatinContext) {
-		eSet(systemadaptationPackage.Literals.MIGRATE_ACTION__NEW_ALLOCATIN_CONTEXT, newNewAllocatinContext);
+	public void setNewAllocationContext(AllocationContext newNewAllocationContext) {
+		eSet(systemadaptationPackage.Literals.MIGRATE_ACTION__NEW_ALLOCATION_CONTEXT, newNewAllocationContext);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public AllocationContext getSourceAllocationContext() {
+		return (AllocationContext)eGet(systemadaptationPackage.Literals.MIGRATE_ACTION__SOURCE_ALLOCATION_CONTEXT, true);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public void setSourceAllocationContext(AllocationContext newSourceAllocationContext) {
+		eSet(systemadaptationPackage.Literals.MIGRATE_ACTION__SOURCE_ALLOCATION_CONTEXT, newSourceAllocationContext);
 	}
 
 } //MigrateActionImpl

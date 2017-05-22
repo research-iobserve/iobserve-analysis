@@ -16,7 +16,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.planning.systemadaptation.impl.AllocateActionImpl#getNewAllocatinContext <em>New Allocatin Context</em>}</li>
+ *   <li>{@link org.iobserve.planning.systemadaptation.impl.AllocateActionImpl#getNewAllocationContext <em>New Allocation Context</em>}</li>
  * </ul>
  *
  * @generated
@@ -46,8 +46,8 @@ public class AllocateActionImpl extends AssemblyContextActionImpl implements All
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public AllocationContext getNewAllocatinContext() {
-		return (AllocationContext)eGet(systemadaptationPackage.Literals.ALLOCATE_ACTION__NEW_ALLOCATIN_CONTEXT, true);
+	public AllocationContext getNewAllocationContext() {
+		return (AllocationContext)eGet(systemadaptationPackage.Literals.ALLOCATE_ACTION__NEW_ALLOCATION_CONTEXT, true);
 	}
 
 	/**
@@ -55,8 +55,8 @@ public class AllocateActionImpl extends AssemblyContextActionImpl implements All
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public void setNewAllocatinContext(AllocationContext newNewAllocatinContext) {
-		eSet(systemadaptationPackage.Literals.ALLOCATE_ACTION__NEW_ALLOCATIN_CONTEXT, newNewAllocatinContext);
+	public void setNewAllocationContext(AllocationContext newNewAllocationContext) {
+		eSet(systemadaptationPackage.Literals.ALLOCATE_ACTION__NEW_ALLOCATION_CONTEXT, newNewAllocationContext);
 	}
 
 } //AllocateActionImpl

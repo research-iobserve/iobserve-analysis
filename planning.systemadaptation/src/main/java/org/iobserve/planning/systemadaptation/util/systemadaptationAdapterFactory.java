@@ -258,20 +258,6 @@ public class systemadaptationAdapterFactory extends AdapterFactoryImpl {
 	}
 
 	/**
-	 * Creates a new adapter for an object of class '{@link org.iobserve.planning.systemadaptation.ReplicateAction <em>Replicate Action</em>}'.
-	 * <!-- begin-user-doc -->
-	 * This default implementation returns null so that we can easily ignore cases;
-	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
-	 * <!-- end-user-doc -->
-	 * @return the new adapter.
-	 * @see org.iobserve.planning.systemadaptation.ReplicateAction
-	 * @generated
-	 */
-	public Adapter createReplicateActionAdapter() {
-		return null;
-	}
-
-	/**
 	 * Creates a new adapter for an object of class '{@link org.iobserve.planning.systemadaptation.TerminateAction <em>Terminate Action</em>}'.
 	 * <!-- begin-user-doc -->
 	 * This default implementation returns null so that we can easily ignore cases;
@@ -282,6 +268,20 @@ public class systemadaptationAdapterFactory extends AdapterFactoryImpl {
 	 * @generated
 	 */
 	public Adapter createTerminateActionAdapter() {
+		return null;
+	}
+
+	/**
+	 * Creates a new adapter for an object of class '{@link org.iobserve.planning.systemadaptation.ReplicateAction <em>Replicate Action</em>}'.
+	 * <!-- begin-user-doc -->
+	 * This default implementation returns null so that we can easily ignore cases;
+	 * it's useful to ignore a case when inheritance will catch all the cases anyway.
+	 * <!-- end-user-doc -->
+	 * @return the new adapter.
+	 * @see org.iobserve.planning.systemadaptation.ReplicateAction
+	 * @generated
+	 */
+	public Adapter createReplicateActionAdapter() {
 		return null;
 	}
 

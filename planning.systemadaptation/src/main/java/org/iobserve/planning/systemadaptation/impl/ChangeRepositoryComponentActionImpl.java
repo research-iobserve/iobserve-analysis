@@ -6,6 +6,7 @@ import org.eclipse.emf.ecore.EClass;
 
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
 import org.iobserve.planning.systemadaptation.systemadaptationPackage;
+
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 
 /**

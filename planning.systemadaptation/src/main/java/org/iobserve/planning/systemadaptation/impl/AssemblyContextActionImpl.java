@@ -6,6 +6,7 @@ import org.eclipse.emf.ecore.EClass;
 
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.systemadaptationPackage;
+
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 /**

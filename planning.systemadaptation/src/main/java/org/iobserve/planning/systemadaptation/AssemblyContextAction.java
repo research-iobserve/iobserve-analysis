@@ -4,7 +4,6 @@ package org.iobserve.planning.systemadaptation;
 
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>Assembly Context Action</b></em>'.
@@ -22,7 +21,6 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
  * @generated
  */
 public interface AssemblyContextAction extends Action {
-
 	/**
 	 * Returns the value of the '<em><b>Source Assembly Context</b></em>' reference.
 	 * <!-- begin-user-doc -->
@@ -48,4 +46,5 @@ public interface AssemblyContextAction extends Action {
 	 * @generated
 	 */
 	void setSourceAssemblyContext(AssemblyContext value);
+
 } // AssemblyContextAction

@@ -3,7 +3,9 @@
 package org.iobserve.planning.systemadaptation;
 
 import org.eclipse.emf.common.util.EList;
+
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
@@ -56,7 +58,7 @@ public interface ReplicateAction extends ResourceContainerAction {
 	 * The list contents are of type {@link org.palladiosimulator.pcm.allocation.AllocationContext}.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>Source Allocation Context</em>' reference isn't clear,
+	 * If the meaning of the '<em>Source Allocation Context</em>' reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->
@@ -72,7 +74,7 @@ public interface ReplicateAction extends ResourceContainerAction {
 	 * The list contents are of type {@link org.palladiosimulator.pcm.allocation.AllocationContext}.
 	 * <!-- begin-user-doc -->
 	 * <p>
-	 * If the meaning of the '<em>New Allocation Context</em>' reference isn't clear,
+	 * If the meaning of the '<em>New Allocation Context</em>' reference list isn't clear,
 	 * there really should be more of a description here...
 	 * </p>
 	 * <!-- end-user-doc -->

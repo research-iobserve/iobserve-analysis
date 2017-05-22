@@ -167,9 +167,9 @@ public class systemadaptationFactoryImpl extends EFactoryImpl implements systema
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public ReplicateAction createReplicateAction() {
-		ReplicateActionImpl replicateAction = new ReplicateActionImpl();
-		return replicateAction;
+	public TerminateAction createTerminateAction() {
+		TerminateActionImpl terminateAction = new TerminateActionImpl();
+		return terminateAction;
 	}
 
 	/**
@@ -177,9 +177,9 @@ public class systemadaptationFactoryImpl extends EFactoryImpl implements systema
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public TerminateAction createTerminateAction() {
-		TerminateActionImpl terminateAction = new TerminateActionImpl();
-		return terminateAction;
+	public ReplicateAction createReplicateAction() {
+		ReplicateActionImpl replicateAction = new ReplicateActionImpl();
+		return replicateAction;
 	}
 
 	/**

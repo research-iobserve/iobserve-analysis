@@ -23,9 +23,13 @@ import org.iobserve.planning.systemadaptation.systemadaptationFactory;
 import org.iobserve.planning.systemadaptation.systemadaptationPackage;
 
 import org.palladiosimulator.pcm.PcmPackage;
+
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
+
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
+
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
+
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
@@ -103,14 +107,14 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass replicateActionEClass = null;
+	private EClass terminateActionEClass = null;
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	private EClass terminateActionEClass = null;
+	private EClass replicateActionEClass = null;
 
 	/**
 	 * Creates an instance of the model <b>Package</b>, registered with
@@ -280,7 +284,7 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getAllocateAction_NewAllocatinContext() {
+	public EReference getAllocateAction_NewAllocationContext() {
 		return (EReference)allocateActionEClass.getEStructuralFeatures().get(0);
 	}
 
@@ -307,8 +311,17 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	public EReference getMigrateAction_NewAllocatinContext() {
+	public EReference getMigrateAction_NewAllocationContext() {
 		return (EReference)migrateActionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EReference getMigrateAction_SourceAllocationContext() {
+		return (EReference)migrateActionEClass.getEStructuralFeatures().get(1);
 	}
 
 	/**
@@ -318,6 +331,15 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 */
 	public EClass getAcquireAction() {
 		return acquireActionEClass;
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	public EClass getTerminateAction() {
+		return terminateActionEClass;
 	}
 
 	/**
@@ -354,15 +376,6 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 */
 	public EReference getReplicateAction_NewAllocationContext() {
 		return (EReference)replicateActionEClass.getEStructuralFeatures().get(2);
-	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @generated
-	 */
-	public EClass getTerminateAction() {
-		return terminateActionEClass;
 	}
 
 	/**
@@ -409,12 +422,13 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 		createEReference(changeRepositoryComponentActionEClass, CHANGE_REPOSITORY_COMPONENT_ACTION__NEW_REPOSITORY_COMPONENT);
 
 		allocateActionEClass = createEClass(ALLOCATE_ACTION);
-		createEReference(allocateActionEClass, ALLOCATE_ACTION__NEW_ALLOCATIN_CONTEXT);
+		createEReference(allocateActionEClass, ALLOCATE_ACTION__NEW_ALLOCATION_CONTEXT);
 
 		deallocateActionEClass = createEClass(DEALLOCATE_ACTION);
 
 		migrateActionEClass = createEClass(MIGRATE_ACTION);
-		createEReference(migrateActionEClass, MIGRATE_ACTION__NEW_ALLOCATIN_CONTEXT);
+		createEReference(migrateActionEClass, MIGRATE_ACTION__NEW_ALLOCATION_CONTEXT);
+		createEReference(migrateActionEClass, MIGRATE_ACTION__SOURCE_ALLOCATION_CONTEXT);
 
 		acquireActionEClass = createEClass(ACQUIRE_ACTION);
 
@@ -487,12 +501,13 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 		initEReference(getChangeRepositoryComponentAction_NewRepositoryComponent(), theRepositoryPackage.getRepositoryComponent(), null, "newRepositoryComponent", null, 1, 1, ChangeRepositoryComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, !IS_ORDERED);
 
 		initEClass(allocateActionEClass, AllocateAction.class, "AllocateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getAllocateAction_NewAllocatinContext(), theAllocationPackage.getAllocationContext(), null, "newAllocatinContext", null, 0, 1, AllocateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getAllocateAction_NewAllocationContext(), theAllocationPackage.getAllocationContext(), null, "newAllocationContext", null, 1, 1, AllocateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(deallocateActionEClass, DeallocateAction.class, "DeallocateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
 		initEClass(migrateActionEClass, MigrateAction.class, "MigrateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-		initEReference(getMigrateAction_NewAllocatinContext(), theAllocationPackage.getAllocationContext(), null, "newAllocatinContext", null, 1, 1, MigrateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getMigrateAction_NewAllocationContext(), theAllocationPackage.getAllocationContext(), null, "newAllocationContext", null, 1, 1, MigrateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+		initEReference(getMigrateAction_SourceAllocationContext(), theAllocationPackage.getAllocationContext(), null, "sourceAllocationContext", null, 1, 1, MigrateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(acquireActionEClass, AcquireAction.class, "AcquireAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
