@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.modelneo4j;
+package org.iobserve.analysis.modelneo4j.individualapproach;
 
 import java.io.File;
 
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.modelneo4j.repository.RepositoryProvider;
+import org.iobserve.analysis.modelneo4j.individualapproach.repository.RepositoryProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.palladiosimulator.pcm.repository.Repository;
