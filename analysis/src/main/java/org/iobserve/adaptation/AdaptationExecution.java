@@ -19,7 +19,7 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 		
 		SystemEvaluation.enableEvaluation(element);
 		// TODO Finish, by adding execution. Maybe Async?
-		SystemEvaluation.disableEvaluation();
+//		SystemEvaluation.disableEvaluation();
 	}
 
 }
