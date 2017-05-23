@@ -50,4 +50,36 @@ public class ModelGraph {
 	public InitializeModelProviders getPcmModels() {
 		return pcmModels;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof ModelGraph) {
+			ModelGraph compObj = (ModelGraph) obj;
+
+			//Compare used servers
+			boolean equalServers = true;
+			for (DeploymentNode server : this.servers) {
+				if (server.getContainingComponents().size() == 0) {
+					continue;
+				}
+
+				DeploymentNode compServer = compObj.servers.stream().filter(s -> s.getResourceContainerID().equals(server.getResourceContainerID()))
+						.findFirst().get();
+				equalServers = server.equals(compServer);
+				if (!equalServers)
+					return false;
+			}
+
+			//Compare components
+			boolean equalComponents = true;
+			for (ComponentNode component : this.components) {
+				ComponentNode compComponent = compObj.components.stream().filter(s -> s.getAssemblyContextID().equals(component.getAssemblyContextID()))
+						.findFirst().get();
+				equalComponents = component.equals(compComponent);
+				if (!equalComponents)
+					return false;
+			}
+		}
+		return true;
+	}
 }
