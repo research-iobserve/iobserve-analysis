@@ -29,19 +29,19 @@ import org.palladiosimulator.pcm.repository.Repository;
  * @author Lars Bluemke
  *
  */
-public class Neo4jTest {
+public class TestIndividual {
 
     private static final File DB_PATH = new File("neo4jdb");
     private static final File PCM_MODELS_DIRECTORY = new File(
             "/Users/LarsBlumke/Documents/CAU/Masterprojekt/iObserveWorkspace/models/WorkingTestPCM/pcm");
 
     public static void main(final String[] args) {
-        final GraphDatabaseService graph = new GraphDatabaseFactory().newEmbeddedDatabase(Neo4jTest.DB_PATH);
-        Neo4jTest.registerShutdownHook(graph);
+        final GraphDatabaseService graph = new GraphDatabaseFactory().newEmbeddedDatabase(TestIndividual.DB_PATH);
+        TestIndividual.registerShutdownHook(graph);
         System.out.println("Started db");
 
         final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
-                Neo4jTest.PCM_MODELS_DIRECTORY);
+                TestIndividual.PCM_MODELS_DIRECTORY);
         final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
         final Repository repository = repositoryModelProvider.getModel();
         System.out.println("Loaded model");
