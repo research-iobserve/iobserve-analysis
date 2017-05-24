@@ -21,6 +21,7 @@ import org.iobserve.analysis.modelneo4j.PcmRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.core.entity.Entity;
 
@@ -87,6 +88,13 @@ public class GenericComponentProvider<T extends Entity> {
                  */
                 final Object representation = component.eGet(ref);
 
+                RelationshipType relType;
+                if (ref.isContainment()) {
+                    relType = PcmRelationshipType.CONTAINS;
+                } else {
+                    relType = PcmRelationshipType.REFERENCES;
+                }
+
                 /**
                  * If references reference multiple other components they are represented as a list
                  * otherwise they are not represented as a list
@@ -103,7 +111,8 @@ public class GenericComponentProvider<T extends Entity> {
 
                             /** When the new node is created, create a reference */
                             try (Transaction tx = this.getGraph().beginTx()) {
-                                this.node.createRelationshipTo(refNode, PcmRelationshipType.REFERENCES);
+
+                                this.node.createRelationshipTo(refNode, relType);
                                 tx.success();
                             }
                         } else {
@@ -119,7 +128,7 @@ public class GenericComponentProvider<T extends Entity> {
 
                         /** When the new node is created, create a reference */
                         try (Transaction tx = this.getGraph().beginTx()) {
-                            this.node.createRelationshipTo(refNode, PcmRelationshipType.REFERENCES);
+                            this.node.createRelationshipTo(refNode, relType);
                             tx.success();
                         }
                     } else {
