@@ -10,7 +10,7 @@ import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 
 /**
  * This class provides all data required for planning and adapting the system.
- * 
+ *
  * @author Philipp Weimann
  */
 public class AdaptationData {
@@ -31,7 +31,7 @@ public class AdaptationData {
 	 * @return the runtimeModelURI
 	 */
 	public URI getRuntimeModelURI() {
-		return runtimeModelURI;
+		return this.runtimeModelURI;
 	}
 
 	/**
@@ -46,7 +46,7 @@ public class AdaptationData {
 	 * @return the runtimeGraph
 	 */
 	public ModelGraph getRuntimeGraph() {
-		return runtimeGraph;
+		return this.runtimeGraph;
 	}
 
 	/**
@@ -61,7 +61,7 @@ public class AdaptationData {
 	 * @return the reDeploymentURI
 	 */
 	public URI getReDeploymentURI() {
-		return reDeploymentURI;
+		return this.reDeploymentURI;
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class AdaptationData {
 	 * @return the reDeploymentGraph
 	 */
 	public ModelGraph getReDeploymentGraph() {
-		return reDeploymentGraph;
+		return this.reDeploymentGraph;
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class AdaptationData {
 	 * @return the acActions
 	 */
 	public List<AssemblyContextAction> getAcActions() {
-		return acActions;
+		return this.acActions;
 	}
 
 	/**
@@ -106,7 +106,7 @@ public class AdaptationData {
 	 * @return the rcActions
 	 */
 	public List<ResourceContainerAction> getRcActions() {
-		return rcActions;
+		return this.rcActions;
 	}
 
 	/**
@@ -121,7 +121,7 @@ public class AdaptationData {
 	 * @return the executionOrder
 	 */
 	public List<Action> getExecutionOrder() {
-		return executionOrder;
+		return this.executionOrder;
 	}
 
 	/**

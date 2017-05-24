@@ -2,6 +2,7 @@ package org.iobserve.adaptation.execution;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.TerminateAction;
 
 public class TerminateActionScript extends ExecutionScript {
@@ -9,7 +10,8 @@ public class TerminateActionScript extends ExecutionScript {
 
 	private final TerminateAction action;
 
-	public TerminateActionScript(TerminateAction action) {
+	public TerminateActionScript(AdaptationData data, TerminateAction action) {
+		super(data);
 		this.action = action;
 	}
 

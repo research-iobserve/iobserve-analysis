@@ -2,6 +2,7 @@ package org.iobserve.adaptation.execution;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 
 public class ReplicateActionScript extends ExecutionScript {
@@ -9,7 +10,8 @@ public class ReplicateActionScript extends ExecutionScript {
 
 	private final ReplicateAction action;
 
-	public ReplicateActionScript(ReplicateAction action) {
+	public ReplicateActionScript(AdaptationData data, ReplicateAction action) {
+		super(data);
 		this.action = action;
 	}
 

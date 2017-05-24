@@ -25,6 +25,7 @@ dependencies {
 	compile gradleApi()
 	compile project(":common")
 	compile project(":planning.systemadaptation")
+	compile project(":planning.cloudprofile")
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
@@ -37,6 +38,7 @@ dependencies {
 		
 	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
 	compile 'org.apache.logging.log4j:log4j-core:2.6.2'
+	compile 'org.apache.jclouds:jclouds-all:2.0.1+'
 	
 	compile 'junit:junit:4.11'
 	
