@@ -60,4 +60,8 @@ public class ReplayerConfiguration extends Configuration {
         return this.consumer;
     }
 
+    public boolean isOutputConnected() {
+        return this.consumer.isOutputConnected();
+    }
+
 }

@@ -71,4 +71,8 @@ public class DataSendStage extends AbstractConsumerStage<IMonitoringRecord> {
     public long getCount() {
         return this.count;
     }
+
+    public boolean isOutputConnected() {
+        return !this.ctrl.isMonitoringTerminated();
+    }
 }

@@ -42,7 +42,7 @@ public final class ReplayerMain {
     private Integer inputPort;
 
     @Parameter(names = { "-h",
-    "--host" }, required = true, description = "Name or IP address of the host where the data is send to.", converter = IntegerConverter.class)
+    "--host" }, required = true, description = "Name or IP address of the host where the data is send to.")
     private String hostname;
 
     /**
@@ -79,28 +79,34 @@ public final class ReplayerMain {
         System.out.println("Receiver");
         final ReplayerConfiguration configuration = new ReplayerConfiguration(
                 this.dataLocation, this.hostname, this.inputPort);
-        final Execution<ReplayerConfiguration> analysis = new Execution<>(configuration);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    synchronized (analysis) {
-                        analysis.abortEventually();
+        if (configuration.isOutputConnected()) {
+
+            final Execution<ReplayerConfiguration> analysis = new Execution<>(configuration);
+
+            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        synchronized (analysis) {
+                            analysis.abortEventually();
+                        }
+                    } catch (final Exception e) { // NOCS
+
                     }
-                } catch (final Exception e) { // NOCS
-
                 }
-            }
-        }));
+            }));
 
-        System.out.println("Running analysis");
+            System.out.println("Running analysis");
 
-        analysis.executeBlocking();
+            analysis.executeBlocking();
 
-        System.out.println("Records send " + configuration.getCounter().getCount());
+            System.out.println("Records send " + configuration.getCounter().getCount());
 
-        System.out.println("Done");
+            System.out.println("Done");
+        } else {
+            System.out.println("Cannot connect to host.");
+        }
 
     }
 
