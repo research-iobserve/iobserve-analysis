@@ -17,7 +17,6 @@ package org.iobserve.analysis.modelneo4j.genericapproach;
 
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
 import org.iobserve.analysis.modelneo4j.PcmRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
@@ -46,81 +45,91 @@ public class GenericComponentProvider<T extends Entity> {
     public Node createComponent(final T component) {
         System.out.println("\n\n------------------------------------------------------------------------");
         System.out.println("component " + component);
+
+        /** Create a label representing the type of the component */
         final Label label = Label.label(this.parseTypeName(component.eClass().getInstanceTypeName()));
+
+        /** Look if there already is a node for the component in the graph */
         try (Transaction tx = this.getGraph().beginTx()) {
             this.node = this.getGraph().findNode(label, GenericComponentProvider.ID,
                     component.eGet(component.eClass().getEIDAttribute()));
             tx.success();
         }
 
+        /** If there is no node yet, create one */
         if (this.node == null) {
             try (Transaction tx = this.getGraph().beginTx()) {
                 this.node = this.getGraph().createNode(label);
+
+                /** Iterate over all attributes */
+                for (final EAttribute attr : component.eClass().getEAllAttributes()) {
+                    System.out.println("attibute " + attr.getEAttributeType() + " key: " + attr.getName() + " value: "
+                            + component.eGet(attr));
+
+                    /** Save attributes as properties of the node */
+                    final Object value = component.eGet(attr);
+                    if (value != null) {
+                        this.node.setProperty(attr.getName(), value.toString());
+                    }
+                }
+
                 tx.success();
             }
 
-            int as = 0;
-            int rs = 0;
-            for (final EStructuralFeature f : component.eClass().getEAllStructuralFeatures()) {
-                if (f instanceof EAttribute) {
-                    as++;
-                    System.out.println("attibute " + ((EAttribute) f).getEAttributeType() + " key: " + f.getName()
-                            + " value: " + component.eGet(f));
+            /** Iterate over all references */
+            for (final EReference ref : component.eClass().getEAllReferences()) {
+                System.out.println("\n\n------------------------------------------------------------------------");
+                System.out.println("component " + component);
+                System.out.println("reference " + ref.getEReferenceType() + " value: " + component.eGet(ref));
 
-                    final Object a = component.eGet(f);
-                    if (a != null) {
-                        try (Transaction tx = this.getGraph().beginTx()) {
-                            this.node.setProperty(f.getName(), a.toString());
-                            tx.success();
-                        }
-                    }
+                /**
+                 * Save references of the component as references to other nodes in the graph
+                 */
+                final Object representation = component.eGet(ref);
 
-                } else if (f instanceof EReference) {
+                /**
+                 * If references reference multiple other components they are represented as a list
+                 * otherwise they are not represented as a list
+                 *
+                 * TODO: Make sure the order of the list is kept!
+                 */
+                if (representation instanceof Iterable<?>) {
+                    /** Store each single reference */
+                    for (final Object i : (Iterable<?>) component.eGet(ref)) {
+                        if (i instanceof Entity) {
 
-                    rs++;
-                    System.out.println("\n\n------------------------------------------------------------------------");
-                    System.out.println("component " + component);
-                    System.out.println(
-                            "reference " + ((EReference) f).getEReferenceType() + " value: " + component.eGet(f));
+                            /** Let a new provider create a node for the referenced component */
+                            final Node refNode = new GenericComponentProvider<>(this.graph).createComponent((Entity) i);
 
-                    final Object r = component.eGet(f);
-                    if (r instanceof Iterable<?>) {
-                        System.out.println("iterable");
-                        for (final Object i : (Iterable<?>) component.eGet(f)) {
-                            if (i instanceof Entity) {
-
-                                final Node refNode = new GenericComponentProvider<>(this.graph)
-                                        .createComponent((Entity) i);
-                                try (Transaction tx = this.getGraph().beginTx()) {
-                                    this.node.createRelationshipTo(refNode, PcmRelationshipType.REFERENCES);
-                                    tx.success();
-                                }
-                            } else {
-                                System.out.println(i + " should not happen!!!!!!!!!");
-                            }
-                        }
-
-                    } else {
-                        System.out.println("not iterable");
-                        if (r instanceof Entity) {
-
-                            final Node refNode = new GenericComponentProvider<>(this.graph).createComponent((Entity) r);
+                            /** When the new node is created, create a reference */
                             try (Transaction tx = this.getGraph().beginTx()) {
                                 this.node.createRelationshipTo(refNode, PcmRelationshipType.REFERENCES);
                                 tx.success();
                             }
                         } else {
-                            System.out.println(r + " should not happen!!!!!!!!!");
+                            System.out.println(i + " should not happen!!!!!!!!!");
                         }
+                    }
+                } else {
+                    if (representation instanceof Entity) {
+
+                        /** Let a new provider create a node for the referenced component */
+                        final Node refNode = new GenericComponentProvider<>(this.graph)
+                                .createComponent((Entity) representation);
+
+                        /** When the new node is created, create a reference */
+                        try (Transaction tx = this.getGraph().beginTx()) {
+                            this.node.createRelationshipTo(refNode, PcmRelationshipType.REFERENCES);
+                            tx.success();
+                        }
+                    } else {
+                        System.out.println(representation + " should not happen!!!!!!!!!");
                     }
                 }
             }
-            System.out.println(label + " has " + as + " attributes and " + rs + " references");
-
         }
 
         return this.node;
-
     }
 
     private String parseTypeName(final String name) {
