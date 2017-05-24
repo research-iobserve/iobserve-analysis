@@ -7,6 +7,9 @@ This repository contains the sources for the iobserve analysis including
 - analysis.cli command line version of the analysis
 - analysis.service the service version of the analysis
 - splitter separates monitoring data streams by host
+- rac.creator this tool allows to create a RAC mapping based on
+  monitoring data, a PCM model and a supplementary mapping file.
+- test.setup test tooling
 
 The code is in a prototype stage and not fully functional, especially, as
 some parts are still located in other SVN repositories.
@@ -20,6 +23,7 @@ some parts are still located in other SVN repositories.
   Checkout the `iobserve-repository` git repository alongside 
   `iobserve-analysis`
   `git clone git@github.com:research-iobserve/iobserve-repository.git`
+- You need Kieker example data, a RAC and a corresponding palladio model
 
 ## Setup Build Environment
 
@@ -62,8 +66,6 @@ usage: iobserve-analysis
 
 For a minimal analysis, type:
 `analysis.cli-0.0.2-SNAPSHOT/bin/analysis.cli -i example-kieker-data -p palladio-directory -t 1 -V 2 -w`
-
-
 
 
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.splitter;
+package org.iobserve.replayer;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +22,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
 
 import teetime.framework.Execution;
 
@@ -30,37 +31,35 @@ import teetime.framework.Execution;
  *
  * @author Reiner Jung
  */
-public final class SplitterMain {
+public final class ReplayerMain {
 
     @Parameter(names = { "-i",
-            "--input" }, required = true, description = "Input directory.", converter = FileConverter.class)
-    private File sourceLocation;
+    "--input" }, required = true, description = "Input data directory.", converter = FileConverter.class)
+    private File dataLocation;
 
-    @Parameter(names = { "-o",
-            "--output" }, required = true, description = "Output directory.", converter = FileConverter.class)
-    private File targetLocation;
+    @Parameter(names = { "-p",
+    "--port" }, required = true, description = "Output port.", converter = IntegerConverter.class)
+    private Integer inputPort;
 
-    @Parameter(names = { "-H", "--hosts" }, required = true, description = "List of hosts.")
-    private String[] hostnames;
+    @Parameter(names = { "-h",
+    "--host" }, required = true, description = "Name or IP address of the host where the data is send to.", converter = IntegerConverter.class)
+    private String hostname;
 
     /**
      * This is a simple main class which does not need to be instantiated.
      */
-    private SplitterMain() {
+    private ReplayerMain() {
 
     }
 
     /**
-     * Configure and execute the splitter.
+     * Configure and execute the TCP Kieker data collector.
      *
      * @param args
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-
-        System.out.println("Splitter");
-
-        final SplitterMain main = new SplitterMain();
+        final ReplayerMain main = new ReplayerMain();
         final JCommander commander = new JCommander(main);
         try {
             commander.parse(args);
@@ -75,12 +74,12 @@ public final class SplitterMain {
     }
 
     private void execute(final JCommander commander) throws IOException {
-        this.checkDirectory(this.sourceLocation, "Source", commander);
-        this.checkDirectory(this.targetLocation, "Target", commander);
+        this.checkDirectory(this.dataLocation, "Output Kieker directory", commander);
 
-        final SimpleSplitterConfiguration configuration = new SimpleSplitterConfiguration(this.sourceLocation,
-                this.targetLocation, this.hostnames);
-        final Execution<SimpleSplitterConfiguration> analysis = new Execution<>(configuration);
+        System.out.println("Receiver");
+        final ReplayerConfiguration configuration = new ReplayerConfiguration(
+                this.dataLocation, this.hostname, this.inputPort);
+        final Execution<ReplayerConfiguration> analysis = new Execution<>(configuration);
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
@@ -98,6 +97,8 @@ public final class SplitterMain {
         System.out.println("Running analysis");
 
         analysis.executeBlocking();
+
+        System.out.println("Records send " + configuration.getCounter().getCount());
 
         System.out.println("Done");
 
@@ -117,5 +118,4 @@ public final class SplitterMain {
         }
 
     }
-
 }

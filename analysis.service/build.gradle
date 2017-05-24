@@ -12,7 +12,7 @@ if (group.isEmpty()) {
 dependencies {
     compile project(":analysis")
     compile 'commons-daemon:commons-daemon:1.0.15'
-    compile 'commons-cli:commons-cli:1.3.1'
+	compile "com.beust:jcommander:1.60"
 	compile 'javax.json:javax.json-api:1.0'
 	compile 'org.glassfish:javax.json:1.0.4'
     

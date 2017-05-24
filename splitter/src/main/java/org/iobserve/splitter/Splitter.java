@@ -15,7 +15,9 @@
  ***************************************************************************/
 package org.iobserve.splitter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import kieker.common.record.IMonitoringRecord;
@@ -34,50 +36,27 @@ import teetime.framework.OutputPort;
  */
 public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
 
-    // private static final Logger LOGGER = LogManager.getLogger(Splitter.class);
-
-    private final OutputPort<IMonitoringRecord> adapterOutputPort = this.createOutputPort();
-    private final OutputPort<IMonitoringRecord> enterpriseOutputPort = this.createOutputPort();
-    private final OutputPort<IMonitoringRecord> storeOutputPort = this.createOutputPort();
-    private final OutputPort<IMonitoringRecord> registryOutputPort = this.createOutputPort();
-    private final OutputPort<IMonitoringRecord> webFrontendMetaPort = this.createOutputPort();
+    private final List<OutputPort<IMonitoringRecord>> outputPorts = new ArrayList<>();
 
     private final Map<Long, TraceMetadata> traceRegisterMap = new HashMap<>();
 
     /** Statistics. */
     private int recordCount;
 
-    private final String adapter;
-
-    private final String enterprise;
-
-    private final String store;
-
-    private final String registry;
-
-    private final String webFrontend;
+    private final String[] hostnames;
 
     /**
      * Splitter constructor.
      *
-     * @param adapter
-     *            name of the adapter node
-     * @param enterprise
-     *            name of the enterprise node
-     * @param store
-     *            name of the store node
-     * @param registry
-     *            name of the registry node
-     * @param webFrontend
-     *            name of the webfrontend node
+     * @param hostnames
+     *            array of host names
      */
-    public Splitter(final String adapter, final String enterprise, final String store, final String registry,
-            final String webFrontend) {
-        this.adapter = adapter;
-        this.enterprise = enterprise;
-        this.store = store;
-        this.registry = registry;
-        this.webFrontend = webFrontend;
+    public Splitter(final String[] hostnames) {
+        this.hostnames = hostnames;
+        final int numOfPorts = hostnames.length;
+        for (int i = 0; i < numOfPorts; i++) {
+            this.outputPorts.add(this.createOutputPort());
+        }
     }
 
     @Override
@@ -86,85 +65,49 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
         if (element instanceof TraceMetadata) {
             final TraceMetadata traceMetadata = (TraceMetadata) element;
             this.traceRegisterMap.put(traceMetadata.getTraceId(), traceMetadata);
-            if (this.adapter.equals(traceMetadata.getHostname())) {
-                this.getAdapterOutputPort().send(element);
-            } else if (this.enterprise.equals(traceMetadata.getHostname())) {
-                this.getEnterpriseOutputPort().send(element);
-            } else if (this.store.equals(traceMetadata.getHostname())) {
-                this.getStoreOutputPort().send(element);
-            } else if (this.registry.equals(traceMetadata.getHostname())) {
-                this.getRegistryOutputPort().send(element);
-            } else if (this.webFrontend.equals(traceMetadata.getHostname())) {
-                this.getWebFrontendOutputPort().send(element);
-            } else {
-                this.getAdapterOutputPort().send(element);
-                this.getEnterpriseOutputPort().send(element);
-                this.getStoreOutputPort().send(element);
-                this.getWebFrontendOutputPort().send(element);
+
+            boolean send = false;
+            for (int i = 0; i < this.hostnames.length; i++) {
+                if (this.hostnames.equals(traceMetadata.getHostname())) {
+                    this.outputPorts.get(i).send(element);
+                    send = true;
+                }
+            }
+            if (!send) {
+                for (int i = 0; i < this.hostnames.length; i++) {
+                    this.outputPorts.get(i).send(element);
+                }
             }
         } else if (element instanceof ITraceRecord) {
             final TraceMetadata metadata = this.traceRegisterMap.get(((ITraceRecord) element).getTraceId());
-            if (this.adapter.equals(metadata.getHostname())) {
-                this.getAdapterOutputPort().send(element);
-            } else if (this.enterprise.equals(metadata.getHostname())) {
-                this.getEnterpriseOutputPort().send(element);
-            } else if (this.store.equals(metadata.getHostname())) {
-                this.getStoreOutputPort().send(element);
-            } else if (this.registry.equals(metadata.getHostname())) {
-                this.getRegistryOutputPort().send(element);
-            } else if (this.webFrontend.equals(metadata.getHostname())) {
-                this.getWebFrontendOutputPort().send(element);
-            } else {
-                this.getAdapterOutputPort().send(element);
-                this.getEnterpriseOutputPort().send(element);
-                this.getStoreOutputPort().send(element);
-                this.getWebFrontendOutputPort().send(element);
+
+            boolean send = false;
+            for (int i = 0; i < this.hostnames.length; i++) {
+                if (this.hostnames.equals(metadata.getHostname())) {
+                    this.outputPorts.get(i).send(element);
+                    send = true;
+                }
+            }
+            if (!send) {
+                for (int i = 0; i < this.hostnames.length; i++) {
+                    this.outputPorts.get(i).send(element);
+                }
             }
         } else if (element instanceof KiekerMetadataRecord) {
             /** ignore. */
             System.out.println("Metadata record " + element);
         } else {
-            this.getAdapterOutputPort().send(element);
-            this.getEnterpriseOutputPort().send(element);
-            this.getStoreOutputPort().send(element);
-            this.getWebFrontendOutputPort().send(element);
+            for (int i = 0; i < this.hostnames.length; i++) {
+                this.outputPorts.get(i).send(element);
+            }
         }
     }
 
     /**
-     * @return the deploymentOutputPort
+     * @return all output ports
      */
-    public final OutputPort<IMonitoringRecord> getAdapterOutputPort() {
-        return this.adapterOutputPort;
-    }
-
-    /**
-     * @return the undeploymentOutputPort
-     */
-    public final OutputPort<IMonitoringRecord> getEnterpriseOutputPort() {
-        return this.enterpriseOutputPort;
-    }
-
-    /**
-     * @return the flowOutputPort
-     */
-    public final OutputPort<IMonitoringRecord> getStoreOutputPort() {
-        return this.storeOutputPort;
-    }
-
-    /**
-     * @return the flowOutputPort
-     */
-    public final OutputPort<IMonitoringRecord> getRegistryOutputPort() {
-        return this.registryOutputPort;
-    }
-
-    /**
-     *
-     * @return traceOutputPort
-     */
-    public OutputPort<IMonitoringRecord> getWebFrontendOutputPort() {
-        return this.webFrontendMetaPort;
+    public final List<OutputPort<IMonitoringRecord>> getAllOutputPorts() {
+        return this.outputPorts;
     }
 
     public long getRecordCount() {

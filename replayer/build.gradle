@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-mainClassName='org.iobserve.splitter.SplitterMain'
+mainClassName='org.iobserve.replayer.ReplayerMain'
 
 dependencies {
 	compile project(":analysis")
@@ -11,7 +11,7 @@ install {
     repositories.mavenInstaller {
         pom.version = version
         pom.groupId = 'org.iobserve'
-        pom.artifactId = 'splitter'
+        pom.artifactId = 'replayer'
     }
 }
 

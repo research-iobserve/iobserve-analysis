@@ -36,6 +36,12 @@ public class RACWriter extends AbstractConsumerStage<Map<String, PcmEntity>> {
     private final PcmMapping mapping = new PcmMapping();
     private final File file;
 
+    /**
+     * Create the RAC file writer.
+     *
+     * @param file
+     *            the RAC file name.
+     */
     public RACWriter(final File file) {
         this.file = file;
     }
