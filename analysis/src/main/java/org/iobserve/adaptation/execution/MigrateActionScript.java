@@ -34,8 +34,7 @@ public class MigrateActionScript extends ActionScript {
 		ComputeService client = this.getComputeServiceForContainer(sourceCloudContainer);
 		String assemblyContextName = this.action.getSourceAssemblyContext().getEntityName();
 
-		// If the assembly context has already been allocated on the group, do
-		// nothing
+		// If the assembly context has already been migrated, do nothing
 		if (!this.data.getMigratedContexts().contains(assemblyContextName)) {
 			client.runScriptOnNodesMatching(node -> node.getGroup().equals(sourceCloudContainer.getGroupName()),
 					this.getScript(AdaptationData.PRE_MIGRATE_SCRIPT_NAME, this.action.getSourceAssemblyContext()));

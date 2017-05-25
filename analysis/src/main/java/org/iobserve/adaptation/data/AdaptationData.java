@@ -39,6 +39,7 @@ public class AdaptationData {
 	private Set<String> allocatedContexts = new HashSet<String>();
 	private Set<String> deallocatedContexts = new HashSet<String>();
 	private Set<String> migratedContexts = new HashSet<String>();
+	private Set<String> terminatedGroups = new HashSet<String>();
 
 	////////////////////// GETTERS & SETTERS //////////////////////
 	/**
@@ -165,4 +166,9 @@ public class AdaptationData {
 	public Set<String> getMigratedContexts() {
 		return this.migratedContexts;
 	}
+
+	public Set<String> getTerminatedGroups() {
+		return this.terminatedGroups;
+	}
+
 }
