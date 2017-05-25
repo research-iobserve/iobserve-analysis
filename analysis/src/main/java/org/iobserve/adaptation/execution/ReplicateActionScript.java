@@ -17,7 +17,9 @@ public class ReplicateActionScript extends ActionScript {
 
 	@Override
 	public void execute() {
-		// TODO Auto-generated method stub
+
+		throw new UnsupportedOperationException(
+				"Automated replication is currently not possible. Please use the acquire and allocate actions to replicate components!");
 
 	}
 

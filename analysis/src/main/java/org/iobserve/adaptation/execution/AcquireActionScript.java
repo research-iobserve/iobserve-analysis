@@ -4,10 +4,6 @@ import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.jclouds.compute.options.TemplateOptions.Builder.runScript;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -25,8 +21,6 @@ import org.jclouds.scriptbuilder.statements.login.AdminAccess;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-import com.google.common.io.Files;
-
 public class AcquireActionScript extends ActionScript {
 	private static final Logger LOG = LogManager.getLogger();
 
@@ -40,17 +34,8 @@ public class AcquireActionScript extends ActionScript {
 	@Override
 	public void execute() throws RunNodesException {
 		ResourceContainer container = this.action.getSourceResourceContainer();
-		ResourceContainerCloud cloudContainer = null;
 
-		if (!(container instanceof ResourceContainerCloud)) {
-			String error = String.format(
-					"ResourceContainer '%s' was not a cloud container, therefore it can not be acquired!",
-					container.getEntityName());
-			LOG.error(error);
-			throw new IllegalArgumentException(error);
-		}
-
-		cloudContainer = (ResourceContainerCloud) container;
+		ResourceContainerCloud cloudContainer = this.getResourceContainerCloud(container);
 
 		ComputeService client = this.getComputeServiceForContainer(cloudContainer);
 
@@ -89,18 +74,10 @@ public class AcquireActionScript extends ActionScript {
 		URI nodeStartupScriptURI = this.data.getDeployablesFolderURI()
 				.appendSegment(AdaptationData.NODE_STARTUP_SCRIPT_NAME);
 
-		if (nodeStartupScriptURI.isFile()) {
-			try {
-				return Files.toString(new File(nodeStartupScriptURI.toFileString()), StandardCharsets.UTF_8);
-			} catch (IOException e) {
-				LOG.warn(String.format("Could not read startup script for resource container at '%s'! Using none.",
-						nodeStartupScriptURI.toFileString()), e);
-			}
-		} else {
-			LOG.warn(String.format("Startup script for resource container at '%s' is not a file! Using none.",
-					nodeStartupScriptURI.toFileString()));
+		try {
+			return this.getFileContents(nodeStartupScriptURI);
+		} catch (IllegalArgumentException e) {
+			return "";
 		}
-
-		return "";
 	}
 }
