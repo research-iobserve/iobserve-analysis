@@ -26,7 +26,9 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="newAllocationContext" lowerBound="1"
         eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="DeallocateAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DeallocateAction" eSuperTypes="#//AssemblyContextAction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="oldAllocationContext" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="MigrateAction" eSuperTypes="#//AssemblyContextAction">
     <eStructuralFeatures xsi:type="ecore:EReference" name="newAllocationContext" lowerBound="1"
         eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>

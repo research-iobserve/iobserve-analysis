@@ -305,13 +305,22 @@ public interface systemadaptationPackage extends EPackage {
 	int DEALLOCATE_ACTION__SOURCE_ASSEMBLY_CONTEXT = ASSEMBLY_CONTEXT_ACTION__SOURCE_ASSEMBLY_CONTEXT;
 
 	/**
+	 * The feature id for the '<em><b>Old Allocation Context</b></em>' reference.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 * @ordered
+	 */
+	int DEALLOCATE_ACTION__OLD_ALLOCATION_CONTEXT = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 0;
+
+	/**
 	 * The number of structural features of the '<em>Deallocate Action</em>' class.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 * @ordered
 	 */
-	int DEALLOCATE_ACTION_FEATURE_COUNT = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 0;
+	int DEALLOCATE_ACTION_FEATURE_COUNT = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 1;
 
 	/**
 	 * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.MigrateActionImpl <em>Migrate Action</em>}' class.
@@ -644,6 +653,17 @@ public interface systemadaptationPackage extends EPackage {
 	EClass getDeallocateAction();
 
 	/**
+	 * Returns the meta object for the reference '{@link org.iobserve.planning.systemadaptation.DeallocateAction#getOldAllocationContext <em>Old Allocation Context</em>}'.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @return the meta object for the reference '<em>Old Allocation Context</em>'.
+	 * @see org.iobserve.planning.systemadaptation.DeallocateAction#getOldAllocationContext()
+	 * @see #getDeallocateAction()
+	 * @generated
+	 */
+	EReference getDeallocateAction_OldAllocationContext();
+
+	/**
 	 * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.MigrateAction <em>Migrate Action</em>}'.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
@@ -877,6 +897,14 @@ public interface systemadaptationPackage extends EPackage {
 		 * @generated
 		 */
 		EClass DEALLOCATE_ACTION = eINSTANCE.getDeallocateAction();
+
+		/**
+		 * The meta object literal for the '<em><b>Old Allocation Context</b></em>' reference feature.
+		 * <!-- begin-user-doc -->
+		 * <!-- end-user-doc -->
+		 * @generated
+		 */
+		EReference DEALLOCATE_ACTION__OLD_ALLOCATION_CONTEXT = eINSTANCE.getDeallocateAction_OldAllocationContext();
 
 		/**
 		 * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.MigrateActionImpl <em>Migrate Action</em>}' class.
