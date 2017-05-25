@@ -12,16 +12,16 @@ import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.TerminateAction;
 
-public class ExecutionScriptFactory {
+public class ActionScriptFactory {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private final AdaptationData data;
 
-	public ExecutionScriptFactory(AdaptationData data) {
+	public ActionScriptFactory(AdaptationData data) {
 		this.data = data;
 	}
 
-	public ExecutionScript getExecutionScript(Action adaptationAction) {
+	public ActionScript getExecutionScript(Action adaptationAction) {
 		if (adaptationAction instanceof ChangeRepositoryComponentAction) {
 			return this.createChangeRepositoryComponentActionScript((ChangeRepositoryComponentAction) adaptationAction);
 		} else if (adaptationAction instanceof AllocateAction) {
@@ -45,31 +45,31 @@ public class ExecutionScriptFactory {
 		}
 	}
 
-	private ExecutionScript createReplicateActionScript(ReplicateAction adaptationAction) {
+	private ActionScript createReplicateActionScript(ReplicateAction adaptationAction) {
 		return new ReplicateActionScript(this.data, adaptationAction);
 	}
 
-	private ExecutionScript createTerminateActionScript(TerminateAction adaptationAction) {
+	private ActionScript createTerminateActionScript(TerminateAction adaptationAction) {
 		return new TerminateActionScript(this.data, adaptationAction);
 	}
 
-	private ExecutionScript createAcquireActionScript(AcquireAction adaptationAction) {
+	private ActionScript createAcquireActionScript(AcquireAction adaptationAction) {
 		return new AcquireActionScript(this.data, adaptationAction);
 	}
 
-	private ExecutionScript createMigrateActionScript(MigrateAction adaptationAction) {
+	private ActionScript createMigrateActionScript(MigrateAction adaptationAction) {
 		return new MigrateActionScript(this.data, adaptationAction);
 	}
 
-	private ExecutionScript createDeallocateActionScript(DeallocateAction adaptationAction) {
+	private ActionScript createDeallocateActionScript(DeallocateAction adaptationAction) {
 		return new DeallocateActionScript(this.data, adaptationAction);
 	}
 
-	private ExecutionScript createAllocateActionScript(AllocateAction adaptationAction) {
+	private ActionScript createAllocateActionScript(AllocateAction adaptationAction) {
 		return new AllocateActionScript(this.data, adaptationAction);
 	}
 
-	private ExecutionScript createChangeRepositoryComponentActionScript(
+	private ActionScript createChangeRepositoryComponentActionScript(
 			ChangeRepositoryComponentAction adaptationAction) {
 		return new ChangeRepositoryComponentActionScript(this.data, adaptationAction);
 	}

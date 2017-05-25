@@ -1,6 +1,8 @@
 package org.iobserve.adaptation.data;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.graph.ModelGraph;
@@ -14,7 +16,12 @@ import org.iobserve.planning.systemadaptation.ResourceContainerAction;
  * @author Philipp Weimann
  */
 public class AdaptationData {
-	public static final String NODE_STARTUP_SCRIPT_NAME = "node_startup";
+	public static final String NODE_STARTUP_SCRIPT_NAME = "node_startup.sh";
+	public static final String ALLOCATE_SCRIPT_NAME = "allocate.sh";
+	public static final String DEALLOCATE_SCRIPT_NAME = "deallocate.sh";
+	public static final String PRE_MIGRATE_SCRIPT_NAME = "pre_migrate.sh";
+	public static final String POST_MIGRATE_SCRIPT_NAME = "post_migrate.sh";
+	public static final String NODE_PRE_TERMINATE_SCRIPT_NAME = "node_pre_terminate.sh";
 
 	private URI runtimeModelURI;
 	private ModelGraph runtimeGraph;
@@ -28,6 +35,10 @@ public class AdaptationData {
 	private List<ResourceContainerAction> rcActions;
 
 	private List<Action> executionOrder;
+
+	private Set<String> allocatedContexts = new HashSet<String>();
+	private Set<String> deallocatedContexts = new HashSet<String>();
+	private Set<String> migratedContexts = new HashSet<String>();
 
 	////////////////////// GETTERS & SETTERS //////////////////////
 	/**
@@ -143,4 +154,15 @@ public class AdaptationData {
 		this.deployablesFolderURI = deployablesFolderURI;
 	}
 
+	public Set<String> getAllocatedContexts() {
+		return this.allocatedContexts;
+	}
+
+	public Set<String> getDeallocatedContexts() {
+		return this.deallocatedContexts;
+	}
+
+	public Set<String> getMigratedContexts() {
+		return this.migratedContexts;
+	}
 }

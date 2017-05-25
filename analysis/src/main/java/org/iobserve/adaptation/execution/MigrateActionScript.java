@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 
-public class MigrateActionScript extends ExecutionScript {
+public class MigrateActionScript extends ActionScript {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private final MigrateAction action;
