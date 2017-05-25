@@ -37,32 +37,32 @@ public class ActionScriptFactory {
 	 * Constructs a new execution script according to the type of the adaptation
 	 * action.
 	 *
-	 * @param adaptationAction
+	 * @param action
 	 *            the action for which an execution script should be created
 	 * @return the execution script
 	 * @throws IllegalArgumentException
 	 *             if the adaptation action could not be mapped to an execution
 	 *             script
 	 */
-	public ActionScript getExecutionScript(Action adaptationAction) throws IllegalArgumentException {
-		if (adaptationAction instanceof ChangeRepositoryComponentAction) {
-			return this.createChangeRepositoryComponentActionScript((ChangeRepositoryComponentAction) adaptationAction);
-		} else if (adaptationAction instanceof AllocateAction) {
-			return this.createAllocateActionScript((AllocateAction) adaptationAction);
-		} else if (adaptationAction instanceof DeallocateAction) {
-			return this.createDeallocateActionScript((DeallocateAction) adaptationAction);
-		} else if (adaptationAction instanceof MigrateAction) {
-			return this.createMigrateActionScript((MigrateAction) adaptationAction);
-		} else if (adaptationAction instanceof AcquireAction) {
-			return this.createAcquireActionScript((AcquireAction) adaptationAction);
-		} else if (adaptationAction instanceof TerminateAction) {
-			return this.createTerminateActionScript((TerminateAction) adaptationAction);
-		} else if (adaptationAction instanceof ReplicateAction) {
-			return this.createReplicateActionScript((ReplicateAction) adaptationAction);
+	public ActionScript getExecutionScript(Action action) throws IllegalArgumentException {
+		if (action instanceof ChangeRepositoryComponentAction) {
+			return this.createChangeRepositoryComponentActionScript((ChangeRepositoryComponentAction) action);
+		} else if (action instanceof AllocateAction) {
+			return this.createAllocateActionScript((AllocateAction) action);
+		} else if (action instanceof DeallocateAction) {
+			return this.createDeallocateActionScript((DeallocateAction) action);
+		} else if (action instanceof MigrateAction) {
+			return this.createMigrateActionScript((MigrateAction) action);
+		} else if (action instanceof AcquireAction) {
+			return this.createAcquireActionScript((AcquireAction) action);
+		} else if (action instanceof TerminateAction) {
+			return this.createTerminateActionScript((TerminateAction) action);
+		} else if (action instanceof ReplicateAction) {
+			return this.createReplicateActionScript((ReplicateAction) action);
 		} else {
 			String errorMsg = String.format(
 					"Could not create action script for adaptationAction '%s', no suitable class could be found",
-					adaptationAction);
+					action);
 			LOG.error(errorMsg);
 			throw new IllegalArgumentException(errorMsg);
 		}
