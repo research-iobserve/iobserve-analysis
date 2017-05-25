@@ -8,10 +8,10 @@ import org.iobserve.planning.cloudprofile.CloudProvider;
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
+import org.jclouds.compute.RunNodesException;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.sshj.config.SshjSshClientModule;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Module;
@@ -24,7 +24,7 @@ public abstract class ExecutionScript {
 		this.data = data;
 	}
 
-	public abstract void execute();
+	public abstract void execute() throws RunNodesException;
 
 	protected CloudProvider getCloudProviderByName(String name) {
 		InitializeModelProviders modelProviders = this.data.getRuntimeGraph().getPcmModels();
@@ -34,16 +34,14 @@ public abstract class ExecutionScript {
 				.orElse(null);
 	}
 
-	protected ComputeService getComputeServiceForContainer(ResourceContainer container) {
-		ResourceContainerCloud cloudContainer;
-		cloudContainer = (ResourceContainerCloud) container;
-		CloudProvider provider = this.getCloudProviderByName(cloudContainer.getCloudProvider());
-	
+	protected ComputeService getComputeServiceForContainer(ResourceContainerCloud container) {
+		CloudProvider provider = this.getCloudProviderByName(container.getCloudProvider());
+
 		ComputeServiceContext context = ContextBuilder.newBuilder(provider.getName())
 				.credentials(provider.getIdentity(), provider.getCredential())
 				.modules(ImmutableSet.<Module>of(new SLF4JLoggingModule(), new SshjSshClientModule()))
 				.buildView(ComputeServiceContext.class);
-	
+
 		ComputeService client = context.getComputeService();
 		return client;
 	}

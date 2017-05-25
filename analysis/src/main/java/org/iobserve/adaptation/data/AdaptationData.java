@@ -14,12 +14,15 @@ import org.iobserve.planning.systemadaptation.ResourceContainerAction;
  * @author Philipp Weimann
  */
 public class AdaptationData {
+	public static final String NODE_STARTUP_SCRIPT_NAME = "node_startup";
 
 	private URI runtimeModelURI;
 	private ModelGraph runtimeGraph;
 
 	private URI reDeploymentURI;
 	private ModelGraph reDeploymentGraph;
+
+	private URI deployablesFolderURI;
 
 	private List<AssemblyContextAction> acActions;
 	private List<ResourceContainerAction> rcActions;
@@ -130,6 +133,14 @@ public class AdaptationData {
 	 */
 	public void setExecutionOrder(List<Action> executionOrder) {
 		this.executionOrder = executionOrder;
+	}
+
+	public URI getDeployablesFolderURI() {
+		return this.deployablesFolderURI;
+	}
+
+	public void setDeployablesFolderURI(URI deployablesFolderURI) {
+		this.deployablesFolderURI = deployablesFolderURI;
 	}
 
 }

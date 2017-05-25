@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+
 import javax.imageio.IIOException;
 
 import org.eclipse.emf.common.util.URI;
@@ -18,12 +19,13 @@ import teetime.framework.OutputPort;
 /**
  * This class creates a copy of the current PCM runtime model. (also called
  * Snapshot) The output port contains the send URI of the snapshot.
- * 
+ *
  * @author Philipp Weimann
  */
 public class SnapshotBuilder extends AbstractStage {
 
-	private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES };
+	private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING,
+			StandardCopyOption.COPY_ATTRIBUTES };
 
 	private static boolean createSnapshot;
 	private static boolean evaluationMode;
@@ -36,7 +38,7 @@ public class SnapshotBuilder extends AbstractStage {
 
 	/**
 	 * The constructor.
-	 * 
+	 *
 	 * @param snapshotURI
 	 *            where the snapshot will be saved to
 	 * @param modelProviders
@@ -57,11 +59,12 @@ public class SnapshotBuilder extends AbstractStage {
 		// Boolean createSnapshot = this.inputPort.receive();
 
 		if (SnapshotBuilder.createSnapshot) {
-			this.createModelSnapshot(modelProviders.getAllocationModelProvider());
-			this.createModelSnapshot(modelProviders.getRepositoryModelProvider());
-			this.createModelSnapshot(modelProviders.getResourceEnvironmentModelProvider());
-			this.createModelSnapshot(modelProviders.getSystemModelProvider());
-			this.createModelSnapshot(modelProviders.getUsageModelProvider());
+			this.createModelSnapshot(this.modelProviders.getAllocationModelProvider());
+			this.createModelSnapshot(this.modelProviders.getRepositoryModelProvider());
+			this.createModelSnapshot(this.modelProviders.getResourceEnvironmentModelProvider());
+			this.createModelSnapshot(this.modelProviders.getSystemModelProvider());
+			this.createModelSnapshot(this.modelProviders.getUsageModelProvider());
+			this.createModelSnapshot(this.modelProviders.getCloudProfileModelProvider());
 			// this.createModelSnapshot(modelProviders.getCorrespondenceModel());
 			SnapshotBuilder.createSnapshot = false;
 
@@ -128,7 +131,7 @@ public class SnapshotBuilder extends AbstractStage {
 	 * @return the evaluationOutputPort
 	 */
 	public OutputPort<URI> getEvaluationOutputPort() {
-		return evaluationOutputPort;
+		return this.evaluationOutputPort;
 	}
 
 }
