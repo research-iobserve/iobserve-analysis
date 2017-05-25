@@ -66,7 +66,7 @@ public class ExecutionScriptFactory {
 	}
 
 	private ExecutionScript createAllocateActionScript(AllocateAction adaptationAction) {
-		return new AllocationActionScript(this.data, adaptationAction);
+		return new AllocateActionScript(this.data, adaptationAction);
 	}
 
 	private ExecutionScript createChangeRepositoryComponentActionScript(

@@ -78,7 +78,7 @@ public class AcquireActionScript extends ExecutionScript {
 	}
 
 	private static String getChangeHostnameScript(ResourceContainerCloud cloudContainer) {
-		// This only works on a *nix OS and is only valid until rebooting
+		// This only works on a *nix OS and is valid until rebooting the node
 		return String.format("hostname %s", cloudContainer.getEntityName());
 	}
 
