@@ -1,7 +1,5 @@
 package org.iobserve.adaptation.execution;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
@@ -11,11 +9,29 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.Resourc
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+/**
+ * Action script for a deallocation action.
+ *
+ * This action undeploys an assembly context off a node group. It looks for a
+ * script with the name {@link AdaptationData#DEALLOCATE_SCRIPT_NAME} in the
+ * folder '{$deployablesRepository}/{$assemblyContextComponentName}/' and
+ * executes this script on each node of the group to undeploy the assembly
+ * context.
+ *
+ * @author Tobias Pöppke
+ *
+ */
 public class DeallocateActionScript extends ActionScript {
-	private static final Logger LOG = LogManager.getLogger();
-
 	private final DeallocateAction action;
 
+	/**
+	 * Create a new deallocate action script with the given data.
+	 *
+	 * @param data
+	 *            the data shared in the adaptation stage
+	 * @param action
+	 *            the action item to be executed
+	 */
 	public DeallocateActionScript(AdaptationData data, DeallocateAction action) {
 		super(data);
 		this.action = action;

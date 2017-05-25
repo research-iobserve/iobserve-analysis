@@ -21,11 +21,25 @@ import org.jclouds.scriptbuilder.statements.login.AdminAccess;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+/**
+ * Action script for acquiring a new cloud resource container.
+ *
+ * @author Tobias Pöppke
+ *
+ */
 public class AcquireActionScript extends ActionScript {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private final AcquireAction action;
 
+	/**
+	 * Create a new acquire action script with the given data.
+	 *
+	 * @param data
+	 *            the data shared in the adaptation stage
+	 * @param action
+	 *            the action item to be executed
+	 */
 	public AcquireActionScript(AdaptationData data, AcquireAction action) {
 		super(data);
 		this.action = action;

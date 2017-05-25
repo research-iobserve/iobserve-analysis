@@ -12,16 +12,39 @@ import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.TerminateAction;
 
+/**
+ * A factory for constructing execution scripts from adaptation actions.
+ *
+ * @author Tobias Pöppke
+ *
+ */
 public class ActionScriptFactory {
 	private static final Logger LOG = LogManager.getLogger();
 
 	private final AdaptationData data;
 
+	/**
+	 * Creates a new action script factory with the given shared data.
+	 *
+	 * @param data
+	 *            shared data of the adaptation stage
+	 */
 	public ActionScriptFactory(AdaptationData data) {
 		this.data = data;
 	}
 
-	public ActionScript getExecutionScript(Action adaptationAction) {
+	/**
+	 * Constructs a new execution script according to the type of the adaptation
+	 * action.
+	 *
+	 * @param adaptationAction
+	 *            the action for which an execution script should be created
+	 * @return the execution script
+	 * @throws IllegalArgumentException
+	 *             if the adaptation action could not be mapped to an execution
+	 *             script
+	 */
+	public ActionScript getExecutionScript(Action adaptationAction) throws IllegalArgumentException {
 		if (adaptationAction instanceof ChangeRepositoryComponentAction) {
 			return this.createChangeRepositoryComponentActionScript((ChangeRepositoryComponentAction) adaptationAction);
 		} else if (adaptationAction instanceof AllocateAction) {
@@ -69,8 +92,7 @@ public class ActionScriptFactory {
 		return new AllocateActionScript(this.data, adaptationAction);
 	}
 
-	private ActionScript createChangeRepositoryComponentActionScript(
-			ChangeRepositoryComponentAction adaptationAction) {
+	private ActionScript createChangeRepositoryComponentActionScript(ChangeRepositoryComponentAction adaptationAction) {
 		return new ChangeRepositoryComponentActionScript(this.data, adaptationAction);
 	}
 }

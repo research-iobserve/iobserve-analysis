@@ -1,7 +1,5 @@
 package org.iobserve.adaptation.execution;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.TerminateAction;
@@ -10,11 +8,24 @@ import org.jclouds.compute.RunScriptOnNodesException;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+/**
+ * Action script for terminating a group of cloud resource containers.
+ *
+ * @author Tobias Pöppke
+ *
+ */
 public class TerminateActionScript extends ActionScript {
-	private static final Logger LOG = LogManager.getLogger();
 
 	private final TerminateAction action;
 
+	/**
+	 * Create a new terminate action script with the given data.
+	 *
+	 * @param data
+	 *            the data shared in the adaptation stage
+	 * @param action
+	 *            the action item to be executed
+	 */
 	public TerminateActionScript(AdaptationData data, TerminateAction action) {
 		super(data);
 		this.action = action;

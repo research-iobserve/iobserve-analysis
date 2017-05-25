@@ -1,7 +1,5 @@
 package org.iobserve.adaptation.execution;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.MigrateAction;
@@ -11,11 +9,32 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.Resourc
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+/**
+ * Action script for migrating an assembly context from one cloud resource
+ * container group to another.
+ *
+ * This action migrates an assembly context from one node group to another. It
+ * looks for a script with the name
+ * {@link AdaptationData#PRE_MIGRATE_SCRIPT_NAME} in the folder
+ * '{$deployablesRepository}/{$assemblyContextComponentName}/' and executes this
+ * script on each node of the group to prepare the migration. After that, the
+ * script {@link AdaptationData#POST_MIGRATE_SCRIPT_NAME} in the same folder is
+ * executed on the target node group to complete the migration.
+ *
+ * @author Tobias Pöppke
+ *
+ */
 public class MigrateActionScript extends ActionScript {
-	private static final Logger LOG = LogManager.getLogger();
-
 	private final MigrateAction action;
 
+	/**
+	 * Create a new migration action script with the given data.
+	 *
+	 * @param data
+	 *            the data shared in the adaptation stage
+	 * @param action
+	 *            the action item to be executed
+	 */
 	public MigrateActionScript(AdaptationData data, MigrateAction action) {
 		super(data);
 		this.action = action;
@@ -40,6 +59,7 @@ public class MigrateActionScript extends ActionScript {
 					this.getScript(AdaptationData.PRE_MIGRATE_SCRIPT_NAME, this.action.getSourceAssemblyContext()));
 			client.runScriptOnNodesMatching(node -> node.getGroup().equals(targetCloudContainer.getGroupName()),
 					this.getScript(AdaptationData.POST_MIGRATE_SCRIPT_NAME, this.action.getSourceAssemblyContext()));
+			// TODO add possibility to open up ports defined in a config file
 			this.data.getMigratedContexts().add(assemblyContextName);
 		}
 	}
@@ -49,8 +69,11 @@ public class MigrateActionScript extends ActionScript {
 
 		URI deallocationScriptURI = this.data.getDeployablesFolderURI().appendSegment(assemblyCtxFolderName)
 				.appendSegment(scriptName);
-
-		return this.getFileContents(deallocationScriptURI);
+		try {
+			return this.getFileContents(deallocationScriptURI);
+		} catch (IllegalArgumentException e) {
+			return "";
+		}
 	}
 
 }
