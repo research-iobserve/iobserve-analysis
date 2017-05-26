@@ -16,7 +16,6 @@ package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelPreperation;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelTableGeneration;
 import org.iobserve.analysis.cdoruserbehavior.filter.TInstanceTransformations;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.EditableBehaviorModelTable;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 
@@ -62,11 +61,9 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
 
         this.merger = new Merger<>(new SkippingBusyWaitingRoundRobinStrategy());
 
-        final EditableBehaviorModelTable modelTable = new EditableBehaviorModelTable(
-                configuration.getSignatureCreationStrategy(), this.configuration.getRepresentativeStrategy(),
-                this.configuration.getModelGenerationFilter());
+        this.tBehaviorModelGeneration = new TBehaviorModelTableGeneration(configuration.getSignatureCreationStrategy(),
+                this.configuration.getRepresentativeStrategy(), this.configuration.getModelGenerationFilter());
 
-        this.tBehaviorModelGeneration = new TBehaviorModelTableGeneration(modelTable);
         this.tBehaviorModelPreperation = new TBehaviorModelPreperation();
 
         this.tInstanceTransformations = new TInstanceTransformations();

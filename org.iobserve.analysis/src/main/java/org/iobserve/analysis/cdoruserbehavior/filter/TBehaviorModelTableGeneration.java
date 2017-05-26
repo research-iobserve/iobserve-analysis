@@ -18,6 +18,9 @@ import java.util.List;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModelTable;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EditableBehaviorModelTable;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
@@ -35,16 +38,25 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
 
     private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
 
-    final EditableBehaviorModelTable modelTable;
+    private final EditableBehaviorModelTable modelTable;
 
     /**
      * constructor
      *
-     * @param modelTable
+     * input values are used to create the inner {@link EditableBehaviorModelTable}.
+     *
+     * @param signatureCreationStrategy
+     *            signature creation strategy
+     * @param strategy
+     *            representative strategy
+     * @param modelGenerationFilter
+     *            model generation filter
      */
-    public TBehaviorModelTableGeneration(final EditableBehaviorModelTable modelTable) {
+    public TBehaviorModelTableGeneration(final ISignatureCreationStrategy signatureCreationStrategy,
+            final IRepresentativeStrategy strategy, final ModelGenerationFilter modelGenerationFilter) {
         super();
-        this.modelTable = modelTable;
+
+        this.modelTable = new EditableBehaviorModelTable(signatureCreationStrategy, strategy, modelGenerationFilter);
 
     }
 
@@ -61,6 +73,7 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
                 final boolean isAllowed = this.modelTable.isAllowedSignature(eventCall.getOperationSignature());
 
                 if ((lastCall != null) && isAllowed) {
+                    System.out.println(eventCall.getClassSignature() + eventCall.getOperationSignature());
                     this.modelTable.addTransition(lastCall, eventCall);
                     this.modelTable.addInformation(eventCall);
 
