@@ -42,7 +42,7 @@ public class EntryCallNode {
      * @param signature
      *            signature
      */
-    public EntryCallNode(String signature) {
+    public EntryCallNode(final String signature) {
         this.signature = signature;
         this.incommingEdges = new HashSet<>();
         this.outgoingEdges = new HashSet<>();
@@ -55,7 +55,7 @@ public class EntryCallNode {
      * @param callInformations
      *            callInformations
      */
-    public void mergeInformation(Set<CallInformation> callInformations) {
+    public void mergeInformation(final Set<CallInformation> callInformations) {
         callInformations.stream().forEach(this::mergeInformation);
     }
 
@@ -65,7 +65,7 @@ public class EntryCallNode {
      * @param callInformation
      *            callInformation
      */
-    public void mergeInformation(CallInformation callInformation) {
+    public void mergeInformation(final CallInformation callInformation) {
         final Optional<CallInformation> match = this.entryCallInformations.stream().filter(
                 information -> information.getInformationSignature().equals(callInformation.getInformationSignature()))
                 .collect(new SingleOrNoneCollector<>());
@@ -77,13 +77,33 @@ public class EntryCallNode {
         }
     }
 
+    /**
+     * adds an incomming edge
+     * 
+     * @param edge
+     * @return true if added, false else
+     */
+    public boolean addIncommingEdge(final EntryCallEdge edge) {
+        return this.incommingEdges.add(edge);
+    }
+
+    /**
+     * adds an outgoing edge
+     * 
+     * @param edge
+     * @return true if added, false else
+     */
+    public boolean addOutgoingEdge(final EntryCallEdge edge) {
+        return this.outgoingEdges.add(edge);
+    }
+
     /*
      * (non-Javadoc)
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof EntryCallNode) {
             // compare signatures
             final EntryCallNode entryCallNode = (EntryCallNode) obj;

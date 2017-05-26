@@ -46,10 +46,10 @@ public class EntryCallEdge {
      * @param target
      *            target node
      */
-    public EntryCallEdge(EntryCallNode source, EntryCallNode target) {
+    public EntryCallEdge(final EntryCallNode source, final EntryCallNode target) {
         this.source = source;
         this.target = target;
-        this.calls = 1;
+        this.calls = 1.0;
     }
 
     /**
@@ -62,7 +62,7 @@ public class EntryCallEdge {
      * @param calls
      *            calls
      */
-    public EntryCallEdge(EntryCallNode source, EntryCallNode target, double calls) {
+    public EntryCallEdge(final EntryCallNode source, final EntryCallNode target, final double calls) {
         this.source = source;
         this.target = target;
         this.calls = calls;
@@ -88,7 +88,7 @@ public class EntryCallEdge {
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof EntryCallEdge) {
 
             final EntryCallEdge edge = (EntryCallEdge) obj;
@@ -114,7 +114,7 @@ public class EntryCallEdge {
      * @param source
      *            target node
      */
-    public void setSource(EntryCallNode source) {
+    public void setSource(final EntryCallNode source) {
         this.source = source;
     }
 
@@ -133,7 +133,7 @@ public class EntryCallEdge {
      * @param target
      *            target node
      */
-    public void setTarget(EntryCallNode target) {
+    public void setTarget(final EntryCallNode target) {
         this.target = target;
     }
 
@@ -152,7 +152,7 @@ public class EntryCallEdge {
      * @param calls
      *            calls
      */
-    public void setCalls(double calls) {
+    public void setCalls(final double calls) {
         this.calls = calls < 0 ? 0 : calls;
     }
 
@@ -162,7 +162,7 @@ public class EntryCallEdge {
      * @param calls
      *            calls
      */
-    public void addCalls(double calls) {
+    public void addCalls(final double calls) {
         this.calls = this.calls + calls;
         this.calls = this.calls < 0 ? 0 : this.calls;
     }

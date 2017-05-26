@@ -262,7 +262,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         final double[] attArray = new double[attValues.size()];
 
         for (int i = 0; i < attValues.size(); i++) {
-            attArray[i] = attValues.get(i);
+            attArray[i] = attValues.get(i) == null ? 0.0 : attValues.get(i);
         }
 
         final Instance instance = new Instance(1.0, attArray);
