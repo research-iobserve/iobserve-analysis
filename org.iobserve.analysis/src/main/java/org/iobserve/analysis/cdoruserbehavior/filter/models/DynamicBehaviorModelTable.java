@@ -42,7 +42,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  *
  */
 
-public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
+public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
 
     // a map for adding and updating transitions
     private final Map<String, Pair<Integer, ArrayList<AggregatedCallInformation>>> signatures;
@@ -68,7 +68,7 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
      *            modelGenerationFilter
      */
 
-    public EditableBehaviorModelTable(final ISignatureCreationStrategy signatureCreationStrategy,
+    public DynamicBehaviorModelTable(final ISignatureCreationStrategy signatureCreationStrategy,
             final IRepresentativeStrategy strategy, final ModelGenerationFilter modelGenerationFilter) {
         super(signatureCreationStrategy);
         this.signatures = new HashMap<>();
@@ -100,7 +100,11 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
         final Integer fromIndex = this.getSignatureIndex(fromSignature);
         final Integer toIndex = this.getSignatureIndex(toSignature);
 
-        final Integer transitionCount = this.transitions.get(fromIndex).get(toIndex);
+        // If it is the first occurence of the transition, start with transition count of 0
+        final Integer transitionCount = this.transitions.get(fromIndex)
+                .get(toIndex) == AbstractBehaviorModelTable.EMPTY_TRANSITION ? 0
+                        : this.transitions.get(fromIndex).get(toIndex);
+
         this.transitions.get(fromIndex).set(toIndex, transitionCount + 1);
     }
 
@@ -175,11 +179,11 @@ public class EditableBehaviorModelTable extends AbstractBehaviorModelTable {
         this.inverseSignatures.add(signature);
 
         // extend all columns
-        this.transitions.forEach(t -> t.addLast(0));
+        this.transitions.forEach(t -> t.addLast(AbstractBehaviorModelTable.EMPTY_TRANSITION));
 
         // create a new row in the matrix
         final Integer[] newRowArray = new Integer[1 + size];
-        Arrays.fill(newRowArray, 0);
+        Arrays.fill(newRowArray, AbstractBehaviorModelTable.EMPTY_TRANSITION);
         final LinkedList<Integer> newRow = new LinkedList<>(Arrays.asList(newRowArray));
 
         this.transitions.addLast(newRow);

@@ -17,7 +17,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter;
 import java.util.List;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModelTable;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.EditableBehaviorModelTable;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.DynamicBehaviorModelTable;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
@@ -38,12 +38,12 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
 
     private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
 
-    private final EditableBehaviorModelTable modelTable;
+    private final DynamicBehaviorModelTable modelTable;
 
     /**
      * constructor
      *
-     * input values are used to create the inner {@link EditableBehaviorModelTable}.
+     * input values are used to create the inner {@link DynamicBehaviorModelTable}.
      *
      * @param signatureCreationStrategy
      *            signature creation strategy
@@ -56,7 +56,7 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
             final IRepresentativeStrategy strategy, final ModelGenerationFilter modelGenerationFilter) {
         super();
 
-        this.modelTable = new EditableBehaviorModelTable(signatureCreationStrategy, strategy, modelGenerationFilter);
+        this.modelTable = new DynamicBehaviorModelTable(signatureCreationStrategy, strategy, modelGenerationFilter);
 
     }
 
