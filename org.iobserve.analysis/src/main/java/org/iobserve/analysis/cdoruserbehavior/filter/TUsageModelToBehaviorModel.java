@@ -45,7 +45,7 @@ import teetime.framework.OutputPort;
  * @author Christoph Dornieden
  *
  */
-public class TUsageModel extends AbstractConsumerStage<UsageModel> {
+public class TUsageModelToBehaviorModel extends AbstractConsumerStage<UsageModel> {
 
     private final OutputPort<BehaviorModel> outputPort;
     private final Map<AbstractUserAction, String> nodeMap;
@@ -53,7 +53,7 @@ public class TUsageModel extends AbstractConsumerStage<UsageModel> {
     /**
      * constructor
      */
-    public TUsageModel() {
+    public TUsageModelToBehaviorModel() {
         this.nodeMap = new HashMap<>();
         this.outputPort = this.createOutputPort();
     }

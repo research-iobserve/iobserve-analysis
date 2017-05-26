@@ -16,7 +16,7 @@
 package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.TIObserveUBM;
-import org.iobserve.analysis.cdoruserbehavior.filter.TUsageModel;
+import org.iobserve.analysis.cdoruserbehavior.filter.TUsageModelToBehaviorModel;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.filter.TEntryEventSequence;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
@@ -60,22 +60,25 @@ public class TBehaviorModelComparison extends CompositeStage {
      *            closedWorkload
      */
 
-    public TBehaviorModelComparison(BehaviorModelConfiguration configuration, ICorrespondence correspondenceModel,
-            UsageModelProvider usageModelProvider, RepositoryModelProvider repositoryModelProvider,
-            int varianceOfUserGroups, int thinkTime, boolean closedWorkload) {
+    public TBehaviorModelComparison(final BehaviorModelConfiguration configuration,
+            final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
+            final RepositoryModelProvider repositoryModelProvider, final int varianceOfUserGroups, final int thinkTime,
+            final boolean closedWorkload) {
 
+        // cdor userbehavior
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         this.distributor = new Distributor<>(strategy);
 
         final TBehaviorModel tBehaviorModel = new TBehaviorModel(configuration);
 
+        this.connectPorts(this.distributor.getNewOutputPort(), tBehaviorModel.getInputPort());
+
+        // iobserve user behavior
         final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
                 repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
 
-        final TUsageModel tUsageModel = new TUsageModel();
+        final TUsageModelToBehaviorModel tUsageModel = new TUsageModelToBehaviorModel();
         final TIObserveUBM tIObserveUBM = new TIObserveUBM();
-
-        this.connectPorts(this.distributor.getNewOutputPort(), tBehaviorModel.getInputPort());
         this.connectPorts(this.distributor.getNewOutputPort(), tEntryEventSequence.getInputPort());
         this.connectPorts(tEntryEventSequence.getOutputPort(), tUsageModel.getInputPort());
         this.connectPorts(tUsageModel.getOutputPort(), tIObserveUBM.getInputPort());
