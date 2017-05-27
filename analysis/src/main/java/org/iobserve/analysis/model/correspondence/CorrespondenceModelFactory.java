@@ -13,6 +13,9 @@ import org.eclipse.emf.common.util.URI;
  */
 public final class CorrespondenceModelFactory {
 	
+	/**
+	 * Private constructor to prevent creating objects from this class.
+	 */
 	private CorrespondenceModelFactory() {
 		// hide constructor
 	}

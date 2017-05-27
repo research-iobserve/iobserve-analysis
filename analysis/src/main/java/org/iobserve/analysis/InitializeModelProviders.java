@@ -23,12 +23,12 @@ import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
-import org.iobserve.analysis.model.correspondence.CorrespondenceModelImpl;
+import org.iobserve.analysis.model.correspondence.CorrespondenceModelFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 /**
  *
- * will load all model and {@link ICorrespondence} model.
+ * Loads all model and {@link ICorrespondence} model.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
@@ -41,6 +41,8 @@ public final class InitializeModelProviders {
     private ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
     private SystemModelProvider systemModelProvider;
     private ICorrespondence correspondenceModel;
+    
+    private final String theFileForCorrespondenceModelValidationResults = "TestResultsForCorrespondenceModelImpl";
 
     /**
      * Create model provider.
@@ -73,7 +75,10 @@ public final class InitializeModelProviders {
 
             } else if ("rac".equalsIgnoreCase(extension)) {
                 final String pathMappingFile = nextFile.getAbsolutePath();
-                this.correspondenceModel = new CorrespondenceModelImpl(URI.createFileURI(pathMappingFile));
+                this.correspondenceModel = CorrespondenceModelFactory
+                		.createCorrespondenceForValidation(
+                				URI.createFileURI(pathMappingFile), 
+                				new File(this.theFileForCorrespondenceModelValidationResults));
             }
         }
     }
