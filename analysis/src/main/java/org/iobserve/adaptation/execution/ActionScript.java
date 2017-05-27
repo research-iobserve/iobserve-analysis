@@ -62,10 +62,31 @@ public abstract class ActionScript {
 	 *             if there was an error acquiring or terminating a node
 	 * @throws RunScriptOnNodesException
 	 *             if there was an error with a script run on a group of nodes
-	 * @throws IllegalArgumentException
-	 *             if an argument was not correct
+	 * @throws IOException
+	 *             if a needed script for this action could not be found
 	 */
-	public abstract void execute() throws RunNodesException, RunScriptOnNodesException, IllegalArgumentException;
+	public abstract void execute() throws RunNodesException, RunScriptOnNodesException, IOException;
+
+	/**
+	 * Indicates whether this action script is automatically executable or if it
+	 * requires operator interaction.
+	 *
+	 * Even if this method returns true, in an error case, there might still be
+	 * the need for operator intervention.
+	 *
+	 * @return true if the script does not need operator intervention
+	 */
+	public abstract boolean isAutoExecutable();
+
+	/**
+	 * Retrieves a description of the actions executed by this script.
+	 *
+	 * If an error occurs while performing the action, the operator will be
+	 * presented with this description to execute it manually.
+	 *
+	 * @return the description
+	 */
+	public abstract String getDescription();
 
 	/**
 	 * Retrieves the cloud provider with the given name or if not found, returns
@@ -112,20 +133,14 @@ public abstract class ActionScript {
 	 * @throws IllegalArgumentException
 	 *             if there was an error with the file
 	 */
-	protected String getFileContents(URI fileURI) throws IllegalArgumentException {
+	protected String getFileContents(URI fileURI) throws IOException {
 		if (fileURI.isFile()) {
-			try {
-				return Files.toString(new File(fileURI.toFileString()), StandardCharsets.UTF_8);
-			} catch (IOException e) {
-				String msg = String.format("Could not read file at '%s'! ", fileURI.toFileString());
-				LOG.warn(msg, e);
-				throw new IllegalArgumentException(msg, e);
-			}
+			return Files.toString(new File(fileURI.toFileString()), StandardCharsets.UTF_8);
 		} else {
 			String msg = String.format("File at '%s' is not a valid file! Path is probably wrong.",
 					fileURI.toFileString());
 			LOG.warn(msg);
-			throw new IllegalArgumentException(msg);
+			throw new IOException(msg);
 		}
 	}
 

@@ -4,11 +4,14 @@ import static com.google.common.collect.Iterables.concat;
 import static com.google.common.collect.Iterables.getOnlyElement;
 import static org.jclouds.compute.options.TemplateOptions.Builder.runScript;
 
+import java.io.IOException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.AcquireAction;
+import org.iobserve.planning.utils.ModelHelper;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.domain.NodeMetadata;
@@ -69,7 +72,9 @@ public class AcquireActionScript extends ActionScript {
 
 		Template template = templateBuilder.build();
 
-		NodeMetadata node = getOnlyElement(client.createNodesInGroup(cloudContainer.getGroupName(), 1, template));
+		String groupName = ModelHelper.getGroupName(cloudContainer);
+
+		NodeMetadata node = getOnlyElement(client.createNodesInGroup(groupName, 1, template));
 
 		LOG.info(String.format("Acquired node for resource container '%s'. NodeID: %s, Hostname: %s, Adresses: %s",
 				cloudContainer.getEntityName(), node.getId(), node.getHostname(),
@@ -81,7 +86,7 @@ public class AcquireActionScript extends ActionScript {
 
 	private static String getChangeHostnameScript(ResourceContainerCloud cloudContainer) {
 		// This only works on a *nix OS and is valid until rebooting the node
-		return String.format("hostname %s", cloudContainer.getId());
+		return String.format("hostname %s", cloudContainer.getEntityName());
 	}
 
 	private String getStartupScript() {
@@ -90,8 +95,31 @@ public class AcquireActionScript extends ActionScript {
 
 		try {
 			return this.getFileContents(nodeStartupScriptURI);
-		} catch (IllegalArgumentException e) {
+		} catch (IOException e) {
+			// No script found, so we can not execute anything
+			LOG.warn("Could not find script for node startup. No script will be executed.");
 			return "";
 		}
+	}
+
+	@Override
+	public boolean isAutoExecutable() {
+		return true;
+	}
+
+	@Override
+	public String getDescription() {
+		ResourceContainerCloud container = this.getResourceContainerCloud(this.action.getSourceResourceContainer());
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("Acquire Action: Acquire container from provider '");
+		builder.append(container.getCloudProviderName());
+		builder.append("' of type '");
+		builder.append(container.getInstanceType());
+		builder.append("' in location '");
+		builder.append(container.getLocation());
+		builder.append("'");
+		return builder.toString();
+
 	}
 }

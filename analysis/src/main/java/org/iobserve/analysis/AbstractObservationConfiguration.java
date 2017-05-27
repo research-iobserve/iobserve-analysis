@@ -21,6 +21,7 @@ import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.AdaptationCalculation;
 import org.iobserve.adaptation.AdaptationExecution;
 import org.iobserve.adaptation.AdaptationPlanning;
+import org.iobserve.adaptation.IAdaptationEventListener;
 import org.iobserve.adaptation.SystemAdaptation;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
@@ -40,9 +41,10 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.evaluation.ModelComparer;
 import org.iobserve.evaluation.SystemEvaluation;
-import org.iobserve.planning.CandidateCreation;
-import org.iobserve.planning.CandidateSelector;
-import org.iobserve.planning.ModelCreation;
+import org.iobserve.planning.CandidateGeneration;
+import org.iobserve.planning.CandidateProcessing;
+import org.iobserve.planning.ModelOptimization;
+import org.iobserve.planning.ModelProcessing;
 
 import teetime.framework.Configuration;
 
@@ -83,31 +85,39 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 	 *            think time, configuration for entry event filter
 	 * @param closedWorkload
 	 *            kind of workload, configuration for entry event filter
+	 * @param eventListener
+	 *            listener for operator interaction during adaptation phase
 	 *
 	 * @throws ClassNotFoundException
 	 *             when a record type could not be loaded by class loader
 	 * @throws IOException
 	 *             for all file reading errors
 	 */
-	public AbstractObservationConfiguration(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
-			final RepositoryModelProvider repositoryModelProvider, final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
+	public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
+			final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
+			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, 
-			final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final int varianceOfUserGroups,
+			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener) {
 		/** configure filter. */
 		this.recordSwitch = new RecordSwitch();
 
 		final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
-		this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
-		this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
+		this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
+				resourceEnvironmentModelProvider);
+		this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
+				resourceEnvironmentModelProvider);
 		final TEntryCall tEntryCall = new TEntryCall(correspondenceModel);
 		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
-		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider, repositoryModelProvider,
-				varianceOfUserGroups, thinkTime, closedWorkload);
-		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
+		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
+				repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
+				resourceEnvironmentModelProvider);
 		final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
-		final ModelCreation modelCreation = new ModelCreation(new CandidateCreation(perOpteryxHeadless), new CandidateSelector());
-		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(), new AdaptationPlanning(), new AdaptationExecution());
+		final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless),
+				new ModelOptimization(), new CandidateProcessing());
+		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(),
+				new AdaptationPlanning(), new AdaptationExecution(eventListener));
 		final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
 
 		/** dispatch different monitoring data. */
@@ -130,14 +140,14 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		// Path GeoLocation => Snapshot
 		this.connectPorts(this.recordSwitch.getGeoLocationPort(), tGeoLocation.getInputPort());
 		this.connectPorts(tGeoLocation.getOutputPortSnapshot(), snapshotBuilder.getInputPort());
-		
+
 		// Path Snapshot => Planning
-		this.connectPorts(snapshotBuilder.getOutputPort(), modelCreation.getInputPort());
+		this.connectPorts(snapshotBuilder.getOutputPort(), candidateGenerator.getInputPort());
 		// Path Snapshot => Evaluation
 		this.connectPorts(snapshotBuilder.getEvaluationOutputPort(), systemEvaluator.getInputPort());
-		
+
 		// Path Planning => Adaptation
-		this.connectPorts(modelCreation.getOutputPort(), systemAdaptor.getInputPort());
+		this.connectPorts(candidateGenerator.getOutputPort(), systemAdaptor.getInputPort());
 	}
 
 	public RecordSwitch getRecordSwitch() {

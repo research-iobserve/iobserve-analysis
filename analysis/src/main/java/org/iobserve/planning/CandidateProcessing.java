@@ -6,6 +6,7 @@ import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.GraphFactory;
 import org.iobserve.analysis.graph.ModelGraph;
+import org.iobserve.planning.data.PlanningData;
 
 import teetime.stage.basic.AbstractTransformation;
 
@@ -15,17 +16,17 @@ import teetime.stage.basic.AbstractTransformation;
  * 
  * @author Philipp Weimann
  */
-public class CandidateSelector extends AbstractTransformation<CandidateInformations, AdaptationData> {
+public class CandidateProcessing extends AbstractTransformation<PlanningData, AdaptationData> {
 
 	@Override
-	protected void execute(CandidateInformations element) throws Exception {
-		AdaptationData adapdationData = element.adapdationData;
+	protected void execute(PlanningData element) throws Exception {
+		AdaptationData adapdationData = element.getAdaptationData();
 
 		GraphFactory factory = new GraphFactory();
 		ModelGraph graph = factory.buildGraph(new InitializeModelProviders(new File(adapdationData.getReDeploymentURI().toFileString())));
-		element.adapdationData.setReDeploymentGraph(graph);
+		element.getAdaptationData().setReDeploymentGraph(graph);
 
-		this.outputPort.send(element.adapdationData);
+		this.outputPort.send(element.getAdaptationData());
 	}
 
 }

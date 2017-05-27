@@ -2,22 +2,17 @@ package org.iobserve.planning.peropteryx;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.lang.ProcessBuilder.Redirect;
-import java.util.HashSet;
 
 import javax.inject.Inject;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 
 /**
  * Linux specific wrapper, uses bash to call headless PerOpteryx.
  *
- * @author Tobias Pöppke
+ * @author Tobias PÃ¶ppke
  *
  */
 public class ExecutionWrapper extends AbstractExecutionWrapper {
@@ -25,7 +20,7 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 	private String execEnvironment;
 	private String execEnvironmentParam;
 	private String execCommand;
-	private String modelName;
+	// private String modelName;
 
 	@Inject
 	public ExecutionWrapper(URI inputModelDir, URI perOpteryxDir) throws IOException {
@@ -42,7 +37,7 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 			this.execCommand = "./peropteryx-headless";
 		}
 
-		this.modelName = extractModelName(inputModelDir);
+		// this.modelName = this.extractModelName(inputModelDir);
 
 	}
 
@@ -86,7 +81,7 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 		// ProcessBuilder builder = new ProcessBuilder(this.execEnvironment,
 		// "-c", perOpteryxCommand + " -w " + modelDir);
 		ProcessBuilder builder = new ProcessBuilder(this.execEnvironment, this.execEnvironmentParam,
-				this.execCommand + " -m " + this.modelName + " -w " + modelDir);
+				this.execCommand + " -w " + modelDir);
 
 		// LOG.info(String.format("PerOpteryx start parameters: {Command:
 		// '/bin/bash -c %s', working-dir: '%s'}", perOpteryxCommand,
@@ -100,30 +95,32 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 		return builder;
 	}
 
-	private String extractModelName(URI modelDir) throws IOException {
-		String[] files = new File(modelDir.toFileString()).list();
-		String modelName = null;
-
-		HashSet<String> fileNames = new HashSet<String>();
-
-		for (String file : files) {
-			if (!(new File(file).isDirectory())) {
-				String[] fileNameParts = file.split("\\.");
-				String fileName = fileNameParts.length > 0 ? fileNameParts[0] : "";
-
-				boolean added = fileNames.add(fileName);
-
-				if (!added) {
-					modelName = fileName;
-					break;
-				}
-			}
-		}
-
-		if (modelName == null)
-			throw new IOException("Couldn't determine a model name. No filename was found twice ...");
-
-		return modelName;
-	}
+	// private String extractModelName(URI modelDir) throws IOException {
+	// String[] files = new File(modelDir.toFileString()).list();
+	// String modelName = null;
+	//
+	// HashSet<String> fileNames = new HashSet<String>();
+	//
+	// for (String file : files) {
+	// if (!(new File(file).isDirectory())) {
+	// String[] fileNameParts = file.split("\\.");
+	// String fileName = fileNameParts.length > 0 ? fileNameParts[0] : "";
+	//
+	// boolean added = fileNames.add(fileName);
+	//
+	// if (!added) {
+	// modelName = fileName;
+	// break;
+	// }
+	// }
+	// }
+	//
+	// if (modelName == null) {
+	// throw new IOException("Couldn't determine a model name. No filename was
+	// found twice ...");
+	// }
+	//
+	// return modelName;
+	// }
 
 }

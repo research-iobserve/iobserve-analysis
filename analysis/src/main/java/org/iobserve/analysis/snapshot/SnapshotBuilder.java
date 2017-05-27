@@ -6,8 +6,6 @@ import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-import javax.imageio.IIOException;
-
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AbstractModelProvider;
@@ -87,7 +85,7 @@ public class SnapshotBuilder extends AbstractStage {
 
 		File modelFile = new File(modelURI.path());
 		if (!modelFile.exists()) {
-			throw new IIOException("The given file URI did not point to a file");
+			throw new IOException("The given file URI did not point to a file");
 		}
 		String fileName = modelFile.getName();
 		String targetFileLocation = this.snapshotURI.toFileString() + File.separator + fileName;

@@ -1,8 +1,13 @@
 package org.iobserve.adaptation.execution;
 
+import java.io.IOException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.MigrateAction;
+import org.iobserve.planning.utils.ModelHelper;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.RunScriptOnNodesException;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
@@ -25,6 +30,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  *
  */
 public class MigrateActionScript extends ActionScript {
+	private static final Logger LOG = LogManager.getLogger();
+
 	private final MigrateAction action;
 
 	/**
@@ -67,13 +74,50 @@ public class MigrateActionScript extends ActionScript {
 	private String getScript(String scriptName, AssemblyContext assemblyCtx) {
 		String assemblyCtxFolderName = this.getAssemblyContextFolderName(assemblyCtx);
 
-		URI deallocationScriptURI = this.data.getDeployablesFolderURI().appendSegment(assemblyCtxFolderName)
+		URI scriptURI = this.data.getDeployablesFolderURI().appendSegment(assemblyCtxFolderName)
 				.appendSegment(scriptName);
 		try {
-			return this.getFileContents(deallocationScriptURI);
-		} catch (IllegalArgumentException e) {
+			return this.getFileContents(scriptURI);
+		} catch (IOException e) {
+			// No script found, so we can not execute anything
+			LOG.warn(
+					String.format("Could not find script '%s'. No script will be executed.", scriptURI.toFileString()));
 			return "";
 		}
+	}
+
+	@Override
+	public boolean isAutoExecutable() {
+		return true;
+	}
+
+	@Override
+	public String getDescription() {
+		ResourceContainerCloud sourceContainer = this.getResourceContainerCloud(
+				this.action.getSourceAllocationContext().getResourceContainer_AllocationContext());
+		ResourceContainerCloud targetContainer = this.getResourceContainerCloud(
+				this.action.getNewAllocationContext().getResourceContainer_AllocationContext());
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("Migrate Action: Migrate assembly context '");
+		builder.append(this.action.getSourceAssemblyContext().getEntityName());
+		builder.append("' from container of provider '");
+		builder.append(sourceContainer.getCloudProviderName());
+		builder.append("' of type '");
+		builder.append(sourceContainer.getInstanceType());
+		builder.append("' in location '");
+		builder.append(sourceContainer.getLocation());
+		builder.append("' with name '");
+		builder.append(ModelHelper.getGroupName(sourceContainer));
+		builder.append(" to container from provider '");
+		builder.append(targetContainer.getCloudProviderName());
+		builder.append("' of type '");
+		builder.append(targetContainer.getInstanceType());
+		builder.append("' in location '");
+		builder.append(targetContainer.getLocation());
+		builder.append("' with name '");
+		builder.append(ModelHelper.getGroupName(targetContainer));
+		return builder.toString();
 	}
 
 }

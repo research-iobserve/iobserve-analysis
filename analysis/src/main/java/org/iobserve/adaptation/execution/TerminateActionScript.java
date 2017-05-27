@@ -1,8 +1,13 @@
 package org.iobserve.adaptation.execution;
 
+import java.io.IOException;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.TerminateAction;
+import org.iobserve.planning.utils.ModelHelper;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.RunScriptOnNodesException;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
@@ -15,6 +20,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  *
  */
 public class TerminateActionScript extends ActionScript {
+	private static final Logger LOG = LogManager.getLogger();
 
 	private final TerminateAction action;
 
@@ -40,7 +46,7 @@ public class TerminateActionScript extends ActionScript {
 		ComputeService client = this.getComputeServiceForContainer(cloudContainer);
 
 		// If the container group has already been terminated, do nothing
-		if (!this.data.getTerminatedGroups().contains(cloudContainer.getGroupName())) {
+		if (!this.data.getTerminatedGroups().contains(ModelHelper.getGroupName(cloudContainer))) {
 			client.runScriptOnNodesMatching(node -> node.getGroup().equals(cloudContainer.getGroupName()),
 					this.getScript(AdaptationData.NODE_PRE_TERMINATE_SCRIPT_NAME));
 			client.destroyNodesMatching(node -> node.getGroup().equals(cloudContainer.getGroupName()));
@@ -49,9 +55,36 @@ public class TerminateActionScript extends ActionScript {
 	}
 
 	private String getScript(String scriptName) {
-		URI deallocationScriptURI = this.data.getDeployablesFolderURI().appendSegment(scriptName);
+		URI terminationScriptURI = this.data.getDeployablesFolderURI().appendSegment(scriptName);
 
-		return this.getFileContents(deallocationScriptURI);
+		try {
+			return this.getFileContents(terminationScriptURI);
+		} catch (IOException e) {
+			// No script found, so we can not execute anything
+			LOG.warn("Could not find script for node termination. No script will be executed.");
+			return "";
+		}
+	}
+
+	@Override
+	public boolean isAutoExecutable() {
+		return true;
+	}
+
+	@Override
+	public String getDescription() {
+		ResourceContainerCloud container = this.getResourceContainerCloud(this.action.getSourceResourceContainer());
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("Terminate Action: Terminate container group from provider '");
+		builder.append(container.getCloudProviderName());
+		builder.append("' of type '");
+		builder.append(container.getInstanceType());
+		builder.append("' in location '");
+		builder.append(container.getLocation());
+		builder.append("' with name '");
+		builder.append(ModelHelper.getGroupName(container));
+		return builder.toString();
 	}
 
 }

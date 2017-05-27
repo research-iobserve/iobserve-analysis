@@ -1,8 +1,11 @@
 package org.iobserve.adaptation.execution;
 
+import java.io.IOException;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
+import org.iobserve.planning.utils.ModelHelper;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.RunScriptOnNodesException;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
@@ -38,7 +41,7 @@ public class DeallocateActionScript extends ActionScript {
 	}
 
 	@Override
-	public void execute() throws RunScriptOnNodesException {
+	public void execute() throws RunScriptOnNodesException, IOException {
 		ResourceContainer container = this.action.getOldAllocationContext().getResourceContainer_AllocationContext();
 
 		final ResourceContainerCloud cloudContainer = this.getResourceContainerCloud(container);
@@ -55,13 +58,38 @@ public class DeallocateActionScript extends ActionScript {
 		}
 	}
 
-	private String getDeallocateScript(AssemblyContext assemblyCtx) {
+	private String getDeallocateScript(AssemblyContext assemblyCtx) throws IOException {
 		String assemblyCtxFolderName = this.getAssemblyContextFolderName(assemblyCtx);
 
 		URI deallocationScriptURI = this.data.getDeployablesFolderURI().appendSegment(assemblyCtxFolderName)
 				.appendSegment(AdaptationData.DEALLOCATE_SCRIPT_NAME);
 
 		return this.getFileContents(deallocationScriptURI);
+	}
+
+	@Override
+	public boolean isAutoExecutable() {
+		return true;
+	}
+
+	@Override
+	public String getDescription() {
+		ResourceContainerCloud sourceContainer = this.getResourceContainerCloud(
+				this.action.getOldAllocationContext().getResourceContainer_AllocationContext());
+
+		StringBuilder builder = new StringBuilder();
+		builder.append("Deallocate Action: Deallocate assembly context '");
+		builder.append(this.action.getSourceAssemblyContext().getEntityName());
+		builder.append("' from container of provider '");
+		builder.append(sourceContainer.getCloudProviderName());
+		builder.append("' of type '");
+		builder.append(sourceContainer.getInstanceType());
+		builder.append("' in location '");
+		builder.append(sourceContainer.getLocation());
+		builder.append("' with name '");
+		builder.append(ModelHelper.getGroupName(sourceContainer));
+		builder.append("'");
+		return builder.toString();
 	}
 
 }
