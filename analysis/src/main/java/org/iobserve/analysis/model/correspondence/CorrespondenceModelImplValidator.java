@@ -1,10 +1,18 @@
 package org.iobserve.analysis.model.correspondence;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Map;
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.URI;
+
+import giusa.software.framework.table.Table;
+import giusa.software.framework.table.TableHeader;
+import giusa.software.tools.parsing.csv.CSVParser;
 
 /**
  * This class is supposed to validate the {@link CorrespondenceModelImpl}. By
@@ -72,7 +80,44 @@ final class CorrespondenceModelImplValidator implements ICorrespondence {
 	 * Write the results to file.
 	 */
 	private void writeResults() {
+		String csv = "";
 		
+		// read the last state and append new results
+		try (final FileInputStream input = new FileInputStream(this.outputFile)) {
+			final CSVParser parser;
+			if (!this.outputFile.exists()) {
+				final Table<String> table = new Table<>();
+				final TableHeader h1 = new TableHeader("Invocations", 0);
+				final TableHeader h2 = new TableHeader("CorrectResults", 1);
+				final TableHeader h3 = new TableHeader("WrongResults", 2);
+				table.addHeader(h1);
+				table.addHeader(h2);
+				table.addHeader(h3);
+				parser = new CSVParser();
+				parser.setModel(table);
+			} else {
+				parser = new CSVParser();
+				parser.parse(input);
+			}
+			
+			final Table<String> table = parser.getModel();
+			final int row = table.size();
+			table.addColumn(row, 0, String.valueOf(this.cntInvocations), true);
+			table.addColumn(row, 1, String.valueOf(this.cntCorrectResults), true);
+			table.addColumn(row, 2, String.valueOf(this.cntWrongResults), true);
+			csv = parser.toCSV();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		// write the output
+		try (final PrintWriter output = new PrintWriter(this.outputFile)) {
+			output.write(csv);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	// ************************************************************************
