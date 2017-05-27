@@ -27,7 +27,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  * @author Alessandro Giusa
  * @author Philipp Weimann
  */
-public final class ResourceEnvironmentModelProvider extends AbstractModelProvider<ResourceEnvironment> {
+public class ResourceEnvironmentModelProvider extends AbstractModelProvider<ResourceEnvironment> {
 
 	/**
 	 * Create model provider to provide {@link ResourceEnvironment} model.
