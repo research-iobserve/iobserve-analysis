@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ASCII"?>
+<xmi:XMI xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:cm="http://www.example.eclipse.org/CorrespondenceModel">
+  <cm:HighLevelModel>
+    <elements name="defaultRepository" Id="_k9VfYC9GEeeA26oKU-JEkw"/>
+    <elements name="A" Id="_qgwEoC9GEeeA26oKU-JEkw" parent="/0/@elements.0"/>
+    <elements name="Bar" Id="_0zopsC9GEeeA26oKU-JEkw" parent="/0/@elements.0"/>
+    <elements name="bar" Id="_9LUtYC9GEeeA26oKU-JEkw" parent="/0/@elements.2"/>
+    <elements name="B" Id="_yfI3gC9GEeeA26oKU-JEkw" parent="/0/@elements.0"/>
+    <elements name="Foo" Id="_rrc9MC9GEeeA26oKU-JEkw" parent="/0/@elements.0"/>
+    <elements name="foo" Id="_2GEh8C9GEeeA26oKU-JEkw" parent="/0/@elements.5"/>
+  </cm:HighLevelModel>
+  <cm:LowLevelModel>
+    <elements name="IA" Id="a.ejb.IA"/>
+    <elements name="Bar_A" Id="a.ejb.Bar_A"/>
+    <elements name="Bar" Id="a.interfaces.ejb.Bar"/>
+    <elements name="bar0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> a.ejb.Bar_A.bar0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.1"/>
+    <elements name="bar0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> a.interfaces.ejb.Bar.bar0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.2"/>
+    <elements name="IB" Id="b.ejb.IB"/>
+    <elements name="Foo_B" Id="b.ejb.Foo_B"/>
+    <elements name="Foo" Id="b.interfaces.ejb.Foo"/>
+    <elements name="foo0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> b.ejb.Foo_B.foo0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.6"/>
+    <elements name="foo0" Id="public de.uka.ipd.sdq.simucomframework.variables.stackframe.SimulatedStackframe&lt;Object> b.interfaces.ejb.Foo.foo0(de.uka.ipd.sdq.simucomframework.variables.StackContext ctx)" parent="/1/@elements.7"/>
+  </cm:LowLevelModel>
+  <cm:CorrespondenceModel highLevelModel="/0" lowLevelModel="/1">
+    <correspondences debugStr="A#IA" from="/0/@elements.1" to="/1/@elements.0"/>
+    <correspondences debugStr="A#Bar_A" from="/0/@elements.1" to="/1/@elements.1"/>
+    <correspondences debugStr="A#Bar" from="/0/@elements.1" to="/1/@elements.2"/>
+    <correspondences debugStr="bar#bar0" from="/0/@elements.3" to="/1/@elements.3"/>
+    <correspondences debugStr="bar#bar0" from="/0/@elements.3" to="/1/@elements.4"/>
+    <correspondences debugStr="B#IB" from="/0/@elements.4" to="/1/@elements.5"/>
+    <correspondences debugStr="B#Foo_B" from="/0/@elements.4" to="/1/@elements.6"/>
+    <correspondences debugStr="B#Foo" from="/0/@elements.4" to="/1/@elements.7"/>
+    <correspondences debugStr="foo#foo0" from="/0/@elements.6" to="/1/@elements.8"/>
+    <correspondences debugStr="foo#foo0" from="/0/@elements.6" to="/1/@elements.9"/>
+  </cm:CorrespondenceModel>
+</xmi:XMI>

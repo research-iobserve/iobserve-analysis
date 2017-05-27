@@ -39,6 +39,7 @@ public final class CorrespondenceModelFactory {
 	 * @return instance of {@link ICorrespondence}.
 	 */
 	public static ICorrespondence createCorrespondenceForValidation(final URI pathToCM, final File outputFile) {
-		return new CorrespondenceModelImplValidator(pathToCM, outputFile, createCorrespondence(pathToCM));
+		final MapForTestProject map = new MapForTestProject();
+		return new CorrespondenceModelImplValidator(pathToCM, outputFile, map, createCorrespondence(pathToCM));
 	}
 }
