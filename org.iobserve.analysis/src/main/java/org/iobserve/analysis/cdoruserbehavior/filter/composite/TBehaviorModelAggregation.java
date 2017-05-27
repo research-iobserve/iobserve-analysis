@@ -45,7 +45,7 @@ public class TBehaviorModelAggregation extends CompositeStage {
 
         this.tClustering = new TClustering(this.configuration.getClustering());
         this.tBehaviorModelCreation = new TBehaviorModelCreation(configuration.getNamePrefix());
-        this.tIObserveUBM = new TIObserveUBM();
+        this.tIObserveUBM = new TIObserveUBM(configuration.getUBMUrl());
 
         this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
         // this.connectPorts(this.tBehaviorModelCreation.getOutputPort(),

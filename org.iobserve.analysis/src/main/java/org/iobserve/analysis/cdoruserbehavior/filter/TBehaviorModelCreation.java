@@ -153,7 +153,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      * @return EntryCallEdge
      */
     private Optional<EntryCallEdge> createEdge(final String name, final Double value) {
-        if (value >= 1) { // we want no values like 0.6
+        if (value > 0) {
 
             final String[] nodeNames = this.splitSignature(AbstractBehaviorModelTable.EDGE_INDICATOR_PATTERN,
                     AbstractBehaviorModelTable.EDGE_DIVIDER_PATTERN, name);
@@ -162,7 +162,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
                 final EntryCallNode from = new EntryCallNode(nodeNames[0]);
                 final EntryCallNode to = new EntryCallNode(nodeNames[1]);
 
-                final EntryCallEdge edge = new EntryCallEdge(from, to, value.intValue());
+                final EntryCallEdge edge = new EntryCallEdge(from, to, value);
 
                 return Optional.of(edge);
             }

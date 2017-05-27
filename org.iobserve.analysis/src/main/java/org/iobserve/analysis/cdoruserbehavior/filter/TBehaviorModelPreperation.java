@@ -38,10 +38,19 @@ import teetime.framework.OutputPort;
 public final class TBehaviorModelPreperation extends AbstractConsumerStage<Object> {
     /** logger. */
     private static final Log LOG = LogFactory.getLog(TBehaviorModelPreperation.class);
+    private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
 
     private BehaviorModelTable behaviorModelTable = null;
-    private final Set<EntryCallSequenceModel> sequenceModelCache = new HashSet<>();
-    private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
+    private final Set<EntryCallSequenceModel> sequenceModelCache;
+
+    private final boolean keepEmptyTransitions;
+
+    public TBehaviorModelPreperation(final boolean keepEmptyTransitions) {
+        super();
+        this.behaviorModelTable = null;
+        this.sequenceModelCache = new HashSet<>();
+        this.keepEmptyTransitions = keepEmptyTransitions;
+    }
 
     @Override
     protected void execute(final Object object) {
@@ -74,7 +83,7 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
             final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
 
             for (final UserSession userSession : userSessions) {
-                final BehaviorModelTable modelTable = this.behaviorModelTable.getClearedCopy();
+                final BehaviorModelTable modelTable = this.behaviorModelTable.getClearedCopy(this.keepEmptyTransitions);
                 final List<EntryCallEvent> entryCalls = userSession.getEvents();
 
                 EntryCallEvent lastCall = null;

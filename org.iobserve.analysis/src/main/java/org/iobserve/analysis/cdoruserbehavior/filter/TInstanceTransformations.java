@@ -49,6 +49,7 @@ public class TInstanceTransformations extends AbstractConsumerStage<BehaviorMode
     protected void execute(final BehaviorModelTable behaviorModelTable) {
         if (this.instances == null) {
             this.instances = behaviorModelTable.toInstances();
+
         } else {
             this.instances.add(behaviorModelTable.toInstance());
         }

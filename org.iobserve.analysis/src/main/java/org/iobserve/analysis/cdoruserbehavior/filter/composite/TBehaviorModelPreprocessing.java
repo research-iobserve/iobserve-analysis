@@ -62,9 +62,10 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
         this.merger = new Merger<>(new SkippingBusyWaitingRoundRobinStrategy());
 
         this.tBehaviorModelGeneration = new TBehaviorModelTableGeneration(configuration.getSignatureCreationStrategy(),
-                this.configuration.getRepresentativeStrategy(), this.configuration.getModelGenerationFilter());
+                this.configuration.getRepresentativeStrategy(), this.configuration.getModelGenerationFilter(),
+                configuration.keepEmptyTransitions());
 
-        this.tBehaviorModelPreperation = new TBehaviorModelPreperation();
+        this.tBehaviorModelPreperation = new TBehaviorModelPreperation(configuration.keepEmptyTransitions());
 
         this.tInstanceTransformations = new TInstanceTransformations();
 

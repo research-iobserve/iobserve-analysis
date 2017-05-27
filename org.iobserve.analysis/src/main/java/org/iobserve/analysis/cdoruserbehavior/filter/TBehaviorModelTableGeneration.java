@@ -39,6 +39,7 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
     private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
 
     private final DynamicBehaviorModelTable modelTable;
+    private final boolean keepEmptyTransitions;
 
     /**
      * constructor
@@ -53,10 +54,12 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
      *            model generation filter
      */
     public TBehaviorModelTableGeneration(final ISignatureCreationStrategy signatureCreationStrategy,
-            final IRepresentativeStrategy strategy, final ModelGenerationFilter modelGenerationFilter) {
+            final IRepresentativeStrategy strategy, final ModelGenerationFilter modelGenerationFilter,
+            final boolean keepEmptyTransitions) {
         super();
 
         this.modelTable = new DynamicBehaviorModelTable(signatureCreationStrategy, strategy, modelGenerationFilter);
+        this.keepEmptyTransitions = keepEmptyTransitions;
 
     }
 
@@ -91,7 +94,8 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
     @Override
     public void onTerminating() throws Exception {
 
-        final BehaviorModelTable fixedTable = this.modelTable.toClearedFixedSizeBehaviorModelTable();
+        final BehaviorModelTable fixedTable = this.modelTable
+                .toClearedFixedSizeBehaviorModelTable(this.keepEmptyTransitions);
         this.outputPort.send(fixedTable);
 
         super.onTerminating();

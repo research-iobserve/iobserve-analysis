@@ -225,9 +225,11 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
 
     /**
      *
+     * @param keepEmptyTransitions
+     *            keep empty transitions
      * @return cleared fixed size BehaviorModelTable
      */
-    public BehaviorModelTable toClearedFixedSizeBehaviorModelTable() {
+    public BehaviorModelTable toClearedFixedSizeBehaviorModelTable(final boolean keepEmptyTransitions) {
 
         // create fixed signatures
         final Map<String, Pair<Integer, AggregatedCallInformation[]>> fixedSignatures = new HashMap<>();
@@ -249,6 +251,14 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
 
         // create transitions table
         final Integer[][] fixedTransitions = new Integer[fixedSignatures.size()][fixedSignatures.size()];
+        for (int i = 0; i < fixedTransitions.length; i++) {
+            for (int j = 0; j < fixedTransitions.length; j++) {
+
+                fixedTransitions[i][j] = keepEmptyTransitions
+                        && (this.transitions.get(i).get(j) == AbstractBehaviorModelTable.EMPTY_TRANSITION)
+                                ? AbstractBehaviorModelTable.EMPTY_TRANSITION : 0;
+            }
+        }
 
         final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(this.getSignatureCreationStrategy(),
                 fixedSignatures, fixedInverseSignatures, fixedTransitions);

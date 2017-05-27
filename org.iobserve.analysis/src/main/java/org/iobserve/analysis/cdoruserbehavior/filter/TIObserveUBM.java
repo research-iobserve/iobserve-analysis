@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModel;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
@@ -45,17 +46,21 @@ import teetime.framework.AbstractConsumerStage;
  *
  */
 public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
-    private final String baseUrl = "http://localhost:8080/ubm-backend/v1";
+    private final String baseUrl;
+    private final String applicationUrl;
     private final Map<String, JsonNode> nodeMap;
+    private final Pattern idPattern = Pattern.compile("\\\"@id\\\":\\\"1\\\",");
 
     private final ObjectMapper objectMapper;
 
     /**
      * consturctor
      */
-    public TIObserveUBM() {
+    public TIObserveUBM(final String baseUrl) {
         this.objectMapper = new ObjectMapper();
         this.nodeMap = new HashMap<>();
+        this.baseUrl = baseUrl;
+        this.applicationUrl = baseUrl + "/applications";
         // TODO remove
         this.resetVisualization();
 
@@ -82,7 +87,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
         final ObjectNode graph = this.objectMapper.createObjectNode();
         graph.put("name", name);
 
-        final String targetUrl = this.baseUrl + "/applications";
+        final String targetUrl = this.applicationUrl;
 
         final JsonNode json = this.postElement(graph, targetUrl);
         final Long id = json.get("id").asLong();
@@ -93,10 +98,10 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      * reset the visualisation
      */
     private void resetVisualization() {
-        final List<Long> ids = this.getAllGraphsFromUI(this.baseUrl + "/applications");
+        final List<Long> ids = this.getAllGraphsFromUI(this.applicationUrl);
 
         for (final Long id : ids) {
-            this.sendDelete(this.baseUrl + "/applications/" + id);
+            this.sendDelete(this.applicationUrl + "/" + id);
         }
     }
 
@@ -113,14 +118,15 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
             url = new URL(targetUrl);
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            con.setRequestProperty("User-Agent", "Mozilla/5.0 ( compatible ) ");
+            con.setRequestProperty("Accept", "*/*");
             con.setRequestMethod("GET");
 
             con.setDoInput(true);
-
             final InputStream response = con.getInputStream();
             @SuppressWarnings("resource")
             final Scanner scanner = new Scanner(response).useDelimiter("\\A");
-            final String content = scanner.next().replaceAll("\\\"@id\\\":\\\"1\\\",", "");
+            final String content = this.idPattern.matcher(scanner.next()).replaceAll("");
 
             final JsonNode contendNode = this.objectMapper.readTree(content);
 
@@ -268,7 +274,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      * @return graph url
      */
     private String getGraphUrl(final long modelId) {
-        return this.baseUrl + "/applications/" + modelId;
+        return this.applicationUrl + "/" + modelId;
     }
 
     /**

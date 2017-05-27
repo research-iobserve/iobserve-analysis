@@ -15,6 +15,10 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetstoreStrategy;
+
+import weka.core.ManhattanDistance;
+
 /**
  * configuration for the behavior model filter
  *
@@ -23,37 +27,38 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
  */
 public class BehaviorModelConfiguration {
 
-    private final String behaviorModelNamePrefix;
+    private String behaviorModelNamePrefix;
 
     // table generation configuration
-    private final ModelGenerationFilter modelGenerationFilter;
+    private ModelGenerationFilter modelGenerationFilter;
 
-    private final IRepresentativeStrategy representativeStrategy;
+    private IRepresentativeStrategy representativeStrategy;
 
-    private final ISignatureCreationStrategy signatureCreationStrategy;
+    private ISignatureCreationStrategy signatureCreationStrategy;
 
     // clustering configuration
-    private final IClustering clustering;
+    private IClustering clustering;
+
+    // ubm url
+    // TODO
+    private String UBMUrl;
+
+    // empty transitions?
+    private boolean keepEmptyTransitions = true;
 
     /**
-     * constructor
-     *
-     * @param modelGenerationFilter
-     *            modelGenerationFilter
-     * @param representativeStrategy
-     *            representative Strategy
-     * @param clustering
-     *            clustering
+     * default constructor
      */
-    public BehaviorModelConfiguration(final String namePrefix, final ModelGenerationFilter modelGenerationFilter,
-            final IRepresentativeStrategy representativeStrategy,
-            final ISignatureCreationStrategy signatureCreationStrategy, final IClustering clustering) {
-        super();
-        this.behaviorModelNamePrefix = namePrefix;
-        this.signatureCreationStrategy = signatureCreationStrategy;
-        this.modelGenerationFilter = modelGenerationFilter;
-        this.representativeStrategy = representativeStrategy;
-        this.clustering = clustering;
+    public BehaviorModelConfiguration() {
+        this.behaviorModelNamePrefix = "BehaviorModel";
+        this.UBMUrl = null;
+        this.modelGenerationFilter = new ModelGenerationFilter(false);
+        this.modelGenerationFilter.addFilterRule(".*");
+        this.representativeStrategy = new JPetstoreStrategy();
+        this.signatureCreationStrategy = new OperationSignatureStrategy();
+
+        this.clustering = new XMeansClustering(1, 1, new ManhattanDistance());
+
     }
 
     /**
@@ -94,12 +99,109 @@ public class BehaviorModelConfiguration {
 
     /**
      * getter
-     * 
-     * @return nameprefix
+     *
+     * @return the nameprefix
      */
     public String getNamePrefix() {
         return this.behaviorModelNamePrefix;
 
+    }
+
+    /**
+     * getter
+     *
+     * @return the behaviorModelNamePrefix
+     */
+    public String getBehaviorModelNamePrefix() {
+        return this.behaviorModelNamePrefix;
+    }
+
+    /**
+     * getter
+     *
+     * @return the uBMUrl
+     */
+    public String getUBMUrl() {
+        return this.UBMUrl;
+    }
+
+    /**
+     * getter
+     *
+     * @return the keepEmptyTransitions
+     */
+    public boolean keepEmptyTransitions() {
+        return this.keepEmptyTransitions;
+    }
+
+    /**
+     * setter
+     *
+     * @param behaviorModelNamePrefix
+     *            the behaviorModelNamePrefix to set
+     */
+    public void setBehaviorModelNamePrefix(final String behaviorModelNamePrefix) {
+        this.behaviorModelNamePrefix = behaviorModelNamePrefix;
+    }
+
+    /**
+     * setter
+     *
+     * @param modelGenerationFilter
+     *            the modelGenerationFilter to set
+     */
+    public void setModelGenerationFilter(final ModelGenerationFilter modelGenerationFilter) {
+        this.modelGenerationFilter = modelGenerationFilter;
+    }
+
+    /**
+     * setter
+     *
+     * @param representativeStrategy
+     *            the representativeStrategy to set
+     */
+    public void setRepresentativeStrategy(final IRepresentativeStrategy representativeStrategy) {
+        this.representativeStrategy = representativeStrategy;
+    }
+
+    /**
+     * setter
+     *
+     * @param signatureCreationStrategy
+     *            the signatureCreationStrategy to set
+     */
+    public void setSignatureCreationStrategy(final ISignatureCreationStrategy signatureCreationStrategy) {
+        this.signatureCreationStrategy = signatureCreationStrategy;
+    }
+
+    /**
+     * setter
+     *
+     * @param clustering
+     *            the clustering to set
+     */
+    public void setClustering(final IClustering clustering) {
+        this.clustering = clustering;
+    }
+
+    /**
+     * setter
+     *
+     * @param uBMUrl
+     *            the uBMUrl to set
+     */
+    public void setUBMUrl(final String uBMUrl) {
+        this.UBMUrl = uBMUrl;
+    }
+
+    /**
+     * setter
+     * 
+     * @param keepEmptyTransitions
+     *            the keepEmptyTransitions to set
+     */
+    public void setKeepEmptyTransitions(final boolean keepEmptyTransitions) {
+        this.keepEmptyTransitions = keepEmptyTransitions;
     }
 
 }

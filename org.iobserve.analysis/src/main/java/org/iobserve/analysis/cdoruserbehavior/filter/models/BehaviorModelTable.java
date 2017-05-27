@@ -172,11 +172,13 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     }
 
     /**
-     * Creates a cleared Copy
+     * creates a cleared copy
      *
-     * @return cleared copy
+     * @param keepEmptyTransitions
+     *            defines whether or not the empty transitions should be kept
+     * @return cleared copy of the table
      */
-    public BehaviorModelTable getClearedCopy() {
+    public BehaviorModelTable getClearedCopy(final boolean keepEmptyTransitions) {
         final Map<String, Pair<Integer, AggregatedCallInformation[]>> clearedSignatures = new HashMap<>();
 
         for (final String signature : this.signatures.keySet()) {
@@ -192,11 +194,13 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         }
         final Integer[][] clearedTransitions = new Integer[clearedSignatures.size()][clearedSignatures.size()];
 
-        Arrays.stream(clearedTransitions).forEach(t -> Arrays.fill(t, 0));
+        Arrays.stream(clearedTransitions)
+                .forEach(transitions -> Arrays.stream(transitions).filter(
+                        count -> !keepEmptyTransitions || (count != AbstractBehaviorModelTable.EMPTY_TRANSITION))
+                        .forEach(count -> count = 0));
 
         return new BehaviorModelTable(this.getSignatureCreationStrategy(), clearedSignatures, this.inverseSignatures,
                 clearedTransitions);
-
     }
 
     /**

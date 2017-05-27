@@ -106,13 +106,17 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         final ModelGenerationFilter modelGenerationFilter = new CoCoMEModelGenerationFilterFactory().createFilter();
 
-        final int expectedUserGroups = 4; // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+        final int expectedUserGroups = 3; // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
         final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
                 new ManhattanDistance());
 
-        final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration("cdor-",
-                modelGenerationFilter, new JPetstoreStrategy(), new FunctionNameOnlySignatureStrategy(),
-                behaviorModelClustering);
+        final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
+        behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
+        behaviorModelConfiguration.setUBMUrl("http://localhost:7474/ubm-backend/v1");
+        behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
+        behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
+        behaviorModelConfiguration.setSignatureCreationStrategy(new FunctionNameOnlySignatureStrategy());
+        behaviorModelConfiguration.setClustering(behaviorModelClustering);
 
         // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
 
