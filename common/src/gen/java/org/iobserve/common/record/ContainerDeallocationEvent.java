@@ -20,10 +20,6 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
-
-import org.iobserve.common.record.ContainerEvent;
-import org.iobserve.common.record.IDeallocationRecord;
 
 /**
  * @author Generic Kieker
@@ -166,6 +162,12 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (!this.getUrl().equals(castedRecord.getUrl())) return false;
 		return true;
+	}
+
+	@Override
+	public String[] getValueNames() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

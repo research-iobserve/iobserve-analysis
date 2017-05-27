@@ -21,11 +21,8 @@ import java.nio.ByteBuffer;
 
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
-import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
-
-import org.iobserve.common.record.ITraceHelper;
 import kieker.common.record.flow.IFlowRecord;
+import kieker.common.util.registry.IRegistry;
 
 /**
  * @author Reiner Jung
@@ -210,20 +207,29 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		return true;
 	}
 
+	@Override
 	public final long getTraceId() {
 		return this.traceId;
 	}
 	
+	@Override
 	public final String getHost() {
 		return this.host;
 	}
 	
+	@Override
 	public final int getPort() {
 		return this.port;
 	}
 	
 	public final String getRequestURI() {
 		return this.requestURI;
+	}
+
+	@Override
+	public String[] getValueNames() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

@@ -20,10 +20,6 @@ import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
 import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
-
-import org.iobserve.common.record.EJBDeploymentEvent;
-import org.iobserve.common.record.IDeploymentRecord;
 
 /**
  * @author Generic Kieker
@@ -189,6 +185,12 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		if (!this.getContext().equals(castedRecord.getContext())) return false;
 		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		return true;
+	}
+
+	@Override
+	public String[] getValueNames() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

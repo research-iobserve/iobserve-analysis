@@ -19,11 +19,8 @@ import java.nio.BufferOverflowException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 
-import kieker.common.util.registry.IRegistry;
-import kieker.common.util.Version;
-
 import kieker.common.record.flow.AbstractEvent;
-import org.iobserve.common.record.GeoLocation;
+import kieker.common.util.registry.IRegistry;
 
 /**
  * @author Generic Kieker
@@ -206,6 +203,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		return true;
 	}
 
+	@Override
 	public final short getCountryCode() {
 		return this.countryCode;
 	}
@@ -216,6 +214,12 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	
 	public final String getAddress() {
 		return this.address;
+	}
+
+	@Override
+	public String[] getValueNames() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }

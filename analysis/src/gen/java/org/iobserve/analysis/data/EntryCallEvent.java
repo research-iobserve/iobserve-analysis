@@ -279,4 +279,10 @@ public class EntryCallEvent extends AbstractMonitoringRecord
         return this.hostname;
     }
 
+	@Override
+	public String[] getValueNames() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
