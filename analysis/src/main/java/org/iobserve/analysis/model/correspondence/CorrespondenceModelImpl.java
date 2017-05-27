@@ -33,7 +33,7 @@ import edu.kit.ipd.cm.LowLevelModelElement;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public class CorrespondenceModelImpl implements ICorrespondence {
+final class CorrespondenceModelImpl implements ICorrespondence {
 
 	/**EMF model instance.*/
     private final CorrespondenceModel model;
@@ -46,7 +46,7 @@ public class CorrespondenceModelImpl implements ICorrespondence {
 	 * @param pathToCM
 	 *            path to model instance.
 	 */
-    public CorrespondenceModelImpl(final URI pathToCM) {
+   CorrespondenceModelImpl(final URI pathToCM) {
 		this.model = new CorrespondenceModelProviderImpl().load(pathToCM).orElseThrow(() -> new IllegalArgumentException(String.format("CM uri might be wrong %s", pathToCM.toFileString())));
 	}
 
