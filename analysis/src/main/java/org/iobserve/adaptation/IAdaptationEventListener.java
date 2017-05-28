@@ -4,6 +4,13 @@ import java.util.List;
 
 import org.iobserve.adaptation.execution.ActionScript;
 
+/**
+ * Interface for an event listener that is used while executing the adaptation
+ * stage.
+ *
+ * @author Tobias Pöppke
+ *
+ */
 public interface IAdaptationEventListener {
 	/**
 	 * Notifies the listener of actions in the adaptation plan that can not be

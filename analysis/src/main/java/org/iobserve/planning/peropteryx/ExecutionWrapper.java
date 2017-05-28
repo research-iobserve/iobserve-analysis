@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import org.eclipse.emf.common.util.URI;
 
 /**
- * Linux specific wrapper, uses bash to call headless PerOpteryx.
+ * Wrapper for executing headless PerOpteryx.
  *
  * @author Tobias Pöppke
  *
@@ -26,6 +26,7 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 	public ExecutionWrapper(URI inputModelDir, URI perOpteryxDir) throws IOException {
 		super(inputModelDir, perOpteryxDir);
 
+		// TODO this does not recognize perOpteryxDir for the execution
 		boolean isWindows = System.getProperty("os.name").startsWith("Windows");
 		if (isWindows) {
 			this.execEnvironment = "cmd.exe";
@@ -94,6 +95,9 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 
 		return builder;
 	}
+
+	// TODO with the new version of the headless peropteryx this is no longer
+	// necessary
 
 	// private String extractModelName(URI modelDir) throws IOException {
 	// String[] files = new File(modelDir.toFileString()).list();

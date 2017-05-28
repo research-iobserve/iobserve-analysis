@@ -11,17 +11,39 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+/**
+ * Container for all allocation groups contained in an allocation model.
+ *
+ * @author Tobias Pöppke
+ * @see AllocationGroup
+ *
+ */
 public class AllocationGroupsContainer {
 	private final Allocation allocation;
 
 	private Map<String, ComponentGroup> componentNameToComponentGroupMap = new LinkedHashMap<>();
 	private Set<AllocationGroup> allocationGroups = new LinkedHashSet<>();
 
+	/**
+	 * Constructs an allocation group container for all allocation groups
+	 * contained in the given allocation model.
+	 *
+	 * @param allocation
+	 *            the allocation model
+	 */
 	public AllocationGroupsContainer(Allocation allocation) {
 		this.allocation = allocation;
 		this.initAllocationGroups();
 	}
 
+	/**
+	 * Returns the allocation group to which the given allocation context
+	 * belongs.
+	 *
+	 * @param allocContext
+	 *            the allocation context for which to get the allocation group
+	 * @return the corresponding allocation group or null if there is none
+	 */
 	public AllocationGroup getAllocationGroup(AllocationContext allocContext) {
 		AssemblyContext asmContext = allocContext.getAssemblyContext_AllocationContext();
 		String componentName = asmContext.getEncapsulatedComponent__AssemblyContext().getEntityName();
@@ -39,6 +61,12 @@ public class AllocationGroupsContainer {
 		return allocationGroupsMap.get(containerIdentifier);
 	}
 
+	/**
+	 * Returns all allocation groups contained in this allocation groups
+	 * container.
+	 *
+	 * @return all contained allocation groups
+	 */
 	public Set<AllocationGroup> getAllocationGroups() {
 		return this.allocationGroups;
 	}
@@ -63,16 +91,16 @@ public class AllocationGroupsContainer {
 		}
 	}
 
-	public static class ComponentGroup {
+	private static class ComponentGroup {
 		private Map<String, AllocationGroup> allocationGroupsMap = new LinkedHashMap<>();
 
 		private final String componentName;
 
-		public ComponentGroup(String componentName) {
+		ComponentGroup(String componentName) {
 			this.componentName = componentName;
 		}
 
-		public AllocationGroup addAllocationContext(String containerIdentifier, AllocationContext context) {
+		AllocationGroup addAllocationContext(String containerIdentifier, AllocationContext context) {
 			AllocationGroup group = this.allocationGroupsMap.get(containerIdentifier);
 
 			if (group == null) {
@@ -84,12 +112,8 @@ public class AllocationGroupsContainer {
 			return group;
 		}
 
-		public Map<String, AllocationGroup> getAllocationGroups() {
+		Map<String, AllocationGroup> getAllocationGroups() {
 			return this.allocationGroupsMap;
-		}
-
-		public String getComponentName() {
-			return this.componentName;
 		}
 	}
 

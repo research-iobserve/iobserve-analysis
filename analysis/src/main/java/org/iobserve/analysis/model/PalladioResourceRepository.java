@@ -7,6 +7,8 @@ import org.palladiosimulator.pcm.resourcetype.SchedulingPolicy;
 
 /**
  * Convenient access to Palladio's {@link ResourceRepository}
+ *
+ * @author Fabian Keller
  */
 public interface PalladioResourceRepository {
 

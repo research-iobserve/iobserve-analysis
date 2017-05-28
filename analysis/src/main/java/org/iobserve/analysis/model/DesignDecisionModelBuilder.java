@@ -19,7 +19,7 @@ import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDe
 import de.uka.ipd.sdq.pcm.designdecision.specific.specificFactory;
 
 /**
- * TODO
+ * Builder for design decision models.
  *
  * @author Tobias Pöppke
  *
@@ -27,12 +27,17 @@ import de.uka.ipd.sdq.pcm.designdecision.specific.specificFactory;
 public class DesignDecisionModelBuilder {
 
 	/**
-	 * TODO
+	 * Saves the decision space with the specified file name in the given
+	 * folder.
 	 *
 	 * @param designDecisionFolder
+	 *            the folder to save the model
 	 * @param fileName
+	 *            the file name for the saved model
 	 * @param decisionSpace
+	 *            the decision space to save
 	 * @throws IOException
+	 *             if the decision space could not be saved
 	 */
 	public static void saveDecisionSpace(final URI designDecisionFolder, final String fileName,
 			final DecisionSpace decisionSpace) throws IOException {
@@ -45,11 +50,11 @@ public class DesignDecisionModelBuilder {
 	}
 
 	/**
-	 * TODO
+	 * Creates a new decision space with the specified name.
 	 *
-	 * @param designDecisionFile
 	 * @param name
-	 * @return
+	 *            the name of the decision space
+	 * @return the new decision space
 	 */
 	public static DecisionSpace createDecisionSpace(final String name) {
 		DecisionSpace decisionSpace = designdecisionFactory.eINSTANCE.createDecisionSpace();
@@ -59,12 +64,18 @@ public class DesignDecisionModelBuilder {
 	}
 
 	/**
-	 * TODO
+	 * Creates a new allocation degree in the specified decision space with the
+	 * given name, associated allocation context and the given resource
+	 * containers as the possible choices for this degree.
 	 *
 	 * @param decisionSpace
+	 *            the decision space for creating the allocation degree
 	 * @param name
+	 *            the name of the allocation degree
 	 * @param changedContext
+	 *            the allocation context that is change by this degree
 	 * @param availableResourceContainers
+	 *            the available resource container choices for this degree
 	 * @return
 	 */
 	public static AllocationDegree createAllocationDegree(final DecisionSpace decisionSpace, final String name,
@@ -79,15 +90,23 @@ public class DesignDecisionModelBuilder {
 	}
 
 	/**
-	 * TODO
+	 * Creates a new resource container replication degree.
+	 *
+	 * The degree's name is set to the given name and the number of replicas is
+	 * bounded by the to and from number of replicas parameters. Both bounds are
+	 * included and all steps in between as well.
 	 *
 	 * @param decisionSpace
+	 *            the decision space in which to create the replication degree
 	 * @param name
+	 *            the name of this replication degree
 	 * @param replicatedContainer
+	 *            the container that is to be replicated
 	 * @param fromNrOfReplicas
+	 *            the lower bound on the number of replicas
 	 * @param toNrOfReplicas
-	 * @param allocationContexts
-	 * @return
+	 *            the upper bound on the number of replicas
+	 * @return the new replication degree
 	 */
 	public static ResourceContainerReplicationDegree createReplicationDegree(final DecisionSpace decisionSpace,
 			final String name, final ResourceContainer replicatedContainer, final int fromNrOfReplicas,
@@ -101,7 +120,6 @@ public class DesignDecisionModelBuilder {
 		degree.setUpperBoundIncluded(true);
 		degree.setNumberOfSteps(0);
 		degree.setPrimaryChanged(replicatedContainer);
-		// degree.getChangeableElements().addAll(allocationContexts);
 		decisionSpace.getDegreesOfFreedom().add(degree);
 		return degree;
 	}

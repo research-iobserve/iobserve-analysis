@@ -1,6 +1,5 @@
 package org.iobserve.planning.utils;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -12,6 +11,7 @@ import org.iobserve.analysis.model.CostModelBuilder;
 import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentCloudBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.planning.cloudprofile.CloudProfile;
 import org.iobserve.planning.cloudprofile.CloudProvider;
 import org.iobserve.planning.cloudprofile.CloudResourceType;
 import org.iobserve.planning.cloudprofile.VMType;
@@ -28,6 +28,12 @@ import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
 import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
 
+/**
+ * Helper class for model related tasks, especially resource environment
+ * related.
+ *
+ * @author Tobias Pöppke
+ */
 public final class ModelHelper {
 
 	private static final String INTERNET_LINKING_RESOURCE_NAME = "Internet";
@@ -35,6 +41,17 @@ public final class ModelHelper {
 	private ModelHelper() {
 	}
 
+	/**
+	 * Returns the identifier for a resource container.
+	 *
+	 * If the resource container is a cloud container, the returned identifier
+	 * contains the provider, location and the type of this container. For other
+	 * containers, the entity name is returned.
+	 *
+	 * @param allocationContainer
+	 *            the container for which to retrieve the identifier
+	 * @return the identifier
+	 */
 	public static String getResourceContainerIdentifier(ResourceContainer allocationContainer) {
 		String identifier = "";
 		if (allocationContainer instanceof ResourceContainerCloud) {
@@ -47,6 +64,14 @@ public final class ModelHelper {
 		return identifier;
 	}
 
+	/**
+	 * Searches the resource environment for a linking resource with name
+	 * 'Internet' and returns it, or creates it if it does not exist.
+	 *
+	 * @param environment
+	 *            the resource environment to search
+	 * @return the found linking resource or the newly created one
+	 */
 	public static LinkingResource getInternetLinkingResource(ResourceEnvironment environment) {
 		LinkingResource linkingResource = null;
 		List<LinkingResource> linkingResources = environment.getLinkingResources__ResourceEnvironment();
@@ -54,15 +79,27 @@ public final class ModelHelper {
 		Optional<LinkingResource> internetLink = linkingResources.stream()
 				.filter(link -> link.getEntityName().contains(INTERNET_LINKING_RESOURCE_NAME)).findFirst();
 
-		if (internetLink.isPresent()) {
-			linkingResource = internetLink.get();
-		} else {
-			linkingResource = ResourceEnvironmentCloudBuilder.createLinkingResource(environment, null,
-					INTERNET_LINKING_RESOURCE_NAME);
-		}
+		linkingResource = internetLink.orElse(ResourceEnvironmentCloudBuilder.createLinkingResource(environment, null,
+				INTERNET_LINKING_RESOURCE_NAME));
+
 		return linkingResource;
 	}
 
+	/**
+	 * Creates a new resource container from a specific {@link VMType},
+	 * including an entry in the cost repository.
+	 *
+	 * @param environment
+	 *            the resource environment in which to create the container
+	 * @param costRepository
+	 *            the cost repository in which to create the costs for the
+	 *            container
+	 * @param cloudVM
+	 *            the type of vm this container is an instance of
+	 * @param containerName
+	 *            the name of this container
+	 * @return the newly created resource container
+	 */
 	public static ResourceContainerCloud createResourceContainerFromVMType(ResourceEnvironment environment,
 			CostRepository costRepository, VMType cloudVM, String containerName) {
 		ResourceContainerCloud container = ResourceEnvironmentCloudBuilder.createResourceContainer(environment,
@@ -91,6 +128,16 @@ public final class ModelHelper {
 		return container;
 	}
 
+	/**
+	 * Adds a resource container to the given resource environment, connecting
+	 * it to an internet linking resource in the environment. (See
+	 * {@link #getInternetLinkingResource(ResourceEnvironment)}).
+	 *
+	 * @param environment
+	 *            the environment in which to add the container
+	 * @param container
+	 *            the container to add
+	 */
 	public static void addResourceContainerToEnvironment(ResourceEnvironment environment, ResourceContainer container) {
 		environment.getResourceContainer_ResourceEnvironment().add(container);
 
@@ -98,6 +145,15 @@ public final class ModelHelper {
 		linkingResource.getConnectedResourceContainers_LinkingResource().add(container);
 	}
 
+	/**
+	 * Adds all available allocation contexts in the allocation model to all
+	 * available resource container replication degrees as changeable elements.
+	 *
+	 * @param allocation
+	 *            the allocation model
+	 * @param decisionSpace
+	 *            the decision space
+	 */
 	public static void addAllAllocationsToReplicationDegrees(Allocation allocation, DecisionSpace decisionSpace) {
 		List<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
 
@@ -124,6 +180,16 @@ public final class ModelHelper {
 		return nrOfCores;
 	}
 
+	/**
+	 * Returns all degrees of freedom of the given degree of freedom type in the
+	 * decision space.
+	 *
+	 * @param decisionSpace
+	 *            the decision space in which to look for the degrees
+	 * @param degreeClass
+	 *            the class of degree to look for
+	 * @return a list of degrees of the requested type
+	 */
 	public static <T extends DegreeOfFreedomInstance> List<T> getAllDegreesOf(DecisionSpace decisionSpace,
 			Class<T> degreeClass) {
 		List<T> results = decisionSpace.getDegreesOfFreedom().stream().filter(degreeClass::isInstance)
@@ -131,8 +197,22 @@ public final class ModelHelper {
 		return results;
 	}
 
-	public static void fillResourceEnvironmentFromCloudProfile(InitializeModelProviders modelProviders)
-			throws IOException {
+	/**
+	 * Creates resource containers and their associated costs from the cloud
+	 * profile given in the model provider.
+	 *
+	 * The created resource containers are of the type
+	 * {@link ResourceContainerCloud} and are connected via an Internet linking
+	 * resource ({@link #getInternetLinkingResource(ResourceEnvironment)}. For
+	 * every vm type in the cloud profile, this method creates one resource
+	 * container representing an instance of this specific vm type. The model is
+	 * saved after the creation of containers is completed.
+	 *
+	 * @param modelProviders
+	 *            the model providers with an initialized resource environment,
+	 *            cost model and cloud profile
+	 */
+	public static void fillResourceEnvironmentFromCloudProfile(InitializeModelProviders modelProviders) {
 		ResourceEnvironmentModelProvider resourceProvider = modelProviders.getResourceEnvironmentModelProvider();
 		CloudProfileModelProvider cloudProfileProvider = modelProviders.getCloudProfileModelProvider();
 		CostModelProvider costProvider = modelProviders.getCostModelProvider();
@@ -152,11 +232,91 @@ public final class ModelHelper {
 		costProvider.save();
 	}
 
+	/**
+	 * Returns the name of the container group this container is a part of. This
+	 * name is used for acquiring and terminating a VM during adaptation
+	 * execution.
+	 *
+	 * @param cloudContainer
+	 *            the cloud container
+	 * @return the group name of this container
+	 */
 	public static String getGroupName(ResourceContainerCloud cloudContainer) {
 		String groupName = cloudContainer.getGroupName();
 		if ((groupName == null) || groupName.trim().isEmpty()) {
 			groupName = cloudContainer.getEntityName();
 		}
 		return groupName;
+	}
+
+	/**
+	 * Returns the hostname for this resource container.
+	 *
+	 * The hostname contains information to reconstruct the resource container
+	 * from events.
+	 *
+	 * @param container
+	 *            the container for which to create the hostname
+	 * @return the hostname
+	 */
+	public static String getHostname(ResourceContainerCloud container) {
+		return String.format("%s_%s", container.getId(), getGroupName(container));
+	}
+
+	/**
+	 * Creates a cloud container from the given hostname with the information
+	 * provided by the model providers in the resource environment provided by
+	 * the model providers.
+	 *
+	 * If the hostname is not a valid cloud container hostname or if no matching
+	 * VMType could be found, the method returns null.
+	 *
+	 * @param modelProviders
+	 *            the model providers to use
+	 * @param hostname
+	 *            the hostname to convert
+	 * @return the new cloud container or null in case of a problem
+	 */
+	public static ResourceContainerCloud getResourceContainerFromHostname(InitializeModelProviders modelProviders,
+			String hostname) {
+		String[] nameParts = hostname.split("_");
+
+		VMType vmType = null;
+
+		// A cloud container hostname should look like this:
+		// ContainerId_AllocationGroupName_ProviderName_Location_InstanceType
+		if (nameParts.length == 5) {
+			String providerName = nameParts[2];
+			String location = nameParts[3];
+			String instanceType = nameParts[4];
+
+			vmType = getVMType(modelProviders.getCloudProfileModelProvider(), providerName, location, instanceType);
+
+			if (vmType != null) {
+				ResourceEnvironment environment = modelProviders.getResourceEnvironmentModelProvider().getModel();
+				CostRepository costRepository = modelProviders.getCostModelProvider().getModel();
+
+				return createResourceContainerFromVMType(environment, costRepository, vmType, hostname);
+			}
+		}
+		return null;
+	}
+
+	private static VMType getVMType(CloudProfileModelProvider cloudProfileProvider, String cloudProviderName,
+			String location, String instanceType) {
+		CloudProfile profile = cloudProfileProvider.getModel();
+
+		CloudProvider cloudProvider = profile.getCloudProviders().stream()
+				.filter(provider -> provider.getName().equals(cloudProviderName)).findFirst().orElse(null);
+
+		if (cloudProvider != null) {
+			VMType vmType = cloudProvider.getCloudResources().stream()
+					.filter(resource -> ((resource instanceof VMType)
+							&& ((VMType) resource).getLocation().equals(location)
+							&& ((VMType) resource).getName().equals(instanceType)))
+					.map(resource -> (VMType) resource).findFirst().orElse(null);
+			return vmType;
+		}
+		return null;
 	}
 }

@@ -12,6 +12,12 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
+/**
+ * Model builder for cloud resource environment models.
+ *
+ * @author Tobias Pöppke
+ *
+ */
 public class ResourceEnvironmentCloudBuilder {
 
 	// 100 ms latency is a conservative value

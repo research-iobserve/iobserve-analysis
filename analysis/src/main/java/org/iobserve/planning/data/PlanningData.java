@@ -7,6 +7,7 @@ import org.iobserve.adaptation.data.AdaptationData;
  * This class transports all required data between the planning filter stages.
  *
  * @author Philipp Weimann
+ * @author Tobias Pöppke
  */
 public class PlanningData {
 

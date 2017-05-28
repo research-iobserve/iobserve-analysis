@@ -10,6 +10,12 @@ import org.palladiosimulator.pcm.resourcetype.ResourceRepository;
 import org.palladiosimulator.pcm.resourcetype.ResourceType;
 import org.palladiosimulator.pcm.resourcetype.SchedulingPolicy;
 
+/**
+ * Convenience class to access palladio resource repository components.
+ *
+ * @author Fabian Keller
+ *
+ */
 public class PalladioResourceRepositoryImpl implements PalladioResourceRepository {
 
 	private final ResourceRepository repository;

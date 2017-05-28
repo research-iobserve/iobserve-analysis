@@ -31,6 +31,17 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import de.uka.ipd.sdq.pcm.cost.CostRepository;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 
+/**
+ * Class for performing the transformation of the original PCM model into the
+ * simplified model with allocation groups.
+ *
+ * The processed model is stored in a new 'processedModel' subfolder of the
+ * original model folder, so PerOpteryx should use this model during the
+ * optimization.
+ *
+ * @author Tobias Pöppke
+ *
+ */
 public class ModelTransformer {
 
 	private static final String PROCESSED_MODEL_FOLDER = "processedModel";
@@ -48,12 +59,36 @@ public class ModelTransformer {
 
 	private DecisionSpace decisionSpace;
 
+	/**
+	 * Constructs a new model transformer with the given planning data and
+	 * updates the planning data with the original model directory.
+	 *
+	 * @param planningData
+	 */
 	public ModelTransformer(PlanningData planningData) {
 		this.planningData = planningData;
 		String originalModelDir = planningData.getOriginalModelDir().toFileString();
 		this.originalModelProviders = new InitializeModelProviders(new File(originalModelDir));
 	}
 
+	/**
+	 * Performs the actual model transformation.
+	 *
+	 * First the original model is copied into the processed model folder and a
+	 * new decision space is created. The original allocation groups are
+	 * extracted and saved for further processing. The next step is to clear all
+	 * cloud containers from the resource environment and clear all allocation
+	 * contexts.
+	 *
+	 * Now the new resource environment is built with only one set of resource
+	 * containers for each allocation group, derived from the available VMTypes
+	 * in the cloud profile. For each of these resource containers a replication
+	 * degree is created. A new allocation context is then created for each
+	 * allocation group, allocating the referenced assembly context to the
+	 * correct type of resource container. A new allocation degree is also
+	 * created for each allocation group, with all available resource containers
+	 * as viable choices.
+	 */
 	public void transformModel() {
 		this.initModelTransformation();
 		this.clearUnneededElements();
@@ -123,6 +158,8 @@ public class ModelTransformer {
 		ResourceEnvironment environment = this.resourceProvider.getModel();
 		CostRepository costs = this.costProvider.getModel();
 
+		// Get resource container that represents the instances this allocation
+		// group is currently deployed on
 		ResourceContainerCloud representingContainer = allocationGroup.getRepresentingResourceContainer();
 
 		if (representingContainer == null) {
@@ -131,24 +168,34 @@ public class ModelTransformer {
 							allocationGroup.getName()));
 		}
 
+		// Set group name of the representing container and add it to the
+		// resource environment
+		representingContainer.setGroupName(allocationGroup.getName());
 		ModelHelper.addResourceContainerToEnvironment(environment, representingContainer);
 
+		// Create a new resource container with replication degree for each
+		// VMType in the cloud profile, except for the one already added as the
+		// representing container create only replication degree
 		for (CloudProvider provider : profile.getCloudProviders()) {
 			for (CloudResourceType cloudResource : provider.getCloudResources()) {
 				if (cloudResource instanceof VMType) {
 					VMType cloudVM = (VMType) cloudResource;
 
-					if (this.isSameVMType(cloudVM, representingContainer)) {
-						continue;
-					}
-
 					int nrOfCurrentReplicas = allocationGroup.getAllocationContexts().size();
 
+					// Upper bound for number of replicas for one resource
+					// container type should be sufficiently high
 					int toNrOfReplicas = (nrOfCurrentReplicas + PlanningData.POSSIBLE_REPLICAS_OFFSET)
 							* PlanningData.POSSIBLE_REPLICAS_FACTOR;
 
-					ResourceContainerCloud createdContainer = ModelHelper.createResourceContainerFromVMType(environment,
-							costs, cloudVM, allocationGroup.getName());
+					ResourceContainerCloud createdContainer;
+					if (this.isSameVMType(cloudVM, representingContainer)) {
+						createdContainer = representingContainer;
+					} else {
+						createdContainer = ModelHelper.createResourceContainerFromVMType(environment, costs, cloudVM,
+								allocationGroup.getName());
+						createdContainer.setGroupName(allocationGroup.getName());
+					}
 
 					DesignDecisionModelBuilder.createReplicationDegree(decisionSpace, allocationGroup.getName(),
 							createdContainer, 1, toNrOfReplicas);

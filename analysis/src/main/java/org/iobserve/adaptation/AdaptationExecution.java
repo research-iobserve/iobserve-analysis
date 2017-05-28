@@ -22,6 +22,16 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 
 	private final IAdaptationEventListener listener;
 
+	/**
+	 * Create a new adaptation execution stage with the given event listener for
+	 * events generated during adaptation.
+	 *
+	 * If the listener is null and an error occurs, the execution will throw an
+	 * exception and exit.
+	 *
+	 * @param listener
+	 *            the event listener
+	 */
 	public AdaptationExecution(IAdaptationEventListener listener) {
 		this.listener = listener;
 	}
