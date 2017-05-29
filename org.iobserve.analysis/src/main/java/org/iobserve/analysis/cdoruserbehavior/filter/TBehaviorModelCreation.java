@@ -52,10 +52,13 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
 
         for (int i = 0; i < size; i++) {
             final Instance instance = instances.instance(i);
-            final BehaviorModel behaviorModel = this.createBehaviorModel(instances, instance);
-            behaviorModel.setName(this.namePrefix + i);
-            this.outputPort.send(behaviorModel);
+            final Optional<BehaviorModel> behaviorModel = this.createBehaviorModel(instances, instance);
+
+            final String modelName = this.namePrefix + i;
+            behaviorModel.ifPresent(model -> model.setName(modelName));
+            behaviorModel.ifPresent(this.outputPort::send);
         }
+
     }
 
     /**
@@ -74,9 +77,9 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      *            instances containing the attribute names
      * @param instance
      *            instance containing the attributes
-     * @return behavior model
+     * @return behavior model if relevant
      */
-    private BehaviorModel createBehaviorModel(final Instances instances, final Instance instance) {
+    private Optional<BehaviorModel> createBehaviorModel(final Instances instances, final Instance instance) {
         final int size = instance.numAttributes();
         final BehaviorModel behaviorModel = new BehaviorModel();
 
@@ -102,7 +105,12 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
 
             }
         }
-        return behaviorModel;
+
+        if (behaviorModel.getEntryCallEdges().isEmpty() && behaviorModel.getEntryCallNodes().isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(behaviorModel);
     }
 
     /**
@@ -153,8 +161,9 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      * @return EntryCallEdge
      */
     private Optional<EntryCallEdge> createEdge(final String name, final Double value) {
-        if (value > 0) {
-
+        // only create relevant edges
+        final double roundedValue = Math.floor(value);
+        if (roundedValue > 0.5) {
             final String[] nodeNames = this.splitSignature(AbstractBehaviorModelTable.EDGE_INDICATOR_PATTERN,
                     AbstractBehaviorModelTable.EDGE_DIVIDER_PATTERN, name);
 
@@ -162,8 +171,8 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
                 final EntryCallNode from = new EntryCallNode(nodeNames[0]);
                 final EntryCallNode to = new EntryCallNode(nodeNames[1]);
 
-                final EntryCallEdge edge = new EntryCallEdge(from, to, value);
-
+                // rount
+                final EntryCallEdge edge = new EntryCallEdge(from, to, roundedValue);
                 return Optional.of(edge);
             }
         }

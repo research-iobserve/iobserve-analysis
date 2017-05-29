@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
+import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 import org.iobserve.analysis.data.EntryCallEvent;
 
 /**
@@ -27,11 +28,11 @@ public interface ISignatureCreationStrategy {
 
     /**
      * create a signature from an entry {@link EntryCallEvent}
-     * 
+     *
      * @param event
      *            event
      * @return signature
      */
-    public String getSignature(EntryCallEvent event);
+    public String getSignature(EntryCallNode node);
 
 }

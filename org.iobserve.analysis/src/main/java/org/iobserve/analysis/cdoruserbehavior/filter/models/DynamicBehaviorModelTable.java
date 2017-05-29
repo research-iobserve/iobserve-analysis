@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
 import org.iobserve.analysis.data.EntryCallEvent;
@@ -68,9 +67,8 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
      *            modelGenerationFilter
      */
 
-    public DynamicBehaviorModelTable(final ISignatureCreationStrategy signatureCreationStrategy,
-            final IRepresentativeStrategy strategy, final ModelGenerationFilter modelGenerationFilter) {
-        super(signatureCreationStrategy);
+    public DynamicBehaviorModelTable(final IRepresentativeStrategy strategy,
+            final ModelGenerationFilter modelGenerationFilter) {
         this.signatures = new HashMap<>();
         this.inverseSignatures = new ArrayList<>();
         this.transitions = new LinkedList<>();
@@ -217,8 +215,8 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
         final Integer[][] fixedTransitions = this.transitions.stream().map(l -> l.stream().toArray(Integer[]::new))
                 .toArray(Integer[][]::new);
 
-        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(this.getSignatureCreationStrategy(),
-                fixedSignatures, fixedInverseSignatures, fixedTransitions);
+        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(fixedSignatures,
+                fixedInverseSignatures, fixedTransitions);
 
         return fixedBehaviorModelTable;
     }
@@ -253,15 +251,14 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
         final Integer[][] fixedTransitions = new Integer[fixedSignatures.size()][fixedSignatures.size()];
         for (int i = 0; i < fixedTransitions.length; i++) {
             for (int j = 0; j < fixedTransitions.length; j++) {
-
                 fixedTransitions[i][j] = keepEmptyTransitions
                         && (this.transitions.get(i).get(j) == AbstractBehaviorModelTable.EMPTY_TRANSITION)
                                 ? AbstractBehaviorModelTable.EMPTY_TRANSITION : 0;
             }
         }
 
-        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(this.getSignatureCreationStrategy(),
-                fixedSignatures, fixedInverseSignatures, fixedTransitions);
+        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(fixedSignatures,
+                fixedInverseSignatures, fixedTransitions);
 
         return fixedBehaviorModelTable;
     }

@@ -17,7 +17,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
 import java.util.regex.Pattern;
 
-import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 
 /**
  * strategy using only the function name
@@ -36,8 +36,8 @@ public class FunctionNameOnlySignatureStrategy implements ISignatureCreationStra
     }
 
     @Override
-    public String getSignature(final EntryCallEvent event) {
-        final String operationSignature = this.bracketPattern.matcher(event.getOperationSignature()).replaceAll("");
+    public String getSignature(final EntryCallNode node) {
+        final String operationSignature = this.bracketPattern.matcher(node.getSignature()).replaceAll("");
         final String[] operationSignatureSplit = this.dotPattern.split(operationSignature);
         final String function = operationSignatureSplit[operationSignatureSplit.length - 1];
         return function;

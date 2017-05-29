@@ -15,19 +15,19 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
-import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 
 /**
  * strategy using only the operation signature
- * 
+ *
  * @author Christoph Dornieden
  *
  */
 public class OperationSignatureStrategy implements ISignatureCreationStrategy {
 
     @Override
-    public String getSignature(final EntryCallEvent event) {
-        return event.getOperationSignature();
+    public String getSignature(final EntryCallNode node) {
+        return node.getSignature();
     }
 
 }

@@ -16,7 +16,6 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models;
 
 import java.util.regex.Pattern;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 
@@ -41,18 +40,6 @@ public abstract class AbstractBehaviorModelTable {
     public static final Pattern INFORMATION_DIVIDER_PATTERN = Pattern
             .compile(AbstractBehaviorModelTable.INFORMATION_DIVIDER);
 
-    private final ISignatureCreationStrategy signatureCreationStrategy;
-
-    /**
-     * constructor
-     *
-     * @param signatureCreationStrategy
-     *            strategy defining the signature string format
-     */
-    public AbstractBehaviorModelTable(final ISignatureCreationStrategy signatureCreationStrategy) {
-        this.signatureCreationStrategy = signatureCreationStrategy;
-    }
-
     /**
      *
      * @param event
@@ -61,7 +48,7 @@ public abstract class AbstractBehaviorModelTable {
      * @return signature of the event used by this class
      */
     public String getSignatureFromEvent(final EntryCallEvent event) {
-        return this.signatureCreationStrategy.getSignature(event);
+        return event.getOperationSignature();
     }
 
     /**
@@ -107,15 +94,6 @@ public abstract class AbstractBehaviorModelTable {
         } else {
             // TODO
         }
-    }
-
-    /**
-     * getter
-     *
-     * @return signatureCreationStrategy
-     */
-    public ISignatureCreationStrategy getSignatureCreationStrategy() {
-        return this.signatureCreationStrategy;
     }
 
     /**

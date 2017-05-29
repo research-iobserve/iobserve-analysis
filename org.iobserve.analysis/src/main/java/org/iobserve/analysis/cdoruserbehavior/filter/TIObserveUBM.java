@@ -31,6 +31,7 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModel;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallEdge;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,7 +47,7 @@ import teetime.framework.AbstractConsumerStage;
  *
  */
 public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
-    private final String baseUrl;
+    ISignatureCreationStrategy signatureStrategy;
     private final String applicationUrl;
     private final Map<String, JsonNode> nodeMap;
     private final Pattern idPattern = Pattern.compile("\\\"@id\\\":\\\"1\\\",");
@@ -56,11 +57,11 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
     /**
      * consturctor
      */
-    public TIObserveUBM(final String baseUrl) {
+    public TIObserveUBM(final String baseUrl, final ISignatureCreationStrategy signatureStrategy) {
         this.objectMapper = new ObjectMapper();
         this.nodeMap = new HashMap<>();
-        this.baseUrl = baseUrl;
         this.applicationUrl = baseUrl + "/applications";
+        this.signatureStrategy = signatureStrategy;
         // TODO remove
         this.resetVisualization();
 
@@ -180,7 +181,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
 
             final ObjectNode json = this.objectMapper.createObjectNode();
             json.put("id", 0);
-            json.put("name", entryCallNode.getSignature());
+            json.put("name", this.signatureStrategy.getSignature(entryCallNode));
 
             final ObjectNode extras = this.objectMapper.createObjectNode();
             for (final CallInformation callInformation : entryCallNode.getEntryCallInformation()) {

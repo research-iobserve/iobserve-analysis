@@ -78,7 +78,8 @@ public class TBehaviorModelComparison extends CompositeStage {
                 repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
 
         final TUsageModelToBehaviorModel tUsageModel = new TUsageModelToBehaviorModel();
-        final TIObserveUBM tIObserveUBM = new TIObserveUBM(configuration.getUBMUrl());
+        final TIObserveUBM tIObserveUBM = new TIObserveUBM(configuration.getUBMUrl(),
+                configuration.getSignatureCreationStrategy());
         this.connectPorts(this.distributor.getNewOutputPort(), tEntryEventSequence.getInputPort());
         this.connectPorts(tEntryEventSequence.getOutputPort(), tUsageModel.getInputPort());
         this.connectPorts(tUsageModel.getOutputPort(), tIObserveUBM.getInputPort());

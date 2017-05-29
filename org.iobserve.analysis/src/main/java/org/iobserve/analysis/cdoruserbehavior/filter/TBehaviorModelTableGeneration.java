@@ -19,7 +19,6 @@ import java.util.List;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModelTable;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.DynamicBehaviorModelTable;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
@@ -53,12 +52,11 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
      * @param modelGenerationFilter
      *            model generation filter
      */
-    public TBehaviorModelTableGeneration(final ISignatureCreationStrategy signatureCreationStrategy,
-            final IRepresentativeStrategy strategy, final ModelGenerationFilter modelGenerationFilter,
-            final boolean keepEmptyTransitions) {
+    public TBehaviorModelTableGeneration(final IRepresentativeStrategy strategy,
+            final ModelGenerationFilter modelGenerationFilter, final boolean keepEmptyTransitions) {
         super();
 
-        this.modelTable = new DynamicBehaviorModelTable(signatureCreationStrategy, strategy, modelGenerationFilter);
+        this.modelTable = new DynamicBehaviorModelTable(strategy, modelGenerationFilter);
         this.keepEmptyTransitions = keepEmptyTransitions;
 
     }
