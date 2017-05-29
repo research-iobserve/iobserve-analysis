@@ -12,7 +12,7 @@ import org.iobserve.analysis.utils.AbstractLinearComposition;
  * @author Philipp Weimann
  * @author Tobias Pöppke
  */
-public class CandidateGeneration extends AbstractLinearComposition<URI, AdaptationData> {
+public class CandidateGeneration extends AbstractLinearComposition<AdaptationData, AdaptationData> {
 
 	/**
 	 * The constructor for the model creation part.

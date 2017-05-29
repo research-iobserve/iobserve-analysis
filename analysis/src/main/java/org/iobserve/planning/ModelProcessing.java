@@ -15,7 +15,7 @@ import teetime.stage.basic.AbstractTransformation;
  * @author Tobias Pöppke
  *
  */
-public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
+public class ModelProcessing extends AbstractTransformation<AdaptationData, PlanningData> {
 
 	private final URI perOpteryxDir;
 
@@ -32,14 +32,14 @@ public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
 	}
 
 	@Override
-	protected void execute(URI element) throws Exception {
-		AdaptationData adaptationData = new AdaptationData();
+	protected void execute(AdaptationData element) throws Exception {
+		AdaptationData adaptationData = element;
 		PlanningData planningData = new PlanningData();
 
-		adaptationData.setRuntimeModelURI(element);
+//		adaptationData.setRuntimeModelURI(element);
 		planningData.setAdaptationData(adaptationData);
 		planningData.setPerOpteryxDir(this.perOpteryxDir);
-		planningData.setOriginalModelDir(element);
+		planningData.setOriginalModelDir(adaptationData.getRuntimeModelURI());
 
 		ModelTransformer modelTransformer = new ModelTransformer(planningData);
 

@@ -96,31 +96,28 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 	 * @throws IOException
 	 *             for all file reading errors
 	 */
-	public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
-			final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
-			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
+	public AbstractObservationConfiguration(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
+			final RepositoryModelProvider repositoryModelProvider, final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final int varianceOfUserGroups,
-			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener) {
+			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final int varianceOfUserGroups, final int thinkTime,
+			final boolean closedWorkload, final IAdaptationEventListener eventListener) {
 		/** configure filter. */
 		this.recordSwitch = new RecordSwitch();
 
 		final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
-		this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
-				resourceEnvironmentModelProvider);
-		this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
-				resourceEnvironmentModelProvider);
+		this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
+		this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
 		final TEntryCall tEntryCall = new TEntryCall(correspondenceModel);
 		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
-		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
-				repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
-		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
-				resourceEnvironmentModelProvider);
+		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider, repositoryModelProvider,
+				varianceOfUserGroups, thinkTime, closedWorkload);
+		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
 		final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
-		final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless),
-				new ModelOptimization(), new CandidateProcessing());
-		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(),
-				new AdaptationPlanning(), new AdaptationExecution(eventListener));
+		final PrivacyAnalysis privacyAnalysis = new PrivacyAnalysis(new GraphCreation(), new GraphPrivacyAnalysis());
+		final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless), new ModelOptimization(),
+				new CandidateProcessing());
+		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(), new AdaptationPlanning(),
+				new AdaptationExecution(eventListener));
 		final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
 
 		/** dispatch different monitoring data. */
@@ -144,14 +141,12 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		this.connectPorts(this.recordSwitch.getGeoLocationPort(), tGeoLocation.getInputPort());
 		this.connectPorts(tGeoLocation.getOutputPortSnapshot(), snapshotBuilder.getInputPort());
 
-		
 		// Path Snapshot => Privacy Analysis
 		this.connectPorts(snapshotBuilder.getOutputPort(), privacyAnalysis.getInputPort());
-		
-		// Path Privacy Analysis => Planning
-		this.connectPorts(privacyAnalysis.getOutputPort(), modelCreation.getInputPort());
-		// Path Snapshot => Evaluation
 		this.connectPorts(snapshotBuilder.getEvaluationOutputPort(), systemEvaluator.getInputPort());
+
+		// Path Privacy Analysis => Planning
+		this.connectPorts(privacyAnalysis.getOutputPort(), candidateGenerator.getInputPort());
 
 		// Path Planning => Adaptation
 		this.connectPorts(candidateGenerator.getOutputPort(), systemAdaptor.getInputPort());
