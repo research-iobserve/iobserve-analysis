@@ -17,9 +17,6 @@ package org.iobserve.analysis.model;
 
 import java.io.IOException;
 import java.util.Map;
-import java.io.File;
-
-import de.uka.ipd.sdq.identifier.Identifier;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -31,8 +28,11 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
+import de.uka.ipd.sdq.identifier.Identifier;
+
 /**
- * Base class for pcm model provider. Implements common methods for loading/saving pcm model.
+ * Base class for pcm model provider. Implements common methods for
+ * loading/saving pcm model.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
@@ -40,191 +40,191 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
  */
 public abstract class AbstractModelProvider<T extends EObject> {
 
-    /** uri to the pcm model. */
-    private URI uriModelInstance;
-    /** parent where this provider belongs to. */
-    /** save strategy of model. */
-    private ModelSaveStrategy saveStrategy = ModelSaveStrategy.OVERRIDE;
-    /** the model instance. */
-    private T model;
+	/** uri to the pcm model. */
+	private URI uriModelInstance;
+	/** parent where this provider belongs to. */
+	/** save strategy of model. */
+	private ModelSaveStrategy saveStrategy = ModelSaveStrategy.OVERRIDE;
+	/** the model instance. */
+	private T model;
 
-    /**
-     * Create a model provider for the given. Uses {@link #MODEL_FILE_LOADER} as loader and
-     * {@link #MODEL_FILE_SAVER} as saver.
-     *
-     * @param theUriModelInstance
-     *            uri to the model
-     */
-    AbstractModelProvider(final URI theUriModelInstance) {
-        this.uriModelInstance = theUriModelInstance;
-        this.loadModel();
-    }
+	/**
+	 * Create a model provider for the given. Uses {@link #MODEL_FILE_LOADER} as
+	 * loader and {@link #MODEL_FILE_SAVER} as saver.
+	 *
+	 * @param theUriModelInstance
+	 *            uri to the model
+	 */
+	AbstractModelProvider(final URI theUriModelInstance) {
+		this.uriModelInstance = theUriModelInstance;
+		this.loadModel();
+	}
 
-    /**
-     * Set the save strategy which is used to save the model, when {@link #save()} is called.
-     *
-     * @param saveStrategy
-     *            save strategy
-     */
-    public void setSaveStrategy(final ModelSaveStrategy saveStrategy) {
-        this.saveStrategy = saveStrategy;
-    }
+	/**
+	 * Set the save strategy which is used to save the model, when
+	 * {@link #save()} is called.
+	 *
+	 * @param saveStrategy
+	 *            save strategy
+	 */
+	public void setSaveStrategy(final ModelSaveStrategy saveStrategy) {
+		this.saveStrategy = saveStrategy;
+	}
 
-    /**
-     * Save the internal model. This will override the existing.
-     */
-    public final void save() {
-        switch (this.saveStrategy) {
-        case OVERRIDE:
-            this.overrideModel();
-            break;
-        case MERGE:
-            throw new UnsupportedOperationException(
-                    String.format("%s save strategy does not exist yet!", ModelSaveStrategy.MERGE.name()));
-        default:
-            this.overrideModel();
-            break;
-        }
-    }
-    
-    
-    /**
-     * Saves the current model instance at the given location. Old files will be overwritten.
-     * 
-     * @param snapshotLocation
-     * 			location to save the current model instance to
-     */
-    public final void save(final URI snapshotLocation)
-    {
-    	URI backupUIRI =  this.uriModelInstance;
-    	ModelSaveStrategy saveStrategyBackup = this.saveStrategy;
-    	this.uriModelInstance = snapshotLocation;
-    	this.setSaveStrategy(ModelSaveStrategy.OVERRIDE);
-    	
-    	this.save();
-    	
-    	this.uriModelInstance = backupUIRI;
-    	this.setSaveStrategy(saveStrategyBackup);
-    }
-    
+	/**
+	 * Save the internal model. This will override the existing.
+	 */
+	public final void save() {
+		switch (this.saveStrategy) {
+		case OVERRIDE:
+			this.overrideModel();
+			break;
+		case MERGE:
+			throw new UnsupportedOperationException(
+					String.format("%s save strategy does not exist yet!", ModelSaveStrategy.MERGE.name()));
+		default:
+			this.overrideModel();
+			break;
+		}
+	}
 
-    /**
-     * Override existing model content.
-     */
-    private void overrideModel() {
-        final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-        final Map<String, Object> map = reg.getExtensionToFactoryMap();
-        map.put("*", new XMIResourceFactoryImpl());
+	/**
+	 * Saves the current model instance at the given location. Old files will be
+	 * overwritten.
+	 *
+	 * @param snapshotLocation
+	 *            location to save the current model instance to
+	 */
+	public final void save(final URI snapshotLocation) {
+		URI backupUIRI = this.uriModelInstance;
+		ModelSaveStrategy saveStrategyBackup = this.saveStrategy;
+		this.uriModelInstance = snapshotLocation;
+		this.setSaveStrategy(ModelSaveStrategy.OVERRIDE);
 
-        final ResourceSet resSet = new ResourceSetImpl();
-        resSet.setResourceFactoryRegistry(reg);
+		this.save();
 
-        final Resource res = resSet.createResource(this.uriModelInstance);
-        res.getContents().add(this.model);
-        try {
-            res.save(null);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-    }
+		this.uriModelInstance = backupUIRI;
+		this.setSaveStrategy(saveStrategyBackup);
+	}
 
-    /**
-     * Get an instance of the package where this model belongs to. <br>
-     * <br>
-     * For instance:
-     *
-     * <pre>
-     * public EPackage getPackage() {
-     *     return AllocationPackage.eINSTANCE;
-     * }
-     * </pre>
-     *
-     * @return return the package of this model
-     */
-    protected abstract EPackage getPackage();
+	/**
+	 * Override existing model content.
+	 */
+	private void overrideModel() {
+		final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+		final Map<String, Object> map = reg.getExtensionToFactoryMap();
+		map.put("*", new XMIResourceFactoryImpl());
 
-    /**
-     * Load the model from {@link #uriModelInstance}.
-     */
-    @SuppressWarnings("unchecked")
-    public void loadModel() {
-        this.getPackage().eClass();
+		final ResourceSet resSet = new ResourceSetImpl();
+		resSet.setResourceFactoryRegistry(reg);
 
-        final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
-        final Map<String, Object> map = reg.getExtensionToFactoryMap();
-        map.put("*", new XMIResourceFactoryImpl());
+		final Resource res = resSet.createResource(this.uriModelInstance);
+		res.getContents().add(this.model);
+		try {
+			res.save(null);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-        final ResourceSet resSet = new ResourceSetImpl();
-        resSet.setResourceFactoryRegistry(reg);
+	/**
+	 * Get an instance of the package where this model belongs to. <br>
+	 * <br>
+	 * For instance:
+	 *
+	 * <pre>
+	 * public EPackage getPackage() {
+	 * 	return AllocationPackage.eINSTANCE;
+	 * }
+	 * </pre>
+	 *
+	 * @return return the package of this model
+	 */
+	protected abstract EPackage getPackage();
 
-        final Resource resource = resSet.getResource(this.uriModelInstance, true);
-        try {
-            resource.load(null);
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-        EcoreUtil.resolveAll(resSet);
-        this.model = null;
-        if (!resource.getContents().isEmpty()) {
-            this.model = (T) resource.getContents().get(0);
-        }
+	/**
+	 * Load the model from {@link #uriModelInstance}.
+	 */
+	@SuppressWarnings("unchecked")
+	public void loadModel() {
+		this.getPackage().eClass();
 
-        if (this.model == null) {
-            System.out.printf("Model at %s could not be loaded!\n", this.uriModelInstance.toString());
-        }
-    }
+		final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+		final Map<String, Object> map = reg.getExtensionToFactoryMap();
+		map.put("*", new XMIResourceFactoryImpl());
 
-    /**
-     * Clears model content.
-     */
-    public abstract void resetModel();
+		final ResourceSet resSet = new ResourceSetImpl();
+		resSet.setResourceFactoryRegistry(reg);
 
-    /**
-     * Get the loaded model.
-     *
-     * @return model
-     */
-    public T getModel() {
-        return this.model;
-    }
+		final Resource resource = resSet.getResource(this.uriModelInstance, true);
+		try {
+			resource.load(null);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+		EcoreUtil.resolveAll(resSet);
+		this.model = null;
+		if (!resource.getContents().isEmpty()) {
+			this.model = (T) resource.getContents().get(0);
+		}
 
-    /**
-     * Get the uri to the model.
-     *
-     * @return uri to model
-     */
-    public URI getModelUri() {
-        return this.uriModelInstance;
-    }
+		if (this.model == null) {
+			System.out.printf("Model at %s could not be loaded!\n", this.uriModelInstance.toString());
+		}
+	}
 
-    /**
-     * Get the loaded model.
-     *
-     * @param reload
-     *            if true, it will reloaded the model before return.
-     * @return the model
-     */
-    public T getModel(final boolean reload) {
-        if (reload) {
-            this.loadModel();
-        }
-        return this.getModel();
-    }
+	/**
+	 * Clears model content.
+	 */
+	public abstract void resetModel();
 
-    /**
-     * @param id
-     *            id
-     * @param list
-     *            where to search
-     * @return identifier or null if no identifier with the given id could be found.
-     */
-    public static Identifier getIdentifiableComponent(final String id, final EList<? extends Identifier> list) {
-        for (final Identifier next : list) {
-            if (next.getId().equals(id)) {
-                return next;
-            }
-        }
-        return null;
-    }
+	/**
+	 * Get the loaded model.
+	 *
+	 * @return model
+	 */
+	public T getModel() {
+		return this.model;
+	}
+
+	/**
+	 * Get the uri to the model.
+	 *
+	 * @return uri to model
+	 */
+	public URI getModelUri() {
+		return this.uriModelInstance;
+	}
+
+	/**
+	 * Get the loaded model.
+	 *
+	 * @param reload
+	 *            if true, it will reloaded the model before return.
+	 * @return the model
+	 */
+	public T getModel(final boolean reload) {
+		if (reload) {
+			this.loadModel();
+		}
+		return this.getModel();
+	}
+
+	/**
+	 * @param id
+	 *            id
+	 * @param list
+	 *            where to search
+	 * @return identifier or null if no identifier with the given id could be
+	 *         found.
+	 */
+	public static Identifier getIdentifiableComponent(final String id, final EList<? extends Identifier> list) {
+		for (final Identifier next : list) {
+			if (next.getId().equals(id)) {
+				return next;
+			}
+		}
+		return null;
+	}
 
 }

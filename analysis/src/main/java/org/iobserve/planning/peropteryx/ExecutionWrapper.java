@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import javax.inject.Inject;
-
 import org.eclipse.emf.common.util.URI;
 
 /**
@@ -22,7 +20,6 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 	private String execCommand;
 	// private String modelName;
 
-	@Inject
 	public ExecutionWrapper(URI inputModelDir, URI perOpteryxDir) throws IOException {
 		super(inputModelDir, perOpteryxDir);
 
@@ -35,7 +32,7 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 		} else {
 			this.execEnvironment = "/bin/bash";
 			this.execEnvironmentParam = "-c";
-			this.execCommand = "./peropteryx-headless";
+			this.execCommand = perOpteryxDir.toFileString() + "/peropteryx-headless";
 		}
 
 		// this.modelName = this.extractModelName(inputModelDir);
