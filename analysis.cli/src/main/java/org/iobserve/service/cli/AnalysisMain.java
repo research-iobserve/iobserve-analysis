@@ -30,6 +30,8 @@ import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -105,6 +107,9 @@ public final class AnalysisMain {
 						final AllocationModelProvider allocationModelProvider = modelProviderPlatform
 								.getAllocationModelProvider();
 						final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
+						final CloudProfileModelProvider cloudProfileModelProvider = modelProviderPlatform
+								.getCloudProfileModelProvider();
+						final CostModelProvider costModelProvider = modelProviderPlatform.getCostModelProvider();
 
 						String snapshotPath = commandLine.getOptionValue("s");
 						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(URI.createFileURI(snapshotPath),
@@ -118,8 +123,8 @@ public final class AnalysisMain {
 						final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
 								correspondenceModel, usageModelProvider, repositoryModelProvider,
 								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider,
-								snapshotBuilder, perOpteryxUri, varianceOfUserGroups, thinkTime, closedWorkload,
-								eventListener);
+								snapshotBuilder, cloudProfileModelProvider, costModelProvider, perOpteryxUri,
+								varianceOfUserGroups, thinkTime, closedWorkload, eventListener);
 
 						System.out.println("Analysis configuration");
 						final Execution<Configuration> analysis = new Execution<>(configuration);

@@ -1,6 +1,7 @@
 package org.iobserve.planning.cli;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -92,7 +93,11 @@ public final class PlanningMain {
 
 			// Process model
 			ModelTransformer transformer = new ModelTransformer(planningData);
-			transformer.transformModel();
+			try {
+				transformer.transformModel();
+			} catch (IOException e) {
+				LOG.error("IOException while executing model transformation: ", e);
+			}
 
 			// Execute PerOpteryx
 			int result = 0;

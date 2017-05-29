@@ -33,6 +33,8 @@ import org.iobserve.analysis.filter.TGeoLocation;
 import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -97,12 +99,14 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 			final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
 			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final int varianceOfUserGroups,
+			final SnapshotBuilder snapshotBuilder, final CloudProfileModelProvider cloudProfileModelProvider,
+			final CostModelProvider costModelProvider, final URI perOpteryxHeadless, final int varianceOfUserGroups,
 			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener) {
 		/** configure filter. */
 		this.recordSwitch = new RecordSwitch();
 
-		final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
+		final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider, cloudProfileModelProvider,
+				costModelProvider);
 		this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
 				resourceEnvironmentModelProvider);
 		this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,

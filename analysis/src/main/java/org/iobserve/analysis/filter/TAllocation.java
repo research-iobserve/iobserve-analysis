@@ -15,81 +15,104 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
-
+import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.iobserve.planning.utils.ModelHelper;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 /**
- *  TAllocation creates a new resource container if and only if there is no corresponding container already available.
+ * TAllocation creates a new resource container if and only if there is no
+ * corresponding container already available.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
+ * @author Tobias Pöppke
  */
 public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
 
-    /** reference to {@link ResourceEnvironment} provider. */
-    private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
-    /** output port. */
-    private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
+	/** reference to {@link ResourceEnvironment} provider. */
+	private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
 
-    /**
-     * Most likely the constructor needs an additional field for the PCM access. But this has to be
-     * discussed with Robert.
-     *
-     * @param resourceEvnironmentModelProvider
-     *            the resource environment model provider
-     */
-    public TAllocation(final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider) {
-        this.resourceEnvModelProvider = resourceEvnironmentModelProvider;
-    }
+	private final CloudProfileModelProvider cloudProfileModelProvider;
 
-    /**
-     * @return the deploymentOutputPort
-     */
-    public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
-        return this.deploymentOutputPort;
-    }
+	private final CostModelProvider costModelProvider;
+	/** output port. */
+	private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
 
-    /**
-     * This method is triggered for every deployment event.
-     *
-     * @param event
-     *            one deployment event to be processed
-     */
-    @Override
-    protected void execute(final IDeploymentRecord event) {
-        if (event instanceof ServletDeployedEvent) {
-            final String serivce = ((ServletDeployedEvent) event).getSerivce();
-            this.updateModel(serivce);
-        } else if (event instanceof EJBDeployedEvent) {
-            final String service = ((EJBDeployedEvent) event).getSerivce();
-            this.updateModel(service);
-        }
+	/**
+	 * Most likely the constructor needs an additional field for the PCM access.
+	 * But this has to be discussed with Robert.
+	 *
+	 * @param resourceEvnironmentModelProvider
+	 *            the resource environment model provider
+	 */
+	public TAllocation(final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
+			final CloudProfileModelProvider cloudProfileModelProvider, final CostModelProvider costModelProvider) {
+		this.resourceEnvModelProvider = resourceEvnironmentModelProvider;
+		this.cloudProfileModelProvider = cloudProfileModelProvider;
+		this.costModelProvider = costModelProvider;
+	}
 
-        // forward the event
-        this.deploymentOutputPort.send(event);
-    }
+	/**
+	 * @return the deploymentOutputPort
+	 */
+	public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
+		return this.deploymentOutputPort;
+	}
 
-    /**
-     * Update the allocation model with the given server-name if necessary.
-     *
-     * @param serverName
-     *            server name
-     */
-    private void updateModel(final String serverName) {
-        Opt.of(ResourceEnvironmentModelBuilder.getResourceContainerByName(this.resourceEnvModelProvider.getModel(),
-                serverName)).ifNotPresent().apply(() -> {
-                    TAllocation.this.resourceEnvModelProvider.loadModel();
-                    final ResourceEnvironment model = TAllocation.this.resourceEnvModelProvider.getModel();
-                    ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
-                    TAllocation.this.resourceEnvModelProvider.save();
-                });
-    }
+	/**
+	 * This method is triggered for every deployment event.
+	 *
+	 * @param event
+	 *            one deployment event to be processed
+	 */
+	@Override
+	protected void execute(final IDeploymentRecord event) {
+		if (event instanceof ServletDeployedEvent) {
+			final String serivce = ((ServletDeployedEvent) event).getSerivce();
+			this.updateModel(serivce);
+		} else if (event instanceof EJBDeployedEvent) {
+			final String service = ((EJBDeployedEvent) event).getSerivce();
+			this.updateModel(service);
+		}
+
+		// forward the event
+		this.deploymentOutputPort.send(event);
+	}
+
+	/**
+	 * Update the allocation model with the given server-name if necessary.
+	 *
+	 * @param serverName
+	 *            server name
+	 */
+	private void updateModel(final String serverName) {
+		Opt.of(ResourceEnvironmentModelBuilder.getResourceContainerByName(this.resourceEnvModelProvider.getModel(),
+				serverName)).ifNotPresent().apply(() -> {
+					this.createNewResourceContainer(serverName);
+				});
+	}
+
+	private void createNewResourceContainer(final String serverName) {
+		ResourceContainer cloudContainer = ModelHelper.getResourceContainerFromHostname(this.resourceEnvModelProvider,
+				this.cloudProfileModelProvider, this.costModelProvider, serverName);
+
+		if (cloudContainer == null) {
+			this.resourceEnvModelProvider.loadModel();
+			final ResourceEnvironment model = TAllocation.this.resourceEnvModelProvider.getModel();
+			ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
+		}
+
+		this.resourceEnvModelProvider.save();
+	}
 }

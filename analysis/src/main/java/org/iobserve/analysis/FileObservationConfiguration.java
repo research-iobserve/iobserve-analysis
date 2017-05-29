@@ -21,6 +21,8 @@ import java.util.Collection;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.IAdaptationEventListener;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -73,11 +75,12 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
 			final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
 			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final int varianceOfUserGroups,
+			final SnapshotBuilder snapshotBuilder, final CloudProfileModelProvider cloudProfileModelProvider,
+			final CostModelProvider costModelProvider, final URI perOpteryxHeadless, final int varianceOfUserGroups,
 			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener) {
 		super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-				allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxHeadless, varianceOfUserGroups,
-				thinkTime, closedWorkload, eventListener);
+				allocationModelProvider, systemModelProvider, snapshotBuilder, cloudProfileModelProvider,
+				costModelProvider, perOpteryxHeadless, varianceOfUserGroups, thinkTime, closedWorkload, eventListener);
 
 		this.files = new InitialElementProducer<>(directories);
 		this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());

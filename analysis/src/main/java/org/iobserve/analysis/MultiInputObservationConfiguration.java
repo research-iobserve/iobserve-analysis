@@ -17,6 +17,8 @@ package org.iobserve.analysis;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -63,11 +65,12 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
 			final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
 			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final int varianceOfUserGroups,
+			final SnapshotBuilder snapshotBuilder, final CloudProfileModelProvider cloudProfileModelProvider,
+			final CostModelProvider costModelProvider, final URI perOpteryxHeadless, final int varianceOfUserGroups,
 			final int thinkTime, final boolean closedWorkload) {
 		super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-				allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxHeadless, varianceOfUserGroups,
-				thinkTime, closedWorkload, null);
+				allocationModelProvider, systemModelProvider, snapshotBuilder, cloudProfileModelProvider,
+				costModelProvider, perOpteryxHeadless, varianceOfUserGroups, thinkTime, closedWorkload, null);
 
 		final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
 				MultiInputObservationConfiguration.CAPACITY);

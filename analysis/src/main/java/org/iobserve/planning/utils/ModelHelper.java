@@ -277,8 +277,9 @@ public final class ModelHelper {
 	 *            the hostname to convert
 	 * @return the new cloud container or null in case of a problem
 	 */
-	public static ResourceContainerCloud getResourceContainerFromHostname(InitializeModelProviders modelProviders,
-			String hostname) {
+	public static ResourceContainerCloud getResourceContainerFromHostname(
+			ResourceEnvironmentModelProvider resourceEnvModelProvider,
+			CloudProfileModelProvider cloudProfileModelProvider, CostModelProvider costModelProvider, String hostname) {
 		String[] nameParts = hostname.split("_");
 
 		VMType vmType = null;
@@ -286,17 +287,20 @@ public final class ModelHelper {
 		// A cloud container hostname should look like this:
 		// ContainerId_AllocationGroupName_ProviderName_Location_InstanceType
 		if (nameParts.length == 5) {
+			String groupName = nameParts[1];
 			String providerName = nameParts[2];
 			String location = nameParts[3];
 			String instanceType = nameParts[4];
 
-			vmType = getVMType(modelProviders.getCloudProfileModelProvider(), providerName, location, instanceType);
+			vmType = getVMType(cloudProfileModelProvider, providerName, location, instanceType);
 
 			if (vmType != null) {
-				ResourceEnvironment environment = modelProviders.getResourceEnvironmentModelProvider().getModel();
-				CostRepository costRepository = modelProviders.getCostModelProvider().getModel();
+				ResourceEnvironment environment = resourceEnvModelProvider.getModel();
+				CostRepository costRepository = costModelProvider.getModel();
 
-				return createResourceContainerFromVMType(environment, costRepository, vmType, hostname);
+				ResourceContainerCloud container = createResourceContainerFromVMType(environment, costRepository,
+						vmType, hostname);
+				container.setGroupName(groupName);
 			}
 		}
 		return null;

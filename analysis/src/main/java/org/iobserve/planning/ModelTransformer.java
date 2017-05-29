@@ -13,6 +13,7 @@ import org.iobserve.analysis.model.CloudProfileModelProvider;
 import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.DesignDecisionModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.planning.cloudprofile.CloudProfile;
 import org.iobserve.planning.cloudprofile.CloudProvider;
 import org.iobserve.planning.cloudprofile.CloudResourceType;
@@ -88,16 +89,22 @@ public class ModelTransformer {
 	 * correct type of resource container. A new allocation degree is also
 	 * created for each allocation group, with all available resource containers
 	 * as viable choices.
+	 *
+	 * @throws IOException
+	 *             if an error occured while saving the models
 	 */
-	public void transformModel() {
+	public void transformModel() throws IOException {
 		this.initModelTransformation();
 		this.clearUnneededElements();
 		this.createResourceEnv();
 	}
 
-	private void initModelTransformation() {
+	private void initModelTransformation() throws IOException {
 		URI processedModelDir = this.planningData.getOriginalModelDir().appendSegment(PROCESSED_MODEL_FOLDER);
-		this.originalModelProviders.saveToSnapshotLocation(processedModelDir);
+
+		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(processedModelDir, this.originalModelProviders);
+		snapshotBuilder.createSnapshot();
+
 		this.planningData.setProcessedModelDir(processedModelDir);
 		this.processedModelProviders = new InitializeModelProviders(new File(processedModelDir.toFileString()));
 

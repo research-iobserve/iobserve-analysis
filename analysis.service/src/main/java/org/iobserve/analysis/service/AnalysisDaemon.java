@@ -18,8 +18,6 @@ package org.iobserve.analysis.service;
 import java.io.File;
 import java.net.MalformedURLException;
 
-import teetime.framework.Configuration;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -33,12 +31,16 @@ import org.apache.commons.daemon.DaemonInitException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+
+import teetime.framework.Configuration;
 
 /**
  * @author Reiner Jung
@@ -79,7 +81,8 @@ public class AnalysisDaemon implements Daemon {
 
 				final File pcmModelsDirectory = new File(commandLine.getOptionValue("p"));
 
-				final int varianceOfUserGroups = Integer.parseInt(commandLine.getOptionValue(AnalysisDaemon.VARIANCE_OF_USER_GROUPS));
+				final int varianceOfUserGroups = Integer
+						.parseInt(commandLine.getOptionValue(AnalysisDaemon.VARIANCE_OF_USER_GROUPS));
 				final int thinkTime = Integer.parseInt(commandLine.getOptionValue(AnalysisDaemon.THINK_TIME));
 				final boolean closedWorkload = commandLine.hasOption(AnalysisDaemon.CLOSED_WORKLOAD);
 
@@ -92,23 +95,34 @@ public class AnalysisDaemon implements Daemon {
 
 						final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
 						final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
-						final RepositoryModelProvider repositoryModelProvider = modelProvider.getRepositoryModelProvider();
-						final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider.getResourceEnvironmentModelProvider();
-						final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
+						final RepositoryModelProvider repositoryModelProvider = modelProvider
+								.getRepositoryModelProvider();
+						final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider
+								.getResourceEnvironmentModelProvider();
+						final AllocationModelProvider allocationModelProvider = modelProvider
+								.getAllocationModelProvider();
 						final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
-						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(URI.createURI(commandLine.getOptionValue("s")), modelProvider);
+						final CloudProfileModelProvider cloudProfileModelProvider = modelProvider
+								.getCloudProfileModelProvider();
+						final CostModelProvider costModelProvider = modelProvider.getCostModelProvider();
+						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(
+								URI.createURI(commandLine.getOptionValue("s")), modelProvider);
 						final URI perOpteryxDir = URI.createURI(commandLine.getOptionValue("po"));
 
-						final Configuration configuration = new ServiceConfiguration(listenPort, outputHostname, outputPort, systemId,
-								varianceOfUserGroups, thinkTime, closedWorkload, correspondenceModel, usageModelProvider, repositoryModelProvider,
-								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxDir);
+						final Configuration configuration = new ServiceConfiguration(listenPort, outputHostname,
+								outputPort, systemId, varianceOfUserGroups, thinkTime, closedWorkload,
+								correspondenceModel, usageModelProvider, repositoryModelProvider,
+								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider,
+								snapshotBuilder, cloudProfileModelProvider, costModelProvider, perOpteryxDir);
 
 						this.thread = new AnalysisThread(this, configuration);
 					} else {
-						throw new DaemonInitException("CLI error: PCM directory " + pcmModelsDirectory.getPath() + " is not a directory.");
+						throw new DaemonInitException(
+								"CLI error: PCM directory " + pcmModelsDirectory.getPath() + " is not a directory.");
 					}
 				} else {
-					throw new DaemonInitException("CLI error: PCM directory " + pcmModelsDirectory.getPath() + " does not exist.");
+					throw new DaemonInitException(
+							"CLI error: PCM directory " + pcmModelsDirectory.getPath() + " does not exist.");
 				}
 			}
 		} catch (final ParseException exp) {
@@ -154,11 +168,14 @@ public class AnalysisDaemon implements Daemon {
 
 		options.addOption(Option.builder("i").required(true).longOpt("input").hasArg()
 				.desc("port number to listen for new connections of Kieker writers").build());
-		options.addOption(Option.builder("o").required(true).longOpt("output").hasArgs().numberOfArgs(2).valueSeparator(':')
-				.desc("hostname and port of the iobserve visualization, e.g., visualization:80").build());
+		options.addOption(
+				Option.builder("o").required(true).longOpt("output").hasArgs().numberOfArgs(2).valueSeparator(':')
+						.desc("hostname and port of the iobserve visualization, e.g., visualization:80").build());
 		options.addOption(Option.builder("s").required(true).longOpt("system").hasArg().desc("system").build());
-		options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg().desc("directory containing all PCM models").build());
-		options.addOption(Option.builder("s").required(true).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
+		options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg()
+				.desc("directory containing all PCM models").build());
+		options.addOption(Option.builder("s").required(true).longOpt("snapshot-location").hasArg()
+				.desc("snapshot save location").build());
 		options.addOption(Option.builder("po").required(true).longOpt("perOpteryx-headless-location").hasArg()
 				.desc("the location of the PerOpteryx headless plugin").build());
 

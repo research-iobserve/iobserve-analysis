@@ -18,7 +18,6 @@ package org.iobserve.analysis;
 import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.model.AbstractModelProvider;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.CloudProfileModelProvider;
 import org.iobserve.analysis.model.CostModelProvider;
@@ -161,32 +160,6 @@ public final class InitializeModelProviders {
 	 */
 	public DesignDecisionModelProvider getDesignDecisionModelProvider() {
 		return this.designDecisionModelProvider;
-	}
-
-	/**
-	 * Saves all currently available models in this provider into the snapshot
-	 * location.
-	 *
-	 * @param locationDirURI
-	 *            the location directory for the snapshot
-	 */
-	public void saveToSnapshotLocation(URI locationDirURI) {
-		URI fileLocationURI = locationDirURI.appendSegment("snapshot");
-		this.saveModelProvider(this.allocationModelProvider, fileLocationURI.appendFileExtension("allocation"));
-		this.saveModelProvider(this.cloudprofileModelProvider, fileLocationURI.appendFileExtension("cloudprofile"));
-		this.saveModelProvider(this.costModelProvider, fileLocationURI.appendFileExtension("cost"));
-		this.saveModelProvider(this.designDecisionModelProvider, fileLocationURI.appendFileExtension("designdecision"));
-		this.saveModelProvider(this.repositoryModelProvider, fileLocationURI.appendFileExtension("repository"));
-		this.saveModelProvider(this.resourceEnvironmentModelProvider,
-				fileLocationURI.appendFileExtension("resourceenvironment"));
-		this.saveModelProvider(this.systemModelProvider, fileLocationURI.appendFileExtension("system"));
-		this.saveModelProvider(this.usageModelProvider, fileLocationURI.appendFileExtension("usagemodel"));
-	}
-
-	private void saveModelProvider(AbstractModelProvider<?> provider, URI fileLocationURI) {
-		if (provider != null) {
-			provider.save(fileLocationURI);
-		}
 	}
 
 	/**
