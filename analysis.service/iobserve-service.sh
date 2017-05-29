@@ -17,7 +17,8 @@ DESC="iobserve service"
 EXEC="/usr/bin/jsvc"
 
 # The path to the folder containing MyDaemon.jar
-FILE_PATH="/home/jweg/iobserve-analysis/"
+FILE_PATH="/home/reiner/Projects/iObserve/iobserve-analysis/"
+#FILE_PATH="/home/jweg/iobserve-analysis/"
 
 # The path to the folder containing the java runtime
 JAVA_HOME="/usr/lib/jvm/java-8-oracle"
@@ -32,7 +33,8 @@ CLASS="org.iobserve.analysis.service.AnalysisDaemon"
 ARGS="-i 3000 -o localhost:9090 -p /home/jweg/models/WorkingTestPCM/pcm/ -c test.rac"
 
 #The user to run the daemon as
-USER="jweg"
+USER="reiner"
+#USER="jweg"
 
 # The file that will contain our process identification number (pid) for other scripts/programs that need to access it.
 PID="$FILE_PATH/$NAME.pid"

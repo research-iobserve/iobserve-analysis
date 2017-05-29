@@ -39,7 +39,7 @@ public final class ReplayerMain {
 
     @Parameter(names = { "-p",
     "--port" }, required = true, description = "Output port.", converter = IntegerConverter.class)
-    private Integer inputPort;
+    private Integer outputPort;
 
     @Parameter(names = { "-h",
     "--host" }, required = true, description = "Name or IP address of the host where the data is send to.")
@@ -78,7 +78,7 @@ public final class ReplayerMain {
 
         System.out.println("Receiver");
         final ReplayerConfiguration configuration = new ReplayerConfiguration(
-                this.dataLocation, this.hostname, this.inputPort);
+                this.dataLocation, this.hostname, this.outputPort);
 
         if (configuration.isOutputConnected()) {
 

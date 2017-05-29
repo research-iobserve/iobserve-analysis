@@ -1,6 +1,6 @@
 apply plugin: 'application'
 
-mainClassName = 'org.iobserve.analysis.service.AnalysisDaemon'
+mainClassName = 'org.iobserve.analysis.service.AnalysisMain'
 
 if (version.isEmpty()) {
 	System.err.println("version not set")
