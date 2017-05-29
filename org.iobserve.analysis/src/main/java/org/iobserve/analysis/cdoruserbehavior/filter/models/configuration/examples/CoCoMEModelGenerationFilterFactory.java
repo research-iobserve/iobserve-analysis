@@ -34,6 +34,16 @@ public class CoCoMEModelGenerationFilterFactory implements IModelGenerationFilte
                                              // except init operations
                 "(p\\w* )(\\w*\\.)*\\w* org\\.cocome\\.cloud\\.logic\\.webservice\\.cashdeskline\\.cashdesk\\.(\\w*\\.)*\\w*\\(.*");
 
+        modelGenerationFilter.addFilterRule(// allow all operations of the package
+                                            // except init operations
+                                            // org.cocome.cloud.logic.webservice.store
+                "(p\\w* )(\\w*\\.)*\\w* org\\.cocome\\.cloud\\.logic\\.webservice\\.store\\.(\\w*\\.)*\\w*\\(.*");
+
+        modelGenerationFilter.addFilterRule(// allow all operations of the package
+                // except init operations
+                // org.cocome.cloud.logic.webservice.store
+                ".*queryStore.(\\w*\\.)*\\w*\\(.*");
+
         return modelGenerationFilter;
     }
 
