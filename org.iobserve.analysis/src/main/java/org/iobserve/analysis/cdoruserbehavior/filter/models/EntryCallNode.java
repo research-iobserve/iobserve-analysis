@@ -33,7 +33,6 @@ public class EntryCallNode {
 
     private final Set<EntryCallEdge> incommingEdges;
     private final Set<EntryCallEdge> outgoingEdges;
-
     private final Set<CallInformation> entryCallInformations;
 
     /**
@@ -79,7 +78,7 @@ public class EntryCallNode {
 
     /**
      * adds an incomming edge
-     * 
+     *
      * @param edge
      * @return true if added, false else
      */
@@ -89,7 +88,7 @@ public class EntryCallNode {
 
     /**
      * adds an outgoing edge
-     * 
+     *
      * @param edge
      * @return true if added, false else
      */

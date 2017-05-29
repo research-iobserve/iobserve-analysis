@@ -141,7 +141,7 @@ public class BehaviorModel {
 
     /**
      * setter
-     * 
+     *
      * @param name
      */
     public void setName(final String name) {

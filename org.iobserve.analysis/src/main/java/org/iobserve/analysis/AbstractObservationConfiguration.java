@@ -24,6 +24,7 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClust
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.XMeansClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.CoCoMEModelGenerationFilterFactory;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetStoreModelGenerationFilterFactory;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetstoreStrategy;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
@@ -104,15 +105,20 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // systemModelProvider,
         // resourceEnvironmentModelProvider);
 
-        final ModelGenerationFilter modelGenerationFilter = new CoCoMEModelGenerationFilterFactory().createFilter();
+        final ModelGenerationFilter modelGenerationFilter;
+        if (thinkTime == 1) {
+            modelGenerationFilter = new JPetStoreModelGenerationFilterFactory().createFilter();
+        } else {
+            modelGenerationFilter = new CoCoMEModelGenerationFilterFactory().createFilter();
+        }
 
-        final int expectedUserGroups = 3; // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+        final int expectedUserGroups = 4; // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
         final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
                 new ManhattanDistance());
 
         final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
         behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
-        behaviorModelConfiguration.setUBMUrl("http://localhost:7474/ubm-backend/v1");
+        behaviorModelConfiguration.setUBMUrl("http://localhost:8080/ubm-backend/v1");
         behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
         behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
         behaviorModelConfiguration.setSignatureCreationStrategy(new FunctionNameOnlySignatureStrategy());
