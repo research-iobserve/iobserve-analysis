@@ -67,6 +67,14 @@ usage: iobserve-analysis
 For a minimal analysis, type:
 `analysis.cli-0.0.2-SNAPSHOT/bin/analysis.cli -i example-kieker-data -p palladio-directory -t 1 -V 2 -w`
 
+# Usage of the different tools
+
+## analysis.cli
+
+The command line tool of the analysis is designed to read a pre-recorded
+monitoring log and update a Palladio Component Model (PCM) model during
+this run. After execution the updated PCM model can be processed in
+other tools.
 
 
 
