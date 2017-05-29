@@ -19,9 +19,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
-
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -40,6 +37,9 @@ import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.privacy.PrivacyAnalysis;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
 
 /**
  * Main class for starting the iObserve application.
@@ -79,7 +79,8 @@ public final class AnalysisMain {
 				commandLine = parser.parse(AnalysisMain.createOptions(), args);
 
 				/** get configuration parameter. */
-				final int varianceOfUserGroups = Integer.parseInt(commandLine.getOptionValue(AnalysisMain.VARIANCE_OF_USER_GROUPS));
+				final int varianceOfUserGroups = Integer
+						.parseInt(commandLine.getOptionValue(AnalysisMain.VARIANCE_OF_USER_GROUPS));
 				final int thinkTime = Integer.parseInt(commandLine.getOptionValue(AnalysisMain.THINK_TIME));
 				final boolean closedWorkload = commandLine.hasOption(AnalysisMain.CLOSED_WORKLOAD);
 
@@ -93,27 +94,36 @@ public final class AnalysisMain {
 						final Collection<File> monitoringDataDirectories = new ArrayList<>();
 						AnalysisMain.findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
 
-						final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(pcmModelsDirectory);
+						final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
+								pcmModelsDirectory);
 
 						final ICorrespondence correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
-						final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
+						final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform
+								.getRepositoryModelProvider();
 						final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
 						final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProviderPlatform
 								.getResourceEnvironmentModelProvider();
-						final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
+						final AllocationModelProvider allocationModelProvider = modelProviderPlatform
+								.getAllocationModelProvider();
 						final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
 
 						String snapshotPath = commandLine.getOptionValue("s");
-						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(URI.createFileURI(snapshotPath), modelProviderPlatform);
-						
+						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(URI.createFileURI(snapshotPath),
+								modelProviderPlatform);
+
 						String legalPrivacyGeoLocationsPath = commandLine.getOptionValue("l");
 						PrivacyAnalysis.setLegalPersonalGeoLocationFile(URI.createFileURI(legalPrivacyGeoLocationsPath));
 						
 						final URI perOpteryxUri = URI.createFileURI(commandLine.getOptionValue("po"));
 
-						final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel,
-								usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
-								systemModelProvider, snapshotBuilder, perOpteryxUri, varianceOfUserGroups, thinkTime, closedWorkload);
+						final boolean interactiveMode = commandLine.hasOption("in");
+						final CLIEventListener eventListener = new CLIEventListener(interactiveMode);
+
+						final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
+								correspondenceModel, usageModelProvider, repositoryModelProvider,
+								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider,
+								snapshotBuilder, perOpteryxUri, varianceOfUserGroups, thinkTime, closedWorkload,
+								eventListener);
 
 						System.out.println("Analysis configuration");
 						final Execution<Configuration> analysis = new Execution<>(configuration);
@@ -151,16 +161,22 @@ public final class AnalysisMain {
 	private static Options createOptions() {
 		final Options options = new Options();
 
-		options.addOption(Option.builder("i").required(true).longOpt("input").hasArg().desc("a Kieker logfile directory").build());
-		options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg().desc("directory containing all PCM models").build());
+		options.addOption(Option.builder("i").required(true).longOpt("input").hasArg()
+				.desc("a Kieker logfile directory").build());
+		options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg()
+				.desc("directory containing all PCM models").build());
 		options.addOption(Option.builder("V").required(true).longOpt(AnalysisMain.VARIANCE_OF_USER_GROUPS).hasArg()
 				.desc("Variance of user groups for the clustering").build());
 		options.addOption(Option.builder("t").required(true).longOpt(AnalysisMain.THINK_TIME).hasArg()
 				.desc("Variance of user groups for the clustering").build());
-		options.addOption(Option.builder("w").required(true).longOpt("closed-workload").desc("Closed workload").build());
-		options.addOption(Option.builder("s").required(true).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
+		options.addOption(
+				Option.builder("w").required(true).longOpt("closed-workload").desc("Closed workload").build());
+		options.addOption(Option.builder("s").required(true).longOpt("snapshot-location").hasArg()
+				.desc("snapshot save location").build());
 		options.addOption(Option.builder("po").required(true).longOpt("perOpteryx-headless-location").hasArg()
 				.desc("the location of the PerOpteryx headless plugin").build());
+		options.addOption(Option.builder("in").required(true).longOpt("interactive-adaptation")
+				.desc("interact with operator during adaptation").build());
 
 		options.addOption(Option.builder("l").required(true).longOpt("legal-geo-locations").hasArg()
 				.desc("the geo-locations, where personal data can be stored").build());
@@ -179,18 +195,24 @@ public final class AnalysisMain {
 	private static Options createHelpOptions() {
 		final Options options = new Options();
 
-		options.addOption(Option.builder("i").required(false).longOpt("input").hasArg().desc("a Kieker logfile directory").build());
-		options.addOption(Option.builder("p").required(false).longOpt("pcm").hasArg().desc("directory containing all PCM models").build());
+		options.addOption(Option.builder("i").required(false).longOpt("input").hasArg()
+				.desc("a Kieker logfile directory").build());
+		options.addOption(Option.builder("p").required(false).longOpt("pcm").hasArg()
+				.desc("directory containing all PCM models").build());
 		options.addOption(Option.builder("V").required(true).longOpt("variance-of-user-groups").hasArg()
 				.desc("Variance of user groups for the clustering").build());
+		options.addOption(Option.builder("t").required(true).longOpt("think-time").hasArg()
+				.desc("Variance of user groups for the clustering").build());
 		options.addOption(
-				Option.builder("t").required(true).longOpt("think-time").hasArg().desc("Variance of user groups for the clustering").build());
-		options.addOption(Option.builder("w").required(true).longOpt("closed-workload").desc("Closed workload").build());
-		options.addOption(Option.builder("s").required(false).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
+				Option.builder("w").required(true).longOpt("closed-workload").desc("Closed workload").build());
+		options.addOption(Option.builder("s").required(false).longOpt("snapshot-location").hasArg()
+				.desc("snapshot save location").build());
 		options.addOption(Option.builder("po").required(false).longOpt("perOpteryx-headless-location").hasArg()
 				.desc("the location of the PerOpteryx headless plugin").build());
 		options.addOption(Option.builder("l").required(false).longOpt("legal-geo-locations").hasArg()
 				.desc("the geo-locations, where personal data can be stored").build());
+		options.addOption(Option.builder("in").required(true).longOpt("interactive-adaptation")
+				.desc("interact with operator during adaptation").build());
 
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());

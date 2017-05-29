@@ -256,26 +256,26 @@ public class systemadaptationItemProviderAdapterFactory extends systemadaptation
 	}
 
 	/**
-	 * This keeps track of the one adapter used for all {@link org.iobserve.planning.systemadaptation.ReplicateAction} instances.
+	 * This keeps track of the one adapter used for all {@link org.iobserve.planning.systemadaptation.AcquireAction} instances.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected ReplicateActionItemProvider replicateActionItemProvider;
+	protected AcquireActionItemProvider acquireActionItemProvider;
 
 	/**
-	 * This creates an adapter for a {@link org.iobserve.planning.systemadaptation.ReplicateAction}.
+	 * This creates an adapter for a {@link org.iobserve.planning.systemadaptation.AcquireAction}.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
 	@Override
-	public Adapter createReplicateActionAdapter() {
-		if (replicateActionItemProvider == null) {
-			replicateActionItemProvider = new ReplicateActionItemProvider(this);
+	public Adapter createAcquireActionAdapter() {
+		if (acquireActionItemProvider == null) {
+			acquireActionItemProvider = new AcquireActionItemProvider(this);
 		}
 
-		return replicateActionItemProvider;
+		return acquireActionItemProvider;
 	}
 
 	/**
@@ -299,6 +299,29 @@ public class systemadaptationItemProviderAdapterFactory extends systemadaptation
 		}
 
 		return terminateActionItemProvider;
+	}
+
+	/**
+	 * This keeps track of the one adapter used for all {@link org.iobserve.planning.systemadaptation.ReplicateAction} instances.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected ReplicateActionItemProvider replicateActionItemProvider;
+
+	/**
+	 * This creates an adapter for a {@link org.iobserve.planning.systemadaptation.ReplicateAction}.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	@Override
+	public Adapter createReplicateActionAdapter() {
+		if (replicateActionItemProvider == null) {
+			replicateActionItemProvider = new ReplicateActionItemProvider(this);
+		}
+
+		return replicateActionItemProvider;
 	}
 
 	/**
@@ -408,8 +431,9 @@ public class systemadaptationItemProviderAdapterFactory extends systemadaptation
 		if (allocateActionItemProvider != null) allocateActionItemProvider.dispose();
 		if (deallocateActionItemProvider != null) deallocateActionItemProvider.dispose();
 		if (migrateActionItemProvider != null) migrateActionItemProvider.dispose();
-		if (replicateActionItemProvider != null) replicateActionItemProvider.dispose();
+		if (acquireActionItemProvider != null) acquireActionItemProvider.dispose();
 		if (terminateActionItemProvider != null) terminateActionItemProvider.dispose();
+		if (replicateActionItemProvider != null) replicateActionItemProvider.dispose();
 	}
 
 }

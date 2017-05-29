@@ -9,7 +9,10 @@ import java.util.List;
 import org.eclipse.emf.common.notify.AdapterFactory;
 import org.eclipse.emf.common.notify.Notification;
 
+import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
+
+import org.iobserve.planning.systemadaptation.systemadaptationPackage;
 
 /**
  * This is the item provider adapter for a {@link org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction} object.
@@ -39,8 +42,31 @@ public class ChangeRepositoryComponentActionItemProvider extends AssemblyContext
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
+			addNewRepositoryComponentPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
+	}
+
+	/**
+	 * This adds a property descriptor for the New Repository Component feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addNewRepositoryComponentPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_ChangeRepositoryComponentAction_newRepositoryComponent_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ChangeRepositoryComponentAction_newRepositoryComponent_feature", "_UI_ChangeRepositoryComponentAction_type"),
+				 systemadaptationPackage.Literals.CHANGE_REPOSITORY_COMPONENT_ACTION__NEW_REPOSITORY_COMPONENT,
+				 true,
+				 false,
+				 true,
+				 null,
+				 null,
+				 null));
 	}
 
 	/**

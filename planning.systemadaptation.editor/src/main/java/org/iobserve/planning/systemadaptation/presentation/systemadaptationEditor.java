@@ -169,7 +169,6 @@ import org.eclipse.ui.actions.WorkspaceModifyOperation;
 import org.iobserve.systemadaptation.changegroup.presentation.systemadaptationEditorPlugin;
 
 import org.palladiosimulator.pcm.allocation.provider.AllocationItemProviderAdapterFactory;
-import org.palladiosimulator.pcm.compositionprivacy.provider.CompositionPrivacyItemProviderAdapterFactory;
 
 import org.palladiosimulator.pcm.core.composition.provider.CompositionItemProviderAdapterFactory;
 
@@ -194,8 +193,6 @@ import org.palladiosimulator.pcm.reliability.provider.ReliabilityItemProviderAda
 import org.palladiosimulator.pcm.repository.provider.RepositoryItemProviderAdapterFactory;
 
 import org.palladiosimulator.pcm.resourceenvironment.provider.ResourceenvironmentItemProviderAdapterFactory;
-
-import org.palladiosimulator.pcm.resourceenvironmentprivacy.provider.ResourceenvironmentPrivacyItemProviderAdapterFactory;
 
 import org.palladiosimulator.pcm.resourcetype.provider.ResourcetypeItemProviderAdapterFactory;
 
@@ -776,8 +773,6 @@ public class systemadaptationEditor
 		adapterFactory.addAdapterFactory(new ResourceenvironmentItemProviderAdapterFactory());
 		adapterFactory.addAdapterFactory(new AllocationItemProviderAdapterFactory());
 		adapterFactory.addAdapterFactory(new SubsystemItemProviderAdapterFactory());
-		adapterFactory.addAdapterFactory(new ResourceenvironmentPrivacyItemProviderAdapterFactory());
-		adapterFactory.addAdapterFactory(new CompositionPrivacyItemProviderAdapterFactory());
 		adapterFactory.addAdapterFactory(new ProbfunctionItemProviderAdapterFactory());
 		adapterFactory.addAdapterFactory(new StoexItemProviderAdapterFactory());
 		adapterFactory.addAdapterFactory(new UnitsItemProviderAdapterFactory());

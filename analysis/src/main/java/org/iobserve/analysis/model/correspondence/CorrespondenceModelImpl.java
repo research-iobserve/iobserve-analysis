@@ -37,7 +37,7 @@ import org.iobserve.analysis.utils.StringUtils;
  * @author Robert Heinrich
  * @author Nicolas Boltz
  * @author Alessandro Giusa
- * 
+ *
  */
 class CorrespondenceModelImpl implements ICorrespondence {
 
@@ -110,10 +110,10 @@ class CorrespondenceModelImpl implements ICorrespondence {
                 for (final PcmCorrespondentMethod correspondentMethod : entityCorrespondent.getMethods()) {
                     correspondentMethod.setParent(entityCorrespondent);
                 }
-                
+
                 entityCorrespondent.initMethodMap();
             }
-            
+
             pcmEntity.initOperationMap();
         }
     }
@@ -125,10 +125,11 @@ class CorrespondenceModelImpl implements ICorrespondence {
     /**
      * Returns whether or not a correspondent is contained in the model.
      */
-    public boolean containsCorrespondent(String classSig, String operationSig) {
-    	return getCorrespondent(classSig, operationSig).isPresent();
+    @Override
+    public boolean containsCorrespondent(final String classSig, final String operationSig) {
+        return this.getCorrespondent(classSig, operationSig).isPresent();
     }
-    
+
     @Override
     public Optional<Correspondent> getCorrespondent(final String classSig, final String operationSig) {
         // TODO debug print, remove later
@@ -149,7 +150,8 @@ class CorrespondenceModelImpl implements ICorrespondence {
 
         // in case the correspondent is not available it has to be mapped
         // !!!!!
-        // this case should never occur, since the correspondents are created and cached in TEntryCall through containsCorrespondent(...)
+        // this case should never occur, since the correspondents are created and cached in
+        // TEntryCall through containsCorrespondent(...)
         // !!!!!
         if (correspondent == null) {
             final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
@@ -235,19 +237,19 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * @return pcm operation signature or null if operation signature not available
      */
     private PcmOperationSignature getPcmOperationSignature(final PcmEntityCorrespondent pcmEntityCorrespondent,
-            String operationSig) {
-        PcmOperationSignature opSig = null;
-        operationSig = operationSig.replaceFirst("static", "");
-        if (operationSig.contains("throws")) {
-        	operationSig = operationSig.substring(0, operationSig.indexOf("throws"));
+            final String operationSig) {
+        String localOperationSig = operationSig.replaceFirst("static", "");
+        if (localOperationSig.contains("throws")) {
+            localOperationSig = localOperationSig.substring(0, localOperationSig.indexOf("throws"));
         }
-        
-        PcmCorrespondentMethod correspondentMethod = pcmEntityCorrespondent.getMethod(operationSig.replaceAll(" ", ""));
-        if(correspondentMethod != null) {
-        	opSig = this.mapOperationSignature(correspondentMethod);
+
+        final PcmCorrespondentMethod correspondentMethod = pcmEntityCorrespondent
+                .getMethod(localOperationSig.replaceAll(" ", ""));
+        if (correspondentMethod != null) {
+            return this.mapOperationSignature(correspondentMethod);
+        } else {
+            return null;
         }
-        
-        return opSig;
     }
 
     /**
@@ -262,9 +264,11 @@ class CorrespondenceModelImpl implements ICorrespondence {
      */
     private PcmOperationSignature mapOperationSignature(final PcmCorrespondentMethod method) {
         final PcmEntity pcmEntity = method.getParent().getParent();
-        PcmOperationSignature opSig = pcmEntity.getOperationSig(StringUtils.modifyForOperationSigMatching(method.getName()).get());
-        if(opSig == null) {
-        	opSig = pcmEntity.getOperationSig(StringUtils.modifyForOperationSigMatching(method.getParent().getUnitName()).get());
+        PcmOperationSignature opSig = pcmEntity
+                .getOperationSig(StringUtils.modifyForOperationSigMatching(method.getName()).get());
+        if (opSig == null) {
+            opSig = pcmEntity
+                    .getOperationSig(StringUtils.modifyForOperationSigMatching(method.getParent().getUnitName()).get());
         }
 
         return opSig;
@@ -274,7 +278,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
      * Test method to print all mappings.
      */
     @SuppressWarnings("unused")
-	private void printAllMappings() {
+    private void printAllMappings() {
         for (final String nextMappingKey : this.mapping.keySet()) {
             System.out.println(nextMappingKey);
             final PcmEntityCorrespondent correspondent = this.mapping.get(nextMappingKey);

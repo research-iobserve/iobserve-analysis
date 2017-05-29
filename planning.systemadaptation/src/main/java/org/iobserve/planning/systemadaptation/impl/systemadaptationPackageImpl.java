@@ -302,6 +302,15 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
+	public EReference getDeallocateAction_OldAllocationContext() {
+		return (EReference)deallocateActionEClass.getEStructuralFeatures().get(0);
+	}
+
+	/**
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
 	public EClass getMigrateAction() {
 		return migrateActionEClass;
 	}
@@ -425,6 +434,7 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 		createEReference(allocateActionEClass, ALLOCATE_ACTION__NEW_ALLOCATION_CONTEXT);
 
 		deallocateActionEClass = createEClass(DEALLOCATE_ACTION);
+		createEReference(deallocateActionEClass, DEALLOCATE_ACTION__OLD_ALLOCATION_CONTEXT);
 
 		migrateActionEClass = createEClass(MIGRATE_ACTION);
 		createEReference(migrateActionEClass, MIGRATE_ACTION__NEW_ALLOCATION_CONTEXT);
@@ -504,6 +514,7 @@ public class systemadaptationPackageImpl extends EPackageImpl implements systema
 		initEReference(getAllocateAction_NewAllocationContext(), theAllocationPackage.getAllocationContext(), null, "newAllocationContext", null, 1, 1, AllocateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(deallocateActionEClass, DeallocateAction.class, "DeallocateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+		initEReference(getDeallocateAction_OldAllocationContext(), theAllocationPackage.getAllocationContext(), null, "oldAllocationContext", null, 0, 1, DeallocateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
 		initEClass(migrateActionEClass, MigrateAction.class, "MigrateAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 		initEReference(getMigrateAction_NewAllocationContext(), theAllocationPackage.getAllocationContext(), null, "newAllocationContext", null, 1, 1, MigrateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

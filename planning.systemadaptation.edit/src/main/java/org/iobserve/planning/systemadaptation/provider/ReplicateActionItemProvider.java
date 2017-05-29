@@ -11,10 +11,7 @@ import org.eclipse.emf.common.notify.Notification;
 
 import org.eclipse.emf.edit.provider.ComposeableAdapterFactory;
 import org.eclipse.emf.edit.provider.IItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.ItemPropertyDescriptor;
-import org.eclipse.emf.edit.provider.ViewerNotification;
 
-import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.systemadaptationPackage;
 
 /**
@@ -45,52 +42,75 @@ public class ReplicateActionItemProvider extends ResourceContainerActionItemProv
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
-			addNewCountPropertyDescriptor(object);
-			addOldCountPropertyDescriptor(object);
+			addNewResourceContainerPropertyDescriptor(object);
+			addSourceAllocationContextPropertyDescriptor(object);
+			addNewAllocationContextPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
 
 	/**
-	 * This adds a property descriptor for the New Count feature.
+	 * This adds a property descriptor for the New Resource Container feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void addNewCountPropertyDescriptor(Object object) {
+	protected void addNewResourceContainerPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
 			(createItemPropertyDescriptor
 				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
 				 getResourceLocator(),
-				 getString("_UI_ReplicateAction_newCount_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_ReplicateAction_newCount_feature", "_UI_ReplicateAction_type"),
-				 systemadaptationPackage.Literals.REPLICATE_ACTION__NEW_COUNT,
+				 getString("_UI_ReplicateAction_newResourceContainer_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ReplicateAction_newResourceContainer_feature", "_UI_ReplicateAction_type"),
+				 systemadaptationPackage.Literals.REPLICATE_ACTION__NEW_RESOURCE_CONTAINER,
 				 true,
 				 false,
-				 false,
-				 ItemPropertyDescriptor.INTEGRAL_VALUE_IMAGE,
+				 true,
+				 null,
 				 null,
 				 null));
 	}
 
 	/**
-	 * This adds a property descriptor for the Old Count feature.
+	 * This adds a property descriptor for the Source Allocation Context feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void addOldCountPropertyDescriptor(Object object) {
+	protected void addSourceAllocationContextPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
 			(createItemPropertyDescriptor
 				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
 				 getResourceLocator(),
-				 getString("_UI_ReplicateAction_oldCount_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_ReplicateAction_oldCount_feature", "_UI_ReplicateAction_type"),
-				 systemadaptationPackage.Literals.REPLICATE_ACTION__OLD_COUNT,
+				 getString("_UI_ReplicateAction_sourceAllocationContext_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ReplicateAction_sourceAllocationContext_feature", "_UI_ReplicateAction_type"),
+				 systemadaptationPackage.Literals.REPLICATE_ACTION__SOURCE_ALLOCATION_CONTEXT,
 				 true,
 				 false,
+				 true,
+				 null,
+				 null,
+				 null));
+	}
+
+	/**
+	 * This adds a property descriptor for the New Allocation Context feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addNewAllocationContextPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_ReplicateAction_newAllocationContext_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_ReplicateAction_newAllocationContext_feature", "_UI_ReplicateAction_type"),
+				 systemadaptationPackage.Literals.REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT,
+				 true,
 				 false,
-				 ItemPropertyDescriptor.INTEGRAL_VALUE_IMAGE,
+				 true,
+				 null,
 				 null,
 				 null));
 	}
@@ -128,13 +148,6 @@ public class ReplicateActionItemProvider extends ResourceContainerActionItemProv
 	@Override
 	public void notifyChanged(Notification notification) {
 		updateChildren(notification);
-
-		switch (notification.getFeatureID(ReplicateAction.class)) {
-			case systemadaptationPackage.REPLICATE_ACTION__NEW_COUNT:
-			case systemadaptationPackage.REPLICATE_ACTION__OLD_COUNT:
-				fireNotifyChanged(new ViewerNotification(notification, notification.getNotifier(), false, true));
-				return;
-		}
 		super.notifyChanged(notification);
 	}
 

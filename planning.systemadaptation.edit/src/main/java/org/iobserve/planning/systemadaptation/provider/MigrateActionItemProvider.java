@@ -42,25 +42,48 @@ public class MigrateActionItemProvider extends AssemblyContextActionItemProvider
 		if (itemPropertyDescriptors == null) {
 			super.getPropertyDescriptors(object);
 
-			addMigrationTargetContainerPropertyDescriptor(object);
+			addNewAllocationContextPropertyDescriptor(object);
+			addSourceAllocationContextPropertyDescriptor(object);
 		}
 		return itemPropertyDescriptors;
 	}
 
 	/**
-	 * This adds a property descriptor for the Migration Target Container feature.
+	 * This adds a property descriptor for the New Allocation Context feature.
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * @generated
 	 */
-	protected void addMigrationTargetContainerPropertyDescriptor(Object object) {
+	protected void addNewAllocationContextPropertyDescriptor(Object object) {
 		itemPropertyDescriptors.add
 			(createItemPropertyDescriptor
 				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
 				 getResourceLocator(),
-				 getString("_UI_MigrateAction_migrationTargetContainer_feature"),
-				 getString("_UI_PropertyDescriptor_description", "_UI_MigrateAction_migrationTargetContainer_feature", "_UI_MigrateAction_type"),
-				 systemadaptationPackage.Literals.MIGRATE_ACTION__MIGRATION_TARGET_CONTAINER,
+				 getString("_UI_MigrateAction_newAllocationContext_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_MigrateAction_newAllocationContext_feature", "_UI_MigrateAction_type"),
+				 systemadaptationPackage.Literals.MIGRATE_ACTION__NEW_ALLOCATION_CONTEXT,
+				 true,
+				 false,
+				 true,
+				 null,
+				 null,
+				 null));
+	}
+
+	/**
+	 * This adds a property descriptor for the Source Allocation Context feature.
+	 * <!-- begin-user-doc -->
+	 * <!-- end-user-doc -->
+	 * @generated
+	 */
+	protected void addSourceAllocationContextPropertyDescriptor(Object object) {
+		itemPropertyDescriptors.add
+			(createItemPropertyDescriptor
+				(((ComposeableAdapterFactory)adapterFactory).getRootAdapterFactory(),
+				 getResourceLocator(),
+				 getString("_UI_MigrateAction_sourceAllocationContext_feature"),
+				 getString("_UI_PropertyDescriptor_description", "_UI_MigrateAction_sourceAllocationContext_feature", "_UI_MigrateAction_type"),
+				 systemadaptationPackage.Literals.MIGRATE_ACTION__SOURCE_ALLOCATION_CONTEXT,
 				 true,
 				 false,
 				 true,

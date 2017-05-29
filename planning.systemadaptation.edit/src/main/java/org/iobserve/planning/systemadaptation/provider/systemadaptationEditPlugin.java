@@ -13,9 +13,8 @@ import de.uka.ipd.sdq.units.provider.UnitsEditPlugin;
 import org.eclipse.emf.common.EMFPlugin;
 
 import org.eclipse.emf.common.util.ResourceLocator;
-import org.palladiosimulator.pcm.core.provider.PalladioComponentModelEditPlugin;
 
-import org.palladiosimulator.pcm.resourceenvironmentprivacy.provider.PcmprivacyEditPlugin;
+import org.palladiosimulator.pcm.core.provider.PalladioComponentModelEditPlugin;
 
 /**
  * This is the central singleton for the systemadaptation edit plugin.
@@ -51,7 +50,6 @@ public final class systemadaptationEditPlugin extends EMFPlugin {
 		  (new ResourceLocator [] {
 		     IdentifierEditPlugin.INSTANCE,
 		     PalladioComponentModelEditPlugin.INSTANCE,
-		     PcmprivacyEditPlugin.INSTANCE,
 		     ProbabilityFunctionEditPlugin.INSTANCE,
 		     StoexEditPlugin.INSTANCE,
 		     UnitsEditPlugin.INSTANCE,

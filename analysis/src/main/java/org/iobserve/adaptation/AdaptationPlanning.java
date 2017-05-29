@@ -41,10 +41,10 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 
 		List<Action> adaptionSteps = new ArrayList<Action>();
 		adaptionSteps.addAll(aquires);
-		adaptionSteps.addAll(allocations);
-		adaptionSteps.addAll(migrations);
-		adaptionSteps.addAll(changes);
 		adaptionSteps.addAll(deallocations);
+		adaptionSteps.addAll(allocations);
+		adaptionSteps.addAll(changes);
+		adaptionSteps.addAll(migrations);
 		adaptionSteps.addAll(terminates);
 
 		element.setExecutionOrder(adaptionSteps);

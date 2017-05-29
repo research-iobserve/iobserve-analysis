@@ -186,12 +186,17 @@ public class SystemAdaptationItemProvider
 		newChildDescriptors.add
 			(createChildParameter
 				(systemadaptationPackage.Literals.SYSTEM_ADAPTATION__ACTIONS,
-				 systemadaptationFactory.eINSTANCE.createReplicateAction()));
+				 systemadaptationFactory.eINSTANCE.createAcquireAction()));
 
 		newChildDescriptors.add
 			(createChildParameter
 				(systemadaptationPackage.Literals.SYSTEM_ADAPTATION__ACTIONS,
 				 systemadaptationFactory.eINSTANCE.createTerminateAction()));
+
+		newChildDescriptors.add
+			(createChildParameter
+				(systemadaptationPackage.Literals.SYSTEM_ADAPTATION__ACTIONS,
+				 systemadaptationFactory.eINSTANCE.createReplicateAction()));
 	}
 
 	/**

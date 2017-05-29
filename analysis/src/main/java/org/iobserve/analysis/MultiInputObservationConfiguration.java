@@ -33,44 +33,45 @@ import org.iobserve.analysis.snapshot.SnapshotBuilder;
  */
 public class MultiInputObservationConfiguration extends AbstractObservationConfiguration {
 
-    private static final int CAPACITY = 1024 * 1024;
+	private static final int CAPACITY = 1024 * 1024;
 
-    /**
-     * Construct an analysis for multiple TCP inputs.
-     *
-     * @param inputPort
-     *            the input port where the analysis is listening
-     * @param correspondenceModel
-     *            the correspondence model
-     * @param usageModelProvider
-     *            the usage model provider
-     * @param repositoryModelProvider
-     *            the repository model provider
-     * @param resourceEnvironmentModelProvider
-     *            the resource environment provider
-     * @param allocationModelProvider
-     *            the allocation model provider
-     * @param systemModelProvider
-     *            the system model provider
-     * @param varianceOfUserGroups
-     *            variance of user groups, configuration for entry event filter
-     * @param thinkTime
-     *            think time, configuration for entry event filter
-     * @param closedWorkload
-     *            kind of workload, configuration for entry event filter
-     */
-    public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
-            final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
-            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-            final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
-        super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxHeadless, varianceOfUserGroups, thinkTime, closedWorkload);
+	/**
+	 * Construct an analysis for multiple TCP inputs.
+	 *
+	 * @param inputPort
+	 *            the input port where the analysis is listening
+	 * @param correspondenceModel
+	 *            the correspondence model
+	 * @param usageModelProvider
+	 *            the usage model provider
+	 * @param repositoryModelProvider
+	 *            the repository model provider
+	 * @param resourceEnvironmentModelProvider
+	 *            the resource environment provider
+	 * @param allocationModelProvider
+	 *            the allocation model provider
+	 * @param systemModelProvider
+	 *            the system model provider
+	 * @param varianceOfUserGroups
+	 *            variance of user groups, configuration for entry event filter
+	 * @param thinkTime
+	 *            think time, configuration for entry event filter
+	 * @param closedWorkload
+	 *            kind of workload, configuration for entry event filter
+	 */
+	public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
+			final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
+			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
+			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final int varianceOfUserGroups,
+			final int thinkTime, final boolean closedWorkload) {
+		super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
+				allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxHeadless, varianceOfUserGroups,
+				thinkTime, closedWorkload, null);
 
-        final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
-                MultiInputObservationConfiguration.CAPACITY);
-        this.connectPorts(reader.getOutputPort(), this.recordSwitch.getInputPort());
-    }
+		final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
+				MultiInputObservationConfiguration.CAPACITY);
+		this.connectPorts(reader.getOutputPort(), this.recordSwitch.getInputPort());
+	}
 
 }
