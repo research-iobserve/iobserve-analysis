@@ -45,8 +45,6 @@ import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
  */
 public class ModelTransformer {
 
-	private static final String PROCESSED_MODEL_FOLDER = "processedModel";
-
 	private final PlanningData planningData;
 	private final InitializeModelProviders originalModelProviders;
 	private InitializeModelProviders processedModelProviders;
@@ -100,7 +98,8 @@ public class ModelTransformer {
 	}
 
 	private void initModelTransformation() throws IOException {
-		URI processedModelDir = this.planningData.getOriginalModelDir().appendSegment(PROCESSED_MODEL_FOLDER);
+		URI processedModelDir = this.planningData.getOriginalModelDir()
+				.appendSegment(ModelProcessing.PROCESSED_MODEL_FOLDER);
 
 		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(processedModelDir, this.originalModelProviders);
 		snapshotBuilder.createSnapshot();

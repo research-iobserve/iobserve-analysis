@@ -29,11 +29,10 @@ public class ModelOptimization extends AbstractTransformation<PlanningData, Plan
 		int result = EXEC_SUCCESS;// exec.startModelGeneration();
 
 		if (result == EXEC_ERROR) {
-			adaptationData.setReDeploymentURI(URI.createFileURI(
-					"C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\AssemblyContextActionModel"));
+			// TODO throw exception to exit?
+			adaptationData.setReDeploymentURI(null);
 		} else if (result == EXEC_SUCCESS) {
-			adaptationData.setReDeploymentURI(URI.createFileURI(
-					"C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\ResourceContainerActionModel"));
+			adaptationData.setReDeploymentURI(planningData.getProcessedModelDir());
 		} else {
 			throw new RuntimeException("PerOpteryx exited with unkown result/exec code");
 		}

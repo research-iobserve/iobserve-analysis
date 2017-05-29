@@ -16,6 +16,7 @@ import teetime.stage.basic.AbstractTransformation;
  *
  */
 public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
+	public static final String PROCESSED_MODEL_FOLDER = "processedModel";
 
 	private final URI perOpteryxDir;
 
