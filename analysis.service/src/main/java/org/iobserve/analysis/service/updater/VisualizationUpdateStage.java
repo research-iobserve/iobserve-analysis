@@ -42,6 +42,7 @@ import teetime.framework.InputPort;
 public class VisualizationUpdateStage extends AbstractStage {
 
     private static final String USER_AGENT = "iObserve/0.0.2";
+    // DATABASE_URL="postgresql://iobserve:iobserve-ui@localhost:5432/iobserve-ui" (?)
 
     private final URL outputURL;
 
@@ -77,7 +78,8 @@ public class VisualizationUpdateStage extends AbstractStage {
     }
 
     private JsonObject deployment(final AddAllocationContextEvent allocate) {
-        final JsonObject data = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE").build();
+        final JsonObject data = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
+                .add("data.type", "node").add("data.id", allocate.getAllocationContext().getId()).build();
 
         return data;
     }
