@@ -5,7 +5,6 @@ import java.lang.reflect.Modifier;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
@@ -16,7 +15,6 @@ import org.iobserve.planning.cloudprofile.cloudprofilePackage;
 import org.iobserve.planning.cloudprofile.util.cloudprofileResourceFactoryImpl;
 import org.iobserve.planning.environment.uriconverter.PrefixConverter;
 import org.iobserve.planning.environment.uriconverter.URIConverterHandler;
-import org.palladiosimulator.analyzer.workflow.configurations.AbstractPCMWorkflowRunConfiguration;
 import org.palladiosimulator.pcm.allocation.util.AllocationResourceFactoryImpl;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.util.ResourceenvironmentcloudResourceFactoryImpl;
 import org.palladiosimulator.pcm.core.composition.util.CompositionResourceFactoryImpl;
@@ -103,9 +101,11 @@ public enum PalladioEclipseEnvironment {
 	 * Manually register all Palladio factories for EMF.
 	 */
 	private void registerFactories() {
-		for (final EPackage ePackage : AbstractPCMWorkflowRunConfiguration.PCM_EPACKAGES) {
-			Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(ePackage.getNsURI(), ePackage);
-		}
+		// for (final EPackage ePackage :
+		// AbstractPCMWorkflowRunConfiguration.PCM_EPACKAGES) {
+		// Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(ePackage.getNsURI(),
+		// ePackage);
+		// }
 		log.info("Initialized EMF factories");
 
 		// register factories:
