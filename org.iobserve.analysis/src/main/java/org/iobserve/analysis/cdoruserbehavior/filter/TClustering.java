@@ -20,6 +20,7 @@ import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+import weka.core.Instance;
 import weka.core.Instances;
 
 /**
@@ -58,9 +59,24 @@ public class TClustering extends AbstractConsumerStage<Instances> {
                 clusteringResults = tempClusteringResults;
             }
         }
-
+        clusteringResults.ifPresent(this::printInstances);
         clusteringResults.ifPresent(results -> this.outputPort.send(results.getClusteringMetrics().getCentroids()));
 
+    }
+
+    private void printInstances(final ClusteringResults results) {
+        results.printClusteringResults();
+        final Instances centroids = results.getClusteringMetrics().getCentroids();
+        for (int i = 0; i < centroids.numInstances(); i++) {
+            System.out.println("***************************");
+            System.out.println("Cluster " + i);
+            System.out.println("***************************");
+            final Instance instance = centroids.instance(i);
+            for (int a = 0; a < instance.numAttributes(); a++) {
+                System.out.println(centroids.attribute(a).name() + " : " + instance.value(a));
+
+            }
+        }
     }
 
     /**
