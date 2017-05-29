@@ -113,8 +113,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
 
                         callInformations = this.emptyBrackets.matcher(callInformations).matches() ? newInformations
                                 : this.closedBracket.matcher(callInformations).replaceAll(",")
-                                        + this.openBracket.matcher(newInformations).replaceAll("");
-                        System.out.println(callInformations);
+                                        + this.openBracket.matcher(newInformations).replaceAll("");               
 
                     }
 
