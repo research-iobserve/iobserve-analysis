@@ -74,10 +74,10 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
 			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
 			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final int varianceOfUserGroups,
-			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener) {
+			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener, final URI deployablesFolder) {
 		super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
 				allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxHeadless, varianceOfUserGroups,
-				thinkTime, closedWorkload, eventListener);
+				thinkTime, closedWorkload, eventListener, deployablesFolder);
 
 		this.files = new InitialElementProducer<>(directories);
 		this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());

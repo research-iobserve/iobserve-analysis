@@ -111,12 +111,14 @@ public final class AnalysisMain {
 
 						final URI perOpteryxUri = URI.createFileURI(commandLine.getOptionValue("po"));
 
+						final URI deployablesFolder = URI.createFileURI(commandLine.getOptionValue("d"));
+
 						final boolean interactiveMode = commandLine.hasOption("in");
 						final CLIEventListener eventListener = new CLIEventListener(interactiveMode);
 
 						final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel,
 								usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
-								systemModelProvider, snapshotBuilder, perOpteryxUri, varianceOfUserGroups, thinkTime, closedWorkload, eventListener);
+								systemModelProvider, snapshotBuilder, perOpteryxUri, varianceOfUserGroups, thinkTime, closedWorkload, eventListener, deployablesFolder);
 
 						System.out.println("Analysis configuration");
 						final Execution<Configuration> analysis = new Execution<>(configuration);
@@ -164,6 +166,8 @@ public final class AnalysisMain {
 		options.addOption(Option.builder("s").required(true).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
 		options.addOption(Option.builder("po").required(true).longOpt("perOpteryx-headless-location").hasArg()
 				.desc("the location of the PerOpteryx headless plugin").build());
+		options.addOption(Option.builder("d").required(true).longOpt("deployables-folder").hasArg()
+				.desc("the location of the deployable/executable scripts for adaptation execution").build());
 		options.addOption(
 				Option.builder("in").required(true).longOpt("interactive-adaptation").desc("interact with operator during adaptation").build());
 
@@ -191,8 +195,10 @@ public final class AnalysisMain {
 		options.addOption(Option.builder("s").required(false).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
 		options.addOption(Option.builder("po").required(false).longOpt("perOpteryx-headless-location").hasArg()
 				.desc("the location of the PerOpteryx headless plugin").build());
-		options.addOption(
-				Option.builder("in").required(true).longOpt("interactive-adaptation").desc("interact with operator during adaptation").build());
+		options.addOption(Option.builder("d").required(true).longOpt("deployables-folder").hasArg()
+				.desc("the location of the deployable/executable scripts for adaptation execution").build());
+		options.addOption(Option.builder("in").required(true).longOpt("interactive-adaptation")
+				.desc("interact with operator during adaptation").build());
 
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
