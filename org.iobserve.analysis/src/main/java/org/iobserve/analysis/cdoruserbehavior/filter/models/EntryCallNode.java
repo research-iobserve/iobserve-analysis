@@ -30,9 +30,6 @@ import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
 
 public class EntryCallNode {
     private final String signature;
-
-    private final Set<EntryCallEdge> incommingEdges;
-    private final Set<EntryCallEdge> outgoingEdges;
     private final Set<CallInformation> entryCallInformations;
 
     /**
@@ -43,8 +40,6 @@ public class EntryCallNode {
      */
     public EntryCallNode(final String signature) {
         this.signature = signature;
-        this.incommingEdges = new HashSet<>();
-        this.outgoingEdges = new HashSet<>();
         this.entryCallInformations = new HashSet();
     }
 
@@ -76,26 +71,6 @@ public class EntryCallNode {
         }
     }
 
-    /**
-     * adds an incomming edge
-     *
-     * @param edge
-     * @return true if added, false else
-     */
-    public boolean addIncommingEdge(final EntryCallEdge edge) {
-        return this.incommingEdges.add(edge);
-    }
-
-    /**
-     * adds an outgoing edge
-     *
-     * @param edge
-     * @return true if added, false else
-     */
-    public boolean addOutgoingEdge(final EntryCallEdge edge) {
-        return this.outgoingEdges.add(edge);
-    }
-
     /*
      * (non-Javadoc)
      *
@@ -120,24 +95,6 @@ public class EntryCallNode {
      */
     public String getSignature() {
         return this.signature;
-    }
-
-    /**
-     * getter
-     *
-     * @return the incommingEdges
-     */
-    public Set<EntryCallEdge> getIncommingEdges() {
-        return this.incommingEdges;
-    }
-
-    /**
-     * getter
-     *
-     * @return the outgoingEdges
-     */
-    public Set<EntryCallEdge> getOutgoingEdges() {
-        return this.outgoingEdges;
     }
 
     /**

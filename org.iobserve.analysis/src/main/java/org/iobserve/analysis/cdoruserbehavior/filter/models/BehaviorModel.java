@@ -20,7 +20,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
-import org.iobserve.analysis.filter.models.UserSession;
 
 /**
  * Represents the user Behavior of a user or a group of users
@@ -30,19 +29,15 @@ import org.iobserve.analysis.filter.models.UserSession;
  */
 public class BehaviorModel {
     private String name;
-    private EntryCallNode rootEntryCall;
     private final Set<EntryCallNode> entryCallNodes;
     private final Set<EntryCallEdge> entryCallEdges;
-    private final Set<UserSession> userSessions;
 
     /**
      * constructor
      */
     public BehaviorModel() {
-        this.rootEntryCall = null;
         this.entryCallNodes = new HashSet<>();
         this.entryCallEdges = new HashSet<>();
-        this.userSessions = new HashSet<>();
     }
 
     /**
@@ -97,15 +92,6 @@ public class BehaviorModel {
     /**
      * getter
      *
-     * @return root entry call node
-     */
-    public EntryCallNode getRootEntryCall() {
-        return this.rootEntryCall;
-    }
-
-    /**
-     * getter
-     *
      * @return entry call nodes
      */
     public Set<EntryCallNode> getEntryCallNodes() {
@@ -119,15 +105,6 @@ public class BehaviorModel {
      */
     public Set<EntryCallEdge> getEntryCallEdges() {
         return this.entryCallEdges;
-    }
-
-    /**
-     * getter
-     *
-     * @return user sessions
-     */
-    public Set<UserSession> getUserSessions() {
-        return this.userSessions;
     }
 
     /**
@@ -157,7 +134,6 @@ public class BehaviorModel {
      */
     private EntryCallNode mergeNode(final EntryCallNode node) {
         if (this.entryCallNodes.isEmpty()) {
-            this.rootEntryCall = node;
             this.entryCallNodes.add(node);
             return node;
 

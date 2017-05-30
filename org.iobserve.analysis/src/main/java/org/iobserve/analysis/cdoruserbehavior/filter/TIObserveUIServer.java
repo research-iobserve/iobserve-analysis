@@ -63,7 +63,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
     }
 
     @Override
-    protected void execute(BehaviorModel behaviorModel) {
+    protected void execute(final BehaviorModel behaviorModel) {
         final ArrayList<ObjectNode> changelogs = new ArrayList<>();
         final ArrayList<ObjectNode> instanceChangelogs = new ArrayList<>();
         final String nodeID = this.createBasicChangelogs(changelogs);
@@ -98,8 +98,8 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
      * @param nodeID
      *            nodeID
      */
-    private void toCreateEdgeChangelog(EntryCallEdge edge, ArrayList<ObjectNode> changelogs,
-            ArrayList<ObjectNode> instanceChangelogs, String nodeID) {
+    private void toCreateEdgeChangelog(final EntryCallEdge edge, final ArrayList<ObjectNode> changelogs,
+            final ArrayList<ObjectNode> instanceChangelogs, final String nodeID) {
         final String fromSignature = edge.getSource().getSignature();
         final String toSignature = edge.getTarget().getSignature();
         final String signature = fromSignature + ">" + toSignature;
@@ -150,8 +150,8 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
      *
      * @return
      */
-    private void toCreateNodeChangelog(EntryCallNode entryCallNode, ArrayList<ObjectNode> changelogs,
-            ArrayList<ObjectNode> instanceChangelogs, String nodeID, BehaviorModel behaviorModel) {
+    private void toCreateNodeChangelog(final EntryCallNode entryCallNode, final ArrayList<ObjectNode> changelogs,
+            final ArrayList<ObjectNode> instanceChangelogs, final String nodeID, final BehaviorModel behaviorModel) {
         final String signature = entryCallNode.getSignature();
         final ObjectNode service = this.objectMapper.createObjectNode();
         final String serviceID = this.createID(nodeID, signature);
@@ -170,12 +170,6 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
         serviceInstance.put("name", signature);
         serviceInstance.put("serviceId", serviceID);
         serviceInstance.put("nodeId", nodeID);
-
-        // mark root node
-        if (entryCallNode.equals(behaviorModel.getRootEntryCall())) {
-            service.put("status", "WARNING");
-            serviceInstance.put("status", "WARNING");
-        }
 
         serviceChangelog.put("data", service);
         changelogs.add(serviceChangelog);
@@ -199,7 +193,8 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
      * @param info
      *            info
      */
-    private void appendInformation(ArrayList<ObjectNode> changelogs, String serviceInstanceID, CallInformation info) {
+    private void appendInformation(final ArrayList<ObjectNode> changelogs, final String serviceInstanceID,
+            final CallInformation info) {
         final String signature = info.getInformationSignature();
         final ObjectNode statusInfo = this.objectMapper.createObjectNode();
 
@@ -225,7 +220,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
      * @return nodeID
      *
      */
-    private String createBasicChangelogs(ArrayList<ObjectNode> list) {
+    private String createBasicChangelogs(final ArrayList<ObjectNode> list) {
         final String nodeID = UUID.randomUUID().toString();
         final ObjectNode behaviorModelAsNode = this.objectMapper.createObjectNode();
         behaviorModelAsNode.put("type", "node");
@@ -252,7 +247,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
      *            type
      * @return object node of changelog
      */
-    private ObjectNode getChangelog(ChangelogType type) {
+    private ObjectNode getChangelog(final ChangelogType type) {
         final ObjectNode changelog = this.objectMapper.createObjectNode();
         changelog.put("type", "changelog");
         changelog.put("systemId", this.systemId);
@@ -311,7 +306,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
      * @param changelogs
      *            changelogs
      */
-    private void postChangelogs(ArrayList<ObjectNode> changelogs) {
+    private void postChangelogs(final ArrayList<ObjectNode> changelogs) {
 
         try {
             final String json = this.objectMapper.writeValueAsString(changelogs);
@@ -348,7 +343,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
      *            signature
      * @return id
      */
-    private String createID(String nodeID, String signature) {
+    private String createID(final String nodeID, final String signature) {
         return nodeID + signature;
     }
 
