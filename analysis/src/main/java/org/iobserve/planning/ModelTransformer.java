@@ -94,7 +94,7 @@ public class ModelTransformer {
 	public void transformModel() throws IOException {
 		this.initModelTransformation();
 		this.clearUnneededElements();
-		this.createResourceEnv();
+		this.rebuildEnvironment();
 	}
 
 	private void initModelTransformation() throws IOException {
@@ -124,7 +124,7 @@ public class ModelTransformer {
 		this.clearAllocationContexts();
 	}
 
-	private void createResourceEnv() {
+	private void rebuildEnvironment() {
 		for (AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
 			AllocationContext representingContext = allocationGroup.getRepresentingContext();
 

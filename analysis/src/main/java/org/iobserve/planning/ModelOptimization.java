@@ -12,11 +12,11 @@ import teetime.stage.basic.AbstractTransformation;
  * is OS independent.
  *
  * @author Philipp Weimann
+ * @author Tobias Pöppke
  */
 public class ModelOptimization extends AbstractTransformation<PlanningData, PlanningData> {
 
 	private final static int EXEC_SUCCESS = 0;
-	private final static int EXEC_ERROR = 1;
 
 	@Override
 	protected void execute(PlanningData planningData) throws Exception {
@@ -26,15 +26,12 @@ public class ModelOptimization extends AbstractTransformation<PlanningData, Plan
 
 		ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir());
 
-		int result = EXEC_SUCCESS;// exec.startModelGeneration();
+		int result = exec.startModelGeneration();
 
-		if (result == EXEC_ERROR) {
-			// TODO throw exception to exit?
-			adaptationData.setReDeploymentURI(null);
-		} else if (result == EXEC_SUCCESS) {
-			adaptationData.setReDeploymentURI(planningData.getProcessedModelDir());
+		if (result != EXEC_SUCCESS) {
+			throw new RuntimeException("PerOpteryx exited with error code " + result);
 		} else {
-			throw new RuntimeException("PerOpteryx exited with unkown result/exec code");
+			adaptationData.setReDeploymentURI(planningData.getProcessedModelDir());
 		}
 
 		this.outputPort.send(planningData);
