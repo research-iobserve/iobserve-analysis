@@ -16,6 +16,7 @@
 package org.iobserve.analysis.modelneo4j.genericapproach;
 
 import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.iobserve.analysis.modelneo4j.PcmRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
@@ -31,7 +32,7 @@ import org.palladiosimulator.pcm.core.entity.Entity;
  *
  * @param <T>
  */
-public class GenericComponentProvider<T extends Entity> {
+public class GenericComponentProvider<T extends EObject> {
 
     public static final String ID = "id";
     public static final String ENTITY_NAME = "entityName";
@@ -44,8 +45,8 @@ public class GenericComponentProvider<T extends Entity> {
     }
 
     public Node createComponent(final T component) {
-        System.out.println("\n\n------------------------------------------------------------------------");
-        System.out.println("component " + component);
+        // System.out.println("\n\n------------------------------------------------------------------------");
+        // System.out.println("component " + component);
 
         /** Create a label representing the type of the component */
         final Label label = Label.label(this.parseTypeName(component.eClass().getInstanceTypeName()));
@@ -59,13 +60,15 @@ public class GenericComponentProvider<T extends Entity> {
 
         /** If there is no node yet, create one */
         if (this.node == null) {
+
+            /** Iterate over all attributes */
             try (Transaction tx = this.getGraph().beginTx()) {
                 this.node = this.getGraph().createNode(label);
 
-                /** Iterate over all attributes */
                 for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                    System.out.println("attibute " + attr.getEAttributeType() + " key: " + attr.getName() + " value: "
-                            + component.eGet(attr));
+                    // System.out.println("attibute " + attr.getEAttributeType() + " key: " +
+                    // attr.getName() + " value: "
+                    // + component.eGet(attr));
 
                     /** Save attributes as properties of the node */
                     final Object value = component.eGet(attr);
@@ -79,14 +82,15 @@ public class GenericComponentProvider<T extends Entity> {
 
             /** Iterate over all references */
             for (final EReference ref : component.eClass().getEAllReferences()) {
-                System.out.println("\n\n------------------------------------------------------------------------");
-                System.out.println("component " + component);
-                System.out.println("reference " + ref.getEReferenceType() + " value: " + component.eGet(ref));
+                // System.out.println("\n\n------------------------------------------------------------------------");
+                // System.out.println("component " + component);
+                // System.out.println("reference " + ref.getEReferenceType() + " value: " +
+                // component.eGet(ref));
 
                 /**
                  * Save references of the component as references to other nodes in the graph
                  */
-                final Object representation = component.eGet(ref);
+                final Object refReprensation = component.eGet(ref);
 
                 RelationshipType relType;
                 if (ref.isContainment()) {
@@ -101,13 +105,13 @@ public class GenericComponentProvider<T extends Entity> {
                  *
                  * TODO: Make sure the order of the list is kept!
                  */
-                if (representation instanceof Iterable<?>) {
+                if (refReprensation instanceof Iterable<?>) {
                     /** Store each single reference */
-                    for (final Object i : (Iterable<?>) component.eGet(ref)) {
-                        if (i instanceof Entity) {
+                    for (final Object o : (Iterable<?>) component.eGet(ref)) {
+                        if (o instanceof Entity) {
 
                             /** Let a new provider create a node for the referenced component */
-                            final Node refNode = new GenericComponentProvider<>(this.graph).createComponent((Entity) i);
+                            final Node refNode = new GenericComponentProvider<>(this.graph).createComponent((Entity) o);
 
                             /** When the new node is created, create a reference */
                             try (Transaction tx = this.getGraph().beginTx()) {
@@ -116,15 +120,18 @@ public class GenericComponentProvider<T extends Entity> {
                                 tx.success();
                             }
                         } else {
-                            System.out.println(i + " should not happen!!!!!!!!!");
+                            if (o != null) {
+                                System.out.println(component + " has " + o
+                                        + " (iterable) which is not an Entity and reltype is " + relType);
+                            }
                         }
                     }
                 } else {
-                    if (representation instanceof Entity) {
+                    if (refReprensation instanceof Entity) {
 
                         /** Let a new provider create a node for the referenced component */
                         final Node refNode = new GenericComponentProvider<>(this.graph)
-                                .createComponent((Entity) representation);
+                                .createComponent((Entity) refReprensation);
 
                         /** When the new node is created, create a reference */
                         try (Transaction tx = this.getGraph().beginTx()) {
@@ -132,7 +139,10 @@ public class GenericComponentProvider<T extends Entity> {
                             tx.success();
                         }
                     } else {
-                        System.out.println(representation + " should not happen!!!!!!!!!");
+                        if (refReprensation != null) {
+                            System.out.println(component + " has " + refReprensation
+                                    + " (single) which is not an Entity and reltype is " + relType);
+                        }
                     }
                 }
             }
