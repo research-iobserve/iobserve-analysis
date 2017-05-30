@@ -25,6 +25,7 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.core.entity.Entity;
+import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 
 /**
  *
@@ -36,6 +37,7 @@ public class GenericComponentProvider<T extends EObject> {
 
     public static final String ID = "id";
     public static final String ENTITY_NAME = "entityName";
+    public static final String TYPE = "type";
 
     private final GraphDatabaseService graph;
     private Node node;
@@ -45,17 +47,25 @@ public class GenericComponentProvider<T extends EObject> {
     }
 
     public Node createComponent(final T component) {
-        // System.out.println("\n\n------------------------------------------------------------------------");
-        // System.out.println("component " + component);
-
         /** Create a label representing the type of the component */
         final Label label = Label.label(this.parseTypeName(component.eClass().getInstanceTypeName()));
 
-        /** Look if there already is a node for the component in the graph */
-        try (Transaction tx = this.getGraph().beginTx()) {
-            this.node = this.getGraph().findNode(label, GenericComponentProvider.ID,
-                    component.eGet(component.eClass().getEIDAttribute()));
-            tx.success();
+        /**
+         * For Entities and DataTypes: Look if there already is a node for the component in the
+         * graph. Note that complex data types are entities. For everything else: Always create a
+         * new node.
+         */
+        if (component instanceof Entity) {
+            try (Transaction tx = this.getGraph().beginTx()) {
+                this.node = this.getGraph().findNode(label, GenericComponentProvider.ID, ((Entity) component).getId());
+                tx.success();
+            }
+        } else if (component instanceof PrimitiveDataType) {
+            try (Transaction tx = this.getGraph().beginTx()) {
+                this.node = this.getGraph().findNode(label, GenericComponentProvider.TYPE,
+                        ((PrimitiveDataType) component).getType().name());
+                tx.success();
+            }
         }
 
         /** If there is no node yet, create one */
@@ -65,12 +75,8 @@ public class GenericComponentProvider<T extends EObject> {
             try (Transaction tx = this.getGraph().beginTx()) {
                 this.node = this.getGraph().createNode(label);
 
+                /** Save attributes as properties of the node */
                 for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                    // System.out.println("attibute " + attr.getEAttributeType() + " key: " +
-                    // attr.getName() + " value: "
-                    // + component.eGet(attr));
-
-                    /** Save attributes as properties of the node */
                     final Object value = component.eGet(attr);
                     if (value != null) {
                         this.node.setProperty(attr.getName(), value.toString());
@@ -82,10 +88,6 @@ public class GenericComponentProvider<T extends EObject> {
 
             /** Iterate over all references */
             for (final EReference ref : component.eClass().getEAllReferences()) {
-                // System.out.println("\n\n------------------------------------------------------------------------");
-                // System.out.println("component " + component);
-                // System.out.println("reference " + ref.getEReferenceType() + " value: " +
-                // component.eGet(ref));
 
                 /**
                  * Save references of the component as references to other nodes in the graph
@@ -106,42 +108,32 @@ public class GenericComponentProvider<T extends EObject> {
                  * TODO: Make sure the order of the list is kept!
                  */
                 if (refReprensation instanceof Iterable<?>) {
+
                     /** Store each single reference */
                     for (final Object o : (Iterable<?>) component.eGet(ref)) {
-                        if (o instanceof Entity) {
-
-                            /** Let a new provider create a node for the referenced component */
-                            final Node refNode = new GenericComponentProvider<>(this.graph).createComponent((Entity) o);
-
-                            /** When the new node is created, create a reference */
-                            try (Transaction tx = this.getGraph().beginTx()) {
-
-                                this.node.createRelationshipTo(refNode, relType);
-                                tx.success();
-                            }
-                        } else {
-                            if (o != null) {
-                                System.out.println(component + " has " + o
-                                        + " (iterable) which is not an Entity and reltype is " + relType);
-                            }
-                        }
-                    }
-                } else {
-                    if (refReprensation instanceof Entity) {
 
                         /** Let a new provider create a node for the referenced component */
                         final Node refNode = new GenericComponentProvider<>(this.graph)
-                                .createComponent((Entity) refReprensation);
+                                .createComponent((EObject) o);
+
+                        /** When the new node is created, create a reference */
+                        try (Transaction tx = this.getGraph().beginTx()) {
+
+                            this.node.createRelationshipTo(refNode, relType);
+                            tx.success();
+                        }
+                    }
+                } else {
+                    if (refReprensation != null) {
+
+                        /** Let a new provider create a node for the referenced component */
+                        final Node refNode = new GenericComponentProvider<>(this.graph)
+                                .createComponent((EObject) refReprensation);
 
                         /** When the new node is created, create a reference */
                         try (Transaction tx = this.getGraph().beginTx()) {
                             this.node.createRelationshipTo(refNode, relType);
                             tx.success();
-                        }
-                    } else {
-                        if (refReprensation != null) {
-                            System.out.println(component + " has " + refReprensation
-                                    + " (single) which is not an Entity and reltype is " + relType);
                         }
                     }
                 }
