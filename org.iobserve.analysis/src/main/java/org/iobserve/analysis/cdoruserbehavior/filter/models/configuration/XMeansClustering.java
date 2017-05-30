@@ -53,6 +53,24 @@ public class XMeansClustering implements IClustering {
 
     @Override
     public Optional<ClusteringResults> clusterInstances(final Instances instances) {
+        Optional<ClusteringResults> clusteringResults = Optional.empty();
+
+        // Cluster multiple times to reduce the impact of the initial k of the k-means
+        for (int i = 0; i < 5; i++) {
+
+            final Optional<ClusteringResults> tempClusteringResults = this.getClusteringResults(instances);
+            if (clusteringResults.isPresent() && tempClusteringResults.isPresent()) {
+                clusteringResults = tempClusteringResults.get().getClusteringMetrics()
+                        .getSumOfSquaredErrors() < clusteringResults.get().getClusteringMetrics()
+                                .getSumOfSquaredErrors() ? tempClusteringResults : clusteringResults;
+            } else if (tempClusteringResults.isPresent() && !clusteringResults.isPresent()) {
+                clusteringResults = tempClusteringResults;
+            }
+        }
+        return clusteringResults;
+    }
+
+    private Optional<ClusteringResults> getClusteringResults(final Instances instances) {
         final XMeans xMeansClusterer = new XMeans();
 
         xMeansClusterer.setSeed(new Random().nextInt(Integer.MAX_VALUE));
@@ -64,9 +82,10 @@ public class XMeansClustering implements IClustering {
         try {
             xMeansClusterer.buildClusterer(instances);
 
-            // ****
+            // **************************************************************
             // Code used from org.iobserve.analysis.userbehavior.XMeansClustering
             // to use org.iobserve.analysis.userbehavior.ClusteringResults
+            // **************************************************************
             int[] clustersize = null;
             final int[] assignments = new int[instances.numInstances()];
             clustersize = new int[xMeansClusterer.getClusterCenters().numInstances()];

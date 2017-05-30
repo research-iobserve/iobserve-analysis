@@ -45,20 +45,7 @@ public class TClustering extends AbstractConsumerStage<Instances> {
 
     @Override
     protected void execute(final Instances instances) {
-
-        Optional<ClusteringResults> clusteringResults = Optional.empty();
-
-        for (int i = 0; i < 5; i++) {
-
-            final Optional<ClusteringResults> tempClusteringResults = this.clustering.clusterInstances(instances);
-            if (clusteringResults.isPresent() && tempClusteringResults.isPresent()) {
-                clusteringResults = tempClusteringResults.get().getClusteringMetrics()
-                        .getSumOfSquaredErrors() < clusteringResults.get().getClusteringMetrics()
-                                .getSumOfSquaredErrors() ? clusteringResults : tempClusteringResults;
-            } else if (tempClusteringResults.isPresent() && !clusteringResults.isPresent()) {
-                clusteringResults = tempClusteringResults;
-            }
-        }
+        final Optional<ClusteringResults> clusteringResults = this.clustering.clusterInstances(instances);
         clusteringResults.ifPresent(this::printInstances);
         clusteringResults.ifPresent(results -> this.outputPort.send(results.getClusteringMetrics().getCentroids()));
 
