@@ -106,13 +106,16 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // resourceEnvironmentModelProvider);
 
         final ModelGenerationFilter modelGenerationFilter;
+        final int expectedUserGroups;
         if (thinkTime == 1) {
             modelGenerationFilter = new JPetStoreModelGenerationFilterFactory().createFilter();
+            expectedUserGroups = 6;
         } else {
             modelGenerationFilter = new CoCoMEModelGenerationFilterFactory().createFilter();
+            expectedUserGroups = 4;
         }
 
-        final int expectedUserGroups = 4; // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+        // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
         final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
                 new ManhattanDistance());
 
