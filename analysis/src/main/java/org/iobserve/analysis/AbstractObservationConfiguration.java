@@ -101,7 +101,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
 			final SnapshotBuilder snapshotBuilder, final CloudProfileModelProvider cloudProfileModelProvider,
 			final CostModelProvider costModelProvider, final URI perOpteryxHeadless, final int varianceOfUserGroups,
-			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener) {
+			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener,
+			final URI deployablesFolder) {
 		/** configure filter. */
 		this.recordSwitch = new RecordSwitch();
 
@@ -121,7 +122,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless),
 				new ModelOptimization(), new CandidateProcessing());
 		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(),
-				new AdaptationPlanning(), new AdaptationExecution(eventListener));
+				new AdaptationPlanning(), new AdaptationExecution(eventListener, deployablesFolder));
 		final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
 
 		/** dispatch different monitoring data. */

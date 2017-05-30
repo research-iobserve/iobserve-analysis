@@ -108,12 +108,14 @@ public class AnalysisDaemon implements Daemon {
 						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(
 								URI.createURI(commandLine.getOptionValue("s")), modelProvider);
 						final URI perOpteryxDir = URI.createURI(commandLine.getOptionValue("po"));
+						final URI deployablesFolder = URI.createURI(commandLine.getOptionValue("d"));
 
 						final Configuration configuration = new ServiceConfiguration(listenPort, outputHostname,
 								outputPort, systemId, varianceOfUserGroups, thinkTime, closedWorkload,
 								correspondenceModel, usageModelProvider, repositoryModelProvider,
 								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider,
-								snapshotBuilder, cloudProfileModelProvider, costModelProvider, perOpteryxDir);
+								snapshotBuilder, cloudProfileModelProvider, costModelProvider, perOpteryxDir,
+								deployablesFolder);
 
 						this.thread = new AnalysisThread(this, configuration);
 					} else {
@@ -178,6 +180,8 @@ public class AnalysisDaemon implements Daemon {
 				.desc("snapshot save location").build());
 		options.addOption(Option.builder("po").required(true).longOpt("perOpteryx-headless-location").hasArg()
 				.desc("the location of the PerOpteryx headless plugin").build());
+		options.addOption(Option.builder("d").required(true).longOpt("deployables-folder").hasArg()
+				.desc("the location of the deployable/executable scripts for adaptation execution").build());
 
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());

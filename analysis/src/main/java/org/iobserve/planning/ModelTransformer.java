@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
-import org.gradle.internal.impldep.com.esotericsoftware.minlog.Log;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.CloudProfileModelProvider;
@@ -147,13 +146,15 @@ public class ModelTransformer {
 	}
 
 	private void saveModels() {
-		try {
-			DesignDecisionModelBuilder.saveDecisionSpace(this.planningData.getProcessedModelDir(), "snapshot",
-					this.decisionSpace);
-		} catch (IOException e) {
-			Log.error("Could not save the design decision model to file!");
-		}
+		// try {
+		// DesignDecisionModelBuilder.saveDecisionSpace(this.planningData.getProcessedModelDir(),
+		// "snapshot",
+		// this.decisionSpace);
+		// } catch (IOException e) {
+		// Log.error("Could not save the design decision model to file!");
+		// }
 
+		this.processedModelProviders.getDesignDecisionModelProvider().save();
 		this.allocationProvider.save();
 		this.costProvider.save();
 		this.resourceProvider.save();
