@@ -52,7 +52,7 @@ dependencies {
 	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
 	compile 'extra:org.palladiosimulator.pcm:4.0.2+'
 	compile 'extra:org.palladiosimulator.pcm.resources:4.0.0+'
-	compile 'extra:org.palladiosimulator.pcm.privacy:4.0.0.2017-05-10'
+	compile 'extra:org.palladiosimulator.pcm.privacy:4.0.2.2017-05-31'
 	compile 'extra:org.palladiosimulator.pcm.cloud:1.0.0+'
 	compile 'extra:org.palladiosimulator.analyzer.workflow:1.0.0+'
     compile 'extra:org.palladiosimulator.analyzer.completions:1.0.0+'

@@ -90,6 +90,11 @@ public class SnapshotBuilder extends AbstractStage {
 	 * Creates the actual copy
 	 */
 	private void createModelSnapshot(AbstractModelProvider<?> modelProvider) throws IOException {
+		if (modelProvider == null)
+		{
+			return;
+		}
+		
 		modelProvider.save();
 
 		URI modelURI = modelProvider.getModelUri();
