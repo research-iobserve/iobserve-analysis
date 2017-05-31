@@ -1,6 +1,5 @@
 package org.iobserve.planning;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.utils.AbstractLinearComposition;
 

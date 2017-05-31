@@ -78,8 +78,7 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 
 		// ProcessBuilder builder = new ProcessBuilder(this.execEnvironment,
 		// "-c", perOpteryxCommand + " -w " + modelDir);
-		ProcessBuilder builder = new ProcessBuilder(this.execEnvironment, this.execEnvironmentParam,
-				this.execCommand + " -w " + modelDir);
+		ProcessBuilder builder = new ProcessBuilder(this.execEnvironment, this.execEnvironmentParam, this.execCommand + " -w " + modelDir);
 
 		// LOG.info(String.format("PerOpteryx start parameters: {Command:
 		// '/bin/bash -c %s', working-dir: '%s'}", perOpteryxCommand,

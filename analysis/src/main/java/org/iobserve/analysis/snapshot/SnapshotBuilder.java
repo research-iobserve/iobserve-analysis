@@ -69,6 +69,11 @@ public class SnapshotBuilder extends AbstractStage {
 		}
 	}
 
+	/**
+	 * Creates a Snapshot to the location specified during instance creation.
+	 * 
+	 * @throws IOException
+	 */
 	public void createSnapshot() throws IOException {
 		this.createModelSnapshot(this.modelProviders.getAllocationModelProvider());
 		this.createModelSnapshot(this.modelProviders.getRepositoryModelProvider());
