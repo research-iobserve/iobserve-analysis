@@ -13,14 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.cli;
+package org.iobserve.analysis.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 
-import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -61,11 +58,18 @@ public final class AnalysisMain {
 
     @Parameter(names = { "-c",
             "--closed-workload" }, required = false, description = "Closed workload.", converter = IntegerConverter.class)
-    private final boolean closedWorkload = false;
+    private boolean closedWorkload;
 
     @Parameter(names = { "-i",
-            "--input" }, required = true, description = "Kieker monitoring data directory.", converter = FileConverter.class)
-    private File monitoringDataDirectory;
+            "--input" }, required = true, description = "port number to listen for new connections of Kieker writers.", converter = IntegerConverter.class)
+    private int listenPort;
+
+    @Parameter(names = { "-o",
+            "--output" }, required = true, description = "hostname and port of the iobserve visualization, e.g., visualization:80.")
+    private String output;
+
+    @Parameter(names = { "-s", "--system" }, required = true, description = "system id.")
+    private String systemId;
 
     @Parameter(names = { "-p",
             "--pcm" }, required = true, description = "Directory containing PCM model data.", converter = FileConverter.class)
@@ -104,36 +108,37 @@ public final class AnalysisMain {
             commander.usage();
             System.exit(1);
         } else {
-            this.checkDirectory(this.monitoringDataDirectory, "Kieker log", commander);
             this.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander);
             /** process parameter. */
 
-            /** create and run application */
-            final Collection<File> monitoringDataDirectories = new ArrayList<>();
-            AnalysisMain.findDirectories(this.monitoringDataDirectory.listFiles(), monitoringDataDirectories);
+            final String[] outputs = this.output.split(":");
+            if (outputs.length == 2) {
+                final String outputHostname = outputs[0];
+                final String outputPort = outputs[1];
 
-            final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
-                    this.pcmModelsDirectory);
+                /** process parameter. */
+                final InitializeModelProviders modelProvider = new InitializeModelProviders(this.pcmModelsDirectory);
 
-            final ICorrespondence correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
-            final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
-            final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
-            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProviderPlatform
-                    .getResourceEnvironmentModelProvider();
-            final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
-            final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
+                final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
+                final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
+                final RepositoryModelProvider repositoryModelProvider = modelProvider.getRepositoryModelProvider();
+                final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider
+                        .getResourceEnvironmentModelProvider();
+                final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
+                final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
 
-            final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
-                    correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
-                    allocationModelProvider, systemModelProvider, this.varianceOfUserGroups, this.thinkTime,
-                    this.closedWorkload);
+                final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
+                        outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
+                        correspondenceModel, usageModelProvider, repositoryModelProvider,
+                        resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider);
 
-            System.out.println("Analysis configuration");
-            final Execution<Configuration> analysis = new Execution<>(configuration);
-            System.out.println("Analysis start");
-            analysis.executeBlocking();
-            System.out.println("Anaylsis complete");
-            ExecutionTimeLogger.getInstance().exportAsCsv();
+                System.out.println("Analysis configuration");
+                final Execution<Configuration> analysis = new Execution<>(configuration);
+                System.out.println("Analysis start");
+                analysis.executeBlocking();
+                System.out.println("Anaylsis complete");
+                ExecutionTimeLogger.getInstance().exportAsCsv();
+            }
         }
     }
 
@@ -150,15 +155,6 @@ public final class AnalysisMain {
             System.exit(1);
         }
 
-    }
-
-    private static void findDirectories(final File[] listFiles, final Collection<File> monitoringDataDirectories) {
-        for (final File file : listFiles) {
-            if (file.isDirectory()) {
-                monitoringDataDirectories.add(file);
-                AnalysisMain.findDirectories(file.listFiles(), monitoringDataDirectories);
-            }
-        }
     }
 
 }

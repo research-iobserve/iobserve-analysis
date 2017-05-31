@@ -78,5 +78,4 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
         this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
         this.connectPorts(this.reader.getOutputPort(), this.recordSwitch.getInputPort());
     }
-
 }

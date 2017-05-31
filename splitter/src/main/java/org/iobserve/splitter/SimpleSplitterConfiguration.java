@@ -16,6 +16,7 @@
 package org.iobserve.splitter;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -35,11 +36,7 @@ public class SimpleSplitterConfiguration extends Configuration {
 
     private final InitialElementProducer<File> files;
     private final Dir2RecordsFilter reader;
-    private final DataDumpStage adapterConsumer;
-    private final DataDumpStage enterpriseConsumer;
-    private final DataDumpStage storeConsumer;
-    private final DataDumpStage registryConsumer;
-    private final DataDumpStage webFrontendConsumer;
+    private final DataDumpStage[] consumer;
     private final Splitter splitter;
     private final Filter filter;
 
@@ -50,59 +47,36 @@ public class SimpleSplitterConfiguration extends Configuration {
      *            location of a Kieker data log
      * @param outputLocation
      *            output location
-     * @param adapter
-     *            name of the adapter node
-     * @param enterprise
-     *            name of the enterprise node
-     * @param store
-     *            name of the store node
-     * @param registry
-     *            name of the registry node
-     * @param webfrontend
-     *            name of the webfrontend node
+     * @param hostnames
+     *            names of the different nodes
+     * @throws IOException
+     *             on error initializing dump stage
      */
-    public SimpleSplitterConfiguration(final String dataLocation, final String outputLocation, final String adapter,
-            final String enterprise, final String store, final String registry, final String webfrontend) {
+    public SimpleSplitterConfiguration(final File dataLocation, final File outputLocation, final String[] hostnames)
+            throws IOException {
 
         System.out.println("Read from " + dataLocation);
 
         final Collection<File> directories = new ArrayList<>();
 
-        final File directory = new File(dataLocation);
-
-        if (directory.isDirectory()) {
-            for (final File file : directory.listFiles()) {
-                if (file.isDirectory()) {
-                    directories.add(file);
-                }
-            }
-
-        } else {
-            System.out.println(dataLocation + " is not a directory containing Kieker directories.");
-        }
+        directories.add(dataLocation);
 
         this.files = new InitialElementProducer<>(directories);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
 
         this.filter = new Filter();
 
-        this.splitter = new Splitter(adapter, enterprise, store, registry, webfrontend);
+        this.splitter = new Splitter(hostnames);
 
-        this.adapterConsumer = new DataDumpStage(outputLocation, adapter);
-        this.enterpriseConsumer = new DataDumpStage(outputLocation, enterprise);
-        this.storeConsumer = new DataDumpStage(outputLocation, store);
-        this.registryConsumer = new DataDumpStage(outputLocation, registry);
-        this.webFrontendConsumer = new DataDumpStage(outputLocation, webfrontend);
+        this.consumer = new DataDumpStage[hostnames.length];
 
+        for (int i = 0; i < hostnames.length; i++) {
+            this.consumer[i] = new DataDumpStage(outputLocation.getCanonicalPath(), hostnames[i]);
+            this.connectPorts(this.splitter.getAllOutputPorts().get(i), this.consumer[i].getInputPort());
+        }
         this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
         this.connectPorts(this.reader.getOutputPort(), this.filter.getInputPort());
         this.connectPorts(this.filter.getOutputPort(), this.splitter.getInputPort());
-        this.connectPorts(this.splitter.getAdapterOutputPort(), this.adapterConsumer.getInputPort());
-        this.connectPorts(this.splitter.getEnterpriseOutputPort(), this.enterpriseConsumer.getInputPort());
-        this.connectPorts(this.splitter.getStoreOutputPort(), this.storeConsumer.getInputPort());
-        this.connectPorts(this.splitter.getRegistryOutputPort(), this.registryConsumer.getInputPort());
-        this.connectPorts(this.splitter.getWebFrontendOutputPort(), this.webFrontendConsumer.getInputPort());
-
     }
 
 }

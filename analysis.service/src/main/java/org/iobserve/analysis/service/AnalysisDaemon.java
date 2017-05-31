@@ -16,17 +16,9 @@
 package org.iobserve.analysis.service;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 
-import teetime.framework.Configuration;
-
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
@@ -38,15 +30,49 @@ import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
+
+import teetime.framework.Configuration;
+
 /**
  * @author Reiner Jung
  *
  */
 public class AnalysisDaemon implements Daemon {
 
-    private static final String VARIANCE_OF_USER_GROUPS = "variance-of-user-groups";
-    private static final String THINK_TIME = "think-time";
-    private static final String CLOSED_WORKLOAD = "closed-workload";
+    @Parameter(names = "--help", help = true)
+    private boolean help;
+
+    @Parameter(names = { "-v",
+            "--variance-of-user-groups" }, required = true, description = "Variance of user groups.", converter = IntegerConverter.class)
+    private int varianceOfUserGroups;
+
+    @Parameter(names = { "-t",
+            "--think-time" }, required = true, description = "Think time.", converter = IntegerConverter.class)
+    private int thinkTime;
+
+    @Parameter(names = { "-c",
+            "--closed-workload" }, required = false, description = "Closed workload.", converter = IntegerConverter.class)
+    private final boolean closedWorkload = false;
+
+    @Parameter(names = { "-i",
+            "--input" }, required = true, description = "port number to listen for new connections of Kieker writers.", converter = IntegerConverter.class)
+    private int listenPort;
+
+    @Parameter(names = { "-o",
+            "--output" }, required = true, description = "hostname and port of the iobserve visualization, e.g., visualization:80.")
+    private String output;
+
+    @Parameter(names = { "-s", "--system" }, required = true, description = "system id.")
+    private String systemId;
+
+    @Parameter(names = { "-p",
+            "--pcm" }, required = true, description = "Directory containing PCM model data.", converter = FileConverter.class)
+    private File pcmModelsDirectory;
 
     private AnalysisThread thread;
     private boolean running = false;
@@ -59,66 +85,52 @@ public class AnalysisDaemon implements Daemon {
 
     @Override
     public void init(final DaemonContext context) throws DaemonInitException, MalformedURLException {
+        final JCommander commander = new JCommander(this);
         final String[] args = context.getArguments();
-        final CommandLineParser parser = new DefaultParser();
         try {
-            CommandLine commandLine = parser.parse(AnalysisDaemon.createHelpOptions(), args);
-
-            if (commandLine.hasOption("h")) {
-                final HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("iobserve-service", AnalysisDaemon.createOptions());
-            } else {
-                commandLine = parser.parse(AnalysisDaemon.createOptions(), args);
-
-                /** get configuration parameter. */
-                final int listenPort = Integer.parseInt(commandLine.getOptionValue("i"));
-                final String outputHostname = commandLine.getOptionValues("o")[0];
-                final String outputPort = commandLine.getOptionValues("o")[1];
-
-                final File pcmModelsDirectory = new File(commandLine.getOptionValue("p"));
-
-                final int varianceOfUserGroups = Integer
-                        .parseInt(commandLine.getOptionValue(AnalysisDaemon.VARIANCE_OF_USER_GROUPS));
-                final int thinkTime = Integer.parseInt(commandLine.getOptionValue(AnalysisDaemon.THINK_TIME));
-                final boolean closedWorkload = commandLine.hasOption(AnalysisDaemon.CLOSED_WORKLOAD);
-
-                final String systemId = commandLine.getOptionValue("s");
-
-                /** process parameter. */
-                if (pcmModelsDirectory.exists()) {
-                    if (pcmModelsDirectory.isDirectory()) {
-                        final InitializeModelProviders modelProvider = new InitializeModelProviders(pcmModelsDirectory);
-
-                        final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
-                        final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
-                        final RepositoryModelProvider repositoryModelProvider = modelProvider
-                                .getRepositoryModelProvider();
-                        final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider
-                                .getResourceEnvironmentModelProvider();
-                        final AllocationModelProvider allocationModelProvider = modelProvider
-                                .getAllocationModelProvider();
-                        final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
-
-                        final Configuration configuration = new ServiceConfiguration(listenPort, outputHostname,
-                                outputPort, systemId, varianceOfUserGroups, thinkTime, closedWorkload,
-                                correspondenceModel, usageModelProvider, repositoryModelProvider,
-                                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider);
-
-                        this.thread = new AnalysisThread(this, configuration);
-                    } else {
-                        throw new DaemonInitException(
-                                "CLI error: PCM directory " + pcmModelsDirectory.getPath() + " is not a directory.");
-                    }
-                } else {
-                    throw new DaemonInitException(
-                            "CLI error: PCM directory " + pcmModelsDirectory.getPath() + " does not exist.");
-                }
-            }
-        } catch (final ParseException exp) {
-            final HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("iobserve-analysis", AnalysisDaemon.createOptions());
-            throw new DaemonInitException("CLI error: " + exp.getMessage());
+            commander.parse(args);
+            this.execute(commander);
+        } catch (final ParameterException e) {
+            System.err.println(e.getLocalizedMessage());
+            commander.usage();
+        } catch (final IOException e) {
+            System.err.println(e.getLocalizedMessage());
+            commander.usage();
         }
+    }
+
+    private void execute(final JCommander commander) throws IOException {
+
+        /** get configuration parameter. */
+        this.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander);
+
+        final String[] outputs = this.output.split(":");
+        if (this.output.length() == 2) {
+            final String outputHostname = outputs[0];
+            final String outputPort = outputs[1];
+
+            /** process parameter. */
+            final InitializeModelProviders modelProvider = new InitializeModelProviders(this.pcmModelsDirectory);
+
+            final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
+            final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
+            final RepositoryModelProvider repositoryModelProvider = modelProvider.getRepositoryModelProvider();
+            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider
+                    .getResourceEnvironmentModelProvider();
+            final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
+            final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
+
+            final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname, outputPort,
+                    this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
+                    usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
+                    allocationModelProvider, systemModelProvider);
+
+            this.thread = new AnalysisThread(this, configuration);
+        } else {
+            commander.usage();
+            System.exit(2);
+        }
+
     }
 
     @Override
@@ -147,40 +159,18 @@ public class AnalysisDaemon implements Daemon {
         return this.running;
     }
 
-    /**
-     * Create the command line parameter setup.
-     *
-     * @return options for the command line parser
-     */
-    private static Options createOptions() {
-        final Options options = new Options();
+    private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
+            throws IOException {
+        if (!location.exists()) {
+            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            commander.usage();
+            System.exit(1);
+        }
+        if (!location.isDirectory()) {
+            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            commander.usage();
+            System.exit(1);
+        }
 
-        options.addOption(Option.builder("i").required(true).longOpt("input").hasArg()
-                .desc("port number to listen for new connections of Kieker writers").build());
-        options.addOption(
-                Option.builder("o").required(true).longOpt("output").hasArgs().numberOfArgs(2).valueSeparator(':')
-                        .desc("hostname and port of the iobserve visualization, e.g., visualization:80").build());
-        options.addOption(Option.builder("s").required(true).longOpt("system").hasArg().desc("system").build());
-        options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg()
-                .desc("directory containing all PCM models").build());
-
-        /** help */
-        options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
-
-        return options;
-    }
-
-    /**
-     * Create a command line setup with only the help option.
-     *
-     * @return returns simplified options
-     */
-    private static Options createHelpOptions() {
-        final Options options = new Options();
-
-        /** help */
-        options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
-
-        return options;
     }
 }

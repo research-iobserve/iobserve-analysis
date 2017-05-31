@@ -15,15 +15,16 @@
  ***************************************************************************/
 package org.iobserve.collector;
 
-import teetime.framework.Execution;
+import java.io.File;
+import java.io.IOException;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
+
+import teetime.framework.Execution;
 
 /**
  * Collector main class.
@@ -32,10 +33,13 @@ import org.apache.commons.cli.ParseException;
  */
 public final class CollectorMain {
 
-    private static final String DATA_DIR_OPTION = "data";
-    private static final String INPUT_PORT_OPTION = "port";
-    private static final String DATA_DIR_OPTION_SHORT = "d";
-    private static final String INPUT_PORT_OPTION_SHORT = "p";
+    @Parameter(names = { "-d",
+            "--data" }, required = true, description = "Output data directory.", converter = FileConverter.class)
+    private File dataLocation;
+
+    @Parameter(names = { "-p",
+            "--port" }, required = true, description = "Input port.", converter = IntegerConverter.class)
+    private Integer inputPort;
 
     /**
      * This is a simple main class which does not need to be instantiated.
@@ -51,59 +55,63 @@ public final class CollectorMain {
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        final CommandLineParser parser = new DefaultParser();
+        final CollectorMain main = new CollectorMain();
+        final JCommander commander = new JCommander(main);
         try {
-            final CommandLine commandLine = parser.parse(CollectorMain.createOptions(), args);
-            final String dataLocation = commandLine.getOptionValue(CollectorMain.DATA_DIR_OPTION);
-            final int inputPort = Integer.parseInt(commandLine.getOptionValue(CollectorMain.INPUT_PORT_OPTION));
-            System.out.println("Receiver");
-            final SimpleBridgeConfiguration configuration = new SimpleBridgeConfiguration(dataLocation, inputPort);
-            final Execution<SimpleBridgeConfiguration> analysis = new Execution<>(configuration);
-
-            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        synchronized (analysis) {
-                            analysis.abortEventually();
-                        }
-                    } catch (final Exception e) { // NOCS
-
-                    }
-                }
-            }));
-
-            System.out.println("Running analysis");
-
-            analysis.executeBlocking();
-
-            System.out.println("Counts " + configuration.getCounter().getCount());
-
-            System.out.println("Done");
-        } catch (final ParseException exp) {
-            System.err.println("CLI error: " + exp.getMessage());
-            final HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("collector", CollectorMain.createOptions());
+            commander.parse(args);
+            main.execute(commander);
+        } catch (final ParameterException e) {
+            System.err.println(e.getLocalizedMessage());
+            commander.usage();
+        } catch (final IOException e) {
+            System.err.println(e.getLocalizedMessage());
+            commander.usage();
         }
     }
 
-    /**
-     * Create the command line parameter setup.
-     *
-     * @return options for the command line parser
-     */
-    private static Options createOptions() {
-        final Options options = new Options();
+    private void execute(final JCommander commander) throws IOException {
+        this.checkDirectory(this.dataLocation, "Output Kieker directory", commander);
 
-        options.addOption(Option.builder(CollectorMain.INPUT_PORT_OPTION_SHORT).required(true)
-                .longOpt(CollectorMain.INPUT_PORT_OPTION).hasArg().desc("input TCP port").build());
-        options.addOption(Option.builder(CollectorMain.DATA_DIR_OPTION_SHORT).required(true)
-                .longOpt(CollectorMain.DATA_DIR_OPTION).hasArg().desc("Kieker directory location").build());
+        System.out.println("Receiver");
+        final SimpleBridgeConfiguration configuration = new SimpleBridgeConfiguration(
+                this.dataLocation.getCanonicalPath(), this.inputPort);
+        final Execution<SimpleBridgeConfiguration> analysis = new Execution<>(configuration);
 
-        /** help */
-        options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    synchronized (analysis) {
+                        analysis.abortEventually();
+                    }
+                } catch (final Exception e) { // NOCS
 
-        return options;
+                }
+            }
+        }));
+
+        System.out.println("Running analysis");
+
+        analysis.executeBlocking();
+
+        System.out.println("Counts " + configuration.getCounter().getCount());
+
+        System.out.println("Done");
+
     }
 
+    private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
+            throws IOException {
+        if (!location.exists()) {
+            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            commander.usage();
+            System.exit(1);
+        }
+        if (!location.isDirectory()) {
+            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            commander.usage();
+            System.exit(1);
+        }
+
+    }
 }

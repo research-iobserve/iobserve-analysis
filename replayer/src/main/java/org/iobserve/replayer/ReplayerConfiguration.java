@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,45 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.test.cli;
+package org.iobserve.replayer;
 
 import java.io.File;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
-import org.iobserve.analysis.filter.writer.DataDumpStage;
 
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
 
 /**
+ * Configuration for the log replayer.
+ *
  * @author Reiner Jung
  *
  */
-public class ObservationConfiguration extends Configuration {
+public class ReplayerConfiguration extends Configuration {
+
+    private final DataSendStage consumer;
 
     /**
-     * Create a configuration with a ASCII file reader.
+     * Construct the replayer configuration.
      *
-     * @param directories
-     *            input logs
-     * @param dataLocation
-     *            output directory
+     * @param dataLocation directory containing Kieker data.
+     * @param hostname name of the host where the data is send to
+     * @param outputPort port on the host the data is send to
      */
-    public ObservationConfiguration(final Collection<File> directories, final File dataLocation) {
+    public ReplayerConfiguration(final File dataLocation, final String hostname, final int outputPort) {
 
-        /** configure filter. */
+        final List<File> directories = new ArrayList<File>();
+        directories.add(dataLocation);
+
         final InitialElementProducer<File> files = new InitialElementProducer<>(directories);
         final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
-        final RecordTypeFilter filter = new RecordTypeFilter();
 
-        final DataDumpStage dumpStage = new DataDumpStage(dataLocation.getAbsolutePath());
+        this.consumer  = new DataSendStage(hostname, outputPort);
 
-        /** connections. */
         this.connectPorts(files.getOutputPort(), reader.getInputPort());
-        this.connectPorts(reader.getOutputPort(), filter.getInputPort());
-        this.connectPorts(filter.getOutputPort(), dumpStage.getInputPort());
+        this.connectPorts(reader.getOutputPort(), this.consumer.getInputPort());
+    }
+
+    public DataSendStage getCounter() {
+        return this.consumer;
+    }
+
+    public boolean isOutputConnected() {
+        return this.consumer.isOutputConnected();
     }
 
 }

@@ -18,21 +18,23 @@ EXEC="/usr/bin/jsvc"
 
 # The path to the folder containing MyDaemon.jar
 FILE_PATH="/home/reiner/Projects/iObserve/iobserve-analysis/"
+#FILE_PATH="/home/jweg/iobserve-analysis/"
 
 # The path to the folder containing the java runtime
 JAVA_HOME="/usr/lib/jvm/java-8-oracle"
 
 # Our classpath including our jar file and the Apache Commons Daemon library
-CLASS_PATH="$FILE_PATH/org.iobserve.analysis.service/build/libs/org.iobserve.analysis.service.jar"
+CLASS_PATH="$FILE_PATH/analysis.service/build/libs/analysis.service-0.0.2-SNAPSHOT.jar"
 
 # The fully qualified name of the class to execute
 CLASS="org.iobserve.analysis.service.AnalysisDaemon"
 
 # Any command line arguments to be passed to the our Java Daemon implementations init() method
-ARGS="-i 3000 -o localhost:3001 -p . -c test.rac"
+ARGS="-i 3000 -o localhost:9090 -p /home/jweg/models/WorkingTestPCM/pcm/ -c test.rac"
 
 #The user to run the daemon as
 USER="reiner"
+#USER="jweg"
 
 # The file that will contain our process identification number (pid) for other scripts/programs that need to access it.
 PID="$FILE_PATH/$NAME.pid"

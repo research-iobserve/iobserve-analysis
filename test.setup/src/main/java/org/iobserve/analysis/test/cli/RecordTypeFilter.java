@@ -13,48 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.rac.creator;
+package org.iobserve.analysis.test.cli;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Map;
+import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.ServletTraceHelper;
 
-import javax.xml.bind.JAXB;
-
-import org.iobserve.analysis.protocom.PcmEntity;
-import org.iobserve.analysis.protocom.PcmMapping;
-
+import kieker.common.record.IMonitoringRecord;
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 /**
  *
  * @author Reiner Jung
  *
  */
-public class RACWriter extends AbstractConsumerStage<Map<String, PcmEntity>> {
+public class RecordTypeFilter extends AbstractConsumerStage<IMonitoringRecord> {
 
-    private final PcmMapping mapping = new PcmMapping();
-    private final File file;
+    private final OutputPort<IMonitoringRecord> outputPort = this.createOutputPort();
 
-    /**
-     * Create the RAC file writer.
-     *
-     * @param file
-     *            the RAC file name.
-     */
-    public RACWriter(final File file) {
-        this.file = file;
+    public OutputPort<IMonitoringRecord> getOutputPort() {
+        return this.outputPort;
     }
 
     @Override
-    protected void execute(final Map<String, PcmEntity> element) throws Exception {
-        this.mapping.setEntities(new ArrayList<>(element.values()));
-    }
-
-    @Override
-    public void onTerminating() throws Exception {
-        super.onTerminating();
-        JAXB.marshal(this.mapping, this.file);
+    protected void execute(final IMonitoringRecord element) throws Exception {
+        if (!(element instanceof IDeploymentRecord) && !(element instanceof IUndeploymentRecord)
+                && !(element instanceof ServletTraceHelper)) {
+            this.outputPort.send(element);
+        }
     }
 
 }

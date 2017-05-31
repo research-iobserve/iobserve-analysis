@@ -32,12 +32,20 @@ public class ModelMappingReader {
 
     private final File mappingFile;
 
+    /**
+     * Create a reader for model mappings.
+     *
+     * @param mappingFile
+     *            a hfile handle for the mapping file
+     */
     public ModelMappingReader(final File mappingFile) {
         this.mappingFile = mappingFile;
     }
 
     /**
-     * Read the mapping file.
+     * Read the mapping file and place the mapping in a map.
+     *
+     * @return returns a map of model and code identifiers
      */
     public Map<String, String> readModelMapping() {
         try {
