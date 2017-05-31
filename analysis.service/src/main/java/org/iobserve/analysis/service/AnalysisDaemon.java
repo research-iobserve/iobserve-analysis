@@ -30,6 +30,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
@@ -60,7 +61,7 @@ public class AnalysisDaemon implements Daemon {
 	}
 
 	@Override
-	public void init(final DaemonContext context) throws DaemonInitException, MalformedURLException {
+	public void init(final DaemonContext context) throws DaemonInitException, MalformedURLException, InitializationException {
 		final String[] args = context.getArguments();
 		final CommandLineParser parser = new DefaultParser();
 		try {
@@ -89,6 +90,7 @@ public class AnalysisDaemon implements Daemon {
 				if (pcmModelsDirectory.exists()) {
 					if (pcmModelsDirectory.isDirectory()) {
 						final InitializeModelProviders modelProvider = new InitializeModelProviders(pcmModelsDirectory);
+						SnapshotBuilder.setBaseSnapshotURI(URI.createURI(commandLine.getOptionValue("s")));
 
 						final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
 						final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
@@ -96,7 +98,7 @@ public class AnalysisDaemon implements Daemon {
 						final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider.getResourceEnvironmentModelProvider();
 						final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
 						final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
-						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(URI.createURI(commandLine.getOptionValue("s")), modelProvider);
+						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelProvider);
 						final URI perOpteryxDir = URI.createURI(commandLine.getOptionValue("po"));
 
 						final Configuration configuration = new ServiceConfiguration(listenPort, outputHostname, outputPort, systemId,
