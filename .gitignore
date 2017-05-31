@@ -34,3 +34,4 @@ gradle.properties
 repos/
 *.log
 **/neo4jdb/**
+**/neo4jdb2/**
