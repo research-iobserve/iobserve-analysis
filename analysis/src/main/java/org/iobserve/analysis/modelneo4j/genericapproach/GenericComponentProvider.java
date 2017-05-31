@@ -34,7 +34,11 @@ import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.core.entity.Entity;
+import org.palladiosimulator.pcm.parameter.VariableCharacterisationType;
+import org.palladiosimulator.pcm.repository.ComponentType;
+import org.palladiosimulator.pcm.repository.ParameterModifier;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
+import org.palladiosimulator.pcm.repository.PrimitiveTypeEnum;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
@@ -83,11 +87,10 @@ public class GenericComponentProvider<T extends EObject> {
         /** If there is no node yet, create one */
         if (this.node == null) {
 
-            /** Iterate over all attributes */
             try (Transaction tx = this.getGraph().beginTx()) {
                 this.node = this.getGraph().createNode(label);
 
-                /** Save attributes as properties of the node */
+                /** Iterate over all attributes */
                 for (final EAttribute attr : component.eClass().getEAllAttributes()) {
                     final Object value = component.eGet(attr);
                     if (value != null) {
@@ -179,11 +182,14 @@ public class GenericComponentProvider<T extends EObject> {
         /** Iterate over all attributes */
         try (Transaction tx = this.getGraph().beginTx()) {
 
-            System.out.println("reading " + component);
+            // System.out.println("reading " + component);
             for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                System.out.println("\tattribute " + attr.getName());
+                // System.out.print("\tattribute " + attr.getName() + " = ");
                 try {
-                    component.eSet(attr, node.getProperty(attr.getName()));
+                    final Object value = this.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
+                            node.getProperty(attr.getName()).toString());
+                    // System.out.println(value);
+                    component.eSet(attr, value);
                 } catch (final NotFoundException e) {
                     component.eSet(attr, null);
                 }
@@ -194,17 +200,13 @@ public class GenericComponentProvider<T extends EObject> {
         /** Iterate over all references */
         for (final EReference ref : component.eClass().getEAllReferences()) {
             final String refName = ref.getName();
-            System.out.println("\treference " + ref.getName());
+            // System.out.print("\treference " + refName + " = ");
             Object refReprensation = component.eGet(ref);
 
             try (Transaction tx = this.getGraph().beginTx()) {
-                for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
-                    System.out
-                            .println(rel + " " + rel.getProperty(GenericComponentProvider.REF_NAME) + " = " + refName);
-                    if ((rel.getProperty(GenericComponentProvider.REF_NAME)).equals(refName)) {
-                        System.out.println("found matching relationship");
-                        Node endNode;
-                        endNode = rel.getEndNode();
+                for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS)) {
+                    if (refName.equals(rel.getProperty(GenericComponentProvider.REF_NAME))) {
+                        final Node endNode = rel.getEndNode();
 
                         if (refReprensation instanceof EList<?>) {
                             final EObject endComponent = new GenericComponentProvider<>(this.graph)
@@ -217,6 +219,7 @@ public class GenericComponentProvider<T extends EObject> {
                 }
                 tx.success();
             }
+            // System.out.println(refReprensation);
         }
         return component;
     }
@@ -256,10 +259,56 @@ public class GenericComponentProvider<T extends EObject> {
         return name.substring(i + 1);
     }
 
-    private String parseTypeName(final String name) {
-        final int i = name.lastIndexOf(".");
-        return name.substring(i + 1);
+    private Object instantiateAttribute(final Class<?> clazz, final String value) {
+        if (clazz == String.class) {
+            return value;
+        } else if (clazz == ParameterModifier.class) {
+            if (value.equals(ParameterModifier.NONE.toString())) {
+                return ParameterModifier.NONE;
+            } else if (value.equals(ParameterModifier.IN.toString())) {
+                return ParameterModifier.IN;
+            } else if (value.equals(ParameterModifier.OUT.toString())) {
+                return ParameterModifier.OUT;
+            } else if (value.equals(ParameterModifier.INOUT.toString())) {
+                return ParameterModifier.INOUT;
+            }
+        } else if (clazz == ComponentType.class) {
+            if (value.equals(ComponentType.BUSINESS_COMPONENT.toString())) {
+                return ComponentType.BUSINESS_COMPONENT;
+            } else if (value.equals(ComponentType.INFRASTRUCTURE_COMPONENT.toString())) {
+                return ComponentType.INFRASTRUCTURE_COMPONENT;
+            }
+        } else if (clazz == PrimitiveTypeEnum.class) {
+            if (value.equals(PrimitiveTypeEnum.INT.toString())) {
+                return PrimitiveTypeEnum.INT;
+            } else if (value.equals(PrimitiveTypeEnum.STRING.toString())) {
+                return PrimitiveTypeEnum.STRING;
+            } else if (value.equals(PrimitiveTypeEnum.BOOL.toString())) {
+                return PrimitiveTypeEnum.BOOL;
+            } else if (value.equals(PrimitiveTypeEnum.DOUBLE.toString())) {
+                return PrimitiveTypeEnum.DOUBLE;
+            } else if (value.equals(PrimitiveTypeEnum.CHAR.toString())) {
+                return PrimitiveTypeEnum.CHAR;
+            } else if (value.equals(PrimitiveTypeEnum.BYTE.toString())) {
+                return PrimitiveTypeEnum.BYTE;
+            } else if (value.equals(PrimitiveTypeEnum.LONG.toString())) {
+                return PrimitiveTypeEnum.LONG;
+            }
+        } else if (clazz == VariableCharacterisationType.class) {
+            if (value.equals(VariableCharacterisationType.STRUCTURE.toString())) {
+                return VariableCharacterisationType.STRUCTURE;
+            } else if (value.equals(VariableCharacterisationType.NUMBER_OF_ELEMENTS.toString())) {
+                return VariableCharacterisationType.NUMBER_OF_ELEMENTS;
+            } else if (value.equals(VariableCharacterisationType.VALUE.toString())) {
+                return VariableCharacterisationType.VALUE;
+            } else if (value.equals(VariableCharacterisationType.BYTESIZE.toString())) {
+                return VariableCharacterisationType.BYTESIZE;
+            } else if (value.equals(VariableCharacterisationType.TYPE.toString())) {
+                return VariableCharacterisationType.TYPE;
+            }
+        }
 
+        return null;
     }
 
     public GraphDatabaseService getGraph() {
