@@ -6,6 +6,7 @@ import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AbstractModelProvider;
@@ -22,6 +23,7 @@ import teetime.framework.OutputPort;
  */
 public class SnapshotBuilder extends AbstractStage {
 
+	private static URI baseSnapshotLocation = null;
 	private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING,
 			StandardCopyOption.COPY_ATTRIBUTES };
 
@@ -41,13 +43,26 @@ public class SnapshotBuilder extends AbstractStage {
 	 *            where the snapshot will be saved to
 	 * @param modelProviders
 	 *            the source pcm models
+	 * @throws InitializationException
 	 */
-	public SnapshotBuilder(final URI snapshotURI, final InitializeModelProviders modelProviders) {
+	public SnapshotBuilder(final String subURI, final InitializeModelProviders modelProviders)
+			throws InitializationException {
 		super();
 
+		if (SnapshotBuilder.baseSnapshotLocation == null) {
+			throw new InitializationException(
+					"Intitialize baseSnapshotLocation via setBaseSnapshotURI(...) first, befor calling the constructor!");
+		}
+
 		SnapshotBuilder.createSnapshot = false;
-		this.snapshotURI = snapshotURI;
+		this.snapshotURI = SnapshotBuilder.baseSnapshotLocation.appendSegment(subURI);
 		this.modelProviders = modelProviders;
+
+		String fileString = this.snapshotURI.toFileString();
+		File baseFolder = new File(fileString);
+		if (!baseFolder.exists()) {
+			baseFolder.mkdirs();
+		}
 	}
 
 	@Override
@@ -69,7 +84,7 @@ public class SnapshotBuilder extends AbstractStage {
 		}
 	}
 
-	public void createSnapshot() throws IOException {
+	public URI createSnapshot() throws IOException {
 		this.createModelSnapshot(this.modelProviders.getAllocationModelProvider());
 		this.createModelSnapshot(this.modelProviders.getRepositoryModelProvider());
 		this.createModelSnapshot(this.modelProviders.getResourceEnvironmentModelProvider());
@@ -79,17 +94,22 @@ public class SnapshotBuilder extends AbstractStage {
 		this.createModelSnapshot(this.modelProviders.getCostModelProvider());
 		this.createModelSnapshot(this.modelProviders.getDesignDecisionModelProvider());
 		// this.createModelSnapshot(modelProviders.getCorrespondenceModel());
+		return this.snapshotURI;
 	}
 
 	/*
 	 * Creates the actual copy
 	 */
 	private void createModelSnapshot(AbstractModelProvider<?> modelProvider) throws IOException {
+		if (modelProvider == null) {
+			return;
+		}
+
 		modelProvider.save();
 
 		URI modelURI = modelProvider.getModelUri();
 
-		File modelFile = new File(modelURI.path());
+		File modelFile = new File(modelURI.toFileString());
 		if (!modelFile.exists()) {
 			throw new IOException("The given file URI did not point to a file");
 		}
@@ -98,6 +118,26 @@ public class SnapshotBuilder extends AbstractStage {
 		File modelFileCopy = new File(targetFileLocation);
 
 		Files.copy(modelFile.toPath(), modelFileCopy.toPath(), SnapshotBuilder.copyOptions);
+	}
+
+	/**
+	 * Sets the base location for all snapshots. Must be called before
+	 * initializing the SnapshotBuilder.
+	 *
+	 * @param baseSnapshotURI
+	 *            URI base location
+	 */
+	public static void setBaseSnapshotURI(final URI baseSnapshotURI) {
+		SnapshotBuilder.baseSnapshotLocation = baseSnapshotURI;
+	}
+
+	/**
+	 * Return the snapshotURI.
+	 *
+	 * @return snapshot URI
+	 */
+	public URI getSnapshotURI() {
+		return this.snapshotURI;
 	}
 
 	/**

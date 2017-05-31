@@ -26,6 +26,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
@@ -67,8 +68,9 @@ public final class AnalysisMain {
 	 *
 	 * @param args
 	 *            command line arguments.
+	 * @throws InitializationException
 	 */
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws InitializationException {
 		final CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine commandLine = parser.parse(AnalysisMain.createHelpOptions(), args);
@@ -112,8 +114,8 @@ public final class AnalysisMain {
 						final CostModelProvider costModelProvider = modelProviderPlatform.getCostModelProvider();
 
 						String snapshotPath = commandLine.getOptionValue("s");
-						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(URI.createFileURI(snapshotPath),
-								modelProviderPlatform);
+						SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(snapshotPath));
+						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelProviderPlatform);
 
 						final URI perOpteryxUri = URI.createFileURI(commandLine.getOptionValue("po"));
 

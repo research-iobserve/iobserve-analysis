@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
@@ -89,18 +90,23 @@ public class ModelTransformer {
 	 *
 	 * @throws IOException
 	 *             if an error occured while saving the models
+	 * @throws InitializationException
+	 *             if an error occurred during snapshot generation
 	 */
-	public void transformModel() throws IOException {
+	public void transformModel() throws IOException, InitializationException {
 		this.initModelTransformation();
 		this.clearUnneededElements();
 		this.rebuildEnvironment();
 	}
 
-	private void initModelTransformation() throws IOException {
+	private void initModelTransformation() throws IOException, InitializationException {
 		URI processedModelDir = this.planningData.getOriginalModelDir()
 				.appendSegment(ModelProcessing.PROCESSED_MODEL_FOLDER);
 
-		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(processedModelDir, this.originalModelProviders);
+		SnapshotBuilder.setBaseSnapshotURI(this.planningData.getOriginalModelDir());
+
+		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER,
+				this.originalModelProviders);
 		snapshotBuilder.createSnapshot();
 
 		this.planningData.setProcessedModelDir(processedModelDir);

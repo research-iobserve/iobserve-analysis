@@ -12,12 +12,14 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.planning.ModelTransformer;
 import org.iobserve.planning.data.PlanningData;
 import org.iobserve.planning.environment.PalladioEclipseEnvironment;
+import org.iobserve.planning.peropteryx.ExecutionWrapper;
 import org.iobserve.planning.utils.ModelHelper;
 
 /**
@@ -95,21 +97,19 @@ public final class PlanningMain {
 			ModelTransformer transformer = new ModelTransformer(planningData);
 			try {
 				transformer.transformModel();
-			} catch (IOException e) {
-				LOG.error("IOException while executing model transformation: ", e);
+			} catch (IOException | InitializationException e) {
+				LOG.error("Exception while executing model transformation: ", e);
 			}
 
 			// Execute PerOpteryx
 			int result = 0;
-			// try {
-			// ExecutionWrapper execution = new
-			// ExecutionWrapper(planningData.getProcessedModelDir(),
-			// perOpteryxURI);
-			// result = execution.startModelGeneration();
-			// } catch (IOException e) {
-			// LOG.error("Execution failed with IOException.", e);
-			// return;
-			// }
+			try {
+				ExecutionWrapper execution = new ExecutionWrapper(planningData.getProcessedModelDir(), perOpteryxURI);
+				result = execution.startModelGeneration();
+			} catch (IOException e) {
+				LOG.error("Execution failed with IOException.", e);
+				return;
+			}
 
 			if (result == 0) {
 				LOG.info("Optimization was successful.");
