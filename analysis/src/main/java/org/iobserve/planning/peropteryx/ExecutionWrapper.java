@@ -32,7 +32,7 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 		} else {
 			this.execEnvironment = "/bin/bash";
 			this.execEnvironmentParam = "-c";
-			this.execCommand = perOpteryxDir.toFileString() + "/peropteryx-headless";
+			this.execCommand = "./peropteryx-headless";
 		}
 
 		// this.modelName = this.extractModelName(inputModelDir);

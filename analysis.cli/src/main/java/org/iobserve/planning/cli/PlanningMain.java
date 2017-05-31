@@ -1,7 +1,6 @@
 package org.iobserve.planning.cli;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -18,7 +17,6 @@ import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.planning.ModelTransformer;
 import org.iobserve.planning.data.PlanningData;
 import org.iobserve.planning.environment.PalladioEclipseEnvironment;
-import org.iobserve.planning.peropteryx.ExecutionWrapper;
 import org.iobserve.planning.utils.ModelHelper;
 
 /**
@@ -97,14 +95,16 @@ public final class PlanningMain {
 			transformer.transformModel();
 
 			// Execute PerOpteryx
-			int result = -1;
-			try {
-				ExecutionWrapper execution = new ExecutionWrapper(planningData.getProcessedModelDir(), perOpteryxURI);
-				result = execution.startModelGeneration();
-			} catch (IOException e) {
-				LOG.error("Execution failed with IOException.", e);
-				return;
-			}
+			int result = 0;
+			// try {
+			// ExecutionWrapper execution = new
+			// ExecutionWrapper(planningData.getProcessedModelDir(),
+			// perOpteryxURI);
+			// result = execution.startModelGeneration();
+			// } catch (IOException e) {
+			// LOG.error("Execution failed with IOException.", e);
+			// return;
+			// }
 
 			if (result == 0) {
 				LOG.info("Optimization was successful.");

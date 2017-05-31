@@ -57,13 +57,7 @@ public class SnapshotBuilder extends AbstractStage {
 		// Boolean createSnapshot = this.inputPort.receive();
 
 		if (SnapshotBuilder.createSnapshot) {
-			this.createModelSnapshot(this.modelProviders.getAllocationModelProvider());
-			this.createModelSnapshot(this.modelProviders.getRepositoryModelProvider());
-			this.createModelSnapshot(this.modelProviders.getResourceEnvironmentModelProvider());
-			this.createModelSnapshot(this.modelProviders.getSystemModelProvider());
-			this.createModelSnapshot(this.modelProviders.getUsageModelProvider());
-			this.createModelSnapshot(this.modelProviders.getCloudProfileModelProvider());
-			// this.createModelSnapshot(modelProviders.getCorrespondenceModel());
+			this.createSnapshot();
 			SnapshotBuilder.createSnapshot = false;
 
 			if (SnapshotBuilder.evaluationMode) {
@@ -73,6 +67,18 @@ public class SnapshotBuilder extends AbstractStage {
 			}
 
 		}
+	}
+
+	public void createSnapshot() throws IOException {
+		this.createModelSnapshot(this.modelProviders.getAllocationModelProvider());
+		this.createModelSnapshot(this.modelProviders.getRepositoryModelProvider());
+		this.createModelSnapshot(this.modelProviders.getResourceEnvironmentModelProvider());
+		this.createModelSnapshot(this.modelProviders.getSystemModelProvider());
+		this.createModelSnapshot(this.modelProviders.getUsageModelProvider());
+		this.createModelSnapshot(this.modelProviders.getCloudProfileModelProvider());
+		this.createModelSnapshot(this.modelProviders.getCostModelProvider());
+		this.createModelSnapshot(this.modelProviders.getDesignDecisionModelProvider());
+		// this.createModelSnapshot(modelProviders.getCorrespondenceModel());
 	}
 
 	/*
