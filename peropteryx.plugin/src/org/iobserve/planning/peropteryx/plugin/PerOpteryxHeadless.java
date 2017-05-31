@@ -52,13 +52,10 @@ public class PerOpteryxHeadless implements IApplication {
 		try {
 			final CommandLine commandLine = parser.parse(PerOpteryxHeadless.createOptions(), args);
 			final String workingDir = commandLine.getOptionValue(INPUT_WORKING_DIR_OPTION);
-			// final String modelName =
-			// commandLine.getOptionValue(INPUT_MODEL_NAME_OPTION);
 			LOG.info("Working dir: " + workingDir);
 
 			this.launchPeropteryx(workingDir);
 		} catch (final ParseException exp) {
-			// LOG.error("CLI error: " + exp.getMessage());
 			final HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("peropteryx-headless", PerOpteryxHeadless.createOptions());
 			return -1;
@@ -96,22 +93,15 @@ public class PerOpteryxHeadless implements IApplication {
 		if (this.project.exists()) {
 			this.project.close(null);
 			this.project.delete(true, null);
-			// this.workspaceRoot.refreshLocal(IResource.DEPTH_INFINITE, null);
 		}
 
 		this.project.create(null);
-
-		if (!this.project.isOpen()) {
-			this.project.open(null);
-		}
+		this.project.open(null);
 
 		IFolder modelFolder = this.project.getFolder(PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_WORKING_DIR);
 
-		if (!modelFolder.exists()) {
-			modelFolder.createLink(new Path(modelDir), IFolder.BACKGROUND_REFRESH, new NullProgressMonitor());
-		} else {
-			modelFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
-		}
+		modelFolder.createLink(new Path(modelDir), IFolder.BACKGROUND_REFRESH | IResource.REPLACE,
+				new NullProgressMonitor());
 	}
 
 	@Override
@@ -135,17 +125,11 @@ public class PerOpteryxHeadless implements IApplication {
 				"Working directory containing the model files. Note that the files may be changed in the process.");
 		workDirOption.setRequired(true);
 
-		// final Option modelNameOption = new
-		// Option(INPUT_MODEL_NAME_OPTION_SHORT, INPUT_MODEL_NAME_OPTION, true,
-		// "The name of the model contained in the working directory.");
-		// modelNameOption.setRequired(true);
-
 		final Option productOption = new Option(INPUT_PRODUCT_OPTION, true, "Eclipse product description");
 
 		final Option helpOption = new Option("h", "help", false, "Show usage information");
 
 		options.addOption(workDirOption);
-		// options.addOption(modelNameOption);
 		options.addOption(productOption);
 
 		/** help */
