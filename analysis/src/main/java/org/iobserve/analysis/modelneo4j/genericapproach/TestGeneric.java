@@ -16,6 +16,7 @@
 package org.iobserve.analysis.modelneo4j.genericapproach;
 
 import java.io.File;
+import java.util.List;
 
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -44,8 +45,16 @@ public class TestGeneric {
         final Repository repository = repositoryModelProvider.getModel();
         System.out.println("Loaded model");
 
-        System.out.println("Writing to db");
-        new GenericComponentProvider<>(graph).createComponent(repository);
+        // System.out.println("Writing to db");
+        // new GenericComponentProvider<>(graph).createComponent(repository);
+
+        // System.out.println("Reading id -> object from db");
+        // new GenericComponentProvider<>(graph).readComponent("OperationInterface",
+        // "_j8RD0NYgEeWrM-HnT5f_ug");
+
+        System.out.println("Reading type -> ids from db");
+        final List<String> ids = new GenericComponentProvider<>(graph).readComponent("OperationInterface");
+        System.out.println(ids);
 
         graph.shutdown();
         System.out.print("Shut down db");
