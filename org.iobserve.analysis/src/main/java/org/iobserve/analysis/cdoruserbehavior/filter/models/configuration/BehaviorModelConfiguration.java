@@ -39,9 +39,7 @@ public class BehaviorModelConfiguration {
     // clustering configuration
     private IClustering clustering;
 
-    // ubm url
-    // TODO
-    private String UBMUrl;
+    private String visualizationUrl;
 
     // empty transitions?
     private boolean keepEmptyTransitions = true;
@@ -51,7 +49,7 @@ public class BehaviorModelConfiguration {
      */
     public BehaviorModelConfiguration() {
         this.behaviorModelNamePrefix = "BehaviorModel";
-        this.UBMUrl = null;
+        this.visualizationUrl = null;
         this.modelGenerationFilter = new ModelGenerationFilter(false);
         this.modelGenerationFilter.addFilterRule(".*");
         this.representativeStrategy = new JPetstoreStrategy();
@@ -121,8 +119,8 @@ public class BehaviorModelConfiguration {
      *
      * @return the uBMUrl
      */
-    public String getUBMUrl() {
-        return this.UBMUrl;
+    public String getVisualizationUrl() {
+        return this.visualizationUrl;
     }
 
     /**
@@ -190,13 +188,13 @@ public class BehaviorModelConfiguration {
      * @param uBMUrl
      *            the uBMUrl to set
      */
-    public void setUBMUrl(final String uBMUrl) {
-        this.UBMUrl = uBMUrl;
+    public void setVisualizationUrl(final String visualizationUrl) {
+        this.visualizationUrl = visualizationUrl;
     }
 
     /**
      * setter
-     * 
+     *
      * @param keepEmptyTransitions
      *            the keepEmptyTransitions to set
      */

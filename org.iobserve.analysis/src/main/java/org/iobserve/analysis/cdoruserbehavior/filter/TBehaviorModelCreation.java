@@ -102,7 +102,6 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
                 if (node.isPresent()) {
                     behaviorModel.addNode(node.get());
                 }
-
             }
         }
 

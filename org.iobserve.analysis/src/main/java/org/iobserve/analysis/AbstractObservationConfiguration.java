@@ -121,7 +121,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
         behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
-        behaviorModelConfiguration.setUBMUrl("http://localhost:8080/ubm-backend/v1");
+        behaviorModelConfiguration.setVisualizationUrl("http://localhost:8080/ubm-backend/v1");
         behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
         behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
         behaviorModelConfiguration.setSignatureCreationStrategy(new FunctionNameOnlySignatureStrategy());
