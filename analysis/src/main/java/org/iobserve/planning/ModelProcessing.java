@@ -1,7 +1,11 @@
 package org.iobserve.planning;
 
+import java.io.File;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
+import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.PlanningData;
 
 import teetime.stage.basic.AbstractTransformation;
@@ -17,6 +21,7 @@ import teetime.stage.basic.AbstractTransformation;
  */
 public class ModelProcessing extends AbstractTransformation<AdaptationData, PlanningData> {
 
+	private static final String PROCESSED_DIR = "ProcessedModel";
 	private final URI perOpteryxDir;
 
 	/**
@@ -36,14 +41,19 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 		AdaptationData adaptationData = element;
 		PlanningData planningData = new PlanningData();
 
-//		adaptationData.setRuntimeModelURI(element);
+		// adaptationData.setRuntimeModelURI(element);
 		planningData.setAdaptationData(adaptationData);
 		planningData.setPerOpteryxDir(this.perOpteryxDir);
 		planningData.setOriginalModelDir(adaptationData.getRuntimeModelURI());
 
-		ModelTransformer modelTransformer = new ModelTransformer(planningData);
+		InitializeModelProviders models = new InitializeModelProviders(new File(adaptationData.getRuntimeModelURI().toFileString()));
+		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_DIR, models);
+		URI snapshotLocation = snapshotBuilder.createSnapshot();
+		planningData.setProcessedModelDir(snapshotLocation);
 
-		modelTransformer.transformModel();
+		// ModelTransformer modelTransformer = new
+		// ModelTransformer(planningData);
+		// modelTransformer.transformModel();
 
 		this.outputPort.send(planningData);
 	}

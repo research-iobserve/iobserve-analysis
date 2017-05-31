@@ -11,6 +11,7 @@ import org.eclipse.emf.common.util.URI;
  * Wrapper for executing headless PerOpteryx.
  *
  * @author Tobias Pöppke
+ * @author Philipp Weimann
  *
  */
 public class ExecutionWrapper extends AbstractExecutionWrapper {
