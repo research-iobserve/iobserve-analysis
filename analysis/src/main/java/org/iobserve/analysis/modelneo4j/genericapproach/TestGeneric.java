@@ -21,7 +21,6 @@ import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.Repository;
 
 /**
@@ -49,15 +48,20 @@ public class TestGeneric {
         // System.out.println("Writing to db");
         // new GenericComponentProvider<>(graph).createComponent(repository);
 
+        // System.out.println("Reading id -> object from db");
+        // final OperationInterface inter = (OperationInterface) new
+        // GenericComponentProvider<>(graph)
+        // .readComponent("OperationInterface", "_j8RD0NYgEeWrM-HnT5f_ug");
+
         System.out.println("Reading id -> object from db");
-        final OperationInterface inter = (OperationInterface) new GenericComponentProvider<>(graph)
-                .readComponent("OperationInterface", "_j8RD0NYgEeWrM-HnT5f_ug");
+        final Repository repository2 = (Repository) new GenericComponentProvider<>(graph).readComponent("Repository",
+                repository.getId());
 
         final GraphDatabaseService graph2 = new GraphDatabaseFactory().newEmbeddedDatabase(TestGeneric.DB_PATH2);
         TestGeneric.registerShutdownHook(graph2);
 
         System.out.println("Writing to db2");
-        new GenericComponentProvider<>(graph2).createComponent(inter);
+        new GenericComponentProvider<>(graph2).createComponent(repository2);
 
         // System.out.println("Reading type -> ids from db");
         // final List<String> ids = new
