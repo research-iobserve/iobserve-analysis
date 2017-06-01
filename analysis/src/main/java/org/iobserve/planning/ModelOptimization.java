@@ -21,7 +21,7 @@ public class ModelOptimization extends AbstractTransformation<PlanningData, Plan
 	@Override
 	protected void execute(PlanningData planningData) throws Exception {
 
-		URI inputModelDir = planningData.getAdaptationData().getRuntimeModelURI();
+		URI inputModelDir = planningData.getProcessedModelDir();
 		AdaptationData adaptationData = planningData.getAdaptationData();
 		ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir());
 

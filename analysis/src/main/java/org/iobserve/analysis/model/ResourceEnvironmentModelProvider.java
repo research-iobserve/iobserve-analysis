@@ -18,6 +18,7 @@ package org.iobserve.analysis.model;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceenvironmentcloudPackage;
+import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.impl.ResourceenvironmentcloudPackageImpl;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.impl.ResourceenvironmentPrivacyPackageImpl;
 
@@ -49,7 +50,7 @@ public class ResourceEnvironmentModelProvider extends AbstractModelProvider<Reso
 
 	@Override
 	protected EPackage getPackage() {
-		return ResourceenvironmentPrivacyPackageImpl.eINSTANCE;
+		return ResourceenvironmentcloudPackageImpl.eINSTANCE;
 	}
 
 }
