@@ -45,14 +45,13 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 		planningData.setAdaptationData(adaptationData);
 		planningData.setPerOpteryxDir(this.perOpteryxDir);
 		planningData.setOriginalModelDir(adaptationData.getRuntimeModelURI());
-
+		
 		InitializeModelProviders models = new InitializeModelProviders(new File(adaptationData.getRuntimeModelURI().toFileString()));
 		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_DIR, models);
 		URI snapshotLocation = snapshotBuilder.createSnapshot();
 		planningData.setProcessedModelDir(snapshotLocation);
 
-		// ModelTransformer modelTransformer = new
-		// ModelTransformer(planningData);
+		// ModelTransformer modelTransformer = new ModelTransformer(planningData);
 		// modelTransformer.transformModel();
 
 		this.outputPort.send(planningData);
