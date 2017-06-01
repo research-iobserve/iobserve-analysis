@@ -50,19 +50,19 @@ public class ReplicateActionScript extends ActionScript {
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("Replicate Action: Replicate container from provider '");
-		builder.append(sourceContainer.getCloudProviderName());
+		builder.append(sourceContainer.getInstanceType().getProvider().getName());
 		builder.append("' of type '");
 		builder.append(sourceContainer.getInstanceType());
 		builder.append("' in location '");
-		builder.append(sourceContainer.getLocation());
+		builder.append(sourceContainer.getInstanceType().getLocation());
 		builder.append("' with name '");
 		builder.append(ModelHelper.getGroupName(sourceContainer));
 		builder.append(" to container from provider '");
-		builder.append(targetContainer.getCloudProviderName());
+		builder.append(targetContainer.getInstanceType().getProvider().getName());
 		builder.append("' of type '");
 		builder.append(targetContainer.getInstanceType());
 		builder.append("' in location '");
-		builder.append(targetContainer.getLocation());
+		builder.append(targetContainer.getInstanceType().getLocation());
 		builder.append("' with name '");
 		builder.append(ModelHelper.getGroupName(targetContainer));
 		return builder.toString();

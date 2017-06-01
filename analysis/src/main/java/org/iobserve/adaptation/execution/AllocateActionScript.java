@@ -82,11 +82,11 @@ public class AllocateActionScript extends ActionScript {
 		builder.append("Allocate Action: Allocate assembly context '");
 		builder.append(this.action.getSourceAssemblyContext().getEntityName());
 		builder.append("' to container of provider '");
-		builder.append(sourceContainer.getCloudProviderName());
+		builder.append(sourceContainer.getInstanceType().getProvider().getName());
 		builder.append("' of type '");
 		builder.append(sourceContainer.getInstanceType());
 		builder.append("' in location '");
-		builder.append(sourceContainer.getLocation());
+		builder.append(sourceContainer.getInstanceType().getLocation());
 		builder.append("' with name '");
 		builder.append(ModelHelper.getGroupName(sourceContainer));
 		builder.append("'");

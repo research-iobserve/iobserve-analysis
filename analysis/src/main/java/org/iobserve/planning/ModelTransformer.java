@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.CloudProfileModelProvider;
@@ -14,16 +15,16 @@ import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.DesignDecisionModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.planning.cloudprofile.CloudProfile;
-import org.iobserve.planning.cloudprofile.CloudProvider;
-import org.iobserve.planning.cloudprofile.CloudResourceType;
-import org.iobserve.planning.cloudprofile.VMType;
 import org.iobserve.planning.data.AllocationGroup;
 import org.iobserve.planning.data.AllocationGroupsContainer;
 import org.iobserve.planning.data.PlanningData;
 import org.iobserve.planning.utils.ModelHelper;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProvider;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudResourceType;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.VMType;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -44,6 +45,8 @@ import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
  *
  */
 public class ModelTransformer {
+
+	private static final String PROCESSED_MODEL_FOLDER = "processedModel";
 
 	private final PlanningData planningData;
 	private final InitializeModelProviders originalModelProviders;
@@ -219,10 +222,11 @@ public class ModelTransformer {
 	}
 
 	private boolean isSameVMType(VMType cloudVM, ResourceContainerCloud representingContainer) {
-		boolean sameProviderName = cloudVM.getProvider().getName().equals(representingContainer.getCloudProviderName());
-		boolean sameType = cloudVM.getName().equals(representingContainer.getInstanceType());
-		boolean sameLocation = cloudVM.getLocation().equals(representingContainer.getLocation());
-		return sameProviderName && sameType && sameLocation;
+//		boolean sameProviderName = cloudVM.getProvider().getName().equals(representingContainer.getCloudProviderName());
+//		boolean sameType = cloudVM.getName().equals(representingContainer.getInstanceType());
+//		boolean sameLocation = cloudVM.getLocation().equals(representingContainer.getLocation());
+//		return sameProviderName && sameType && sameLocation;
+		return EcoreUtil.equals(cloudVM, representingContainer.getInstanceType());
 	}
 
 	private void clearAllocationContexts() {

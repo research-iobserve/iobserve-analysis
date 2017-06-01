@@ -2,8 +2,8 @@ package org.iobserve.analysis.model;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
-import org.iobserve.planning.cloudprofile.CloudProfile;
-import org.iobserve.planning.cloudprofile.cloudprofilePackage;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudprofilePackage;
 
 /**
  * Model provider to provide a {@link CloudProfile} model.
@@ -25,7 +25,7 @@ public class CloudProfileModelProvider extends AbstractModelProvider<CloudProfil
 
 	@Override
 	protected EPackage getPackage() {
-		return cloudprofilePackage.eINSTANCE;
+		return CloudprofilePackage.eINSTANCE;
 	}
 
 	@Override
