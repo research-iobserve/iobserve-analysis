@@ -278,9 +278,8 @@ public final class ModelHelper {
 	 *            the hostname to convert
 	 * @return the new cloud container or null in case of a problem
 	 */
-	public static ResourceContainerCloud getResourceContainerFromHostname(
-			ResourceEnvironmentModelProvider resourceEnvModelProvider,
-			CloudProfileModelProvider cloudProfileModelProvider, CostModelProvider costModelProvider, String hostname) {
+	public static ResourceContainerCloud getResourceContainerFromHostname(ResourceEnvironmentModelProvider resourceProvider,
+			CostModelProvider costProvider, CloudProfileModelProvider cloudProfileProvider, String hostname) {
 		String[] nameParts = hostname.split("_");
 
 		VMType vmType = null;
@@ -293,11 +292,11 @@ public final class ModelHelper {
 			String location = nameParts[3];
 			String instanceType = nameParts[4];
 
-			vmType = getVMType(cloudProfileModelProvider, providerName, location, instanceType);
+			vmType = getVMType(cloudProfileProvider, providerName, location, instanceType);
 
 			if (vmType != null) {
-				ResourceEnvironment environment = resourceEnvModelProvider.getModel();
-				CostRepository costRepository = costModelProvider.getModel();
+				ResourceEnvironment environment = resourceProvider.getModel();
+				CostRepository costRepository = costProvider.getModel();
 
 				ResourceContainerCloud cloudContainer = createResourceContainerFromVMType(
 						environment, costRepository, vmType, hostname);

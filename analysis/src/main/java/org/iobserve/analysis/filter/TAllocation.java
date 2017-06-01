@@ -105,7 +105,7 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
 
 	private void createNewResourceContainer(final String serverName) {
 		ResourceContainer cloudContainer = ModelHelper.getResourceContainerFromHostname(this.resourceEnvModelProvider,
-				this.cloudProfileModelProvider, this.costModelProvider, serverName);
+				this.costModelProvider, this.cloudProfileModelProvider, serverName);
 
 		if (cloudContainer == null) {
 			this.resourceEnvModelProvider.loadModel();
