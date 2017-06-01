@@ -83,6 +83,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 resourceEnvironmentModelProvider);
         this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
+
         final TEntryCall tEntryCall = new TEntryCall();
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence(correspondenceModel);
         final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
@@ -99,6 +100,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(tAllocation.getDeploymentOutputPort(), this.deployment.getInputPort());
         this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
         this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
+
     }
 
     public RecordSwitch getRecordSwitch() {

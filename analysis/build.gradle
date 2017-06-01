@@ -58,7 +58,12 @@ dependencies {
 	compile 'extra:org.eclipse.ocl:3.6.0.v20160523-1914'
 	compile 'extra:org.eclipse.ocl.common:1.4.0.v20160521-2033'
 	compile 'extra:org.eclipse.ocl.ecore:3.6.0.v20160523-1914'
-	compile 'extra:lpg.runtime.java:2.0.17.v201004271640'	
+	compile 'extra:lpg.runtime.java:2.0.17.v201004271640'
+	
+	compile 'commons-daemon:commons-daemon:1.0.15'
+	compile "com.beust:jcommander:1.60"
+	compile 'javax.json:javax.json-api:1.0'
+	compile 'org.glassfish:javax.json:1.0.4'	
 }
 
 sourceSets {

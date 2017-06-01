@@ -48,5 +48,4 @@ task runAnalysis(type: JavaExec) {
 	dependsOn << copyPcmToWorkingDir
 	classpath = sourceSets.main.runtimeClasspath
 	main = 'org.iobserve.service.cli.AnalysisMain'
-	args '-i /data/cocome -c /home/reiner/Projects/iObserve/cocomePcmModel/ -p /home/reiner/Projects/iObserve/cocomePcmModel/'
 }
