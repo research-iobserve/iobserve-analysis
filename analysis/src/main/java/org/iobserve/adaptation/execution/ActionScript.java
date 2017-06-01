@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.planning.cloudprofile.CloudProvider;
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
@@ -18,6 +17,7 @@ import org.jclouds.compute.RunNodesException;
 import org.jclouds.compute.RunScriptOnNodesException;
 import org.jclouds.logging.slf4j.config.SLF4JLoggingModule;
 import org.jclouds.sshj.config.SshjSshClientModule;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProvider;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -89,22 +89,6 @@ public abstract class ActionScript {
 	public abstract String getDescription();
 
 	/**
-	 * Retrieves the cloud provider with the given name or if not found, returns
-	 * null.
-	 *
-	 * @param name
-	 *            the name of the cloud provider
-	 * @return the cloud provider, or null
-	 */
-	protected CloudProvider getCloudProviderByName(String name) {
-		InitializeModelProviders modelProviders = this.data.getRuntimeGraph().getPcmModels();
-		List<CloudProvider> cloudProviders = modelProviders.getCloudProfileModelProvider().getModel()
-				.getCloudProviders();
-		return cloudProviders.stream().filter(provider -> provider.getName().equalsIgnoreCase(name)).findFirst()
-				.orElse(null);
-	}
-
-	/**
 	 * Returns a compute service client to use for further queries to the cloud
 	 * provider.
 	 *
@@ -113,7 +97,7 @@ public abstract class ActionScript {
 	 * @return the corresponding compute service
 	 */
 	protected ComputeService getComputeServiceForContainer(ResourceContainerCloud container) {
-		CloudProvider provider = this.getCloudProviderByName(container.getCloudProviderName());
+		CloudProvider provider = container.getInstanceType().getProvider();
 
 		ComputeServiceContext context = ContextBuilder.newBuilder(provider.getName())
 				.credentials(provider.getIdentity(), provider.getCredential())

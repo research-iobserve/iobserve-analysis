@@ -77,11 +77,11 @@ public class TerminateActionScript extends ActionScript {
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("Terminate Action: Terminate container group from provider '");
-		builder.append(container.getCloudProviderName());
+		builder.append(container.getInstanceType().getProvider().getName());
 		builder.append("' of type '");
 		builder.append(container.getInstanceType());
 		builder.append("' in location '");
-		builder.append(container.getLocation());
+		builder.append(container.getInstanceType().getLocation());
 		builder.append("' with name '");
 		builder.append(ModelHelper.getGroupName(container));
 		return builder.toString();
