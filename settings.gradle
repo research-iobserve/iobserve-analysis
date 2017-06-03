@@ -1,2 +1,2 @@
 
-include "analysis", "common", "monitoring", "analysis.service", "analysis.cli", "collector", "splitter", "planning.systemadaptation", "planning.cloudprofile"
+include "analysis", "common", "monitoring", "analysis.service", "analysis.privacy","analysis.cli", "collector", "splitter", "planning.systemadaptation", "planning.cloudprofile"

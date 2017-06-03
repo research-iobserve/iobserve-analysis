@@ -26,6 +26,7 @@ dependencies {
 	compile project(":common")
 	compile project(":planning.systemadaptation")
 	compile project(":planning.cloudprofile")
+	compile project(":analysis.privacy")
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
