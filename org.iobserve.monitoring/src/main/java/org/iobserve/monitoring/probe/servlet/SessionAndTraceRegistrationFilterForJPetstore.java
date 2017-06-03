@@ -95,7 +95,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
     private final Pattern pathStrucPattern = Pattern.compile("\\.[A-Za-z0-9\\(\\)]*$");
     private final Pattern equalsPattern = Pattern.compile("=");
     private final Pattern andPattern = Pattern.compile("&");
-    private final Pattern isAccountPattern = Pattern.compile("(\\w*\\.)*Account\\.*");
+    private final Pattern isAccountPattern = Pattern.compile("(\\w*\\.)*Account\\..*");
     private final Pattern isActionPattern = Pattern.compile("\\w*\\.actions\\..*");
     private final Pattern isImagePattern = Pattern.compile("\\w*\\.images\\..*");
     private final Pattern removeActionOfIndexPattern = Pattern.compile("\\.action\\(");
@@ -202,18 +202,17 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                 } else {
                     // pattern = "\\w*\\.actions\\."
                     if (this.isActionPattern.matcher(trimmedPath).matches()) {
+                        SessionAndTraceRegistrationFilterForJPetstore.LOG.debug("ACTION");
                         // pattern ="jpetstore\\.actions\\."
                         operationSignature = trimmedPath + "()";
-
                         // pattern = "\\.action\\("
                         operationSignature = this.removeActionOfIndexPattern.matcher(operationSignature)
                                 .replaceAll(".index(");
-                        SessionAndTraceRegistrationFilterForJPetstore.LOG.debug("SINGLE OP");
 
                         // pattern "\\w*\\.images\\."
                     } else if (this.isImagePattern.matcher(trimmedPath).matches()) {
-                        operationSignature = trimmedPath;
                         SessionAndTraceRegistrationFilterForJPetstore.LOG.debug("IMAGE");
+                        operationSignature = trimmedPath;
 
                     } else {
                         SessionAndTraceRegistrationFilterForJPetstore.LOG.debug("ELSE");
@@ -226,14 +225,14 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
 
                 operationSignature = trimmedPath + "()";
 
-                // matches "(\\w*\\.)*Account\\.*" ?
+                // matches "(\\w*\\.)*Account\\..*" ?
                 if (this.isAccountPattern.matcher(operationSignature).matches()) {
-
-                } else {
                     // post on the account is always a login
                     // pattern = "\\.action\\("
                     operationSignature = this.removeActionOfIndexPattern.matcher(operationSignature)
                             .replaceAll(".login(");
+                } else {
+
                 }
 
                 // pattern = "\\.action\\."
@@ -244,7 +243,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                 return;
             }
             componentSignature = this.pathStrucPattern.matcher(operationSignature).replaceAll("");
-            SessionAndTraceRegistrationFilterForJPetstore.LOG.debug(operationSignature);
+            SessionAndTraceRegistrationFilterForJPetstore.LOG.error(operationSignature);
 
             final long traceId = trace.getTraceId();
 
