@@ -30,8 +30,8 @@ public class JPetStoreModelGenerationFilterFactory implements IModelGenerationFi
     public ModelGenerationFilter createFilter() {
         ModelGenerationFilter modelGenerationFilter;
         modelGenerationFilter = new ModelGenerationFilter(true);
-        modelGenerationFilter.addFilterRule("(.*jpetstore\\.images).*\\)");
-        modelGenerationFilter.addFilterRule("(.*jpetstore\\.css).*\\)");
+        modelGenerationFilter.addFilterRule("(\\w*\\.)*images.*");
+        modelGenerationFilter.addFilterRule("(\\w*\\.)*css.*");
 
         return modelGenerationFilter;
     }
