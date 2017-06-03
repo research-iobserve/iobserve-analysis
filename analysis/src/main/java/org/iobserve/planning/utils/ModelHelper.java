@@ -66,6 +66,17 @@ public final class ModelHelper {
 	}
 
 	/**
+	 * Returns the identifier for a virtual machine type.
+	 *
+	 * @param type
+	 *            the VM type for which to get the identifier
+	 * @return the identifier
+	 */
+	public static String getResourceContainerIdentifier(final VMType type) {
+		return String.format("%s_%s_%s", type.getProvider().getName(), type.getLocation(), type.getName());
+	}
+
+	/**
 	 * Searches the resource environment for a linking resource with name
 	 * 'Internet' and returns it, or creates it if it does not exist.
 	 *
@@ -80,8 +91,8 @@ public final class ModelHelper {
 		Optional<LinkingResource> internetLink = linkingResources.stream()
 		        .filter(link -> link.getEntityName().contains(INTERNET_LINKING_RESOURCE_NAME)).findFirst();
 
-		linkingResource = internetLink.orElse(ResourceEnvironmentCloudBuilder.createLinkingResource(environment, null,
-		        INTERNET_LINKING_RESOURCE_NAME));
+		linkingResource = internetLink.orElseGet(() -> ResourceEnvironmentCloudBuilder
+		        .createLinkingResource(environment, null, INTERNET_LINKING_RESOURCE_NAME));
 
 		return linkingResource;
 	}

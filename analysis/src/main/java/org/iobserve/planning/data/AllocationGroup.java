@@ -25,6 +25,7 @@ public class AllocationGroup {
 	private final Set<ResourceContainer> resourceContainers = new LinkedHashSet<>();
 
 	private final String name;
+	private final String componentName;
 
 	/**
 	 * Creates a new allocation group with the given component name and resource
@@ -35,8 +36,9 @@ public class AllocationGroup {
 	 * @param containerIdentifier
 	 *            the container identifier for the container type
 	 */
-	public AllocationGroup(String componentName, String containerIdentifier) {
+	public AllocationGroup(final String componentName, final String containerIdentifier) {
 		this.name = getAllocationGroupName(componentName, containerIdentifier);
+		this.componentName = componentName;
 	}
 
 	/**
@@ -47,7 +49,7 @@ public class AllocationGroup {
 	 * @param context
 	 *            the context to add
 	 */
-	public void addAllocationContext(AllocationContext context) {
+	public void addAllocationContext(final AllocationContext context) {
 		this.allocationContexts.add(context);
 		this.resourceContainers.add(context.getResourceContainer_AllocationContext());
 	}
@@ -91,7 +93,7 @@ public class AllocationGroup {
 	 *            the identifier of the container type
 	 * @return an allocation group name
 	 */
-	public static String getAllocationGroupName(String componentName, String containerIdentifier) {
+	public static String getAllocationGroupName(final String componentName, final String containerIdentifier) {
 		return String.format("%s_%s", componentName, containerIdentifier);
 	}
 
@@ -114,8 +116,12 @@ public class AllocationGroup {
 	 */
 	public ResourceContainerCloud getRepresentingResourceContainer() {
 		ResourceContainerCloud representingContainer = this.resourceContainers.stream()
-				.filter(container -> (container instanceof ResourceContainerCloud))
-				.map(container -> ((ResourceContainerCloud) container)).findFirst().orElse(null);
+		        .filter(container -> (container instanceof ResourceContainerCloud))
+		        .map(container -> ((ResourceContainerCloud) container)).findFirst().orElse(null);
 		return representingContainer;
+	}
+
+	public String getComponentName() {
+		return componentName;
 	}
 }

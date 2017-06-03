@@ -13,6 +13,7 @@ import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.CloudProfileModelProvider;
 import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.DesignDecisionModelBuilder;
+import org.iobserve.analysis.model.DesignDecisionModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.AllocationGroup;
@@ -56,8 +57,7 @@ public class ModelTransformer {
 	private CostModelProvider costProvider;
 	private ResourceEnvironmentModelProvider resourceProvider;
 	private CloudProfileModelProvider cloudProfileProvider;
-
-	private DecisionSpace decisionSpace;
+	private DesignDecisionModelProvider decisionProvider;
 
 	/**
 	 * Constructs a new model transformer with the given planning data and
@@ -117,12 +117,13 @@ public class ModelTransformer {
 		this.cloudProfileProvider = this.processedModelProviders.getCloudProfileModelProvider();
 		this.costProvider = this.processedModelProviders.getCostModelProvider();
 		this.resourceProvider = this.processedModelProviders.getResourceEnvironmentModelProvider();
+		this.decisionProvider = this.processedModelProviders.getDesignDecisionModelProvider();
 
-		this.decisionSpace = this.processedModelProviders.getDesignDecisionModelProvider().getModel();
+		DecisionSpace decisionSpace = this.processedModelProviders.getDesignDecisionModelProvider().getModel();
 
-		if (this.decisionSpace == null) {
-			this.decisionSpace = DesignDecisionModelBuilder.createDecisionSpace("processedDecision");
-			this.processedModelProviders.getDesignDecisionModelProvider().setModel(this.decisionSpace);
+		if (decisionSpace == null) {
+			decisionSpace = DesignDecisionModelBuilder.createDecisionSpace("processedDecision");
+			this.processedModelProviders.getDesignDecisionModelProvider().setModel(decisionSpace);
 		}
 
 		Allocation originalAllocation = this.originalModelProviders.getAllocationModelProvider().getModel();
@@ -139,7 +140,7 @@ public class ModelTransformer {
 		for (AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
 			AllocationContext representingContext = allocationGroup.getRepresentingContext();
 
-			this.createResourcesAndReplicationDegrees(this.decisionSpace, allocationGroup);
+			this.createResourcesAndReplicationDegrees(this.decisionProvider.getModel(), allocationGroup);
 
 			this.allocationProvider.getModel().getAllocationContexts_Allocation().add(representingContext);
 		}
@@ -147,18 +148,19 @@ public class ModelTransformer {
 		for (AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
 			String allocationDegreeName = String.format("%s_AllocationDegree", allocationGroup.getName());
 
-			DesignDecisionModelBuilder.createAllocationDegree(this.decisionSpace, allocationDegreeName,
+			DesignDecisionModelBuilder.createAllocationDegree(this.decisionProvider.getModel(), allocationDegreeName,
 			        allocationGroup.getRepresentingContext(),
 			        this.resourceProvider.getModel().getResourceContainer_ResourceEnvironment());
 		}
 
-		ModelHelper.addAllAllocationsToReplicationDegrees(this.allocationProvider.getModel(), this.decisionSpace);
+		ModelHelper.addAllAllocationsToReplicationDegrees(this.allocationProvider.getModel(),
+		        this.decisionProvider.getModel());
 
 		this.saveModels();
 	}
 
 	private void saveModels() {
-		this.processedModelProviders.getDesignDecisionModelProvider().save();
+		this.decisionProvider.save();
 		this.allocationProvider.save();
 		this.costProvider.save();
 		this.resourceProvider.save();
@@ -183,7 +185,15 @@ public class ModelTransformer {
 		// Set group name of the representing container and add it to the
 		// resource environment
 		representingContainer.setGroupName(allocationGroup.getName());
+		representingContainer.setEntityName(allocationGroup.getName());
 		ModelHelper.addResourceContainerToEnvironment(environment, representingContainer);
+
+		int nrOfCurrentReplicas = allocationGroup.getAllocationContexts().size();
+
+		// Upper bound for number of replicas for one resource
+		// container type should be sufficiently high
+		int toNrOfReplicas = (nrOfCurrentReplicas + PlanningData.POSSIBLE_REPLICAS_OFFSET)
+		        * PlanningData.POSSIBLE_REPLICAS_FACTOR;
 
 		// Create a new resource container with replication degree for each
 		// VMType in the cloud profile, except for the one already added as the
@@ -193,24 +203,22 @@ public class ModelTransformer {
 				if (cloudResource instanceof VMType) {
 					VMType cloudVM = (VMType) cloudResource;
 
-					int nrOfCurrentReplicas = allocationGroup.getAllocationContexts().size();
-
-					// Upper bound for number of replicas for one resource
-					// container type should be sufficiently high
-					int toNrOfReplicas = (nrOfCurrentReplicas + PlanningData.POSSIBLE_REPLICAS_OFFSET)
-					        * PlanningData.POSSIBLE_REPLICAS_FACTOR;
-
+					String degreeName;
 					ResourceContainerCloud createdContainer;
 					if (this.isSameVMType(cloudVM, representingContainer)) {
 						createdContainer = representingContainer;
+						degreeName = String.format("%s_ReplicationDegree", allocationGroup.getName());
 					} else {
+						String containerName = AllocationGroup.getAllocationGroupName(
+						        allocationGroup.getComponentName(),
+						        ModelHelper.getResourceContainerIdentifier(cloudVM));
 						createdContainer = ModelHelper.createResourceContainerFromVMType(environment, costs, cloudVM,
-						        allocationGroup.getName());
+						        containerName);
+						degreeName = String.format("%s_ReplicationDegree", containerName);
 					}
-					createdContainer.setGroupName(allocationGroup.getName());
 
-					DesignDecisionModelBuilder.createReplicationDegree(decisionSpace, allocationGroup.getName(),
-					        createdContainer, 1, toNrOfReplicas);
+					DesignDecisionModelBuilder.createReplicationDegree(decisionSpace, degreeName, createdContainer, 1,
+					        toNrOfReplicas);
 
 				}
 			}
