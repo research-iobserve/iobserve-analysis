@@ -23,10 +23,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModel;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallEdge;
@@ -46,7 +49,8 @@ import teetime.framework.AbstractConsumerStage;
  * @author Christoph Dornieden
  *
  */
-public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
+public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorModel> {
+    private static final Logger LOGGER = LogManager.getLogger(TBehaviorModelVisualization.class);
     ISignatureCreationStrategy signatureStrategy;
     private final String applicationUrl;
     private final Map<String, JsonNode> nodeMap;
@@ -57,7 +61,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
     /**
      * consturctor
      */
-    public TIObserveUBM(final String baseUrl, final ISignatureCreationStrategy signatureStrategy) {
+    public TBehaviorModelVisualization(final String baseUrl, final ISignatureCreationStrategy signatureStrategy) {
         this.objectMapper = new ObjectMapper();
         this.nodeMap = new HashMap<>();
         this.applicationUrl = baseUrl + "/applications";
@@ -71,8 +75,12 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
     protected void execute(final BehaviorModel model) {
         this.nodeMap.clear();
         final long modelId = this.createGraph(model.getName());
-        this.createNodes(model.getEntryCallNodes(), modelId);
-        this.createEdges(model.getEntryCallEdges(), modelId);
+        if (modelId != -1L) {
+            this.createNodes(model.getEntryCallNodes(), modelId);
+            this.createEdges(model.getEntryCallEdges(), modelId);
+        } else {
+            TBehaviorModelVisualization.LOGGER.error("Failed to create behavior on server!");
+        }
 
     }
 
@@ -91,19 +99,23 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
         final String targetUrl = this.applicationUrl;
 
         final JsonNode json = this.postElement(graph, targetUrl);
-        final Long id = json.get("id").asLong();
-        return id;
+        final JsonNode idJson = json.get("id");
+        if (idJson != null) {
+            return idJson.asLong();
+        } else {// server error
+            return -1L;
+        }
+
     }
 
     /**
      * reset the visualisation
      */
     private void resetVisualization() {
-        final List<Long> ids = this.getAllGraphsFromUI(this.applicationUrl);
+        final Optional<List<Long>> ids = this.getAllGraphsFromUI(this.applicationUrl);
 
-        for (final Long id : ids) {
-            this.sendDelete(this.applicationUrl + "/" + id);
-        }
+        ids.ifPresent(idx -> idx.stream().forEach(id -> this.sendDelete(this.applicationUrl + "/" + id)));
+
     }
 
     /**
@@ -113,7 +125,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
      *            targetUrl
      * @return ids as List
      */
-    private List<Long> getAllGraphsFromUI(final String targetUrl) {
+    private Optional<List<Long>> getAllGraphsFromUI(final String targetUrl) {
         URL url;
         try {
             url = new URL(targetUrl);
@@ -136,14 +148,14 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
                 for (final JsonNode graph : contendNode) {
                     graphIds.add(graph.get("id").asLong());
                 }
-                return graphIds;
+                return Optional.of(graphIds);
             }
 
         } catch (final Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        return null;
+        return Optional.empty();
     }
 
     /**
@@ -254,7 +266,7 @@ public class TIObserveUBM extends AbstractConsumerStage<BehaviorModel> {
             final InputStream response = con.getInputStream();
             @SuppressWarnings("resource")
             final Scanner scanner = new Scanner(response).useDelimiter("\\A");
-            final String content = scanner.next().replaceAll("\\\"@id\\\":\\\"1\\\",", "");
+            final String content = this.idPattern.matcher(scanner.next()).replaceAll("");
 
             final JsonNode contendNode = this.objectMapper.readTree(content);
 

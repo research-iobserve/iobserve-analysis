@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.TIObserveUBM;
+import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelVisualization;
 import org.iobserve.analysis.cdoruserbehavior.filter.TUsageModelToBehaviorModel;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.filter.TEntryEventSequence;
@@ -78,7 +78,7 @@ public class TBehaviorModelComparison extends CompositeStage {
                 repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
 
         final TUsageModelToBehaviorModel tUsageModel = new TUsageModelToBehaviorModel();
-        final TIObserveUBM tIObserveUBM = new TIObserveUBM(configuration.getVisualizationUrl(),
+        final TBehaviorModelVisualization tIObserveUBM = new TBehaviorModelVisualization(configuration.getVisualizationUrl(),
                 configuration.getSignatureCreationStrategy());
         this.connectPorts(this.distributor.getNewOutputPort(), tEntryEventSequence.getInputPort());
         this.connectPorts(tEntryEventSequence.getOutputPort(), tUsageModel.getInputPort());
