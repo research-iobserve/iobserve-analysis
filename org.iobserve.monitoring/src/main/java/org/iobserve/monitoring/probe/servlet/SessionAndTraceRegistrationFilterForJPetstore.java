@@ -17,10 +17,7 @@ package org.iobserve.monitoring.probe.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -36,6 +33,8 @@ import org.iobserve.analysis.filter.models.CallInformation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationFailedEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
@@ -90,236 +89,19 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
     protected static final String VM_NAME = SessionAndTraceRegistrationFilterForJPetstore.CTRLINST.getHostname();
     /** Kieker trace registry. */
     private static final TraceRegistry TRACEREGISTRY = TraceRegistry.INSTANCE;
+    private static final int INFORMATION_VALUE = 1;
 
-    /** Code Map **/
-    private static Map<String, Integer> codes;
+    // precompile pattern for performance
+    private final Pattern pathStrucPattern = Pattern.compile("\\.[A-Za-z0-9\\(\\)]*$");
+    private final Pattern equalsPattern = Pattern.compile("=");
+    private final Pattern andPattern = Pattern.compile("&");
+    private final Pattern isAccountPattern = Pattern.compile("(\\w*\\.)*Account\\.*");
+    private final Pattern isActionPattern = Pattern.compile("\\w*\\.actions\\..*");
+    private final Pattern isImagePattern = Pattern.compile("\\w*\\.images\\..*");
+    private final Pattern removeActionOfIndexPattern = Pattern.compile("\\.action\\(");
+    private final Pattern removeActionOfOperationPattern = Pattern.compile("action\\.");
 
-    private static Set<String> categoryCodes;
-    private static Set<String> productCodes;
-    private static Set<String> itemCodes;
-
-    /** Category Codes **/
-    private static final int CATEGORY_VALUE = 1;
-    private static final int CATEGORY_FISH = 1000;
-    private static final int CATEGORY_DOGS = 2000;
-    private static final int CATEGORY_REPTILES = 3000;
-    private static final int CATEGORY_CATS = 4000;
-    private static final int CATEGORY_BIRDS = 5000;
-
-    /** Product Codes **/
-    private static final int PRODUCT_FI_SW_01 = 1000;
-    private static final int ITEM_EST_1 = 1000;
-    private static final int ITEM_EST_2 = 1001;
-    private static final int PRODUCT_FI_SW_02 = 1010;
-    private static final int ITEM_EST_3 = 1010;
-    private static final int PRODUCT_FI_FW_01 = 1100;
-    private static final int ITEM_EST_4 = 1100;
-    private static final int ITEM_EST_5 = 1101;
-    private static final int PRODUCT_FI_FW_02 = 1110;
-    private static final int ITEM_EST_20 = 1110;
-    private static final int ITEM_EST_21 = 1111;
-
-    private static final int PRODUCT_K9_BD_01 = 2000;
-    private static final int ITEM_EST_6 = 2000;
-    private static final int ITEM_EST_7 = 2001;
-    private static final int PRODUCT_K9_PO_02 = 2030;
-    private static final int ITEM_EST_8 = 2030;
-    private static final int PRODUCT_K9_DL_01 = 2060;
-    private static final int ITEM_EST_9 = 2060;
-    private static final int ITEM_EST_10 = 2061;
-    private static final int PRODUCT_K9_RT_01 = 2090;
-    private static final int ITEM_EST_28 = 2090;
-    private static final int PRODUCT_K9_RT_02 = 2100;
-    private static final int ITEM_EST_22 = 2100;
-    private static final int ITEM_EST_23 = 2101;
-    private static final int ITEM_EST_24 = 2102;
-    private static final int ITEM_EST_25 = 2103;
-    private static final int PRODUCT_K9_CW_01 = 2130;
-    private static final int ITEM_EST_26 = 2130;
-    private static final int ITEM_EST_27 = 2131;
-
-    private static final int PRODUCT_RP_SN_01 = 3000;
-    private static final int ITEM_EST_11 = 3000;
-    private static final int ITEM_EST_12 = 3001;
-    private static final int PRODUCT_RP_LI_02 = 3200;
-    private static final int ITEM_EST_13 = 3200;
-
-    private static final int PRODUCT_FL_DSH_01 = 4000;
-    private static final int ITEM_EST_14 = 4000;
-    private static final int ITEM_EST_15 = 4001;
-    private static final int PRODUCT_FL_DLH_02 = 4010;
-    private static final int ITEM_EST_16 = 4010;
-    private static final int ITEM_EST_17 = 4011;
-
-    private static final int PRODUCT_AV_CB_01 = 5000;
-    private static final int ITEM_EST_18 = 5000;
-    private static final int PRODUCT_AV_SB_02 = 5050;
-    private static final int ITEM_EST_19 = 5050;
-
-    /** boolean codes **/
-    private static final int BOOL_TRUE = 5000;
-    private static final int BOOL_FALSE = 0;
-
-    // private static final Log LOG =
-    // LogFactory.getLog(SessionAndTraceRegistrationFilterForJPetstore.class);
-
-    /**
-     * Create an SessionAndTraceRegistrationFilterForJPetstore and initialize the filter operation
-     * signature.
-     */
-    public SessionAndTraceRegistrationFilterForJPetstore() {
-        SessionAndTraceRegistrationFilterForJPetstore.codes = new HashMap<>();
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes = new HashSet<>();
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes = new HashSet<>();
-        SessionAndTraceRegistrationFilterForJPetstore.itemCodes = new HashSet<>();
-
-        // ** categorys
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FISH",
-                SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_FISH);
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.add("FISH");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("CATS",
-                SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_CATS);
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.add("CATS");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("DOGS",
-                SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_DOGS);
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.add("DOGS");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("REPTILES",
-                SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_REPTILES);
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.add("REPTILES");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("BIRDS",
-                SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_BIRDS);
-        SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.add("BIRDS");
-
-        // ** products
-        // fish
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FI-SW-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FI_SW_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("FI-SW-01");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FI-SW-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FI_SW_02);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("FI-SW-02");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FI-FW-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FI_FW_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("FI-FW-01");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FI-FW-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FI_FW_02);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("FI-FW-02");
-
-        // dogs
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-BD-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_BD_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-BD-01");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-PO-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_PO_02);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-PO-02");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-DL-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_DL_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-DL-01");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-RT-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_RT_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-RT-01");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-RT-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_RT_02);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-RT-02");
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("K9-CW-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_K9_CW_01);
-        SessionAndTraceRegistrationFilterForJPetstore.productCodes.add("K9-CW-01");
-
-        // reptiles
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("RP-SN-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_RP_SN_01);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("RP-LI-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_RP_LI_02);
-
-        // cats
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FL-DSH-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FL_DSH_01);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("FL-DLH-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_FL_DLH_02);
-
-        // birds
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("AV-CB-01",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_AV_CB_01);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("AV-SB-02",
-                SessionAndTraceRegistrationFilterForJPetstore.PRODUCT_AV_SB_02);
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-1",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_1);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-2",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_2);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-3",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_3);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-4",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_4);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-5",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_5);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-6",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_6);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-7",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_7);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-8",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_8);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-9",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_9);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-10",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_10);
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-11",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_11);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-12",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_12);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-13",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_13);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-14",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_14);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-15",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_15);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-16",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_16);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-17",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_17);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-18",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_18);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-19",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_19);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-20",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_20);
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-21",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_21);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-22",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_22);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-23",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_23);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-24",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_24);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-25",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_25);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-26",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_26);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-27",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_27);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("EST-28",
-                SessionAndTraceRegistrationFilterForJPetstore.ITEM_EST_28);
-
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("true",
-                SessionAndTraceRegistrationFilterForJPetstore.BOOL_TRUE);
-        SessionAndTraceRegistrationFilterForJPetstore.codes.put("false",
-                SessionAndTraceRegistrationFilterForJPetstore.BOOL_FALSE);
-
-    }
+    private static final Log LOG = LogFactory.getLog(SessionAndTraceRegistrationFilterForJPetstore.class);
 
     @Override
     public void init(final FilterConfig config) throws ServletException {
@@ -376,7 +158,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                 if (query == null) {
                     query = "";
                 } else {
-                    queryParameters = query.split("&");
+                    queryParameters = this.andPattern.split(query);
                 }
             } else {
                 method = "POST";
@@ -385,12 +167,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                 query = "";
             }
 
-            final String trimmedPath = path.replaceAll("\\.[A-Za-z0-9]*$", "");
-            // final int lastComponentSignatureIndex = trimmedPath.lastIndexOf("actions.");
-
-            componentSignature = "jpetstore.actions"; // lastComponentSignatureIndex < 0 ?
-                                                      // trimmedPath: trimmedPath.substring(0,
-                                                      // lastComponentSignatureIndex - 1);
+            final String trimmedPath = path;
 
             TraceMetadata trace = SessionAndTraceRegistrationFilterForJPetstore.TRACEREGISTRY.getTrace();
             final boolean newTrace = trace == null;
@@ -402,52 +179,72 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
             }
 
             if ("GET".equals(method)) {
-                if ((queryParameters != null) && (queryParameters.length == 2)) {
 
-                    operationSignature = trimmedPath.replaceAll("jpetstore\\.actions\\.", "") + "."
-                            + queryParameters[0].replace("=", "") + "()"; // "("
-                    // +
-                    // queryParameters[0]
-                    // +
-                    // ")";
+                if ((queryParameters != null)) {
+                    // pattern ="jpetstore\\.actions\\."
+                    operationSignature = trimmedPath + "."
+                            + this.equalsPattern.matcher(queryParameters[0]).replaceAll("") + "()";
 
-                    final String[] queryParameterSplit = queryParameters[1].split("=");
+                    // is operation called with parameters
+                    if ((queryParameters.length > 1)) {
+                        // then add the parameters as call informations
+                        for (int i = 1; i < queryParameters.length; i++) {
+                            final String[] queryParameterSplit = this.equalsPattern.split(queryParameters[i]);
 
-                    callInformations.add(new CallInformation(queryParameterSplit[1],
-                            SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_VALUE));
+                            callInformations.add(new CallInformation(queryParameterSplit[i],
+                                    SessionAndTraceRegistrationFilterForJPetstore.INFORMATION_VALUE));
+                        }
+                    }
 
-                    // if
-                    // (SessionAndTraceRegistrationFilterForJPetstore.categoryCodes.contains(queryParameterSplit[1]))
-                    // {
-                    // callInformations.add(new CallInformation(queryParameterSplit[1],
-                    // SessionAndTraceRegistrationFilterForJPetstore.CATEGORY_VALUE));
-                    //
-                    // } else {
-                    // final Long code = SessionAndTraceRegistrationFilterForJPetstore.codes
-                    // .containsKey(queryParameterSplit[1])
-                    // ? SessionAndTraceRegistrationFilterForJPetstore.codes
-                    // .get(queryParameterSplit[1])
-                    // : -100L;
-                    //
-                    // callInformations.add(new CallInformation(queryParameterSplit[0], code));
-                    // }
+                    // pattern = "\\.action\\."
+                    operationSignature = this.removeActionOfOperationPattern.matcher(operationSignature).replaceAll("");
 
                 } else {
-                    operationSignature = trimmedPath.replaceAll("jpetstore\\.actions\\.", "") + "("
-                            + query.replace(';', ':') + ")";
+                    // pattern = "\\w*\\.actions\\."
+                    if (this.isActionPattern.matcher(trimmedPath).matches()) {
+                        // pattern ="jpetstore\\.actions\\."
+                        operationSignature = trimmedPath + "()";
+
+                        // pattern = "\\.action\\("
+                        operationSignature = this.removeActionOfIndexPattern.matcher(operationSignature)
+                                .replaceAll(".index(");
+                        SessionAndTraceRegistrationFilterForJPetstore.LOG.debug("SINGLE OP");
+
+                        // pattern "\\w*\\.images\\."
+                    } else if (this.isImagePattern.matcher(trimmedPath).matches()) {
+                        operationSignature = trimmedPath;
+                        SessionAndTraceRegistrationFilterForJPetstore.LOG.debug("IMAGE");
+
+                    } else {
+                        SessionAndTraceRegistrationFilterForJPetstore.LOG.debug("ELSE");
+                        operationSignature = trimmedPath + "()";
+
+                    }
                 }
 
-                operationSignature = operationSignature.replaceAll("\\.action\\(", "(");
-                operationSignature = operationSignature.replaceAll("action\\.", "");
-
             } else if ("POST".equals(method)) {
-                operationSignature = trimmedPath.replaceAll("jpetstore\\.actions\\.", "") + "()";
-                operationSignature = operationSignature.replaceAll("\\.action\\(", "(");
-                operationSignature = operationSignature.replaceAll("action\\.", "");
+
+                operationSignature = trimmedPath + "()";
+
+                // matches "(\\w*\\.)*Account\\.*" ?
+                if (this.isAccountPattern.matcher(operationSignature).matches()) {
+
+                } else {
+                    // post on the account is always a login
+                    // pattern = "\\.action\\("
+                    operationSignature = this.removeActionOfIndexPattern.matcher(operationSignature)
+                            .replaceAll(".login(");
+                }
+
+                // pattern = "\\.action\\."
+                operationSignature = this.removeActionOfOperationPattern.matcher(operationSignature).replaceAll("");
+
             } else {
                 chain.doFilter(request, response);
                 return;
             }
+            componentSignature = this.pathStrucPattern.matcher(operationSignature).replaceAll("");
+            SessionAndTraceRegistrationFilterForJPetstore.LOG.debug(operationSignature);
 
             final long traceId = trace.getTraceId();
 
