@@ -5,15 +5,16 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.gradle.internal.impldep.com.esotericsoftware.minlog.Log;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.CloudProfileModelProvider;
 import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.DesignDecisionModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.AllocationGroup;
 import org.iobserve.planning.data.AllocationGroupsContainer;
 import org.iobserve.planning.data.PlanningData;
@@ -45,8 +46,6 @@ import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
  */
 public class ModelTransformer {
 
-	private static final String PROCESSED_MODEL_FOLDER = "processedModel";
-
 	private final PlanningData planningData;
 	private final InitializeModelProviders originalModelProviders;
 	private InitializeModelProviders processedModelProviders;
@@ -66,7 +65,7 @@ public class ModelTransformer {
 	 *
 	 * @param planningData
 	 */
-	public ModelTransformer(PlanningData planningData) {
+	public ModelTransformer(final PlanningData planningData) {
 		this.planningData = planningData;
 		String originalModelDir = planningData.getOriginalModelDir().toFileString();
 		this.originalModelProviders = new InitializeModelProviders(new File(originalModelDir));
@@ -89,16 +88,28 @@ public class ModelTransformer {
 	 * correct type of resource container. A new allocation degree is also
 	 * created for each allocation group, with all available resource containers
 	 * as viable choices.
+	 *
+	 * @throws IOException
+	 *             if an error occured while saving the models
+	 * @throws InitializationException
+	 *             if an error occurred during snapshot generation
 	 */
-	public void transformModel() {
+	public void transformModel() throws IOException, InitializationException {
 		this.initModelTransformation();
 		this.clearUnneededElements();
-		this.createResourceEnv();
+		this.rebuildEnvironment();
 	}
 
-	private void initModelTransformation() {
-		URI processedModelDir = this.planningData.getOriginalModelDir().appendSegment(PROCESSED_MODEL_FOLDER);
-		this.originalModelProviders.saveToSnapshotLocation(processedModelDir);
+	private void initModelTransformation() throws IOException, InitializationException {
+		URI processedModelDir = this.planningData.getOriginalModelDir()
+		        .appendSegment(ModelProcessing.PROCESSED_MODEL_DIR);
+
+		SnapshotBuilder.setBaseSnapshotURI(this.planningData.getOriginalModelDir());
+
+		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_DIR,
+		        this.originalModelProviders);
+		snapshotBuilder.createSnapshot();
+
 		this.planningData.setProcessedModelDir(processedModelDir);
 		this.processedModelProviders = new InitializeModelProviders(new File(processedModelDir.toFileString()));
 
@@ -107,7 +118,12 @@ public class ModelTransformer {
 		this.costProvider = this.processedModelProviders.getCostModelProvider();
 		this.resourceProvider = this.processedModelProviders.getResourceEnvironmentModelProvider();
 
-		this.decisionSpace = DesignDecisionModelBuilder.createDecisionSpace("processedDecision");
+		this.decisionSpace = this.processedModelProviders.getDesignDecisionModelProvider().getModel();
+
+		if (this.decisionSpace == null) {
+			this.decisionSpace = DesignDecisionModelBuilder.createDecisionSpace("processedDecision");
+			this.processedModelProviders.getDesignDecisionModelProvider().setModel(this.decisionSpace);
+		}
 
 		Allocation originalAllocation = this.originalModelProviders.getAllocationModelProvider().getModel();
 
@@ -119,7 +135,7 @@ public class ModelTransformer {
 		this.clearAllocationContexts();
 	}
 
-	private void createResourceEnv() {
+	private void rebuildEnvironment() {
 		for (AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
 			AllocationContext representingContext = allocationGroup.getRepresentingContext();
 
@@ -132,8 +148,8 @@ public class ModelTransformer {
 			String allocationDegreeName = String.format("%s_AllocationDegree", allocationGroup.getName());
 
 			DesignDecisionModelBuilder.createAllocationDegree(this.decisionSpace, allocationDegreeName,
-					allocationGroup.getRepresentingContext(),
-					this.resourceProvider.getModel().getResourceContainer_ResourceEnvironment());
+			        allocationGroup.getRepresentingContext(),
+			        this.resourceProvider.getModel().getResourceContainer_ResourceEnvironment());
 		}
 
 		ModelHelper.addAllAllocationsToReplicationDegrees(this.allocationProvider.getModel(), this.decisionSpace);
@@ -142,19 +158,14 @@ public class ModelTransformer {
 	}
 
 	private void saveModels() {
-		try {
-			DesignDecisionModelBuilder.saveDecisionSpace(this.planningData.getProcessedModelDir(), "snapshot",
-					this.decisionSpace);
-		} catch (IOException e) {
-			Log.error("Could not save the design decision model to file!");
-		}
-
+		this.processedModelProviders.getDesignDecisionModelProvider().save();
 		this.allocationProvider.save();
 		this.costProvider.save();
 		this.resourceProvider.save();
 	}
 
-	private void createResourcesAndReplicationDegrees(DecisionSpace decisionSpace, AllocationGroup allocationGroup) {
+	private void createResourcesAndReplicationDegrees(final DecisionSpace decisionSpace,
+	        final AllocationGroup allocationGroup) {
 		CloudProfile profile = this.cloudProfileProvider.getModel();
 		ResourceEnvironment environment = this.resourceProvider.getModel();
 		CostRepository costs = this.costProvider.getModel();
@@ -165,8 +176,8 @@ public class ModelTransformer {
 
 		if (representingContainer == null) {
 			throw new IllegalArgumentException(
-					String.format("Could not find a cloud container for allocation group '%s'. Check your model.",
-							allocationGroup.getName()));
+			        String.format("Could not find a cloud container for allocation group '%s'. Check your model.",
+			                allocationGroup.getName()));
 		}
 
 		// Set group name of the representing container and add it to the
@@ -187,30 +198,26 @@ public class ModelTransformer {
 					// Upper bound for number of replicas for one resource
 					// container type should be sufficiently high
 					int toNrOfReplicas = (nrOfCurrentReplicas + PlanningData.POSSIBLE_REPLICAS_OFFSET)
-							* PlanningData.POSSIBLE_REPLICAS_FACTOR;
+					        * PlanningData.POSSIBLE_REPLICAS_FACTOR;
 
 					ResourceContainerCloud createdContainer;
 					if (this.isSameVMType(cloudVM, representingContainer)) {
 						createdContainer = representingContainer;
 					} else {
 						createdContainer = ModelHelper.createResourceContainerFromVMType(environment, costs, cloudVM,
-								allocationGroup.getName());
-						createdContainer.setGroupName(allocationGroup.getName());
+						        allocationGroup.getName());
 					}
+					createdContainer.setGroupName(allocationGroup.getName());
 
 					DesignDecisionModelBuilder.createReplicationDegree(decisionSpace, allocationGroup.getName(),
-							createdContainer, 1, toNrOfReplicas);
+					        createdContainer, 1, toNrOfReplicas);
 
 				}
 			}
 		}
 	}
 
-	private boolean isSameVMType(VMType cloudVM, ResourceContainerCloud representingContainer) {
-//		boolean sameProviderName = cloudVM.getProvider().getName().equals(representingContainer.getCloudProviderName());
-//		boolean sameType = cloudVM.getName().equals(representingContainer.getInstanceType());
-//		boolean sameLocation = cloudVM.getLocation().equals(representingContainer.getLocation());
-//		return sameProviderName && sameType && sameLocation;
+	private boolean isSameVMType(final VMType cloudVM, final ResourceContainerCloud representingContainer) {
 		return EcoreUtil.equals(cloudVM, representingContainer.getInstanceType());
 	}
 

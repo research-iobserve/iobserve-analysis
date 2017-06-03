@@ -52,15 +52,13 @@ public final class ModelHelper {
 	 *            the container for which to retrieve the identifier
 	 * @return the identifier
 	 */
-	public static String getResourceContainerIdentifier(ResourceContainer allocationContainer) {
+	public static String getResourceContainerIdentifier(final ResourceContainer allocationContainer) {
 		String identifier = "";
 		if (allocationContainer instanceof ResourceContainerCloud) {
 			ResourceContainerCloud cloudContainer = (ResourceContainerCloud) allocationContainer;
 			VMType type = cloudContainer.getInstanceType();
-			
-			identifier = String.format("%s_%s_%s", cloudContainer.getInstanceType().getProvider().getName(), 
-					cloudContainer.getInstanceType().getLocation(),
-					cloudContainer.getInstanceType());
+
+			identifier = String.format("%s_%s_%s", type.getProvider().getName(), type.getLocation(), type.getName());
 		} else {
 			identifier = allocationContainer.getEntityName();
 		}
@@ -75,15 +73,15 @@ public final class ModelHelper {
 	 *            the resource environment to search
 	 * @return the found linking resource or the newly created one
 	 */
-	public static LinkingResource getInternetLinkingResource(ResourceEnvironment environment) {
+	public static LinkingResource getInternetLinkingResource(final ResourceEnvironment environment) {
 		LinkingResource linkingResource = null;
 		List<LinkingResource> linkingResources = environment.getLinkingResources__ResourceEnvironment();
 
 		Optional<LinkingResource> internetLink = linkingResources.stream()
-				.filter(link -> link.getEntityName().contains(INTERNET_LINKING_RESOURCE_NAME)).findFirst();
+		        .filter(link -> link.getEntityName().contains(INTERNET_LINKING_RESOURCE_NAME)).findFirst();
 
 		linkingResource = internetLink.orElse(ResourceEnvironmentCloudBuilder.createLinkingResource(environment, null,
-				INTERNET_LINKING_RESOURCE_NAME));
+		        INTERNET_LINKING_RESOURCE_NAME));
 
 		return linkingResource;
 	}
