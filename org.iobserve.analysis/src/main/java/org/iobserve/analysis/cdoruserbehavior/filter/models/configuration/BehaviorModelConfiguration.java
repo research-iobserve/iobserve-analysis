@@ -53,7 +53,7 @@ public class BehaviorModelConfiguration {
         this.modelGenerationFilter = new ModelGenerationFilter(false);
         this.modelGenerationFilter.addFilterRule(".*");
         this.representativeStrategy = new JPetstoreStrategy();
-        this.signatureCreationStrategy = new OperationSignatureStrategy();
+        this.signatureCreationStrategy = new GetLastXSignatureStrategy(Integer.MAX_VALUE);
 
         this.clustering = new XMeansClustering(1, 1, new ManhattanDistance());
 

@@ -19,7 +19,7 @@ import java.io.IOException;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelComparison;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.FunctionNameOnlySignatureStrategy;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.GetLastXSignatureStrategy;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.XMeansClustering;
@@ -124,7 +124,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         behaviorModelConfiguration.setVisualizationUrl("http://localhost:8080/ubm-backend/v1");
         behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
         behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
-        behaviorModelConfiguration.setSignatureCreationStrategy(new FunctionNameOnlySignatureStrategy());
+        behaviorModelConfiguration.setSignatureCreationStrategy(new GetLastXSignatureStrategy(1));
         behaviorModelConfiguration.setClustering(behaviorModelClustering);
 
         // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);

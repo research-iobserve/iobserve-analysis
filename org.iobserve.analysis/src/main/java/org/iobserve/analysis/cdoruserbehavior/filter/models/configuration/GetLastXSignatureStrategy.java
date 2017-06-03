@@ -20,27 +20,59 @@ import java.util.regex.Pattern;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 
 /**
- * strategy using only the function name
+ * strategy using the last x parts of the operation
  *
  * @author Christoph Dornieden
  *
  */
-public class FunctionNameOnlySignatureStrategy implements ISignatureCreationStrategy {
+public class GetLastXSignatureStrategy implements ISignatureCreationStrategy {
+    private final int x;
+    private final boolean keepBrackets;
     final Pattern dotPattern;
     final Pattern bracketPattern;
 
-    public FunctionNameOnlySignatureStrategy() {
+    /**
+     * constructor
+     *
+     * @param x
+     *            number of operation parts
+     */
+    public GetLastXSignatureStrategy(final int x) {
+        this(x, false);
+    }
+
+    /**
+     * constructor
+     *
+     * @param x
+     *            number of operation parts
+     * @param keepBrackets
+     *            keepBrackets?
+     */
+    public GetLastXSignatureStrategy(final int x, final boolean keepBrackets) {
         this.dotPattern = Pattern.compile("\\.");
         this.bracketPattern = Pattern.compile("\\(.*\\)");
-
+        this.keepBrackets = keepBrackets;
+        this.x = x < 1 ? 1 : x;
     }
 
     @Override
     public String getSignature(final EntryCallNode node) {
-        final String operationSignature = this.bracketPattern.matcher(node.getSignature()).replaceAll("");
+        final String operationSignature = this.keepBrackets ? node.getSignature()
+                : this.bracketPattern.matcher(node.getSignature()).replaceAll("");
         final String[] operationSignatureSplit = this.dotPattern.split(operationSignature);
-        final String function = operationSignatureSplit[operationSignatureSplit.length - 1];
-        return function;
+        final int operationParts = operationSignatureSplit.length;
+
+        if (this.x >= operationParts) {
+            return operationSignature;
+        } else {
+            String partialOperation = operationSignatureSplit[operationParts - 1];
+            for (int i = operationParts - this.x; i < (operationParts - 1); i++) {
+                partialOperation = operationSignatureSplit[i] + "." + partialOperation;
+            }
+            return partialOperation;
+        }
+
     }
 
 }
