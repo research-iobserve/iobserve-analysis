@@ -88,6 +88,7 @@ public class SnapshotBuilder extends AbstractStage {
 		this.createModelSnapshot(this.modelProviders.getCloudProfileModelProvider());
 		this.createModelSnapshot(this.modelProviders.getCostModelProvider());
 		this.createModelSnapshot(this.modelProviders.getDesignDecisionModelProvider());
+		this.createModelSnapshot(this.modelProviders.getQMLDeclarationsModelProvider());
 		// this.createModelSnapshot(modelProviders.getCorrespondenceModel());
 		return this.snapshotURI;
 	}
