@@ -14,11 +14,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
 
@@ -29,30 +25,10 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepre
  *
  */
 public class JPetstoreStrategy implements IRepresentativeStrategy {
-    private final Set<String> categoryCodes;
-
-    /**
-     * constructor
-     */
-    public JPetstoreStrategy() {
-        this.categoryCodes = new HashSet<>();
-        this.categoryCodes.add("FISH");
-        this.categoryCodes.add("CATS");
-        this.categoryCodes.add("DOGS");
-        this.categoryCodes.add("REPTILES");
-        this.categoryCodes.add("BIRDS");
-    }
 
     @Override
-    public Double findRepresentativeCode(final String signature, List<Double> callInformationCodes) {
-
+    public Double findRepresentativeCode(final String signature, final List<Double> callInformationCodes) {
         return this.categoryStrategy(callInformationCodes);
-        // if (this.categoryCodes.contains(signature)) {
-        // return this.categoryStrategy(callInformationCodes);
-        // } else {
-        // return this.defaultStratey(signature, callInformationCodes);
-        // }
-
     }
 
     /**
@@ -62,43 +38,9 @@ public class JPetstoreStrategy implements IRepresentativeStrategy {
      *            callInformationCodes
      * @return representative value
      */
-    private final Double categoryStrategy(List<Double> callInformationCodes) {
-        final int num = callInformationCodes.size();
-        return Double.valueOf(num);
-    }
-
-    /**
-     * default representative strategy for jpetstore
-     *
-     * @param signature
-     *            signature
-     * @param callInformationCodes
-     *            callInformationCodes
-     * @return representative code
-     */
-    private final Double defaultStratey(String signature, List<Double> callInformationCodes) {
-        final Double representative;
-        final Map<Double, Integer> candidates;
-        final int informationQuotient;
-
-        switch (signature) {
-        case "ITEM-ID":
-            informationQuotient = 1000;
-            break;
-        default:
-            informationQuotient = 1;
-
-        }
-
-        // sum up all code occurences in a map
-        candidates = callInformationCodes.stream().map(code -> code / informationQuotient)
-                .collect(Collectors.groupingBy(trimmedCode -> trimmedCode, Collectors.summingInt(i -> 1)));
-
-        // find the code with the highest occurence
-        representative = candidates.keySet().stream()
-                .max((a, b) -> Integer.compare(candidates.get(a), candidates.get(b))).get() * informationQuotient;
-
-        return representative;
+    private final Double categoryStrategy(final List<Double> callInformationCodes) {
+        final Double num = callInformationCodes.stream().reduce(0.0, (a, b) -> a + b);
+        return num;
     }
 
 }
