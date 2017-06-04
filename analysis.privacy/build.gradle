@@ -12,6 +12,7 @@ repositories {
 }
 
 dependencies {
+	compile project(":common")
     compile group: 'org.apache.logging.log4j', name: 'log4j-1.2-api', version: '2.8.1'
 
     // Declare the dependency for your favourite test framework you want to use in your tests.
@@ -20,14 +21,16 @@ dependencies {
     // 'test.useTestNG()' to your build script.
     testCompile 'junit:junit:4.12'
     
-    compile 'org.eclipse.emf:org.eclipse.emf.common:2.12.0+'
-    compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.12.0+'
-    compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.12.0+'
-    //compile 'org.eclipse.emf:org.eclipse.emf.query:1.7.0+'
+	compile 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
+	compile 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
+	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
+	compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
+	compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
+	compile 'org.eclipse.emf:org.eclipse.emf.mwe.core:1.3.20+'
     
    	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
 	compile 'extra:org.palladiosimulator.pcm:4.0.2+'
-	//compile 'extra:org.palladiosimulator.pcm.resources:4.0.0+'
+	compile 'extra:org.palladiosimulator.pcm.resources:4.0.0+'
 	compile 'extra:org.palladiosimulator.pcm.privacy:4.0.2.2017-05-31'
 	compile 'extra:org.palladiosimulator.pcm.cloud:1.0.0+'
 	
