@@ -38,9 +38,7 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.privacy.GraphCreation;
-import org.iobserve.analysis.privacy.GraphPrivacyAnalysis;
-import org.iobserve.analysis.privacy.PrivacyAnalysis;
+import org.iobserve.analysis.privacyanalysis.PrivacyAnalysis;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.evaluation.ModelComparer;
 import org.iobserve.evaluation.SystemEvaluation;
@@ -113,7 +111,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 				varianceOfUserGroups, thinkTime, closedWorkload);
 		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
 		final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
-		final PrivacyAnalysis privacyAnalysis = new PrivacyAnalysis(new GraphCreation(), new GraphPrivacyAnalysis());
+		final PrivacyAnalysis privacyAnalysis = new org.iobserve.analysis.privacyanalysis.PrivacyAnalysis(new org.iobserve.analysis.privacyanalysis.GraphCreation(), new org.iobserve.analysis.privacyanalysis.GraphPrivacyAnalysis());
 		final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless), new ModelOptimization(),
 				new CandidateProcessing());
 		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(), new AdaptationPlanning(),

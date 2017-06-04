@@ -16,9 +16,11 @@ import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
  */
 public class DeploymentAnalysis {
 
+	private final HashSet<Integer> legalPersonalGeoLocations;
 	private ModelGraph model;
 
-	public DeploymentAnalysis(ModelGraph model) {
+	public DeploymentAnalysis(ModelGraph model, final HashSet<Integer> legalPersonalGeoLocations) {
+		this.legalPersonalGeoLocations = legalPersonalGeoLocations;
 		this.model = model;
 	}
 
@@ -42,7 +44,7 @@ public class DeploymentAnalysis {
 	 * Checks the basic deployment rules!
 	 */
 	private boolean isLegalDeployment(DeploymentNode server) {
-		boolean legalPersonalGeoLocation = PrivacyAnalysis.getLegalPersonalGeoLocations().contains((Integer) server.getIsoCountryCode());
+		boolean legalPersonalGeoLocation = this.legalPersonalGeoLocations.contains((Integer) server.getIsoCountryCode());
 
 		if (legalPersonalGeoLocation) {
 			// Everything can be deployed onto a "Save" geo-location

@@ -1,13 +1,14 @@
-package org.iobserve.analysis.privacy;
+package org.iobserve.analysis.privacyanalysis;
 
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.EList;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.ComponentNode;
 import org.iobserve.analysis.graph.ModelGraph;
 import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.privacy.ComponentClassificationAnalysis;
+import org.iobserve.analysis.privacy.DeploymentAnalysis;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyContextPrivacy;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
@@ -34,7 +35,7 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 		classificationAnalysis.start();
 
 		System.out.println("Deployment analysis ... ");
-		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(graph);
+		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(graph, PrivacyAnalysis.getLegalPersonalGeoLocations());
 		boolean legalDeployment = deploymentAnalysis.start();
 
 		if (legalDeployment)
