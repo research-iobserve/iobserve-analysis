@@ -18,6 +18,7 @@ package org.iobserve.analysis;
 import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
+import org.iobserve.analysis.graph.ModelCollection;
 import org.iobserve.analysis.model.AbstractModelProvider;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.CloudProfileModelProvider;
@@ -82,8 +83,7 @@ public final class InitializeModelProviders {
 
 			} else if ("rac".equalsIgnoreCase(extension)) {
 				final String pathMappingFile = nextFile.getAbsolutePath();
-				this.correspondenceModel = CorrespondeceModelFactory.INSTANCE
-						.createCorrespondenceModel(pathMappingFile);
+				this.correspondenceModel = CorrespondeceModelFactory.INSTANCE.createCorrespondenceModel(pathMappingFile);
 
 			} else if ("cloudprofile".equalsIgnoreCase(extension)) {
 				final URI uri = this.getUri(nextFile);
@@ -177,8 +177,7 @@ public final class InitializeModelProviders {
 		this.saveModelProvider(this.costModelProvider, fileLocationURI.appendFileExtension("cost"));
 		this.saveModelProvider(this.designDecisionModelProvider, fileLocationURI.appendFileExtension("designdecision"));
 		this.saveModelProvider(this.repositoryModelProvider, fileLocationURI.appendFileExtension("repository"));
-		this.saveModelProvider(this.resourceEnvironmentModelProvider,
-				fileLocationURI.appendFileExtension("resourceenvironment"));
+		this.saveModelProvider(this.resourceEnvironmentModelProvider, fileLocationURI.appendFileExtension("resourceenvironment"));
 		this.saveModelProvider(this.systemModelProvider, fileLocationURI.appendFileExtension("system"));
 		this.saveModelProvider(this.usageModelProvider, fileLocationURI.appendFileExtension("usagemodel"));
 	}
@@ -209,6 +208,16 @@ public final class InitializeModelProviders {
 	 */
 	private URI getUri(final File file) {
 		return URI.createFileURI(file.getAbsolutePath());
+	}
+
+	/**
+	 * The model provider.
+	 * 
+	 * @return the model provider
+	 */
+	public ModelCollection getModelCollection() {
+		return new ModelCollection(this.repositoryModelProvider.getModel(), this.systemModelProvider.getModel(),
+				this.allocationModelProvider.getModel(), this.resourceEnvironmentModelProvider.getModel());
 	}
 
 }

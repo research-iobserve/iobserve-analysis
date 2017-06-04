@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.iobserve.analysis.InitializeModelProviders;
-
 /**
  * This class contains a model for privacy analysis purposes.
  * 
@@ -16,9 +14,9 @@ public class ModelGraph {
 
 	private Set<DeploymentNode> servers;
 	private Set<ComponentNode> components;
-	private InitializeModelProviders pcmModels;
+	private ModelCollection pcmModels;
 
-	public ModelGraph(Collection<DeploymentNode> servers, Collection<ComponentNode> components, InitializeModelProviders pcmModels) {
+	public ModelGraph(Collection<DeploymentNode> servers, Collection<ComponentNode> components, ModelCollection pcmModels) {
 		this.servers = new HashSet<DeploymentNode>(servers);
 		this.components = new HashSet<ComponentNode>(components);
 		this.pcmModels = pcmModels;
@@ -47,7 +45,7 @@ public class ModelGraph {
 	/**
 	 * @return the pcmModels
 	 */
-	public InitializeModelProviders getPcmModels() {
+	public ModelCollection getPcmModels() {
 		return pcmModels;
 	}
 

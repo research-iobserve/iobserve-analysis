@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.emf.common.util.URI;
+import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.ModelGraph;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
@@ -24,9 +25,11 @@ public class AdaptationData {
 	public static final String NODE_PRE_TERMINATE_SCRIPT_NAME = "node_pre_terminate.sh";
 
 	private URI runtimeModelURI;
+	private InitializeModelProviders runtimeModelProviders;
 	private ModelGraph runtimeGraph;
 
 	private URI reDeploymentURI;
+	private InitializeModelProviders reDeploymentModelProviders;
 	private ModelGraph reDeploymentGraph;
 
 	private URI deployablesFolderURI;
@@ -58,6 +61,21 @@ public class AdaptationData {
 	}
 
 	/**
+	 * @return the runtimeModelProviders
+	 */
+	public InitializeModelProviders getRuntimeModelProviders() {
+		return runtimeModelProviders;
+	}
+
+	/**
+	 * @param runtimeModelProviders
+	 *            the runtimeModelProviders to set
+	 */
+	public void setRuntimeModelProviders(InitializeModelProviders runtimeModelProviders) {
+		this.runtimeModelProviders = runtimeModelProviders;
+	}
+
+	/**
 	 * @return the runtimeGraph
 	 */
 	public ModelGraph getRuntimeGraph() {
@@ -85,6 +103,21 @@ public class AdaptationData {
 	 */
 	public void setReDeploymentURI(URI reDeploymentURI) {
 		this.reDeploymentURI = reDeploymentURI;
+	}
+
+	/**
+	 * @return the reDeploymentModelProviders
+	 */
+	public InitializeModelProviders getReDeploymentModelProviders() {
+		return reDeploymentModelProviders;
+	}
+
+	/**
+	 * @param reDeploymentModelProviders
+	 *            the reDeploymentModelProviders to set
+	 */
+	public void setReDeploymentModelProviders(InitializeModelProviders reDeploymentModelProviders) {
+		this.reDeploymentModelProviders = reDeploymentModelProviders;
 	}
 
 	/**

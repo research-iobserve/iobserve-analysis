@@ -5,10 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.emf.common.util.EList;
-import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyConnectorPrivacy;
@@ -20,7 +16,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
 
 public class GraphFactory {
-	private InitializeModelProviders modelProvider;
+	private ModelCollection modelProvider;
 
 	private Map<String, AssemblyContext> assemblyContexts;
 	private Map<String, DataPrivacyLvl> assemblyContextPrivacyLvl;
@@ -35,14 +31,14 @@ public class GraphFactory {
 	public GraphFactory() {
 	}
 
-	public ModelGraph buildGraph(InitializeModelProviders modelProvider) throws Exception {
+	public ModelGraph buildGraph(ModelCollection modelProvider) throws Exception {
 		this.init(modelProvider);
 
-		this.extractAssemblyContexts(this.modelProvider.getSystemModelProvider());
-		this.extractAssemblyConnectors(this.modelProvider.getSystemModelProvider());
-		this.extractResourceContainers(this.modelProvider.getResourceEnvironmentModelProvider());
+		this.extractAssemblyContexts(this.modelProvider.getSystemModel());
+		this.extractAssemblyConnectors(this.modelProvider.getSystemModel());
+		this.extractResourceContainers(this.modelProvider.getResourceEnvironmentModel());
 		this.adaptPrivacyLvl();
-		this.extractAllocations(this.modelProvider.getAllocationModelProvider());
+		this.extractAllocations(this.modelProvider.getAllocationModel());
 
 		return this.createModelGraph();
 	}
@@ -50,7 +46,7 @@ public class GraphFactory {
 	/*
 	 * Prepare all data structures.
 	 */
-	private void init(InitializeModelProviders modelProvider) {
+	private void init(ModelCollection modelProvider) {
 		this.modelProvider = modelProvider;
 
 		this.assemblyContexts = new HashMap<String, AssemblyContext>();
@@ -64,8 +60,7 @@ public class GraphFactory {
 	/*
 	 * Extract Information Helpers
 	 */
-	private void extractAssemblyContexts(SystemModelProvider sysModelProv) {
-		org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
+	private void extractAssemblyContexts(org.palladiosimulator.pcm.system.System sysModel) {
 		EList<AssemblyContext> assemblyContexts = sysModel.getAssemblyContexts__ComposedStructure();
 
 		for (AssemblyContext assemblyContext : assemblyContexts) {
@@ -73,8 +68,7 @@ public class GraphFactory {
 		}
 	}
 
-	private void extractAssemblyConnectors(SystemModelProvider sysModelProv) {
-		org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
+	private void extractAssemblyConnectors(org.palladiosimulator.pcm.system.System sysModel) {
 		EList<Connector> connectors = sysModel.getConnectors__ComposedStructure();
 
 		for (Connector connector : connectors) {
@@ -121,8 +115,7 @@ public class GraphFactory {
 		this.assemblyContextPrivacyLvl.put(assemblyContext_ID, currentDataLevelPrivacy);
 	}
 
-	private void extractResourceContainers(ResourceEnvironmentModelProvider resEnvModelProv) {
-		ResourceEnvironment resEnvModel = resEnvModelProv.getModel();
+	private void extractResourceContainers(ResourceEnvironment resEnvModel) {
 		EList<ResourceContainer> resourceContainers = resEnvModel.getResourceContainer_ResourceEnvironment();
 		for (ResourceContainer resourceContainer : resourceContainers) {
 			if (resourceContainer instanceof ResourceContainerPrivacy) {
@@ -133,8 +126,7 @@ public class GraphFactory {
 		}
 	}
 
-	private void extractAllocations(AllocationModelProvider allocationModelProv) {
-		Allocation allocation = allocationModelProv.getModel();
+	private void extractAllocations(Allocation allocation) {
 		EList<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
 
 		for (AllocationContext allocationContext : allocationContexts) {

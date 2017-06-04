@@ -24,8 +24,7 @@ public class AssemblyContextActionFactory extends ActionFactory {
 
 	private static AssemblyContextAction setSourceAssemblyContext(AssemblyContextAction action,
 			String assemblyContextID) {
-		org.palladiosimulator.pcm.system.System systemModel = ActionFactory.runtimeModels.getSystemModelProvider()
-				.getModel();
+		org.palladiosimulator.pcm.system.System systemModel = ActionFactory.runtimeModels.getSystemModel();
 		AssemblyContext assemblyContext = ActionFactory.getAssemblyContext(assemblyContextID, systemModel);
 		action.setSourceAssemblyContext(assemblyContext);
 		return action;
@@ -38,7 +37,7 @@ public class AssemblyContextActionFactory extends ActionFactory {
 
 		AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
 
-		Repository repositoryModel = redeploymentModels.getRepositoryModelProvider().getModel();
+		Repository repositoryModel = redeploymentModels.getRepositoryModel();
 		RepositoryComponent repositoryComponent = repositoryModel.getComponents__Repository().stream()
 				.filter(s -> s.getId().equals(reDeploymentNode.getRepositoryComponentID())).findFirst().get();
 		action.setNewRepositoryComponent(repositoryComponent);
@@ -52,11 +51,11 @@ public class AssemblyContextActionFactory extends ActionFactory {
 
 		AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
 
-		Allocation runAllocation = ActionFactory.runtimeModels.getAllocationModelProvider().getModel();
+		Allocation runAllocation = ActionFactory.runtimeModels.getAllocationModel();
 		action.setSourceAllocationContext(
 				ActionFactory.getAllocationContext(runtimeNode.getAllocationContextID(), runAllocation));
 
-		Allocation reDeplAllocation = ActionFactory.redeploymentModels.getAllocationModelProvider().getModel();
+		Allocation reDeplAllocation = ActionFactory.redeploymentModels.getAllocationModel();
 		action.setNewAllocationContext(
 				ActionFactory.getAllocationContext(reDeploymentNode.getAllocationContextID(), reDeplAllocation));
 		return action;
@@ -68,7 +67,7 @@ public class AssemblyContextActionFactory extends ActionFactory {
 
 		AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
 
-		Allocation runAllocation = ActionFactory.runtimeModels.getAllocationModelProvider().getModel();
+		Allocation runAllocation = ActionFactory.runtimeModels.getAllocationModel();
 		action.setOldAllocationContext(
 				ActionFactory.getAllocationContext(runtimeNode.getAllocationContextID(), runAllocation));
 
@@ -83,12 +82,11 @@ public class AssemblyContextActionFactory extends ActionFactory {
 		// AssemblyContextActionFactory.setSourceAssemblyContext(action,
 		// runtimeNode.getAssemblyContextID());
 
-		org.palladiosimulator.pcm.system.System reDeplSystem = ActionFactory.redeploymentModels.getSystemModelProvider()
-				.getModel();
+		org.palladiosimulator.pcm.system.System reDeplSystem = ActionFactory.redeploymentModels.getSystemModel();
 		action.setSourceAssemblyContext(
 				ActionFactory.getAssemblyContext(reDeploymentNode.getAssemblyContextID(), reDeplSystem));
 
-		Allocation reDeplAllocation = ActionFactory.redeploymentModels.getAllocationModelProvider().getModel();
+		Allocation reDeplAllocation = ActionFactory.redeploymentModels.getAllocationModel();
 		action.setNewAllocationContext(
 				ActionFactory.getAllocationContext(reDeploymentNode.getAllocationContextID(), reDeplAllocation));
 		return action;

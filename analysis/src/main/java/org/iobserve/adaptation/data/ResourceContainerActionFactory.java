@@ -23,7 +23,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 public class ResourceContainerActionFactory extends ActionFactory {
 
 	private static ResourceContainerAction setSourceResourceContainer(ResourceContainerAction action, String resourceContainerID) {
-		ResourceEnvironment resEnvModel = ActionFactory.runtimeModels.getResourceEnvironmentModelProvider().getModel();
+		ResourceEnvironment resEnvModel = ActionFactory.runtimeModels.getResourceEnvironmentModel();
 		ResourceContainer resourceContainer = ActionFactory.getResourceContainer(resourceContainerID, resEnvModel);
 		action.setSourceResourceContainer(resourceContainer);
 		return action;
@@ -42,7 +42,7 @@ public class ResourceContainerActionFactory extends ActionFactory {
 		systemadaptationFactory factory = systemadaptationFactoryImpl.eINSTANCE;
 		AcquireAction action = factory.createAcquireAction();
 
-		ResourceEnvironment reDeplResEnvModel = ActionFactory.redeploymentModels.getResourceEnvironmentModelProvider().getModel();
+		ResourceEnvironment reDeplResEnvModel = ActionFactory.redeploymentModels.getResourceEnvironmentModel();
 		ResourceContainer resourceContainer = ActionFactory.getResourceContainer(reDeploymentServer.getResourceContainerID(), reDeplResEnvModel);
 		action.setSourceResourceContainer(resourceContainer);
 
@@ -55,19 +55,19 @@ public class ResourceContainerActionFactory extends ActionFactory {
 
 		ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
 
-		Allocation runtimeAllocModel = ActionFactory.runtimeModels.getAllocationModelProvider().getModel();
+		Allocation runtimeAllocModel = ActionFactory.runtimeModels.getAllocationModel();
 		for (ComponentNode component : runtimeServer.getContainingComponents()) {
 			AllocationContext oldAllocationContext = ActionFactory.getAllocationContext(component.getAllocationContextID(), runtimeAllocModel);
 			action.getSourceAllocationContext().add(oldAllocationContext);
 		}
 
-		Allocation reDeplAllocModel = ActionFactory.redeploymentModels.getAllocationModelProvider().getModel();
+		Allocation reDeplAllocModel = ActionFactory.redeploymentModels.getAllocationModel();
 		for (ComponentNode component : reDeploymentServer.getContainingComponents()) {
 			AllocationContext newAllocationContext = ActionFactory.getAllocationContext(component.getAllocationContextID(), reDeplAllocModel);
 			action.getSourceAllocationContext().add(newAllocationContext);
 		}
 
-		ResourceEnvironment resEnvModel = redeploymentModels.getResourceEnvironmentModelProvider().getModel();
+		ResourceEnvironment resEnvModel = redeploymentModels.getResourceEnvironmentModel();
 		ResourceContainer newResourceContainer = ActionFactory.getResourceContainer(reDeploymentServer.getResourceContainerID(), resEnvModel);
 		action.setNewResourceContainer(newResourceContainer);
 

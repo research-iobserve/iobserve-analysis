@@ -23,8 +23,9 @@ public class ModelComparer extends AbstractTransformation<URI, Boolean> {
 		{
 			//TODO finish
 			InitializeModelProviders modelProviders = new InitializeModelProviders(new File(element.toFileString()));
+			
 			GraphFactory graphFactory = new GraphFactory();
-			ModelGraph runtimeGraph = graphFactory.buildGraph(modelProviders);
+			ModelGraph runtimeGraph = graphFactory.buildGraph(modelProviders.getModelCollection());
 			
 			if (runtimeGraph.equals(adaptationData.getReDeploymentGraph()) && adaptationData.getReDeploymentGraph().equals(runtimeGraph)) {
 				equalGraphs = true;

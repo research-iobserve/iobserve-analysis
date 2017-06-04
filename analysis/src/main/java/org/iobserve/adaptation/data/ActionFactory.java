@@ -1,6 +1,7 @@
 package org.iobserve.adaptation.data;
 
 import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.analysis.graph.ModelCollection;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -19,8 +20,8 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class ActionFactory {
 
-	public static InitializeModelProviders runtimeModels;
-	public static InitializeModelProviders redeploymentModels;
+	public static ModelCollection runtimeModels;
+	public static ModelCollection redeploymentModels;
 
 	/*
 	 * ////////// HELPERS //////////

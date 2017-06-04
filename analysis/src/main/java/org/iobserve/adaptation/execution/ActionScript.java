@@ -97,7 +97,7 @@ public abstract class ActionScript {
 	 * @return the cloud provider, or null
 	 */
 	protected CloudProvider getCloudProviderByName(String name) {
-		InitializeModelProviders modelProviders = this.data.getRuntimeGraph().getPcmModels();
+		InitializeModelProviders modelProviders = this.data.getRuntimeModelProviders();
 		List<CloudProvider> cloudProviders = modelProviders.getCloudProfileModelProvider().getModel()
 				.getCloudProviders();
 		return cloudProviders.stream().filter(provider -> provider.getName().equalsIgnoreCase(name)).findFirst()

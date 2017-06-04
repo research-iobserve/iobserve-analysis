@@ -32,8 +32,10 @@ public class GraphCreation extends AbstractTransformation<URI, AdaptationData> {
 		AdaptationData adaptionData = new AdaptationData();
 		adaptionData.setRuntimeModelURI(element);
 		
-		InitializeModelProviders modelProvider = new InitializeModelProviders(new File(element.toFileString()));
-		ModelGraph graph = this.graphFactory.buildGraph(modelProvider);
+		InitializeModelProviders initModelProvider = new InitializeModelProviders(new File(element.toFileString()));
+		adaptionData.setRuntimeModelProviders(initModelProvider);
+		
+		ModelGraph graph = this.graphFactory.buildGraph(initModelProvider.getModelCollection());
 		adaptionData.setRuntimeGraph(graph);
 		
 		outputPort.send(adaptionData);

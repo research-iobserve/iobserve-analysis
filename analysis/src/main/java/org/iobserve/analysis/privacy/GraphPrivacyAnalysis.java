@@ -4,8 +4,10 @@ import java.util.Optional;
 
 import org.eclipse.emf.common.util.EList;
 import org.iobserve.adaptation.data.AdaptationData;
+import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.ComponentNode;
 import org.iobserve.analysis.graph.ModelGraph;
+import org.iobserve.analysis.model.SystemModelProvider;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyContextPrivacy;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
@@ -42,20 +44,20 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 
 //		graph.printGraph();
 		
-		this.writeComponentClassificationToPCM(graph);
+		this.writeComponentClassificationToPCM(graph, element.getRuntimeModelProviders().getSystemModelProvider());
 		
 		if (!legalDeployment)
 			this.outputPort.send(element);
 	}
 
-	private void writeComponentClassificationToPCM(ModelGraph model) {
-		EList<AssemblyContext> acs = model.getPcmModels().getSystemModelProvider().getModel().getAssemblyContexts__ComposedStructure();
+	private void writeComponentClassificationToPCM(ModelGraph modelGraph, SystemModelProvider systemModelProviders) {
+		EList<AssemblyContext> acs = modelGraph.getPcmModels().getSystemModel().getAssemblyContexts__ComposedStructure();
 
 		for (AssemblyContext ac : acs) {
 			if (ac instanceof AssemblyContextPrivacy) {
 				AssemblyContextPrivacy acp = (AssemblyContextPrivacy) ac;
 
-				Optional<ComponentNode> optCom = model.getComponents().stream().filter(s -> s.getAssemblyContextID().equals(acp.getId())).findFirst();
+				Optional<ComponentNode> optCom = modelGraph.getComponents().stream().filter(s -> s.getAssemblyContextID().equals(acp.getId())).findFirst();
 				if (optCom.isPresent())
 					acp.setPrivacyLevel(optCom.get().getPrivacyLvl());
 				else
@@ -64,7 +66,10 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 				System.err.println("AssemblyContext: " + ac.getId() + " is not of type AssemblyContextPrivacy!");
 		}
 		
-		model.getPcmModels().getSystemModelProvider().save();
+		if (modelGraph.getPcmModels().getSystemModel() == systemModelProviders.getModel())
+			systemModelProviders.save();
+		else
+			throw new IllegalArgumentException("The model graph and the system model provider don't mach. They represent different models!");
 	}
 
 }
