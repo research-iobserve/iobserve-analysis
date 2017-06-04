@@ -4,7 +4,6 @@ package org.iobserve.planning.systemadaptation;
 
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 
-
 /**
  * <!-- begin-user-doc -->
  * A representation of the model object '<em><b>Allocate Action</b></em>'.
@@ -22,7 +21,6 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * @generated
  */
 public interface AllocateAction extends AssemblyContextAction {
-
 	/**
 	 * Returns the value of the '<em><b>New Allocation Context</b></em>' reference.
 	 * <!-- begin-user-doc -->
@@ -48,4 +46,5 @@ public interface AllocateAction extends AssemblyContextAction {
 	 * @generated
 	 */
 	void setNewAllocationContext(AllocationContext value);
+
 } // AllocateAction

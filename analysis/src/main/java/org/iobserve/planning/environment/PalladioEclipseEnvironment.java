@@ -12,12 +12,12 @@ import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.iobserve.analysis.model.PalladioResourceRepository;
 import org.iobserve.analysis.model.PalladioResourceRepositoryImpl;
-import org.iobserve.planning.cloudprofile.cloudprofilePackage;
-import org.iobserve.planning.cloudprofile.util.cloudprofileResourceFactoryImpl;
 import org.iobserve.planning.environment.uriconverter.PrefixConverter;
 import org.iobserve.planning.environment.uriconverter.URIConverterHandler;
 import org.palladiosimulator.analyzer.workflow.configurations.AbstractPCMWorkflowRunConfiguration;
 import org.palladiosimulator.pcm.allocation.util.AllocationResourceFactoryImpl;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudprofilePackage;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.util.CloudprofileResourceFactoryImpl;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.util.ResourceenvironmentcloudResourceFactoryImpl;
 import org.palladiosimulator.pcm.core.composition.util.CompositionResourceFactoryImpl;
 import org.palladiosimulator.pcm.core.entity.util.EntityResourceFactoryImpl;
@@ -141,7 +141,7 @@ public enum PalladioEclipseEnvironment {
 		specificPackage.eINSTANCE.eClass();
 		gdofPackage.eINSTANCE.eClass();
 		costPackage.eINSTANCE.eClass();
-		cloudprofilePackage.eINSTANCE.eClass();
+		CloudprofilePackage.eINSTANCE.eClass();
 
 		log.info("Registered package instances");
 	}

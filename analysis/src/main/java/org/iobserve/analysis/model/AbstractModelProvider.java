@@ -186,6 +186,16 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	public T getModel() {
 		return this.model;
 	}
+	
+	/**
+	 * Set the model in this provider to the new model.
+	 *
+	 * @param model 
+	 * 			the new model
+	 */
+	public void setModel(T model) {
+		this.model = model;
+	}
 
 	/**
 	 * Get the uri to the model.

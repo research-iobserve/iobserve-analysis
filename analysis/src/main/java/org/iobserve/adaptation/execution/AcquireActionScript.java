@@ -21,6 +21,7 @@ import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
 import org.jclouds.scriptbuilder.domain.Statement;
 import org.jclouds.scriptbuilder.statements.login.AdminAccess;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.VMType;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
@@ -58,8 +59,10 @@ public class AcquireActionScript extends ActionScript {
 
 		TemplateBuilder templateBuilder = client.templateBuilder();
 
-		templateBuilder.hardwareId(cloudContainer.getInstanceType());
-		templateBuilder.locationId(cloudContainer.getLocation());
+		VMType instanceType = cloudContainer.getInstanceType();
+		
+		templateBuilder.hardwareId(instanceType.getName());
+		templateBuilder.locationId(instanceType.getLocation());
 		// TODO maybe make this configurable
 		templateBuilder.osFamily(OsFamily.UBUNTU);
 
@@ -113,11 +116,11 @@ public class AcquireActionScript extends ActionScript {
 
 		StringBuilder builder = new StringBuilder();
 		builder.append("Acquire Action: Acquire container from provider '");
-		builder.append(container.getCloudProviderName());
+		builder.append(container.getInstanceType().getProvider().getName());
 		builder.append("' of type '");
 		builder.append(container.getInstanceType());
 		builder.append("' in location '");
-		builder.append(container.getLocation());
+		builder.append(container.getInstanceType().getLocation());
 		builder.append("'");
 		return builder.toString();
 

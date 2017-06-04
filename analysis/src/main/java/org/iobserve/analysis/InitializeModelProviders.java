@@ -24,6 +24,7 @@ import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.CloudProfileModelProvider;
 import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.DesignDecisionModelProvider;
+import org.iobserve.analysis.model.QMLDeclarationsModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -49,6 +50,7 @@ public final class InitializeModelProviders {
 	private ICorrespondence correspondenceModel;
 	private CostModelProvider costModelProvider;
 	private DesignDecisionModelProvider designDecisionModelProvider;
+	private QMLDeclarationsModelProvider qmlDeclarationsModelProvider;
 
 	/**
 	 * Create model provider.
@@ -96,6 +98,9 @@ public final class InitializeModelProviders {
 			} else if ("designdecision".equalsIgnoreCase(extension)) {
 				final URI uri = this.getUri(nextFile);
 				this.designDecisionModelProvider = new DesignDecisionModelProvider(uri);
+			} else if ("qmldeclarations".equalsIgnoreCase(extension)) {
+				final URI uri = this.getUri(nextFile);
+				this.qmlDeclarationsModelProvider = new QMLDeclarationsModelProvider(uri);
 			}
 		}
 	}
@@ -161,6 +166,13 @@ public final class InitializeModelProviders {
 	 */
 	public DesignDecisionModelProvider getDesignDecisionModelProvider() {
 		return this.designDecisionModelProvider;
+	}
+	
+	/**
+	 * @return QML declarations model provider
+	 */
+	public QMLDeclarationsModelProvider getQMLDeclarationsModelProvider() {
+		return this.qmlDeclarationsModelProvider;
 	}
 
 	/**

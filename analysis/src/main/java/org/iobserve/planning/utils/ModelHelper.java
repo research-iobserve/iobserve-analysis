@@ -11,12 +11,12 @@ import org.iobserve.analysis.model.CostModelBuilder;
 import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentCloudBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.planning.cloudprofile.CloudProfile;
-import org.iobserve.planning.cloudprofile.CloudProvider;
-import org.iobserve.planning.cloudprofile.CloudResourceType;
-import org.iobserve.planning.cloudprofile.VMType;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProvider;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudResourceType;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.VMType;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
@@ -52,16 +52,28 @@ public final class ModelHelper {
 	 *            the container for which to retrieve the identifier
 	 * @return the identifier
 	 */
-	public static String getResourceContainerIdentifier(ResourceContainer allocationContainer) {
+	public static String getResourceContainerIdentifier(final ResourceContainer allocationContainer) {
 		String identifier = "";
 		if (allocationContainer instanceof ResourceContainerCloud) {
 			ResourceContainerCloud cloudContainer = (ResourceContainerCloud) allocationContainer;
-			identifier = String.format("%s_%s_%s", cloudContainer.getCloudProviderName(), cloudContainer.getLocation(),
-					cloudContainer.getInstanceType());
+			VMType type = cloudContainer.getInstanceType();
+
+			identifier = String.format("%s_%s_%s", type.getProvider().getName(), type.getLocation(), type.getName());
 		} else {
 			identifier = allocationContainer.getEntityName();
 		}
 		return identifier;
+	}
+
+	/**
+	 * Returns the identifier for a virtual machine type.
+	 *
+	 * @param type
+	 *            the VM type for which to get the identifier
+	 * @return the identifier
+	 */
+	public static String getResourceContainerIdentifier(final VMType type) {
+		return String.format("%s_%s_%s", type.getProvider().getName(), type.getLocation(), type.getName());
 	}
 
 	/**
@@ -72,15 +84,15 @@ public final class ModelHelper {
 	 *            the resource environment to search
 	 * @return the found linking resource or the newly created one
 	 */
-	public static LinkingResource getInternetLinkingResource(ResourceEnvironment environment) {
+	public static LinkingResource getInternetLinkingResource(final ResourceEnvironment environment) {
 		LinkingResource linkingResource = null;
 		List<LinkingResource> linkingResources = environment.getLinkingResources__ResourceEnvironment();
 
 		Optional<LinkingResource> internetLink = linkingResources.stream()
-				.filter(link -> link.getEntityName().contains(INTERNET_LINKING_RESOURCE_NAME)).findFirst();
+		        .filter(link -> link.getEntityName().contains(INTERNET_LINKING_RESOURCE_NAME)).findFirst();
 
-		linkingResource = internetLink.orElse(ResourceEnvironmentCloudBuilder.createLinkingResource(environment, null,
-				INTERNET_LINKING_RESOURCE_NAME));
+		linkingResource = internetLink.orElseGet(() -> ResourceEnvironmentCloudBuilder
+		        .createLinkingResource(environment, null, INTERNET_LINKING_RESOURCE_NAME));
 
 		return linkingResource;
 	}
@@ -107,9 +119,7 @@ public final class ModelHelper {
 
 		container.setId(EcoreUtil.generateUUID());
 		container.setResourceEnvironment_ResourceContainer(environment);
-		container.setCloudProviderName(cloudVM.getProvider().getName());
-		container.setInstanceType(cloudVM.getName());
-		container.setLocation(cloudVM.getLocation());
+		container.setInstanceType(cloudVM);
 
 		// Connect container to internet
 		LinkingResource linkingResource = getInternetLinkingResource(environment);
@@ -286,6 +296,7 @@ public final class ModelHelper {
 		// A cloud container hostname should look like this:
 		// ContainerId_AllocationGroupName_ProviderName_Location_InstanceType
 		if (nameParts.length == 5) {
+			String groupName = nameParts[1];
 			String providerName = nameParts[2];
 			String location = nameParts[3];
 			String instanceType = nameParts[4];
@@ -296,7 +307,10 @@ public final class ModelHelper {
 				ResourceEnvironment environment = modelProviders.getResourceEnvironmentModelProvider().getModel();
 				CostRepository costRepository = modelProviders.getCostModelProvider().getModel();
 
-				return createResourceContainerFromVMType(environment, costRepository, vmType, hostname);
+				ResourceContainerCloud cloudContainer = createResourceContainerFromVMType(
+						environment, costRepository, vmType, hostname);
+				cloudContainer.setGroupName(groupName);
+				return cloudContainer;
 			}
 		}
 		return null;
