@@ -21,7 +21,7 @@ import org.palladiosimulator.edp2.impl.RepositoryManager;
 import org.palladiosimulator.edp2.models.Repository.LocalMemoryRepository;
 import org.palladiosimulator.edp2.models.Repository.Repository;
 import org.palladiosimulator.edp2.models.Repository.RepositoryFactory;
-import org.palladiosimulator.recorderframework.edp2.config.EDP2RecorderConfigurationFactory;
+import org.palladiosimulator.recorderframework.edp2.config.AbstractEDP2RecorderConfigurationFactory;
 import org.palladiosimulator.recorderframework.utils.RecorderExtensionHelper;
 import org.palladiosimulator.reliability.MarkovEvaluationType;
 import org.palladiosimulator.solver.runconfig.MessageStrings;
@@ -55,7 +55,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 	 *            e.g. .allocation for an allocation model file.
 	 * @return
 	 */
-	private static IPath getModelFilePath(String modelDir, String fileExtension) {
+	private static IPath getModelFilePath(final String modelDir, final String fileExtension) {
 		// String modelFile;
 		//
 		// if (modelDir.endsWith("/")) {
@@ -70,8 +70,8 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		return filePath;
 	}
 
-	public static ILaunchConfiguration getDefaultLaunchConfiguration(String projectModelDir, String sourceModelDir)
-			throws CoreException {
+	public static ILaunchConfiguration getDefaultLaunchConfiguration(final String projectModelDir,
+	        final String sourceModelDir) throws CoreException {
 		final Map<String, Object> attr = new HashMap<>();
 
 		setDefaultConfigFiles(projectModelDir, attr);
@@ -102,7 +102,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		return launchConfig;
 	}
 
-	private static void setDefaultTacticsOptions(Map<String, Object> attr) {
+	private static void setDefaultTacticsOptions(final Map<String, Object> attr) {
 		attr.put(DSEConstantsContainer.USE_REALLOCATION, false);
 		attr.put(DSEConstantsContainer.REALLOCATION_UTILISATION_DIFFERENCE, Double.toString(0.5));
 		attr.put(DSEConstantsContainer.REALLOCATION_WEIGHT, Double.toString(1.0));
@@ -137,9 +137,9 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(AbstractSimulationConfig.VARIATION_ID, AbstractSimulationConfig.DEFAULT_VARIATION_NAME);
 		attr.put(AbstractSimulationConfig.SIMULATION_TIME, AbstractSimulationConfig.DEFAULT_SIMULATION_TIME);
 		attr.put(AbstractSimulationConfig.MAXIMUM_MEASUREMENT_COUNT,
-				AbstractSimulationConfig.DEFAULT_MAXIMUM_MEASUREMENT_COUNT);
+		        AbstractSimulationConfig.DEFAULT_MAXIMUM_MEASUREMENT_COUNT);
 		attr.put(AbstractSimulationConfig.PERSISTENCE_RECORDER_NAME,
-				AbstractSimulationConfig.DEFAULT_PERSISTENCE_RECORDER_NAME);
+		        AbstractSimulationConfig.DEFAULT_PERSISTENCE_RECORDER_NAME);
 		attr.put(AbstractSimulationConfig.USE_FIXED_SEED, false);
 		attr.put(SimuComConfig.USE_CONFIDENCE, SimuComConfig.DEFAULT_USE_CONFIDENCE);
 		attr.put(SimuComConfig.CONFIDENCE_LEVEL, Integer.toString(SimuComConfig.DEFAULT_CONFIDENCE_LEVEL));
@@ -147,11 +147,11 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(SimuComConfig.CONFIDENCE_MODELELEMENT_NAME, SimuComConfig.DEFAULT_CONFIDENCE_MODELELEMENT_NAME);
 		attr.put(SimuComConfig.CONFIDENCE_MODELELEMENT_URI, SimuComConfig.DEFAULT_CONFIDENCE_MODELELEMENT_URI);
 		attr.put(SimuComConfig.CONFIDENCE_USE_AUTOMATIC_BATCHES,
-				SimuComConfig.DEFAULT_CONFIDENCE_USE_AUTOMATIC_BATCHES);
+		        SimuComConfig.DEFAULT_CONFIDENCE_USE_AUTOMATIC_BATCHES);
 		attr.put(SimuComConfig.CONFIDENCE_BATCH_SIZE, Integer.toString(SimuComConfig.DEFAULT_CONFIDENCE_BATCH_SIZE));
 		attr.put(SimuComConfig.CONFIDENCE_MIN_NUMBER_OF_BATCHES,
-				SimuComConfig.DEFAULT_CONFIDENCE_MIN_NUMBER_OF_BATCHES);
-		attr.put(SimuComConfig.VERBOSE_LOGGING, false);
+		        SimuComConfig.DEFAULT_CONFIDENCE_MIN_NUMBER_OF_BATCHES);
+		attr.put(AbstractSimulationConfig.VERBOSE_LOGGING, false);
 		attr.put(ConstantsContainer.DELETE_TEMPORARY_DATA_AFTER_ANALYSIS, true);
 
 		setEDP2ResourceRepository(attr);
@@ -159,11 +159,12 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		setDefaultPersistenceRecorder(attr);
 	}
 
-	private static void setLQNSDefaultOptions(final Map<String, Object> attr, String projectModelDir,
-			String sourceModelDir) {
+	private static void setLQNSDefaultOptions(final Map<String, Object> attr, final String projectModelDir,
+	        final String sourceModelDir) {
 		LOG.info("sourceModelDir: " + sourceModelDir);
 		(new File(sourceModelDir + "/lqns_out")).mkdirs();
-		attr.put(MessageStrings.SOLVER, MessageStrings.LQNS_SOLVER);
+		(new File(sourceModelDir + "/line_out")).mkdirs();
+		attr.put(MessageStrings.SOLVER, MessageStrings.LINE_SOLVER);
 		attr.put(MessageStrings.LQNS_OUTPUT, MessageStrings.LQN_OUTPUT_XML);
 
 		attr.put(MessageStrings.SAMPLING_DIST, Double.toString(1.0));
@@ -231,11 +232,11 @@ public class PerOpteryxLaunchConfigurationBuilder {
 	private static void setEDP2ResourceRepository(final Map<String, Object> attr) {
 		EList<Repository> repositories = EDP2Plugin.INSTANCE.getRepositories().getAvailableRepositories();
 		if (repositories.size() > 0) {
-			attr.put(EDP2RecorderConfigurationFactory.REPOSITORY_ID, repositories.get(0).getId());
+			attr.put(AbstractEDP2RecorderConfigurationFactory.REPOSITORY_ID, repositories.get(0).getId());
 		} else {
 			LocalMemoryRepository repository = RepositoryFactory.eINSTANCE.createLocalMemoryRepository();
 			RepositoryManager.addRepository(EDP2Plugin.INSTANCE.getRepositories(), repository);
-			attr.put(EDP2RecorderConfigurationFactory.REPOSITORY_ID, repository.getId());
+			attr.put(AbstractEDP2RecorderConfigurationFactory.REPOSITORY_ID, repository.getId());
 		}
 	}
 
@@ -267,11 +268,11 @@ public class PerOpteryxLaunchConfigurationBuilder {
 	}
 
 	private static void setDefaultAnalysisOptions(final Map<String, Object> attr) {
-		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.PERFORMANCE_QUALITY), "LQN Solver Analysis");
+		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.PERFORMANCE_QUALITY), "LINE Solver Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.COST_QUALITY), "Cost Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.NQR_QUALITY), "none");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.RELIABILITY_QUALITY),
-				"Reliability Solver Analysis");
+		        "Reliability Solver Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.SECURITY_QUALITY), "none");
 	}
 
@@ -302,13 +303,13 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.INDIVIDUALS_PER_GENERATION, "3");
 	}
 
-	private static void setDefaultConfigFiles(String modelDir, final Map<String, Object> attr) {
+	private static void setDefaultConfigFiles(final String modelDir, final Map<String, Object> attr) {
 		// Standard PCM settings
 		IPath allocationFile = getModelFilePath(modelDir, "allocation");
 		LOG.info("Allocation file: " + allocationFile);
 		attr.put(ConstantsContainer.ALLOCATION_FILE, allocationFile.toString());
 
-		IPath outputFolder = new Path("output");
+		IPath outputFolder = new Path("platform:/resource/output");
 		LOG.info("Output folder: " + outputFolder);
 		attr.put(ConstantsContainer.CLIENTOUT_PATH, outputFolder.toString());
 
@@ -326,7 +327,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 
 		// Has to be only the name because PerOpteryx will create a project with
 		// this name
-		IPath tempFolder = new Path("temporary");
+		IPath tempFolder = new Path("platform:/resource/temporary");
 		LOG.info("Temp folder: " + tempFolder);
 		attr.put(ConstantsContainer.TEMPORARY_DATA_LOCATION, tempFolder.toString());
 
@@ -335,9 +336,9 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(ConstantsContainer.USAGE_FILE, usageFile.toString());
 
 		attr.put(ConstantsContainer.ACCURACY_QUALITY_ANNOTATION_FILE,
-				ConstantsContainer.DEFAULT_ACCURACY_QUALITY_ANNOTATION_FILE);
+		        ConstantsContainer.DEFAULT_ACCURACY_QUALITY_ANNOTATION_FILE);
 		attr.put(ConstantsContainer.RMI_MIDDLEWARE_REPOSITORY_FILE,
-				ConstantsContainer.DEFAULT_RMI_MIDDLEWARE_REPOSITORY_FILE);
+		        ConstantsContainer.DEFAULT_RMI_MIDDLEWARE_REPOSITORY_FILE);
 		attr.put(ConstantsContainer.EVENT_MIDDLEWARE_REPOSITORY_FILE, ConstantsContainer.DEFAULT_EVENT_MIDDLEWARE_FILE);
 		attr.put(ConstantsContainer.FEATURE_CONFIG, ConstantsContainer.DEFAULT_FEATURE_CONFIGURATION_FILE);
 

@@ -45,7 +45,7 @@ public class PerOpteryxHeadless implements IApplication {
 	private IProject project;
 
 	@Override
-	public Object start(IApplicationContext context) throws Exception {
+	public Object start(final IApplicationContext context) throws Exception {
 		String[] args = Platform.getCommandLineArgs();
 
 		final CommandLineParser parser = new BasicParser();
@@ -66,17 +66,17 @@ public class PerOpteryxHeadless implements IApplication {
 		return IApplication.EXIT_OK;
 	}
 
-	private void launchPeropteryx(String workingDir) throws CoreException {
+	private void launchPeropteryx(final String workingDir) throws CoreException {
 		LOG.info("Configuring PerOpteryx run...");
 		DSELaunch launch = new DSELaunch();
 
 		this.configureInternalWorkspace(workingDir);
 
 		String projectDir = PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_NAME + "/"
-				+ PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_WORKING_DIR;
+		        + PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_WORKING_DIR;
 
 		ILaunchConfiguration launchConfig = PerOpteryxLaunchConfigurationBuilder
-				.getDefaultLaunchConfiguration(projectDir, workingDir);
+		        .getDefaultLaunchConfiguration(projectDir, workingDir);
 		ILaunch currentLaunch = new Launch(launchConfig, ILaunchManager.RUN_MODE, null);
 
 		DebugPlugin.getDefault().getLaunchManager().addLaunch(currentLaunch);
@@ -85,7 +85,7 @@ public class PerOpteryxHeadless implements IApplication {
 		launch.launch(launchConfig, ILaunchManager.RUN_MODE, currentLaunch, new NullProgressMonitor());
 	}
 
-	private void configureInternalWorkspace(String modelDir) throws CoreException {
+	private void configureInternalWorkspace(final String modelDir) throws CoreException {
 		this.workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
 		LOG.info("Workspace root: " + this.workspaceRoot.getLocation());
 		this.project = this.workspaceRoot.getProject(PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_NAME);
@@ -100,8 +100,8 @@ public class PerOpteryxHeadless implements IApplication {
 
 		IFolder modelFolder = this.project.getFolder(PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_WORKING_DIR);
 
-		modelFolder.createLink(new Path(modelDir), IFolder.BACKGROUND_REFRESH | IResource.REPLACE,
-				new NullProgressMonitor());
+		modelFolder.createLink(new Path(modelDir), IResource.BACKGROUND_REFRESH | IResource.REPLACE,
+		        new NullProgressMonitor());
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public class PerOpteryxHeadless implements IApplication {
 		final Options options = new Options();
 
 		final Option workDirOption = new Option(INPUT_WORKING_DIR_OPTION_SHORT, INPUT_WORKING_DIR_OPTION, true,
-				"Working directory containing the model files. Note that the files may be changed in the process.");
+		        "Working directory containing the model files. Note that the files may be changed in the process.");
 		workDirOption.setRequired(true);
 
 		final Option productOption = new Option(INPUT_PRODUCT_OPTION, true, "Eclipse product description");

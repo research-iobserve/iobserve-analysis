@@ -26,6 +26,6 @@ Require-Bundle: org.eclipse.core.runtime,
  de.uka.ipd.sdq.codegen.simucontroller,
  org.palladiosimulator.solver
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: org.palladiosimulator.solver.runconfig
 Export-Package: org.iobserve.planning.peropteryx.plugin
 Bundle-ClassPath: .
+Import-Package: org.palladiosimulator.solver.runconfig
