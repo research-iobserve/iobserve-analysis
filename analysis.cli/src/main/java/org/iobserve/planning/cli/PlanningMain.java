@@ -1,6 +1,7 @@
 package org.iobserve.planning.cli;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -11,6 +12,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
@@ -92,7 +94,15 @@ public final class PlanningMain {
 
 			// Process model
 			ModelTransformer transformer = new ModelTransformer(planningData);
-			transformer.transformModel();
+			try {
+				transformer.transformModel();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InitializationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
 			// Execute PerOpteryx
 			int result = 0;

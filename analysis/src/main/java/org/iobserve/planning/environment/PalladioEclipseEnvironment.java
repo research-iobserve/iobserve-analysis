@@ -132,7 +132,7 @@ public enum PalladioEclipseEnvironment {
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("specific", new specificResourceFactoryImpl());
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("gdof", new gdofResourceFactoryImpl());
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("cost", new costResourceFactoryImpl());
-		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("cloudprofile", new cloudprofileResourceFactoryImpl());
+		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("cloudprofile", new CloudprofileResourceFactoryImpl());
 		Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("*", new XMIResourceFactoryImpl());
 
 		log.info("Initialized resource factories");

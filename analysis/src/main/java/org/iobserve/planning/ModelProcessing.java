@@ -1,7 +1,11 @@
 package org.iobserve.planning;
 
+import java.io.File;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
+import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.PlanningData;
 
 import teetime.stage.basic.AbstractTransformation;
@@ -43,7 +47,7 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 		planningData.setOriginalModelDir(adaptationData.getRuntimeModelURI());
 
 		InitializeModelProviders models = new InitializeModelProviders(new File(adaptationData.getRuntimeModelURI().toFileString()));
-		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_DIR, models);
+		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_MODEL_DIR, models);
 		URI snapshotLocation = snapshotBuilder.createSnapshot();
 		planningData.setProcessedModelDir(snapshotLocation);
 		// URI snapshotLocation = snapshotBuilder.createSnapshot();
