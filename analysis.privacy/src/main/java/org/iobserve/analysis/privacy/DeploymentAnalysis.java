@@ -1,6 +1,8 @@
 package org.iobserve.analysis.privacy;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.iobserve.analysis.graph.ComponentEdge;
@@ -29,40 +31,47 @@ public class DeploymentAnalysis {
 	 * 
 	 * @return whether the deployment is privacy compliant
 	 */
-	public boolean start() {
+	public String[] start() {
 
 		boolean legalDeployment = true;
-
+		List<String> illegalDeployments = new ArrayList<String>();
+		
 		for (DeploymentNode server : model.getServers()) {
-			legalDeployment = legalDeployment && this.isLegalDeployment(server);
+			
+			List<String> newIllegalDepoyments = this.isLegalDeployment(server);
+			illegalDeployments.addAll(newIllegalDepoyments);
 		}
 
-		return legalDeployment;
+		return illegalDeployments.toArray(new String[illegalDeployments.size()]);
 	}
 
 	/*
 	 * Checks the basic deployment rules!
 	 */
-	private boolean isLegalDeployment(DeploymentNode server) {
+	private List<String> isLegalDeployment(DeploymentNode server) {
+		List<String> deploymentViolations = new ArrayList<String>();
+
 		boolean legalPersonalGeoLocation = this.legalPersonalGeoLocations.contains((Integer) server.getIsoCountryCode());
 
 		if (legalPersonalGeoLocation) {
 			// Everything can be deployed onto a "Save" geo-location
-			return true;
+			return deploymentViolations;
 		}
+
 		// "unsave" geo-location!
 
 		DataPrivacyLvl mostCriticalPrivacyLvl = DataPrivacyLvl.ANONYMIZED;
 		for (ComponentNode component : server.getContainingComponents()) {
+			deploymentViolations.add(this.printDeploymentViolation(server, component));
 			mostCriticalPrivacyLvl = DataPrivacyLvl.get(Math.min(mostCriticalPrivacyLvl.getValue(), component.getPrivacyLvl().getValue()));
 		}
 
 		if (mostCriticalPrivacyLvl == DataPrivacyLvl.ANONYMIZED) {
 			// "Anonymized" can be deployed anywhere
-			return true;
+			return deploymentViolations;
 		} else if (mostCriticalPrivacyLvl == DataPrivacyLvl.PERSONAL) {
 			// Personal datas on "unsave" geo-location
-			return false;
+			return deploymentViolations;
 		}
 
 		// Geo-location is "PePersonalized"
@@ -70,7 +79,7 @@ public class DeploymentAnalysis {
 		if (hostedComponents.length == 1 && hostedComponents[0].getPrivacyLvl() != DataPrivacyLvl.PERSONAL) {
 			// No "Joining Data Streams" on "unsave" geo-location, because only
 			// one component is deployed and datas are at least "DePersonalized"
-			return true;
+			return deploymentViolations;
 		}
 
 		long dePersonalizedComponentCount = server.getContainingComponents().stream()
@@ -78,11 +87,17 @@ public class DeploymentAnalysis {
 		if (dePersonalizedComponentCount == 1) {
 			// Maximum of one dePersonalized components on server => no "joining
 			// data streams"
-			return true;
+			return deploymentViolations;
 		} else {
-			return this.makeExtensiveJoiningDataStreamAnalysis(server);
+			// No easy decision, search for "joining data streams"
+			boolean illegalDeployment = this.makeExtensiveJoiningDataStreamAnalysis(server);
+			if (illegalDeployment) {
+				for (ComponentNode component : server.getContainingComponents()) {
+					deploymentViolations.add(this.printDeploymentViolation(server, component));
+				}
+			}
+			return deploymentViolations;
 		}
-
 	}
 
 	private ComponentEdge dataSourceEdge;
@@ -134,6 +149,10 @@ public class DeploymentAnalysis {
 		}
 
 		return singleDataSourceEdge;
+	}
+
+	private String printDeploymentViolation(DeploymentNode server, ComponentNode component) {
+		return "Server: \t" + server.getResourceContainerName() + " @ " + server.getIso3CountryCode() + "\t -> \t" + component.getAssemblyName();
 	}
 
 }

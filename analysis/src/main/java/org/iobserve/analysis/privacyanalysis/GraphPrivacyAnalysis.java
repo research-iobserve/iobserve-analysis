@@ -23,31 +23,30 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 			System.err.println("Privacy Analysis Model is null. Aborting!");
 			return;
 		}
-		
+
 		ModelGraph graph = element.getRuntimeGraph();
-		
 
 		System.out.print("Starting Privacy Analysis ... ");
 		System.out.println("Component PrivacyLvl analysis ...");
-//		graph.printGraph();
+		// graph.printGraph();
 
 		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(graph);
 		classificationAnalysis.start();
 
 		System.out.println("Deployment analysis ... ");
 		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(graph, PrivacyAnalysis.getLegalPersonalGeoLocations());
-		boolean legalDeployment = deploymentAnalysis.start();
+		String[] legalDeployment = deploymentAnalysis.start();
 
-		if (legalDeployment)
+		if (legalDeployment.length == 0)
 			System.out.println("The deployment is LEGAL");
 		else
 			System.err.println("The deployment is ILLEGAL");
 
-//		graph.printGraph();
-		
+		// graph.printGraph();
+
 		this.writeComponentClassificationToPCM(graph, element.getRuntimeModelProviders().getSystemModelProvider());
-		
-		if (!legalDeployment)
+
+		if (legalDeployment.length > 0)
 			this.outputPort.send(element);
 	}
 
@@ -58,7 +57,8 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 			if (ac instanceof AssemblyContextPrivacy) {
 				AssemblyContextPrivacy acp = (AssemblyContextPrivacy) ac;
 
-				Optional<ComponentNode> optCom = modelGraph.getComponents().stream().filter(s -> s.getAssemblyContextID().equals(acp.getId())).findFirst();
+				Optional<ComponentNode> optCom = modelGraph.getComponents().stream().filter(s -> s.getAssemblyContextID().equals(acp.getId()))
+						.findFirst();
 				if (optCom.isPresent())
 					acp.setPrivacyLevel(optCom.get().getPrivacyLvl());
 				else
@@ -66,7 +66,7 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 			} else
 				System.err.println("AssemblyContext: " + ac.getId() + " is not of type AssemblyContextPrivacy!");
 		}
-		
+
 		if (modelGraph.getPcmModels().getSystemModel() == systemModelProviders.getModel())
 			systemModelProviders.save();
 		else
