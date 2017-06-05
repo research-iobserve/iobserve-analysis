@@ -20,9 +20,10 @@ import teetime.stage.basic.AbstractTransformation;
  *
  */
 public class ModelProcessing extends AbstractTransformation<AdaptationData, PlanningData> {
+	public static final String PROCESSED_MODEL_FOLDER = "processedModel";
 
-	public static final String PROCESSED_MODEL_DIR = "processedModel";
 	private final URI perOpteryxDir;
+	private final URI lqnsDir;
 
 	/**
 	 * Creates a new model processing stage and fills the planning data with the
@@ -32,8 +33,9 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 	 * @param perOpteryxDir
 	 *            the location of the headless PerOpteryx executable
 	 */
-	public ModelProcessing(final URI perOpteryxDir) {
+	public ModelProcessing(final URI perOpteryxDir, final URI lqnsDir) {
 		this.perOpteryxDir = perOpteryxDir;
+		this.lqnsDir = lqnsDir;
 	}
 
 	@Override
@@ -45,9 +47,10 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 		planningData.setAdaptationData(adaptationData);
 		planningData.setPerOpteryxDir(this.perOpteryxDir);
 		planningData.setOriginalModelDir(adaptationData.getRuntimeModelURI());
+		planningData.setLqnsDir(lqnsDir);
 
 		InitializeModelProviders models = new InitializeModelProviders(new File(adaptationData.getRuntimeModelURI().toFileString()));
-		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_MODEL_DIR, models);
+		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_MODEL_FOLDER, models);
 		URI snapshotLocation = snapshotBuilder.createSnapshot();
 		planningData.setProcessedModelDir(snapshotLocation);
 		// URI snapshotLocation = snapshotBuilder.createSnapshot();

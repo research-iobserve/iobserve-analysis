@@ -100,10 +100,13 @@ public class AnalysisDaemon implements Daemon {
 						final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
 						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelProvider);
 						final URI perOpteryxDir = URI.createURI(commandLine.getOptionValue("po"));
+						final URI deployablesFolder = URI.createURI(commandLine.getOptionValue("d"));
+						final URI lqnsDir = URI.createURI(commandLine.getOptionValue("l"));
 
 						final Configuration configuration = new ServiceConfiguration(listenPort, outputHostname, outputPort, systemId,
 								varianceOfUserGroups, thinkTime, closedWorkload, correspondenceModel, usageModelProvider, repositoryModelProvider,
-								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxDir);
+								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxDir, lqnsDir,
+								deployablesFolder);
 
 						this.thread = new AnalysisThread(this, configuration);
 					} else {
@@ -163,6 +166,10 @@ public class AnalysisDaemon implements Daemon {
 		options.addOption(Option.builder("s").required(true).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
 		options.addOption(Option.builder("po").required(true).longOpt("perOpteryx-headless-location").hasArg()
 				.desc("the location of the PerOpteryx headless plugin").build());
+		options.addOption(Option.builder("l").required(true).longOpt("lqns-location").hasArg()
+				.desc("the location of the LQN Solver for optimization").build());
+		options.addOption(Option.builder("d").required(true).longOpt("deployables-folder").hasArg()
+				.desc("the location of the deployable/executable scripts for adaptation execution").build());
 
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());

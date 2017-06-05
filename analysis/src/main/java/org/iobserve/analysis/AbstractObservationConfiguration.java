@@ -97,8 +97,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 	public AbstractObservationConfiguration(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
 			final RepositoryModelProvider repositoryModelProvider, final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final int varianceOfUserGroups, final int thinkTime,
-			final boolean closedWorkload, final IAdaptationEventListener eventListener) {
+			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir, final int varianceOfUserGroups,
+			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener, final URI deployablesFolder) {
 		/** configure filter. */
 		this.recordSwitch = new RecordSwitch();
 
@@ -109,13 +109,19 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
 		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider, repositoryModelProvider,
 				varianceOfUserGroups, thinkTime, closedWorkload);
+		
 		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
+
 		final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
-		final PrivacyAnalysis privacyAnalysis = new org.iobserve.analysis.privacyanalysis.PrivacyAnalysis(new org.iobserve.analysis.privacyanalysis.GraphCreation(), new org.iobserve.analysis.privacyanalysis.GraphPrivacyAnalysis());
-		final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless), new ModelOptimization(),
-				new CandidateProcessing());
+
+		final PrivacyAnalysis privacyAnalysis = new org.iobserve.analysis.privacyanalysis.PrivacyAnalysis(
+				new org.iobserve.analysis.privacyanalysis.GraphCreation(), new org.iobserve.analysis.privacyanalysis.GraphPrivacyAnalysis());
+
+		final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless, lqnsDir),
+				new ModelOptimization(), new CandidateProcessing());
+
 		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(), new AdaptationPlanning(),
-				new AdaptationExecution(eventListener));
+				new AdaptationExecution(eventListener, deployablesFolder));
 		final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
 
 		/** dispatch different monitoring data. */

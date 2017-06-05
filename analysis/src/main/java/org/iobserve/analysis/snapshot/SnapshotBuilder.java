@@ -98,10 +98,15 @@ public class SnapshotBuilder extends AbstractStage {
 		return this.snapshotURI;
 	}
 
-	/*
-	 * Creates the actual copy
+	/**
+	 * Creates the actual snapshot.
+	 * 
+	 * @param modelProvider
+	 *            the model for the snapshot
+	 * @throws IOException
+	 *             if the model URI does not exist
 	 */
-	private void createModelSnapshot(AbstractModelProvider<?> modelProvider) throws IOException {
+	public void createModelSnapshot(AbstractModelProvider<?> modelProvider) throws IOException {
 		if (modelProvider == null) {
 			return;
 		}

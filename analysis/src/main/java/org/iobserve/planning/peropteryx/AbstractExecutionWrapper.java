@@ -24,6 +24,7 @@ public abstract class AbstractExecutionWrapper {
 
 	private final URI inputModelDir;
 	private final URI perOpteryxDir;
+	private final URI lqnsDir;
 
 	/**
 	 * The constructor
@@ -31,9 +32,10 @@ public abstract class AbstractExecutionWrapper {
 	 * @param inputModelDir the directory containing the pcm model for modification
 	 * @param perOpteryxDir the headless PerOpteryx directory
 	 */
-	public AbstractExecutionWrapper(URI inputModelDir, URI perOpteryxDir) {
+	public AbstractExecutionWrapper(URI inputModelDir, URI perOpteryxDir, URI lqnsDir) {
 		this.inputModelDir = inputModelDir;
 		this.perOpteryxDir = perOpteryxDir;
+		this.lqnsDir = lqnsDir;
 	}
 
 	/**
@@ -88,5 +90,9 @@ public abstract class AbstractExecutionWrapper {
 	 */
 	protected URI getPerOpteryxDir() {
 		return perOpteryxDir;
+	}
+	
+	protected URI getLQNSDir() {
+		return this.lqnsDir;
 	}
 }

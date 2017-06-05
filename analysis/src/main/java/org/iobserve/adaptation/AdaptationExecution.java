@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.adaptation.execution.ActionScript;
 import org.iobserve.adaptation.execution.ActionScriptFactory;
@@ -22,6 +23,8 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 
 	private final IAdaptationEventListener listener;
 
+	private final URI deployablesFolderURI;
+
 	/**
 	 * Create a new adaptation execution stage with the given event listener for
 	 * events generated during adaptation.
@@ -32,12 +35,15 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 	 * @param listener
 	 *            the event listener
 	 */
-	public AdaptationExecution(IAdaptationEventListener listener) {
+	public AdaptationExecution(IAdaptationEventListener listener, URI deployablesFolderURI) {
 		this.listener = listener;
+		this.deployablesFolderURI = deployablesFolderURI;
 	}
 
 	@Override
 	protected void execute(AdaptationData element) throws Exception {
+
+		element.setDeployablesFolderURI(this.deployablesFolderURI);
 
 		List<ActionScript> notAutoSupported = new ArrayList<>();
 		List<ActionScript> actionScripts = new ArrayList<>();
@@ -55,11 +61,9 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 
 		if (notAutoSupported.size() > 0) {
 			if (this.listener == null) {
-				String unsupportedActionsDesc = notAutoSupported.stream().map(script -> script.getDescription())
-						.collect(Collectors.joining("\n"));
+				String unsupportedActionsDesc = notAutoSupported.stream().map(script -> script.getDescription()).collect(Collectors.joining("\n"));
 				throw new IllegalStateException(
-						"Could not execute all actions automatically, aborting.\n Not supported actions were:\n"
-								+ unsupportedActionsDesc);
+						"Could not execute all actions automatically, aborting.\n Not supported actions were:\n" + unsupportedActionsDesc);
 			}
 
 			this.listener.notifyUnsupportedActionsFound(notAutoSupported);

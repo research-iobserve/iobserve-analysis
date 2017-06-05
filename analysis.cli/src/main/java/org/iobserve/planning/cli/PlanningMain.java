@@ -44,24 +44,29 @@ public final class PlanningMain {
 	public static final String PEROPTERYX_DIR_OPTION = "peropteryx-dir";
 	public static final String PEROPTERYX_DIR_OPTION_SHORT = "p";
 
+	public static final String LQNS_DIR_OPTION = "lqns-dir";
+	public static final String LQNS_DIR_OPTION_SHORT = "l";
+
 	private PlanningMain() {
 		// Do nothing.
 	}
 
-	public static void main(final String[] args) {
+	public static void main(final String[] args) throws IOException, InitializationException {
 		final CommandLineParser parser = new DefaultParser();
 
 		final String workingDir;
 		final String perOpteryxDir;
+		final String lqnsDir;
 
 		final CommandLine commandLine;
 		try {
-			for (String arg : args) {
+			for (final String arg : args) {
 				LOG.info("arg: " + arg);
 			}
 			commandLine = parser.parse(PlanningMain.createOptions(), args);
 			workingDir = commandLine.getOptionValue(INPUT_WORKING_DIR_OPTION);
 			perOpteryxDir = commandLine.getOptionValue(PEROPTERYX_DIR_OPTION);
+			lqnsDir = commandLine.getOptionValue(LQNS_DIR_OPTION);
 
 			LOG.info("Working dir: " + workingDir + ", PerOpteryx dir: " + perOpteryxDir);
 		} catch (final ParseException exp) {
@@ -71,29 +76,30 @@ public final class PlanningMain {
 			return;
 		}
 
-		URI modelURI = URI.createFileURI(workingDir);
+		final URI modelURI = URI.createFileURI(workingDir);
 		LOG.info("modelURI: " + modelURI);
 
-		URI perOpteryxURI = URI.createFileURI(perOpteryxDir);
+		final URI perOpteryxURI = URI.createFileURI(perOpteryxDir);
 		LOG.info("perOpteryxURI: " + perOpteryxURI);
 
-		LOG.info(String.format("URI was %s", modelURI.path()));
+		final URI lqnsURI = URI.createFileURI(lqnsDir);
+		LOG.info("lqnsURI: " + perOpteryxURI);
 
 		PalladioEclipseEnvironment.INSTANCE.setup();
 
 		if (!commandLine.hasOption(CREATE_RESOURCEENVIRONMENT_OPTION)) {
 			LOG.info("Executing optimization...");
 
-			AdaptationData adaptationData = new AdaptationData();
+			final AdaptationData adaptationData = new AdaptationData();
 			adaptationData.setRuntimeModelURI(modelURI);
 
-			PlanningData planningData = new PlanningData();
+			final PlanningData planningData = new PlanningData();
 			planningData.setAdaptationData(adaptationData);
 			planningData.setOriginalModelDir(modelURI);
 			planningData.setPerOpteryxDir(perOpteryxURI);
 
 			// Process model
-			ModelTransformer transformer = new ModelTransformer(planningData);
+			final ModelTransformer transformer = new ModelTransformer(planningData);
 			try {
 				transformer.transformModel();
 			} catch (IOException e) {
@@ -105,7 +111,7 @@ public final class PlanningMain {
 			}
 
 			// Execute PerOpteryx
-			int result = 0;
+			final int result = 0;
 			// try {
 			// ExecutionWrapper execution = new
 			// ExecutionWrapper(planningData.getProcessedModelDir(),
@@ -123,7 +129,7 @@ public final class PlanningMain {
 			}
 		} else {
 			LOG.info("Creating ResourceEnvironment...");
-			InitializeModelProviders modelProviders = new InitializeModelProviders(new File(workingDir));
+			final InitializeModelProviders modelProviders = new InitializeModelProviders(new File(workingDir));
 			ModelHelper.fillResourceEnvironmentFromCloudProfile(modelProviders);
 			LOG.info("ResourceEnvironment successfully created.");
 		}
@@ -149,6 +155,10 @@ public final class PlanningMain {
 				"Directory containing the PerOpteryx headless executable.");
 		modelNameOption.setRequired(true);
 
+		final Option lqnsDirOption = new Option(LQNS_DIR_OPTION_SHORT, LQNS_DIR_OPTION, true,
+				"Directory containing the LQN Solver executable.");
+		modelNameOption.setRequired(true);
+
 		final Option createResourcesOption = new Option(CREATE_RESOURCEENVIRONMENT_OPTION_SHORT,
 				CREATE_RESOURCEENVIRONMENT_OPTION, false,
 				"Create resource environment from cloudprofile. This is only needed when the cloudprofile changes.");
@@ -160,6 +170,7 @@ public final class PlanningMain {
 		options.addOption(modelNameOption);
 		options.addOption(perOpteryxDirOption);
 		options.addOption(createResourcesOption);
+		options.addOption(lqnsDirOption);
 
 		/** help */
 		options.addOption(helpOption);
