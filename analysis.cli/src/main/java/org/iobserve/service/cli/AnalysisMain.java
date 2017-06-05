@@ -108,8 +108,9 @@ public final class AnalysisMain {
 						SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(snapshotPath));
 						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelProviderPlatform);
 
-
 						final URI perOpteryxUri = URI.createFileURI(commandLine.getOptionValue("po"));
+
+						final URI lqnsUri = URI.createFileURI(commandLine.getOptionValue("l"));
 
 						final URI deployablesFolder = URI.createFileURI(commandLine.getOptionValue("d"));
 
@@ -118,7 +119,7 @@ public final class AnalysisMain {
 
 						final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel,
 								usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
-								systemModelProvider, snapshotBuilder, perOpteryxUri, varianceOfUserGroups, thinkTime, closedWorkload, eventListener, deployablesFolder);
+								systemModelProvider, snapshotBuilder, perOpteryxUri, lqnsUri, varianceOfUserGroups, thinkTime, closedWorkload, eventListener, deployablesFolder);
 
 						System.out.println("Analysis configuration");
 						final Execution<Configuration> analysis = new Execution<>(configuration);
@@ -166,10 +167,12 @@ public final class AnalysisMain {
 		options.addOption(Option.builder("s").required(true).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
 		options.addOption(Option.builder("po").required(true).longOpt("perOpteryx-headless-location").hasArg()
 				.desc("the location of the PerOpteryx headless plugin").build());
+		options.addOption(Option.builder("l").required(true).longOpt("lqns-location").hasArg()
+				.desc("the location of the LQN Solver for optimization").build());
 		options.addOption(Option.builder("d").required(true).longOpt("deployables-folder").hasArg()
 				.desc("the location of the deployable/executable scripts for adaptation execution").build());
-		options.addOption(
-				Option.builder("in").required(true).longOpt("interactive-adaptation").desc("interact with operator during adaptation").build());
+		options.addOption(Option.builder("in").required(true).longOpt("interactive-adaptation")
+				.desc("interact with operator during adaptation").build());
 
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
@@ -195,6 +198,8 @@ public final class AnalysisMain {
 		options.addOption(Option.builder("s").required(false).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
 		options.addOption(Option.builder("po").required(false).longOpt("perOpteryx-headless-location").hasArg()
 				.desc("the location of the PerOpteryx headless plugin").build());
+		options.addOption(Option.builder("l").required(true).longOpt("lqns-location").hasArg()
+				.desc("the location of the LQN Solver for optimization").build());
 		options.addOption(Option.builder("d").required(true).longOpt("deployables-folder").hasArg()
 				.desc("the location of the deployable/executable scripts for adaptation execution").build());
 		options.addOption(Option.builder("in").required(true).longOpt("interactive-adaptation")

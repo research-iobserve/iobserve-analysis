@@ -164,7 +164,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		LOG.info("sourceModelDir: " + sourceModelDir);
 		(new File(sourceModelDir + "/lqns_out")).mkdirs();
 		(new File(sourceModelDir + "/line_out")).mkdirs();
-		attr.put(MessageStrings.SOLVER, MessageStrings.LINE_SOLVER);
+		attr.put(MessageStrings.SOLVER, MessageStrings.LQNS_SOLVER);
 		attr.put(MessageStrings.LQNS_OUTPUT, MessageStrings.LQN_OUTPUT_XML);
 
 		attr.put(MessageStrings.SAMPLING_DIST, Double.toString(1.0));
@@ -174,8 +174,6 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(MessageStrings.IT_LIMIT, Integer.toString(50));
 		attr.put(MessageStrings.PRINT_INT, Integer.toString(10));
 		attr.put(MessageStrings.UNDER_COEFF, Double.toString(0.5));
-		attr.put(MessageStrings.LQNS_OUTPUT, sourceModelDir + "/lqns_out/output");
-		attr.put(MessageStrings.LQSIM_OUTPUT, sourceModelDir + "/lqsim_out/output");
 
 		attr.put(MessageStrings.STOP_ON_MESSAGE_LOSS_LQNS, true);
 		attr.put(MessageStrings.STOP_ON_MESSAGE_LOSS_LQSIM, true);
@@ -268,7 +266,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 	}
 
 	private static void setDefaultAnalysisOptions(final Map<String, Object> attr) {
-		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.PERFORMANCE_QUALITY), "LINE Solver Analysis");
+		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.PERFORMANCE_QUALITY), "LQN Solver Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.COST_QUALITY), "Cost Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.NQR_QUALITY), "none");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.RELIABILITY_QUALITY),

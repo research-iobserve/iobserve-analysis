@@ -67,7 +67,7 @@ public class ModelTransformer {
 	 */
 	public ModelTransformer(final PlanningData planningData) {
 		this.planningData = planningData;
-		String originalModelDir = planningData.getOriginalModelDir().toFileString();
+		final String originalModelDir = planningData.getOriginalModelDir().toFileString();
 		this.originalModelProviders = new InitializeModelProviders(new File(originalModelDir));
 	}
 
@@ -101,13 +101,13 @@ public class ModelTransformer {
 	}
 
 	private void initModelTransformation() throws IOException, InitializationException {
-		URI processedModelDir = this.planningData.getOriginalModelDir()
-		        .appendSegment(ModelProcessing.PROCESSED_MODEL_DIR);
+		final URI processedModelDir = this.planningData.getOriginalModelDir()
+				.appendSegment(ModelProcessing.PROCESSED_MODEL_FOLDER);
 
 		SnapshotBuilder.setBaseSnapshotURI(this.planningData.getOriginalModelDir());
 
-		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_DIR,
-		        this.originalModelProviders);
+		final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER,
+				this.originalModelProviders);
 		snapshotBuilder.createSnapshot();
 
 		this.planningData.setProcessedModelDir(processedModelDir);
@@ -126,7 +126,7 @@ public class ModelTransformer {
 			this.processedModelProviders.getDesignDecisionModelProvider().setModel(decisionSpace);
 		}
 
-		Allocation originalAllocation = this.originalModelProviders.getAllocationModelProvider().getModel();
+		final Allocation originalAllocation = this.originalModelProviders.getAllocationModelProvider().getModel();
 
 		this.originalAllocationGroups = new AllocationGroupsContainer(originalAllocation);
 	}
@@ -137,24 +137,24 @@ public class ModelTransformer {
 	}
 
 	private void rebuildEnvironment() {
-		for (AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
-			AllocationContext representingContext = allocationGroup.getRepresentingContext();
+		for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
+			final AllocationContext representingContext = allocationGroup.getRepresentingContext();
 
 			this.createResourcesAndReplicationDegrees(this.decisionProvider.getModel(), allocationGroup);
 
 			this.allocationProvider.getModel().getAllocationContexts_Allocation().add(representingContext);
 		}
 
-		for (AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
-			String allocationDegreeName = String.format("%s_AllocationDegree", allocationGroup.getName());
+		for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
+			final String allocationDegreeName = String.format("%s_AllocationDegree", allocationGroup.getName());
 
 			DesignDecisionModelBuilder.createAllocationDegree(this.decisionProvider.getModel(), allocationDegreeName,
-			        allocationGroup.getRepresentingContext(),
-			        this.resourceProvider.getModel().getResourceContainer_ResourceEnvironment());
+					allocationGroup.getRepresentingContext(),
+					this.resourceProvider.getModel().getResourceContainer_ResourceEnvironment());
 		}
 
 		ModelHelper.addAllAllocationsToReplicationDegrees(this.allocationProvider.getModel(),
-		        this.decisionProvider.getModel());
+				this.decisionProvider.getModel());
 
 		this.saveModels();
 	}
@@ -167,19 +167,19 @@ public class ModelTransformer {
 	}
 
 	private void createResourcesAndReplicationDegrees(final DecisionSpace decisionSpace,
-	        final AllocationGroup allocationGroup) {
-		CloudProfile profile = this.cloudProfileProvider.getModel();
-		ResourceEnvironment environment = this.resourceProvider.getModel();
-		CostRepository costs = this.costProvider.getModel();
+			final AllocationGroup allocationGroup) {
+		final CloudProfile profile = this.cloudProfileProvider.getModel();
+		final ResourceEnvironment environment = this.resourceProvider.getModel();
+		final CostRepository costs = this.costProvider.getModel();
 
 		// Get resource container that represents the instances this allocation
 		// group is currently deployed on
-		ResourceContainerCloud representingContainer = allocationGroup.getRepresentingResourceContainer();
+		final ResourceContainerCloud representingContainer = allocationGroup.getRepresentingResourceContainer();
 
 		if (representingContainer == null) {
 			throw new IllegalArgumentException(
-			        String.format("Could not find a cloud container for allocation group '%s'. Check your model.",
-			                allocationGroup.getName()));
+					String.format("Could not find a cloud container for allocation group '%s'. Check your model.",
+							allocationGroup.getName()));
 		}
 
 		// Set group name of the representing container and add it to the
@@ -188,20 +188,20 @@ public class ModelTransformer {
 		representingContainer.setEntityName(allocationGroup.getName());
 		ModelHelper.addResourceContainerToEnvironment(environment, representingContainer);
 
-		int nrOfCurrentReplicas = allocationGroup.getAllocationContexts().size();
+		final int nrOfCurrentReplicas = allocationGroup.getAllocationContexts().size();
 
 		// Upper bound for number of replicas for one resource
 		// container type should be sufficiently high
-		int toNrOfReplicas = (nrOfCurrentReplicas + PlanningData.POSSIBLE_REPLICAS_OFFSET)
-		        * PlanningData.POSSIBLE_REPLICAS_FACTOR;
+		final int toNrOfReplicas = (nrOfCurrentReplicas + PlanningData.POSSIBLE_REPLICAS_OFFSET)
+				* PlanningData.POSSIBLE_REPLICAS_FACTOR;
 
 		// Create a new resource container with replication degree for each
 		// VMType in the cloud profile, except for the one already added as the
 		// representing container create only replication degree
-		for (CloudProvider provider : profile.getCloudProviders()) {
-			for (CloudResourceType cloudResource : provider.getCloudResources()) {
+		for (final CloudProvider provider : profile.getCloudProviders()) {
+			for (final CloudResourceType cloudResource : provider.getCloudResources()) {
 				if (cloudResource instanceof VMType) {
-					VMType cloudVM = (VMType) cloudResource;
+					final VMType cloudVM = (VMType) cloudResource;
 
 					String degreeName;
 					ResourceContainerCloud createdContainer;
@@ -209,16 +209,16 @@ public class ModelTransformer {
 						createdContainer = representingContainer;
 						degreeName = String.format("%s_ReplicationDegree", allocationGroup.getName());
 					} else {
-						String containerName = AllocationGroup.getAllocationGroupName(
-						        allocationGroup.getComponentName(),
-						        ModelHelper.getResourceContainerIdentifier(cloudVM));
+						final String containerName = AllocationGroup.getAllocationGroupName(
+								allocationGroup.getComponentName(),
+								ModelHelper.getResourceContainerIdentifier(cloudVM));
 						createdContainer = ModelHelper.createResourceContainerFromVMType(environment, costs, cloudVM,
-						        containerName);
+								containerName);
 						degreeName = String.format("%s_ReplicationDegree", containerName);
 					}
 
 					DesignDecisionModelBuilder.createReplicationDegree(decisionSpace, degreeName, createdContainer, 1,
-					        toNrOfReplicas);
+							toNrOfReplicas);
 
 				}
 			}
@@ -234,17 +234,17 @@ public class ModelTransformer {
 	}
 
 	private void clearCloudResourcesFromResourceEnv() {
-		ResourceEnvironment environment = this.resourceProvider.getModel();
+		final ResourceEnvironment environment = this.resourceProvider.getModel();
 
-		List<ResourceContainer> resourceContainers = environment.getResourceContainer_ResourceEnvironment();
-		for (Iterator<ResourceContainer> iter = resourceContainers.iterator(); iter.hasNext();) {
-			ResourceContainer container = iter.next();
+		final List<ResourceContainer> resourceContainers = environment.getResourceContainer_ResourceEnvironment();
+		for (final Iterator<ResourceContainer> iter = resourceContainers.iterator(); iter.hasNext();) {
+			final ResourceContainer container = iter.next();
 			if (container instanceof ResourceContainerCloud) {
 				iter.remove();
 			}
 		}
 
-		LinkingResource linkingResource = ModelHelper.getInternetLinkingResource(environment);
+		final LinkingResource linkingResource = ModelHelper.getInternetLinkingResource(environment);
 		linkingResource.getConnectedResourceContainers_LinkingResource().clear();
 	}
 }
