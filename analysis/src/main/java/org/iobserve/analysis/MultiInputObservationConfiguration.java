@@ -66,11 +66,11 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
 			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
 			final SnapshotBuilder snapshotBuilder, final CloudProfileModelProvider cloudProfileModelProvider,
-			final CostModelProvider costModelProvider, final URI perOpteryxHeadless, final int varianceOfUserGroups,
+			final CostModelProvider costModelProvider, final URI perOpteryxHeadless, final URI lqnsDir, final int varianceOfUserGroups,
 			final int thinkTime, final boolean closedWorkload, final URI deployablesFolder) {
 		super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
 				allocationModelProvider, systemModelProvider, snapshotBuilder, cloudProfileModelProvider,
-				costModelProvider, perOpteryxHeadless, varianceOfUserGroups, thinkTime, closedWorkload, null,
+				costModelProvider, perOpteryxHeadless, lqnsDir, varianceOfUserGroups, thinkTime, closedWorkload, null,
 				deployablesFolder);
 
 		final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,

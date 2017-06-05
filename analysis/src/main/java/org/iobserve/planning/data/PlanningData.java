@@ -18,6 +18,7 @@ public class PlanningData {
 	private AdaptationData adaptationData;
 
 	private URI perOpteryxDir;
+	private URI lqnsDir;
 
 	private URI originalModelDir;
 	private URI processedModelDir;
@@ -52,6 +53,14 @@ public class PlanningData {
 
 	public void setOriginalModelDir(URI originalModelDir) {
 		this.originalModelDir = originalModelDir;
+	}
+
+	public URI getLqnsDir() {
+		return lqnsDir;
+	}
+
+	public void setLqnsDir(URI lqnsDir) {
+		this.lqnsDir = lqnsDir;
 	}
 
 }

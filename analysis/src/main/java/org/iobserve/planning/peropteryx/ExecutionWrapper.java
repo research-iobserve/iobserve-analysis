@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 import org.eclipse.emf.common.util.URI;
 
@@ -20,11 +21,10 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 	private String execEnvironmentParam;
 	private String execCommand;
 
-	public ExecutionWrapper(URI inputModelDir, URI perOpteryxDir) throws IOException {
-		super(inputModelDir, perOpteryxDir);
-
-		boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-		if (isWindows) {
+	public ExecutionWrapper(URI inputModelDir, URI perOpteryxDir, URI lqnsDir) throws IOException {
+		super(inputModelDir, perOpteryxDir, lqnsDir);
+		
+		if (isWindows()) {
 			this.execEnvironment = "cmd.exe";
 			this.execEnvironmentParam = "/C";
 			this.execCommand = "java  -jar .\\plugins\\org.eclipse.equinox.launcher_1.3.201.v20161025-1711.jar";
@@ -34,6 +34,11 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 			this.execCommand = "./peropteryx-headless";
 		}
 
+	}
+
+	private boolean isWindows() {
+		boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+		return isWindows;
 	}
 
 	@Override
@@ -72,6 +77,20 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 				this.execCommand + " -w " + modelDir);
 
 		String perOpteryxDir = this.getPerOpteryxDir().toFileString();
+		Map<String, String> env = builder.environment();
+		
+		String path;
+		if (isWindows()) {
+			path = env.get("Path");
+			path = this.getLQNSDir().toFileString()+ ";" + path;
+			env.put("Path", path);
+		} else {
+			path = env.get("PATH");
+			path = this.getLQNSDir().toFileString()+ ":" + path;
+			env.put("PATH", path);
+		}
+		
+		LOG.info("Environment PATH: " + path);
 		builder.directory(new File(perOpteryxDir));
 		builder.redirectOutput();
 		builder.redirectErrorStream(true);

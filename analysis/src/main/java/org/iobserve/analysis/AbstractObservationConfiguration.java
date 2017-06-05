@@ -100,7 +100,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
 			final SnapshotBuilder snapshotBuilder, final CloudProfileModelProvider cloudProfileModelProvider,
-			final CostModelProvider costModelProvider, final URI perOpteryxHeadless, final int varianceOfUserGroups,
+			final CostModelProvider costModelProvider, final URI perOpteryxHeadless, final URI lqnsDir, final int varianceOfUserGroups,
 			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener,
 			final URI deployablesFolder) {
 		/** configure filter. */
@@ -119,7 +119,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
 				resourceEnvironmentModelProvider);
 		final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
-		final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless),
+		final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless, lqnsDir),
 				new ModelOptimization(), new CandidateProcessing());
 		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(),
 				new AdaptationPlanning(), new AdaptationExecution(eventListener, deployablesFolder));

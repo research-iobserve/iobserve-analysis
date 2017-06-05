@@ -24,7 +24,7 @@ public class ModelOptimization extends AbstractTransformation<PlanningData, Plan
 		URI inputModelDir = planningData.getAdaptationData().getRuntimeModelURI();
 		AdaptationData adaptationData = planningData.getAdaptationData();
 
-		ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir());
+		ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir(), planningData.getLqnsDir());
 
 		int result = exec.startModelGeneration();
 

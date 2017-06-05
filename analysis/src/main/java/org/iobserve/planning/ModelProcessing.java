@@ -1,11 +1,7 @@
 package org.iobserve.planning;
 
-import java.io.File;
-
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.PlanningData;
 
 import teetime.stage.basic.AbstractTransformation;
@@ -22,8 +18,8 @@ import teetime.stage.basic.AbstractTransformation;
 public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
 	public static final String PROCESSED_MODEL_FOLDER = "processedModel";
 
-	private static final String PROCESSED_DIR = "ProcessedModel";
 	private final URI perOpteryxDir;
+	private final URI lqnsDir;
 
 	/**
 	 * Creates a new model processing stage and fills the planning data with the
@@ -33,8 +29,9 @@ public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
 	 * @param perOpteryxDir
 	 *            the location of the headless PerOpteryx executable
 	 */
-	public ModelProcessing(final URI perOpteryxDir) {
+	public ModelProcessing(final URI perOpteryxDir, final URI lqnsDir) {
 		this.perOpteryxDir = perOpteryxDir;
+		this.lqnsDir = lqnsDir;
 	}
 
 	@Override
@@ -46,6 +43,7 @@ public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
 		planningData.setAdaptationData(adaptationData);
 		planningData.setPerOpteryxDir(this.perOpteryxDir);
 		planningData.setOriginalModelDir(element);
+		planningData.setLqnsDir(lqnsDir);
 		
 		//InitializeModelProviders models = new InitializeModelProviders(new File(adaptationData.getRuntimeModelURI().toFileString()));
 		//SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_DIR, models);

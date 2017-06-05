@@ -21,6 +21,7 @@ import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.planning.ModelTransformer;
 import org.iobserve.planning.data.PlanningData;
 import org.iobserve.planning.environment.PalladioEclipseEnvironment;
+import org.iobserve.planning.peropteryx.ExecutionWrapper;
 import org.iobserve.planning.utils.ModelHelper;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
@@ -59,6 +60,9 @@ public final class PlanningMain {
 	public static final String PEROPTERYX_DIR_OPTION = "peropteryx-dir";
 	public static final String PEROPTERYX_DIR_OPTION_SHORT = "p";
 
+	public static final String LQNS_DIR_OPTION = "lqns-dir";
+	public static final String LQNS_DIR_OPTION_SHORT = "l";
+
 	private PlanningMain() {
 		// Do nothing.
 	}
@@ -68,15 +72,17 @@ public final class PlanningMain {
 
 		final String workingDir;
 		final String perOpteryxDir;
+		final String lqnsDir;
 
 		final CommandLine commandLine;
 		try {
-			for (String arg : args) {
+			for (final String arg : args) {
 				LOG.info("arg: " + arg);
 			}
 			commandLine = parser.parse(PlanningMain.createOptions(), args);
 			workingDir = commandLine.getOptionValue(INPUT_WORKING_DIR_OPTION);
 			perOpteryxDir = commandLine.getOptionValue(PEROPTERYX_DIR_OPTION);
+			lqnsDir = commandLine.getOptionValue(LQNS_DIR_OPTION);
 
 			LOG.info("Working dir: " + workingDir + ", PerOpteryx dir: " + perOpteryxDir);
 		} catch (final ParseException exp) {
@@ -86,50 +92,51 @@ public final class PlanningMain {
 			return;
 		}
 
-		URI modelURI = URI.createFileURI(workingDir);
+		final URI modelURI = URI.createFileURI(workingDir);
 		LOG.info("modelURI: " + modelURI);
 
-		URI perOpteryxURI = URI.createFileURI(perOpteryxDir);
+		final URI perOpteryxURI = URI.createFileURI(perOpteryxDir);
 		LOG.info("perOpteryxURI: " + perOpteryxURI);
 
-		LOG.info(String.format("URI was %s", modelURI.path()));
+		final URI lqnsURI = URI.createFileURI(lqnsDir);
+		LOG.info("lqnsURI: " + perOpteryxURI);
 
 		PalladioEclipseEnvironment.INSTANCE.setup();
 
 		if (commandLine.hasOption(CREATE_RESOURCEENVIRONMENT_OPTION)) {
 			LOG.info("Creating ResourceEnvironment...");
-			InitializeModelProviders modelProviders = new InitializeModelProviders(new File(workingDir));
+			final InitializeModelProviders modelProviders = new InitializeModelProviders(new File(workingDir));
 			ModelHelper.fillResourceEnvironmentFromCloudProfile(modelProviders);
 			LOG.info("ResourceEnvironment successfully created.");
 		} else if (commandLine.hasOption(CREATE_SEFFS_OPTION)) {
 			LOG.info("Creating seffs...");
-			InitializeModelProviders modelProviders = new InitializeModelProviders(new File(workingDir));
-			RepositoryModelProvider repositoryProvider = modelProviders.getRepositoryModelProvider();
+			final InitializeModelProviders modelProviders = new InitializeModelProviders(new File(workingDir));
+			final RepositoryModelProvider repositoryProvider = modelProviders.getRepositoryModelProvider();
 
-			for (RepositoryComponent component : repositoryProvider.getModel().getComponents__Repository()) {
+			for (final RepositoryComponent component : repositoryProvider.getModel().getComponents__Repository()) {
 				if (component instanceof BasicComponent) {
-					BasicComponent basicComponent = (BasicComponent) component;
-					for (ProvidedRole role : basicComponent.getProvidedRoles_InterfaceProvidingEntity()) {
+					final BasicComponent basicComponent = (BasicComponent) component;
+					for (final ProvidedRole role : basicComponent.getProvidedRoles_InterfaceProvidingEntity()) {
 						if (role instanceof OperationProvidedRole) {
-							OperationProvidedRole operationRole = (OperationProvidedRole) role;
-							for (OperationSignature signature : operationRole
-							        .getProvidedInterface__OperationProvidedRole()
-							        .getSignatures__OperationInterface()) {
-								ServiceEffectSpecification seffOpt = basicComponent
-								        .getServiceEffectSpecifications__BasicComponent().stream().filter(seff -> seff
-								                .getDescribedService__SEFF().getId().equals(signature.getId()))
-								        .findFirst().orElse(null);
+							final OperationProvidedRole operationRole = (OperationProvidedRole) role;
+							for (final OperationSignature signature : operationRole
+									.getProvidedInterface__OperationProvidedRole()
+									.getSignatures__OperationInterface()) {
+								final ServiceEffectSpecification seffOpt = basicComponent
+										.getServiceEffectSpecifications__BasicComponent().stream().filter(seff -> seff
+												.getDescribedService__SEFF().getId().equals(signature.getId()))
+										.findFirst().orElse(null);
 								if (seffOpt == null) {
-									ResourceDemandingSEFF seff = SeffFactory.eINSTANCE.createResourceDemandingSEFF();
+									final ResourceDemandingSEFF seff = SeffFactory.eINSTANCE.createResourceDemandingSEFF();
 									seff.setBasicComponent_ServiceEffectSpecification(basicComponent);
 									seff.setDescribedService__SEFF(signature);
 									seff.setSeffTypeID(EcoreUtil.generateUUID());
 									basicComponent.getServiceEffectSpecifications__BasicComponent().add(seff);
 								} else if (seffOpt instanceof ResourceDemandingSEFF) {
-									ResourceDemandingSEFF seff = (ResourceDemandingSEFF) seffOpt;
+									final ResourceDemandingSEFF seff = (ResourceDemandingSEFF) seffOpt;
 									if (seff.getSteps_Behaviour().size() < 2) {
-										StartAction start = SeffFactory.eINSTANCE.createStartAction();
-										StopAction stop = SeffFactory.eINSTANCE.createStopAction();
+										final StartAction start = SeffFactory.eINSTANCE.createStartAction();
+										final StopAction stop = SeffFactory.eINSTANCE.createStopAction();
 
 										start.setEntityName("aName");
 										start.setId(EcoreUtil.generateUUID());
@@ -153,16 +160,16 @@ public final class PlanningMain {
 		} else {
 			LOG.info("Executing optimization...");
 
-			AdaptationData adaptationData = new AdaptationData();
+			final AdaptationData adaptationData = new AdaptationData();
 			adaptationData.setRuntimeModelURI(modelURI);
 
-			PlanningData planningData = new PlanningData();
+			final PlanningData planningData = new PlanningData();
 			planningData.setAdaptationData(adaptationData);
 			planningData.setOriginalModelDir(modelURI);
 			planningData.setPerOpteryxDir(perOpteryxURI);
 
 			// Process model
-			ModelTransformer transformer = new ModelTransformer(planningData);
+			final ModelTransformer transformer = new ModelTransformer(planningData);
 			try {
 				transformer.transformModel();
 			} catch (IOException | InitializationException e) {
@@ -171,15 +178,13 @@ public final class PlanningMain {
 
 			// Execute PerOpteryx
 			int result = 0;
-			// try {
-			// ExecutionWrapper execution = new
-			// ExecutionWrapper(planningData.getProcessedModelDir(),
-			// perOpteryxURI);
-			// result = execution.startModelGeneration();
-			// } catch (IOException e) {
-			// LOG.error("Execution failed with IOException.", e);
-			// return;
-			// }
+			try {
+				final ExecutionWrapper execution = new ExecutionWrapper(planningData.getProcessedModelDir(), perOpteryxURI, lqnsURI);
+				result = execution.startModelGeneration();
+			} catch (final IOException e) {
+				LOG.error("Execution failed with IOException.", e);
+				return;
+			}
 
 			if (result == 0) {
 				LOG.info("Optimization was successful.");
@@ -198,24 +203,28 @@ public final class PlanningMain {
 		final Options options = new Options();
 
 		final Option workDirOption = new Option(INPUT_WORKING_DIR_OPTION_SHORT, INPUT_WORKING_DIR_OPTION, true,
-		        "Working directory containing the model files. Note that the files may be changed in the process.");
+				"Working directory containing the model files. Note that the files may be changed in the process.");
 		workDirOption.setRequired(true);
 
 		final Option modelNameOption = new Option(INPUT_MODEL_NAME_OPTION_SHORT, INPUT_MODEL_NAME_OPTION, true,
-		        "The name of the model contained in the working directory.");
+				"The name of the model contained in the working directory.");
 		modelNameOption.setRequired(true);
 
 		final Option perOpteryxDirOption = new Option(PEROPTERYX_DIR_OPTION_SHORT, PEROPTERYX_DIR_OPTION, true,
-		        "Directory containing the PerOpteryx headless executable.");
+				"Directory containing the PerOpteryx headless executable.");
+		modelNameOption.setRequired(true);
+
+		final Option lqnsDirOption = new Option(LQNS_DIR_OPTION_SHORT, LQNS_DIR_OPTION, true,
+				"Directory containing the LQN Solver executable.");
 		modelNameOption.setRequired(true);
 
 		final Option createResourcesOption = new Option(CREATE_RESOURCEENVIRONMENT_OPTION_SHORT,
-		        CREATE_RESOURCEENVIRONMENT_OPTION, false,
-		        "Create resource environment from cloudprofile. This is only needed when the cloudprofile changes.");
+				CREATE_RESOURCEENVIRONMENT_OPTION, false,
+				"Create resource environment from cloudprofile. This is only needed when the cloudprofile changes.");
 		modelNameOption.setRequired(false);
 
 		final Option createSeffsOption = new Option(CREATE_SEFFS_OPTION_SHORT, CREATE_SEFFS_OPTION, false,
-		        "Create empty seffs in repository.");
+				"Create empty seffs in repository.");
 		modelNameOption.setRequired(false);
 
 		final Option helpOption = new Option("h", "help", false, "Show usage information");
@@ -225,6 +234,7 @@ public final class PlanningMain {
 		options.addOption(perOpteryxDirOption);
 		options.addOption(createResourcesOption);
 		options.addOption(createSeffsOption);
+		options.addOption(lqnsDirOption);
 
 		/** help */
 		options.addOption(helpOption);
