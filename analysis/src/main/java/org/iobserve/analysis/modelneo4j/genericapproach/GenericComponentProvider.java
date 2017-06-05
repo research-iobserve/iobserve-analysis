@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j.genericapproach;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -56,6 +57,7 @@ import org.palladiosimulator.pcm.qosannotations.qos_reliability.QosReliabilityPa
 import org.palladiosimulator.pcm.reliability.ReliabilityFactory;
 import org.palladiosimulator.pcm.reliability.ReliabilityPackage;
 import org.palladiosimulator.pcm.repository.ComponentType;
+import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.ParameterModifier;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 import org.palladiosimulator.pcm.repository.PrimitiveTypeEnum;
@@ -89,18 +91,25 @@ public class GenericComponentProvider<T extends EObject> {
     public static final String ID = "id";
     public static final String ENTITY_NAME = "entityName";
     public static final String TYPE = "type";
-    public static final String REF_NAME = "name";
+    public static final String REF_NAME = "refName";
 
     private final GraphDatabaseService graph;
-    private Node node;
+    private final HashMap<String, EObject> modelTypes;
 
     public GenericComponentProvider(final GraphDatabaseService graph) {
         this.graph = graph;
+        this.modelTypes = new HashMap<>();
     }
 
-    public Node createComponent(final T component) {
+    public GenericComponentProvider(final GraphDatabaseService graph, final HashMap<String, EObject> modelTypes) {
+        this.graph = graph;
+        this.modelTypes = modelTypes;
+    }
+
+    public Node createComponent(final T pred, final T component) {
         /** Create a label representing the type of the component */
         final Label label = Label.label(this.getTypeName(component.eClass()));
+        Node node = null;
 
         /**
          * For Entities and DataTypes: Look if there already is a node for the component in the
@@ -109,28 +118,28 @@ public class GenericComponentProvider<T extends EObject> {
          */
         if (component instanceof Entity) {
             try (Transaction tx = this.getGraph().beginTx()) {
-                this.node = this.getGraph().findNode(label, GenericComponentProvider.ID, ((Entity) component).getId());
+                node = this.getGraph().findNode(label, GenericComponentProvider.ID, ((Entity) component).getId());
                 tx.success();
             }
         } else if (component instanceof PrimitiveDataType) {
             try (Transaction tx = this.getGraph().beginTx()) {
-                this.node = this.getGraph().findNode(label, GenericComponentProvider.TYPE,
+                node = this.getGraph().findNode(label, GenericComponentProvider.TYPE,
                         ((PrimitiveDataType) component).getType().name());
                 tx.success();
             }
         }
 
         /** If there is no node yet, create one */
-        if (this.node == null) {
+        if (node == null) {
 
             try (Transaction tx = this.getGraph().beginTx()) {
-                this.node = this.getGraph().createNode(label);
+                node = this.getGraph().createNode(label);
 
                 /** Iterate over all attributes */
                 for (final EAttribute attr : component.eClass().getEAllAttributes()) {
                     final Object value = component.eGet(attr);
                     if (value != null) {
-                        this.node.setProperty(attr.getName(), value.toString());
+                        node.setProperty(attr.getName(), value.toString());
                     }
                 }
 
@@ -163,13 +172,24 @@ public class GenericComponentProvider<T extends EObject> {
                     /** Store each single reference */
                     for (final Object o : (Iterable<?>) component.eGet(ref)) {
 
+                        if ((o instanceof DataType) && (o != pred)) {
+                            relType = PcmRelationshipType.IS_TYPE;
+
+                            // if (component instanceof InnerDeclaration) {
+                            // if (o instanceof CompositeDataType) {
+                            // relType = PcmRelationshipType.REFERENCES;
+                            // }
+                            // }
+                        }
+
                         /** Let a new provider create a node for the referenced component */
-                        final Node refNode = new GenericComponentProvider<>(this.graph).createComponent((EObject) o);
+                        final Node refNode = new GenericComponentProvider<>(this.graph).createComponent(component,
+                                (EObject) o);
 
                         /** When the new node is created, create a reference */
                         try (Transaction tx = this.getGraph().beginTx()) {
 
-                            final Relationship rel = this.node.createRelationshipTo(refNode, relType);
+                            final Relationship rel = node.createRelationshipTo(refNode, relType);
                             rel.setProperty(GenericComponentProvider.REF_NAME, ref.getName());
                             tx.success();
                         }
@@ -177,13 +197,23 @@ public class GenericComponentProvider<T extends EObject> {
                 } else {
                     if (refReprensation != null) {
 
+                        if ((refReprensation instanceof DataType) && (refReprensation != pred)) {
+                            relType = PcmRelationshipType.IS_TYPE;
+
+                            // if (component instanceof InnerDeclaration) {
+                            // if (refReprensation instanceof CompositeDataType) {
+                            // relType = PcmRelationshipType.REFERENCES;
+                            // }
+                            // }
+                        }
+
                         /** Let a new provider create a node for the referenced component */
-                        final Node refNode = new GenericComponentProvider<>(this.graph)
-                                .createComponent((EObject) refReprensation);
+                        final Node refNode = new GenericComponentProvider<>(this.graph).createComponent(component,
+                                (EObject) refReprensation);
 
                         /** When the new node is created, create a reference */
                         try (Transaction tx = this.getGraph().beginTx()) {
-                            final Relationship rel = this.node.createRelationshipTo(refNode, relType);
+                            final Relationship rel = node.createRelationshipTo(refNode, relType);
                             rel.setProperty(GenericComponentProvider.REF_NAME, ref.getName());
                             tx.success();
                         }
@@ -192,18 +222,19 @@ public class GenericComponentProvider<T extends EObject> {
             }
         }
 
-        return this.node;
+        return node;
     }
 
     public EObject readComponent(final String typeName, final String id) {
         final Label label = Label.label(typeName);
+        Node node;
 
         try (Transaction tx = this.getGraph().beginTx()) {
-            this.node = this.getGraph().findNode(label, GenericComponentProvider.ID, id);
+            node = this.getGraph().findNode(label, GenericComponentProvider.ID, id);
             tx.success();
         }
 
-        return this.readComponent(this.node);
+        return this.readComponent(node);
     }
 
     public EObject readComponent(final Node node) {
@@ -216,58 +247,95 @@ public class GenericComponentProvider<T extends EObject> {
             label = this.getFirstLabel(node.getLabels());
             tx.success();
         }
-        System.out.println(label.name());
 
         final EObject component = this.instantiateEObject(label.name());
+        final boolean isComplete = false;
 
-        /** Iterate over all attributes */
-        try (Transaction tx = this.getGraph().beginTx()) {
+        // if (component instanceof DataType) {
+        // System.out.println(label.name());
+        // final EObject component2 = this.modelTypes.get(label.name());
+        // if (component2 != null) {
+        // isComplete = true;
+        // component = component2;
+        // }
+        // // component = this.model.find(component);
+        // }
 
-            System.out.println("reading " + component);
-            for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                System.out.print("\tattribute " + attr.getName() + " = ");
-                try {
-                    final Object value = this.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
-                            node.getProperty(attr.getName()).toString());
-                    System.out.println(value);
-                    if (value != null) {
-                        component.eSet(attr, value);
-                    }
-                } catch (final NotFoundException e) {
-                    component.eSet(attr, null);
-                }
-            }
-            tx.success();
-        }
+        if (!isComplete) {
 
-        /** Iterate over all references */
-        for (final EReference ref : component.eClass().getEAllReferences()) {
-            final String refName = ref.getName();
-            System.out.print("\treference " + refName + " = ");
-            Object refReprensation = component.eGet(ref);
-
-            /** Iterate over all outgoing containment relationships of the node */
+            /** Iterate over all attributes */
             try (Transaction tx = this.getGraph().beginTx()) {
-                for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS)) {
-                    /** If a relationship in the graph matches the references name... */
-                    if (refName.equals(rel.getProperty(GenericComponentProvider.REF_NAME))) {
-                        System.out.println(rel.getProperty(GenericComponentProvider.REF_NAME));
-                        final Node endNode = rel.getEndNode();
 
-                        /** ...recursively create an instance of the referenced object */
-                        if (refReprensation instanceof EList<?>) {
-                            final EObject endComponent = new GenericComponentProvider<>(this.graph)
-                                    .readComponent(endNode);
-                            ((EList<EObject>) refReprensation).add(endComponent);
-                        } else {
-                            refReprensation = new GenericComponentProvider<>(this.graph).readComponent(endNode);
+                System.out.println("reading " + component + " " + label.name());
+                for (final EAttribute attr : component.eClass().getEAllAttributes()) {
+                    System.out.print("\tattribute " + attr.getName() + " = ");
+                    try {
+                        final Object value = this.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
+                                node.getProperty(attr.getName()).toString());
+                        System.out.println(value);
+                        if (value != null) {
+                            component.eSet(attr, value);
                         }
+                    } catch (final NotFoundException e) {
+                        component.eSet(attr, null);
                     }
                 }
                 tx.success();
             }
-            // System.out.println(refReprensation);
+
+            /** Iterate over all references */
+            for (final EReference ref : component.eClass().getEAllReferences()) {
+                final String refName = ref.getName();
+                Object refReprensation = component.eGet(ref);
+
+                        /** Iterate over all outgoing containment relationships of the node */
+                        try (final Transaction tx = this.getGraph().beginTx()) {
+                    for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
+                        /** If a relationship in the graph matches the references name... */
+                        if (refName.equals(rel.getProperty(GenericComponentProvider.REF_NAME))) {
+                            final Node endNode = rel.getEndNode();
+
+                            /** Only create a new object for containments */
+                            if (rel.isType(PcmRelationshipType.CONTAINS)) {
+                                System.out.println("\treference " + refName);
+                                /** ...recursively create an instance of the referenced object */
+                                if (refReprensation instanceof EList<?>) {
+                                    final EObject endComponent = new GenericComponentProvider<>(this.graph,
+                                            this.modelTypes).readComponent(endNode);
+                                    ((EList<EObject>) refReprensation).add(endComponent);
+                                } else {
+                                    refReprensation = new GenericComponentProvider<>(this.graph, this.modelTypes)
+                                            .readComponent(endNode);
+                                }
+                            } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
+                                System.out.println("\treference " + refName);
+                                String typeName;
+                                System.out.print(
+                                        "Type Label: " + this.getFirstLabel(endNode.getLabels()) + " Type Name: ");
+                                if (this.getFirstLabel(endNode.getLabels()).name().equals("PrimitiveDataType")) {
+                                    typeName = (String) endNode.getProperty(GenericComponentProvider.TYPE);
+                                } else {
+                                    typeName = (String) endNode.getProperty(GenericComponentProvider.ENTITY_NAME);
+                                }
+                                System.out.println(typeName);
+                                refReprensation = this.modelTypes.get(typeName);
+
+                                if (refReprensation == null) {
+                                    refReprensation = new GenericComponentProvider<>(this.graph, this.modelTypes)
+                                            .readComponent(endNode);
+                                    this.modelTypes.put(typeName, (EObject) refReprensation);
+                                } else {
+                                    System.out.println("(found in map)");
+                                }
+
+                            }
+                        }
+                    }
+                    tx.success();
+                }
+            }
         }
+
         return component;
     }
 
