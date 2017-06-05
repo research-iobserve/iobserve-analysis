@@ -38,6 +38,10 @@ public class ResourceEnvironmentModelProvider extends AbstractModelProvider<Reso
 	public ResourceEnvironmentModelProvider(final URI uriUsageModel) {
 		super(uriUsageModel);
 	}
+	
+	public ResourceEnvironmentModelProvider() {
+		super();
+	}
 
 	@Override
 	public void resetModel() {

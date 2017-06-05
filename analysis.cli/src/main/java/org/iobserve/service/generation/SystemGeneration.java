@@ -7,6 +7,9 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.eclipse.emf.common.util.EList;
+import org.palladiosimulator.pcm.compositionprivacy.AssemblyConnectorPrivacy;
+import org.palladiosimulator.pcm.compositionprivacy.CompositionPrivacyFactory;
+import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
@@ -22,6 +25,7 @@ import org.palladiosimulator.pcm.system.impl.SystemFactoryImpl;
 public class SystemGeneration {
 
 	private static final CompositionFactory COMPOSITION_FACTORY = CompositionFactory.eINSTANCE;
+	private static final CompositionPrivacyFactory COMPOSITION_PRIVACY_FACTORY = CompositionPrivacyFactory.eINSTANCE;
 
 	private Repository repo;
 	private RepositoryComponent[] components;
@@ -60,6 +64,7 @@ public class SystemGeneration {
 					this.connectedProvidedInterfaces.put(interfaceID, new LinkedList<AssemblyContext>());
 				}
 			}
+
 			for (RequiredRole requRole : component.getRequiredRoles_InterfaceRequiringEntity()) {
 				if (!(requRole instanceof OperationRequiredRole))
 					continue;
@@ -213,7 +218,7 @@ public class SystemGeneration {
 	 * AssemblyContextes for the given interface.
 	 */
 	private AssemblyConnector createAssemblyConnector(AssemblyContext requiringAC, AssemblyContext providingAC, String interfaceID) {
-		AssemblyConnector connector = COMPOSITION_FACTORY.createAssemblyConnector();
+		AssemblyConnectorPrivacy connector = COMPOSITION_PRIVACY_FACTORY.createAssemblyConnectorPrivacy();
 		connector.setEntityName(requiringAC.getEntityName() + " -> " + providingAC.getEntityName());
 
 		java.util.Optional<ProvidedRole> providedRole = providingAC.getEncapsulatedComponent__AssemblyContext()
@@ -226,6 +231,17 @@ public class SystemGeneration {
 
 		connector.setProvidedRole_AssemblyConnector((OperationProvidedRole) providedRole.get());
 		connector.setRequiredRole_AssemblyConnector((OperationRequiredRole) requiredRole.get());
+		
+		float randFloat = ThreadLocalRandom.current().nextFloat();
+		if (randFloat < 0.15)
+		{
+			connector.setPrivacyLevel(DataPrivacyLvl.PERSONAL);
+		} else if (randFloat < 0.50)
+		{
+			connector.setPrivacyLevel(DataPrivacyLvl.DEPERSONALIZED);
+		} else {
+			connector.setPrivacyLevel(DataPrivacyLvl.ANONYMIZED);
+		}
 
 		return connector;
 	}
