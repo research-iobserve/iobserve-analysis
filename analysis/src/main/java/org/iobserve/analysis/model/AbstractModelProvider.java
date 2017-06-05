@@ -49,6 +49,12 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	private T model;
 
 	/**
+	 * Create an empty instance! Set the URI after creation!
+	 */
+	public AbstractModelProvider() {
+	}
+
+	/**
 	 * Create a model provider for the given. Uses {@link #MODEL_FILE_LOADER} as
 	 * loader and {@link #MODEL_FILE_SAVER} as saver.
 	 *
@@ -80,8 +86,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
 			this.overrideModel();
 			break;
 		case MERGE:
-			throw new UnsupportedOperationException(
-					String.format("%s save strategy does not exist yet!", ModelSaveStrategy.MERGE.name()));
+			throw new UnsupportedOperationException(String.format("%s save strategy does not exist yet!", ModelSaveStrategy.MERGE.name()));
 		default:
 			this.overrideModel();
 			break;
@@ -186,12 +191,12 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	public T getModel() {
 		return this.model;
 	}
-	
+
 	/**
 	 * Set the model in this provider to the new model.
 	 *
-	 * @param model 
-	 * 			the new model
+	 * @param model
+	 *            the new model
 	 */
 	public void setModel(T model) {
 		this.model = model;
@@ -204,6 +209,17 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	 */
 	public URI getModelUri() {
 		return this.uriModelInstance;
+	}
+
+	/**
+	 * 
+	 * Set the uri to the model.
+	 * 
+	 * @param modelUri
+	 *            to model
+	 */
+	public void setModelUri(URI modelUri) {
+		this.uriModelInstance = modelUri;
 	}
 
 	/**

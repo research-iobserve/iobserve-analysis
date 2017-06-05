@@ -1,7 +1,6 @@
 package org.iobserve.service.generation;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -11,20 +10,14 @@ import org.eclipse.emf.common.util.EList;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
-import org.palladiosimulator.pcm.core.composition.impl.AssemblyContextImpl;
-import org.palladiosimulator.pcm.core.composition.impl.CompositionFactoryImpl;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RequiredRole;
-import org.palladiosimulator.pcm.system.*;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.impl.SystemFactoryImpl;
-
-import com.google.common.base.Optional;
-import com.sun.jna.Native.ffi_callback;
 
 public class SystemGeneration {
 
@@ -59,10 +52,11 @@ public class SystemGeneration {
 				if (!(provRole instanceof OperationProvidedRole))
 					continue;
 
-				String interfaceID = provRole.getProvidingEntity_ProvidedRole().getId();
-				if (!openRequiredInterfaces.containsKey(interfaceID)) {
+				OperationProvidedRole provInterface = (OperationProvidedRole) provRole;
+				String interfaceID = provInterface.getProvidedInterface__OperationProvidedRole().getId();
+				if (!this.openProvidedInterfaces.containsKey(interfaceID)) {
 					this.openProvidedInterfaces.put(interfaceID, new LinkedList<AssemblyContext>());
-					this.openProvidedInterfaces.put(interfaceID, new LinkedList<AssemblyContext>());
+					this.openRequiredInterfaces.put(interfaceID, new LinkedList<AssemblyContext>());
 					this.connectedProvidedInterfaces.put(interfaceID, new LinkedList<AssemblyContext>());
 				}
 			}
@@ -70,10 +64,11 @@ public class SystemGeneration {
 				if (!(requRole instanceof OperationRequiredRole))
 					continue;
 
-				String interfaceID = requRole.getRequiringEntity_RequiredRole().getId();
-				if (!openRequiredInterfaces.containsKey(interfaceID)) {
+				OperationRequiredRole reqInterface = (OperationRequiredRole) requRole;
+				String interfaceID = reqInterface.getRequiredInterface__OperationRequiredRole().getId();
+				if (!this.openProvidedInterfaces.containsKey(interfaceID)) {
 					this.openProvidedInterfaces.put(interfaceID, new LinkedList<AssemblyContext>());
-					this.openProvidedInterfaces.put(interfaceID, new LinkedList<AssemblyContext>());
+					this.openRequiredInterfaces.put(interfaceID, new LinkedList<AssemblyContext>());
 					this.connectedProvidedInterfaces.put(interfaceID, new LinkedList<AssemblyContext>());
 				}
 			}
@@ -84,7 +79,7 @@ public class SystemGeneration {
 
 		for (int i = 0; i < assemblyContextCount; i++) {
 
-			int randomInt = ThreadLocalRandom.current().nextInt(components.length - 1);
+			int randomInt = ThreadLocalRandom.current().nextInt(components.length);
 			RepositoryComponent randComponent = this.components[randomInt];
 
 			AssemblyContext newAC = COMPOSITION_FACTORY.createAssemblyContext();
@@ -151,7 +146,8 @@ public class SystemGeneration {
 				continue;
 
 			boolean connected = false;
-			String interfaceID = provRole.getProvidingEntity_ProvidedRole().getId();
+			OperationProvidedRole provInterface = (OperationProvidedRole) provRole;
+			String interfaceID = provInterface.getProvidedInterface__OperationProvidedRole().getId();
 			if (this.openRequiredInterfaces.get(interfaceID).size() > 0) {
 				// Currently not connected, but required interfaces
 				List<AssemblyContext> openRequiredAC = this.openRequiredInterfaces.get(interfaceID);
@@ -188,7 +184,8 @@ public class SystemGeneration {
 				continue;
 
 			boolean connected = false;
-			String interfaceID = requRole.getRequiringEntity_RequiredRole().getId();
+			OperationRequiredRole reqInterface = (OperationRequiredRole) requRole;
+			String interfaceID = reqInterface.getRequiredInterface__OperationRequiredRole().getId();
 			if (this.openProvidedInterfaces.get(interfaceID).size() > 0) {
 				// Open provided interface is available
 				List<AssemblyContext> openProvidingAC = this.openProvidedInterfaces.get(interfaceID);
@@ -197,16 +194,17 @@ public class SystemGeneration {
 				if (providingAC != null) {
 					AssemblyConnector connector = this.createAssemblyConnector(newAC, providingAC, interfaceID);
 					this.system.getConnectors__ComposedStructure().add(connector);
-					
+
 					this.connectedProvidedInterfaces.get(interfaceID).add(providingAC);
 					connected = true;
 				}
 			}
 
-			if (!connected)
+			if (!connected) {
 				// Add to open, but required interfaces to connect later!
-				this.openRequiredInterfaces.get(interfaceID).add(newAC);
-
+				List<AssemblyContext> acs = this.openRequiredInterfaces.get(interfaceID);
+				acs.add(newAC);
+			}
 		}
 	}
 
@@ -219,11 +217,9 @@ public class SystemGeneration {
 		connector.setEntityName(requiringAC.getEntityName() + " -> " + providingAC.getEntityName());
 
 		java.util.Optional<ProvidedRole> providedRole = providingAC.getEncapsulatedComponent__AssemblyContext()
-				.getProvidedRoles_InterfaceProvidingEntity().stream().filter(s -> s.getProvidingEntity_ProvidedRole().getId().equals(interfaceID))
-				.findFirst();
+				.getProvidedRoles_InterfaceProvidingEntity().stream().filter(s -> matchingInterface(s, interfaceID)).findFirst();
 		java.util.Optional<RequiredRole> requiredRole = requiringAC.getEncapsulatedComponent__AssemblyContext()
-				.getRequiredRoles_InterfaceRequiringEntity().stream().filter(s -> s.getRequiringEntity_RequiredRole().getId().equals(interfaceID))
-				.findFirst();
+				.getRequiredRoles_InterfaceRequiringEntity().stream().filter(s -> matchingInterface(s, interfaceID)).findFirst();
 
 		connector.setProvidingAssemblyContext_AssemblyConnector(providingAC);
 		connector.setRequiringAssemblyContext_AssemblyConnector(requiringAC);
@@ -232,6 +228,24 @@ public class SystemGeneration {
 		connector.setRequiredRole_AssemblyConnector((OperationRequiredRole) requiredRole.get());
 
 		return connector;
+	}
+
+	private boolean matchingInterface(ProvidedRole providedRole, String interfaceID) {
+		boolean equalInterface = false;
+		if (providedRole instanceof OperationProvidedRole) {
+			OperationProvidedRole provInterface = (OperationProvidedRole) providedRole;
+			equalInterface = provInterface.getProvidedInterface__OperationProvidedRole().getId().equals(interfaceID);
+		}
+		return equalInterface;
+	}
+
+	private boolean matchingInterface(RequiredRole requRole, String interfaceID) {
+		boolean equalInterface = false;
+		if (requRole instanceof OperationRequiredRole) {
+			OperationRequiredRole preqInterface = (OperationRequiredRole) requRole;
+			equalInterface = preqInterface.getRequiredInterface__OperationRequiredRole().getId().equals(interfaceID);
+		}
+		return equalInterface;
 	}
 
 	/*
@@ -249,7 +263,7 @@ public class SystemGeneration {
 				container.remove(0);
 		} else {
 			boolean acFound = false;
-			while (!acFound) {
+			for (int i = 0; i < container.size() * 10 && !acFound; i++) {
 				int randIndex = ThreadLocalRandom.current().nextInt(container.size());
 				ac = container.get(randIndex);
 				if (ac != forbiddenRef) {
