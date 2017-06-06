@@ -21,7 +21,7 @@ import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.palladiosimulator.pcm.repository.OperationInterface;
+import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.Repository;
 
 /**
@@ -38,39 +38,47 @@ public class TestGeneric {
     public static void main(final String[] args) {
         final GraphDatabaseService graph = new GraphDatabaseFactory().newEmbeddedDatabase(TestGeneric.DB_PATH);
         TestGeneric.registerShutdownHook(graph);
-        System.out.println("Started db");
+        final GraphDatabaseService graph2 = new GraphDatabaseFactory().newEmbeddedDatabase(TestGeneric.DB_PATH2);
+        TestGeneric.registerShutdownHook(graph2);
+        System.out.println("Started DBs");
 
+        /** Load repository model */
         final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
                 TestGeneric.PCM_MODELS_DIRECTORY);
         final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
         final Repository repository = repositoryModelProvider.getModel();
-        System.out.println("Loaded model");
 
-        // System.out.println("Writing to db");
+        /** Write to DB1 */
+        // System.out.println("Writing to DB1");
         // new GenericComponentProvider<>(graph).createComponent(null, repository);
 
-        System.out.println("Reading id -> object from db");
-        final OperationInterface inter = (OperationInterface) new GenericComponentProvider<>(graph)
-                .readComponent("OperationInterface", "_j8RD0NYgEeWrM-HnT5f_ug");
+        /** Read interface (id -> object) from DB1 */
+        System.out.println("Reading interface (id -> object) from DB1");
+        // final OperationInterface inter = (OperationInterface) new
+        // GenericComponentProvider<>(graph)
+        // .readComponent("OperationInterface", "_j8RD0NYgEeWrM-HnT5f_ug");
+        final OperationSignature sig = (OperationSignature) new GenericComponentProvider<>(graph)
+                .readComponent("OperationSignature", "_j9JNltYgEeWrM-HnT5f_ug");
 
-        // System.out.println("Reading id -> object from db");
+        /** Read repository (id -> object) from DB1 */
+        // System.out.println("Reading repository (id -> object) from DB1");
         // final Repository repository2 = (Repository) new
         // GenericComponentProvider<>(graph).readComponent("Repository",
         // repository.getId());
 
-        final GraphDatabaseService graph2 = new GraphDatabaseFactory().newEmbeddedDatabase(TestGeneric.DB_PATH2);
-        TestGeneric.registerShutdownHook(graph2);
+        /** Write to DB2 */
+        System.out.println("Writing to DB2");
+        new GenericComponentProvider<>(graph2).createComponent(null, sig);
 
-        System.out.println("Writing to db2");
-        new GenericComponentProvider<>(graph2).createComponent(null, inter);
-
-        // System.out.println("Reading type -> ids from db");
+        /** Read OperationInterface (type -> ids) from DB1 */
+        // System.out.println("Reading OperationInterface (type -> ids) from DB1");
         // final List<String> ids = new
         // GenericComponentProvider<>(graph).readComponent("OperationInterface");
         // System.out.println(ids);
 
         graph.shutdown();
-        System.out.print("Shut down db");
+        graph2.shutdown();
+        System.out.print("Shut down DBs");
     }
 
     private static void registerShutdownHook(final GraphDatabaseService graphDb) {
