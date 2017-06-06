@@ -58,6 +58,7 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
      */
     public RepositoryModelProvider(final URI uriRepositoryModel) {
         super(uriRepositoryModel);
+        this.loadModel();
         loadData();
     }
 

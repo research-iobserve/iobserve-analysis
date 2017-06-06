@@ -37,6 +37,7 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
      */
     public SystemModelProvider(final URI uriModelInstance) {
         super(uriModelInstance);
+        this.loadModel();
     }
     
     public SystemModelProvider() {

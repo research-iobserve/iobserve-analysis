@@ -37,6 +37,7 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
      */
     public AllocationModelProvider(final URI uriModelInstance) {
         super(uriModelInstance);
+        this.loadModel();
     }
     
     public AllocationModelProvider() {

@@ -39,6 +39,7 @@ public class ResourceEnvironmentModelProvider extends AbstractModelProvider<Reso
 	 */
 	public ResourceEnvironmentModelProvider(final URI uriUsageModel) {
 		super(uriUsageModel);
+		this.loadModel();
 	}
 	
 	public ResourceEnvironmentModelProvider() {
