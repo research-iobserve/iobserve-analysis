@@ -36,14 +36,19 @@ public class GraphFactory {
 	}
 
 	public ModelGraph buildGraph(ModelCollection modelProvider) throws Exception {
+		// LOG.info("Starting");
 		this.init(modelProvider);
-
+		// LOG.info("Extrating Assembly Contexts");
 		this.extractAssemblyContexts(this.modelProvider.getSystemModel());
+		// LOG.info("Extrating Assembly Connectors");
 		this.extractAssemblyConnectors(this.modelProvider.getSystemModel());
+		// LOG.info("Extrating Resource Containers");
 		this.extractResourceContainers(this.modelProvider.getResourceEnvironmentModel());
+		// LOG.info("Adapting Component Privacy Level");
 		this.adaptPrivacyLvl();
+		// LOG.info("Extract Allocations");
 		this.extractAllocations(this.modelProvider.getAllocationModel());
-
+		// LOG.info("Building Graph");
 		return this.createModelGraph();
 	}
 
@@ -199,6 +204,7 @@ public class GraphFactory {
 			reqNode.addCommunicationEdge(edge);
 		}
 
+		LOG.info("Building DONE!");
 		return new ModelGraph(servers.values(), components.values(), this.modelProvider);
 	}
 }
