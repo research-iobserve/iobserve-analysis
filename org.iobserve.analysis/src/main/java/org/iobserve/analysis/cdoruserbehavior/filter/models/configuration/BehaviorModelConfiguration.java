@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetstoreStrategy;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.DefaultStrategy;
 
 import weka.core.ManhattanDistance;
 
@@ -42,21 +42,19 @@ public class BehaviorModelConfiguration {
     private String visualizationUrl;
 
     // empty transitions?
-    private boolean keepEmptyTransitions = true;
+    private boolean keepEmptyTransitions;
 
     /**
      * default constructor
      */
     public BehaviorModelConfiguration() {
         this.behaviorModelNamePrefix = "BehaviorModel";
-        this.visualizationUrl = null;
-        this.modelGenerationFilter = new ModelGenerationFilter(false);
-        this.modelGenerationFilter.addFilterRule(".*");
-        this.representativeStrategy = new JPetstoreStrategy();
+        this.visualizationUrl = "localhost:8080";
+        this.keepEmptyTransitions = true;
+        this.modelGenerationFilter = new ModelGenerationFilter(false).addFilterRule(".*");
+        this.representativeStrategy = new DefaultStrategy();
         this.signatureCreationStrategy = new GetLastXSignatureStrategy(Integer.MAX_VALUE);
-
         this.clustering = new XMeansClustering(1, 1, new ManhattanDistance());
-
     }
 
     /**

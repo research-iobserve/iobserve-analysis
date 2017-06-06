@@ -19,17 +19,16 @@ import java.util.List;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
 
 /**
- * strategy to find the representative of a list of callinformations for jPetstore
+ * strategy to find the representative of a list of call-informations returns the first
+ * call-information of the list
  *
  * @author Christoph Dornieden
  *
  */
-public class JPetstoreStrategy implements IRepresentativeStrategy {
+public class DefaultStrategy implements IRepresentativeStrategy {
 
     @Override
     public Double findRepresentativeCode(final String signature, final List<Double> callInformationCodes) {
-        // summing up all values
-        final Double num = callInformationCodes.stream().reduce(0.0, (a, b) -> a + b);
-        return num;
+        return callInformationCodes.isEmpty() ? 1.0 : callInformationCodes.get(0);
     }
 }
