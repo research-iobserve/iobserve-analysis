@@ -16,8 +16,6 @@
 package org.iobserve.analysis.modelneo4j.genericapproach;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
@@ -31,6 +29,7 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
+import org.palladiosimulator.pcm.repository.CompositeDataType;
 
 /**
  *
@@ -40,16 +39,16 @@ import org.neo4j.graphdb.Transaction;
 public class DataTypeProvider extends GenericComponentProvider<EObject> {
 
     private final HashMap<String, EObject> modelTypes;
-    private final List<Node> subtypes;
+    private final HashMap<Node, EObject> subtypes;
 
     public DataTypeProvider(final GraphDatabaseService graph, final HashMap<String, EObject> modelTypes) {
         super(graph);
         this.modelTypes = modelTypes;
-        this.subtypes = new LinkedList<>();
+        this.subtypes = new HashMap<>();
     }
 
     public DataTypeProvider(final GraphDatabaseService graph, final HashMap<String, EObject> modelTypes,
-            final List<Node> subtypes) {
+            final HashMap<Node, EObject> subtypes) {
         super(graph);
         this.modelTypes = modelTypes;
         this.subtypes = subtypes;
@@ -57,6 +56,8 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
 
     @Override
     public EObject readComponent(final Node node) {
+        boolean debug = false;
+
         /**
          * Get the node's data type from its label and instantiate a new empty object of this data
          * type
@@ -67,14 +68,14 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
             tx.success();
         }
 
-        final EObject component = this.instantiateEObject(label.name());
-
-        if (this.subtypes.contains(node)) {
-            // //System.out.println("Circle closed");
-            return component;
+        final EObject unfinishedComponent = this.subtypes.get(node);
+        if (unfinishedComponent != null) {
+            if (node.getId() == 646) {
+                System.out.println(node + " " + node.getProperty(GenericComponentProvider.ENTITY_NAME));
+            }
+            return unfinishedComponent;
         } else {
-
-            this.subtypes.add(node);
+            final EObject component = this.instantiateEObject(label.name());
 
             /** Iterate over all attributes */
             try (Transaction tx = this.getGraph().beginTx()) {
@@ -87,6 +88,14 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
                         // System.out.println(value);
                         if (value != null) {
                             component.eSet(attr, value);
+                            if (node.getId() == 646) {
+                                System.out.println(attr + " " + value);
+                            }
+
+                            if (value.equals("List_products"/* "list_productAmountTO" */)) {
+                                debug = true;
+                            }
+
                         }
                     } catch (final NotFoundException e) {
                         component.eSet(attr, null);
@@ -95,6 +104,8 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
                 tx.success();
 
             }
+
+            this.subtypes.put(node, component);
 
             /** Iterate over all references */
             for (final EReference ref : component.eClass().getEAllReferences()) {
@@ -119,6 +130,10 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
                                     component.eSet(ref, refReprensation);
                                 }
                             } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
+                                if (debug) {
+                                    System.out.println(node + " " + component + " " + refName + " " + refReprensation
+                                            + " " + endNode);
+                                }
                                 String typeName;
                                 if (this.getFirstLabel(endNode.getLabels()).name().equals("PrimitiveDataType")) {
                                     typeName = (String) endNode.getProperty(GenericComponentProvider.TYPE);
@@ -126,13 +141,24 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
                                     typeName = (String) endNode.getProperty(GenericComponentProvider.ENTITY_NAME);
                                 }
                                 refReprensation = this.modelTypes.get(typeName);
+                                if (debug) {
+                                    System.out.println("refReprentation at 1 " + refReprensation + " : " + typeName);
+                                }
 
                                 if (refReprensation == null) {
                                     refReprensation = this.readComponent(endNode);
                                     this.modelTypes.put(typeName, (EObject) refReprensation);
                                 }
+                                if (debug) {
+                                    System.out.println("refReprentation at 2 " + refReprensation + " : " + typeName);
+                                }
 
                                 component.eSet(ref, refReprensation);
+
+                                if (debug) {
+                                    System.out.println("component.eget(ref) "
+                                            + ((CompositeDataType) component.eGet(ref)).getEntityName());
+                                }
                             }
                         }
                     }

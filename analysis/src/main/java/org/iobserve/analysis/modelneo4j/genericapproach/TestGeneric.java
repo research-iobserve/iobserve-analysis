@@ -63,8 +63,8 @@ public class TestGeneric {
                 repository.getId());
 
         /** Write to DB2 */
-        // System.out.println("Writing to DB2");
-        // new GenericComponentProvider<>(graph2).createComponent(null, repository2);
+        System.out.println("Writing to DB2");
+        new GenericComponentProvider<>(graph2).createComponent(null, repository2);
 
         /** Read OperationInterface (type -> ids) from DB1 */
         // System.out.println("Reading OperationInterface (type -> ids) from DB1");

@@ -180,7 +180,9 @@ public class GenericComponentProvider<T extends EObject> {
 
                         // System.out.println("\t" + component + " reference " + o);
 
-                        if ((o instanceof DataType) && (o != pred)) {
+                        if ((refReprensation instanceof DataType)
+                                && !(ref.getName().equals("parentType_CompositeDataType")
+                                        || (ref.getName().equals("compositeDataType_InnerDeclaration")))) {
                             relType = PcmRelationshipType.IS_TYPE;
                         }
 
@@ -201,7 +203,9 @@ public class GenericComponentProvider<T extends EObject> {
 
                         // System.out.println("\t" + component + " reference " + refReprensation);
 
-                        if ((refReprensation instanceof DataType) && (refReprensation != pred)) {
+                        if ((refReprensation instanceof DataType)
+                                && !(ref.getName().equals("parentType_CompositeDataType")
+                                        || (ref.getName().equals("compositeDataType_InnerDeclaration")))) {
                             relType = PcmRelationshipType.IS_TYPE;
                         }
 
