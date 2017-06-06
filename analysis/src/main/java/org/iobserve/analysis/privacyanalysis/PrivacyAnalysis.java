@@ -6,12 +6,17 @@ import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.stream.Stream;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.utils.AbstractLinearComposition;
+import org.iobserve.planning.CandidateGeneration;
 
 public class PrivacyAnalysis extends AbstractLinearComposition<URI, AdaptationData> {
 
+	protected static final Logger LOG = LogManager.getLogger(PrivacyAnalysis.class);
+	
 	private static URI legalPersonalGeoLocationFile;
 	private static HashSet<Integer> legalPersonalGeoLocations;
 

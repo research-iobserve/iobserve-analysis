@@ -29,6 +29,8 @@ public class GraphCreation extends AbstractTransformation<URI, AdaptationData> {
 
 	@Override
 	protected void execute(URI element) throws Exception {
+		PrivacyAnalysis.LOG.info("Creating graph");
+		
 		AdaptationData adaptionData = new AdaptationData();
 		adaptionData.setRuntimeModelURI(element);
 		
