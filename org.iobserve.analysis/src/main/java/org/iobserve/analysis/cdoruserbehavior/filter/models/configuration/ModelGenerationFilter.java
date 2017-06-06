@@ -78,8 +78,9 @@ public class ModelGenerationFilter {
      *            regex matching signatures
      * @return true if regex could be added, false else
      */
-    public boolean addFilterRule(final String regex) {
-        return this.filterList.add(Pattern.compile(regex));
+    public ModelGenerationFilter addFilterRule(final String regex) {
+        this.filterList.add(Pattern.compile(regex));
+        return this;
     }
 
     /**
