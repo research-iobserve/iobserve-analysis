@@ -70,7 +70,7 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
         final EObject component = this.instantiateEObject(label.name());
 
         if (this.subtypes.contains(node)) {
-            // System.out.println("Circle closed");
+            // //System.out.println("Circle closed");
             return component;
         } else {
 
@@ -79,9 +79,8 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
             /** Iterate over all attributes */
             try (Transaction tx = this.getGraph().beginTx()) {
 
-                // System.out.println("reading " + component + " " + label.name());
                 for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                    // System.out.print("\tattribute " + attr.getName() + " = ");
+                    // System.out.print("\t" + component + " attribute " + attr.getName() + " = ");
                     try {
                         final Object value = this.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
                                 node.getProperty(attr.getName()).toString());
@@ -111,7 +110,6 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
 
                             /** Only create a new object for containments */
                             if (rel.isType(PcmRelationshipType.CONTAINS)) {
-                                // System.out.println("\treference " + refName);
                                 /** ...recursively create an instance of the referenced object */
                                 if (refReprensation instanceof EList<?>) {
                                     final EObject endComponent = this.readComponent(endNode);
@@ -121,27 +119,20 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
                                     component.eSet(ref, refReprensation);
                                 }
                             } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
-                                // System.out.println("\treference " + refName);
                                 String typeName;
-                                // System.out.print(
-                                // "Type Label: " + this.getFirstLabel(endNode.getLabels()) + " Type
-                                // Name: ");
                                 if (this.getFirstLabel(endNode.getLabels()).name().equals("PrimitiveDataType")) {
                                     typeName = (String) endNode.getProperty(GenericComponentProvider.TYPE);
                                 } else {
                                     typeName = (String) endNode.getProperty(GenericComponentProvider.ENTITY_NAME);
                                 }
-                                // System.out.println(typeName);
                                 refReprensation = this.modelTypes.get(typeName);
 
                                 if (refReprensation == null) {
                                     refReprensation = this.readComponent(endNode);
-                                    component.eSet(ref, refReprensation);
                                     this.modelTypes.put(typeName, (EObject) refReprensation);
-                                } else {
-                                    // System.out.println("(found in map)");
                                 }
 
+                                component.eSet(ref, refReprensation);
                             }
                         }
                     }

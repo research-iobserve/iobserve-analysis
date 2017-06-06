@@ -109,7 +109,7 @@ public class GenericComponentProvider<T extends EObject> {
     public Node createComponent(final T pred, final T component) {
         /** Create a label representing the type of the component */
         final Label label = Label.label(this.getTypeName(component.eClass()));
-        System.out.println("Writing " + this.getTypeName(component.eClass()));
+        // System.out.println("Writing " + this.getTypeName(component.eClass()));
         Node node = null;
 
         /**
@@ -136,13 +136,14 @@ public class GenericComponentProvider<T extends EObject> {
             try (Transaction tx = this.getGraph().beginTx()) {
                 node = this.getGraph().createNode(label);
 
-                System.out.println("writing " + component + " " + label.name());
+                // System.out.println("writing " + component + " " + label.name());
                 /** Iterate over all attributes */
                 for (final EAttribute attr : component.eClass().getEAllAttributes()) {
                     final Object value = component.eGet(attr);
                     if (value != null) {
                         node.setProperty(attr.getName(), value.toString());
-                        System.out.println("\t" + component + " attribute " + attr.getName() + " " + value.toString());
+                        // System.out.println("\t" + component + " attribute " + attr.getName() + "
+                        // " + value.toString());
                     }
                 }
 
@@ -156,7 +157,8 @@ public class GenericComponentProvider<T extends EObject> {
                  * Save references of the component as references to other nodes in the graph
                  */
                 final Object refReprensation = component.eGet(ref);
-                System.out.println("\t" + component + " all refs " + ref + " " + refReprensation);
+                // System.out.println("\t" + component + " all refs " + ref + " " +
+                // refReprensation);
 
                 RelationshipType relType;
                 if (ref.isContainment()) {
@@ -176,7 +178,7 @@ public class GenericComponentProvider<T extends EObject> {
                     /** Store each single reference */
                     for (final Object o : (Iterable<?>) component.eGet(ref)) {
 
-                        System.out.println("\t" + component + " reference " + o);
+                        // System.out.println("\t" + component + " reference " + o);
 
                         if ((o instanceof DataType) && (o != pred)) {
                             relType = PcmRelationshipType.IS_TYPE;
@@ -197,7 +199,7 @@ public class GenericComponentProvider<T extends EObject> {
                 } else {
                     if (refReprensation != null) {
 
-                        System.out.println("\t" + component + " reference " + refReprensation);
+                        // System.out.println("\t" + component + " reference " + refReprensation);
 
                         if ((refReprensation instanceof DataType) && (refReprensation != pred)) {
                             relType = PcmRelationshipType.IS_TYPE;
@@ -249,13 +251,13 @@ public class GenericComponentProvider<T extends EObject> {
         /** Iterate over all attributes */
         try (Transaction tx = this.getGraph().beginTx()) {
 
-            System.out.println("reading " + component + " " + label.name());
+            // System.out.println("reading " + component + " " + label.name());
             for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                System.out.print("\t" + component + " attribute " + attr.getName() + " = ");
+                // System.out.print("\t" + component + " attribute " + attr.getName() + " = ");
                 try {
                     final Object value = this.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
                             node.getProperty(attr.getName()).toString());
-                    System.out.println(value);
+                    // System.out.println(value);
                     if (value != null) {
                         component.eSet(attr, value);
                     }
@@ -280,7 +282,7 @@ public class GenericComponentProvider<T extends EObject> {
 
                         /** Only create a new object for containments */
                         if (rel.isType(PcmRelationshipType.CONTAINS)) {
-                            System.out.println("\t" + component + " reference " + refName);
+                            // System.out.println("\t" + component + " reference " + refName);
                             /** ...recursively create an instance of the referenced object */
                             if (refReprensation instanceof EList<?>) {
                                 final EObject endComponent = new GenericComponentProvider<>(this.graph, this.modelTypes)
@@ -293,12 +295,17 @@ public class GenericComponentProvider<T extends EObject> {
 
                             }
                         } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
-                            System.out.println("\t" + component + " reference " + refName);
-
-                            refReprensation = new DataTypeProvider(this.graph, this.modelTypes).readComponent(endNode);
-                            component.eSet(ref, refReprensation);
-                            System.out.println(">>>>>>Datatype2 " + refReprensation);
-
+                            // System.out.println("\t" + component + " reference " + refName);
+                            if (refReprensation instanceof EList<?>) {
+                                final EObject endComponent = new DataTypeProvider(this.graph, this.modelTypes)
+                                        .readComponent(endNode);
+                                ((EList<EObject>) refReprensation).add(endComponent);
+                            } else {
+                                refReprensation = new DataTypeProvider(this.graph, this.modelTypes)
+                                        .readComponent(endNode);
+                                component.eSet(ref, refReprensation);
+                                // System.out.println(">>>>>>Datatype2 " + refReprensation);
+                            }
                         }
                     }
                 }
