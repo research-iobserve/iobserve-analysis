@@ -37,6 +37,9 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 
 	@Override
 	protected void execute(AdaptationData element) throws Exception {
+		
+		SystemAdaptation.LOG.info("Planning adaptation order");
+		
 		init(element);
 
 		List<Action> adaptionSteps = new ArrayList<Action>();
@@ -71,7 +74,7 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 			sb.append(i + "\t" + this.printAction(adaptionSteps.get(i)) + "\n");
 		}
 
-		System.out.println(sb.toString());
+		SystemAdaptation.LOG.info(sb.toString());
 	}
 
 	private String printAction(Action action) {

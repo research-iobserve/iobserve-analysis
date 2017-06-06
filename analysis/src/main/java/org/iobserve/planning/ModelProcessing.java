@@ -40,6 +40,8 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 
 	@Override
 	protected void execute(AdaptationData element) throws Exception {
+		CandidateGeneration.LOG.info("Model Processing");
+		
 		AdaptationData adaptationData = element;
 		PlanningData planningData = new PlanningData();
 

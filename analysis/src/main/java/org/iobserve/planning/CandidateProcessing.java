@@ -20,6 +20,7 @@ public class CandidateProcessing extends AbstractTransformation<PlanningData, Ad
 
 	@Override
 	protected void execute(PlanningData element) throws Exception {
+		CandidateGeneration.LOG.info("Candiate Processing");
 		AdaptationData adapdationData = element.getAdaptationData();
 
 		InitializeModelProviders initModelProvider = new InitializeModelProviders(new File(adapdationData.getReDeploymentURI().toFileString()));

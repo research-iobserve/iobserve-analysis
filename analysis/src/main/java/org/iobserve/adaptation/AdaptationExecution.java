@@ -42,6 +42,8 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 
 	@Override
 	protected void execute(AdaptationData element) throws Exception {
+		
+		SystemAdaptation.LOG.info("Executing adaptation");
 
 		element.setDeployablesFolderURI(this.deployablesFolderURI);
 

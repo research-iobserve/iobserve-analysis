@@ -34,7 +34,9 @@ public class GraphCreation extends AbstractTransformation<URI, AdaptationData> {
 		AdaptationData adaptionData = new AdaptationData();
 		adaptionData.setRuntimeModelURI(element);
 		
+		PrivacyAnalysis.LOG.info("Creating Model Providers");
 		InitializeModelProviders initModelProvider = new InitializeModelProviders(new File(element.toFileString()));
+		PrivacyAnalysis.LOG.info("DONE!");
 		adaptionData.setRuntimeModelProviders(initModelProvider);
 		
 		ModelGraph graph = this.graphFactory.buildGraph(initModelProvider.getModelCollection());
