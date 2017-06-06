@@ -36,7 +36,8 @@ public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
 
 	@Override
 	protected void execute(final URI element) throws Exception {
-		AdaptationData adaptationData = new AdaptationData();
+		CandidateGeneration.LOG.info("Model Processing");
+		
 		PlanningData planningData = new PlanningData();
 
 		adaptationData.setRuntimeModelURI(element);
@@ -45,12 +46,11 @@ public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
 		planningData.setOriginalModelDir(element);
 		planningData.setLqnsDir(lqnsDir);
 
-		// InitializeModelProviders models = new InitializeModelProviders(new
-		// File(adaptationData.getRuntimeModelURI().toFileString()));
-		// SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_DIR,
-		// models);
-		// URI snapshotLocation = snapshotBuilder.createSnapshot();
-		// planningData.setProcessedModelDir(snapshotLocation);
+		InitializeModelProviders models = new InitializeModelProviders(new File(adaptationData.getRuntimeModelURI().toFileString()));
+		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_MODEL_FOLDER, models);
+		
+		URI snapshotLocation = snapshotBuilder.createSnapshot();
+		planningData.setProcessedModelDir(snapshotLocation);
 
 		ModelTransformer modelTransformer = new ModelTransformer(planningData);
 		modelTransformer.transformModel();

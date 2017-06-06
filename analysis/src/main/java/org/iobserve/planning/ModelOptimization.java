@@ -20,20 +20,18 @@ public class ModelOptimization extends AbstractTransformation<PlanningData, Plan
 
 	@Override
 	protected void execute(PlanningData planningData) throws Exception {
+		CandidateGeneration.LOG.info("Model Optimizing");
 
 		URI inputModelDir = planningData.getAdaptationData().getRuntimeModelURI();
 		AdaptationData adaptationData = planningData.getAdaptationData();
 
 		ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir(), planningData.getLqnsDir());
 
-		int result = EXEC_SUCCESS;// exec.startModelGeneration();
+		int result = exec.startModelGeneration();
 
-		if (result == EXEC_ERROR) {
-			adaptationData.setReDeploymentURI(URI.createFileURI(
-					"C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\AssemblyContextActionModel"));
-		} else if (result == EXEC_SUCCESS) {
-			adaptationData.setReDeploymentURI(URI.createFileURI(
-					"C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\ResourceContainerActionModel"));
+		if (result != EXEC_SUCCESS) {
+			//adaptationData.setReDeploymentURI(URI.createFileURI("C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\processedModel\\PerOpteryx_results\\costOptimalModel"));
+			throw new RuntimeException("PerOpteryx exited with error code " + result);
 		} else {
 			throw new RuntimeException("PerOpteryx exited with unkown result/exec code");
 		}

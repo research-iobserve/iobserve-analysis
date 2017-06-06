@@ -6,10 +6,13 @@ import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AbstractModelProvider;
+import org.iobserve.analysis.privacyanalysis.PrivacyAnalysis;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
@@ -22,6 +25,8 @@ import teetime.framework.OutputPort;
  * @author Philipp Weimann
  */
 public class SnapshotBuilder extends AbstractStage {
+	
+	protected static final Logger LOG = LogManager.getLogger(SnapshotBuilder.class);
 
 	private static URI baseSnapshotLocation = null;
 	private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES };
@@ -66,7 +71,7 @@ public class SnapshotBuilder extends AbstractStage {
 		// List<InputPort<?>> inputPorts = super.getInputPorts();
 		// Boolean createSnapshot = this.inputPort.receive();
 
-		if (SnapshotBuilder.createSnapshot) {
+		if (SnapshotBuilder.createSnapshot) {		
 			this.createSnapshot();
 			SnapshotBuilder.createSnapshot = false;
 
@@ -75,11 +80,12 @@ public class SnapshotBuilder extends AbstractStage {
 			} else {
 				this.outputPort.send(this.snapshotURI);
 			}
-
 		}
 	}
 
 	public URI createSnapshot() throws IOException {
+		LOG.info("Creating Snapshot: \t" + this.snapshotURI.toFileString());
+		
 		this.createModelSnapshot(this.modelProviders.getAllocationModelProvider());
 		this.createModelSnapshot(this.modelProviders.getRepositoryModelProvider());
 		this.createModelSnapshot(this.modelProviders.getResourceEnvironmentModelProvider());
