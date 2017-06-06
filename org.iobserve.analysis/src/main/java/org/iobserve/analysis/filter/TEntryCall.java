@@ -73,7 +73,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
         if (event instanceof TraceMetadata) {
             final TraceMetadata metaData = (TraceMetadata) event;
             /** only recognize traces which no parent trace (i.e. would be internal traces) */
-            if (metaData.getParentTraceId() == metaData.getTraceId()) {
+            if (metaData.getParentTraceId() < 0) {
                 this.traceMetaDatas.put(metaData.getTraceId(), metaData);
             }
         } else if (event instanceof BeforeOperationEvent) {
@@ -87,40 +87,51 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                 }
             }
         } else if (event instanceof AfterOperationEvent) {
-            // System.out.println(event.toString());
+
             final AfterOperationEvent afterOperationEvent = (AfterOperationEvent) event;
+
             final TraceMetadata metaData = this.traceMetaDatas.get(afterOperationEvent.getTraceId());
+
             if (metaData != null) {
-                /** actually this is a valid trace */
+
                 final BeforeOperationEvent beforeOperationEvent = this.beforeOperationEvents.get(metaData.getTraceId());
-                /** check whether it matches an before operation event. */
-                if (beforeOperationEvent.getClassSignature().equals(afterOperationEvent.getClassSignature())
-                        && beforeOperationEvent.getOperationSignature()
-                                .equals(afterOperationEvent.getOperationSignature())) {
+                if (beforeOperationEvent != null) {
+                    /** check whether it matches an before operation event. */
+                    if (beforeOperationEvent.getClassSignature().equals(afterOperationEvent.getClassSignature())
+                            && beforeOperationEvent.getOperationSignature()
+                                    .equals(afterOperationEvent.getOperationSignature())) {
 
-                    /** check for extended events **/
-                    String callInformations = "[]";
+                        /** check for extended events **/
+                        String callInformations = "[]";
 
-                    if (beforeOperationEvent instanceof ExtendedBeforeOperationEvent) {
-                        final ExtendedBeforeOperationEvent extendedBeforeOperationEvent = (ExtendedBeforeOperationEvent) beforeOperationEvent;
-                        callInformations = extendedBeforeOperationEvent.getInformations();
+                        if (beforeOperationEvent instanceof ExtendedBeforeOperationEvent) {
+                            final ExtendedBeforeOperationEvent extendedBeforeOperationEvent = (ExtendedBeforeOperationEvent) beforeOperationEvent;
+                            callInformations = extendedBeforeOperationEvent.getInformations();
 
+                        }
+
+                        if (afterOperationEvent instanceof ExtendedAfterOperationEvent) {
+                            final ExtendedAfterOperationEvent extendedAfterOperationEvent = (ExtendedAfterOperationEvent) afterOperationEvent;
+                            final String newInformations = extendedAfterOperationEvent.getInformations();
+
+                            callInformations = this.emptyBrackets.matcher(callInformations).matches() ? newInformations
+                                    : this.closedBracket.matcher(callInformations).replaceAll(",")
+                                            + this.openBracket.matcher(newInformations).replaceAll("");
+
+                        }
+
+                        /**
+                         * if afterOperationEvent has a beforeOperationEvent counterpart remove
+                         * beforeOperationEvent so a second afterOperationEvent with the same
+                         * traceId does not send a call two times
+                         */
+                        this.beforeOperationEvents.remove(metaData.getTraceId(), beforeOperationEvent);
+
+                        this.outputPort.send(new ExtendedEntryCallEvent(beforeOperationEvent.getTimestamp(),
+                                afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
+                                beforeOperationEvent.getClassSignature(), metaData.getSessionId(),
+                                metaData.getHostname(), callInformations));
                     }
-
-                    if (afterOperationEvent instanceof ExtendedAfterOperationEvent) {
-                        final ExtendedAfterOperationEvent extendedAfterOperationEvent = (ExtendedAfterOperationEvent) afterOperationEvent;
-                        final String newInformations = extendedAfterOperationEvent.getInformations();
-
-                        callInformations = this.emptyBrackets.matcher(callInformations).matches() ? newInformations
-                                : this.closedBracket.matcher(callInformations).replaceAll(",")
-                                        + this.openBracket.matcher(newInformations).replaceAll("");               
-
-                    }
-
-                    this.outputPort.send(new ExtendedEntryCallEvent(beforeOperationEvent.getTimestamp(),
-                            afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
-                            beforeOperationEvent.getClassSignature(), metaData.getSessionId(), metaData.getHostname(),
-                            callInformations));
                 }
             }
         } else {
