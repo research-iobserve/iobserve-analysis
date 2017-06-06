@@ -40,7 +40,7 @@ public class EntryCallNode {
      */
     public EntryCallNode(final String signature) {
         this.signature = signature;
-        this.entryCallInformations = new HashSet();
+        this.entryCallInformations = new HashSet<>();
     }
 
     /**

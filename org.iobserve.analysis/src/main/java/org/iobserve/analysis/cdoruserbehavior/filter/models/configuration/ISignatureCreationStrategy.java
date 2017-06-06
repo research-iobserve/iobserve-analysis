@@ -16,10 +16,9 @@
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
-import org.iobserve.analysis.data.EntryCallEvent;
 
 /**
- * interface for the creation strategy of a signature from a {@link EntryCallEvent}
+ * interface for the creation strategy of a signature from a {@link EntryCallNode}
  *
  * @author Christop Dornieden
  *
@@ -27,7 +26,7 @@ import org.iobserve.analysis.data.EntryCallEvent;
 public interface ISignatureCreationStrategy {
 
     /**
-     * create a signature from an entry {@link EntryCallEvent}
+     * create a signature from an entry {@link EntryCallNode}
      *
      * @param event
      *            event
