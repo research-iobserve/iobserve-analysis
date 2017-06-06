@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -16,6 +18,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
 
 public class GraphFactory {
+	private static final Logger LOG = LogManager.getLogger(GraphFactory.class);
+
 	private ModelCollection modelProvider;
 
 	private Map<String, AssemblyContext> assemblyContexts;
@@ -64,6 +68,7 @@ public class GraphFactory {
 		EList<AssemblyContext> assemblyContexts = sysModel.getAssemblyContexts__ComposedStructure();
 
 		for (AssemblyContext assemblyContext : assemblyContexts) {
+			// LOG.info(assemblyContext.getId());
 			this.assemblyContexts.put(assemblyContext.getId(), assemblyContext);
 		}
 	}
@@ -97,8 +102,8 @@ public class GraphFactory {
 		// Check whether the AssemblyContext was found while extracting
 		AssemblyContext assemblyContext = this.assemblyContexts.get(assemblyContext_ID);
 		if (assemblyContext == null) {
-			System.err.printf("The provided AssemblyContext (ID: %s) form the AssemblyConnectorPrivacy (ID: %s) "
-					+ "was not found during the AssemblyContextExtraction", assemblyContext_ID, acp.getId());
+			LOG.error(String.format("The provided AssemblyContext (ID: %s) form the AssemblyConnectorPrivacy (ID: %s) "
+					+ "was not found during the AssemblyContextExtraction", assemblyContext_ID, acp.getId()));
 
 			this.assemblyContexts.put(assemblyContext_ID, acp.getProvidingAssemblyContext_AssemblyConnector());
 		}
@@ -121,7 +126,7 @@ public class GraphFactory {
 			if (resourceContainer instanceof ResourceContainerPrivacy) {
 				this.resourceContainers.put(resourceContainer.getId(), (ResourceContainerPrivacy) resourceContainer);
 			} else {
-				System.err.printf("A ResourceContainer (ID: %s) was found which has no privacy extention\n", resourceContainer.getId());
+				LOG.error(String.format("A ResourceContainer (ID: %s) was found which has no privacy extention", resourceContainer.getId()));
 			}
 		}
 	}
@@ -138,13 +143,14 @@ public class GraphFactory {
 			boolean correctIDs = true;
 			String resContainerID = resContainer.getId();
 			if (!this.resourceContainers.containsKey(resContainerID)) {
-				System.err.printf("A unknown ResourceContainer (ID: %s) was found during allocation context analysis.\n", resContainer.getId());
+				LOG.error(String.format("A unknown ResourceContainer (ID: %s) was found during allocation context analysis.", resContainer.getId()));
 				correctIDs = false;
 			}
 
 			String assemblyContextID = assemblyContext.getId();
 			if (!this.assemblyContexts.containsKey(assemblyContextID)) {
-				System.err.printf("An unknown AssemblyContext (ID: %s) was found during allocation context analysis.\n", assemblyContext.getId());
+				LOG.error(
+						String.format("An unknown AssemblyContext (ID: %s) was found during allocation context analysis.", assemblyContext.getId()));
 				correctIDs = false;
 			}
 

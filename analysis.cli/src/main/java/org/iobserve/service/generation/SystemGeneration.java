@@ -231,13 +231,11 @@ public class SystemGeneration {
 
 		connector.setProvidedRole_AssemblyConnector((OperationProvidedRole) providedRole.get());
 		connector.setRequiredRole_AssemblyConnector((OperationRequiredRole) requiredRole.get());
-		
+
 		float randFloat = ThreadLocalRandom.current().nextFloat();
-		if (randFloat < 0.15)
-		{
+		if (randFloat < 0.15) {
 			connector.setPrivacyLevel(DataPrivacyLvl.PERSONAL);
-		} else if (randFloat < 0.50)
-		{
+		} else if (randFloat < 0.50) {
 			connector.setPrivacyLevel(DataPrivacyLvl.DEPERSONALIZED);
 		} else {
 			connector.setPrivacyLevel(DataPrivacyLvl.ANONYMIZED);

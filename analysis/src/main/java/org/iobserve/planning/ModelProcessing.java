@@ -51,10 +51,9 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 
 		InitializeModelProviders models = new InitializeModelProviders(new File(adaptationData.getRuntimeModelURI().toFileString()));
 		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_MODEL_FOLDER, models);
+		
 		URI snapshotLocation = snapshotBuilder.createSnapshot();
 		planningData.setProcessedModelDir(snapshotLocation);
-		// URI snapshotLocation = snapshotBuilder.createSnapshot();
-		// planningData.setProcessedModelDir(snapshotLocation);
 
 		// ModelTransformer modelTransformer = new ModelTransformer(planningData);
 		// modelTransformer.transformModel();

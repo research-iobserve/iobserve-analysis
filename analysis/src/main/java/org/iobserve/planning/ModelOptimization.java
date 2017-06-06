@@ -25,16 +25,12 @@ public class ModelOptimization extends AbstractTransformation<PlanningData, Plan
 		AdaptationData adaptationData = planningData.getAdaptationData();
 		ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir(), planningData.getLqnsDir());
 
-		int result = exec.startModelGeneration();
+	int result = exec.startModelGeneration();
 
-		if (result == EXEC_ERROR) {
-			adaptationData.setReDeploymentURI(URI.createFileURI(
-					"C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\AssemblyContextActionModel"));
-		} else if (result == EXEC_SUCCESS) {
-			adaptationData.setReDeploymentURI(URI.createFileURI(
-					"C:\\GitRepositorys\\cocome\\cocome-cloud-jee-privacy\\EvalPCMModels\\SystemAdaptation\\ResourceContainerActionModel"));
+		if (result != EXEC_SUCCESS) {
+			throw new RuntimeException("PerOpteryx exited with error code " + result);
 		} else {
-			throw new RuntimeException("PerOpteryx exited with unkown result/exec code");
+			adaptationData.setReDeploymentURI(planningData.getProcessedModelDir());
 		}
 
 		this.outputPort.send(planningData);

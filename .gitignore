@@ -34,3 +34,5 @@ gradle.properties
 repos/
 *.log
 /analysis/res/working_dir/
+peropteryx.plugin/build.xml
+peropteryx.plugin/javaCompiler...args

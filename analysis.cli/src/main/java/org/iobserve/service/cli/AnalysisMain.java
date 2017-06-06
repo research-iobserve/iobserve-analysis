@@ -109,7 +109,7 @@ public final class AnalysisMain {
 						SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(snapshotPath));
 						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelProviderPlatform);
 
-						String legalPrivacyGeoLocationsPath = commandLine.getOptionValue("l");
+						String legalPrivacyGeoLocationsPath = commandLine.getOptionValue("geo");
 						PrivacyAnalysis.setLegalPersonalGeoLocationFile(URI.createFileURI(legalPrivacyGeoLocationsPath));
 						final URI perOpteryxUri = URI.createFileURI(commandLine.getOptionValue("po"));
 

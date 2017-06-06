@@ -23,6 +23,7 @@ public class ModelFileHelper {
 				}
 			}
 		} catch (CoreException e) {
+			LOG.info("EVIL THINGS HAPPEN HERE!!!!!!!!!!");
 		}
 		return null;
 	}

@@ -93,7 +93,6 @@ public final class ResourceEnvironmentModelBuilder {
 	 *         available with the given name.
 	 */
 	public static Optional<ResourceContainer> getResourceContainerByName(final ResourceEnvironment resourceEnvironment, final String name) {
-		// TODO: Change to ResourceContainerPrivacy
 		return resourceEnvironment.getResourceContainer_ResourceEnvironment().stream().filter(container -> container.getEntityName().equals(name))
 				.findFirst();
 	}
