@@ -82,10 +82,10 @@ public class AllocationGeneration {
 	 */
 	private AllocationContext generateAllocationContext(AssemblyContext assemblyContext) {
 		AllocationContext allocationContext = ALLOCATION_FACTORY.createAllocationContext();
+		allocationContext.setAssemblyContext_AllocationContext(assemblyContext);
 
 		int randomIndex = ThreadLocalRandom.current().nextInt(resContainer.length);
 
-		allocationContext.setAssemblyContext_AllocationContext(assemblyContext);
 		allocationContext.setResourceContainer_AllocationContext(this.resContainer[randomIndex]);
 		allocationContext.setEntityName(assemblyContext.getEntityName() + " @ " + this.resContainer[randomIndex].getEntityName());
 		return allocationContext;

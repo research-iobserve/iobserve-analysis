@@ -22,8 +22,8 @@ public class AllocationModification {
 	private System systemModel;
 	private ResourceEnvironment resEnvModel;
 	private ResourceContainer[] resContainer;
-	private HashMap<ResourceContainer, List<AllocationContext>> resContainer2AllocationContext;
-	private HashMap<AssemblyContext, AllocationContext> assemblyCon2AllocationContext;
+	private HashMap<String, List<AllocationContext>> resContainer2AllocationContext;
+	private HashMap<String, AllocationContext> assemblyCon2AllocationContext;
 
 	public AllocationModification(Allocation allocationModel, System systemModel, ResourceEnvironment resEnvModel) {
 		this.allocationModel = allocationModel;
@@ -37,20 +37,20 @@ public class AllocationModification {
 	}
 
 	private void initResContainer2AllocationContext() {
-		this.resContainer2AllocationContext = new HashMap<ResourceContainer, List<AllocationContext>>();
-		this.assemblyCon2AllocationContext = new HashMap<AssemblyContext, AllocationContext>();
+		this.resContainer2AllocationContext = new HashMap<String, List<AllocationContext>>();
+		this.assemblyCon2AllocationContext = new HashMap<String, AllocationContext>();
 
 		for (AllocationContext ac : this.allocationModel.getAllocationContexts_Allocation()) {
 
 			ResourceContainer resCon = ac.getResourceContainer_AllocationContext();
-			if (!this.resContainer2AllocationContext.containsKey(resCon)) {
-				this.resContainer2AllocationContext.put(resCon, new LinkedList<AllocationContext>());
+			if (!this.resContainer2AllocationContext.containsKey(resCon.getId())) {
+				this.resContainer2AllocationContext.put(resCon.getId(), new LinkedList<AllocationContext>());
 			}
-			this.resContainer2AllocationContext.get(resCon).add(ac);
+			this.resContainer2AllocationContext.get(resCon.getId()).add(ac);
 
 			AssemblyContext assemblyCon = ac.getAssemblyContext_AllocationContext();
-			if (!this.assemblyCon2AllocationContext.containsKey(assemblyCon)) {
-				this.assemblyCon2AllocationContext.put(assemblyCon, ac);
+			if (!this.assemblyCon2AllocationContext.containsKey(assemblyCon.getId())) {
+				this.assemblyCon2AllocationContext.put(assemblyCon.getId(), ac);
 			} else {
 				throw new RuntimeException("An assembly context was found twice during assembly context analysis!");
 			}
@@ -67,8 +67,8 @@ public class AllocationModification {
 		int migrationsMade = 0;
 
 		for (ResourceContainer terminatedResCon : terminatedResContainers) {
-			if (this.resContainer2AllocationContext.containsKey(terminatedResCon))
-				for (AllocationContext allocation : this.resContainer2AllocationContext.get(terminatedResCon)) {
+			if (this.resContainer2AllocationContext.containsKey(terminatedResCon.getId()))
+				for (AllocationContext allocation : this.resContainer2AllocationContext.get(terminatedResCon.getId())) {
 					migrateToRandomResourceContainer(allocation);
 					migrationsMade++;
 				}
@@ -84,8 +84,10 @@ public class AllocationModification {
 	public void modifyAllocation_FixDeallocations(List<AssemblyContext> deallocatedAssemblyContexts) {
 
 		for (AssemblyContext deallocatedAssemblyCon : deallocatedAssemblyContexts) {
-			if (this.assemblyCon2AllocationContext.containsKey(deallocatedAssemblyCon)) {
-				AllocationContext allocationCon = this.assemblyCon2AllocationContext.get(deallocatedAssemblyCon);
+
+			if (this.assemblyCon2AllocationContext.containsKey(deallocatedAssemblyCon.getId())) {
+
+				AllocationContext allocationCon = this.assemblyCon2AllocationContext.get(deallocatedAssemblyCon.getId());
 				this.allocationModel.getAllocationContexts_Allocation().remove(allocationCon);
 			}
 		}

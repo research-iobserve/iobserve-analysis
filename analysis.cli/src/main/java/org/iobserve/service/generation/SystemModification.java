@@ -93,7 +93,7 @@ public class SystemModification {
 		for (int i = 0; i < deallocations && assemblyContexts.size() > 0; i++) {
 			int randomIndex = ThreadLocalRandom.current().nextInt(assemblyContexts.size());
 			AssemblyContext assemblyContext = assemblyContexts.remove(randomIndex);
-			// LOG.info("\tREMOVING: \t" + assemblyContext.getId());
+			 LOG.info("REMOVING: \tAssemblyContext: \t" + assemblyContext.getId());
 
 			for (AssemblyConnector assemblyConnector : assemblyConnectors) {
 
@@ -101,7 +101,7 @@ public class SystemModification {
 
 				if (assemblyConnector.getProvidingAssemblyContext_AssemblyConnector() == assemblyContext) {
 
-					String interfaceID = assemblyConnector.getProvidedRole_AssemblyConnector().getProvidedInterface__OperationProvidedRole().getId();
+					String interfaceID = assemblyConnector.getRequiredRole_AssemblyConnector().getRequiredInterface__OperationRequiredRole().getId();
 					if (!this.openRequiredInterfaces.containsKey(interfaceID)) {
 						this.openRequiredInterfaces.put(interfaceID, new ArrayList<AssemblyContext>());
 					}
@@ -111,7 +111,7 @@ public class SystemModification {
 
 				} else if (assemblyConnector.getRequiringAssemblyContext_AssemblyConnector() == assemblyContext) {
 
-					String interfaceID = assemblyConnector.getRequiredRole_AssemblyConnector().getRequiredInterface__OperationRequiredRole().getId();
+					String interfaceID = assemblyConnector.getProvidedRole_AssemblyConnector().getProvidedInterface__OperationProvidedRole().getId();
 					if (!this.openProvidedInterfaces.containsKey(interfaceID)) {
 						this.openProvidedInterfaces.put(interfaceID, new ArrayList<AssemblyContext>());
 					}
@@ -127,6 +127,10 @@ public class SystemModification {
 			
 			deallocatedAssemblyContexts.add(assemblyContext);
 		}
+		
+		for (AssemblyContext ac : deallocatedAssemblyContexts)
+			this.removeInterfaceMaps(ac);
+		
 		return deallocatedAssemblyContexts;
 	}
 
@@ -219,6 +223,20 @@ public class SystemModification {
 		}
 
 		return sb.toString();
+	}
+	
+	
+	private void removeInterfaceMaps(AssemblyContext assemblyContext)
+	{
+		for (String key : this.openProvidedInterfaces.keySet())
+		{
+			this.openProvidedInterfaces.get(key).remove(assemblyContext);
+		}
+		
+		for (String key : this.openRequiredInterfaces.keySet())
+		{
+			this.openRequiredInterfaces.get(key).remove(assemblyContext);
+		}
 	}
 
 }

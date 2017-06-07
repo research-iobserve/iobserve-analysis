@@ -58,6 +58,11 @@ public class ComponentClassificationAnalysis {
 	private void extractComponents() {
 		// add nodes according to privacy lvl
 		for (ComponentNode node : model.getComponents()) {
+			int test = 0;
+			if (node.getPrivacyLvl() == null) {
+				test = 1;
+			}
+
 			switch (node.getPrivacyLvl()) {
 			case PERSONAL:
 				this.personalComponents.add(node);

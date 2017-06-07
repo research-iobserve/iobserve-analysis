@@ -18,37 +18,38 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 
 	@Override
 	protected void execute(AdaptationData element) throws Exception {
-		
+
 		if (element == null || element.getRuntimeGraph() == null) {
 			System.err.println("Privacy Analysis Model is null. Aborting!");
 			return;
 		}
-		
+
 		PrivacyAnalysis.LOG.info("Analysing graph");
 
 		ModelGraph graph = element.getRuntimeGraph();
 
-//		System.out.print("Starting Privacy Analysis ... ");
-//		System.out.println("Component PrivacyLvl analysis ...");
+		// System.out.print("Starting Privacy Analysis ... ");
+		// System.out.println("Component PrivacyLvl analysis ...");
 		// graph.printGraph();
 
 		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(graph);
 		classificationAnalysis.start();
 
-//		System.out.println("Deployment analysis ... ");
+		// System.out.println("Deployment analysis ... ");
 		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(graph, PrivacyAnalysis.getLegalPersonalGeoLocations());
 		String[] legalDeployment = deploymentAnalysis.start();
 
 		if (legalDeployment.length == 0)
 			PrivacyAnalysis.LOG.info("Legal Deployment");
-//			System.out.println("The deployment is LEGAL");
+		// System.out.println("The deployment is LEGAL");
 		else
 			PrivacyAnalysis.LOG.error("ILLEGAL Deployment");
-//			System.err.println("The deployment is ILLEGAL");
+		// System.err.println("The deployment is ILLEGAL");
 
 		// graph.printGraph();
 
-		this.writeComponentClassificationToPCM(graph, element.getRuntimeModelProviders().getSystemModelProvider());
+		//TODO Fix @ generation!
+//		this.writeComponentClassificationToPCM(graph, element.getRuntimeModelProviders().getSystemModelProvider());
 
 		if (legalDeployment.length > 0)
 			this.outputPort.send(element);
