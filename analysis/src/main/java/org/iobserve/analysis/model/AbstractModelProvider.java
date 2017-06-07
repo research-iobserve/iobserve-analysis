@@ -211,6 +211,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	 */
 	public void setModel(T model) {
 		this.model = model;
+		this.modelLoaded = true;
 	}
 
 	/**

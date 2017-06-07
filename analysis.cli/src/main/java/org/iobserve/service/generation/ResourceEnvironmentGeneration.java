@@ -18,17 +18,34 @@ public class ResourceEnvironmentGeneration {
 		this.resourceEnvironment.setEntityName(modelName);
 	}
 
+	public ResourceEnvironmentGeneration(ResourceEnvironment resEnvModel) {
+		this.resourceEnvironment = resEnvModel;
+	}
+
 	public ResourceEnvironment craeteResourceEnvironment(int resourceContainerCount) {
 		for (int i = 0; i < resourceContainerCount; i++) {
-			ResourceContainerPrivacy resContainer = RES_ENV_PRIVACY_FACTORY.createResourceContainerPrivacy();
-			resContainer.setEntityName(Integer.toString(i) + "_ResCon");
-			
-			int randGeoLocation = ThreadLocalRandom.current().nextInt(1000);
-			resContainer.setGeolocation(randGeoLocation);
-
+			String prefix = Integer.toString(i);
+			ResourceContainerPrivacy resContainer = createResourceContainer(prefix);
 			this.resourceEnvironment.getResourceContainer_ResourceEnvironment().add(resContainer);
 		}
 		return this.resourceEnvironment;
+	}
+
+	public void addResourceContainers(int resourceContainerCount, String postPrefix) {
+		for (int i = 0; i < resourceContainerCount; i++) {
+			String prefix = Integer.toString(i);
+			ResourceContainerPrivacy resContainer = createResourceContainer(prefix + "_" + postPrefix);
+			this.resourceEnvironment.getResourceContainer_ResourceEnvironment().add(resContainer);
+		}
+	}
+
+	private ResourceContainerPrivacy createResourceContainer(String prefix) {
+		ResourceContainerPrivacy resContainer = RES_ENV_PRIVACY_FACTORY.createResourceContainerPrivacy();
+		resContainer.setEntityName(prefix + "_ResCon");
+
+		int randGeoLocation = ThreadLocalRandom.current().nextInt(1000);
+		resContainer.setGeolocation(randGeoLocation);
+		return resContainer;
 	}
 
 }
