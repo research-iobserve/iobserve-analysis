@@ -48,13 +48,12 @@ public class TestGeneric {
         final Repository repository = repositoryModelProvider.getModel();
 
         /** Write to DB1 */
-        System.out.println("Writing to DB1");
-        new ModelProvider(graph).createComponent(repository);
+        // System.out.println("Writing to DB1");
+        // new ModelProvider(graph).createComponent(repository);
 
         /** Read interface (id -> object) from DB1 */
         // System.out.println("Reading interface (id -> object) from DB1");
-        // final OperationInterface inter = (OperationInterface) new
-        // GenericComponentProvider<>(graph)
+        // final OperationInterface inter = (OperationInterface) new ModelProvider(graph)
         // .readComponent("OperationInterface", "_j8RD0NYgEeWrM-HnT5f_ug");
 
         /** Read repository (id -> object) from DB1 */

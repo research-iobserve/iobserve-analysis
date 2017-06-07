@@ -49,14 +49,14 @@ public class ModelProvider {
     public static final String REF_NAME = "refName";
 
     private final GraphDatabaseService graph;
-    private final HashMap<String, DataType> dataTypes;
+    private final HashMap<Node, DataType> dataTypes;
 
     public ModelProvider(final GraphDatabaseService graph) {
         this.graph = graph;
         this.dataTypes = new HashMap<>();
     }
 
-    public ModelProvider(final GraphDatabaseService graph, final HashMap<String, DataType> dataTypes) {
+    public ModelProvider(final GraphDatabaseService graph, final HashMap<Node, DataType> dataTypes) {
         this.graph = graph;
         this.dataTypes = dataTypes;
     }
@@ -191,6 +191,11 @@ public class ModelProvider {
             tx.success();
         }
 
+        // Already register unfinished types because there might be circles with inner declarations
+        if (component instanceof DataType) {
+            this.getDataTypes().putIfAbsent(node, (DataType) component);
+        }
+
         // Iterate over all references...
         for (final EReference ref : component.eClass().getEAllReferences()) {
             final String refName = ref.getName();
@@ -198,7 +203,7 @@ public class ModelProvider {
 
             try (final Transaction tx = this.getGraph().beginTx()) {
 
-                // ...and iterate over all outgoing containment or type relationships of the node */
+                // ...and iterate over all outgoing containment or type relationships of the node
                 for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
                         PcmRelationshipType.IS_TYPE)) {
 
@@ -221,15 +226,22 @@ public class ModelProvider {
                         } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
                             // System.out.println("\t" + component + " reference " + refName);
 
+                            // Look if this data type has already been created
+                            EObject endComponent = this.getDataTypes().get(endNode);
+
+                            if (endComponent == null) {
+                                endComponent = this.readComponent(endNode);
+                            }
+
                             if (refReprensation instanceof EList<?>) {
-                                final EObject endComponent = new DataTypeProvider(this.graph, this.dataTypes)
-                                        .readComponent(endNode);
                                 ((EList<EObject>) refReprensation).add(endComponent);
                             } else {
-                                refReprensation = new DataTypeProvider(this.graph, this.dataTypes)
-                                        .readComponent(endNode);
-                                component.eSet(ref, refReprensation);
+                                component.eSet(ref, endComponent);
                             }
+
+                            // Replace possibly unfinished data type
+                            this.getDataTypes().replace(node, (DataType) endComponent);
+
                         }
                     }
                 }
@@ -261,7 +273,7 @@ public class ModelProvider {
     public void deleteComponent(final EObject component) {
     }
 
-    public HashMap<String, DataType> getDataTypes() {
+    public HashMap<Node, DataType> getDataTypes() {
         return this.dataTypes;
     }
 
