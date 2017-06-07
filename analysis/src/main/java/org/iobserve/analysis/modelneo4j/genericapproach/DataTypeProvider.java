@@ -30,6 +30,7 @@ import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.repository.CompositeDataType;
+import org.palladiosimulator.pcm.repository.DataType;
 
 /**
  *
@@ -38,20 +39,11 @@ import org.palladiosimulator.pcm.repository.CompositeDataType;
  */
 public class DataTypeProvider extends GenericComponentProvider<EObject> {
 
-    private final HashMap<String, EObject> modelTypes;
     private final HashMap<Node, EObject> subtypes;
 
-    public DataTypeProvider(final GraphDatabaseService graph, final HashMap<String, EObject> modelTypes) {
-        super(graph);
-        this.modelTypes = modelTypes;
+    public DataTypeProvider(final GraphDatabaseService graph, final HashMap<String, DataType> dataTypes) {
+        super(graph, dataTypes);
         this.subtypes = new HashMap<>();
-    }
-
-    public DataTypeProvider(final GraphDatabaseService graph, final HashMap<String, EObject> modelTypes,
-            final HashMap<Node, EObject> subtypes) {
-        super(graph);
-        this.modelTypes = modelTypes;
-        this.subtypes = subtypes;
     }
 
     @Override
@@ -64,7 +56,7 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
          */
         Label label;
         try (Transaction tx = this.getGraph().beginTx()) {
-            label = this.getFirstLabel(node.getLabels());
+            label = ModelNeo4jUtil.getFirstLabel(node.getLabels());
             tx.success();
         }
 
@@ -75,7 +67,7 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
             }
             return unfinishedComponent;
         } else {
-            final EObject component = this.instantiateEObject(label.name());
+            final EObject component = ModelNeo4jUtil.instantiateEObject(label.name());
 
             /** Iterate over all attributes */
             try (Transaction tx = this.getGraph().beginTx()) {
@@ -83,7 +75,8 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
                 for (final EAttribute attr : component.eClass().getEAllAttributes()) {
                     // System.out.print("\t" + component + " attribute " + attr.getName() + " = ");
                     try {
-                        final Object value = this.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
+                        final Object value = ModelNeo4jUtil.instantiateAttribute(
+                                attr.getEAttributeType().getInstanceClass(),
                                 node.getProperty(attr.getName()).toString());
                         // System.out.println(value);
                         if (value != null) {
@@ -135,19 +128,20 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
                                             + " " + endNode);
                                 }
                                 String typeName;
-                                if (this.getFirstLabel(endNode.getLabels()).name().equals("PrimitiveDataType")) {
+                                if (ModelNeo4jUtil.getFirstLabel(endNode.getLabels()).name()
+                                        .equals("PrimitiveDataType")) {
                                     typeName = (String) endNode.getProperty(GenericComponentProvider.TYPE);
                                 } else {
                                     typeName = (String) endNode.getProperty(GenericComponentProvider.ENTITY_NAME);
                                 }
-                                refReprensation = this.modelTypes.get(typeName);
+                                refReprensation = this.getDataTypes().get(typeName);
                                 if (debug) {
                                     System.out.println("refReprentation at 1 " + refReprensation + " : " + typeName);
                                 }
 
                                 if (refReprensation == null) {
                                     refReprensation = this.readComponent(endNode);
-                                    this.modelTypes.put(typeName, (EObject) refReprensation);
+                                    this.getDataTypes().put(typeName, (DataType) refReprensation);
                                 }
                                 if (debug) {
                                     System.out.println("refReprentation at 2 " + refReprensation + " : " + typeName);
