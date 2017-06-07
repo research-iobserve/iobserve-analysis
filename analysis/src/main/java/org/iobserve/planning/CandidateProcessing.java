@@ -22,7 +22,11 @@ public class CandidateProcessing extends AbstractTransformation<PlanningData, Ad
 	protected void execute(PlanningData element) throws Exception {
 		CandidateGeneration.LOG.info("Candiate Processing");
 		AdaptationData adapdationData = element.getAdaptationData();
-
+		
+		String reDeploymentURIString = adapdationData.getReDeploymentURI().toFileString();
+		InitializeModelProviders initModelProvider = new InitializeModelProviders(new File(reDeploymentURIString));
+		adapdationData.setReDeploymentModelProviders(initModelProvider);
+		
 		GraphFactory factory = new GraphFactory();
 		ModelGraph graph = factory.buildGraph(new InitializeModelProviders(new File(adapdationData.getReDeploymentURI().toFileString())));
 		element.getAdaptationData().setReDeploymentGraph(graph);

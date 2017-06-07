@@ -1,18 +1,25 @@
 package org.iobserve.service.generation;
 
+import java.io.File;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.gradle.internal.impldep.com.esotericsoftware.minlog.Log;
+import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.analysis.graph.GraphFactory;
 
 public class EvaluationGeneration {
 
-//	private static final Logger LOG = LogManager.getLogger(EvaluationGeneration.class);
+	 private static final Logger LOG = LogManager.getLogger(EvaluationGeneration.class);
 
 	public static void main(String[] args) {
-		
+
 		final CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine commandLine = parser.parse(createHelpOptions(), args);
@@ -24,20 +31,38 @@ public class EvaluationGeneration {
 				commandLine = parser.parse(createOptions(), args);
 
 				if (commandLine.hasOption("n")) {
+					clearDirectory(commandLine.getOptionValue("o"));
 					ModelGeneration.createNewModel(commandLine);
-				} 
-				if (commandLine.hasOption("m")) {
-					ModelModification.createNewModel(commandLine);
-				}
 
+					InitializeModelProviders modelProviers = new InitializeModelProviders(new File(commandLine.getOptionValue("o")));
+					GraphFactory graphFactory = new GraphFactory();
+					graphFactory.buildGraph(modelProviers.getModelCollection());
+				}
+				if (commandLine.hasOption("m")) {
+					clearDirectory(commandLine.getOptionValue("o"));
+					ModelModification.createNewModel(commandLine);
+
+					InitializeModelProviders modelProviers = new InitializeModelProviders(new File(commandLine.getOptionValue("o")));
+					GraphFactory graphFactory = new GraphFactory();
+					graphFactory.buildGraph(modelProviers.getModelCollection());
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
+
+	private static void clearDirectory(String fileURI) {
+		LOG.info("Clearing output folder: " + fileURI);
+		File outputDir = new File(fileURI);
+
+		if (outputDir.exists()) {
+			for (File file : outputDir.listFiles())
+				if (!file.isDirectory())
+					file.delete();
+		}
+	}
+
 	/**
 	 * Create the command line parameter setup.
 	 *

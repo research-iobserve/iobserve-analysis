@@ -7,11 +7,14 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceenvironmentPrivacyFactory;
 
+import com.neovisionaries.i18n.CountryCode;
+
 public class ResourceEnvironmentGeneration {
 
 	private static ResourceenvironmentFactory RES_ENV_FACTORY = ResourceenvironmentFactory.eINSTANCE;
 	private static ResourceenvironmentPrivacyFactory RES_ENV_PRIVACY_FACTORY = ResourceenvironmentPrivacyFactory.eINSTANCE;
 	private ResourceEnvironment resourceEnvironment;
+	private CountryCode[] countryCodes = CountryCode.values();
 
 	public ResourceEnvironmentGeneration(String modelName) {
 		this.resourceEnvironment = RES_ENV_FACTORY.createResourceEnvironment();
@@ -42,9 +45,10 @@ public class ResourceEnvironmentGeneration {
 	private ResourceContainerPrivacy createResourceContainer(String prefix) {
 		ResourceContainerPrivacy resContainer = RES_ENV_PRIVACY_FACTORY.createResourceContainerPrivacy();
 		resContainer.setEntityName(prefix + "_ResCon");
-
-		int randGeoLocation = ThreadLocalRandom.current().nextInt(1000);
-		resContainer.setGeolocation(randGeoLocation);
+		
+		int randGeoLocation = ThreadLocalRandom.current().nextInt(this.countryCodes.length);
+		resContainer.setGeolocation(this.countryCodes[randGeoLocation].getNumeric());
+		
 		return resContainer;
 	}
 

@@ -52,8 +52,8 @@ public class ModelModification {
 		allocMod = new AllocationModification(models.getAllocationModel(), models.getSystemModel(), models.getResourceEnvironmentModel());
 		allocMod.modifyAllocation_FixDeallocations(deallocatedACs);
 
-		LOG.info("Exchanging Components");
-		sysMod.modifySystem_ChangeComp(Integer.parseInt(commandLine.getOptionValue("cr")));
+		// LOG.info("Exchanging Components");
+		// sysMod.modifySystem_ChangeComp(Integer.parseInt(commandLine.getOptionValue("cr")));
 
 		LOG.info("Allocating new Components");
 		List<AssemblyContext> allocatedACs = sysMod.modifySystem_Allocate(Integer.parseInt(commandLine.getOptionValue("al")));
@@ -61,7 +61,7 @@ public class ModelModification {
 		LOG.info("Creating Allocation for new components");
 		allocMod = new AllocationModification(models.getAllocationModel(), models.getSystemModel(), models.getResourceEnvironmentModel());
 		allocMod.modifyAllocation_FixAllocations(allocatedACs);
-		// int allocationMigrations = allocatedACs.size();
+		int allocationMigrations = allocatedACs.size();
 
 		LOG.info("Creating migrations");
 		allocMod = new AllocationModification(models.getAllocationModel(), models.getSystemModel(), models.getResourceEnvironmentModel());

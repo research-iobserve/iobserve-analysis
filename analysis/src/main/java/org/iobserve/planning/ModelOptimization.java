@@ -27,11 +27,14 @@ public class ModelOptimization extends AbstractTransformation<PlanningData, Plan
 
 		ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir(), planningData.getLqnsDir());
 
-		int result = exec.startModelGeneration();
+		int result = 2;//exec.startModelGeneration();
 
 		if (result != EXEC_SUCCESS) {
 			//adaptationData.setReDeploymentURI(URI.createFileURI("C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\processedModel\\PerOpteryx_results\\costOptimalModel"));
 			throw new RuntimeException("PerOpteryx exited with error code " + result);
+			//String uriString = "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\Test";
+
+			//adaptationData.setReDeploymentURI(URI.createFileURI(uriString));
 		} else {
 			throw new RuntimeException("PerOpteryx exited with unkown result/exec code");
 		}

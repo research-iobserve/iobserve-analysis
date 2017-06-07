@@ -61,7 +61,11 @@ public class DeploymentNode {
 	 * @return the Iso Alpha3 Country Code
 	 */
 	public String getIso3CountryCode() {
-		return CountryCode.getByCode(this.getIsoCountryCode()).getAlpha3();
+		try {
+			return CountryCode.getByCode(this.getIsoCountryCode()).getAlpha3();
+		} catch (NullPointerException e) {
+			return "ERROR";
+		}
 	}
 
 	/**
@@ -89,8 +93,7 @@ public class DeploymentNode {
 	public boolean equals(Object obj) {
 		if (obj instanceof DeploymentNode) {
 			DeploymentNode compObj = (DeploymentNode) obj;
-			if (this.resourceContainerID.equals(compObj.resourceContainerID) 
-					&& this.resourceContainerName.equals(compObj.resourceContainerName)
+			if (this.resourceContainerID.equals(compObj.resourceContainerID) && this.resourceContainerName.equals(compObj.resourceContainerName)
 					&& this.isoCountryCode == compObj.isoCountryCode) {
 				return true;
 			}
