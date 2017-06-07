@@ -29,7 +29,6 @@ import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.Transaction;
-import org.palladiosimulator.pcm.repository.CompositeDataType;
 import org.palladiosimulator.pcm.repository.DataType;
 
 /**
@@ -39,6 +38,7 @@ import org.palladiosimulator.pcm.repository.DataType;
  */
 public class DataTypeProvider extends ModelProvider {
 
+    /** Map of a datatype's subnodes + subtypes to detect circles */
     private final HashMap<Node, EObject> subtypes;
 
     public DataTypeProvider(final GraphDatabaseService graph, final HashMap<String, DataType> dataTypes) {
@@ -48,48 +48,38 @@ public class DataTypeProvider extends ModelProvider {
 
     @Override
     public EObject readComponent(final Node node) {
-        boolean debug = false;
 
-        /**
-         * Get the node's data type from its label and instantiate a new empty object of this data
-         * type
-         */
+        // Get the node's data type name...
         Label label;
         try (Transaction tx = this.getGraph().beginTx()) {
             label = ModelProviderUtil.getFirstLabel(node.getLabels());
             tx.success();
         }
 
+        // Look if there has already been created an object for this node
         final EObject unfinishedComponent = this.subtypes.get(node);
+
         if (unfinishedComponent != null) {
-            if (node.getId() == 646) {
-                System.out.println(node + " " + node.getProperty(ModelProvider.ENTITY_NAME));
-            }
             return unfinishedComponent;
         } else {
+            // ...and instantiate a new empty object of this data type
             final EObject component = ModelProviderUtil.instantiateEObject(label.name());
 
-            /** Iterate over all attributes */
             try (Transaction tx = this.getGraph().beginTx()) {
 
+                // Iterate over all attributes and get their values from the node
                 for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                    // System.out.print("\t" + component + " attribute " + attr.getName() + " = ");
+
                     try {
                         final Object value = ModelProviderUtil.instantiateAttribute(
                                 attr.getEAttributeType().getInstanceClass(),
                                 node.getProperty(attr.getName()).toString());
-                        // System.out.println(value);
+
                         if (value != null) {
                             component.eSet(attr, value);
-                            if (node.getId() == 646) {
-                                System.out.println(attr + " " + value);
-                            }
-
-                            if (value.equals("List_products"/* "list_productAmountTO" */)) {
-                                debug = true;
-                            }
-
                         }
+                        // System.out.println("\t" + component + " attribute " + attr.getName() + "
+                        // = " + value);
                     } catch (final NotFoundException e) {
                         component.eSet(attr, null);
                     }
@@ -98,23 +88,28 @@ public class DataTypeProvider extends ModelProvider {
 
             }
 
+            // Add the unfinished component
             this.subtypes.put(node, component);
 
-            /** Iterate over all references */
+            // Iterate over all references...
             for (final EReference ref : component.eClass().getEAllReferences()) {
                 final String refName = ref.getName();
                 Object refReprensation = component.eGet(ref);
 
                 try (final Transaction tx = this.getGraph().beginTx()) {
-                    /** Iterate over all outgoing containment relationships of the node */
-                    for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
-                        /** If a relationship in the graph matches the references name... */
+
+                    // ...and iterate over all outgoing containment or type relationships of the
+                    // node */
+                    for (final Relationship rel : node.getRelationships(Direction.OUTGOING,
+                            PcmRelationshipType.CONTAINS, PcmRelationshipType.IS_TYPE)) {
+
+                        // If a relationship in the graph matches the references name...
                         if (refName.equals(rel.getProperty(ModelProvider.REF_NAME))) {
                             final Node endNode = rel.getEndNode();
 
-                            /** Only create a new object for containments */
+                            // ...recursively create an instance of the referenced object
                             if (rel.isType(PcmRelationshipType.CONTAINS)) {
-                                /** ...recursively create an instance of the referenced object */
+
                                 if (refReprensation instanceof EList<?>) {
                                     final EObject endComponent = this.readComponent(endNode);
                                     ((EList<EObject>) refReprensation).add(endComponent);
@@ -123,36 +118,24 @@ public class DataTypeProvider extends ModelProvider {
                                     component.eSet(ref, refReprensation);
                                 }
                             } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
-                                if (debug) {
-                                    System.out.println(node + " " + component + " " + refName + " " + refReprensation
-                                            + " " + endNode);
-                                }
                                 String typeName;
+
                                 if (ModelProviderUtil.getFirstLabel(endNode.getLabels()).name()
                                         .equals("PrimitiveDataType")) {
                                     typeName = (String) endNode.getProperty(ModelProvider.TYPE);
                                 } else {
                                     typeName = (String) endNode.getProperty(ModelProvider.ENTITY_NAME);
                                 }
+
+                                // Look if this data type has already been created
                                 refReprensation = this.getDataTypes().get(typeName);
-                                if (debug) {
-                                    System.out.println("refReprentation at 1 " + refReprensation + " : " + typeName);
-                                }
 
                                 if (refReprensation == null) {
                                     refReprensation = this.readComponent(endNode);
                                     this.getDataTypes().put(typeName, (DataType) refReprensation);
                                 }
-                                if (debug) {
-                                    System.out.println("refReprentation at 2 " + refReprensation + " : " + typeName);
-                                }
 
                                 component.eSet(ref, refReprensation);
-
-                                if (debug) {
-                                    System.out.println("component.eget(ref) "
-                                            + ((CompositeDataType) component.eGet(ref)).getEntityName());
-                                }
                             }
                         }
                     }
