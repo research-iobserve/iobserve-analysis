@@ -101,7 +101,6 @@ public class ModelProvider {
                         // " + value.toString());
                     }
                 }
-
                 tx.success();
             }
 
