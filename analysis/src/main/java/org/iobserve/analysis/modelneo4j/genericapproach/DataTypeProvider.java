@@ -37,7 +37,7 @@ import org.palladiosimulator.pcm.repository.DataType;
  * @author Lars Bluemke
  *
  */
-public class DataTypeProvider extends GenericComponentProvider<EObject> {
+public class DataTypeProvider extends ModelProvider {
 
     private final HashMap<Node, EObject> subtypes;
 
@@ -56,18 +56,18 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
          */
         Label label;
         try (Transaction tx = this.getGraph().beginTx()) {
-            label = ModelNeo4jUtil.getFirstLabel(node.getLabels());
+            label = ModelProviderUtil.getFirstLabel(node.getLabels());
             tx.success();
         }
 
         final EObject unfinishedComponent = this.subtypes.get(node);
         if (unfinishedComponent != null) {
             if (node.getId() == 646) {
-                System.out.println(node + " " + node.getProperty(GenericComponentProvider.ENTITY_NAME));
+                System.out.println(node + " " + node.getProperty(ModelProvider.ENTITY_NAME));
             }
             return unfinishedComponent;
         } else {
-            final EObject component = ModelNeo4jUtil.instantiateEObject(label.name());
+            final EObject component = ModelProviderUtil.instantiateEObject(label.name());
 
             /** Iterate over all attributes */
             try (Transaction tx = this.getGraph().beginTx()) {
@@ -75,7 +75,7 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
                 for (final EAttribute attr : component.eClass().getEAllAttributes()) {
                     // System.out.print("\t" + component + " attribute " + attr.getName() + " = ");
                     try {
-                        final Object value = ModelNeo4jUtil.instantiateAttribute(
+                        final Object value = ModelProviderUtil.instantiateAttribute(
                                 attr.getEAttributeType().getInstanceClass(),
                                 node.getProperty(attr.getName()).toString());
                         // System.out.println(value);
@@ -109,7 +109,7 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
                     /** Iterate over all outgoing containment relationships of the node */
                     for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
                         /** If a relationship in the graph matches the references name... */
-                        if (refName.equals(rel.getProperty(GenericComponentProvider.REF_NAME))) {
+                        if (refName.equals(rel.getProperty(ModelProvider.REF_NAME))) {
                             final Node endNode = rel.getEndNode();
 
                             /** Only create a new object for containments */
@@ -128,11 +128,11 @@ public class DataTypeProvider extends GenericComponentProvider<EObject> {
                                             + " " + endNode);
                                 }
                                 String typeName;
-                                if (ModelNeo4jUtil.getFirstLabel(endNode.getLabels()).name()
+                                if (ModelProviderUtil.getFirstLabel(endNode.getLabels()).name()
                                         .equals("PrimitiveDataType")) {
-                                    typeName = (String) endNode.getProperty(GenericComponentProvider.TYPE);
+                                    typeName = (String) endNode.getProperty(ModelProvider.TYPE);
                                 } else {
-                                    typeName = (String) endNode.getProperty(GenericComponentProvider.ENTITY_NAME);
+                                    typeName = (String) endNode.getProperty(ModelProvider.ENTITY_NAME);
                                 }
                                 refReprensation = this.getDataTypes().get(typeName);
                                 if (debug) {

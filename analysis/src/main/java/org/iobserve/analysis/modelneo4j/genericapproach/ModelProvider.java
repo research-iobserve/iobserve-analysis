@@ -40,9 +40,8 @@ import org.palladiosimulator.pcm.repository.PrimitiveDataType;
  *
  * @author Lars Bluemke
  *
- * @param <T>
  */
-public class GenericComponentProvider<T extends EObject> {
+public class ModelProvider {
 
     public static final String ID = "id";
     public static final String ENTITY_NAME = "entityName";
@@ -52,19 +51,19 @@ public class GenericComponentProvider<T extends EObject> {
     private final GraphDatabaseService graph;
     private final HashMap<String, DataType> dataTypes;
 
-    public GenericComponentProvider(final GraphDatabaseService graph) {
+    public ModelProvider(final GraphDatabaseService graph) {
         this.graph = graph;
         this.dataTypes = new HashMap<>();
     }
 
-    public GenericComponentProvider(final GraphDatabaseService graph, final HashMap<String, DataType> dataTypes) {
+    public ModelProvider(final GraphDatabaseService graph, final HashMap<String, DataType> dataTypes) {
         this.graph = graph;
         this.dataTypes = dataTypes;
     }
 
-    public Node createComponent(final T component) {
+    public Node createComponent(final EObject component) {
         /** Create a label representing the type of the component */
-        final Label label = Label.label(ModelNeo4jUtil.getTypeName(component.eClass()));
+        final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         // System.out.println("Writing " + this.getTypeName(component.eClass()));
         Node node = null;
 
@@ -75,12 +74,12 @@ public class GenericComponentProvider<T extends EObject> {
          */
         if (component instanceof Entity) {
             try (Transaction tx = this.getGraph().beginTx()) {
-                node = this.getGraph().findNode(label, GenericComponentProvider.ID, ((Entity) component).getId());
+                node = this.getGraph().findNode(label, ModelProvider.ID, ((Entity) component).getId());
                 tx.success();
             }
         } else if (component instanceof PrimitiveDataType) {
             try (Transaction tx = this.getGraph().beginTx()) {
-                node = this.getGraph().findNode(label, GenericComponentProvider.TYPE,
+                node = this.getGraph().findNode(label, ModelProvider.TYPE,
                         ((PrimitiveDataType) component).getType().name());
                 tx.success();
             }
@@ -129,13 +128,13 @@ public class GenericComponentProvider<T extends EObject> {
                         // System.out.println("\t" + component + " reference " + o);
 
                         /** Let a new provider create a node for the referenced component */
-                        final Node refNode = new GenericComponentProvider<>(this.graph).createComponent((EObject) o);
+                        final Node refNode = this.createComponent((EObject) o);
 
                         /** When the new node is created, create a reference */
                         try (Transaction tx = this.getGraph().beginTx()) {
                             final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelNeo4jUtil.getRelationshipType(ref, o));
-                            rel.setProperty(GenericComponentProvider.REF_NAME, ref.getName());
+                                    ModelProviderUtil.getRelationshipType(ref, o));
+                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                             tx.success();
                         }
                     }
@@ -144,14 +143,13 @@ public class GenericComponentProvider<T extends EObject> {
                         // System.out.println("\t" + component + " reference " + refReprensation);
 
                         /** Let a new provider create a node for the referenced component */
-                        final Node refNode = new GenericComponentProvider<>(this.graph)
-                                .createComponent((EObject) refReprensation);
+                        final Node refNode = this.createComponent((EObject) refReprensation);
 
                         /** When the new node is created, create a reference */
                         try (Transaction tx = this.getGraph().beginTx()) {
                             final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelNeo4jUtil.getRelationshipType(ref, refReprensation));
-                            rel.setProperty(GenericComponentProvider.REF_NAME, ref.getName());
+                                    ModelProviderUtil.getRelationshipType(ref, refReprensation));
+                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                             tx.success();
                         }
                     }
@@ -167,7 +165,7 @@ public class GenericComponentProvider<T extends EObject> {
         Node node;
 
         try (Transaction tx = this.getGraph().beginTx()) {
-            node = this.getGraph().findNode(label, GenericComponentProvider.ID, id);
+            node = this.getGraph().findNode(label, ModelProvider.ID, id);
             tx.success();
         }
 
@@ -181,11 +179,11 @@ public class GenericComponentProvider<T extends EObject> {
          */
         Label label;
         try (Transaction tx = this.getGraph().beginTx()) {
-            label = ModelNeo4jUtil.getFirstLabel(node.getLabels());
+            label = ModelProviderUtil.getFirstLabel(node.getLabels());
             tx.success();
         }
 
-        final EObject component = ModelNeo4jUtil.instantiateEObject(label.name());
+        final EObject component = ModelProviderUtil.instantiateEObject(label.name());
 
         /** Iterate over all attributes */
         try (Transaction tx = this.getGraph().beginTx()) {
@@ -194,7 +192,7 @@ public class GenericComponentProvider<T extends EObject> {
             for (final EAttribute attr : component.eClass().getEAllAttributes()) {
                 // System.out.print("\t" + component + " attribute " + attr.getName() + " = ");
                 try {
-                    final Object value = ModelNeo4jUtil.instantiateAttribute(
+                    final Object value = ModelProviderUtil.instantiateAttribute(
                             attr.getEAttributeType().getInstanceClass(), node.getProperty(attr.getName()).toString());
                     // System.out.println(value);
                     if (value != null) {
@@ -216,7 +214,7 @@ public class GenericComponentProvider<T extends EObject> {
                 /** Iterate over all outgoing containment relationships of the node */
                 for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
                     /** If a relationship in the graph matches the references name... */
-                    if (refName.equals(rel.getProperty(GenericComponentProvider.REF_NAME))) {
+                    if (refName.equals(rel.getProperty(ModelProvider.REF_NAME))) {
                         final Node endNode = rel.getEndNode();
 
                         /** Only create a new object for containments */
@@ -224,12 +222,10 @@ public class GenericComponentProvider<T extends EObject> {
                             // System.out.println("\t" + component + " reference " + refName);
                             /** ...recursively create an instance of the referenced object */
                             if (refReprensation instanceof EList<?>) {
-                                final EObject endComponent = new GenericComponentProvider<>(this.graph, this.dataTypes)
-                                        .readComponent(endNode);
+                                final EObject endComponent = this.readComponent(endNode);
                                 ((EList<EObject>) refReprensation).add(endComponent);
                             } else {
-                                refReprensation = new GenericComponentProvider<>(this.graph, this.dataTypes)
-                                        .readComponent(endNode);
+                                refReprensation = this.readComponent(endNode);
                                 component.eSet(ref, refReprensation);
 
                             }
@@ -262,7 +258,7 @@ public class GenericComponentProvider<T extends EObject> {
 
             while (nodes.hasNext()) {
                 final Node n = nodes.next();
-                ids.add(n.getProperty(GenericComponentProvider.ID).toString());
+                ids.add(n.getProperty(ModelProvider.ID).toString());
             }
 
             tx.success();
@@ -270,10 +266,10 @@ public class GenericComponentProvider<T extends EObject> {
         }
     }
 
-    public void updateComponent(final T component) {
+    public void updateComponent(final EObject component) {
     }
 
-    public void deleteComponent(final T component) {
+    public void deleteComponent(final EObject component) {
     }
 
     public HashMap<String, DataType> getDataTypes() {

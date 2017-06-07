@@ -70,7 +70,7 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  * @author Lars Bluemke
  *
  */
-public class ModelNeo4jUtil {
+public class ModelProviderUtil {
 
     public static Label getFirstLabel(final Iterable<Label> labels) {
         for (final Label l : labels) {
