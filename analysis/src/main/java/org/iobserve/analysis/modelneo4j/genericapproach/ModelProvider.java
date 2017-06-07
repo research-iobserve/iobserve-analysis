@@ -40,8 +40,9 @@ import org.palladiosimulator.pcm.repository.PrimitiveDataType;
  *
  * @author Lars Bluemke
  *
+ * @param <T>
  */
-public class ModelProvider {
+public class ModelProvider<T extends EObject> {
 
     public static final String ID = "id";
     public static final String ENTITY_NAME = "entityName";
@@ -148,8 +149,8 @@ public class ModelProvider {
         return node;
     }
 
-    public EObject readComponent(final String typeName, final String id) {
-        final Label label = Label.label(typeName);
+    public EObject readComponent(final Class<T> clazz, final String id) {
+        final Label label = Label.label(clazz.getSimpleName());
         Node node;
 
         try (Transaction tx = this.getGraph().beginTx()) {

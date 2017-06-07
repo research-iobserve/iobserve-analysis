@@ -21,6 +21,7 @@ import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.Repository;
 
 /**
@@ -41,29 +42,36 @@ public class TestGeneric {
         TestGeneric.registerShutdownHook(graph2);
         System.out.println("Started DBs");
 
-        /** Load repository model */
         final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
+
+                /** Load repository model */
                 TestGeneric.PCM_MODELS_DIRECTORY);
         final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
         final Repository repository = repositoryModelProvider.getModel();
+
+        /** Load usage model */
+        // final UsageModelProvider usageModelProvider =
+        // modelProviderPlatform.getUsageModelProvider();
+        // final UsageModel usageModel = usageModelProvider.getModel();
 
         /** Write to DB1 */
         // System.out.println("Writing to DB1");
         // new ModelProvider(graph).createComponent(repository);
 
         /** Read interface (id -> object) from DB1 */
-        // System.out.println("Reading interface (id -> object) from DB1");
-        // final OperationInterface inter = (OperationInterface) new ModelProvider(graph)
-        // .readComponent("OperationInterface", "_j8RD0NYgEeWrM-HnT5f_ug");
+        System.out.println("Reading interface (id -> object) from DB1");
+        final OperationInterface inter = (OperationInterface) new ModelProvider<OperationInterface>(graph)
+                .readComponent(OperationInterface.class, "_j8RD0NYgEeWrM-HnT5f_ug");
 
-        /** Read repository (id -> object) from DB1 */
-        System.out.println("Reading repository (id -> object) from DB1");
-        final Repository repository2 = (Repository) new ModelProvider(graph).readComponent("Repository",
-                repository.getId());
+        // /** Read repository (id -> object) from DB1 */
+        // System.out.println("Reading repository (id -> object) from DB1");
+        // final Repository repository2 = (Repository) new
+        // ModelProvider<Repository>(graph).readComponent(Repository.class,
+        // repository.getId());
 
         /** Write to DB2 */
         System.out.println("Writing to DB2");
-        new ModelProvider(graph2).createComponent(repository2);
+        new ModelProvider<OperationInterface>(graph2).createComponent(inter);
 
         /** Read OperationInterface (type -> ids) from DB1 */
         // System.out.println("Reading OperationInterface (type -> ids) from DB1");
