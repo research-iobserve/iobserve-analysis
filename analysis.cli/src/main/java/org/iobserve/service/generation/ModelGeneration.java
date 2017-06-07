@@ -4,11 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
@@ -24,45 +19,27 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
 public class ModelGeneration {
+	
 	private static final Logger LOG = LogManager.getLogger(ModelGeneration.class);
+	
 
-	public static void main(String[] args) {
+	public static void createNewModel(CommandLine commandLine) throws InitializationException, IOException {
+		LOG.info("Creating new model!");
 		
-		final CommandLineParser parser = new DefaultParser();
-		try {
-			CommandLine commandLine = parser.parse(ModelGeneration.createHelpOptions(), args);
+		URI repoLocation = URI.createFileURI(commandLine.getOptionValue("i"));
+		URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
-			if (commandLine.hasOption("h")) {
-				final HelpFormatter formatter = new HelpFormatter();
-				formatter.printHelp("iobserve-analysis", ModelGeneration.createOptions());
-			} else {
-				commandLine = parser.parse(ModelGeneration.createOptions(), args);
+		LOG.info("Copying repository model to new location.");
+		RepositoryModelProvider repoModelProvider = new RepositoryModelProvider(repoLocation);
+		ModelGeneration.copyRepoToOutput(outputLocation, repoModelProvider);
 
-				if (commandLine.hasOption("n")) {
-					LOG.info("Creating new model!");
-					
-					URI repoLocation = URI.createFileURI(commandLine.getOptionValue("i"));
-					URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
-
-					LOG.info("Copying repository model to new location.");
-					RepositoryModelProvider repoModelProvider = new RepositoryModelProvider(repoLocation);
-					ModelGeneration.copyRepoToOutput(outputLocation, repoModelProvider);
-
-					LOG.info("Generating system model.");
-					System systemModel = generateAndSaveSystem(commandLine, outputLocation);
-					LOG.info("Generating resource environment model.");
-					ResourceEnvironment resEnvModel = generateAndSaveResourceEnvironment(commandLine, outputLocation, systemModel.getEntityName());
-					LOG.info("Generating allocation model.");
-					Allocation allocationModel = generateAndSaveAllocation(outputLocation, systemModel, resEnvModel);
-					LOG.info("Generating done!");
-				} else if (commandLine.hasOption("m")) {
-
-				}
-
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		LOG.info("Generating system model.");
+		System systemModel = generateAndSaveSystem(commandLine, outputLocation);
+		LOG.info("Generating resource environment model.");
+		ResourceEnvironment resEnvModel = generateAndSaveResourceEnvironment(commandLine, outputLocation, systemModel.getEntityName());
+		LOG.info("Generating allocation model.");
+		generateAndSaveAllocation(outputLocation, systemModel, resEnvModel);
+		LOG.info("Generating done!");
 	}
 
 	private static System generateAndSaveSystem(CommandLine commandLine, URI outputLocation) {
@@ -112,65 +89,6 @@ public class ModelGeneration {
 		return false;
 	}
 
-	/**
-	 * Create the command line parameter setup.
-	 *
-	 * @return options for the command line parser
-	 */
-	private static Options createOptions() {
-		final Options options = new Options();
-
-		options.addOption(Option.builder("i").required(true).longOpt("input").hasArg().desc("the repository model file").build());
-		options.addOption(Option.builder("o").required(true).longOpt("output").hasArg().desc("the output directory").build());
-		options.addOption(Option.builder("n").required(false).longOpt("generate-new").desc("generates new model, based on input repo").build());
-		options.addOption(Option.builder("m").required(false).longOpt("modify").desc("modify the input model").build());
-
-		options.addOption(Option.builder("a").required(false).longOpt("allocation-contexts").hasArg().desc("allocation context count").build());
-		options.addOption(Option.builder("r").required(false).longOpt("resource-container").hasArg().desc("resource container count").build());
-
-		options.addOption(Option.builder("al").required(false).longOpt("allocation").hasArg().desc("allocate actions").build());
-		options.addOption(Option.builder("mi").required(false).longOpt("migrate").hasArg().desc("migrate actions").build());
-		options.addOption(Option.builder("de").required(false).longOpt("deallocate").hasArg().desc("deallocate actions").build());
-		options.addOption(Option.builder("cr").required(false).longOpt("change-repo").hasArg().desc("change repo actions").build());
-
-		options.addOption(Option.builder("ac").required(false).longOpt("acquire").hasArg().desc("acquire actions").build());
-		options.addOption(Option.builder("re").required(false).longOpt("replicate").hasArg().desc("replicate actions").build());
-		options.addOption(Option.builder("te").required(false).longOpt("terminate").hasArg().desc("terminate actions").build());
-
-		/** help */
-		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
-
-		return options;
-	}
-
-	/**
-	 * Create a command line setup with only the help option.
-	 *
-	 * @return returns simplified options
-	 */
-	private static Options createHelpOptions() {
-		final Options options = new Options();
-
-		options.addOption(Option.builder("i").required(true).longOpt("input").hasArg().desc("the repository model file").build());
-		options.addOption(Option.builder("o").required(true).longOpt("output").hasArg().desc("the output directory").build());
-		options.addOption(Option.builder("n").required(false).longOpt("generate-new").desc("generates new model, based on input repo").build());
-		options.addOption(Option.builder("m").required(false).longOpt("modify").desc("modify the input model").build());
-
-		options.addOption(Option.builder("a").required(false).longOpt("allocation-contexts").hasArg().desc("allocation context count").build());
-		options.addOption(Option.builder("r").required(false).longOpt("resource-container").hasArg().desc("resource container count").build());
-
-		options.addOption(Option.builder("al").required(false).longOpt("allocation").hasArg().desc("allocate actions").build());
-		options.addOption(Option.builder("mi").required(false).longOpt("migrate").hasArg().desc("migrate actions").build());
-		options.addOption(Option.builder("de").required(false).longOpt("deallocate").hasArg().desc("deallocate actions").build());
-		options.addOption(Option.builder("cr").required(false).longOpt("change-repo").hasArg().desc("change repo actions").build());
-
-		options.addOption(Option.builder("ac").required(false).longOpt("acquire").hasArg().desc("acquire actions").build());
-		options.addOption(Option.builder("re").required(false).longOpt("replicate").hasArg().desc("replicate actions").build());
-		options.addOption(Option.builder("te").required(false).longOpt("terminate").hasArg().desc("terminate actions").build());
-
-		/** help */
-		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
-		return options;
-	}
+	
 
 }

@@ -1,5 +1,6 @@
 package org.iobserve.service.generation;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.repository.ProvidedRole;
@@ -44,6 +46,17 @@ public class SystemGeneration {
 
 		this.system = SystemFactoryImpl.init().createSystem();
 		this.system.setEntityName(this.repo.getEntityName());
+	}
+
+	public SystemGeneration(Repository repo, System system, HashMap<String, List<AssemblyContext>> openRequiredInterfaces,
+			HashMap<String, List<AssemblyContext>> openProvidedInterfaces) {
+		this.repo = repo;
+		this.components = repo.getComponents__Repository().toArray(new RepositoryComponent[repo.getComponents__Repository().size()]);
+
+		this.initInterfaceMaps();
+
+		this.system = system;
+		this.fillInterfaceMaps(openRequiredInterfaces, openProvidedInterfaces);
 	}
 
 	private void initInterfaceMaps() {
@@ -78,26 +91,38 @@ public class SystemGeneration {
 				}
 			}
 		}
-	};
+	}
 
+	private void fillInterfaceMaps(HashMap<String, List<AssemblyContext>> openRequiredInterfaces,
+			HashMap<String, List<AssemblyContext>> openProvidedInterfaces) {
+		for (String key : openRequiredInterfaces.keySet()) {
+			this.openRequiredInterfaces.replace(key, openRequiredInterfaces.get(key));
+		}
+
+		for (String key : openProvidedInterfaces.keySet()) {
+			this.openProvidedInterfaces.replace(key, openProvidedInterfaces.get(key));
+		}
+
+		for (Connector connector : this.system.getConnectors__ComposedStructure()) {
+			if (connector instanceof AssemblyConnector) {
+				AssemblyConnector assemblyConnector = (AssemblyConnector) connector;
+				String interfaceID = assemblyConnector.getProvidedRole_AssemblyConnector().getProvidedInterface__OperationProvidedRole().getId();
+				this.connectedProvidedInterfaces.get(interfaceID).add(assemblyConnector.getProvidingAssemblyContext_AssemblyConnector());
+			}
+		}
+	}
+
+	/**
+	 * 
+	 * 
+	 * @param assemblyContextCount
+	 * @return
+	 */
 	public System generateSystemModel(int assemblyContextCount) {
 
 		for (int i = 0; i < assemblyContextCount; i++) {
-
-			int randomInt = ThreadLocalRandom.current().nextInt(components.length);
-			RepositoryComponent randComponent = this.components[randomInt];
-
-			AssemblyContext newAC = COMPOSITION_FACTORY.createAssemblyContext();
-			newAC.setEntityName(Integer.toString(i) + "_AC_" + randComponent.getEntityName());
-			newAC.setEncapsulatedComponent__AssemblyContext(randComponent);
-			newAC.setParentStructure__AssemblyContext(system);
-			this.system.getAssemblyContexts__ComposedStructure().add(newAC);
-
-			EList<ProvidedRole> provRoles = randComponent.getProvidedRoles_InterfaceProvidingEntity();
-			this.connectProvidedInterfaces(newAC, provRoles);
-
-			EList<RequiredRole> requRoles = randComponent.getRequiredRoles_InterfaceRequiringEntity();
-			this.connectRequiredInterfaces(newAC, requRoles);
+			String namePrefix = Integer.toString(i);
+			generateNewAC(namePrefix);
 		}
 
 		this.finalizeModelGeneration();
@@ -105,6 +130,47 @@ public class SystemGeneration {
 		return this.system;
 	}
 
+	/**
+	 * 
+	 * @param assemblyContextCount
+	 * @param prefix
+	 * @return
+	 */
+	public List<AssemblyContext> addAssemblyContexts(int assemblyContextCount, String prefix) {
+
+		List<AssemblyContext> newACs = new ArrayList<AssemblyContext>();
+		for (int i = 0; i < assemblyContextCount; i++) {
+			String namePrefix = Integer.toString(i) + "_" + prefix;
+			AssemblyContext newAC = generateNewAC(namePrefix);
+			newACs.add(newAC);
+		}
+
+		this.finalizeModelGeneration();
+
+		return newACs;
+	}
+
+	private AssemblyContext generateNewAC(String namePrefix) {
+		int randomInt = ThreadLocalRandom.current().nextInt(components.length);
+		RepositoryComponent randComponent = this.components[randomInt];
+
+		AssemblyContext newAC = COMPOSITION_FACTORY.createAssemblyContext();
+		newAC.setEntityName(namePrefix + "_AC_" + randComponent.getEntityName());
+		newAC.setEncapsulatedComponent__AssemblyContext(randComponent);
+		newAC.setParentStructure__AssemblyContext(system);
+		this.system.getAssemblyContexts__ComposedStructure().add(newAC);
+
+		EList<ProvidedRole> provRoles = randComponent.getProvidedRoles_InterfaceProvidingEntity();
+		this.connectProvidedInterfaces(newAC, provRoles);
+
+		EList<RequiredRole> requRoles = randComponent.getRequiredRoles_InterfaceRequiringEntity();
+		this.connectRequiredInterfaces(newAC, requRoles);
+		return newAC;
+	}
+
+	/*
+	 * Connects open required interfaces to existing providing interfaces
+	 */
 	private void finalizeModelGeneration() {
 		Set<String> interfaceIDs = this.openRequiredInterfaces.keySet();
 
