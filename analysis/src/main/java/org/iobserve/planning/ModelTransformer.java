@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelBuilder;
 import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.DesignDecisionModelBuilder;
 import org.iobserve.analysis.model.DesignDecisionModelProvider;
@@ -133,6 +134,7 @@ public class ModelTransformer {
 	}
 
 	private void clearUnneededElements() {
+		this.clearCosts();
 		this.clearCloudResourcesFromResourceEnv();
 		this.clearAllocationContexts();
 	}
@@ -220,6 +222,13 @@ public class ModelTransformer {
 					ResourceContainerCloud createdContainer;
 					if (this.isSameVMType(cloudVM, representingContainer)) {
 						createdContainer = representingContainer;
+						// If we just use the container, the references in the
+						// resulting environment would point to the original cloudprofile
+						createdContainer.setInstanceType(cloudVM);
+
+						CostModelBuilder.createFixedProcessingResourceCost(costs, 0.0, cloudVM.getPricePerHour(),
+								createdContainer.getActiveResourceSpecifications_ResourceContainer().get(0));
+
 						degreeName = String.format("%s_ReplicationDegree", allocationGroup.getName());
 					} else {
 						final String containerName = AllocationGroup.getAllocationGroupName(
@@ -244,6 +253,10 @@ public class ModelTransformer {
 
 	private void clearAllocationContexts() {
 		this.allocationProvider.resetModel();
+	}
+
+	private void clearCosts() {
+		this.costProvider.resetModel();
 	}
 
 	private void clearCloudResourcesFromResourceEnv() {
