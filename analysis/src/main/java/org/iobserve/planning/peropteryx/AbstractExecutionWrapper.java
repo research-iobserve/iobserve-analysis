@@ -47,11 +47,11 @@ public abstract class AbstractExecutionWrapper {
 		try {
 			process = processBuilder.start();
 			this.watch(process);
+			return process.waitFor();
 		} catch (IOException | InterruptedException e) {
 			LOG.error("Could not start PerOpteryx executable process. Check the parameters and the log files!", e);
 			return -1;
 		}
-		return process.exitValue();
 	}
 
 	/**

@@ -21,10 +21,10 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 	private String execEnvironmentParam;
 	private String execCommand;
 
-	public ExecutionWrapper(URI inputModelDir, URI perOpteryxDir, URI lqnsDir) throws IOException {
+	public ExecutionWrapper(final URI inputModelDir, final URI perOpteryxDir, final URI lqnsDir) throws IOException {
 		super(inputModelDir, perOpteryxDir, lqnsDir);
-		
-		if (isWindows()) {
+
+		if (this.isWindows()) {
 			this.execEnvironment = "cmd.exe";
 			this.execEnvironmentParam = "/C";
 			this.execCommand = "java  -jar .\\plugins\\org.eclipse.equinox.launcher_1.3.201.v20161025-1711.jar";
@@ -43,21 +43,18 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 
 	@Override
 	public void watch(final Process process) throws InterruptedException {
-		Thread watcherThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-				String line = null;
-				try {
-					while ((line = input.readLine()) != null) {
-						System.err.println("PerOpteryx Output: " + line);
-						// LOG.info("PerOpteryx Output: " + line);
-					}
-				} catch (IOException e) {
-					System.err.println("Watcher Thread terminated");
-					// LOG.error("IOException during PerOpteryx run: " +
-					// e.getStackTrace());
+		Thread watcherThread = new Thread(() -> {
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			String line = null;
+			try {
+				while ((line = input.readLine()) != null) {
+					System.err.println("PerOpteryx Output: " + line);
+					// LOG.info("PerOpteryx Output: " + line);
 				}
+			} catch (IOException e) {
+				System.err.println("Watcher Thread terminated");
+				// LOG.error("IOException during PerOpteryx run: " +
+				// e.getStackTrace());
 			}
 		});
 		synchronized (watcherThread) {
@@ -78,9 +75,9 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 
 		String perOpteryxDir = this.getPerOpteryxDir().toFileString();
 		Map<String, String> env = builder.environment();
-		
+
 		String path;
-		if (isWindows()) {
+		if (this.isWindows()) {
 			path = env.get("Path");
 			path = this.getLQNSDir().toFileString()+ ";" + path;
 			env.put("Path", path);
@@ -89,7 +86,7 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 			path = this.getLQNSDir().toFileString()+ ":" + path;
 			env.put("PATH", path);
 		}
-		
+
 		LOG.info("Environment PATH: " + path);
 		builder.directory(new File(perOpteryxDir));
 		builder.redirectOutput();
