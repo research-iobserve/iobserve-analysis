@@ -114,11 +114,11 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.PROCESSING_RATE_THRESHOLD_LOW_UTILISATION, Double.toString(0.2));
 		attr.put(DSEConstantsContainer.PROCESSING_RATE_WEIGHT, Double.toString(0.1));
 
-		attr.put(DSEConstantsContainer.USE_SERVER_CONSOLIDATION, false);
+		attr.put(DSEConstantsContainer.USE_SERVER_CONSOLIDATION, true);
 		attr.put(DSEConstantsContainer.SERVER_CONSOLIDATION_THRESHOLD_LOW_UTILISATION, Double.toString(0.3));
 		attr.put(DSEConstantsContainer.SERVER_CONSOLIDATION_WEIGHT, Double.toString(0.5));
 
-		attr.put(DSEConstantsContainer.USE_SERVER_EXPANSION, false);
+		attr.put(DSEConstantsContainer.USE_SERVER_EXPANSION, true);
 		attr.put(DSEConstantsContainer.SERVER_EXPANSION_MAX_NUMBER_OF_REPLACEMENTS, Integer.toString(1));
 		attr.put(DSEConstantsContainer.SERVER_EXPANSION_THRESHOLD_HIGH_UTILISATION, Double.toString(0.7));
 		attr.put(DSEConstantsContainer.SERVER_EXPANSION_WEIGHT, Double.toString(0.7));
@@ -284,7 +284,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.STORE_RESULTS_AS_EMF, true);
 		attr.put(DSEConstantsContainer.STORE_RESULTS_AS_CSV, true);
 		attr.put(DSEConstantsContainer.TC_INSIGNIFICANT_FRONT_CHANGE_ACTIVATE, true);
-		attr.put(DSEConstantsContainer.DSE_ITERATIONS, "1");
+		attr.put(DSEConstantsContainer.DSE_ITERATIONS, "2");
 		attr.put(DSEConstantsContainer.CROSSOVER_RATE, "0.5");
 		attr.put(DSEConstantsContainer.PREDEFINED_INSTANCES, "");
 		attr.put(DSEConstantsContainer.CACHE_INSTANCES, "");
@@ -298,7 +298,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.USE_ANTIPATTERNS, false);
 		attr.put(DSEConstantsContainer.USE_STARTING_POPULATION_HEURISTIC, false);
 		attr.put(DSEConstantsContainer.STOP_ON_INITIAL_FAILURE, false);
-		attr.put(DSEConstantsContainer.INDIVIDUALS_PER_GENERATION, "3");
+		attr.put(DSEConstantsContainer.INDIVIDUALS_PER_GENERATION, "5");
 	}
 
 	private static void setDefaultConfigFiles(final String modelDir, final Map<String, Object> attr) {

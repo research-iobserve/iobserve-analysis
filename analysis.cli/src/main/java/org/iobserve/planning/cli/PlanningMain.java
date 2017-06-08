@@ -160,6 +160,7 @@ public final class PlanningMain {
 		} else {
 			LOG.info("Executing optimization...");
 
+			long startTime = System.nanoTime();
 			final AdaptationData adaptationData = new AdaptationData();
 			adaptationData.setRuntimeModelURI(modelURI);
 
@@ -186,6 +187,10 @@ public final class PlanningMain {
 				return;
 			}
 
+			long endTime = System.nanoTime();
+			// Print duration in seconds
+			float duration = (endTime - startTime) / 1000000000;
+			LOG.info("Optimization planning took " + duration + " seconds.");
 			if (result == 0) {
 				LOG.info("Optimization was successful.");
 			} else {
