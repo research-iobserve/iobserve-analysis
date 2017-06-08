@@ -19,14 +19,14 @@ public class ModelOptimization extends AbstractTransformation<PlanningData, Plan
 	private final static int EXEC_SUCCESS = 0;
 
 	@Override
-	protected void execute(PlanningData planningData) throws Exception {
+	protected void execute(final PlanningData planningData) throws Exception {
 
-		URI inputModelDir = planningData.getAdaptationData().getRuntimeModelURI();
-		AdaptationData adaptationData = planningData.getAdaptationData();
+		final URI inputModelDir = planningData.getProcessedModelDir();
+		final AdaptationData adaptationData = planningData.getAdaptationData();
 
-		ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir(), planningData.getLqnsDir());
+		final ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir(), planningData.getLqnsDir());
 
-		int result = exec.startModelGeneration();
+		final int result = exec.startModelGeneration();
 
 		if (result != EXEC_SUCCESS) {
 			throw new RuntimeException("PerOpteryx exited with error code " + result);

@@ -99,7 +99,7 @@ public final class PlanningMain {
 		LOG.info("perOpteryxURI: " + perOpteryxURI);
 
 		final URI lqnsURI = URI.createFileURI(lqnsDir);
-		LOG.info("lqnsURI: " + perOpteryxURI);
+		LOG.info("lqnsURI: " + lqnsDir);
 
 		PalladioEclipseEnvironment.INSTANCE.setup();
 
