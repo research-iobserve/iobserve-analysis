@@ -13,13 +13,14 @@ import teetime.stage.basic.AbstractTransformation;
 /**
  * This class selects a created candidate and creates all required information
  * for further processing.
- * 
+ *
  * @author Philipp Weimann
  */
 public class CandidateProcessing extends AbstractTransformation<PlanningData, AdaptationData> {
 
 	@Override
-	protected void execute(PlanningData element) throws Exception {
+	protected void execute(final PlanningData element) throws Exception {
+		CandidateGeneration.LOG.info("Candiate Processing");
 		AdaptationData adapdationData = element.getAdaptationData();
 
 		GraphFactory factory = new GraphFactory();

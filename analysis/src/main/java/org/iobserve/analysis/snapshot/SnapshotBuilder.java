@@ -6,6 +6,8 @@ import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
@@ -22,6 +24,8 @@ import teetime.framework.OutputPort;
  * @author Philipp Weimann
  */
 public class SnapshotBuilder extends AbstractStage {
+
+	protected static final Logger LOG = LogManager.getLogger(SnapshotBuilder.class);
 
 	private static URI baseSnapshotLocation = null;
 	private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING,
@@ -80,11 +84,12 @@ public class SnapshotBuilder extends AbstractStage {
 			} else {
 				this.outputPort.send(this.snapshotURI);
 			}
-
 		}
 	}
 
 	public URI createSnapshot() throws IOException {
+		LOG.info("Creating Snapshot: \t" + this.snapshotURI.toFileString());
+
 		this.createModelSnapshot(this.modelProviders.getAllocationModelProvider());
 		this.createModelSnapshot(this.modelProviders.getRepositoryModelProvider());
 		this.createModelSnapshot(this.modelProviders.getResourceEnvironmentModelProvider());
@@ -98,10 +103,15 @@ public class SnapshotBuilder extends AbstractStage {
 		return this.snapshotURI;
 	}
 
-	/*
-	 * Creates the actual copy
+	/**
+	 * Creates the actual snapshot.
+	 *
+	 * @param modelProvider
+	 *            the model for the snapshot
+	 * @throws IOException
+	 *             if the model URI does not exist
 	 */
-	private void createModelSnapshot(AbstractModelProvider<?> modelProvider) throws IOException {
+	public void createModelSnapshot(final AbstractModelProvider<?> modelProvider) throws IOException {
 		if (modelProvider == null) {
 			return;
 		}
@@ -153,7 +163,7 @@ public class SnapshotBuilder extends AbstractStage {
 	 * @param evaluationMode
 	 *            the evaluationMode to set
 	 */
-	public static void setEvaluationMode(boolean evaluationMode) {
+	public static void setEvaluationMode(final boolean evaluationMode) {
 		SnapshotBuilder.evaluationMode = evaluationMode;
 	}
 

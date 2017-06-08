@@ -34,12 +34,15 @@ import de.uka.ipd.sdq.identifier.Identifier;
  * Base class for pcm model provider. Implements common methods for
  * loading/saving pcm model.
  *
+ * @author Philipp Weimann
+ * @author Tobias Poeppke
  * @author Robert Heinrich
  * @author Alessandro Giusa
  * @param <T>
  */
 public abstract class AbstractModelProvider<T extends EObject> {
 
+	private boolean modelLoaded;
 	/** uri to the pcm model. */
 	private URI uriModelInstance;
 	/** parent where this provider belongs to. */
@@ -47,6 +50,13 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	private ModelSaveStrategy saveStrategy = ModelSaveStrategy.OVERRIDE;
 	/** the model instance. */
 	private T model;
+
+	/**
+	 * Create an empty instance! Set the URI after creation!
+	 */
+	public AbstractModelProvider() {
+		this.modelLoaded = false;
+	}
 
 	/**
 	 * Create a model provider for the given. Uses {@link #MODEL_FILE_LOADER} as
@@ -57,7 +67,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	 */
 	AbstractModelProvider(final URI theUriModelInstance) {
 		this.uriModelInstance = theUriModelInstance;
-		this.loadModel();
+		this.modelLoaded = false;
 	}
 
 	/**
@@ -75,16 +85,18 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	 * Save the internal model. This will override the existing.
 	 */
 	public final void save() {
-		switch (this.saveStrategy) {
-		case OVERRIDE:
-			this.overrideModel();
-			break;
-		case MERGE:
-			throw new UnsupportedOperationException(
-					String.format("%s save strategy does not exist yet!", ModelSaveStrategy.MERGE.name()));
-		default:
-			this.overrideModel();
-			break;
+
+		if (this.modelLoaded) {
+			switch (this.saveStrategy) {
+			case OVERRIDE:
+				this.overrideModel();
+				break;
+			case MERGE:
+				throw new UnsupportedOperationException(String.format("%s save strategy does not exist yet!", ModelSaveStrategy.MERGE.name()));
+			default:
+				this.overrideModel();
+				break;
+			}
 		}
 	}
 
@@ -171,6 +183,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
 		if (this.model == null) {
 			System.out.printf("Model at %s could not be loaded!\n", this.uriModelInstance.toString());
 		}
+		this.modelLoaded = true;
 	}
 
 	/**
@@ -184,17 +197,21 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	 * @return model
 	 */
 	public T getModel() {
+		if (!this.modelLoaded) {
+			this.loadModel();
+		}
 		return this.model;
 	}
-	
+
 	/**
 	 * Set the model in this provider to the new model.
 	 *
-	 * @param model 
-	 * 			the new model
+	 * @param model
+	 *            the new model
 	 */
-	public void setModel(T model) {
+	public void setModel(final T model) {
 		this.model = model;
+		this.modelLoaded = true;
 	}
 
 	/**
@@ -204,6 +221,17 @@ public abstract class AbstractModelProvider<T extends EObject> {
 	 */
 	public URI getModelUri() {
 		return this.uriModelInstance;
+	}
+
+	/**
+	 *
+	 * Set the uri to the model.
+	 *
+	 * @param modelUri
+	 *            to model
+	 */
+	public void setModelUri(final URI modelUri) {
+		this.uriModelInstance = modelUri;
 	}
 
 	/**

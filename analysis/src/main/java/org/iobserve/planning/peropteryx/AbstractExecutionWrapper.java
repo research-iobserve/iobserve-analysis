@@ -29,7 +29,7 @@ public abstract class AbstractExecutionWrapper {
 	 * @param perOpteryxDir
 	 *            the headless PerOpteryx directory
 	 */
-	public AbstractExecutionWrapper(URI inputModelDir, URI perOpteryxDir, URI lqnsDir) {
+	public AbstractExecutionWrapper(final URI inputModelDir, final URI perOpteryxDir, final URI lqnsDir) {
 		this.inputModelDir = inputModelDir;
 		this.perOpteryxDir = perOpteryxDir;
 		this.lqnsDir = lqnsDir;
@@ -87,7 +87,7 @@ public abstract class AbstractExecutionWrapper {
 	protected URI getPerOpteryxDir() {
 		return this.perOpteryxDir;
 	}
-	
+
 	protected URI getLQNSDir() {
 		return this.lqnsDir;
 	}

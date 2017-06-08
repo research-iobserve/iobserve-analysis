@@ -53,6 +53,8 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 
 		assert (element.getRuntimeGraph() != null);
 		assert (element.getReDeploymentGraph() != null);
+		
+		SystemAdaptation.LOG.info("Calculating system adaptation");
 
 		this.init(element);
 		this.addRuntimeData(element.getRuntimeGraph());
