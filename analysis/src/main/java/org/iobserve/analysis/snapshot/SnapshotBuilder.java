@@ -63,6 +63,12 @@ public class SnapshotBuilder extends AbstractStage {
 		File baseFolder = new File(fileString);
 		if (!baseFolder.exists())
 			baseFolder.mkdirs();
+		else
+		{
+			for (File file : baseFolder.listFiles())
+				if (!file.isDirectory())
+					file.delete();
+		}
 	}
 
 	@Override

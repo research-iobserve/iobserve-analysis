@@ -33,11 +33,12 @@ public class ModelModification {
 		ModelCollection models = modelProviders.getModelCollection();
 
 		ResourceEnvironmentModification resEnvMod = new ResourceEnvironmentModification(models.getResourceEnvironmentModel());
-		LOG.info("Acquiring Server");
-		resEnvMod.modifyResEnv_acquire(Integer.parseInt(commandLine.getOptionValue("ac")));
 
 		LOG.info("Terminating Server");
 		List<ResourceContainer> terminatedResourceContainers = resEnvMod.modifyResEnv_terminate(Integer.parseInt(commandLine.getOptionValue("ac")));
+		
+		LOG.info("Acquiring Server");
+		resEnvMod.modifyResEnv_acquire(Integer.parseInt(commandLine.getOptionValue("ac")));
 
 		LOG.info("Fixing Allocation after terminating");
 		AllocationModification allocMod = new AllocationModification(models.getAllocationModel(), models.getSystemModel(),
