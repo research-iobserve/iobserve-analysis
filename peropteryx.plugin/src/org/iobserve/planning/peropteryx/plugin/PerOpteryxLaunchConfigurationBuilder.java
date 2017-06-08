@@ -247,17 +247,17 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(MessageStrings.NUMBER_OF_EXACT_DECIMAL_PLACES, 1);
 		attr.put(MessageStrings.SOLVING_TIME_LIMIT_ENABLED, false);
 		attr.put(MessageStrings.SOLVING_TIME_LIMIT, 1);
-		attr.put(MessageStrings.LOG_FILE, "");
+		attr.put(MessageStrings.LOG_FILE, "markov.log");
 		attr.put(MessageStrings.MARKOV_MODEL_REDUCTION_ENABLED, true);
 		attr.put(MessageStrings.MARKOV_MODEL_TRACES_ENABLED, false);
-		attr.put(MessageStrings.ITERATION_OVER_PHYSICAL_SYSTEM_STATES_ENABLED, true);
+		attr.put(MessageStrings.ITERATION_OVER_PHYSICAL_SYSTEM_STATES_ENABLED, false);
 		attr.put(MessageStrings.MARKOV_MODEL_STORAGE_ENABLED, false);
 		attr.put(MessageStrings.MARKOV_MODEL_FILE, "");
-		attr.put(MessageStrings.MARKOV_EVALUATION_MODE, MarkovEvaluationType.POINTSOFFAILURE.toString());
+		attr.put(MessageStrings.MARKOV_EVALUATION_MODE, MarkovEvaluationType.SINGLE.toString());
 	}
 
 	private static void setDefaultResourceOptions(final Map<String, Object> attr) {
-		attr.put(DSEConstantsContainer.MIN_NUMBER_RESOURCE_CONTAINERS, Integer.toString(2));
+		attr.put(DSEConstantsContainer.MIN_NUMBER_RESOURCE_CONTAINERS, Integer.toString(1));
 		attr.put(DSEConstantsContainer.MAX_NUMBER_RESOURCE_CONTAINERS, Integer.toString(9));
 		attr.put(DSEConstantsContainer.NUMBER_OF_CANDIDATES_PER_ALLOCATION_LEVEL, Integer.toString(10));
 
@@ -270,7 +270,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.COST_QUALITY), "Cost Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.NQR_QUALITY), "none");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.RELIABILITY_QUALITY),
-				"Reliability Solver Analysis");
+				"none");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.SECURITY_QUALITY), "none");
 	}
 
