@@ -23,7 +23,6 @@
    <vm>
    </vm>
 
-
    <plugins>
       <plugin id="ch.ethz.iks.r_osgi.remote"/>
       <plugin id="ch.qos.logback.classic"/>
@@ -38,6 +37,7 @@
       <plugin id="de.uka.ipd.sdq.dsexplore"/>
       <plugin id="de.uka.ipd.sdq.dsexplore.analysis.cost"/>
       <plugin id="de.uka.ipd.sdq.dsexplore.analysis.lqn"/>
+      <plugin id="de.uka.ipd.sdq.dsexplore.analysis.privacy"/>
       <plugin id="de.uka.ipd.sdq.dsexplore.analysis.reliability"/>
       <plugin id="de.uka.ipd.sdq.dsexplore.analysis.simucom"/>
       <plugin id="de.uka.ipd.sdq.dsexplore.bayesnets"/>
@@ -86,20 +86,15 @@
       <plugin id="javax.activation"/>
       <plugin id="javax.inject"/>
       <plugin id="javax.servlet"/>
-      <plugin id="javax.servlet"/>
       <plugin id="javax.xml"/>
       <plugin id="lpg.runtime.java"/>
-      <plugin id="org.antlr.runtime" version="4.3.0.v201502022030"/>
       <plugin id="org.antlr.runtime" version="3.2.0.v201101311130"/>
       <plugin id="org.apache.ant"/>
-      <plugin id="org.apache.batik.css" version="1.6.0.v201011041432"/>
       <plugin id="org.apache.batik.css" version="1.7.0.v201011041433"/>
       <plugin id="org.apache.batik.dom"/>
       <plugin id="org.apache.batik.ext.awt"/>
       <plugin id="org.apache.batik.svggen"/>
-      <plugin id="org.apache.batik.util" version="1.6.0.v201011041432"/>
       <plugin id="org.apache.batik.util" version="1.7.0.v201011041433"/>
-      <plugin id="org.apache.batik.util.gui" version="1.6.0.v201011041432"/>
       <plugin id="org.apache.batik.util.gui" version="1.7.0.v200903091627"/>
       <plugin id="org.apache.batik.xml"/>
       <plugin id="org.apache.commons.cli"/>
@@ -108,6 +103,7 @@
       <plugin id="org.apache.commons.jxpath"/>
       <plugin id="org.apache.commons.lang"/>
       <plugin id="org.apache.commons.logging"/>
+      <plugin id="org.apache.commons.logging.fragment" fragment="true"/>
       <plugin id="org.apache.commons.math"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
       <plugin id="org.apache.felix.gogo.shell"/>
@@ -133,10 +129,10 @@
       <plugin id="org.eclipse.core.filebuffers"/>
       <plugin id="org.eclipse.core.filesystem"/>
       <plugin id="org.eclipse.core.filesystem.win32.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.core.filesystem.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.net"/>
       <plugin id="org.eclipse.core.net.linux.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.core.net.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.core.resources"/>
       <plugin id="org.eclipse.core.resources.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.core.runtime"/>
@@ -188,7 +184,6 @@
       <plugin id="org.eclipse.emf.mapping.ecore2xml"/>
       <plugin id="org.eclipse.emf.mwe.core"/>
       <plugin id="org.eclipse.emf.mwe.utils"/>
-      <plugin id="org.eclipse.emf.mwe2.lib"/>
       <plugin id="org.eclipse.emf.mwe2.launch"/>
       <plugin id="org.eclipse.emf.mwe2.lib"/>
       <plugin id="org.eclipse.emf.mwe2.runtime"/>
@@ -264,12 +259,12 @@
       <plugin id="org.eclipse.jdt.junit.runtime"/>
       <plugin id="org.eclipse.jdt.launching"/>
       <plugin id="org.eclipse.jdt.ui"/>
+      <plugin id="org.eclipse.jem.util"/>
       <plugin id="org.eclipse.jetty.http"/>
       <plugin id="org.eclipse.jetty.io"/>
       <plugin id="org.eclipse.jetty.security"/>
       <plugin id="org.eclipse.jetty.server"/>
       <plugin id="org.eclipse.jetty.servlet"/>
-      <plugin id="org.eclipse.jetty.util"/>
       <plugin id="org.eclipse.jetty.util"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
@@ -320,7 +315,6 @@
       <plugin id="org.eclipse.sirius.ext.swt"/>
       <plugin id="org.eclipse.sirius.ui"/>
       <plugin id="org.eclipse.swt"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.swt.win32.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.team.core"/>
       <plugin id="org.eclipse.team.ui"/>

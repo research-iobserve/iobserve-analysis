@@ -16,7 +16,8 @@ import teetime.stage.basic.AbstractTransformation;
 public class ModelOptimization extends AbstractTransformation<PlanningData, PlanningData> {
 
 	private final static int EXEC_SUCCESS = 0;
-	private final static int EXEC_ERROR = 1;
+
+	private final static String[] PerOpteryxOutputSubFolders = new String[] { "PerOpteryx_results", "costOptimalModel" };
 
 	@Override
 	protected void execute(PlanningData planningData) throws Exception {
@@ -32,13 +33,14 @@ public class ModelOptimization extends AbstractTransformation<PlanningData, Plan
 		if (result != EXEC_SUCCESS) {
 			// String uriString =
 			// "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\processedModel\\PerOpteryx_results\\costOptimalModel";
-			String uriString = "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\Test";
+			// String uriString =
+			// "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\Test";
 
-			adaptationData.setReDeploymentURI(URI.createFileURI(uriString));
-			// throw new RuntimeException("PerOpteryx exited with error code " +
-			// result);
+			// adaptationData.setReDeploymentURI(URI.createFileURI(uriString));
+			throw new RuntimeException("PerOpteryx exited with error code " + result);
 		} else {
-			adaptationData.setReDeploymentURI(planningData.getProcessedModelDir());
+			URI redeploymentURI = planningData.getProcessedModelDir().appendSegments(PerOpteryxOutputSubFolders);
+			adaptationData.setReDeploymentURI(redeploymentURI);
 		}
 
 		this.outputPort.send(planningData);

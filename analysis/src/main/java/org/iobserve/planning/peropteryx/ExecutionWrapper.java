@@ -43,15 +43,15 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 
 	@Override
 	public void watch(final Process process) throws InterruptedException {
-		final Thread watcherThread = new Thread(() -> {
-			final BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		Thread watcherThread = new Thread(() -> {
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line = null;
 			try {
 				while ((line = input.readLine()) != null) {
 					System.err.println("PerOpteryx Output: " + line);
 					// LOG.info("PerOpteryx Output: " + line);
 				}
-			} catch (final IOException e) {
+			} catch (IOException e) {
 				System.err.println("Watcher Thread terminated");
 				// LOG.error("IOException during PerOpteryx run: " +
 				// e.getStackTrace());

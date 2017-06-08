@@ -242,13 +242,13 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(MessageStrings.NUMBER_OF_EXACT_DECIMAL_PLACES, 1);
 		attr.put(MessageStrings.SOLVING_TIME_LIMIT_ENABLED, false);
 		attr.put(MessageStrings.SOLVING_TIME_LIMIT, 1);
-		attr.put(MessageStrings.LOG_FILE, "");
+		attr.put(MessageStrings.LOG_FILE, "markov.log");
 		attr.put(MessageStrings.MARKOV_MODEL_REDUCTION_ENABLED, true);
 		attr.put(MessageStrings.MARKOV_MODEL_TRACES_ENABLED, false);
-		attr.put(MessageStrings.ITERATION_OVER_PHYSICAL_SYSTEM_STATES_ENABLED, true);
+		attr.put(MessageStrings.ITERATION_OVER_PHYSICAL_SYSTEM_STATES_ENABLED, false);
 		attr.put(MessageStrings.MARKOV_MODEL_STORAGE_ENABLED, false);
 		attr.put(MessageStrings.MARKOV_MODEL_FILE, "");
-		attr.put(MessageStrings.MARKOV_EVALUATION_MODE, MarkovEvaluationType.POINTSOFFAILURE.toString());
+		attr.put(MessageStrings.MARKOV_EVALUATION_MODE, MarkovEvaluationType.SINGLE.toString());
 	}
 
 	private static void setDefaultResourceOptions(final Map<String, Object> attr) {
@@ -264,7 +264,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.PERFORMANCE_QUALITY), "LQN Solver Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.COST_QUALITY), "Cost Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.NQR_QUALITY), "none");
-		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.RELIABILITY_QUALITY), "Reliability Solver Analysis");
+		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.RELIABILITY_QUALITY), "none");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.SECURITY_QUALITY), "none");
 
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.PRIVACY_QUALITY), "Privacy Analysis");
@@ -280,7 +280,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.STORE_RESULTS_AS_EMF, true);
 		attr.put(DSEConstantsContainer.STORE_RESULTS_AS_CSV, true);
 		attr.put(DSEConstantsContainer.TC_INSIGNIFICANT_FRONT_CHANGE_ACTIVATE, true);
-		attr.put(DSEConstantsContainer.DSE_ITERATIONS, "1");
+		attr.put(DSEConstantsContainer.DSE_ITERATIONS, "3");
 		attr.put(DSEConstantsContainer.CROSSOVER_RATE, "0.5");
 		attr.put(DSEConstantsContainer.PREDEFINED_INSTANCES, "");
 		attr.put(DSEConstantsContainer.CACHE_INSTANCES, "");
