@@ -271,7 +271,48 @@ public class ModelProvider<T extends EObject> {
     public void updateComponent(final EObject component) {
     }
 
-    public void deleteComponent(final EObject component) {
+    public void deleteComponent(final Class<T> clazz, final String id) {
+        final Label label = Label.label(clazz.getSimpleName());
+        Node node;
+
+        try (Transaction tx = this.getGraph().beginTx()) {
+            node = this.getGraph().findNode(label, ModelProvider.ID, id);
+            tx.success();
+        }
+
+        this.deleteComponent(node);
+    }
+
+    public void deleteComponent(final Node node) {
+
+        try (Transaction tx = this.getGraph().beginTx()) {
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                    PcmRelationshipType.IS_TYPE)) {
+
+                final Node endNode = rel.getEndNode();
+
+                if (rel.isType(PcmRelationshipType.CONTAINS)) {
+                    rel.delete();
+                    this.deleteComponent(endNode);
+                } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
+                    // Only delete type when it has no other incoming relations
+                    rel.delete();
+                    if (!endNode.hasRelationship(Direction.INCOMING)) {
+                        this.deleteComponent(endNode);
+                    }
+
+                }
+
+            }
+
+            for (final Relationship rel : node.getRelationships()) {
+                rel.delete();
+            }
+
+            node.delete();
+
+            tx.success();
+        }
     }
 
     public HashMap<Node, DataType> getDataTypes() {

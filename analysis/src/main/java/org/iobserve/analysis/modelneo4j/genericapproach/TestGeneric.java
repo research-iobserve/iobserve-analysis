@@ -59,9 +59,10 @@ public class TestGeneric {
         // new ModelProvider(graph).createComponent(repository);
 
         /** Read interface (id -> object) from DB1 */
-        System.out.println("Reading interface (id -> object) from DB1");
-        final OperationInterface inter = (OperationInterface) new ModelProvider<OperationInterface>(graph)
-                .readComponent(OperationInterface.class, "_j8RD0NYgEeWrM-HnT5f_ug");
+        // System.out.println("Reading interface (id -> object) from DB1");
+        // final OperationInterface inter = (OperationInterface) new
+        // ModelProvider<OperationInterface>(graph)
+        // .readComponent(OperationInterface.class, "_j8RD0NYgEeWrM-HnT5f_ug");
 
         // /** Read repository (id -> object) from DB1 */
         // System.out.println("Reading repository (id -> object) from DB1");
@@ -70,14 +71,24 @@ public class TestGeneric {
         // repository.getId());
 
         /** Write to DB2 */
-        System.out.println("Writing to DB2");
-        new ModelProvider<OperationInterface>(graph2).createComponent(inter);
+        // System.out.println("Writing to DB2");
+        // new ModelProvider<OperationInterface>(graph2).createComponent(inter);
 
         /** Read OperationInterface (type -> ids) from DB1 */
         // System.out.println("Reading OperationInterface (type -> ids) from DB1");
         // final List<String> ids = new
         // GenericComponentProvider<>(graph).readComponent("OperationInterface");
         // System.out.println(ids);
+
+        /** Delete OperationSignature _j9Cf4tYgEeWrM-HnT5f_ug */
+        // System.out.println("Delete OperationSignature _j9Cf4tYgEeWrM-HnT5f_ug");
+        // new ModelProvider<OperationSignature>(graph2).deleteComponent(OperationSignature.class,
+        // "_j9Cf4tYgEeWrM-HnT5f_ug");
+
+        /** Delete Interface "_j8RD0NYgEeWrM-HnT5f_ug" */
+        System.out.println("Delete Inteface");
+        new ModelProvider<OperationInterface>(graph2).deleteComponent(OperationInterface.class,
+                "_j8RD0NYgEeWrM-HnT5f_ug");
 
         graph.shutdown();
         graph2.shutdown();
