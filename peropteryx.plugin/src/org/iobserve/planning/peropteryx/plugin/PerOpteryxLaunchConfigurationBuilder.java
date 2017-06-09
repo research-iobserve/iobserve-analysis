@@ -84,6 +84,8 @@ public class PerOpteryxLaunchConfigurationBuilder {
 
 		setDefaultReliabilityOptions(attr);
 
+		// We don't use Simucom, so no need to set options for it
+		// If you want to use it, you can uncomment this call
 		// setSimuComDefaultOptions(attr);
 		setLQNSDefaultOptions(attr, projectModelDir, sourceModelDir);
 
@@ -115,13 +117,13 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.PROCESSING_RATE_WEIGHT, Double.toString(0.1));
 
 		attr.put(DSEConstantsContainer.USE_SERVER_CONSOLIDATION, true);
-		attr.put(DSEConstantsContainer.SERVER_CONSOLIDATION_THRESHOLD_LOW_UTILISATION, Double.toString(0.3));
+		attr.put(DSEConstantsContainer.SERVER_CONSOLIDATION_THRESHOLD_LOW_UTILISATION, Double.toString(0.2));
 		attr.put(DSEConstantsContainer.SERVER_CONSOLIDATION_WEIGHT, Double.toString(0.5));
 
-		attr.put(DSEConstantsContainer.USE_SERVER_EXPANSION, true);
+		attr.put(DSEConstantsContainer.USE_SERVER_EXPANSION, false);
 		attr.put(DSEConstantsContainer.SERVER_EXPANSION_MAX_NUMBER_OF_REPLACEMENTS, Integer.toString(1));
-		attr.put(DSEConstantsContainer.SERVER_EXPANSION_THRESHOLD_HIGH_UTILISATION, Double.toString(0.7));
-		attr.put(DSEConstantsContainer.SERVER_EXPANSION_WEIGHT, Double.toString(0.7));
+		attr.put(DSEConstantsContainer.SERVER_EXPANSION_THRESHOLD_HIGH_UTILISATION, Double.toString(0.8));
+		attr.put(DSEConstantsContainer.SERVER_EXPANSION_WEIGHT, Double.toString(0.5));
 
 		attr.put(DSEConstantsContainer.USE_ANTIPATTERNS, false);
 	}
