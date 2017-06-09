@@ -97,7 +97,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 	public AbstractObservationConfiguration(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
 			final RepositoryModelProvider repositoryModelProvider, final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir, final int varianceOfUserGroups,
+			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir, final URI privacyAnalysisFile, final int varianceOfUserGroups,
 			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener, final URI deployablesFolder) {
 		/** configure filter. */
 		this.recordSwitch = new RecordSwitch();
@@ -117,7 +117,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 		final PrivacyAnalysis privacyAnalysis = new org.iobserve.analysis.privacyanalysis.PrivacyAnalysis(
 				new org.iobserve.analysis.privacyanalysis.GraphCreation(), new org.iobserve.analysis.privacyanalysis.GraphPrivacyAnalysis());
 
-		final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless, lqnsDir),
+		final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless, lqnsDir, privacyAnalysisFile),
 				new ModelOptimization(), new CandidateProcessing());
 
 		final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(), new AdaptationPlanning(),

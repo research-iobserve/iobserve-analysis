@@ -73,10 +73,10 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
 			final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
 			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir, final int varianceOfUserGroups,
+			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir, final URI privacyAnalysisFile, final int varianceOfUserGroups,
 			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener, final URI deployablesFolder) {
 		super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-				allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxHeadless, lqnsDir, varianceOfUserGroups,
+				allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxHeadless, lqnsDir, privacyAnalysisFile,varianceOfUserGroups,
 				thinkTime, closedWorkload, eventListener, deployablesFolder);
 
 		this.files = new InitialElementProducer<>(directories);

@@ -21,8 +21,8 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 	private String execEnvironmentParam;
 	private String execCommand;
 
-	public ExecutionWrapper(final URI inputModelDir, final URI perOpteryxDir, final URI lqnsDir) throws IOException {
-		super(inputModelDir, perOpteryxDir, lqnsDir);
+	public ExecutionWrapper(final URI inputModelDir, final URI perOpteryxDir, final URI lqnsDir, final URI privacyAnalysisFile) throws IOException {
+		super(inputModelDir, perOpteryxDir, lqnsDir, privacyAnalysisFile);
 
 		if (this.isWindows()) {
 			this.execEnvironment = "cmd.exe";
@@ -69,8 +69,10 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 	public ProcessBuilder createProcess() {
 		LOG.info("Starting optimization process...");
 		final String modelDir = this.getInputModelDir().toFileString();
+		final String paFileString = this.getPrivacyAnalysisFile().toFileString();
 
-		final ProcessBuilder builder = new ProcessBuilder(this.execEnvironment, this.execEnvironmentParam, this.execCommand + " -w " + modelDir);
+		final ProcessBuilder builder = new ProcessBuilder(this.execEnvironment, this.execEnvironmentParam,
+				this.execCommand + " -w " + modelDir + " -pa " + paFileString);
 
 		final String perOpteryxDir = this.getPerOpteryxDir().toFileString();
 		final Map<String, String> env = builder.environment();

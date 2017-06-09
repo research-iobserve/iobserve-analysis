@@ -25,17 +25,21 @@ public abstract class AbstractExecutionWrapper {
 	private final URI inputModelDir;
 	private final URI perOpteryxDir;
 	private final URI lqnsDir;
+	private final URI privacyAnalysisFile;
 
 	/**
 	 * The constructor
 	 * 
-	 * @param inputModelDir the directory containing the pcm model for modification
-	 * @param perOpteryxDir the headless PerOpteryx directory
+	 * @param inputModelDir
+	 *            the directory containing the pcm model for modification
+	 * @param perOpteryxDir
+	 *            the headless PerOpteryx directory
 	 */
-	public AbstractExecutionWrapper(URI inputModelDir, URI perOpteryxDir, URI lqnsDir) {
+	public AbstractExecutionWrapper(URI inputModelDir, URI perOpteryxDir, URI lqnsDir, URI privacyAnalysisFile) {
 		this.inputModelDir = inputModelDir;
 		this.perOpteryxDir = perOpteryxDir;
 		this.lqnsDir = lqnsDir;
+		this.privacyAnalysisFile = privacyAnalysisFile;
 	}
 
 	/**
@@ -73,10 +77,9 @@ public abstract class AbstractExecutionWrapper {
 	 *            the process executing the PerOpteryx headless
 	 */
 	public abstract void watch(final Process process) throws InterruptedException;
-	
-	
+
 	/*
-	 * HELPERS 
+	 * HELPERS
 	 */
 	/**
 	 * @return the inputModelDir
@@ -91,8 +94,19 @@ public abstract class AbstractExecutionWrapper {
 	protected URI getPerOpteryxDir() {
 		return perOpteryxDir;
 	}
-	
+
+	/**
+	 * @return theLQNDir
+	 */
 	protected URI getLQNSDir() {
 		return this.lqnsDir;
 	}
+
+	/**
+	 * @return the privacyAnalysisFile
+	 */
+	protected URI getPrivacyAnalysisFile() {
+		return privacyAnalysisFile;
+	}
+
 }

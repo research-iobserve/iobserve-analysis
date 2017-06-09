@@ -19,6 +19,7 @@ public class PlanningData {
 
 	private URI perOpteryxDir;
 	private URI lqnsDir;
+	private URI privacyAnalysisFile;
 
 	private URI originalModelDir;
 	private URI processedModelDir;
@@ -61,6 +62,21 @@ public class PlanningData {
 
 	public void setLqnsDir(URI lqnsDir) {
 		this.lqnsDir = lqnsDir;
+	}
+
+	/**
+	 * @return the privacyAnalysisFile
+	 */
+	public URI getPrivacyAnalysisFile() {
+		return privacyAnalysisFile;
+	}
+
+	/**
+	 * @param privacyAnalysisFile
+	 *            the privacyAnalysisFile to set
+	 */
+	public void setPrivacyAnalysisFile(URI privacyAnalysisFile) {
+		this.privacyAnalysisFile = privacyAnalysisFile;
 	}
 
 }

@@ -70,11 +70,11 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		return filePath;
 	}
 
-	public static ILaunchConfiguration getDefaultLaunchConfiguration(final String projectModelDir,
-	        final String sourceModelDir) throws CoreException {
+	public static ILaunchConfiguration getDefaultLaunchConfiguration(final String projectModelDir, final String sourceModelDir,
+			final String privacyFile) throws CoreException {
 		final Map<String, Object> attr = new HashMap<>();
 
-		setDefaultConfigFiles(projectModelDir, attr);
+		setDefaultConfigFiles(projectModelDir, privacyFile, attr);
 
 		setDefaultGeneralOptions(attr);
 
@@ -136,21 +136,17 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(AbstractSimulationConfig.EXPERIMENT_RUN, AbstractSimulationConfig.DEFAULT_EXPERIMENT_RUN);
 		attr.put(AbstractSimulationConfig.VARIATION_ID, AbstractSimulationConfig.DEFAULT_VARIATION_NAME);
 		attr.put(AbstractSimulationConfig.SIMULATION_TIME, AbstractSimulationConfig.DEFAULT_SIMULATION_TIME);
-		attr.put(AbstractSimulationConfig.MAXIMUM_MEASUREMENT_COUNT,
-		        AbstractSimulationConfig.DEFAULT_MAXIMUM_MEASUREMENT_COUNT);
-		attr.put(AbstractSimulationConfig.PERSISTENCE_RECORDER_NAME,
-		        AbstractSimulationConfig.DEFAULT_PERSISTENCE_RECORDER_NAME);
+		attr.put(AbstractSimulationConfig.MAXIMUM_MEASUREMENT_COUNT, AbstractSimulationConfig.DEFAULT_MAXIMUM_MEASUREMENT_COUNT);
+		attr.put(AbstractSimulationConfig.PERSISTENCE_RECORDER_NAME, AbstractSimulationConfig.DEFAULT_PERSISTENCE_RECORDER_NAME);
 		attr.put(AbstractSimulationConfig.USE_FIXED_SEED, false);
 		attr.put(SimuComConfig.USE_CONFIDENCE, SimuComConfig.DEFAULT_USE_CONFIDENCE);
 		attr.put(SimuComConfig.CONFIDENCE_LEVEL, Integer.toString(SimuComConfig.DEFAULT_CONFIDENCE_LEVEL));
 		attr.put(SimuComConfig.CONFIDENCE_HALFWIDTH, Integer.toString(SimuComConfig.DEFAULT_CONFIDENCE_HALFWIDTH));
 		attr.put(SimuComConfig.CONFIDENCE_MODELELEMENT_NAME, SimuComConfig.DEFAULT_CONFIDENCE_MODELELEMENT_NAME);
 		attr.put(SimuComConfig.CONFIDENCE_MODELELEMENT_URI, SimuComConfig.DEFAULT_CONFIDENCE_MODELELEMENT_URI);
-		attr.put(SimuComConfig.CONFIDENCE_USE_AUTOMATIC_BATCHES,
-		        SimuComConfig.DEFAULT_CONFIDENCE_USE_AUTOMATIC_BATCHES);
+		attr.put(SimuComConfig.CONFIDENCE_USE_AUTOMATIC_BATCHES, SimuComConfig.DEFAULT_CONFIDENCE_USE_AUTOMATIC_BATCHES);
 		attr.put(SimuComConfig.CONFIDENCE_BATCH_SIZE, Integer.toString(SimuComConfig.DEFAULT_CONFIDENCE_BATCH_SIZE));
-		attr.put(SimuComConfig.CONFIDENCE_MIN_NUMBER_OF_BATCHES,
-		        SimuComConfig.DEFAULT_CONFIDENCE_MIN_NUMBER_OF_BATCHES);
+		attr.put(SimuComConfig.CONFIDENCE_MIN_NUMBER_OF_BATCHES, SimuComConfig.DEFAULT_CONFIDENCE_MIN_NUMBER_OF_BATCHES);
 		attr.put(AbstractSimulationConfig.VERBOSE_LOGGING, false);
 		attr.put(ConstantsContainer.DELETE_TEMPORARY_DATA_AFTER_ANALYSIS, true);
 
@@ -159,8 +155,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		setDefaultPersistenceRecorder(attr);
 	}
 
-	private static void setLQNSDefaultOptions(final Map<String, Object> attr, final String projectModelDir,
-	        final String sourceModelDir) {
+	private static void setLQNSDefaultOptions(final Map<String, Object> attr, final String projectModelDir, final String sourceModelDir) {
 		LOG.info("sourceModelDir: " + sourceModelDir);
 		(new File(sourceModelDir + "/lqns_out")).mkdirs();
 		(new File(sourceModelDir + "/line_out")).mkdirs();
@@ -269,9 +264,10 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.PERFORMANCE_QUALITY), "LQN Solver Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.COST_QUALITY), "Cost Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.NQR_QUALITY), "none");
-		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.RELIABILITY_QUALITY),
-		        "Reliability Solver Analysis");
+		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.RELIABILITY_QUALITY), "Reliability Solver Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.SECURITY_QUALITY), "none");
+
+		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.PRIVACY_QUALITY), "Privacy Analysis");
 	}
 
 	private static void setDefaultGeneralOptions(final Map<String, Object> attr) {
@@ -301,7 +297,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.INDIVIDUALS_PER_GENERATION, "3");
 	}
 
-	private static void setDefaultConfigFiles(final String modelDir, final Map<String, Object> attr) {
+	private static void setDefaultConfigFiles(final String modelDir, final String privacyFile, final Map<String, Object> attr) {
 		// Standard PCM settings
 		IPath allocationFile = getModelFilePath(modelDir, "allocation");
 		LOG.info("Allocation file: " + allocationFile);
@@ -333,10 +329,8 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		LOG.info("Usage file: " + usageFile);
 		attr.put(ConstantsContainer.USAGE_FILE, usageFile.toString());
 
-		attr.put(ConstantsContainer.ACCURACY_QUALITY_ANNOTATION_FILE,
-		        ConstantsContainer.DEFAULT_ACCURACY_QUALITY_ANNOTATION_FILE);
-		attr.put(ConstantsContainer.RMI_MIDDLEWARE_REPOSITORY_FILE,
-		        ConstantsContainer.DEFAULT_RMI_MIDDLEWARE_REPOSITORY_FILE);
+		attr.put(ConstantsContainer.ACCURACY_QUALITY_ANNOTATION_FILE, ConstantsContainer.DEFAULT_ACCURACY_QUALITY_ANNOTATION_FILE);
+		attr.put(ConstantsContainer.RMI_MIDDLEWARE_REPOSITORY_FILE, ConstantsContainer.DEFAULT_RMI_MIDDLEWARE_REPOSITORY_FILE);
 		attr.put(ConstantsContainer.EVENT_MIDDLEWARE_REPOSITORY_FILE, ConstantsContainer.DEFAULT_EVENT_MIDDLEWARE_FILE);
 		attr.put(ConstantsContainer.FEATURE_CONFIG, ConstantsContainer.DEFAULT_FEATURE_CONFIGURATION_FILE);
 
@@ -352,5 +346,9 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		IPath qmlFile = getModelFilePath(modelDir, "qmldeclarations");
 		LOG.info("QMLDeclarations file: " + qmlFile);
 		attr.put(DSEConstantsContainer.QML_DEFINITION_FILE, qmlFile.toString());
+
+		LOG.info("Privacy legal geo file: " + privacyFile);
+		attr.put(DSEConstantsContainer.PRIVACY_FILE, privacyFile);
+
 	}
 }

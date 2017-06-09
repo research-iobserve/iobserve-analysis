@@ -24,6 +24,7 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 
 	private final URI perOpteryxDir;
 	private final URI lqnsDir;
+	private final URI privacyAnalysisFile;
 
 	/**
 	 * Creates a new model processing stage and fills the planning data with the
@@ -33,9 +34,10 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 	 * @param perOpteryxDir
 	 *            the location of the headless PerOpteryx executable
 	 */
-	public ModelProcessing(final URI perOpteryxDir, final URI lqnsDir) {
+	public ModelProcessing(final URI perOpteryxDir, final URI lqnsDir, final URI privacyAnalysisFile) {
 		this.perOpteryxDir = perOpteryxDir;
 		this.lqnsDir = lqnsDir;
+		this.privacyAnalysisFile = privacyAnalysisFile;
 	}
 
 	@Override
@@ -50,6 +52,7 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 		planningData.setPerOpteryxDir(this.perOpteryxDir);
 		planningData.setOriginalModelDir(adaptationData.getRuntimeModelURI());
 		planningData.setLqnsDir(lqnsDir);
+		planningData.setPrivacyAnalysisFile(privacyAnalysisFile);
 
 		InitializeModelProviders models = new InitializeModelProviders(new File(adaptationData.getRuntimeModelURI().toFileString()));
 		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_MODEL_FOLDER, models);

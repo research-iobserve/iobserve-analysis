@@ -110,7 +110,8 @@ public final class AnalysisMain {
 						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelProviderPlatform);
 
 						String legalPrivacyGeoLocationsPath = commandLine.getOptionValue("geo");
-						PrivacyAnalysis.setLegalPersonalGeoLocationFile(URI.createFileURI(legalPrivacyGeoLocationsPath));
+						final URI privacyAnalysisFile = URI.createFileURI(legalPrivacyGeoLocationsPath);
+						PrivacyAnalysis.setLegalPersonalGeoLocationFile(privacyAnalysisFile);
 						final URI perOpteryxUri = URI.createFileURI(commandLine.getOptionValue("po"));
 
 						final URI lqnsUri = URI.createFileURI(commandLine.getOptionValue("l"));
@@ -122,7 +123,8 @@ public final class AnalysisMain {
 
 						final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel,
 								usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
-								systemModelProvider, snapshotBuilder, perOpteryxUri, lqnsUri, varianceOfUserGroups, thinkTime, closedWorkload, eventListener, deployablesFolder);
+								systemModelProvider, snapshotBuilder, perOpteryxUri, lqnsUri, privacyAnalysisFile, varianceOfUserGroups, thinkTime,
+								closedWorkload, eventListener, deployablesFolder);
 
 						System.out.println("Analysis configuration");
 						final Execution<Configuration> analysis = new Execution<>(configuration);
@@ -172,12 +174,12 @@ public final class AnalysisMain {
 				.desc("the location of the PerOpteryx headless plugin").build());
 		options.addOption(Option.builder("geo").required(true).longOpt("legal-geo-locations").hasArg()
 				.desc("the geo-locations, where personal data can be stored").build());
-		options.addOption(Option.builder("l").required(true).longOpt("lqns-location").hasArg()
-				.desc("the location of the LQN Solver for optimization").build());
+		options.addOption(
+				Option.builder("l").required(true).longOpt("lqns-location").hasArg().desc("the location of the LQN Solver for optimization").build());
 		options.addOption(Option.builder("d").required(true).longOpt("deployables-folder").hasArg()
 				.desc("the location of the deployable/executable scripts for adaptation execution").build());
-		options.addOption(Option.builder("in").required(true).longOpt("interactive-adaptation")
-				.desc("interact with operator during adaptation").build());
+		options.addOption(
+				Option.builder("in").required(true).longOpt("interactive-adaptation").desc("interact with operator during adaptation").build());
 
 		options.addOption(Option.builder("l").required(true).longOpt("legal-geo-locations").hasArg()
 				.desc("the geo-locations, where personal data can be stored").build());
@@ -208,12 +210,12 @@ public final class AnalysisMain {
 				.desc("the location of the PerOpteryx headless plugin").build());
 		options.addOption(Option.builder("geo").required(true).longOpt("legal-geo-locations").hasArg()
 				.desc("the geo-locations, where personal data can be stored").build());
-		options.addOption(Option.builder("l").required(true).longOpt("lqns-location").hasArg()
-				.desc("the location of the LQN Solver for optimization").build());
+		options.addOption(
+				Option.builder("l").required(true).longOpt("lqns-location").hasArg().desc("the location of the LQN Solver for optimization").build());
 		options.addOption(Option.builder("d").required(true).longOpt("deployables-folder").hasArg()
 				.desc("the location of the deployable/executable scripts for adaptation execution").build());
-		options.addOption(Option.builder("in").required(true).longOpt("interactive-adaptation")
-				.desc("interact with operator during adaptation").build());
+		options.addOption(
+				Option.builder("in").required(true).longOpt("interactive-adaptation").desc("interact with operator during adaptation").build());
 
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());

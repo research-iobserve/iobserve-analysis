@@ -73,10 +73,10 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
             final RepositoryModelProvider repositoryModelProvider, final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider, final SnapshotBuilder snapshotBuilder, 
-            final URI perOpteryxDir, final URI lqnsDir, final URI deployablesFolder)
+            final URI perOpteryxDir, final URI lqnsDir, final URI privacyAnalysisFile, final URI deployablesFolder)
             throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
-                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxDir, lqnsDir, varianceOfUserGroups,
+                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxDir, lqnsDir, privacyAnalysisFile, varianceOfUserGroups,
                 thinkTime, closedWorkload, deployablesFolder);
 
         final URL url = new URL(

@@ -102,11 +102,12 @@ public class AnalysisDaemon implements Daemon {
 						final URI perOpteryxDir = URI.createURI(commandLine.getOptionValue("po"));
 						final URI deployablesFolder = URI.createURI(commandLine.getOptionValue("d"));
 						final URI lqnsDir = URI.createURI(commandLine.getOptionValue("l"));
+						final URI privacyAnalysisFile = URI.createFileURI(commandLine.getOptionValue("geo"));
 
 						final Configuration configuration = new ServiceConfiguration(listenPort, outputHostname, outputPort, systemId,
 								varianceOfUserGroups, thinkTime, closedWorkload, correspondenceModel, usageModelProvider, repositoryModelProvider,
-								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxDir, lqnsDir,
-								deployablesFolder);
+								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxDir,
+								lqnsDir, privacyAnalysisFile, deployablesFolder);
 
 						this.thread = new AnalysisThread(this, configuration);
 					} else {
@@ -157,19 +158,23 @@ public class AnalysisDaemon implements Daemon {
 	private static Options createOptions() {
 		final Options options = new Options();
 
-		options.addOption(Option.builder("i").required(true).longOpt("input").hasArg()
-				.desc("port number to listen for new connections of Kieker writers").build());
-		options.addOption(Option.builder("o").required(true).longOpt("output").hasArgs().numberOfArgs(2).valueSeparator(':')
-				.desc("hostname and port of the iobserve visualization, e.g., visualization:80").build());
-		options.addOption(Option.builder("s").required(true).longOpt("system").hasArg().desc("system").build());
+		options.addOption(Option.builder("i").required(true).longOpt("input").hasArg().desc("a Kieker logfile directory").build());
 		options.addOption(Option.builder("p").required(true).longOpt("pcm").hasArg().desc("directory containing all PCM models").build());
+		options.addOption(Option.builder("w").required(true).longOpt("closed-workload").desc("Closed workload").build());
 		options.addOption(Option.builder("s").required(true).longOpt("snapshot-location").hasArg().desc("snapshot save location").build());
 		options.addOption(Option.builder("po").required(true).longOpt("perOpteryx-headless-location").hasArg()
 				.desc("the location of the PerOpteryx headless plugin").build());
-		options.addOption(Option.builder("l").required(true).longOpt("lqns-location").hasArg()
-				.desc("the location of the LQN Solver for optimization").build());
+		options.addOption(Option.builder("geo").required(true).longOpt("legal-geo-locations").hasArg()
+				.desc("the geo-locations, where personal data can be stored").build());
+		options.addOption(
+				Option.builder("l").required(true).longOpt("lqns-location").hasArg().desc("the location of the LQN Solver for optimization").build());
 		options.addOption(Option.builder("d").required(true).longOpt("deployables-folder").hasArg()
 				.desc("the location of the deployable/executable scripts for adaptation execution").build());
+		options.addOption(
+				Option.builder("in").required(true).longOpt("interactive-adaptation").desc("interact with operator during adaptation").build());
+
+		options.addOption(Option.builder("l").required(true).longOpt("legal-geo-locations").hasArg()
+				.desc("the geo-locations, where personal data can be stored").build());
 
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());

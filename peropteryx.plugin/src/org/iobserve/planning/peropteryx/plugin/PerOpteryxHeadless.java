@@ -41,6 +41,9 @@ public class PerOpteryxHeadless implements IApplication {
 
 	public static final String INPUT_PRODUCT_OPTION = "product";
 
+	public static final String INPUT_PRIVACY_FILE_OPTION = "privacy-analysis";
+	public static final String INPUT_PRIVACY_FILE_OPTION_SHORT = "pa";
+
 	private IWorkspaceRoot workspaceRoot;
 	private IProject project;
 
@@ -52,9 +55,10 @@ public class PerOpteryxHeadless implements IApplication {
 		try {
 			final CommandLine commandLine = parser.parse(PerOpteryxHeadless.createOptions(), args);
 			final String workingDir = commandLine.getOptionValue(INPUT_WORKING_DIR_OPTION);
+			final String privacyFile = commandLine.getOptionValue(INPUT_PRIVACY_FILE_OPTION);
 			LOG.info("Working dir: " + workingDir);
 
-			this.launchPeropteryx(workingDir);
+			this.launchPeropteryx(workingDir, privacyFile);
 		} catch (final ParseException exp) {
 			final HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp("peropteryx-headless", PerOpteryxHeadless.createOptions());
@@ -66,17 +70,16 @@ public class PerOpteryxHeadless implements IApplication {
 		return IApplication.EXIT_OK;
 	}
 
-	private void launchPeropteryx(final String workingDir) throws CoreException {
+	private void launchPeropteryx(final String workingDir, final String privacyFile) throws CoreException {
 		LOG.info("Configuring PerOpteryx run...");
 		DSELaunch launch = new DSELaunch();
 
 		this.configureInternalWorkspace(workingDir);
 
 		String projectDir = PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_NAME + "/"
-		        + PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_WORKING_DIR;
+				+ PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_WORKING_DIR;
 
-		ILaunchConfiguration launchConfig = PerOpteryxLaunchConfigurationBuilder
-		        .getDefaultLaunchConfiguration(projectDir, workingDir);
+		ILaunchConfiguration launchConfig = PerOpteryxLaunchConfigurationBuilder.getDefaultLaunchConfiguration(projectDir, workingDir, privacyFile);
 		ILaunch currentLaunch = new Launch(launchConfig, ILaunchManager.RUN_MODE, null);
 
 		DebugPlugin.getDefault().getLaunchManager().addLaunch(currentLaunch);
@@ -100,8 +103,7 @@ public class PerOpteryxHeadless implements IApplication {
 
 		IFolder modelFolder = this.project.getFolder(PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_WORKING_DIR);
 
-		modelFolder.createLink(new Path(modelDir), IResource.BACKGROUND_REFRESH | IResource.REPLACE,
-		        new NullProgressMonitor());
+		modelFolder.createLink(new Path(modelDir), IResource.BACKGROUND_REFRESH | IResource.REPLACE, new NullProgressMonitor());
 	}
 
 	@Override
@@ -122,19 +124,25 @@ public class PerOpteryxHeadless implements IApplication {
 		final Options options = new Options();
 
 		final Option workDirOption = new Option(INPUT_WORKING_DIR_OPTION_SHORT, INPUT_WORKING_DIR_OPTION, true,
-		        "Working directory containing the model files. Note that the files may be changed in the process.");
+				"Working directory containing the model files. Note that the files may be changed in the process.");
 		workDirOption.setRequired(true);
 
 		final Option productOption = new Option(INPUT_PRODUCT_OPTION, true, "Eclipse product description");
 
 		final Option helpOption = new Option("h", "help", false, "Show usage information");
 
+		final Option privacyOption = new Option(INPUT_PRIVACY_FILE_OPTION_SHORT, INPUT_WORKING_DIR_OPTION, true,
+				"privacy analysis legal geo-locations file");
+		privacyOption.setRequired(true);
+
 		options.addOption(workDirOption);
 		options.addOption(productOption);
+		options.addOption(privacyOption);
 
 		/** help */
 		options.addOption(helpOption);
 
 		return options;
 	}
+
 }

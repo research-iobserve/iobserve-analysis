@@ -61,16 +61,15 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
 	 */
 	public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
 			final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
-			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir, final int varianceOfUserGroups,
-			final int thinkTime, final boolean closedWorkload, final URI deployablesFolder) {
-		super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-				allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxHeadless, lqnsDir, varianceOfUserGroups,
-				thinkTime, closedWorkload, null, deployablesFolder);
+			final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider, final AllocationModelProvider allocationModelProvider,
+			final SystemModelProvider systemModelProvider, final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,
+			final URI privacyAnalysisFile, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
+			final URI deployablesFolder) {
+		super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider, allocationModelProvider,
+				systemModelProvider, snapshotBuilder, perOpteryxHeadless, lqnsDir, privacyAnalysisFile, varianceOfUserGroups, thinkTime,
+				closedWorkload, null, deployablesFolder);
 
-		final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
-				MultiInputObservationConfiguration.CAPACITY);
+		final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort, MultiInputObservationConfiguration.CAPACITY);
 		this.connectPorts(reader.getOutputPort(), this.recordSwitch.getInputPort());
 	}
 
