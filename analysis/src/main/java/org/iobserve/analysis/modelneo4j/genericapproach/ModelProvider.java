@@ -51,15 +51,12 @@ public class ModelProvider<T extends EObject> {
 
     private final GraphDatabaseService graph;
     private final HashMap<Node, DataType> dataTypes;
+    private final HashMap<Node, Boolean> reallyDeleteValues;
 
     public ModelProvider(final GraphDatabaseService graph) {
         this.graph = graph;
         this.dataTypes = new HashMap<>();
-    }
-
-    public ModelProvider(final GraphDatabaseService graph, final HashMap<Node, DataType> dataTypes) {
-        this.graph = graph;
-        this.dataTypes = dataTypes;
+        this.reallyDeleteValues = new HashMap<>();
     }
 
     public Node createComponent(final EObject component) {
@@ -280,10 +277,14 @@ public class ModelProvider<T extends EObject> {
             tx.success();
         }
 
-        this.deleteComponent(node);
+        this.markAccessibleNodes(node);
+        this.markDeletableNodes(node, true);
+        this.deleteNodes(node);
     }
 
-    public void deleteComponent(final Node node) {
+    public boolean deleteComponent2(final Node node) {
+
+        boolean reallyDelete = true;
 
         try (Transaction tx = this.getGraph().beginTx()) {
             for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
@@ -293,12 +294,15 @@ public class ModelProvider<T extends EObject> {
 
                 if (rel.isType(PcmRelationshipType.CONTAINS)) {
                     rel.delete();
-                    this.deleteComponent(endNode);
+                    this.deleteComponent2(endNode);
                 } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
                     // Only delete type when it has no other incoming relations
                     rel.delete();
-                    if (!endNode.hasRelationship(Direction.INCOMING)) {
-                        this.deleteComponent(endNode);
+
+                    if (endNode.hasRelationship(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
+                        reallyDelete = false;
+                    } else {
+                        reallyDelete = this.deleteComponent2(endNode);
                     }
 
                 }
@@ -309,9 +313,175 @@ public class ModelProvider<T extends EObject> {
                 rel.delete();
             }
 
-            node.delete();
+            if (reallyDelete) {
+                node.delete();
+            }
 
             tx.success();
+
+            return reallyDelete;
+        }
+    }
+
+    public boolean deleteComponent3(final Node node, final boolean reallyDelete) {
+
+        boolean reallyDeleteDown;
+        boolean reallyDeleteUp;
+
+        try (Transaction tx = this.getGraph().beginTx()) {
+            if (node.hasProperty(ModelProvider.ENTITY_NAME)
+                    && node.getProperty(ModelProvider.ENTITY_NAME).equals("ProductOrder")) {
+                System.out.println("Stop");
+            }
+
+            boolean hasUnmarkedInRel = false;
+            for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
+                if (!inRel.hasProperty("marked")) {
+                    hasUnmarkedInRel = true;
+                }
+            }
+
+            if (hasUnmarkedInRel) {
+                reallyDeleteUp = false;
+                reallyDeleteDown = false;
+            } else {
+                reallyDeleteUp = true;
+                reallyDeleteDown = reallyDelete;
+            }
+
+            for (final Relationship outRel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                    PcmRelationshipType.IS_TYPE)) {
+
+                if (node.hasProperty(ModelProvider.ENTITY_NAME)
+                        && node.getProperty(ModelProvider.ENTITY_NAME).equals("ProductOrder")) {
+                    if (outRel.getEndNode().hasProperty(ModelProvider.ENTITY_NAME)) {
+                        System.out.println(outRel.getEndNode().getProperty(ModelProvider.ENTITY_NAME));
+                    } else if (outRel.getEndNode().hasProperty("parameterName")) {
+                        System.out.println(outRel.getEndNode().getProperty("parameterName"));
+                    } else {
+                        System.out.println(outRel.getEndNode().getProperty(ModelProvider.TYPE));
+                    }
+                }
+
+                if (!outRel.hasProperty("marked")) {
+                    outRel.setProperty("marked", "true");
+
+                    if (outRel.isType(PcmRelationshipType.CONTAINS)) {
+                        reallyDeleteUp &= this.deleteComponent3(outRel.getEndNode(), reallyDeleteDown)
+                                && reallyDeleteDown;
+                    } else {
+                        reallyDeleteUp &= this.deleteComponent3(outRel.getEndNode(), reallyDeleteDown)
+                                || reallyDeleteDown;
+
+                    }
+
+                }
+
+            }
+
+            if (reallyDeleteUp) {
+                for (final Relationship rel : node.getRelationships()) {
+                    rel.setProperty("DELETED", "TRUE");
+                }
+                node.addLabel(Label.label("DELETED"));
+            }
+
+            tx.success();
+        }
+
+        return reallyDeleteUp;
+    }
+
+    public void markDeletableNodes(final Node node, final boolean reallyDeletePred) {
+
+        boolean reallyDelete = reallyDeletePred;
+
+        try (Transaction tx = this.getGraph().beginTx()) {
+
+            for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
+                if (!rel.hasProperty("accessible")) {
+                    reallyDelete = false;
+                }
+            }
+
+            if (node.hasProperty("delete")) {
+                // Only set delete from true to false
+                if ((boolean) node.getProperty("delete")) {
+                    node.setProperty("delete", reallyDelete);
+                }
+            } else {
+                node.setProperty("delete", reallyDelete);
+            }
+
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                    PcmRelationshipType.IS_TYPE)) {
+                if (!rel.hasProperty("marked")) {
+                    rel.setProperty("marked", "true");
+                    this.markDeletableNodes(rel.getEndNode(), reallyDelete);
+                }
+            }
+
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                    PcmRelationshipType.IS_TYPE)) {
+                rel.removeProperty("marked");
+            }
+
+            tx.success();
+        }
+    }
+
+    public void markAccessibleNodes(final Node node) {
+        try (Transaction tx = this.getGraph().beginTx()) {
+
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                    PcmRelationshipType.IS_TYPE)) {
+                if (!rel.hasProperty("accessible")) {
+                    rel.setProperty("accessible", "true");
+                    this.markAccessibleNodes(rel.getEndNode());
+                }
+            }
+
+            tx.success();
+
+            return;
+        }
+    }
+
+    public void deleteNodes(final Node node) {
+        try (final Transaction tx = this.getGraph().beginTx()) {
+
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                    PcmRelationshipType.IS_TYPE)) {
+
+                try {
+                    if (!rel.hasProperty("marked2")) {
+                        rel.setProperty("marked2", "true");
+                        this.deleteNodes(rel.getEndNode());
+                    }
+                } catch (final NotFoundException e) {
+                }
+            }
+
+            if ((boolean) node.getProperty("delete")) {
+
+                for (final Relationship rel : node.getRelationships()) {
+                    rel.setProperty("DELETED", "TRUE");
+                    // rel.delete();
+                }
+                // node.delete();
+                node.addLabel(Label.label("DELETED"));
+
+            } else {
+
+                for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                        PcmRelationshipType.IS_TYPE)) {
+                    rel.removeProperty("marked2");
+                }
+            }
+
+            tx.success();
+
+            return;
         }
     }
 
