@@ -452,37 +452,54 @@ public class ModelProvider<T extends EObject> {
 
             for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
                     PcmRelationshipType.IS_TYPE)) {
+                boolean callRecursive = false;
 
-                try {
-                    if (!rel.hasProperty("marked2")) {
-                        rel.setProperty("marked2", "true");
-                        this.deleteNodes(rel.getEndNode());
+                try (Transaction tx2 = this.getGraph().beginTx()) {
+                    try {
+                        if (!rel.hasProperty("marked2")) {
+                            rel.setProperty("marked2", "true");
+                            callRecursive = true;
+                        }
+
+                    } catch (final NotFoundException e) {
                     }
-                } catch (final NotFoundException e) {
+                    tx2.success();
+                }
+
+                if (callRecursive) {
+                    this.deleteNodes(rel.getEndNode());
                 }
             }
+            tx.success();
+        }
 
-            if ((boolean) node.getProperty("delete")) {
+        try (Transaction tx = this.getGraph().beginTx()) {
 
-                for (final Relationship rel : node.getRelationships()) {
-                    rel.setProperty("DELETED", "TRUE");
-                    // rel.delete();
+            try {
+                if ((boolean) node.getProperty("delete")) {
+
+                    for (final Relationship rel : node.getRelationships()) {
+                        // rel.setProperty("DELETED", "TRUE");
+                        rel.delete();
+                    }
+                    node.delete();
+                    // node.addLabel(Label.label("DELETED"));
+
+                } else {
+
+                    for (final Relationship rel : node.getRelationships(Direction.OUTGOING,
+                            PcmRelationshipType.CONTAINS, PcmRelationshipType.IS_TYPE)) {
+                        rel.removeProperty("marked2");
+                    }
                 }
-                // node.delete();
-                node.addLabel(Label.label("DELETED"));
-
-            } else {
-
-                for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                        PcmRelationshipType.IS_TYPE)) {
-                    rel.removeProperty("marked2");
-                }
+            } catch (final NotFoundException e) {
             }
 
             tx.success();
 
             return;
         }
+
     }
 
     public HashMap<Node, DataType> getDataTypes() {

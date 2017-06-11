@@ -59,19 +59,19 @@ public class TestGeneric {
         // new ModelProvider(graph).createComponent(repository);
 
         /** Read interface (id -> object) from DB1 */
-        System.out.println("Reading interface (id -> object) from DB1");
-        final OperationInterface inter = (OperationInterface) new ModelProvider<OperationInterface>(graph)
-                .readComponent(OperationInterface.class, "_j8RD0NYgEeWrM-HnT5f_ug");
+        // System.out.println("Reading interface (id -> object) from DB1");
+        // final OperationInterface inter = (OperationInterface) new
+        // ModelProvider<OperationInterface>(graph)
+        // .readComponent(OperationInterface.class, "_j8RD0NYgEeWrM-HnT5f_ug");
 
         // /** Read repository (id -> object) from DB1 */
-        // System.out.println("Reading repository (id -> object) from DB1");
-        // final Repository repository2 = (Repository) new
-        // ModelProvider<Repository>(graph).readComponent(Repository.class,
-        // repository.getId());
+        System.out.println("Reading repository (id -> object) from DB1");
+        final Repository repository2 = (Repository) new ModelProvider<Repository>(graph).readComponent(Repository.class,
+                repository.getId());
 
         /** Write to DB2 */
         System.out.println("Writing to DB2");
-        new ModelProvider<OperationInterface>(graph2).createComponent(inter);
+        new ModelProvider<OperationInterface>(graph2).createComponent(repository2);
 
         /** Read OperationInterface (type -> ids) from DB1 */
         // System.out.println("Reading OperationInterface (type -> ids) from DB1");
@@ -86,8 +86,9 @@ public class TestGeneric {
 
         /** Delete Interface "_j8RD0NYgEeWrM-HnT5f_ug" */
         System.out.println("Delete Inteface");
-        new ModelProvider<OperationInterface>(graph2).deleteComponent(OperationInterface.class,
-                "_j8RD0NYgEeWrM-HnT5f_ug");
+        // new ModelProvider<OperationInterface>(graph2).deleteComponent(OperationInterface.class,
+        // "_j8RD0NYgEeWrM-HnT5f_ug");
+        new ModelProvider<Repository>(graph2).deleteComponent(Repository.class, repository.getId());
 
         graph.shutdown();
         graph2.shutdown();
