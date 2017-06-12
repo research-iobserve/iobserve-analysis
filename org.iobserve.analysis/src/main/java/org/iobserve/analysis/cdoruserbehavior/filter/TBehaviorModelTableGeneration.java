@@ -19,7 +19,6 @@ import java.util.List;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModelTable;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.DynamicBehaviorModelTable;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
@@ -52,11 +51,10 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
      * @param modelGenerationFilter
      *            model generation filter
      */
-    public TBehaviorModelTableGeneration(final IRepresentativeStrategy strategy,
-            final ModelGenerationFilter modelGenerationFilter, final boolean keepEmptyTransitions) {
+    public TBehaviorModelTableGeneration(final IRepresentativeStrategy strategy, final boolean keepEmptyTransitions) {
         super();
 
-        this.modelTable = new DynamicBehaviorModelTable(strategy, modelGenerationFilter);
+        this.modelTable = new DynamicBehaviorModelTable(strategy);
         this.keepEmptyTransitions = keepEmptyTransitions;
 
     }
@@ -71,20 +69,16 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
 
             EntryCallEvent lastCall = null;
             for (final EntryCallEvent eventCall : entryCalls) {
-                final boolean isAllowed = this.modelTable.isAllowedSignature(eventCall.getOperationSignature());
-
-                if ((lastCall != null) && isAllowed) {
-                    System.out.println(eventCall.getClassSignature() + eventCall.getOperationSignature());
+                if ((lastCall != null)) {
                     this.modelTable.addTransition(lastCall, eventCall);
                     this.modelTable.addInformation(eventCall);
 
-                } else if (isAllowed) { // only called at first valid event (condition lastCall ==
-                                        // null is not needed)
+                } else { // only called at first valid event (condition lastCall ==
+                         // null is not needed)
                     this.modelTable.addInformation(eventCall);
 
                 }
-
-                lastCall = isAllowed ? eventCall : lastCall;
+                lastCall = eventCall;
             }
         }
     }

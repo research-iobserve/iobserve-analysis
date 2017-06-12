@@ -16,7 +16,7 @@
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IModelGenerationFilterFactory;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryCallFilterRules;
 
 /**
  * factory for creating a filter for JPetStore call events
@@ -24,12 +24,12 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelG
  * @author Christoph Dornieden
  *
  */
-public class JPetStoreModelGenerationFilterFactory implements IModelGenerationFilterFactory {
+public class JPetStoreEntryCallRulesFactory implements IModelGenerationFilterFactory {
 
     @Override
-    public ModelGenerationFilter createFilter() {
-        ModelGenerationFilter modelGenerationFilter;
-        modelGenerationFilter = new ModelGenerationFilter(true);
+    public EntryCallFilterRules createFilter() {
+        EntryCallFilterRules modelGenerationFilter;
+        modelGenerationFilter = new EntryCallFilterRules(true);
         modelGenerationFilter.addFilterRule("(\\w*\\.)*images.*");
         modelGenerationFilter.addFilterRule("(\\w*\\.)*css.*");
 

@@ -15,6 +15,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelPreperation;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelTableGeneration;
+import org.iobserve.analysis.cdoruserbehavior.filter.TEntryCallSequenceFilter;
 import org.iobserve.analysis.cdoruserbehavior.filter.TInstanceTransformations;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
@@ -45,6 +46,7 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
 
     private final Distributor<EntryCallSequenceModel> distributor;
     private final Merger<Object> merger;
+    private final TEntryCallSequenceFilter tEntryCallSequenceFilter;
     private final TBehaviorModelTableGeneration tBehaviorModelGeneration;
     private final TBehaviorModelPreperation tBehaviorModelPreperation;
 
@@ -56,19 +58,20 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
     public TBehaviorModelPreprocessing(final BehaviorModelConfiguration configuration) {
         this.configuration = configuration;
 
+        this.tEntryCallSequenceFilter = new TEntryCallSequenceFilter(configuration.getModelGenerationFilter());
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         this.distributor = new Distributor<>(strategy);
 
         this.merger = new Merger<>(new SkippingBusyWaitingRoundRobinStrategy());
 
         this.tBehaviorModelGeneration = new TBehaviorModelTableGeneration(
-                this.configuration.getRepresentativeStrategy(), this.configuration.getModelGenerationFilter(),
-                configuration.keepEmptyTransitions());
+                this.configuration.getRepresentativeStrategy(), configuration.keepEmptyTransitions());
 
         this.tBehaviorModelPreperation = new TBehaviorModelPreperation(configuration.keepEmptyTransitions());
 
         this.tInstanceTransformations = new TInstanceTransformations();
 
+        this.connectPorts(this.tEntryCallSequenceFilter.getOutputPort(), this.distributor.getInputPort());
         this.connectPorts(this.distributor.getNewOutputPort(), this.tBehaviorModelGeneration.getInputPort());
         this.connectPorts(this.distributor.getNewOutputPort(), this.merger.getNewInputPort());
 
@@ -85,7 +88,7 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
      * @return input port
      */
     public InputPort<EntryCallSequenceModel> getInputPort() {
-        return this.distributor.getInputPort();
+        return this.tEntryCallSequenceFilter.getInputPort();
     }
 
     /**

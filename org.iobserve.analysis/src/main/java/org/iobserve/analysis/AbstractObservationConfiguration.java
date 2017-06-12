@@ -21,10 +21,11 @@ import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelCom
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.GetLastXSignatureStrategy;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.XMeansClustering;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.CoCoMEModelGenerationFilterFactory;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetStoreModelGenerationFilterFactory;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.CoCoMEEntryCallRulesFactory;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetStoreEntryCallRulesFactory;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetstoreStrategy;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
@@ -105,13 +106,16 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // systemModelProvider,
         // resourceEnvironmentModelProvider);
 
-        final ModelGenerationFilter modelGenerationFilter;
+        final EntryCallFilterRules modelGenerationFilter;
+        final ISignatureCreationStrategy signatureStrategy;
         final int expectedUserGroups;
         if (thinkTime == 1) {
-            modelGenerationFilter = new JPetStoreModelGenerationFilterFactory().createFilter();
-            expectedUserGroups = 6;
+            modelGenerationFilter = new JPetStoreEntryCallRulesFactory().createFilter();
+            expectedUserGroups = 9;
+            signatureStrategy = new GetLastXSignatureStrategy(2);
         } else {
-            modelGenerationFilter = new CoCoMEModelGenerationFilterFactory().createFilter();
+            modelGenerationFilter = new CoCoMEEntryCallRulesFactory().createFilter();
+            signatureStrategy = new GetLastXSignatureStrategy(1);
             expectedUserGroups = 4;
         }
 
@@ -124,7 +128,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         behaviorModelConfiguration.setVisualizationUrl("http://localhost:8080/ubm-backend/v1");
         behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
         behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
-        behaviorModelConfiguration.setSignatureCreationStrategy(new GetLastXSignatureStrategy(1));
+        behaviorModelConfiguration.setSignatureCreationStrategy(signatureStrategy);
         behaviorModelConfiguration.setClustering(behaviorModelClustering);
 
         // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);

@@ -20,12 +20,14 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.iobserve.analysis.data.EntryCallEvent;
+
 /**
  *
  * @author Christoph Dornieden
  *
  */
-public class ModelGenerationFilter {
+public class EntryCallFilterRules {
     private final List<Pattern> filterList;
     private final boolean blackListMode;
 
@@ -35,7 +37,7 @@ public class ModelGenerationFilter {
      * @param blackListMode
      *            blackListMode
      */
-    public ModelGenerationFilter(final boolean blackListMode) {
+    public EntryCallFilterRules(final boolean blackListMode) {
         this.filterList = new ArrayList<>();
         this.blackListMode = blackListMode;
     }
@@ -48,9 +50,20 @@ public class ModelGenerationFilter {
      * @param blackListMode
      *            blackListMode
      */
-    public ModelGenerationFilter(final List<String> filterList, final boolean blackListMode) {
+    public EntryCallFilterRules(final List<String> filterList, final boolean blackListMode) {
         this.filterList = filterList.stream().map(Pattern::compile).collect(Collectors.toList());
         this.blackListMode = blackListMode;
+    }
+
+    /**
+     * Checks wether a signature of an entryCallEvent is allowed or not
+     *
+     * @param signature
+     *            signature
+     * @return true if signature is allowed, false else
+     */
+    public boolean isAllowed(final EntryCallEvent entryCallEvent) {
+        return this.isAllowed(entryCallEvent.getOperationSignature());
     }
 
     /**
@@ -78,7 +91,7 @@ public class ModelGenerationFilter {
      *            regex matching signatures
      * @return true if regex could be added, false else
      */
-    public ModelGenerationFilter addFilterRule(final String regex) {
+    public EntryCallFilterRules addFilterRule(final String regex) {
         this.filterList.add(Pattern.compile(regex));
         return this;
     }

@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ModelGenerationFilter;
 import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
@@ -52,9 +51,6 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
     // transition matrix
     private final LinkedList<LinkedList<Integer>> transitions;
 
-    // filter list of regex expressions
-    private final ModelGenerationFilter modelGenerationFilter;
-
     // Aggregation Strategy
     private final IRepresentativeStrategy strategy;
 
@@ -67,13 +63,11 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
      *            modelGenerationFilter
      */
 
-    public DynamicBehaviorModelTable(final IRepresentativeStrategy strategy,
-            final ModelGenerationFilter modelGenerationFilter) {
+    public DynamicBehaviorModelTable(final IRepresentativeStrategy strategy) {
         this.signatures = new HashMap<>();
         this.inverseSignatures = new ArrayList<>();
         this.transitions = new LinkedList<>();
         this.strategy = strategy;
-        this.modelGenerationFilter = modelGenerationFilter;
 
     }
 
@@ -89,11 +83,6 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
 
         final String fromSignature = this.getSignatureFromEvent(from);
         final String toSignature = this.getSignatureFromEvent(to);
-
-        if (!(this.isAllowedSignature(from.getOperationSignature())
-                && this.isAllowedSignature(to.getOperationSignature()))) {
-            throw new IllegalArgumentException("event signature not allowed");
-        }
 
         final Integer fromIndex = this.getSignatureIndex(fromSignature);
         final Integer toIndex = this.getSignatureIndex(toSignature);
@@ -264,11 +253,6 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
     }
 
     @Override
-    public boolean isAllowedSignature(final String signature) {
-        return this.modelGenerationFilter.isAllowed(signature);
-    }
-
-    @Override
     public String toString() {
         final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -304,6 +288,12 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
         // }
         //
         return string;
+    }
+
+    @Override
+    public boolean isAllowedSignature(final String signature) { // allow all signatures, since they
+                                                                // are prefiltered
+        return true;
     }
 
 }

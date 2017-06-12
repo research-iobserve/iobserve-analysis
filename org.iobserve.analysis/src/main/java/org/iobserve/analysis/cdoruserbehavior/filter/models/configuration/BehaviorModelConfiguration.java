@@ -30,7 +30,7 @@ public class BehaviorModelConfiguration {
     private String behaviorModelNamePrefix;
 
     // table generation configuration
-    private ModelGenerationFilter modelGenerationFilter;
+    private EntryCallFilterRules modelGenerationFilter;
 
     private IRepresentativeStrategy representativeStrategy;
 
@@ -51,7 +51,7 @@ public class BehaviorModelConfiguration {
         this.behaviorModelNamePrefix = "BehaviorModel";
         this.visualizationUrl = "localhost:8080";
         this.keepEmptyTransitions = true;
-        this.modelGenerationFilter = new ModelGenerationFilter(false).addFilterRule(".*");
+        this.modelGenerationFilter = new EntryCallFilterRules(false).addFilterRule(".*");
         this.representativeStrategy = new DefaultStrategy();
         this.signatureCreationStrategy = new GetLastXSignatureStrategy(Integer.MAX_VALUE);
         this.clustering = new XMeansClustering(1, 1, new ManhattanDistance());
@@ -62,7 +62,7 @@ public class BehaviorModelConfiguration {
      *
      * @return the modelGenerationFilter
      */
-    public ModelGenerationFilter getModelGenerationFilter() {
+    public EntryCallFilterRules getModelGenerationFilter() {
         return this.modelGenerationFilter;
     }
 
@@ -146,7 +146,7 @@ public class BehaviorModelConfiguration {
      * @param modelGenerationFilter
      *            the modelGenerationFilter to set
      */
-    public void setModelGenerationFilter(final ModelGenerationFilter modelGenerationFilter) {
+    public void setModelGenerationFilter(final EntryCallFilterRules modelGenerationFilter) {
         this.modelGenerationFilter = modelGenerationFilter;
     }
 
