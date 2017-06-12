@@ -30,19 +30,16 @@ public class CoCoMEModelGenerationFilterFactory implements IModelGenerationFilte
     public ModelGenerationFilter createFilter() {
         final ModelGenerationFilter modelGenerationFilter = new ModelGenerationFilter(false);
         modelGenerationFilter.addFilterRule( // allow all operations of the package
-                                             // org.cocome.cloud.logic.webservice.cashdeskline.cashdesk
-                                             // except init operations
-                "(p\\w* )(\\w*\\.)*\\w* org\\.cocome\\.cloud\\.logic\\.webservice\\.cashdeskline\\.cashdesk\\.(\\w*\\.)*\\w*\\(.*");
+                // org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.*
+                "p\\w+ (\\w*\\.)*\\w* (\\w*\\.)*(cashdeskservice|cashdesk)\\.(\\w*\\.)*\\w*\\(.*");
 
-        modelGenerationFilter.addFilterRule(// allow all operations of the package
-                                            // except init operations
-                                            // org.cocome.cloud.logic.webservice.store
-                "(p\\w* )(\\w*\\.)*\\w* org\\.cocome\\.cloud\\.logic\\.webservice\\.store\\.(\\w*\\.)*\\w*\\(.*");
-
-        modelGenerationFilter.addFilterRule(// allow all operations of the package
-                // except init operations
-                // org.cocome.cloud.logic.webservice.store
-                ".*queryStore.(\\w*\\.)*\\w*\\(.*");
+        // modelGenerationFilter.addFilterRule( // allow all operations of the package
+        // // org.cocome.cloud.webservice.enterprise.*
+        // "p\\w+ (\\w*\\.)*\\w* (\\w*\\.)*(enterprise)\\.(\\w*\\.)*\\w*\\(.*");
+        // modelGenerationFilter.addFilterRule(// allow all operations of the package
+        // // except init operations
+        // // org.cocome.cloud.logic.webservice.store
+        // ".*queryStore.(\\w*\\.)*\\w*\\(.*");
 
         return modelGenerationFilter;
     }
