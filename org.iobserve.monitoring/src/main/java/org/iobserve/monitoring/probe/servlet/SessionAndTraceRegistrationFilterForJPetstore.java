@@ -96,6 +96,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
     private final Pattern equalsPattern = Pattern.compile("=");
     private final Pattern andPattern = Pattern.compile("&");
     private final Pattern isAccountPattern = Pattern.compile("(\\w*\\.)*Account\\..*");
+    private final Pattern isCatalogPattern = Pattern.compile("(\\w*\\.)*Catalog\\..*");
     private final Pattern isActionPattern = Pattern.compile("\\w*\\.actions\\..*");
     private final Pattern isImagePattern = Pattern.compile("\\w*\\.images\\..*");
     private final Pattern removeActionOfIndexPattern = Pattern.compile("\\.action\\(");
@@ -231,19 +232,25 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                     // pattern = "\\.action\\("
                     operationSignature = this.removeActionOfIndexPattern.matcher(operationSignature)
                             .replaceAll(".login(");
+
+                } else if (this.isCatalogPattern.matcher(operationSignature).matches()) {
+                    // post on the account is always a login
+                    // pattern = "\\.action\\("
+                    operationSignature = this.removeActionOfIndexPattern.matcher(operationSignature)
+                            .replaceAll(".search(");
                 } else {
 
                 }
 
                 // pattern = "\\.action\\."
-                operationSignature = this.removeActionOfOperationPattern.matcher(operationSignature).replaceAll("");
+                operationSignature = this.removeActionOfIndexPattern.matcher(operationSignature).replaceAll(".index(");
 
             } else {
                 chain.doFilter(request, response);
                 return;
             }
             componentSignature = this.pathStrucPattern.matcher(operationSignature).replaceAll("");
-            SessionAndTraceRegistrationFilterForJPetstore.LOG.error(operationSignature);
+            SessionAndTraceRegistrationFilterForJPetstore.LOG.info(operationSignature);
 
             final long traceId = trace.getTraceId();
 
