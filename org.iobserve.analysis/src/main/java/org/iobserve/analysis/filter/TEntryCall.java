@@ -70,16 +70,13 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
      */
     @Override
     protected void execute(final IFlowRecord event) {
-        System.out.println(event.getClass());
-
         if (event instanceof TraceMetadata) {
             final TraceMetadata metaData = (TraceMetadata) event;
             if (metaData.getTraceId() == 13707L) {
                 System.out.println(metaData.getHostname());
-
             }
             /** only recognize traces which no parent trace (i.e. would be internal traces) */
-            if (metaData.getParentTraceId() < 0) {
+            if (metaData.getParentOrderId() < 0) {
                 this.traceMetaDatas.put(metaData.getTraceId(), metaData);
             }
         } else if (event instanceof BeforeOperationEvent) {
