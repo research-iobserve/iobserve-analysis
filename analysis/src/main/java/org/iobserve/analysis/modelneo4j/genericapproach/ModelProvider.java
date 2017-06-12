@@ -44,22 +44,28 @@ import org.palladiosimulator.pcm.repository.PrimitiveDataType;
  */
 public class ModelProvider<T extends EObject> {
 
-    public static final String ID = "id";
-    public static final String ENTITY_NAME = "entityName";
-    public static final String TYPE = "type";
-    public static final String REF_NAME = "refName";
+    private static final String ID = "id";
+    private static final String ENTITY_NAME = "entityName";
+    private static final String TYPE = "type";
+    private static final String REF_NAME = "refName";
+
+    private static final String ACCESSIBLE = "accessible";
+    private static final String DELETE = "delete";
+    private static final String VISITED = "visited";
 
     private final GraphDatabaseService graph;
     private final HashMap<Node, DataType> dataTypes;
-    private final HashMap<Node, Boolean> reallyDeleteValues;
 
     public ModelProvider(final GraphDatabaseService graph) {
         this.graph = graph;
         this.dataTypes = new HashMap<>();
-        this.reallyDeleteValues = new HashMap<>();
     }
 
-    public Node createComponent(final EObject component) {
+    public Node createComponent(final T component) {
+        return this.createNodes(component);
+    }
+
+    private Node createNodes(final EObject component) {
         // Create a label representing the type of the component
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         Node node = null;
@@ -114,7 +120,7 @@ public class ModelProvider<T extends EObject> {
                         // System.out.println("\t" + component + " reference " + o);
 
                         // Create a new node recursively
-                        final Node refNode = this.createComponent((EObject) o);
+                        final Node refNode = this.createNodes((EObject) o);
 
                         // When the new node is created, create a reference
                         try (Transaction tx = this.getGraph().beginTx()) {
@@ -129,7 +135,7 @@ public class ModelProvider<T extends EObject> {
                         // System.out.println("\t" + component + " reference " + refReprensation);
 
                         // Create a new node recursively
-                        final Node refNode = this.createComponent((EObject) refReprensation);
+                        final Node refNode = this.createNodes((EObject) refReprensation);
 
                         // When the new node is created, create a reference
                         try (Transaction tx = this.getGraph().beginTx()) {
@@ -392,51 +398,22 @@ public class ModelProvider<T extends EObject> {
         return reallyDeleteUp;
     }
 
-    public void markDeletableNodes(final Node node, final boolean reallyDeletePred) {
-
-        boolean reallyDelete = reallyDeletePred;
-
+    /**
+     * Helper method for deleting: Starting from a given node this method recursively marks all
+     * nodes accessible via {@link PcmRelationshipType#CONTAINS} or
+     * {@link PcmRelationshipType#IS_TYPE} edges.
+     *
+     * @param node
+     *            The node to start with
+     */
+    private void markAccessibleNodes(final Node node) {
         try (Transaction tx = this.getGraph().beginTx()) {
-
-            for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
-                if (!rel.hasProperty("accessible")) {
-                    reallyDelete = false;
-                }
-            }
-
-            if (node.hasProperty("delete")) {
-                // Only set delete from true to false
-                if ((boolean) node.getProperty("delete")) {
-                    node.setProperty("delete", reallyDelete);
-                }
-            } else {
-                node.setProperty("delete", reallyDelete);
-            }
+            node.setProperty(ModelProvider.DELETE, true);
 
             for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
                     PcmRelationshipType.IS_TYPE)) {
-                if (!rel.hasProperty("marked")) {
-                    rel.setProperty("marked", "true");
-                    this.markDeletableNodes(rel.getEndNode(), reallyDelete);
-                }
-            }
-
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                    PcmRelationshipType.IS_TYPE)) {
-                rel.removeProperty("marked");
-            }
-
-            tx.success();
-        }
-    }
-
-    public void markAccessibleNodes(final Node node) {
-        try (Transaction tx = this.getGraph().beginTx()) {
-
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                    PcmRelationshipType.IS_TYPE)) {
-                if (!rel.hasProperty("accessible")) {
-                    rel.setProperty("accessible", "true");
+                if (!rel.hasProperty(ModelProvider.ACCESSIBLE)) {
+                    rel.setProperty(ModelProvider.ACCESSIBLE, true);
                     this.markAccessibleNodes(rel.getEndNode());
                 }
             }
@@ -447,7 +424,62 @@ public class ModelProvider<T extends EObject> {
         }
     }
 
-    public void deleteNodes(final Node node) {
+    /**
+     * Helper method for deleting: Starting from a given node this method recursively marks all
+     * accessible nodes marked with {@link #markAccessibleNodes(Node)} which can be deleted.
+     * Starting from one node all contained nodes can be deleted as well. Nodes with incoming
+     * {@link PcmRelationshipType#IS_TYPE} edges may only be deleted if they are not referenced from
+     * outside the accessible nodes and have no predecessor which is referenced from outside the
+     * accessible nodes via an {@link PcmRelationshipType#IS_TYPE} edge.
+     *
+     * @param node
+     *            The node to start with
+     * @param reallyDeletePred
+     *            Flag if predecessor may be deleted
+     */
+    private void markDeletableNodes(final Node node, final boolean reallyDeletePred) {
+
+        boolean reallyDelete = reallyDeletePred;
+
+        try (Transaction tx = this.getGraph().beginTx()) {
+
+            for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
+                if (!rel.hasProperty(ModelProvider.ACCESSIBLE)) {
+                    reallyDelete = false;
+                }
+            }
+
+            if (node.hasProperty(ModelProvider.DELETE) && !reallyDelete) {
+                node.removeProperty(ModelProvider.DELETE);
+            }
+
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                    PcmRelationshipType.IS_TYPE)) {
+                if (!rel.hasProperty(ModelProvider.VISITED)) {
+                    rel.setProperty(ModelProvider.VISITED, true);
+                    this.markDeletableNodes(rel.getEndNode(), reallyDelete);
+                }
+            }
+
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                    PcmRelationshipType.IS_TYPE)) {
+                rel.removeProperty(ModelProvider.VISITED);
+            }
+
+            tx.success();
+        }
+    }
+
+    /**
+     * Helper method for deleting: Starting from a given node this method recursively traverses down
+     * through all accessible nodes marked with {@link #markAccessibleNodes(Node)} and then deletes
+     * all nodes marked with a delete flag by {@link #markDeletableNodes(Node)} from bottom to the
+     * top.
+     *
+     * @param node
+     *            The node to start with
+     */
+    private void deleteNodes(final Node node) {
         try (final Transaction tx = this.getGraph().beginTx()) {
 
             for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
@@ -456,8 +488,8 @@ public class ModelProvider<T extends EObject> {
 
                 try (Transaction tx2 = this.getGraph().beginTx()) {
                     try {
-                        if (!rel.hasProperty("marked2")) {
-                            rel.setProperty("marked2", "true");
+                        if (!rel.hasProperty(ModelProvider.VISITED)) {
+                            rel.setProperty(ModelProvider.VISITED, true);
                             callRecursive = true;
                         }
 
@@ -476,7 +508,7 @@ public class ModelProvider<T extends EObject> {
         try (Transaction tx = this.getGraph().beginTx()) {
 
             try {
-                if ((boolean) node.getProperty("delete")) {
+                if (node.hasProperty(ModelProvider.DELETE)) {
 
                     for (final Relationship rel : node.getRelationships()) {
                         // rel.setProperty("DELETED", "TRUE");
@@ -489,7 +521,7 @@ public class ModelProvider<T extends EObject> {
 
                     for (final Relationship rel : node.getRelationships(Direction.OUTGOING,
                             PcmRelationshipType.CONTAINS, PcmRelationshipType.IS_TYPE)) {
-                        rel.removeProperty("marked2");
+                        rel.removeProperty(ModelProvider.VISITED);
                     }
                 }
             } catch (final NotFoundException e) {
