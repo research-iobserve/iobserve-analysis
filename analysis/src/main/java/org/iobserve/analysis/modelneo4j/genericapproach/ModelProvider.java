@@ -384,6 +384,7 @@ public class ModelProvider<T extends EObject> {
                         }
 
                     } catch (final NotFoundException e) {
+                        // relation has already been deleted on another path
                     }
                     tx2.success();
                 }
@@ -413,6 +414,7 @@ public class ModelProvider<T extends EObject> {
                     }
                 }
             } catch (final NotFoundException e) {
+                // node has already been deleted on another path
             }
 
             tx.success();
