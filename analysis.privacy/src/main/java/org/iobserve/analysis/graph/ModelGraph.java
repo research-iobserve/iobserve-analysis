@@ -22,10 +22,13 @@ public class ModelGraph {
 		this.pcmModels = pcmModels;
 	}
 
-	public void printGraph() {
+	public String printGraph(boolean onlyHostingServers) {
+		StringBuilder sb = new StringBuilder();
 		for (DeploymentNode server : getServers()) {
-			System.out.println(server.toString());
+			if (!onlyHostingServers || server.getContainingComponents().size() > 0)
+				sb.append(server.toString());
 		}
+		return sb.toString();
 	}
 
 	/**

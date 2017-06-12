@@ -33,7 +33,6 @@ public class DeploymentAnalysis {
 	 */
 	public String[] start() {
 
-		boolean legalDeployment = true;
 		List<String> illegalDeployments = new ArrayList<String>();
 		
 		for (DeploymentNode server : model.getServers()) {
