@@ -70,8 +70,14 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
      */
     @Override
     protected void execute(final IFlowRecord event) {
+        System.out.println(event.getClass());
+
         if (event instanceof TraceMetadata) {
             final TraceMetadata metaData = (TraceMetadata) event;
+            if (metaData.getTraceId() == 13707L) {
+                System.out.println(metaData.getHostname());
+
+            }
             /** only recognize traces which no parent trace (i.e. would be internal traces) */
             if (metaData.getParentTraceId() < 0) {
                 this.traceMetaDatas.put(metaData.getTraceId(), metaData);
@@ -79,6 +85,10 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
         } else if (event instanceof BeforeOperationEvent) {
             final BeforeOperationEvent operationEvent = (BeforeOperationEvent) event;
             final TraceMetadata metaData = this.traceMetaDatas.get(operationEvent.getTraceId());
+            if (operationEvent.getOperationSignature().matches(".*startSale.*")) {
+                System.out.println(operationEvent.getOperationSignature());
+
+            }
             if (metaData != null) {
                 /** actually this is a valid trace */
                 /** Check whether the record is an entry call */
@@ -87,15 +97,18 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                 }
             }
         } else if (event instanceof AfterOperationEvent) {
-
             final AfterOperationEvent afterOperationEvent = (AfterOperationEvent) event;
-
             final TraceMetadata metaData = this.traceMetaDatas.get(afterOperationEvent.getTraceId());
+            if (afterOperationEvent.getOperationSignature().matches(".*startSale.*")) {
+                System.out.println(afterOperationEvent.getOperationSignature());
+
+            }
 
             if (metaData != null) {
-
+                /** actually this is a valid trace */
                 final BeforeOperationEvent beforeOperationEvent = this.beforeOperationEvents.get(metaData.getTraceId());
                 if (beforeOperationEvent != null) {
+
                     /** check whether it matches an before operation event. */
                     if (beforeOperationEvent.getClassSignature().equals(afterOperationEvent.getClassSignature())
                             && beforeOperationEvent.getOperationSignature()
@@ -127,6 +140,10 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                          */
                         this.beforeOperationEvents.remove(metaData.getTraceId(), beforeOperationEvent);
 
+                        if (afterOperationEvent.getOperationSignature().matches(".*startSale.*")) {
+                            System.out.println(afterOperationEvent.getOperationSignature());
+
+                        }
                         this.outputPort.send(new ExtendedEntryCallEvent(beforeOperationEvent.getTimestamp(),
                                 afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
                                 beforeOperationEvent.getClassSignature(), metaData.getSessionId(),
@@ -134,6 +151,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                     }
                 }
             }
+
         } else {
             TEntryCall.LOG.warn("Unsuppored flow event type " + event.getClass().getCanonicalName());
         }

@@ -16,16 +16,16 @@
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
 /**
- * interface for factories creating {@link ModelGenerationFilter}
+ * interface for factories creating {@link EntryCallFilterRules}
  *
  * @author Christoph Dornieden
  *
  */
 public interface IModelGenerationFilterFactory {
     /**
-     * create a {@link ModelGenerationFilter}
+     * create a {@link EntryCallFilterRules}
      *
-     * @return specific {@link ModelGenerationFilter}
+     * @return specific {@link EntryCallFilterRules}
      */
-    public ModelGenerationFilter createFilter();
+    public EntryCallFilterRules createFilter();
 }
