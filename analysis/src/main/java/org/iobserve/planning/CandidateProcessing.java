@@ -6,6 +6,9 @@ import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.GraphFactory;
 import org.iobserve.analysis.graph.ModelGraph;
+import org.iobserve.analysis.privacy.ComponentClassificationAnalysis;
+import org.iobserve.analysis.privacy.DeploymentAnalysis;
+import org.iobserve.analysis.privacyanalysis.PrivacyAnalysis;
 import org.iobserve.planning.data.PlanningData;
 
 import teetime.stage.basic.AbstractTransformation;
@@ -30,6 +33,21 @@ public class CandidateProcessing extends AbstractTransformation<PlanningData, Ad
 		GraphFactory factory = new GraphFactory();
 		ModelGraph graph = factory.buildGraph(initModelProvider.getModelCollection());
 		element.getAdaptationData().setReDeploymentGraph(graph);
+		
+		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(graph);
+		classificationAnalysis.start();
+
+		
+		// System.out.println("Deployment analysis ... ");
+		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(graph, PrivacyAnalysis.getLegalPersonalGeoLocations());
+		String[] legalDeployment = deploymentAnalysis.start();
+
+		if (legalDeployment.length == 0)
+			CandidateGeneration.LOG.info("ReDeployment Model is legal!");
+		// System.out.println("The deployment is LEGAL");
+		else
+			CandidateGeneration.LOG.error("ReDeployment Model is ILLEGAL");
+		
 
 		this.outputPort.send(adapdationData);
 	}

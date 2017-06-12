@@ -42,7 +42,7 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 
 	@Override
 	protected void execute(AdaptationData element) throws Exception {
-		
+
 		SystemAdaptation.LOG.info("Executing adaptation");
 
 		element.setDeployablesFolderURI(this.deployablesFolderURI);
@@ -73,22 +73,24 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 
 		SystemEvaluation.enableEvaluation(element);
 
-		try {
-			actionScripts.forEach(script -> {
-				try {
-					script.execute();
-				} catch (Exception e) {
-					if (this.listener == null) {
-						throw new IllegalStateException("Could not execute action script '" + script.getDescription()
-								+ "' automatically and no listener was present. Aborting!");
-					}
+		// try {
+		// actionScripts.forEach(script -> {
+		// try {
+		// script.execute();
+		// } catch (Exception e) {
+		// if (this.listener == null) {
+		// throw new IllegalStateException("Could not execute action script '" +
+		// script.getDescription()
+		// + "' automatically and no listener was present. Aborting!");
+		// }
+		//
+		// this.listener.notifyExecutionError(script, e);
+		// }
+		// });
+		// } finally {
+		SystemEvaluation.disableEvaluation();
+		// }
 
-					this.listener.notifyExecutionError(script, e);
-				}
-			});
-		} finally {
-			SystemEvaluation.disableEvaluation();
-		}
 	}
 
 }

@@ -3,10 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: PerOpteryxPlugin
 Bundle-SymbolicName: peropteryx.plugin;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Require-Bundle: org.eclipse.core.runtime,
+Require-Bundle: org.apache.log4j;bundle-version="1.2.15",
+ org.eclipse.core.runtime,
  de.uka.ipd.sdq.dsexplore,
  org.eclipse.debug.core,
- org.apache.log4j;bundle-version="1.2.15",
  org.eclipse.emf.common,
  org.palladiosimulator.analyzer.workflow,
  org.palladiosimulator.pcm.resources,

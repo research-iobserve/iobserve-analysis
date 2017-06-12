@@ -73,15 +73,15 @@ public class GraphFactory {
 	 */
 	private void extractAssemblyContexts(org.palladiosimulator.pcm.system.System sysModel) {
 		EList<AssemblyContext> assemblyContexts = sysModel.getAssemblyContexts__ComposedStructure();
-		Set<String> acs = new HashSet<String>();
+//		Set<String> acs = new HashSet<String>();
 
 		for (AssemblyContext assemblyContext : assemblyContexts) {
 			// LOG.info(assemblyContext.getId());
 			this.assemblyContexts.put(assemblyContext.getId(), assemblyContext);
-			acs.add(assemblyContext.getId());
+//			acs.add(assemblyContext.getId());
 		}
 
-		LOG.info("Individual Assembly Contexts found in System Model: " + acs.size());
+//		LOG.info("Individual Assembly Contexts found in System Model: " + acs.size());
 	}
 
 	private void extractAssemblyConnectors(org.palladiosimulator.pcm.system.System sysModel) {
@@ -98,7 +98,7 @@ public class GraphFactory {
 	private void adaptPrivacyLvl() {
 		Collection<AssemblyConnectorPrivacy> acps = this.assemblyConnectors.values();
 
-		Set<String> acs = new HashSet<String>();
+//		Set<String> acs = new HashSet<String>();
 
 		for (AssemblyConnectorPrivacy acp : acps) {
 			DataPrivacyLvl assemblyConnectorPrivacyLvl = acp.getPrivacyLevel();
@@ -109,11 +109,11 @@ public class GraphFactory {
 			this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, providedAC_ID);
 			this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, requiredAC_ID);
 
-			acs.add(requiredAC_ID);
-			acs.add(providedAC_ID);
+//			acs.add(requiredAC_ID);
+//			acs.add(providedAC_ID);
 		}
 
-		LOG.info("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
+//		LOG.info("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
 	}
 
 	private void updatePrivacyLvl(AssemblyConnectorPrivacy acp, DataPrivacyLvl assemblyConnectorPrivacyLvl, String assemblyContext_ID) {

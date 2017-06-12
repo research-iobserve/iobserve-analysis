@@ -294,7 +294,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.USE_ANTIPATTERNS, false);
 		attr.put(DSEConstantsContainer.USE_STARTING_POPULATION_HEURISTIC, false);
 		attr.put(DSEConstantsContainer.STOP_ON_INITIAL_FAILURE, false);
-		attr.put(DSEConstantsContainer.INDIVIDUALS_PER_GENERATION, "3");
+		attr.put(DSEConstantsContainer.INDIVIDUALS_PER_GENERATION, "5");
 	}
 
 	private static void setDefaultConfigFiles(final String modelDir, final String privacyFile, final Map<String, Object> attr) {

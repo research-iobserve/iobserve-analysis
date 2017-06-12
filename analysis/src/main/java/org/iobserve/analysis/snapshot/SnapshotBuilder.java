@@ -12,6 +12,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AbstractModelProvider;
+import org.iobserve.analysis.model.QMLDeclarationsModelProvider;
 import org.iobserve.analysis.privacyanalysis.PrivacyAnalysis;
 
 import teetime.framework.AbstractStage;
@@ -25,11 +26,12 @@ import teetime.framework.OutputPort;
  * @author Philipp Weimann
  */
 public class SnapshotBuilder extends AbstractStage {
-	
+
 	protected static final Logger LOG = LogManager.getLogger(SnapshotBuilder.class);
 
 	private static URI baseSnapshotLocation = null;
 	private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES };
+	private static String FileEnding_QMLContractType = "qmlcontracttype";
 
 	private static boolean createSnapshot;
 	private static boolean evaluationMode;
@@ -63,8 +65,7 @@ public class SnapshotBuilder extends AbstractStage {
 		File baseFolder = new File(fileString);
 		if (!baseFolder.exists())
 			baseFolder.mkdirs();
-		else
-		{
+		else {
 			for (File file : baseFolder.listFiles())
 				if (!file.isDirectory())
 					file.delete();
@@ -77,7 +78,7 @@ public class SnapshotBuilder extends AbstractStage {
 		// List<InputPort<?>> inputPorts = super.getInputPorts();
 		// Boolean createSnapshot = this.inputPort.receive();
 
-		if (SnapshotBuilder.createSnapshot) {		
+		if (SnapshotBuilder.createSnapshot) {
 			this.createSnapshot();
 			SnapshotBuilder.createSnapshot = false;
 
@@ -96,7 +97,7 @@ public class SnapshotBuilder extends AbstractStage {
 	 */
 	public URI createSnapshot() throws IOException {
 		LOG.info("Creating Snapshot: \t" + this.snapshotURI.toFileString());
-		
+
 		this.createModelSnapshot(this.modelProviders.getAllocationModelProvider());
 		this.createModelSnapshot(this.modelProviders.getRepositoryModelProvider());
 		this.createModelSnapshot(this.modelProviders.getResourceEnvironmentModelProvider());
@@ -107,6 +108,8 @@ public class SnapshotBuilder extends AbstractStage {
 		this.createModelSnapshot(this.modelProviders.getDesignDecisionModelProvider());
 		this.createModelSnapshot(this.modelProviders.getQMLDeclarationsModelProvider());
 		// this.createModelSnapshot(modelProviders.getCorrespondenceModel());
+		
+		this.copyQMLContractFiles(this.modelProviders.getQMLDeclarationsModelProvider());
 		return this.snapshotURI;
 	}
 
@@ -136,6 +139,25 @@ public class SnapshotBuilder extends AbstractStage {
 		File modelFileCopy = new File(targetFileLocation);
 
 		Files.copy(modelFile.toPath(), modelFileCopy.toPath(), SnapshotBuilder.copyOptions);
+	}
+
+	private void copyQMLContractFiles(QMLDeclarationsModelProvider qmlModelProver) throws IOException {
+		URI modelURI = qmlModelProver.getModelUri();
+
+		File modelFile = new File(modelURI.toFileString());
+		if (!modelFile.exists()) {
+			throw new IOException("The given file URI did not point to a file");
+		}
+
+		File parentFile = modelFile.getParentFile();
+		for (File sourceFile : parentFile.listFiles()) {
+			if (sourceFile.getName().endsWith(FileEnding_QMLContractType))
+			{
+				String targetFileLocation = this.snapshotURI.toFileString() + File.separator + sourceFile.getName();
+				File modelFileCopy = new File(targetFileLocation);
+				Files.copy(sourceFile.toPath(), modelFileCopy.toPath(), SnapshotBuilder.copyOptions);
+			}
+		}
 	}
 
 	/**

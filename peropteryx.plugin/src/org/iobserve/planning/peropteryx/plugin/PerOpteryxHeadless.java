@@ -131,7 +131,7 @@ public class PerOpteryxHeadless implements IApplication {
 
 		final Option helpOption = new Option("h", "help", false, "Show usage information");
 
-		final Option privacyOption = new Option(INPUT_PRIVACY_FILE_OPTION_SHORT, INPUT_WORKING_DIR_OPTION, true,
+		final Option privacyOption = new Option(INPUT_PRIVACY_FILE_OPTION_SHORT, INPUT_PRIVACY_FILE_OPTION, true,
 				"privacy analysis legal geo-locations file");
 		privacyOption.setRequired(true);
 
