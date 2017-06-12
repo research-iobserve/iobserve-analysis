@@ -288,116 +288,6 @@ public class ModelProvider<T extends EObject> {
         this.deleteNodes(node);
     }
 
-    public boolean deleteComponent2(final Node node) {
-
-        boolean reallyDelete = true;
-
-        try (Transaction tx = this.getGraph().beginTx()) {
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                    PcmRelationshipType.IS_TYPE)) {
-
-                final Node endNode = rel.getEndNode();
-
-                if (rel.isType(PcmRelationshipType.CONTAINS)) {
-                    rel.delete();
-                    this.deleteComponent2(endNode);
-                } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
-                    // Only delete type when it has no other incoming relations
-                    rel.delete();
-
-                    if (endNode.hasRelationship(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
-                        reallyDelete = false;
-                    } else {
-                        reallyDelete = this.deleteComponent2(endNode);
-                    }
-
-                }
-
-            }
-
-            for (final Relationship rel : node.getRelationships()) {
-                rel.delete();
-            }
-
-            if (reallyDelete) {
-                node.delete();
-            }
-
-            tx.success();
-
-            return reallyDelete;
-        }
-    }
-
-    public boolean deleteComponent3(final Node node, final boolean reallyDelete) {
-
-        boolean reallyDeleteDown;
-        boolean reallyDeleteUp;
-
-        try (Transaction tx = this.getGraph().beginTx()) {
-            if (node.hasProperty(ModelProvider.ENTITY_NAME)
-                    && node.getProperty(ModelProvider.ENTITY_NAME).equals("ProductOrder")) {
-                System.out.println("Stop");
-            }
-
-            boolean hasUnmarkedInRel = false;
-            for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
-                if (!inRel.hasProperty("marked")) {
-                    hasUnmarkedInRel = true;
-                }
-            }
-
-            if (hasUnmarkedInRel) {
-                reallyDeleteUp = false;
-                reallyDeleteDown = false;
-            } else {
-                reallyDeleteUp = true;
-                reallyDeleteDown = reallyDelete;
-            }
-
-            for (final Relationship outRel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                    PcmRelationshipType.IS_TYPE)) {
-
-                if (node.hasProperty(ModelProvider.ENTITY_NAME)
-                        && node.getProperty(ModelProvider.ENTITY_NAME).equals("ProductOrder")) {
-                    if (outRel.getEndNode().hasProperty(ModelProvider.ENTITY_NAME)) {
-                        System.out.println(outRel.getEndNode().getProperty(ModelProvider.ENTITY_NAME));
-                    } else if (outRel.getEndNode().hasProperty("parameterName")) {
-                        System.out.println(outRel.getEndNode().getProperty("parameterName"));
-                    } else {
-                        System.out.println(outRel.getEndNode().getProperty(ModelProvider.TYPE));
-                    }
-                }
-
-                if (!outRel.hasProperty("marked")) {
-                    outRel.setProperty("marked", "true");
-
-                    if (outRel.isType(PcmRelationshipType.CONTAINS)) {
-                        reallyDeleteUp &= this.deleteComponent3(outRel.getEndNode(), reallyDeleteDown)
-                                && reallyDeleteDown;
-                    } else {
-                        reallyDeleteUp &= this.deleteComponent3(outRel.getEndNode(), reallyDeleteDown)
-                                || reallyDeleteDown;
-
-                    }
-
-                }
-
-            }
-
-            if (reallyDeleteUp) {
-                for (final Relationship rel : node.getRelationships()) {
-                    rel.setProperty("DELETED", "TRUE");
-                }
-                node.addLabel(Label.label("DELETED"));
-            }
-
-            tx.success();
-        }
-
-        return reallyDeleteUp;
-    }
-
     /**
      * Helper method for deleting: Starting from a given node this method recursively marks all
      * nodes accessible via {@link PcmRelationshipType#CONTAINS} or
@@ -511,11 +401,9 @@ public class ModelProvider<T extends EObject> {
                 if (node.hasProperty(ModelProvider.DELETE)) {
 
                     for (final Relationship rel : node.getRelationships()) {
-                        // rel.setProperty("DELETED", "TRUE");
                         rel.delete();
                     }
                     node.delete();
-                    // node.addLabel(Label.label("DELETED"));
 
                 } else {
 
