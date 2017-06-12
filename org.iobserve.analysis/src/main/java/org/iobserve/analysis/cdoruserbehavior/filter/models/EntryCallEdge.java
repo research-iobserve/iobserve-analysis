@@ -167,4 +167,9 @@ public class EntryCallEdge {
         this.calls = this.calls < 0 ? 0 : this.calls;
     }
 
+    @Override
+    public String toString() {
+        return "(" + this.source.getSignature() + "->" + this.target.getSignature() + "::" + this.calls + ")";
+    }
+
 }

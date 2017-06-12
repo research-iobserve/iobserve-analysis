@@ -106,4 +106,9 @@ public class EntryCallNode {
         return this.entryCallInformations;
     }
 
+    @Override
+    public String toString() {
+        return "{" + this.getSignature() + "}";
+    }
+
 }
