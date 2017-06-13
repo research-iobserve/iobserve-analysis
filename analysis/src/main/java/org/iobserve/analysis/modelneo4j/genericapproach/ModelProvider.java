@@ -32,7 +32,6 @@ import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
-import org.palladiosimulator.pcm.core.entity.Entity;
 import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 
@@ -70,12 +69,12 @@ public class ModelProvider<T extends EObject> {
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         Node node = null;
 
-        // For Entities and DataTypes: Look if there already is a node for the component in the
-        // graph. Note that complex data types are entities. For everything else: Always create a
-        // new node.
-        if (component instanceof Entity) {
+        // For components with an unique id and primitive data types: Look if there already is a
+        // node for the component in the graph. For everything else: Always create a new node.
+        final EAttribute idAttr = component.eClass().getEIDAttribute();
+        if (idAttr != null) {
             try (Transaction tx = this.getGraph().beginTx()) {
-                node = this.getGraph().findNode(label, ModelProvider.ID, ((Entity) component).getId());
+                node = this.getGraph().findNode(label, ModelProvider.ID, component.eGet(idAttr));
                 tx.success();
             }
         } else if (component instanceof PrimitiveDataType) {
