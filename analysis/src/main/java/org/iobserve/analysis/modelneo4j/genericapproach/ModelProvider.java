@@ -59,6 +59,13 @@ public class ModelProvider<T extends EObject> {
         this.dataTypes = new HashMap<>();
     }
 
+    /**
+     * Writes the given component into the provider's {@link #graph}.
+     *
+     * @param component
+     *            Component to save
+     * @return Root node of the component's graph
+     */
     public Node createComponent(final T component) {
         final Node node;
         try (Transaction tx = this.getGraph().beginTx()) {
@@ -68,6 +75,14 @@ public class ModelProvider<T extends EObject> {
         return node;
     }
 
+    /**
+     * Helper method for writing: Writes the given component into the provider's {@link #graph}
+     * recursively. Calls to this method have to be performed from inside a {@link Transaction}.
+     *
+     * @param component
+     *            Component to save
+     * @return Root node of the component's graph
+     */
     private Node createNodes(final EObject component) {
         // Create a label representing the type of the component
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
@@ -90,7 +105,7 @@ public class ModelProvider<T extends EObject> {
 
             // System.out.println("writing " + component + " " + label.name());
 
-            // Iterate over all attributes and save them as node properties
+            // Save attributes as node properties
             for (final EAttribute attr : component.eClass().getEAllAttributes()) {
                 final Object value = component.eGet(attr);
                 if (value != null) {
@@ -100,10 +115,9 @@ public class ModelProvider<T extends EObject> {
                 }
             }
 
-            // Iterate over all references and save as them as relations in the graph
+            // Save references as relations between nodes
             for (final EReference ref : component.eClass().getEAllReferences()) {
 
-                // if (ref.isContainment()) { // testing with too large usage model
                 final Object refReprensation = component.eGet(ref);
                 // System.out.println("\t" + component + " all refs " + ref + " " +
                 // refReprensation);
@@ -114,10 +128,8 @@ public class ModelProvider<T extends EObject> {
                     for (final Object o : (EList<?>) component.eGet(ref)) {
                         // System.out.println("\t" + component + " reference " + o);
 
-                        // Create a new node recursively
                         final Node refNode = this.createNodes((EObject) o);
 
-                        // When the new node is created, create a reference
                         final Relationship rel = node.createRelationshipTo(refNode,
                                 ModelProviderUtil.getRelationshipType(ref, o));
                         rel.setProperty(ModelProvider.REF_NAME, ref.getName());
@@ -127,22 +139,28 @@ public class ModelProvider<T extends EObject> {
                         // System.out.println("\t" + component + " reference " +
                         // refReprensation);
 
-                        // Create a new node recursively
                         final Node refNode = this.createNodes((EObject) refReprensation);
 
-                        // When the new node is created, create a reference
                         final Relationship rel = node.createRelationshipTo(refNode,
                                 ModelProviderUtil.getRelationshipType(ref, refReprensation));
                         rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                     }
                 }
-                // }
             }
         }
 
         return node;
     }
 
+    /**
+     * Reads a specified component from the provider's {@link #graph}.
+     *
+     * @param clazz
+     *            Data type of component to be read
+     * @param id
+     *            Id of component to be read
+     * @return The read component
+     */
     public EObject readComponent(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
@@ -236,9 +254,16 @@ public class ModelProvider<T extends EObject> {
         return component;
     }
 
-    public List<String> readComponent(final String typeName) {
+    /**
+     * Reads the ids of all components of a specified data type.
+     *
+     * @param clazz
+     *            The data type
+     * @return List of ids of the specified data type
+     */
+    public List<String> readComponent(final Class<T> clazz) {
         try (Transaction tx = this.getGraph().beginTx()) {
-            final ResourceIterator<Node> nodes = this.graph.findNodes(Label.label(typeName));
+            final ResourceIterator<Node> nodes = this.graph.findNodes(Label.label(clazz.getSimpleName()));
             final LinkedList<String> ids = new LinkedList<>();
 
             while (nodes.hasNext()) {
@@ -254,6 +279,14 @@ public class ModelProvider<T extends EObject> {
     public void updateComponent(final EObject component) {
     }
 
+    /**
+     * Deletes a specified component from the provider's {@link #graph}.
+     *
+     * @param clazz
+     *            Data type of component to be deleted
+     * @param id
+     *            Id of component to be deleted
+     */
     public void deleteComponent(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
