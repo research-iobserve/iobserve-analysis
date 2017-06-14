@@ -22,6 +22,12 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RequiredRole;
 import org.palladiosimulator.pcm.system.System;
 
+/**
+ * Modifies a PCM SystemModel
+ * 
+ * @author Philipp Weimann
+ * @author Robert Heinrich
+ */
 public class SystemModification {
 
 	private static final Logger LOG = LogManager.getLogger(ModelGeneration.class);
@@ -79,6 +85,13 @@ public class SystemModification {
 		LOG.info(String.format("Duplicate Interfacestructures found:\t%d", this.duplicateRepositoryComponents.keySet().size()));
 	}
 
+	/**
+	 * Modifies the system model with a certain amount of deallocations
+	 * 
+	 * @param deallocations
+	 *            the amount of deallocations
+	 * @return the deallocated Assembly Contexts
+	 */
 	public List<AssemblyContext> modifySystem_Deallocations(int deallocations) {
 		List<AssemblyContext> deallocatedAssemblyContexts = new LinkedList<AssemblyContext>();
 
@@ -93,7 +106,7 @@ public class SystemModification {
 		for (int i = 0; i < deallocations && assemblyContexts.size() > 0; i++) {
 			int randomIndex = ThreadLocalRandom.current().nextInt(assemblyContexts.size());
 			AssemblyContext assemblyContext = assemblyContexts.remove(randomIndex);
-			 LOG.info("REMOVING: \tAssemblyContext: \t" + assemblyContext.getId());
+			LOG.info("REMOVING: \tAssemblyContext: \t" + assemblyContext.getId());
 
 			for (AssemblyConnector assemblyConnector : assemblyConnectors) {
 
@@ -124,16 +137,23 @@ public class SystemModification {
 					this.systemModel.getConnectors__ComposedStructure().remove(assemblyConnector);
 
 			}
-			
+
 			deallocatedAssemblyContexts.add(assemblyContext);
 		}
-		
+
 		for (AssemblyContext ac : deallocatedAssemblyContexts)
 			this.removeInterfaceMaps(ac);
-		
+
 		return deallocatedAssemblyContexts;
 	}
 
+	/**
+	 * Generates a given amount of repository exchanges
+	 * 
+	 * @param changes
+	 *            the amount of repository exchanges
+	 * @return the amount of changes actually made
+	 */
 	public int modifySystem_ChangeComp(int changes) {
 		int madeChanges = 0;
 
@@ -175,6 +195,13 @@ public class SystemModification {
 		return madeChanges;
 	}
 
+	/**
+	 * Generates a certain amount of Assembly Context allocations
+	 * 
+	 * @param allocations
+	 *            the amount of allocations
+	 * @return the allocated Assembly Contexts
+	 */
 	public List<AssemblyContext> modifySystem_Allocate(int allocations) {
 		List<AssemblyContext> newACs = null;
 
@@ -224,17 +251,16 @@ public class SystemModification {
 
 		return sb.toString();
 	}
-	
-	
-	private void removeInterfaceMaps(AssemblyContext assemblyContext)
-	{
-		for (String key : this.openProvidedInterfaces.keySet())
-		{
+
+	/*
+	 * Removes a given Interface from the support infrastructure
+	 */
+	private void removeInterfaceMaps(AssemblyContext assemblyContext) {
+		for (String key : this.openProvidedInterfaces.keySet()) {
 			this.openProvidedInterfaces.get(key).remove(assemblyContext);
 		}
-		
-		for (String key : this.openRequiredInterfaces.keySet())
-		{
+
+		for (String key : this.openRequiredInterfaces.keySet()) {
 			this.openRequiredInterfaces.get(key).remove(assemblyContext);
 		}
 	}

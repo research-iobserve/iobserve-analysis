@@ -15,6 +15,12 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
+/**
+ * Modifies a PCM AllocationModel
+ * 
+ * @author Philipp Weimann
+ * @author Robert Heinrich
+ */
 public class AllocationModification {
 
 	private Allocation allocationModel;
@@ -25,6 +31,16 @@ public class AllocationModification {
 	private HashMap<String, List<AllocationContext>> resContainer2AllocationContext;
 	private HashMap<String, AllocationContext> assemblyCon2AllocationContext;
 
+	/**
+	 * The constructor
+	 * 
+	 * @param allocationModel
+	 *            the allocation model to modify
+	 * @param systemModel
+	 *            the system model
+	 * @param resEnvModel
+	 *            the resource environment model
+	 */
 	public AllocationModification(Allocation allocationModel, System systemModel, ResourceEnvironment resEnvModel) {
 		this.allocationModel = allocationModel;
 		this.systemModel = systemModel;
@@ -36,6 +52,9 @@ public class AllocationModification {
 		this.initResContainer2AllocationContext();
 	}
 
+	/*
+	 * Inits all support structures
+	 */
 	private void initResContainer2AllocationContext() {
 		this.resContainer2AllocationContext = new HashMap<String, List<AllocationContext>>();
 		this.assemblyCon2AllocationContext = new HashMap<String, AllocationContext>();
@@ -58,9 +77,11 @@ public class AllocationModification {
 	}
 
 	/**
+	 * Modifies allocations due to terminated Resource Containers
 	 * 
 	 * @param terminatedResContainers
-	 * @return
+	 *            the terminated Resource Containers
+	 * @return the amount of modified allocations
 	 */
 	public int modifyAllocation_FixTerminations(List<ResourceContainer> terminatedResContainers) {
 
@@ -78,8 +99,10 @@ public class AllocationModification {
 	}
 
 	/**
+	 * Removes Allocations contexts due to deallocated AssemblyContexts
 	 * 
 	 * @param deallocatedAssemblyContexts
+	 *            the deallocated Assembly Contexts
 	 */
 	public void modifyAllocation_FixDeallocations(List<AssemblyContext> deallocatedAssemblyContexts) {
 
@@ -94,8 +117,10 @@ public class AllocationModification {
 	}
 
 	/**
+	 * Generates new allocations for the given Assembly Contexts
 	 * 
 	 * @param allocatedAssemblyContexts
+	 *            the Assembly Contexts to allocate
 	 */
 	public void modifyAllocation_FixAllocations(List<AssemblyContext> allocatedAssemblyContexts) {
 
@@ -104,10 +129,11 @@ public class AllocationModification {
 	}
 
 	/**
-	 * 
+	 * Generates a certain amount of migrations.
 	 * 
 	 * @param migarions
-	 * @return
+	 *            the amount of migrations to generates
+	 * @return the amount of migrations made
 	 */
 	public int modifyAllocation_Migrate(int migarions) {
 		int migrationsMade = 0;
@@ -133,7 +159,7 @@ public class AllocationModification {
 	}
 
 	/*
-	 * 
+	 * Migration helper
 	 */
 	private void migrateToRandomResourceContainer(AllocationContext allocation) {
 		int randomIndex = ThreadLocalRandom.current().nextInt(this.resContainer.length);

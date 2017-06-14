@@ -141,6 +141,9 @@ public class SnapshotBuilder extends AbstractStage {
 		Files.copy(modelFile.toPath(), modelFileCopy.toPath(), SnapshotBuilder.copyOptions);
 	}
 
+	/*
+	 * Copies all qmlcontracttype-files to the designated base folder.
+	 */
 	private void copyQMLContractFiles(QMLDeclarationsModelProvider qmlModelProver) throws IOException {
 		URI modelURI = qmlModelProver.getModelUri();
 

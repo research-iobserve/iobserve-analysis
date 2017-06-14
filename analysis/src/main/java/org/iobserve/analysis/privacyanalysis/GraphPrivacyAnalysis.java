@@ -14,6 +14,12 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 import teetime.stage.basic.AbstractTransformation;
 
+/**
+ * The actual Privacy Analysis stage.
+ * 
+ * @author Philipp Weimann
+ * @author Robert Heinrich
+ */
 public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData, AdaptationData> {
 
 	@Override
@@ -48,13 +54,16 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 
 		// graph.printGraph();
 
-		//TODO Fix @ generation!
-//		this.writeComponentClassificationToPCM(graph, element.getRuntimeModelProviders().getSystemModelProvider());
+		// TODO Fix @ generation!
+		// this.writeComponentClassificationToPCM(graph, element.getRuntimeModelProviders().getSystemModelProvider());
 
 		if (legalDeployment.length > 0)
 			this.outputPort.send(element);
 	}
 
+	/*
+	 * Writes the DataPrivacyLevel into the AssemblyContextPrivacy PCM element.
+	 */
 	private void writeComponentClassificationToPCM(ModelGraph modelGraph, SystemModelProvider systemModelProviders) {
 		EList<AssemblyContext> acs = modelGraph.getPcmModels().getSystemModel().getAssemblyContexts__ComposedStructure();
 

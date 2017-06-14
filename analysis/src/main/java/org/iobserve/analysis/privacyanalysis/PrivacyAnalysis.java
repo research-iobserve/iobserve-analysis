@@ -11,24 +11,33 @@ import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.utils.AbstractLinearComposition;
-import org.iobserve.planning.CandidateGeneration;
 
+/**
+ * This class is the conceptual Privacy Analysis filter stage.
+ * 
+ * @author Philipp Weimann
+ * @author Robert Heinrich
+ *
+ */
 public class PrivacyAnalysis extends AbstractLinearComposition<URI, AdaptationData> {
 
 	protected static final Logger LOG = LogManager.getLogger(PrivacyAnalysis.class);
-	
+
 	private static URI legalPersonalGeoLocationFile;
 	private static HashSet<Integer> legalPersonalGeoLocations;
 
-	// private AbstractTransformation<URI, Boolean>[] compositionStages;
-
+	/**
+	 * The Privacy Analysis filter stage constructor.
+	 * 
+	 * @param creation
+	 *            the GraphCreation
+	 * @param analysis
+	 *            the GraphPrivacyAnalysis
+	 */
 	public PrivacyAnalysis(GraphCreation creation, GraphPrivacyAnalysis analysis) {
 		super(creation.getInputPort(), analysis.getOutputPort());
 
 		this.connectPorts(creation.getOutputPort(), analysis.getInputPort());
-
-		// this.compositionStages = new AbstractTransformation[] { creation,
-		// analysis };
 	}
 
 	/*

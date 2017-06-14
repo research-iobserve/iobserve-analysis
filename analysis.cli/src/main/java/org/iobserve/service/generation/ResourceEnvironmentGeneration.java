@@ -9,6 +9,12 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceenvironmentP
 
 import com.neovisionaries.i18n.CountryCode;
 
+/**
+ * Generates a PCM Privacy compliant Resource Environment
+ * 
+ * @author Philipp Weimann
+ * @author Robert Heinrich
+ */
 public class ResourceEnvironmentGeneration {
 
 	private static ResourceenvironmentFactory RES_ENV_FACTORY = ResourceenvironmentFactory.eINSTANCE;
@@ -16,15 +22,33 @@ public class ResourceEnvironmentGeneration {
 	private ResourceEnvironment resourceEnvironment;
 	private CountryCode[] countryCodes = CountryCode.values();
 
+	/**
+	 * Constructor for a NEW Resource Environment
+	 * 
+	 * @param modelName
+	 */
 	public ResourceEnvironmentGeneration(String modelName) {
 		this.resourceEnvironment = RES_ENV_FACTORY.createResourceEnvironment();
 		this.resourceEnvironment.setEntityName(modelName);
 	}
 
+	/**
+	 * Constructor for given Resource Environment
+	 * 
+	 * @param resEnvModel
+	 *            the Resource Environment Model
+	 */
 	public ResourceEnvironmentGeneration(ResourceEnvironment resEnvModel) {
 		this.resourceEnvironment = resEnvModel;
 	}
 
+	/**
+	 * Creates a certain amount of Resource Containers
+	 * 
+	 * @param resourceContainerCount
+	 *            the amount of resource containers
+	 * @return The Resource Environment model
+	 */
 	public ResourceEnvironment craeteResourceEnvironment(int resourceContainerCount) {
 		for (int i = 0; i < resourceContainerCount; i++) {
 			String prefix = Integer.toString(i);
@@ -34,6 +58,14 @@ public class ResourceEnvironmentGeneration {
 		return this.resourceEnvironment;
 	}
 
+	/**
+	 * Creates a given amount of new Resource Containers with the given prefix
+	 * 
+	 * @param resourceContainerCount
+	 *            the amount of resource container to create
+	 * @param postPrefix
+	 *            the prefix
+	 */
 	public void addResourceContainers(int resourceContainerCount, String postPrefix) {
 		for (int i = 0; i < resourceContainerCount; i++) {
 			String prefix = Integer.toString(i);
@@ -42,13 +74,16 @@ public class ResourceEnvironmentGeneration {
 		}
 	}
 
+	/*
+	 * Creates a new resource container
+	 */
 	private ResourceContainerPrivacy createResourceContainer(String prefix) {
 		ResourceContainerPrivacy resContainer = RES_ENV_PRIVACY_FACTORY.createResourceContainerPrivacy();
 		resContainer.setEntityName(prefix + "_ResCon");
-		
+
 		int randGeoLocation = ThreadLocalRandom.current().nextInt(this.countryCodes.length);
 		resContainer.setGeolocation(this.countryCodes[randGeoLocation].getNumeric());
-		
+
 		return resContainer;
 	}
 

@@ -11,7 +11,8 @@ import org.iobserve.analysis.utils.AbstractLinearComposition;
  * model processor, a model optimizer and a candidate processor.
  *
  * @author Philipp Weimann
- * @author Tobias Pöppke
+ * @author Tobias Poeppke
+ * @author Robert Heinrich
  */
 public class CandidateGeneration extends AbstractLinearComposition<AdaptationData, AdaptationData> {
 

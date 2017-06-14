@@ -21,7 +21,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * executes this script on each node of the group to undeploy the assembly
  * context.
  *
- * @author Tobias Pöppke
+ * @author Tobias Poeppke
+ * @author Robert Heinrich
  *
  */
 public class DeallocateActionScript extends ActionScript {

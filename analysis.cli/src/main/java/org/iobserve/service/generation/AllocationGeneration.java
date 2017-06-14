@@ -11,6 +11,12 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
+/**
+ * Generates a PCM Privacy compliant AllocationModel
+ * 
+ * @author Philipp Weimann
+ * @author Robert Heinrich
+ */
 public class AllocationGeneration {
 
 	private static AllocationFactory ALLOCATION_FACTORY = AllocationFactory.eINSTANCE;
@@ -19,8 +25,15 @@ public class AllocationGeneration {
 	private System systemModel;
 	private ResourceEnvironment resEnvModel;
 	private ResourceContainer[] resContainer;
-	// private HashMap<String, ResourceContainer> hostingServer;
 
+	/**
+	 * The Constructor for a NEW allocation model
+	 * 
+	 * @param systemModel
+	 *            the system model
+	 * @param resEnvModel
+	 *            the resource environment model
+	 */
 	public AllocationGeneration(System systemModel, ResourceEnvironment resEnvModel) {
 		this.systemModel = systemModel;
 		this.resEnvModel = resEnvModel;
@@ -35,6 +48,16 @@ public class AllocationGeneration {
 		this.allocationModel.setTargetResourceEnvironment_Allocation(this.resEnvModel);
 	}
 
+	/**
+	 * The constructor for a existing allocation model
+	 * 
+	 * @param allocationModel
+	 *            the existing allocation model
+	 * @param systemModel
+	 *            the system model
+	 * @param resEnvModel
+	 *            the resource environment model
+	 */
 	public AllocationGeneration(Allocation allocationModel, System systemModel, ResourceEnvironment resEnvModel) {
 		this.systemModel = systemModel;
 		this.resEnvModel = resEnvModel;
@@ -46,8 +69,10 @@ public class AllocationGeneration {
 	}
 
 	/**
+	 * Generates an Allocation Model. Every AssemblyContext is allocated onto a
+	 * random server!
 	 * 
-	 * @return
+	 * @return the Allocation Model
 	 */
 	public Allocation generateAllocation() {
 		for (AssemblyContext assemblyContext : this.systemModel.getAssemblyContexts__ComposedStructure()) {
@@ -60,10 +85,13 @@ public class AllocationGeneration {
 	}
 
 	/**
+	 * Generates the allocations for the given AssemblyContexts
 	 * 
 	 * @param newAssemblyContexts
+	 *            the Assembly Contexts to allocate
 	 * @param prefix
-	 * @return
+	 *            the special allocation prefix
+	 * @return the Allocation Model
 	 */
 	public Allocation generateAllocation(List<AssemblyContext> newAssemblyContexts, String prefix) {
 
@@ -78,7 +106,7 @@ public class AllocationGeneration {
 	}
 
 	/*
-	 * 
+	 * Generates an Allocation Context
 	 */
 	private AllocationContext generateAllocationContext(AssemblyContext assemblyContext) {
 		AllocationContext allocationContext = ALLOCATION_FACTORY.createAllocationContext();

@@ -8,9 +8,14 @@ import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.GraphFactory;
 import org.iobserve.analysis.graph.ModelGraph;
 
-import teetime.stage.basic.AbstractFilter;
 import teetime.stage.basic.AbstractTransformation;
 
+/**
+ * The Model Comparer filter stage
+ * 
+ * @author Philipp Weimann
+ * @author Robert Heinrich
+ */
 public class ModelComparer extends AbstractTransformation<URI, Boolean> {
 	
 	private AdaptationData adaptationData;

@@ -28,6 +28,12 @@ import org.palladiosimulator.pcm.repository.RequiredRole;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.impl.SystemFactoryImpl;
 
+/**
+ * Generates a PCM Privacy compliant SystemModel
+ * 
+ * @author Philipp Weimann
+ * @author Robert Heinrich
+ */
 public class SystemGeneration {
 
 	private static Logger LOG = LogManager.getLogger(SystemGeneration.class);
@@ -132,10 +138,11 @@ public class SystemGeneration {
 	}
 
 	/**
-	 * 
+	 * Generates a new System Model
 	 * 
 	 * @param assemblyContextCount
-	 * @return
+	 *            the amount of Assembly Contexts to generate
+	 * @return the System Model
 	 */
 	public System generateSystemModel(int assemblyContextCount) {
 
@@ -150,10 +157,14 @@ public class SystemGeneration {
 	}
 
 	/**
+	 * Generates a certain amount of new Assembly Contexts into the existing
+	 * System Model
 	 * 
 	 * @param assemblyContextCount
+	 *            the amount of Assembly Contexts
 	 * @param prefix
-	 * @return
+	 *            the special prefix
+	 * @return the new Assembly Contexts
 	 */
 	public List<AssemblyContext> addAssemblyContexts(int assemblyContextCount, String prefix) {
 
@@ -162,7 +173,7 @@ public class SystemGeneration {
 			String namePrefix = Integer.toString(i) + "_" + prefix;
 			AssemblyContext newAC = this.generateNewAC(namePrefix);
 			newACs.add(newAC);
-			
+
 			LOG.info("CREATING: \tAssemblyContext: \t" + newAC.getId());
 		}
 
@@ -172,7 +183,7 @@ public class SystemGeneration {
 	}
 
 	/*
-	 * 
+	 * Geneartes a new AC
 	 */
 	private AssemblyContext generateNewAC(String namePrefix) {
 		int randomInt = ThreadLocalRandom.current().nextInt(components.length);
@@ -182,7 +193,7 @@ public class SystemGeneration {
 		newAC.setEntityName(namePrefix + "_AC_" + randComponent.getEntityName());
 		newAC.setEncapsulatedComponent__AssemblyContext(randComponent);
 		newAC.setParentStructure__AssemblyContext(system);
-		
+
 		this.system.getAssemblyContexts__ComposedStructure().add(newAC);
 		this.unconnectedAssemblyContextes.add(newAC);
 
@@ -360,6 +371,9 @@ public class SystemGeneration {
 		return connector;
 	}
 
+	/*
+	 * Checks if a matching interface exists
+	 */
 	private boolean matchingInterface(ProvidedRole providedRole, String interfaceID) {
 		boolean equalInterface = false;
 		if (providedRole instanceof OperationProvidedRole) {
@@ -369,6 +383,9 @@ public class SystemGeneration {
 		return equalInterface;
 	}
 
+	/*
+	 * Checks if a matching interface exists
+	 */
 	private boolean matchingInterface(RequiredRole requRole, String interfaceID) {
 		boolean equalInterface = false;
 		if (requRole instanceof OperationRequiredRole) {

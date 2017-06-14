@@ -23,7 +23,7 @@ import teetime.stage.basic.AbstractTransformation;
  * sequence.
  * 
  * @author Philipp Weimann
- *
+ * @author Robert Heinrich
  */
 public class AdaptationPlanning extends AbstractTransformation<AdaptationData, AdaptationData> {
 
@@ -42,6 +42,7 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 		
 		init(element);
 
+		// Reassemble actions by non-conflicting order!
 		List<Action> adaptionSteps = new ArrayList<Action>();
 		adaptionSteps.addAll(aquires);
 		adaptionSteps.addAll(deallocations);
@@ -56,7 +57,11 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 		this.outputPort.send(element);
 	}
 
+	/*
+	 * Inits all support structures
+	 */
 	private void init(AdaptationData data) {
+		// Filter the Actions by type
 		this.aquires = data.getRcActions().stream().filter(s -> s instanceof AcquireAction).collect(Collectors.toSet());
 		this.terminates = data.getRcActions().stream().filter(s -> s instanceof TerminateAction).collect(Collectors.toSet());
 
@@ -66,6 +71,9 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 		this.deallocations = data.getAcActions().stream().filter(s -> s instanceof DeallocateAction).collect(Collectors.toSet());
 	}
 
+	/*
+	 * Prints the Action execution order!
+	 */
 	private void printAdaptionSequence(List<Action> adaptionSteps) {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Adaption sequence:\n");
@@ -77,6 +85,9 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 		SystemAdaptation.LOG.info(sb.toString());
 	}
 
+	/*
+	 * Get Adaptation-String per ActionType
+	 */
 	private String printAction(Action action) {
 		StringBuilder sb = new StringBuilder();
 

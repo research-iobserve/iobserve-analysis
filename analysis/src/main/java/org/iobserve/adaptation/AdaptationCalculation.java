@@ -27,6 +27,7 @@ import teetime.stage.basic.AbstractTransformation;
  * model.
  * 
  * @author Philipp Weimann
+ * @author Robert Heinrich
  *
  */
 public class AdaptationCalculation extends AbstractTransformation<AdaptationData, AdaptationData> {
@@ -37,6 +38,9 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 	private HashSet<AssemblyContextAction> acActions;
 	private HashSet<ResourceContainerAction> rcActions;
 
+	/*
+	 * Inits all support structures.
+	 */
 	private void init(AdaptationData data) {
 		this.runtimeComponentNodes = new HashMap<String, ComponentNode>();
 		this.runtimeDeploymentNodes = new HashMap<String, DeploymentNode>();
@@ -53,7 +57,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 
 		assert (element.getRuntimeGraph() != null);
 		assert (element.getReDeploymentGraph() != null);
-		
+
 		SystemAdaptation.LOG.info("Calculating system adaptation");
 
 		this.init(element);
@@ -62,10 +66,13 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 
 		element.setAcActions(this.acActions.stream().collect(Collectors.toList()));
 		element.setRcActions(this.rcActions.stream().collect(Collectors.toList()));
-		
+
 		this.outputPort.send(element);
 	}
 
+	/*
+	 * Add data to support structure.
+	 */
 	private void addRuntimeData(ModelGraph graph) {
 		for (ComponentNode component : graph.getComponents()) {
 			this.runtimeComponentNodes.put(component.getAssemblyContextID(), component);
@@ -79,19 +86,26 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 		}
 	}
 
+	/*
+	 * Starts the compare ...
+	 */
 	private void startComparison(ModelGraph redeploymentGraph) {
 		this.compareComponents(redeploymentGraph.getComponents());
 		this.compareServers(redeploymentGraph.getServers());
 	}
 
+	/*
+	 * Calculates the AssemblyConnector Actions.
+	 */
 	private void compareComponents(Set<ComponentNode> components) {
+		// Iterate over all ComponentNodes
 		for (ComponentNode reDeplComp : components) {
 
 			ComponentNode runComp = this.runtimeComponentNodes.get(reDeplComp.getAssemblyContextID());
 
 			if (runComp == null) {
 				// Allocate, since ID does not yet exits
-				AssemblyContextAction action = AssemblyContextActionFactory.generateAllocateAction(runComp, reDeplComp);
+				AssemblyContextAction action = AssemblyContextActionFactory.generateAllocateAction(reDeplComp);
 				this.acActions.add(action);
 			} else if (!runComp.equals(reDeplComp)) {
 				// Components differ, so check what actions need to be done!
@@ -117,9 +131,14 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 		}
 	}
 
+	/*
+	 * Calculates the ResourceContainer Actions.
+	 */
 	private void compareServers(Set<DeploymentNode> servers) {
+
+		// Iterate over all DeploymentNodes
 		for (DeploymentNode reDeplServer : servers) {
-			
+
 			if (reDeplServer.getContainingComponents().size() == 0) {
 				// If the server dosn't contain any components => IGNORE
 				continue;

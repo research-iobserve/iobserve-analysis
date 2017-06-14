@@ -10,13 +10,18 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.gradle.internal.impldep.com.esotericsoftware.minlog.Log;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.GraphFactory;
 
+/**
+ * Generates a valid PCM Privacy model for evaluation
+ * 
+ * @author Philipp Weimann
+ * @author Robert Heinrich
+ */
 public class EvaluationGeneration {
 
-	 private static final Logger LOG = LogManager.getLogger(EvaluationGeneration.class);
+	private static final Logger LOG = LogManager.getLogger(EvaluationGeneration.class);
 
 	public static void main(String[] args) {
 
@@ -40,7 +45,7 @@ public class EvaluationGeneration {
 				}
 				if (commandLine.hasOption("m")) {
 					clearDirectory(commandLine.getOptionValue("o"));
-					ModelModification.createNewModel(commandLine);
+					ModelModification.createModifiedModel(commandLine);
 
 					InitializeModelProviders modelProviers = new InitializeModelProviders(new File(commandLine.getOptionValue("o")));
 					GraphFactory graphFactory = new GraphFactory();
@@ -52,6 +57,9 @@ public class EvaluationGeneration {
 		}
 	}
 
+	/*
+	 * Clears the files in the given directory. Doesn't touch Directories!
+	 */
 	private static void clearDirectory(String fileURI) {
 		LOG.info("Clearing output folder: " + fileURI);
 		File outputDir = new File(fileURI);

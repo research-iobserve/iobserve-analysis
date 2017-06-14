@@ -1,7 +1,5 @@
 package org.iobserve.planning;
 
-import java.io.File;
-
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
@@ -16,7 +14,9 @@ import teetime.stage.basic.AbstractTransformation;
  * allocation contexts into allocation groups to reduce the available degrees of
  * freedom for the design space exploration.
  *
- * @author Tobias Pöppke
+ * @author Tobias Poeppke
+ * @author Philipp Weimann
+ * @author Robert Heinrich
  *
  */
 public class ModelProcessing extends AbstractTransformation<AdaptationData, PlanningData> {
@@ -47,16 +47,17 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 		AdaptationData adaptationData = element;
 		PlanningData planningData = new PlanningData();
 
-		// adaptationData.setRuntimeModelURI(element);
+		// Set required information
 		planningData.setAdaptationData(adaptationData);
 		planningData.setPerOpteryxDir(this.perOpteryxDir);
 		planningData.setOriginalModelDir(adaptationData.getRuntimeModelURI());
 		planningData.setLqnsDir(lqnsDir);
 		planningData.setPrivacyAnalysisFile(privacyAnalysisFile);
 
-		InitializeModelProviders models = new InitializeModelProviders(new File(adaptationData.getRuntimeModelURI().toFileString()));
+		// Create Snapshot
+		//InitializeModelProviders models = new InitializeModelProviders(new File(adaptationData.getRuntimeModelURI().toFileString()));
+		InitializeModelProviders models = adaptationData.getRuntimeModelProviders();
 		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_MODEL_FOLDER, models);
-		
 		URI snapshotLocation = snapshotBuilder.createSnapshot();
 		planningData.setProcessedModelDir(snapshotLocation);
 

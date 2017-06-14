@@ -19,13 +19,20 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
 public class ModelGeneration {
-	
-	private static final Logger LOG = LogManager.getLogger(ModelGeneration.class);
-	
 
+	private static final Logger LOG = LogManager.getLogger(ModelGeneration.class);
+
+	/**
+	 * Generates a NEW model!
+	 * 
+	 * @param commandLine
+	 *            the command Line arguemtns
+	 * @throws InitializationException
+	 * @throws IOException
+	 */
 	public static void createNewModel(CommandLine commandLine) throws InitializationException, IOException {
 		LOG.info("Creating new model!");
-		
+
 		URI repoLocation = URI.createFileURI(commandLine.getOptionValue("i"));
 		URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
@@ -42,6 +49,9 @@ public class ModelGeneration {
 		LOG.info("Generating done!");
 	}
 
+	/*
+	 * Genertes the System Model
+	 */
 	private static System generateAndSaveSystem(CommandLine commandLine, URI outputLocation) {
 		InitializeModelProviders modelProviders = new InitializeModelProviders(new File(outputLocation.toFileString()));
 		SystemGeneration systemGen = new SystemGeneration(modelProviders.getRepositoryModelProvider().getModel());
@@ -55,6 +65,9 @@ public class ModelGeneration {
 		return systemModel;
 	}
 
+	/*
+	 * Generates the Resource Environment Model
+	 */
 	private static ResourceEnvironment generateAndSaveResourceEnvironment(CommandLine commandLine, URI outputLocation, String modelName) {
 		ResourceEnvironmentGeneration resEnvGen = new ResourceEnvironmentGeneration(modelName);
 		ResourceEnvironment resEnvModel = resEnvGen.craeteResourceEnvironment(Integer.parseInt(commandLine.getOptionValue("r")));
@@ -67,6 +80,9 @@ public class ModelGeneration {
 		return resEnvModel;
 	}
 
+	/*
+	 * Generates the Allocation Model
+	 */
 	private static Allocation generateAndSaveAllocation(URI outputLocation, System systemModel, ResourceEnvironment resEnvModel) {
 		AllocationGeneration allocationGen = new AllocationGeneration(systemModel, resEnvModel);
 		Allocation allocationModel = allocationGen.generateAllocation();
@@ -80,6 +96,9 @@ public class ModelGeneration {
 		return allocationModel;
 	}
 
+	/*
+	 * Copies the Repository Model to the Output Folder
+	 */
 	private static boolean copyRepoToOutput(URI outputLocation, RepositoryModelProvider repoModelProvider)
 			throws InitializationException, IOException {
 		SnapshotBuilder.setBaseSnapshotURI(outputLocation);
@@ -88,7 +107,5 @@ public class ModelGeneration {
 		snapshotBuilder.createModelSnapshot(repoModelProvider);
 		return false;
 	}
-
-	
 
 }

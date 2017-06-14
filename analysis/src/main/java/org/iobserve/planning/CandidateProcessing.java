@@ -18,27 +18,29 @@ import teetime.stage.basic.AbstractTransformation;
  * for further processing.
  * 
  * @author Philipp Weimann
+ * @author Tobias Poeppke
+ * @author Robert Heinrich
  */
 public class CandidateProcessing extends AbstractTransformation<PlanningData, AdaptationData> {
 
 	@Override
 	protected void execute(PlanningData element) throws Exception {
 		CandidateGeneration.LOG.info("Candiate Processing");
+		
 		AdaptationData adapdationData = element.getAdaptationData();
 		
+		// Set adaptation data
 		String reDeploymentURIString = adapdationData.getReDeploymentURI().toFileString();
 		InitializeModelProviders initModelProvider = new InitializeModelProviders(new File(reDeploymentURIString));
 		adapdationData.setReDeploymentModelProviders(initModelProvider);
 		
 		GraphFactory factory = new GraphFactory();
 		ModelGraph graph = factory.buildGraph(initModelProvider.getModelCollection());
-		element.getAdaptationData().setReDeploymentGraph(graph);
+		adapdationData.setReDeploymentGraph(graph);
 		
+		// Evaluate if ReDeploymentModel is privacy compliant
 		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(graph);
 		classificationAnalysis.start();
-
-		
-		// System.out.println("Deployment analysis ... ");
 		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(graph, PrivacyAnalysis.getLegalPersonalGeoLocations());
 		String[] legalDeployment = deploymentAnalysis.start();
 

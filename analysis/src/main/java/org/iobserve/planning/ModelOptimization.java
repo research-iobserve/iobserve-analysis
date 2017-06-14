@@ -12,6 +12,7 @@ import teetime.stage.basic.AbstractTransformation;
  * is OS independent.
  *
  * @author Philipp Weimann
+ * @author Robert Heinrich
  */
 public class ModelOptimization extends AbstractTransformation<PlanningData, PlanningData> {
 
@@ -31,10 +32,8 @@ public class ModelOptimization extends AbstractTransformation<PlanningData, Plan
 		int result = exec.startModelGeneration();
 
 		if (result != EXEC_SUCCESS) {
-			// String uriString =
-			// "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\processedModel\\PerOpteryx_results\\costOptimalModel";
-			// String uriString =
-			// "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\Test";
+			// String uriString = "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\processedModel\\PerOpteryx_results\\costOptimalModel";
+			// String uriString = "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\Test";
 
 			// adaptationData.setReDeploymentURI(URI.createFileURI(uriString));
 			throw new RuntimeException("PerOpteryx exited with error code " + result);

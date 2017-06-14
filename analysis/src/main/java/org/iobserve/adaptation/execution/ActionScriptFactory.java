@@ -15,7 +15,7 @@ import org.iobserve.planning.systemadaptation.TerminateAction;
 /**
  * A factory for constructing execution scripts from adaptation actions.
  *
- * @author Tobias Pöppke
+ * @author Tobias Poeppke
  *
  */
 public class ActionScriptFactory {

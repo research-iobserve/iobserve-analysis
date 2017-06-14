@@ -19,7 +19,15 @@ public class ModelModification {
 
 	private static final Logger LOG = LogManager.getLogger(ModelModification.class);
 
-	public static void createNewModel(CommandLine commandLine) throws InitializationException, IOException {
+	/**
+	 * Creates a modfied Model
+	 * 
+	 * @param commandLine
+	 *            the command line arguments
+	 * @throws InitializationException
+	 * @throws IOException
+	 */
+	public static void createModifiedModel(CommandLine commandLine) throws InitializationException, IOException {
 		LOG.info("Modifying model!");
 
 		URI inputModels = URI.createFileURI(commandLine.getOptionValue("i"));
@@ -36,7 +44,7 @@ public class ModelModification {
 
 		LOG.info("Terminating Server");
 		List<ResourceContainer> terminatedResourceContainers = resEnvMod.modifyResEnv_terminate(Integer.parseInt(commandLine.getOptionValue("ac")));
-		
+
 		LOG.info("Acquiring Server");
 		resEnvMod.modifyResEnv_acquire(Integer.parseInt(commandLine.getOptionValue("ac")));
 
@@ -53,8 +61,8 @@ public class ModelModification {
 		allocMod = new AllocationModification(models.getAllocationModel(), models.getSystemModel(), models.getResourceEnvironmentModel());
 		allocMod.modifyAllocation_FixDeallocations(deallocatedACs);
 
-		// LOG.info("Exchanging Components");
-		// sysMod.modifySystem_ChangeComp(Integer.parseInt(commandLine.getOptionValue("cr")));
+		 LOG.info("Exchanging Components");
+		 sysMod.modifySystem_ChangeComp(Integer.parseInt(commandLine.getOptionValue("cr")));
 
 		LOG.info("Allocating new Components");
 		List<AssemblyContext> allocatedACs = sysMod.modifySystem_Allocate(Integer.parseInt(commandLine.getOptionValue("al")));

@@ -15,6 +15,8 @@ import org.iobserve.planning.systemadaptation.ResourceContainerAction;
  * This class provides all data required for planning and adapting the system.
  *
  * @author Philipp Weimann
+ * @author Tobias Poeppke
+ * @author Robert Heinrich
  */
 public class AdaptationData {
 	public static final String NODE_STARTUP_SCRIPT_NAME = "node_startup.sh";
@@ -180,26 +182,45 @@ public class AdaptationData {
 		this.executionOrder = executionOrder;
 	}
 
+	/**
+	 * @return the execution scripts dir URI
+	 */
 	public URI getDeployablesFolderURI() {
 		return this.deployablesFolderURI;
 	}
 
+	/**
+	 * @param deployablesFolderURI
+	 *            the execution scripts dir URI
+	 */
 	public void setDeployablesFolderURI(URI deployablesFolderURI) {
 		this.deployablesFolderURI = deployablesFolderURI;
 	}
 
+	/**
+	 * @return the allocated contexts
+	 */
 	public Set<String> getAllocatedContexts() {
 		return this.allocatedContexts;
 	}
 
+	/**
+	 * @return the deallocated contexts
+	 */
 	public Set<String> getDeallocatedContexts() {
 		return this.deallocatedContexts;
 	}
 
+	/**
+	 * @return the migrated contexts
+	 */
 	public Set<String> getMigratedContexts() {
 		return this.migratedContexts;
 	}
 
+	/**
+	 * @return the terminated groups
+	 */
 	public Set<String> getTerminatedGroups() {
 		return this.terminatedGroups;
 	}

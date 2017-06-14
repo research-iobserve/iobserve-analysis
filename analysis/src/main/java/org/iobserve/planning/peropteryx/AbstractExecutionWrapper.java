@@ -16,6 +16,8 @@ import org.eclipse.emf.common.util.URI;
  * PerOpteryx instance.
  * 
  * @author Philipp Weimann
+ * @author Tobias Poeppke
+ * @author Robert Heinrich
  *
  */
 public abstract class AbstractExecutionWrapper {

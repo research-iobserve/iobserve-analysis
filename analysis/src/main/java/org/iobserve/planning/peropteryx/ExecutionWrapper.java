@@ -9,11 +9,11 @@ import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 
 /**
- * Wrapper for executing headless PerOpteryx.
+ * The OS independent Wrapper for executing headless PerOpteryx.
  *
- * @author Tobias Pöppke
+ * @author Tobias Poeppke
  * @author Philipp Weimann
- *
+ * @author Robert Heinrich
  */
 public class ExecutionWrapper extends AbstractExecutionWrapper {
 
@@ -21,6 +21,19 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 	private String execEnvironmentParam;
 	private String execCommand;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param inputModelDir
+	 *            the input and process PCM model URI
+	 * @param perOpteryxDir
+	 *            the PerOpteryx folder URI
+	 * @param lqnsDir
+	 *            the LQN Solver dir URI
+	 * @param privacyAnalysisFile
+	 *            the legal geo-location file URI
+	 * @throws IOException
+	 */
 	public ExecutionWrapper(final URI inputModelDir, final URI perOpteryxDir, final URI lqnsDir, final URI privacyAnalysisFile) throws IOException {
 		super(inputModelDir, perOpteryxDir, lqnsDir, privacyAnalysisFile);
 

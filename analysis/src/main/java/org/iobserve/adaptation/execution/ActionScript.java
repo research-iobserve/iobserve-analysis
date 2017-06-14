@@ -3,13 +3,11 @@ package org.iobserve.adaptation.execution;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.jclouds.ContextBuilder;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.ComputeServiceContext;
@@ -33,7 +31,7 @@ import com.google.inject.Module;
  * The actions derived from this class have to implement the {@link #execute()}
  * method which executes the corresponding action.
  *
- * @author Tobias Pöppke
+ * @author Tobias Poeppke
  *
  */
 public abstract class ActionScript {

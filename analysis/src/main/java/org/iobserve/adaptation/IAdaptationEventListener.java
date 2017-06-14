@@ -8,8 +8,8 @@ import org.iobserve.adaptation.execution.ActionScript;
  * Interface for an event listener that is used while executing the adaptation
  * stage.
  *
- * @author Tobias Pöppke
- *
+ * @author Tobias Poeppke
+ * @author Robert Heinrich
  */
 public interface IAdaptationEventListener {
 	/**
