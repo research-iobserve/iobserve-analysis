@@ -61,7 +61,12 @@ public class ModelProvider<T extends EObject> {
     }
 
     public Node createComponent(final T component) {
-        return this.createNodes(component);
+        final Node node;
+        try (Transaction tx = this.getGraph().beginTx()) {
+            node = this.createNodes(component);
+            tx.success();
+        }
+        return node;
     }
 
     private Node createNodes(final EObject component) {
@@ -73,36 +78,27 @@ public class ModelProvider<T extends EObject> {
         // node for the component in the graph. For everything else: Always create a new node.
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
-            try (Transaction tx = this.getGraph().beginTx()) {
-                node = this.getGraph().findNode(label, ModelProvider.ID, component.eGet(idAttr));
-                tx.success();
-            }
+            node = this.getGraph().findNode(label, ModelProvider.ID, component.eGet(idAttr));
         } else if (component instanceof PrimitiveDataType) {
-            try (Transaction tx = this.getGraph().beginTx()) {
-                node = this.getGraph().findNode(label, ModelProvider.TYPE,
-                        ((PrimitiveDataType) component).getType().name());
-                tx.success();
-            }
+            node = this.getGraph().findNode(label, ModelProvider.TYPE,
+                    ((PrimitiveDataType) component).getType().name());
         }
 
         // If there is no node yet, create one
         if (node == null) {
 
-            try (Transaction tx = this.getGraph().beginTx()) {
-                node = this.getGraph().createNode(label);
+            node = this.getGraph().createNode(label);
 
-                // System.out.println("writing " + component + " " + label.name());
+            // System.out.println("writing " + component + " " + label.name());
 
-                // Iterate over all attributes and save them as node properties
-                for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                    final Object value = component.eGet(attr);
-                    if (value != null) {
-                        node.setProperty(attr.getName(), value.toString());
-                        // System.out.println("\t" + component + " attribute " + attr.getName() + "
-                        // " + value.toString());
-                    }
+            // Iterate over all attributes and save them as node properties
+            for (final EAttribute attr : component.eClass().getEAllAttributes()) {
+                final Object value = component.eGet(attr);
+                if (value != null) {
+                    node.setProperty(attr.getName(), value.toString());
+                    // System.out.println("\t" + component + " attribute " + attr.getName() + "
+                    // " + value.toString());
                 }
-                tx.success();
             }
 
             // Iterate over all references and save as them as relations in the graph
@@ -122,12 +118,9 @@ public class ModelProvider<T extends EObject> {
                         final Node refNode = this.createNodes((EObject) o);
 
                         // When the new node is created, create a reference
-                        try (Transaction tx = this.getGraph().beginTx()) {
-                            final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelProviderUtil.getRelationshipType(ref, o));
-                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                            tx.success();
-                        }
+                        final Relationship rel = node.createRelationshipTo(refNode,
+                                ModelProviderUtil.getRelationshipType(ref, o));
+                        rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                     }
                 } else {
                     if (refReprensation != null) {
@@ -137,12 +130,9 @@ public class ModelProvider<T extends EObject> {
                         final Node refNode = this.createNodes((EObject) refReprensation);
 
                         // When the new node is created, create a reference
-                        try (Transaction tx = this.getGraph().beginTx()) {
-                            final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelProviderUtil.getRelationshipType(ref, refReprensation));
-                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                            tx.success();
-                        }
+                        final Relationship rel = node.createRelationshipTo(refNode,
+                                ModelProviderUtil.getRelationshipType(ref, refReprensation));
+                        rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                     }
                 }
             }
@@ -154,44 +144,38 @@ public class ModelProvider<T extends EObject> {
     public EObject readComponent(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
+        EObject component;
 
         try (Transaction tx = this.getGraph().beginTx()) {
             node = this.getGraph().findNode(label, ModelProvider.ID, id);
+            component = this.readComponent(node);
             tx.success();
         }
 
-        return this.readComponent(node);
+        return component;
     }
 
     public EObject readComponent(final Node node) {
 
         // Get the node's data type name and instantiate a new empty object of this data type
-        Label label;
-        try (Transaction tx = this.getGraph().beginTx()) {
-            label = ModelProviderUtil.getFirstLabel(node.getLabels());
-            tx.success();
-        }
+        final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
         final EObject component = ModelProviderUtil.instantiateEObject(label.name());
 
-        try (Transaction tx = this.getGraph().beginTx()) {
+        // Iterate over all attributes and get their values from the node
+        for (final EAttribute attr : component.eClass().getEAllAttributes()) {
 
-            // Iterate over all attributes and get their values from the node
-            for (final EAttribute attr : component.eClass().getEAllAttributes()) {
+            try {
+                final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
+                        node.getProperty(attr.getName()).toString());
 
-                try {
-                    final Object value = ModelProviderUtil.instantiateAttribute(
-                            attr.getEAttributeType().getInstanceClass(), node.getProperty(attr.getName()).toString());
-
-                    if (value != null) {
-                        component.eSet(attr, value);
-                    }
-                    // System.out.println("\t" + component + " attribute " + attr.getName() + "
-                    // = " + value);
-                } catch (final NotFoundException e) {
-                    component.eSet(attr, null);
+                if (value != null) {
+                    component.eSet(attr, value);
                 }
+                // System.out.println("\t" + component + " attribute " + attr.getName() + "
+                // = " + value);
+            } catch (final NotFoundException e) {
+                component.eSet(attr, null);
             }
-            tx.success();
         }
 
         // Already register unfinished types because there might be circles with inner declarations
@@ -204,51 +188,46 @@ public class ModelProvider<T extends EObject> {
             final String refName = ref.getName();
             Object refReprensation = component.eGet(ref);
 
-            try (final Transaction tx = this.getGraph().beginTx()) {
+            // ...and iterate over all outgoing containment or type relationships of the node
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                    PcmRelationshipType.IS_TYPE)) {
 
-                // ...and iterate over all outgoing containment or type relationships of the node
-                for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                        PcmRelationshipType.IS_TYPE)) {
+                // If a relationship in the graph matches the references name...
+                if (refName.equals(rel.getProperty(ModelProvider.REF_NAME))) {
+                    final Node endNode = rel.getEndNode();
 
-                    // If a relationship in the graph matches the references name...
-                    if (refName.equals(rel.getProperty(ModelProvider.REF_NAME))) {
-                        final Node endNode = rel.getEndNode();
+                    // ...recursively create an instance of the referenced object
+                    if (rel.isType(PcmRelationshipType.CONTAINS)) {
+                        // System.out.println("\t" + component + " reference " + refName);
 
-                        // ...recursively create an instance of the referenced object
-                        if (rel.isType(PcmRelationshipType.CONTAINS)) {
-                            // System.out.println("\t" + component + " reference " + refName);
-
-                            if (refReprensation instanceof EList<?>) {
-                                final EObject endComponent = this.readComponent(endNode);
-                                ((EList<EObject>) refReprensation).add(endComponent);
-                            } else {
-                                refReprensation = this.readComponent(endNode);
-                                component.eSet(ref, refReprensation);
-
-                            }
-                        } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
-                            // System.out.println("\t" + component + " reference " + refName);
-
-                            // Look if this data type has already been created
-                            EObject endComponent = this.getDataTypes().get(endNode);
-
-                            if (endComponent == null) {
-                                endComponent = this.readComponent(endNode);
-                            }
-
-                            if (refReprensation instanceof EList<?>) {
-                                ((EList<EObject>) refReprensation).add(endComponent);
-                            } else {
-                                component.eSet(ref, endComponent);
-                            }
-
-                            // Replace possibly unfinished data type
-                            this.getDataTypes().replace(node, (DataType) endComponent);
+                        if (refReprensation instanceof EList<?>) {
+                            final EObject endComponent = this.readComponent(endNode);
+                            ((EList<EObject>) refReprensation).add(endComponent);
+                        } else {
+                            refReprensation = this.readComponent(endNode);
+                            component.eSet(ref, refReprensation);
 
                         }
+                    } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
+                        // System.out.println("\t" + component + " reference " + refName);
+
+                        // Look if this data type has already been created
+                        EObject endComponent = this.getDataTypes().get(endNode);
+
+                        if (endComponent == null) {
+                            endComponent = this.readComponent(endNode);
+                        }
+
+                        if (refReprensation instanceof EList<?>) {
+                            ((EList<EObject>) refReprensation).add(endComponent);
+                        } else {
+                            component.eSet(ref, endComponent);
+                        }
+
+                        // Replace possibly unfinished data type
+                        this.getDataTypes().replace(node, (DataType) endComponent);
                     }
                 }
-                tx.success();
             }
         }
 
@@ -279,12 +258,12 @@ public class ModelProvider<T extends EObject> {
 
         try (Transaction tx = this.getGraph().beginTx()) {
             node = this.getGraph().findNode(label, ModelProvider.ID, id);
+            this.markAccessibleNodes(node);
+            this.markDeletableNodes(node, true);
+            this.deleteNodes(node);
             tx.success();
         }
 
-        this.markAccessibleNodes(node);
-        this.markDeletableNodes(node, true);
-        this.deleteNodes(node);
     }
 
     /**
@@ -296,21 +275,17 @@ public class ModelProvider<T extends EObject> {
      *            The node to start with
      */
     private void markAccessibleNodes(final Node node) {
-        try (Transaction tx = this.getGraph().beginTx()) {
-            node.setProperty(ModelProvider.DELETE, true);
+        node.setProperty(ModelProvider.DELETE, true);
 
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                    PcmRelationshipType.IS_TYPE)) {
-                if (!rel.hasProperty(ModelProvider.ACCESSIBLE)) {
-                    rel.setProperty(ModelProvider.ACCESSIBLE, true);
-                    this.markAccessibleNodes(rel.getEndNode());
-                }
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                PcmRelationshipType.IS_TYPE)) {
+            if (!rel.hasProperty(ModelProvider.ACCESSIBLE)) {
+                rel.setProperty(ModelProvider.ACCESSIBLE, true);
+                this.markAccessibleNodes(rel.getEndNode());
             }
-
-            tx.success();
-
-            return;
         }
+
+        return;
     }
 
     /**
@@ -330,32 +305,27 @@ public class ModelProvider<T extends EObject> {
 
         boolean reallyDelete = reallyDeletePred;
 
-        try (Transaction tx = this.getGraph().beginTx()) {
-
-            for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
-                if (!rel.hasProperty(ModelProvider.ACCESSIBLE)) {
-                    reallyDelete = false;
-                }
+        for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
+            if (!rel.hasProperty(ModelProvider.ACCESSIBLE)) {
+                reallyDelete = false;
             }
+        }
 
-            if (node.hasProperty(ModelProvider.DELETE) && !reallyDelete) {
-                node.removeProperty(ModelProvider.DELETE);
+        if (node.hasProperty(ModelProvider.DELETE) && !reallyDelete) {
+            node.removeProperty(ModelProvider.DELETE);
+        }
+
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                PcmRelationshipType.IS_TYPE)) {
+            if (!rel.hasProperty(ModelProvider.VISITED)) {
+                rel.setProperty(ModelProvider.VISITED, true);
+                this.markDeletableNodes(rel.getEndNode(), reallyDelete);
             }
+        }
 
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                    PcmRelationshipType.IS_TYPE)) {
-                if (!rel.hasProperty(ModelProvider.VISITED)) {
-                    rel.setProperty(ModelProvider.VISITED, true);
-                    this.markDeletableNodes(rel.getEndNode(), reallyDelete);
-                }
-            }
-
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                    PcmRelationshipType.IS_TYPE)) {
-                rel.removeProperty(ModelProvider.VISITED);
-            }
-
-            tx.success();
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                PcmRelationshipType.IS_TYPE)) {
+            rel.removeProperty(ModelProvider.VISITED);
         }
     }
 
@@ -369,58 +339,46 @@ public class ModelProvider<T extends EObject> {
      *            The node to start with
      */
     private void deleteNodes(final Node node) {
-        try (final Transaction tx = this.getGraph().beginTx()) {
 
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                    PcmRelationshipType.IS_TYPE)) {
-                boolean callRecursive = false;
-
-                try (Transaction tx2 = this.getGraph().beginTx()) {
-                    try {
-                        if (!rel.hasProperty(ModelProvider.VISITED)) {
-                            rel.setProperty(ModelProvider.VISITED, true);
-                            callRecursive = true;
-                        }
-
-                    } catch (final NotFoundException e) {
-                        // relation has already been deleted on another path
-                    }
-                    tx2.success();
-                }
-
-                if (callRecursive) {
-                    this.deleteNodes(rel.getEndNode());
-                }
-            }
-            tx.success();
-        }
-
-        try (Transaction tx = this.getGraph().beginTx()) {
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                PcmRelationshipType.IS_TYPE)) {
+            boolean callRecursive = false;
 
             try {
-                if (node.hasProperty(ModelProvider.DELETE)) {
-
-                    for (final Relationship rel : node.getRelationships()) {
-                        rel.delete();
-                    }
-                    node.delete();
-
-                } else {
-
-                    for (final Relationship rel : node.getRelationships(Direction.OUTGOING,
-                            PcmRelationshipType.CONTAINS, PcmRelationshipType.IS_TYPE)) {
-                        rel.removeProperty(ModelProvider.VISITED);
-                    }
+                if (!rel.hasProperty(ModelProvider.VISITED)) {
+                    rel.setProperty(ModelProvider.VISITED, true);
+                    callRecursive = true;
                 }
+
             } catch (final NotFoundException e) {
-                // node has already been deleted on another path
+                // relation has already been deleted on another path
             }
 
-            tx.success();
-
-            return;
+            if (callRecursive) {
+                this.deleteNodes(rel.getEndNode());
+            }
         }
 
+        try {
+            if (node.hasProperty(ModelProvider.DELETE)) {
+
+                for (final Relationship rel : node.getRelationships()) {
+                    rel.delete();
+                }
+                node.delete();
+
+            } else {
+
+                for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                        PcmRelationshipType.IS_TYPE)) {
+                    rel.removeProperty(ModelProvider.VISITED);
+                }
+            }
+        } catch (final NotFoundException e) {
+            // node has already been deleted on another path
+        }
+
+        return;
     }
 
     public HashMap<Node, DataType> getDataTypes() {
