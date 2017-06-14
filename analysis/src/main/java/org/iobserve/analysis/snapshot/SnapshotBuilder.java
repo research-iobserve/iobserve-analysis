@@ -13,7 +13,6 @@ import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AbstractModelProvider;
 import org.iobserve.analysis.model.QMLDeclarationsModelProvider;
-import org.iobserve.analysis.privacyanalysis.PrivacyAnalysis;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
@@ -74,9 +73,6 @@ public class SnapshotBuilder extends AbstractStage {
 
 	@Override
 	protected void execute() throws Exception {
-		// TODO fix this and make .recieve() possible!
-		// List<InputPort<?>> inputPorts = super.getInputPorts();
-		// Boolean createSnapshot = this.inputPort.receive();
 
 		if (SnapshotBuilder.createSnapshot) {
 			this.createSnapshot();

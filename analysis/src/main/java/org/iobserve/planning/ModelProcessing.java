@@ -55,14 +55,10 @@ public class ModelProcessing extends AbstractTransformation<AdaptationData, Plan
 		planningData.setPrivacyAnalysisFile(privacyAnalysisFile);
 
 		// Create Snapshot
-		//InitializeModelProviders models = new InitializeModelProviders(new File(adaptationData.getRuntimeModelURI().toFileString()));
 		InitializeModelProviders models = adaptationData.getRuntimeModelProviders();
 		SnapshotBuilder snapshotBuilder = new SnapshotBuilder(PROCESSED_MODEL_FOLDER, models);
 		URI snapshotLocation = snapshotBuilder.createSnapshot();
 		planningData.setProcessedModelDir(snapshotLocation);
-
-		// ModelTransformer modelTransformer = new ModelTransformer(planningData);
-		// modelTransformer.transformModel();
 
 		this.outputPort.send(planningData);
 	}

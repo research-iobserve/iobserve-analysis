@@ -12,6 +12,11 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.impl.ResourceContain
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+/**
+ * TODO: Comment
+ * @author Philipp
+ *
+ */
 public class TGeoLocation extends AbstractConsumerStage<ServerGeoLocation> {
 
 	ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;

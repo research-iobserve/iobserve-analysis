@@ -62,6 +62,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 
 		this.init(element);
 		this.addRuntimeData(element.getRuntimeGraph());
+		
 		this.startComparison(element.getReDeploymentGraph());
 
 		element.setAcActions(this.acActions.stream().collect(Collectors.toList()));
@@ -114,6 +115,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 					AssemblyContextAction action = AssemblyContextActionFactory.generateChangeRepositoryComponentAction(runComp, reDeplComp);
 					this.acActions.add(action);
 				}
+				// TODO Both Actions possible!
 				if (!runComp.getHostServer().getResourceContainerID().equals(reDeplComp.getHostServer().getResourceContainerID())) {
 					// AssemblyContexts are hosted on different Servers
 					AssemblyContextAction action = AssemblyContextActionFactory.generateMigrateAction(runComp, reDeplComp);
@@ -152,9 +154,6 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 				this.rcActions.add(action);
 			} else {
 				// Server was and is still in use
-				this.runtimeDeploymentNodes.remove(runServer.getResourceContainerID(), runServer);
-				// }
-
 				this.runtimeDeploymentNodes.remove(runServer.getResourceContainerID(), runServer);
 			}
 		}

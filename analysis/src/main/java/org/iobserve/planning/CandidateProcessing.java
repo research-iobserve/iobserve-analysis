@@ -46,7 +46,6 @@ public class CandidateProcessing extends AbstractTransformation<PlanningData, Ad
 
 		if (legalDeployment.length == 0)
 			CandidateGeneration.LOG.info("ReDeployment Model is legal!");
-		// System.out.println("The deployment is LEGAL");
 		else
 			CandidateGeneration.LOG.error("ReDeployment Model is ILLEGAL");
 		

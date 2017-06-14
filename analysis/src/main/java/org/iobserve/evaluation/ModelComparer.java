@@ -26,7 +26,6 @@ public class ModelComparer extends AbstractTransformation<URI, Boolean> {
 		boolean equalGraphs = false;
 		if (adaptationData != null)
 		{
-			//TODO finish
 			InitializeModelProviders modelProviders = new InitializeModelProviders(new File(element.toFileString()));
 			
 			GraphFactory graphFactory = new GraphFactory();

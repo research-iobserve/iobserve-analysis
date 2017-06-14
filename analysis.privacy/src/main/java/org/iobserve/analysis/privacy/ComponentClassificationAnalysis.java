@@ -93,7 +93,6 @@ public class ComponentClassificationAnalysis {
 	 * Check if a joiningDataStream is found
 	 */
 	private ComponentNode traverseNode(ComponentNode currentComp) {
-		// System.out.println("Traversing: " + currentComp.getAssemblyName());
 		ComponentNode reachingPersonalComponent = null;
 
 		if (this.startingNode == null) {
@@ -101,14 +100,11 @@ public class ComponentClassificationAnalysis {
 			this.startingNode = currentComp;
 		} else if (currentComp.getPrivacyLvl() == DataPrivacyLvl.PERSONAL) {
 			// Found a second privacy data source
-			// System.out.println("---Joining Data Streams!!!!!");
 			return currentComp;
 		}
 
 		ComponentEdge[] edges = currentComp.getEdges();
 		for (ComponentEdge edge : edges) {
-			// System.out.println("-Analysing Edge: " +
-			// edge.getAssemblyConnectorName());
 
 			// Jump over edge if
 			// 1. anonymous connection

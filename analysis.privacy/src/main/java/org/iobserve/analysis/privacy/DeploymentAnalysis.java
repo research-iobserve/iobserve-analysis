@@ -34,9 +34,9 @@ public class DeploymentAnalysis {
 	public String[] start() {
 
 		List<String> illegalDeployments = new ArrayList<String>();
-		
+
 		for (DeploymentNode server : model.getServers()) {
-			
+
 			List<String> newIllegalDepoyments = this.isLegalDeployment(server);
 			illegalDeployments.addAll(newIllegalDepoyments);
 		}
@@ -58,7 +58,6 @@ public class DeploymentAnalysis {
 		}
 
 		// "unsave" geo-location!
-
 		DataPrivacyLvl mostCriticalPrivacyLvl = DataPrivacyLvl.ANONYMIZED;
 		for (ComponentNode component : server.getContainingComponents()) {
 			deploymentViolations.add(this.printDeploymentViolation(server, component));
@@ -67,6 +66,7 @@ public class DeploymentAnalysis {
 
 		if (mostCriticalPrivacyLvl == DataPrivacyLvl.ANONYMIZED) {
 			// "Anonymized" can be deployed anywhere
+			deploymentViolations.clear();
 			return deploymentViolations;
 		} else if (mostCriticalPrivacyLvl == DataPrivacyLvl.PERSONAL) {
 			// Personal datas on "unsave" geo-location
@@ -84,8 +84,7 @@ public class DeploymentAnalysis {
 		long dePersonalizedComponentCount = server.getContainingComponents().stream()
 				.filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED).count();
 		if (dePersonalizedComponentCount == 1) {
-			// Maximum of one dePersonalized components on server => no "joining
-			// data streams"
+			// Maximum of one dePersonalized components on server => no "joining data streams"
 			return deploymentViolations;
 		} else {
 			// No easy decision, search for "joining data streams"
@@ -138,12 +137,17 @@ public class DeploymentAnalysis {
 
 			if (edgePartner.getPrivacyLvl() == DataPrivacyLvl.PERSONAL) {
 				if (this.dataSourceEdge == null) {
+					// First personal edge found => set as source
 					this.dataSourceEdge = currentEdge;
 				} else {
+					// Second personal edge found => illegal deployment
 					return false;
 				}
 			} else if (edgePartner.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED) {
 				singleDataSourceEdge = this.traverseComponentNode(edgePartner);
+				if (!singleDataSourceEdge)
+					// illegal Deployment => return!
+					return singleDataSourceEdge;
 			}
 		}
 
