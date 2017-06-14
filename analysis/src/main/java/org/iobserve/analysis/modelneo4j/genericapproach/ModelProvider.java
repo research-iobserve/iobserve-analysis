@@ -277,7 +277,18 @@ public class ModelProvider<T extends EObject> {
         }
     }
 
-    public void updateComponent(final EObject component) {
+    /**
+     * Updates a specified component in the the provider's {@link #graph}.
+     * 
+     * @param clazz
+     *            Data type of component to be updated
+     * @param component
+     *            The new component
+     */
+    public void updateComponent(final Class<T> clazz, final T component) {
+        final EAttribute idAttr = component.eClass().getEIDAttribute();
+        this.deleteComponent(clazz, component.eGet(idAttr).toString());
+        this.createComponent(component);
     }
 
     /**
