@@ -75,8 +75,6 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 		if (element instanceof IDeploymentRecord) {
 			this.deploymentOutputPort.send((IDeploymentRecord) element);
 		} else if (element instanceof ServerGeoLocation) {
-			//TODO delete println
-			System.err.println("Found GeolocationRecord!");
 			this.geoLocationPort.send((ServerGeoLocation) element);
 		} else if (element instanceof IUndeploymentRecord) {
 			this.undeploymentOutputPort.send((IUndeploymentRecord) element);

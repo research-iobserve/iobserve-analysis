@@ -12,9 +12,10 @@ import org.iobserve.analysis.graph.ModelGraph;
 import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 
 /**
+ * Analyses the given graph for privacy deployment violations.
  * 
  * @author Philipp Weimann
- *
+ * @author Robert Heinrich
  */
 public class DeploymentAnalysis {
 
