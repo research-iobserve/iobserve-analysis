@@ -46,7 +46,7 @@ public class TestGeneric {
 
         /** Load repository model */
         final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
-        final Repository repository = repositoryModelProvider.getModel();
+        final Repository repositoryModel = repositoryModelProvider.getModel();
 
         /** Load usage model */
         // final UsageModelProvider usageModelProvider =
@@ -71,17 +71,16 @@ public class TestGeneric {
         // modelProviderPlatform.getAllocationModelProvider();
         // final Allocation allocationModel = allocationModelProvider.getModel();
 
+        /*************************************************************************************************/
+
         /** Write to DB1 */
-        System.out.println("Writing to DB1");
-        new ModelProvider<Repository>(graph).createComponent(repository);
+        // System.out.println("Writing to DB1");
+        // new ModelProvider<>(graph).createComponent(repositoryModel);
 
         /** Reading (id -> object) from DB1 */
-        System.out.println("Reading (id -> object) from DB1");
-        // final OperationInterface inter = (OperationInterface) new
-        // ModelProvider<OperationInterface>(graph)
-        // .readComponent(OperationInterface.class, "_j8RD0NYgEeWrM-HnT5f_ug");
-        final Repository repository2 = (Repository) new ModelProvider<Repository>(graph).readComponent(Repository.class,
-                repository.getId());
+        // System.out.println("Reading (id -> object) from DB1");
+        // final Repository repositoryModel2 = (Repository) new ModelProvider<Repository>(graph)
+        // .readComponent(Repository.class, repositoryModel.getId());
 
         /** Reading (type -> ids) from DB1 */
         // System.out.println("Reading (type -> ids) from DB1");
@@ -90,17 +89,13 @@ public class TestGeneric {
         // System.out.println(ids);
 
         /** Writing to DB2 */
-        System.out.println("Writing to DB2");
-        new ModelProvider<>(graph2).createComponent(repository);
+        // System.out.println("Writing to DB2");
+        // new ModelProvider<>(graph2).createComponent(repositoryModel2);
 
         /** Deleting from DB2 */
-        // System.out.println("Deleting from DB2");
-        // new ModelProvider<OperationSignature>(graph2).deleteComponent(OperationSignature.class,
-        // "_j9Cf4tYgEeWrM-HnT5f_ug");
-        // new ModelProvider<OperationInterface>(graph2).deleteComponent(OperationInterface.class,
-        // "_j8RD0NYgEeWrM-HnT5f_ug");
-        // new ModelProvider<Repository>(graph2).deleteComponent(Repository.class,
-        // repository2.getId());
+        System.out.println("Deleting from DB2");
+        new ModelProvider<Repository>(graph).deleteComponent(Repository.class, repositoryModel.getId());
+        new ModelProvider<Repository>(graph2).deleteComponent(Repository.class, repositoryModel.getId());
 
         graph.shutdown();
         graph2.shutdown();

@@ -44,7 +44,6 @@ import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 public class ModelProvider<T extends EObject> {
 
     private static final String ID = "id";
-    private static final String ENTITY_NAME = "entityName";
     private static final String TYPE = "type";
     private static final String REF_NAME = "refName";
 
@@ -104,6 +103,7 @@ public class ModelProvider<T extends EObject> {
             // Iterate over all references and save as them as relations in the graph
             for (final EReference ref : component.eClass().getEAllReferences()) {
 
+                // if (ref.isContainment()) { // testing with too large usage model
                 final Object refReprensation = component.eGet(ref);
                 // System.out.println("\t" + component + " all refs " + ref + " " +
                 // refReprensation);
@@ -124,7 +124,8 @@ public class ModelProvider<T extends EObject> {
                     }
                 } else {
                     if (refReprensation != null) {
-                        // System.out.println("\t" + component + " reference " + refReprensation);
+                        // System.out.println("\t" + component + " reference " +
+                        // refReprensation);
 
                         // Create a new node recursively
                         final Node refNode = this.createNodes((EObject) refReprensation);
@@ -135,6 +136,7 @@ public class ModelProvider<T extends EObject> {
                         rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                     }
                 }
+                // }
             }
         }
 
