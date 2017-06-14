@@ -16,8 +16,11 @@
 package org.iobserve.analysis.modelneo4j.genericapproach;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EAttribute;
@@ -52,11 +55,9 @@ public class ModelProvider<T extends EObject> {
     private static final String VISITED = "visited";
 
     private final GraphDatabaseService graph;
-    private final HashMap<Node, DataType> dataTypes;
 
     public ModelProvider(final GraphDatabaseService graph) {
         this.graph = graph;
-        this.dataTypes = new HashMap<>();
     }
 
     /**
@@ -168,86 +169,86 @@ public class ModelProvider<T extends EObject> {
 
         try (Transaction tx = this.getGraph().beginTx()) {
             node = this.getGraph().findNode(label, ModelProvider.ID, id);
-            component = this.readComponent(node);
+            component = this.readComponent(node, new HashMap<Long, DataType>());
             tx.success();
         }
 
         return component;
     }
 
-    public EObject readComponent(final Node node) {
-
-        // Get the node's data type name and instantiate a new empty object of this data type
+    /**
+     * Helper method for reading: Starting from a given node this method recursively reads all
+     * contained successor nodes and instantiates the correspondent ecore objects. To make sure that
+     * data types are instantiated just once a map from node ids to ecore objects is passed for data
+     * types. Calls to this method have to be performed from inside a {@link Transaction}.
+     *
+     * @param node
+     *            The node to start with
+     * @param dataTypes
+     *            Map of node ids to already instantiated ecore objects
+     * @return The root's ecore object
+     */
+    private EObject readComponent(final Node node, final HashMap<Long, DataType> dataTypes) {
+        // Get node's data type label and instantiate a new empty object of this data type
         final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
         final EObject component = ModelProviderUtil.instantiateEObject(label.name());
 
-        // Iterate over all attributes and get their values from the node
-        for (final EAttribute attr : component.eClass().getEAllAttributes()) {
+        // Load attribute values from the node
+        final Iterator<Map.Entry<String, Object>> i = node.getAllProperties().entrySet().iterator();
+        while (i.hasNext()) {
+            final Entry<String, Object> property = i.next();
+            final EAttribute attr = (EAttribute) component.eClass().getEStructuralFeature(property.getKey());
+            final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
+                    property.getValue().toString());
 
-            try {
-                final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
-                        node.getProperty(attr.getName()).toString());
-
-                if (value != null) {
-                    component.eSet(attr, value);
-                }
-                // System.out.println("\t" + component + " attribute " + attr.getName() + "
-                // = " + value);
-            } catch (final NotFoundException e) {
-                component.eSet(attr, null);
+            if (value != null) {
+                component.eSet(attr, value);
             }
         }
 
         // Already register unfinished types because there might be circles with inner declarations
         if (component instanceof DataType) {
-            this.getDataTypes().putIfAbsent(node, (DataType) component);
+            dataTypes.putIfAbsent(node.getId(), (DataType) component);
         }
 
-        // Iterate over all references...
-        for (final EReference ref : component.eClass().getEAllReferences()) {
-            final String refName = ref.getName();
+        // Load related nodes representing referenced components
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                PcmRelationshipType.IS_TYPE)) {
+
+            final Node endNode = rel.getEndNode();
+            final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
+            final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
             Object refReprensation = component.eGet(ref);
 
-            // ...and iterate over all outgoing containment or type relationships of the node
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                    PcmRelationshipType.IS_TYPE)) {
+            if (rel.isType(PcmRelationshipType.CONTAINS)) {
+                // System.out.println("\t" + component + " reference " + refName);
 
-                // If a relationship in the graph matches the references name...
-                if (refName.equals(rel.getProperty(ModelProvider.REF_NAME))) {
-                    final Node endNode = rel.getEndNode();
+                if (refReprensation instanceof EList<?>) {
+                    final EObject endComponent = this.readComponent(endNode, dataTypes);
+                    ((EList<EObject>) refReprensation).add(endComponent);
+                } else {
+                    refReprensation = this.readComponent(endNode, dataTypes);
+                    component.eSet(ref, refReprensation);
 
-                    // ...recursively create an instance of the referenced object
-                    if (rel.isType(PcmRelationshipType.CONTAINS)) {
-                        // System.out.println("\t" + component + " reference " + refName);
-
-                        if (refReprensation instanceof EList<?>) {
-                            final EObject endComponent = this.readComponent(endNode);
-                            ((EList<EObject>) refReprensation).add(endComponent);
-                        } else {
-                            refReprensation = this.readComponent(endNode);
-                            component.eSet(ref, refReprensation);
-
-                        }
-                    } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
-                        // System.out.println("\t" + component + " reference " + refName);
-
-                        // Look if this data type has already been created
-                        EObject endComponent = this.getDataTypes().get(endNode);
-
-                        if (endComponent == null) {
-                            endComponent = this.readComponent(endNode);
-                        }
-
-                        if (refReprensation instanceof EList<?>) {
-                            ((EList<EObject>) refReprensation).add(endComponent);
-                        } else {
-                            component.eSet(ref, endComponent);
-                        }
-
-                        // Replace possibly unfinished data type
-                        this.getDataTypes().replace(node, (DataType) endComponent);
-                    }
                 }
+            } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
+                // System.out.println("\t" + component + " reference " + refName);
+
+                // Look if this data type has already been created
+                EObject endComponent = dataTypes.get(endNode.getId());
+
+                if (endComponent == null) {
+                    endComponent = this.readComponent(endNode, dataTypes);
+                }
+
+                if (refReprensation instanceof EList<?>) {
+                    ((EList<EObject>) refReprensation).add(endComponent);
+                } else {
+                    component.eSet(ref, endComponent);
+                }
+
+                // Replace possibly unfinished data type
+                dataTypes.replace(node.getId(), (DataType) endComponent);
             }
         }
 
@@ -304,7 +305,8 @@ public class ModelProvider<T extends EObject> {
     /**
      * Helper method for deleting: Starting from a given node this method recursively marks all
      * nodes accessible via {@link PcmRelationshipType#CONTAINS} or
-     * {@link PcmRelationshipType#IS_TYPE} edges.
+     * {@link PcmRelationshipType#IS_TYPE} edges. Calls to this method have to be performed from
+     * inside a {@link Transaction}.
      *
      * @param node
      *            The node to start with
@@ -329,7 +331,8 @@ public class ModelProvider<T extends EObject> {
      * Starting from one node all contained nodes can be deleted as well. Nodes with incoming
      * {@link PcmRelationshipType#IS_TYPE} edges may only be deleted if they are not referenced from
      * outside the accessible nodes and have no predecessor which is referenced from outside the
-     * accessible nodes via an {@link PcmRelationshipType#IS_TYPE} edge.
+     * accessible nodes via an {@link PcmRelationshipType#IS_TYPE} edge. Calls to this method have
+     * to be performed from inside a {@link Transaction}.
      *
      * @param node
      *            The node to start with
@@ -340,16 +343,19 @@ public class ModelProvider<T extends EObject> {
 
         boolean reallyDelete = reallyDeletePred;
 
+        // Check if there are incoming IS_TYPE relations from outside
         for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
             if (!rel.hasProperty(ModelProvider.ACCESSIBLE)) {
                 reallyDelete = false;
             }
         }
 
+        // Remove delete property if node must not be deleted
         if (node.hasProperty(ModelProvider.DELETE) && !reallyDelete) {
             node.removeProperty(ModelProvider.DELETE);
         }
 
+        // Recursively check successors and mark already visited edges to prevent call circles
         for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
                 PcmRelationshipType.IS_TYPE)) {
             if (!rel.hasProperty(ModelProvider.VISITED)) {
@@ -358,6 +364,7 @@ public class ModelProvider<T extends EObject> {
             }
         }
 
+        // Remove edge marks when returned from successor node's calls
         for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
                 PcmRelationshipType.IS_TYPE)) {
             rel.removeProperty(ModelProvider.VISITED);
@@ -368,35 +375,31 @@ public class ModelProvider<T extends EObject> {
      * Helper method for deleting: Starting from a given node this method recursively traverses down
      * through all accessible nodes marked with {@link #markAccessibleNodes(Node)} and then deletes
      * all nodes marked with a delete flag by {@link #markDeletableNodes(Node)} from bottom to the
-     * top.
+     * top. Calls to this method have to be performed from inside a {@link Transaction}.
      *
      * @param node
      *            The node to start with
      */
     private void deleteNodes(final Node node) {
 
+        // Recursively go to the lowest node and mark already visited edges to prevent call circles
         for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
                 PcmRelationshipType.IS_TYPE)) {
-            boolean callRecursive = false;
 
             try {
                 if (!rel.hasProperty(ModelProvider.VISITED)) {
                     rel.setProperty(ModelProvider.VISITED, true);
-                    callRecursive = true;
+                    this.deleteNodes(rel.getEndNode());
                 }
-
             } catch (final NotFoundException e) {
                 // relation has already been deleted on another path
-            }
-
-            if (callRecursive) {
-                this.deleteNodes(rel.getEndNode());
             }
         }
 
         try {
             if (node.hasProperty(ModelProvider.DELETE)) {
 
+                // Delete node and its relationships
                 for (final Relationship rel : node.getRelationships()) {
                     rel.delete();
                 }
@@ -404,6 +407,7 @@ public class ModelProvider<T extends EObject> {
 
             } else {
 
+                // Only remove visited mark
                 for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
                         PcmRelationshipType.IS_TYPE)) {
                     rel.removeProperty(ModelProvider.VISITED);
@@ -414,10 +418,6 @@ public class ModelProvider<T extends EObject> {
         }
 
         return;
-    }
-
-    public HashMap<Node, DataType> getDataTypes() {
-        return this.dataTypes;
     }
 
     public GraphDatabaseService getGraph() {

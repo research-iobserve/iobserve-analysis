@@ -16,13 +16,11 @@
 package org.iobserve.analysis.modelneo4j.genericapproach;
 
 import java.io.File;
-import java.util.List;
 
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.Repository;
 
 /**
@@ -76,29 +74,29 @@ public class TestGeneric {
         /*************************************************************************************************/
 
         /** Write to DB1 */
-        System.out.println("Writing to DB1");
-        new ModelProvider<>(graph).createComponent(repositoryModel);
+        // System.out.println("Writing to DB1");
+        // new ModelProvider<>(graph).createComponent(repositoryModel);
 
         /** Reading (id -> object) from DB1 */
         // System.out.println("Reading (id -> object) from DB1");
         // final Repository repositoryModel2 = (Repository) new ModelProvider<Repository>(graph)
         // .readComponent(Repository.class, repositoryModel.getId());
 
-        /** Reading (type -> ids) from DB1 */
-        System.out.println("Reading (type -> ids) from DB1");
-        final List<String> ids = new ModelProvider<OperationInterface>(graph).readComponent(OperationInterface.class);
-        System.out.println(ids);
+        // /** Reading (type -> ids) from DB1 */
+        // System.out.println("Reading (type -> ids) from DB1");
+        // final List<String> ids = new
+        // ModelProvider<OperationInterface>(graph).readComponent(OperationInterface.class);
+        // System.out.println(ids);
 
         /** Writing to DB2 */
         // System.out.println("Writing to DB2");
         // new ModelProvider<>(graph2).createComponent(repositoryModel2);
 
         /** Deleting from DB2 */
-        // System.out.println("Deleting from DB2");
+        System.out.println("Deleting from DB2");
         // new ModelProvider<Repository>(graph).deleteComponent(Repository.class,
         // repositoryModel.getId());
-        // new ModelProvider<Repository>(graph2).deleteComponent(Repository.class,
-        // repositoryModel.getId());
+        new ModelProvider<Repository>(graph2).deleteComponent(Repository.class, repositoryModel.getId());
 
         graph.shutdown();
         graph2.shutdown();
