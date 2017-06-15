@@ -26,7 +26,7 @@ import org.iobserve.planning.utils.ModelHelper;
  * creating cloud containers into the resource environment, so they can be used
  * for modelling the deployment.
  *
- * @author Tobias Pöppke
+ * @author Tobias Poeppke
  *
  */
 public final class PlanningMain {

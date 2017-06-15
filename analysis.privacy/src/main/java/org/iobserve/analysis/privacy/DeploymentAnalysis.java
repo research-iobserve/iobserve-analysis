@@ -61,16 +61,18 @@ public class DeploymentAnalysis {
 		// "unsave" geo-location!
 		DataPrivacyLvl mostCriticalPrivacyLvl = DataPrivacyLvl.ANONYMIZED;
 		for (ComponentNode component : server.getContainingComponents()) {
-			deploymentViolations.add(this.printDeploymentViolation(server, component));
 			mostCriticalPrivacyLvl = DataPrivacyLvl.get(Math.min(mostCriticalPrivacyLvl.getValue(), component.getPrivacyLvl().getValue()));
 		}
 
 		if (mostCriticalPrivacyLvl == DataPrivacyLvl.ANONYMIZED) {
 			// "Anonymized" can be deployed anywhere
-			deploymentViolations.clear();
 			return deploymentViolations;
 		} else if (mostCriticalPrivacyLvl == DataPrivacyLvl.PERSONAL) {
 			// Personal datas on "unsave" geo-location
+			for (ComponentNode component : server.getContainingComponents()) {
+				if (component.getPrivacyLvl() == DataPrivacyLvl.PERSONAL)
+					deploymentViolations.add(this.printDeploymentViolation(server, component));
+			}
 			return deploymentViolations;
 		}
 
@@ -85,12 +87,13 @@ public class DeploymentAnalysis {
 		long dePersonalizedComponentCount = server.getContainingComponents().stream()
 				.filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED).count();
 		if (dePersonalizedComponentCount == 1) {
-			// Maximum of one dePersonalized components on server => no "joining data streams"
+			// Maximum of one dePersonalized components on server => no "joining
+			// data streams"
 			return deploymentViolations;
 		} else {
 			// No easy decision, search for "joining data streams"
-			boolean illegalDeployment = this.makeExtensiveJoiningDataStreamAnalysis(server);
-			if (illegalDeployment) {
+			boolean isLegalDeployment = this.makeExtensiveJoiningDataStreamAnalysis(server);
+			if (!isLegalDeployment) {
 				for (ComponentNode component : server.getContainingComponents()) {
 					deploymentViolations.add(this.printDeploymentViolation(server, component));
 				}
@@ -145,10 +148,8 @@ public class DeploymentAnalysis {
 					return false;
 				}
 			} else if (edgePartner.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED) {
-				singleDataSourceEdge = this.traverseComponentNode(edgePartner);
-				if (!singleDataSourceEdge)
-					// illegal Deployment => return!
-					return singleDataSourceEdge;
+				singleDataSourceEdge = singleDataSourceEdge && this.traverseComponentNode(edgePartner);
+				// Do not stop! Try to reach every component
 			}
 		}
 

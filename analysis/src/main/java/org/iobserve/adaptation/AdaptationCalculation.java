@@ -115,7 +115,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 					AssemblyContextAction action = AssemblyContextActionFactory.generateChangeRepositoryComponentAction(runComp, reDeplComp);
 					this.acActions.add(action);
 				}
-				// TODO Both Actions possible!
+				//Both actions can occur together!
 				if (!runComp.getHostServer().getResourceContainerID().equals(reDeplComp.getHostServer().getResourceContainerID())) {
 					// AssemblyContexts are hosted on different Servers
 					AssemblyContextAction action = AssemblyContextActionFactory.generateMigrateAction(runComp, reDeplComp);

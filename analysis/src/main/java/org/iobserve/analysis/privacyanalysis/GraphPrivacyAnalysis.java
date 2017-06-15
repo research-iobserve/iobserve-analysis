@@ -34,9 +34,11 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 		ModelGraph graph = element.getRuntimeGraph();
 		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(graph);
 		classificationAnalysis.start();
+		// PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
 
 		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(graph, PrivacyAnalysis.getLegalPersonalGeoLocations());
 		String[] legalDeployments = deploymentAnalysis.start();
+		PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
 
 		if (legalDeployments.length == 0) {
 			PrivacyAnalysis.LOG.info("Legal Deployment");
@@ -44,7 +46,7 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 			PrivacyAnalysis.LOG.error("ILLEGAL Deployment");
 
 			PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
-			
+
 			for (String illegalDeployment : legalDeployments) {
 				PrivacyAnalysis.LOG.info(illegalDeployment);
 			}
@@ -53,6 +55,5 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 		if (legalDeployments.length > 0)
 			this.outputPort.send(element);
 	}
-
 
 }

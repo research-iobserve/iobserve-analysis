@@ -120,8 +120,7 @@ public class ComponentClassificationAnalysis {
 				reachingPersonalComponent = this.traverseNode(edge.getEdgePartner(currentComp));
 
 				if (reachingPersonalComponent != null && currentComp.getPrivacyLvl() != DataPrivacyLvl.PERSONAL) {
-					// A second privacy data source was found! Adjust the
-					// privacy level!
+					// A second privacy data source was found! Adjust the privacy level!
 					currentComp.setPrivacyLvl(DataPrivacyLvl.PERSONAL);
 					// Add as potential privacy data source
 					this.personalComponents.add(currentComp);
