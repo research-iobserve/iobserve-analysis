@@ -34,6 +34,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.DesignDecisionModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -98,6 +99,8 @@ public class AnalysisDaemon implements Daemon {
 						final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider.getResourceEnvironmentModelProvider();
 						final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
 						final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
+						final DesignDecisionModelProvider designDecisionModelProvider = modelProvider.getDesignDecisionModelProvider();
+
 						final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelProvider);
 						final URI perOpteryxDir = URI.createURI(commandLine.getOptionValue("po"));
 						final URI deployablesFolder = URI.createURI(commandLine.getOptionValue("d"));
@@ -106,8 +109,8 @@ public class AnalysisDaemon implements Daemon {
 
 						final Configuration configuration = new ServiceConfiguration(listenPort, outputHostname, outputPort, systemId,
 								varianceOfUserGroups, thinkTime, closedWorkload, correspondenceModel, usageModelProvider, repositoryModelProvider,
-								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxDir,
-								lqnsDir, privacyAnalysisFile, deployablesFolder);
+								resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, designDecisionModelProvider,
+								snapshotBuilder, perOpteryxDir, lqnsDir, privacyAnalysisFile, deployablesFolder);
 
 						this.thread = new AnalysisThread(this, configuration);
 					} else {

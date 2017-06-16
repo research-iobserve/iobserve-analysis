@@ -18,7 +18,10 @@ package org.iobserve.analysis.model;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  * Model provider to provide {@link Allocation} model.
@@ -29,32 +32,77 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
  */
 public final class AllocationModelProvider extends AbstractModelProvider<Allocation> {
 
-    /**
-     * Create model provider to provide {@link Allocation} model.
-     *
-     * @param uriModelInstance
-     *            uri to the model
-     */
-    public AllocationModelProvider(final URI uriModelInstance) {
-        super(uriModelInstance);
-        this.loadModel();
-    }
-    
-    public AllocationModelProvider() {
+	/**
+	 * Create model provider to provide {@link Allocation} model.
+	 *
+	 * @param uriModelInstance
+	 *            uri to the model
+	 */
+	public AllocationModelProvider(final URI uriModelInstance) {
+		super(uriModelInstance);
+		this.loadModel();
+	}
+
+	public AllocationModelProvider() {
 		super();
 	}
 
-    /**
-     * Reset model.
-     */
-    @Override
-    public void resetModel() {
-        final Allocation model = this.getModel();
-        model.getAllocationContexts_Allocation().clear();
-    }
+	/**
+	 * Return the assembly context representing the given input.
+	 * 
+	 * @param assemblyContext
+	 *            the containing assembly context
+	 * @param resourceContainer
+	 *            the containing resource container
+	 * @return the allocation context or NULL if not existent
+	 */
+	public AllocationContext getAllocationContext(AssemblyContext assemblyContext, ResourceContainer resourceContainer) {
+		return AllocationModelProvider.getAllocationContext(this.getModel(), assemblyContext, resourceContainer);
+	}
 
-    @Override
-    public EPackage getPackage() {
-        return AllocationPackage.eINSTANCE;
-    }
+	/**
+	 * Return the assembly context representing the given input.
+	 * 
+	 * @param assemblyContext
+	 *            the containing assembly context
+	 * @param resourceContainer
+	 *            the containing resource container
+	 * @return the allocation context or NULL if not existent
+	 */
+	public static AllocationContext getAllocationContext(Allocation model, AssemblyContext assemblyContext, ResourceContainer resourceContainer) {
+		AllocationContext requestedAllocCon = null;
+
+		String assemblyContextID = assemblyContext.getId();
+		String resourceContainerID = resourceContainer.getId();
+
+		for (AllocationContext allocCon : model.getAllocationContexts_Allocation()) {
+			String currentAssemblyConID = allocCon.getAssemblyContext_AllocationContext().getId();
+			if (currentAssemblyConID.equals(assemblyContextID)) {
+				String currentResContainerID = allocCon.getResourceContainer_AllocationContext().getId();
+				// FIXME: Bug, somehow the wrong resource container gets emmited ...
+				// if (currentResContainerID.equals(resourceContainerID))
+				// {
+				requestedAllocCon = allocCon;
+				break;
+				// }
+			}
+		}
+
+		return requestedAllocCon;
+
+	}
+
+	/**
+	 * Reset model.
+	 */
+	@Override
+	public void resetModel() {
+		final Allocation model = this.getModel();
+		model.getAllocationContexts_Allocation().clear();
+	}
+
+	@Override
+	public EPackage getPackage() {
+		return AllocationPackage.eINSTANCE;
+	}
 }

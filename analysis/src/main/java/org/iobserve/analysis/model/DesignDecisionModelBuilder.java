@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -13,6 +14,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
 import de.uka.ipd.sdq.pcm.designdecision.designdecisionFactory;
 import de.uka.ipd.sdq.pcm.designdecision.specific.AllocationDegree;
 import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
@@ -39,11 +41,10 @@ public class DesignDecisionModelBuilder {
 	 * @throws IOException
 	 *             if the decision space could not be saved
 	 */
-	public static void saveDecisionSpace(final URI designDecisionFolder, final String fileName,
-			final DecisionSpace decisionSpace) throws IOException {
+	public static void saveDecisionSpace(final URI designDecisionFolder, final String fileName, final DecisionSpace decisionSpace)
+			throws IOException {
 		ResourceSet resSet = new ResourceSetImpl();
-		Resource resource = resSet
-				.createResource(designDecisionFolder.appendSegment(fileName).appendFileExtension("designdecision"));
+		Resource resource = resSet.createResource(designDecisionFolder.appendSegment(fileName).appendFileExtension("designdecision"));
 
 		resource.getContents().add(decisionSpace);
 		resource.save(Collections.EMPTY_MAP);
@@ -90,6 +91,46 @@ public class DesignDecisionModelBuilder {
 	}
 
 	/**
+	 * Removes a degree of freedom in the specified decision space with the
+	 * given name.
+	 *
+	 * @param decisionSpace
+	 *            the decision space for creating the allocation degree
+	 * @param name
+	 *            the name of the allocation degree
+	 */
+	public static void deleteDegreeOfFreedom(final DecisionSpace decisionSpace, final String name) {
+		decisionSpace.getDegreesOfFreedom().removeIf(s -> s.getEntityName().equals(name));
+	}
+
+	/**
+	 * Removes a degree of freedom in the specified decision space with the
+	 * given name.
+	 *
+	 * @param decisionSpace
+	 *            the decision space for creating the allocation degree
+	 * @param name
+	 *            the name of the allocation degree
+	 */
+	public static boolean deleteAllocationDegree(final DecisionSpace decisionSpace, final String allocationID) {
+		AllocationDegree allocDegree = null;
+		for (DegreeOfFreedomInstance dof : decisionSpace.getDegreesOfFreedom()) {
+			if (dof instanceof AllocationDegree) {
+				AllocationDegree currentAllocDegree = (AllocationDegree) dof;
+				EObject primaryChanged = currentAllocDegree.getPrimaryChanged();
+				if (primaryChanged instanceof AllocationContext) {
+					AllocationContext currentAllocContext = (AllocationContext) primaryChanged;
+					if (currentAllocContext.getId().equals(allocationID)) {
+						allocDegree = currentAllocDegree;
+						break;
+					}
+				}
+			}
+		}
+		return decisionSpace.getDegreesOfFreedom().remove(allocDegree);
+	}
+
+	/**
 	 * Creates a new resource container replication degree.
 	 *
 	 * The degree's name is set to the given name and the number of replicas is
@@ -108,11 +149,9 @@ public class DesignDecisionModelBuilder {
 	 *            the upper bound on the number of replicas
 	 * @return the new replication degree
 	 */
-	public static ResourceContainerReplicationDegree createReplicationDegree(final DecisionSpace decisionSpace,
-			final String name, final ResourceContainer replicatedContainer, final int fromNrOfReplicas,
-			final int toNrOfReplicas) {
-		ResourceContainerReplicationDegree degree = specificFactory.eINSTANCE
-				.createResourceContainerReplicationDegree();
+	public static ResourceContainerReplicationDegree createReplicationDegree(final DecisionSpace decisionSpace, final String name,
+			final ResourceContainer replicatedContainer, final int fromNrOfReplicas, final int toNrOfReplicas) {
+		ResourceContainerReplicationDegree degree = specificFactory.eINSTANCE.createResourceContainerReplicationDegree();
 		degree.setEntityName(name);
 		degree.setFrom(fromNrOfReplicas);
 		degree.setTo(toNrOfReplicas);

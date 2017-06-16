@@ -33,6 +33,7 @@ import org.iobserve.analysis.filter.TGeoLocation;
 import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.DesignDecisionModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -97,19 +98,22 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 	public AbstractObservationConfiguration(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
 			final RepositoryModelProvider repositoryModelProvider, final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
 			final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-			final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir, final URI privacyAnalysisFile, final int varianceOfUserGroups,
-			final int thinkTime, final boolean closedWorkload, final IAdaptationEventListener eventListener, final URI deployablesFolder) {
+			final DesignDecisionModelProvider designDecisionModelProvider, final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless,
+			final URI lqnsDir, final URI privacyAnalysisFile, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
+			final IAdaptationEventListener eventListener, final URI deployablesFolder) {
 		/** configure filter. */
 		this.recordSwitch = new RecordSwitch();
 
 		final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
-		this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
-		this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
+		this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider,
+				designDecisionModelProvider);
+		this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider,
+				designDecisionModelProvider);
 		final TEntryCall tEntryCall = new TEntryCall(correspondenceModel);
 		final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
 		final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider, repositoryModelProvider,
 				varianceOfUserGroups, thinkTime, closedWorkload);
-		
+
 		final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
 
 		final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);

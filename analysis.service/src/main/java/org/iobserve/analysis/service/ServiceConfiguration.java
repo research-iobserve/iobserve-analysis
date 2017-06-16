@@ -21,6 +21,7 @@ import java.net.URL;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.MultiInputObservationConfiguration;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.DesignDecisionModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -36,55 +37,54 @@ import org.iobserve.analysis.snapshot.SnapshotBuilder;
 public class ServiceConfiguration extends MultiInputObservationConfiguration {
 
 	/**
-     * Setup service configuration.
-     *
-     * @param inputPort
-     *            analysis input port, default is 9876
-     * @param outputHostname
-     *            visualization hostname
-     * @param outputPort
-     *            port to be used for the visualization host
-     * @param systemId
-     *            system id to be used for the visualization
-     * @param varianceOfUserGroups
-     *            variance of user groups
-     * @param thinkTime
-     *            think time
-     * @param closedWorkload
-     *            flag for closed and open workload
-     * @param correspondenceModel
-     *            the correspondence model
-     * @param usageModelProvider
-     *            provider for the usage model
-     * @param repositoryModelProvider
-     *            provider for the repository model
-     * @param resourceEvnironmentModelProvider
-     *            provider for the resource model
-     * @param allocationModelProvider
-     *            provider for the allocation model
-     * @param systemModelProvider
-     *            provider for the system model
-     *
-     * @throws MalformedURLException
-     *             if any passed URL in the configuration is broken.
-     */
-    public ServiceConfiguration(final int inputPort, final String outputHostname, final String outputPort,
-            final String systemId, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
-            final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
-            final RepositoryModelProvider repositoryModelProvider, final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider, final SnapshotBuilder snapshotBuilder, 
-            final URI perOpteryxDir, final URI lqnsDir, final URI privacyAnalysisFile, final URI deployablesFolder)
-            throws MalformedURLException {
-        super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
-                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, snapshotBuilder, perOpteryxDir, lqnsDir, privacyAnalysisFile, varianceOfUserGroups,
-                thinkTime, closedWorkload, deployablesFolder);
+	 * Setup service configuration.
+	 *
+	 * @param inputPort
+	 *            analysis input port, default is 9876
+	 * @param outputHostname
+	 *            visualization hostname
+	 * @param outputPort
+	 *            port to be used for the visualization host
+	 * @param systemId
+	 *            system id to be used for the visualization
+	 * @param varianceOfUserGroups
+	 *            variance of user groups
+	 * @param thinkTime
+	 *            think time
+	 * @param closedWorkload
+	 *            flag for closed and open workload
+	 * @param correspondenceModel
+	 *            the correspondence model
+	 * @param usageModelProvider
+	 *            provider for the usage model
+	 * @param repositoryModelProvider
+	 *            provider for the repository model
+	 * @param resourceEvnironmentModelProvider
+	 *            provider for the resource model
+	 * @param allocationModelProvider
+	 *            provider for the allocation model
+	 * @param systemModelProvider
+	 *            provider for the system model
+	 *
+	 * @throws MalformedURLException
+	 *             if any passed URL in the configuration is broken.
+	 */
+	public ServiceConfiguration(final int inputPort, final String outputHostname, final String outputPort, final String systemId,
+			final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload, final ICorrespondence correspondenceModel,
+			final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
+			final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider, final AllocationModelProvider allocationModelProvider,
+			final SystemModelProvider systemModelProvider, final DesignDecisionModelProvider designDecisionModelProvider,
+			final SnapshotBuilder snapshotBuilder, final URI perOpteryxDir, final URI lqnsDir, final URI privacyAnalysisFile,
+			final URI deployablesFolder) throws MalformedURLException {
+		super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
+				systemModelProvider, designDecisionModelProvider, snapshotBuilder, perOpteryxDir, lqnsDir, privacyAnalysisFile, varianceOfUserGroups,
+				thinkTime, closedWorkload, deployablesFolder);
 
-        final URL url = new URL(
-                "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
+		final URL url = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
 
-        final VisualizationUpdateStage visualizationUpdateStage = new VisualizationUpdateStage(url);
-        this.connectPorts(this.deployment.getOutputPort(), visualizationUpdateStage.getDeploymentInputPort());
-        this.connectPorts(this.undeployment.getOutputPort(), visualizationUpdateStage.getUndeploymentInputPort());
-    }
+		final VisualizationUpdateStage visualizationUpdateStage = new VisualizationUpdateStage(url);
+		this.connectPorts(this.deployment.getOutputPort(), visualizationUpdateStage.getDeploymentInputPort());
+		this.connectPorts(this.undeployment.getOutputPort(), visualizationUpdateStage.getUndeploymentInputPort());
+	}
 
 }

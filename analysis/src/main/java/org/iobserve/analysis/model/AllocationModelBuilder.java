@@ -29,83 +29,88 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  */
 public final class AllocationModelBuilder {
 
-    /**
-     *
-     * @param modelProvider
-     */
-    private AllocationModelBuilder() {
-    }
+	/**
+	 *
+	 * @param modelProvider
+	 */
+	private AllocationModelBuilder() {
+	}
 
-    /**
-     * Add an {@link AllocationContext} for the given {@link ResourceContainer} and
-     * {@link AssemblyContext} if they are absent to this model. No check for duplication is done!
-     *
-     * @param model
-     *            allocation model
-     * @param resContainer
-     *            container
-     * @param asmCtx
-     *            assembly context
-     */
-    public static void addAllocationContext(final Allocation model, final ResourceContainer resContainer,
-            final AssemblyContext asmCtx) {
-        final AllocationFactory factory = AllocationFactory.eINSTANCE;
-        final AllocationContext allocationCtx = factory.createAllocationContext();
-        allocationCtx.setEntityName(asmCtx.getEntityName());
-        allocationCtx.setAssemblyContext_AllocationContext(asmCtx);
-        allocationCtx.setResourceContainer_AllocationContext(resContainer);
-        model.getAllocationContexts_Allocation().add(allocationCtx);
-    }
+	/**
+	 * Add an {@link AllocationContext} for the given {@link ResourceContainer}
+	 * and {@link AssemblyContext} if they are absent to this model. No check
+	 * for duplication is done!
+	 *
+	 * @param model
+	 *            allocation model
+	 * @param resContainer
+	 *            container
+	 * @param asmCtx
+	 *            assembly context
+	 */
+	public static AllocationContext addAllocationContext(final Allocation model, final ResourceContainer resContainer, final AssemblyContext asmCtx) {
+		final AllocationFactory factory = AllocationFactory.eINSTANCE;
+		final AllocationContext allocationCtx = factory.createAllocationContext();
+		allocationCtx.setEntityName(asmCtx.getEntityName() + " @ " + resContainer.getEntityName());
+		allocationCtx.setAssemblyContext_AllocationContext(asmCtx);
+		allocationCtx.setResourceContainer_AllocationContext(resContainer);
+		model.getAllocationContexts_Allocation().add(allocationCtx);
+		return allocationCtx;
+	}
 
-    /**
-     * Create an {@link AllocationContext} for the given {@link ResourceContainer} and
-     * {@link AssemblyContext} if they are absent to this model. Check is done via
-     * {@link ResourceContainer#getEntityName()} and {@link AssemblyContext#getEntityName()}.
-     *
-     * @param model
-     *            the allocation model
-     * @param resContainer
-     *            container
-     * @param asmCtx
-     *            assembly context.
-     */
-    public static void addAllocationContextIfAbsent(final Allocation model, final ResourceContainer resContainer,
-            final AssemblyContext asmCtx) {
-        if (!model.getAllocationContexts_Allocation().stream().filter(
-        		context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName())
-                        && context.getResourceContainer_AllocationContext().getEntityName().equals(resContainer.getEntityName()))
-                .findAny().isPresent()) {
-            AllocationModelBuilder.addAllocationContext(model, resContainer, asmCtx);
-        }
-    }
+	/**
+	 * Create an {@link AllocationContext} for the given
+	 * {@link ResourceContainer} and {@link AssemblyContext} if they are absent
+	 * to this model. Check is done via
+	 * {@link ResourceContainer#getEntityName()} and
+	 * {@link AssemblyContext#getEntityName()}.
+	 *
+	 * @param model
+	 *            the allocation model
+	 * @param resContainer
+	 *            container
+	 * @param asmCtx
+	 *            assembly context.
+	 */
+	public static void addAllocationContextIfAbsent(final Allocation model, final ResourceContainer resContainer, final AssemblyContext asmCtx) {
 
-    /**
-     * Remove an {@link AllocationContext} from the given {@link ResourceContainer} and
-     * {@link AssemblyContext} if they are contained in the model. Identification is done via
-     * {@link ResourceContainer#getEntityName()} and {@link AssemblyContext#getEntityName()}.
-     *
-     * @param model
-     *            the allocation model
-     * @param resContainer
-     *            container
-     * @param asmCtx
-     *            assembly context
-     */
-    public static void removeAllocationContext(final Allocation model, final ResourceContainer resContainer,
-            final AssemblyContext asmCtx) {
-        // could be inefficient on big models and high recurrences of undeployments
-        model.getAllocationContexts_Allocation().stream().filter(
-                context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName())
-                        && context.getResourceContainer_AllocationContext().getEntityName().equals(resContainer.getEntityName()))
-                .findFirst().ifPresent(ctx -> model.getAllocationContexts_Allocation().remove(ctx));
-    }
+		String resConID = resContainer.getId();
+		String asmContextID = asmCtx.getId();
+		
+		AllocationContext allocCon = AllocationModelProvider.getAllocationContext(model, asmCtx, resContainer);
+		if (allocCon == null)
+			AllocationModelBuilder.addAllocationContext(model, resContainer, asmCtx);
+	}
 
-    public static void addAllocationContext(final Allocation model, final Class<?> type) {
-        // TODO add an allocation
-    }
+	/**
+	 * Remove an {@link AllocationContext} from the given
+	 * {@link ResourceContainer} and {@link AssemblyContext} if they are
+	 * contained in the model. Identification is done via
+	 * {@link ResourceContainer#getEntityName()} and
+	 * {@link AssemblyContext#getEntityName()}.
+	 *
+	 * @param model
+	 *            the allocation model
+	 * @param resContainer
+	 *            container
+	 * @param asmCtx
+	 *            assembly context
+	 */
+	public static void removeAllocationContext(final Allocation model, final ResourceContainer resContainer, final AssemblyContext asmCtx) {
+		// could be inefficient on big models and high recurrences of
+		// undeployments
+		model.getAllocationContexts_Allocation().stream()
+				.filter(context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName())
+						&& context.getResourceContainer_AllocationContext().getEntityName().equals(resContainer.getEntityName()))
+				.findFirst().ifPresent(ctx -> model.getAllocationContexts_Allocation().remove(ctx));
+	}
 
-    public static void removeAllocationContext(final Allocation model, final Class<?> type) {
-        // TODO remove allocation context
-    }
+	public static void addAllocationContext(final Allocation model, final Class<?> type) {
+		// TODO add an allocation
+	}
+
+	public static void removeAllocationContext(final Allocation model, final Class<?> type) {
+		// TODO remove allocation context
+	}
 
 }

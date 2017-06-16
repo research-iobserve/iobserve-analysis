@@ -31,6 +31,8 @@ import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.DesignDecisionModelBuilder;
+import org.iobserve.analysis.model.DesignDecisionModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -104,6 +106,7 @@ public final class AnalysisMain {
 								.getResourceEnvironmentModelProvider();
 						final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
 						final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
+						final DesignDecisionModelProvider designDecisionModelProvider = modelProviderPlatform.getDesignDecisionModelProvider();
 
 						String snapshotPath = commandLine.getOptionValue("s");
 						SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(snapshotPath));
@@ -123,8 +126,8 @@ public final class AnalysisMain {
 
 						final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel,
 								usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider, allocationModelProvider,
-								systemModelProvider, snapshotBuilder, perOpteryxUri, lqnsUri, privacyAnalysisFile, varianceOfUserGroups, thinkTime,
-								closedWorkload, eventListener, deployablesFolder);
+								systemModelProvider, designDecisionModelProvider, snapshotBuilder, perOpteryxUri, lqnsUri, privacyAnalysisFile,
+								varianceOfUserGroups, thinkTime, closedWorkload, eventListener, deployablesFolder);
 
 						System.out.println("Analysis configuration");
 						final Execution<Configuration> analysis = new Execution<>(configuration);
