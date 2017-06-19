@@ -79,9 +79,7 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
 			String currentAssemblyConID = allocCon.getAssemblyContext_AllocationContext().getId();
 			if (currentAssemblyConID.equals(assemblyContextID)) {
 				String currentResContainerID = allocCon.getResourceContainer_AllocationContext().getId();
-				// FIXME: Bug, somehow the wrong resource container gets emmited ...
-				// if (currentResContainerID.equals(resourceContainerID))
-				// {
+				// if (currentResContainerID.equals(resourceContainerID)) {
 				requestedAllocCon = allocCon;
 				break;
 				// }

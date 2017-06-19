@@ -10,6 +10,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.GraphFactory;
 
@@ -51,6 +52,13 @@ public class EvaluationGeneration {
 					GraphFactory graphFactory = new GraphFactory();
 					graphFactory.buildGraph(modelProviers.getModelCollection());
 				}
+				if (commandLine.hasOption("d")) {
+					InitializeModelProviders modelProviers = new InitializeModelProviders(new File(commandLine.getOptionValue("i")));
+					DatGenerator datGen = new DatGenerator(modelProviers.getModelCollection());
+					
+					URI outputFile = URI.createFileURI(commandLine.getOptionValue("o"));
+					datGen.generateDatFile(Integer.parseInt(commandLine.getOptionValue("c")), outputFile);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -83,6 +91,7 @@ public class EvaluationGeneration {
 		options.addOption(Option.builder("o").required(true).longOpt("output").hasArg().desc("the output directory").build());
 		options.addOption(Option.builder("n").required(false).longOpt("generate-new").desc("generates new model, based on input repo").build());
 		options.addOption(Option.builder("m").required(false).longOpt("modify").desc("modify the input model").build());
+		options.addOption(Option.builder("d").required(false).longOpt("datFile").desc("creates a dat file").build());
 
 		options.addOption(Option.builder("a").required(false).longOpt("allocation-contexts").hasArg().desc("allocation context count").build());
 		options.addOption(Option.builder("r").required(false).longOpt("resource-container").hasArg().desc("resource container count").build());
@@ -95,6 +104,8 @@ public class EvaluationGeneration {
 		options.addOption(Option.builder("ac").required(false).longOpt("acquire").hasArg().desc("acquire actions").build());
 		options.addOption(Option.builder("re").required(false).longOpt("replicate").hasArg().desc("replicate actions").build());
 		options.addOption(Option.builder("te").required(false).longOpt("terminate").hasArg().desc("terminate actions").build());
+		
+		options.addOption(Option.builder("c").required(false).longOpt("commands").hasArg().desc("command counts in dat file").build());
 
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());
@@ -113,6 +124,7 @@ public class EvaluationGeneration {
 		options.addOption(Option.builder("o").required(true).longOpt("output").hasArg().desc("the output directory").build());
 		options.addOption(Option.builder("n").required(false).longOpt("generate-new").desc("generates new model, based on input repo").build());
 		options.addOption(Option.builder("m").required(false).longOpt("modify").desc("modify the input model").build());
+		options.addOption(Option.builder("d").required(false).longOpt("datFile").desc("creates a dat file").build());
 
 		options.addOption(Option.builder("a").required(false).longOpt("allocation-contexts").hasArg().desc("allocation context count").build());
 		options.addOption(Option.builder("r").required(false).longOpt("resource-container").hasArg().desc("resource container count").build());
@@ -125,6 +137,8 @@ public class EvaluationGeneration {
 		options.addOption(Option.builder("ac").required(false).longOpt("acquire").hasArg().desc("acquire actions").build());
 		options.addOption(Option.builder("re").required(false).longOpt("replicate").hasArg().desc("replicate actions").build());
 		options.addOption(Option.builder("te").required(false).longOpt("terminate").hasArg().desc("terminate actions").build());
+		
+		options.addOption(Option.builder("c").required(false).longOpt("commands").hasArg().desc("command counts in dat file").build());
 
 		/** help */
 		options.addOption(Option.builder("h").required(false).longOpt("help").desc("show usage information").build());

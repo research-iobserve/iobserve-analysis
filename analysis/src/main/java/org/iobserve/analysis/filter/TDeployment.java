@@ -40,6 +40,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -108,7 +109,6 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 			this.process((EJBDeployedEvent) event);
 		}
 
-		SnapshotBuilder.setSnapshotFlag();
 		this.outputPortSnapshot.send(false);
 	}
 
@@ -220,16 +220,22 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 		}
 
 		// update the allocation model
-		// this.allocationModelProvider.loadModel();
-		AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer, assemblyContext);
-		this.allocationModelProvider.save();
+		boolean added = AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,	assemblyContext);
+		if (added) {
+			this.allocationModelProvider.save();
+			AllocationContext allocContext = this.allocationModelProvider.getAllocationContext(assemblyContext, resourceContainer);
 
-		AllocationContext allocContext = this.allocationModelProvider.getAllocationContext(assemblyContext, resourceContainer);
-		DesignDecisionModelBuilder.deleteDegreeOfFreedom(this.designDecisionModelProvider.getModel(), allocContext.getEntityName());
-		DesignDecisionModelBuilder.createAllocationDegree(this.designDecisionModelProvider.getModel(), allocContext.getEntityName(), allocContext,
-				this.resourceEnvModelProvider.getModel().getResourceContainer_ResourceEnvironment());
+			// Update DecisionSpace
+			DecisionSpace decisionModel = this.designDecisionModelProvider.getModel();
+			boolean removed = DesignDecisionModelBuilder.deleteDegreeOfFreedom(decisionModel, allocContext.getEntityName());
+			DesignDecisionModelBuilder.createAllocationDegree(decisionModel, allocContext.getEntityName(), allocContext,
+					this.resourceEnvModelProvider.getModel().getResourceContainer_ResourceEnvironment());
+			this.designDecisionModelProvider.save();
 
-		this.outputPort.send(new AddAllocationContextEvent(resourceContainer));
+			// Make SnapshotBuilder create a snapshot
+			SnapshotBuilder.setSnapshotFlag();
+			this.outputPort.send(new AddAllocationContextEvent(resourceContainer));
+		}
 	}
 
 	/**

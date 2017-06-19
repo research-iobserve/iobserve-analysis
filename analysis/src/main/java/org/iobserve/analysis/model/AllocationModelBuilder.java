@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.model;
 
+import java.util.Optional;
+
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
@@ -72,14 +74,15 @@ public final class AllocationModelBuilder {
 	 * @param asmCtx
 	 *            assembly context.
 	 */
-	public static void addAllocationContextIfAbsent(final Allocation model, final ResourceContainer resContainer, final AssemblyContext asmCtx) {
+	public static boolean addAllocationContextIfAbsent(final Allocation model, final ResourceContainer resContainer, final AssemblyContext asmCtx) {
+		boolean added = false;
 
-		String resConID = resContainer.getId();
-		String asmContextID = asmCtx.getId();
-		
 		AllocationContext allocCon = AllocationModelProvider.getAllocationContext(model, asmCtx, resContainer);
-		if (allocCon == null)
+		if (allocCon == null) {
 			AllocationModelBuilder.addAllocationContext(model, resContainer, asmCtx);
+			added = true;
+		}
+		return added;
 	}
 
 	/**
@@ -96,21 +99,14 @@ public final class AllocationModelBuilder {
 	 * @param asmCtx
 	 *            assembly context
 	 */
-	public static void removeAllocationContext(final Allocation model, final ResourceContainer resContainer, final AssemblyContext asmCtx) {
-		// could be inefficient on big models and high recurrences of
-		// undeployments
-		model.getAllocationContexts_Allocation().stream()
-				.filter(context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName())
-						&& context.getResourceContainer_AllocationContext().getEntityName().equals(resContainer.getEntityName()))
-				.findFirst().ifPresent(ctx -> model.getAllocationContexts_Allocation().remove(ctx));
-	}
+	public static boolean removeAllocationContext(final Allocation model, final ResourceContainer resContainer, final AssemblyContext asmCtx) {
+		boolean removed = false;
 
-	public static void addAllocationContext(final Allocation model, final Class<?> type) {
-		// TODO add an allocation
-	}
-
-	public static void removeAllocationContext(final Allocation model, final Class<?> type) {
-		// TODO remove allocation context
+		AllocationContext allocContext = AllocationModelProvider.getAllocationContext(model, asmCtx, resContainer);
+		if (allocContext != null) {
+			removed = model.getAllocationContexts_Allocation().remove(allocContext);
+		}
+		return removed;
 	}
 
 }

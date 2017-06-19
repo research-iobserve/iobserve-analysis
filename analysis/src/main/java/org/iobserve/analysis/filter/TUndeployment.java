@@ -17,6 +17,9 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.eclipse.emf.common.util.EList;
 import org.iobserve.analysis.data.RemoveAllocationContextEvent;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
@@ -50,6 +53,8 @@ import teetime.framework.OutputPort;
  */
 public final class TUndeployment extends AbstractConsumerStage<IUndeploymentRecord> {
 
+	private static final Logger LOG = LogManager.getLogger(TUndeployment.class);
+
 	/** reference to correspondence interface. */
 	private final ICorrespondence correspondence;
 	/** reference to allocation model provider. */
@@ -57,7 +62,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 	/** reference to system model provider. */
 	private final SystemModelProvider systemModelProvider;
 	/** reference to resource environment model provider. */
-	private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+	private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
 	/** reference to design decisions model provider. */
 	private final DesignDecisionModelProvider designDecisionModelProvider;
 
@@ -83,7 +88,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 		this.correspondence = correspondence;
 		this.allocationModelProvider = allocationModelProvider;
 		this.systemModelProvider = systemModelProvider;
-		this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
+		this.resourceEnvModelProvider = resourceEnvironmentModelProvider;
 		this.designDecisionModelProvider = designDecisionModelProvider;
 	}
 
@@ -112,7 +117,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 		final String service = event.getSerivce();
 		final String context = event.getContext();
 		Opt.of(this.correspondence.getCorrespondent(context)).ifPresent().apply(correspondence -> this.updateModel(service, correspondence))
-				.elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
+				.elseApply(() -> LOG.error(String.format("No correspondent found for %s \n", service)));
 	}
 
 	/**
@@ -124,8 +129,22 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 	private void process(final EJBUndeployedEvent event) {
 		final String service = event.getSerivce();
 		final String context = event.getContext();
-		Opt.of(this.correspondence.getCorrespondent(context)).ifPresent().apply(correspondent -> this.updateModel(service, correspondent))
-				.elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
+
+		LOG.info("New TUnDeploymentEvent: " + context + "\t ->\t" + service);
+
+		EList<ResourceContainer> resContainers = this.resourceEnvModelProvider.getModel().getResourceContainer_ResourceEnvironment();
+		Optional<ResourceContainer> resContainer = resContainers.stream().filter(s -> s.getEntityName().equals(service)).findAny();
+
+		if (resContainer.isPresent()) {
+			this.updateModel(resContainer.get(), context);
+		} else {
+			LOG.error(String.format("No correspondent found for %s\n", service));
+		}
+
+		// Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
+		// .apply(correspondent -> this.updateModel(service, correspondent))
+		// .elseApply(() -> System.out.printf("No correspondent found for %s
+		// \n", service));
 	}
 
 	/**
@@ -145,12 +164,12 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
 		// get the model parts by name
 		final Optional<ResourceContainer> optResourceContainer = ResourceEnvironmentModelBuilder
-				.getResourceContainerByName(this.resourceEnvironmentModelProvider.getModel(), serverName);
+				.getResourceContainerByName(this.resourceEnvModelProvider.getModel(), serverName);
 
 		// this can not happen since TAllocation should have created the
 		// resource container already.
 		Opt.of(optResourceContainer).ifPresent().apply(resourceContainer -> this.updateModel(resourceContainer, asmContextName))
-				.elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n"));
+				.elseApply(() -> LOG.error("AssemblyContext %s was not available?!\n"));
 	}
 
 	/**
@@ -171,15 +190,23 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 				asmContextName);
 
 		if (optAssemblyContext.isPresent()) {
-			this.allocationModelProvider.loadModel();
-			this.outputPort.send(new RemoveAllocationContextEvent(resourceContainer));
-			AllocationContext allocCont = this.allocationModelProvider.getAllocationContext(optAssemblyContext.get(), resourceContainer);
-			DesignDecisionModelBuilder.deleteDegreeOfFreedom(this.designDecisionModelProvider.getModel(), allocCont.getId());
-			AllocationModelBuilder.removeAllocationContext(this.allocationModelProvider.getModel(), resourceContainer, optAssemblyContext.get());
-			this.allocationModelProvider.save();
+			// this.allocationModelProvider.loadModel();
 
+			AllocationContext allocCont = this.allocationModelProvider.getAllocationContext(optAssemblyContext.get(), resourceContainer);
+			if (allocCont != null) {
+				DesignDecisionModelBuilder.deleteDegreeOfFreedom(this.designDecisionModelProvider.getModel(), allocCont.getEntityName());
+				this.designDecisionModelProvider.save();
+
+				AllocationModelBuilder.removeAllocationContext(this.allocationModelProvider.getModel(), resourceContainer, optAssemblyContext.get());
+				this.allocationModelProvider.save();
+
+				this.outputPort.send(new RemoveAllocationContextEvent(resourceContainer));
+			} else {
+				LOG.info("AllocationContext for " + optAssemblyContext.get().getEntityName() + " @ " + resourceContainer.getEntityName()
+						+ "not found! \n");
+			}
 		} else {
-			System.out.printf("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n");
+			LOG.info("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n");
 		}
 	}
 

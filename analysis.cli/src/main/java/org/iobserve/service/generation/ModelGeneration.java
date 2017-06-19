@@ -2,6 +2,13 @@ package org.iobserve.service.generation;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.logging.log4j.LogManager;
@@ -9,12 +16,16 @@ import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.analysis.graph.ModelCollection;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
@@ -107,5 +118,10 @@ public class ModelGeneration {
 		snapshotBuilder.createModelSnapshot(repoModelProvider);
 		return false;
 	}
+
+	/*
+	 * Generates Data File
+	 */
+	
 
 }

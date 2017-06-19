@@ -99,8 +99,8 @@ public class DesignDecisionModelBuilder {
 	 * @param name
 	 *            the name of the allocation degree
 	 */
-	public static void deleteDegreeOfFreedom(final DecisionSpace decisionSpace, final String name) {
-		decisionSpace.getDegreesOfFreedom().removeIf(s -> s.getEntityName().equals(name));
+	public static boolean deleteDegreeOfFreedom(final DecisionSpace decisionSpace, final String name) {
+		return decisionSpace.getDegreesOfFreedom().removeIf(s -> s.getEntityName().equals(name));
 	}
 
 	/**

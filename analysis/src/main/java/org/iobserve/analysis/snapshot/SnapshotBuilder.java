@@ -104,7 +104,7 @@ public class SnapshotBuilder extends AbstractStage {
 		this.createModelSnapshot(this.modelProviders.getDesignDecisionModelProvider());
 		this.createModelSnapshot(this.modelProviders.getQMLDeclarationsModelProvider());
 		// this.createModelSnapshot(modelProviders.getCorrespondenceModel());
-		
+
 		this.copyQMLContractFiles(this.modelProviders.getQMLDeclarationsModelProvider());
 		return this.snapshotURI;
 	}
@@ -153,8 +153,7 @@ public class SnapshotBuilder extends AbstractStage {
 
 		File parentFile = modelFile.getParentFile();
 		for (File sourceFile : parentFile.listFiles()) {
-			if (sourceFile.getName().endsWith(FileEnding_QMLContractType))
-			{
+			if (sourceFile.getName().endsWith(FileEnding_QMLContractType)) {
 				String targetFileLocation = this.snapshotURI.toFileString() + File.separator + sourceFile.getName();
 				File modelFileCopy = new File(targetFileLocation);
 				Files.copy(sourceFile.toPath(), modelFileCopy.toPath(), SnapshotBuilder.copyOptions);
@@ -187,7 +186,8 @@ public class SnapshotBuilder extends AbstractStage {
 	 * execution.
 	 */
 	public static void setSnapshotFlag() {
-		SnapshotBuilder.createSnapshot = true;
+		// SnapshotBuilder.createSnapshot = true;
+		SnapshotBuilder.createSnapshot = false;
 	}
 
 	/**
