@@ -32,13 +32,18 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 		PrivacyAnalysis.LOG.info("Analysing graph");
 
 		ModelGraph graph = element.getRuntimeGraph();
+
+		PrivacyAnalysis.LOG.info("Initial Categorization");
+		PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
+
 		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(graph);
 		classificationAnalysis.start();
-		// PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
+	
+		PrivacyAnalysis.LOG.info("Classification Analysis");
+		PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
 
 		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(graph, PrivacyAnalysis.getLegalPersonalGeoLocations());
 		String[] legalDeployments = deploymentAnalysis.start();
-		PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
 
 		if (legalDeployments.length == 0) {
 			PrivacyAnalysis.LOG.info("Legal Deployment");
@@ -52,8 +57,11 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 			}
 		}
 
-		if (legalDeployments.length > 0)
-			this.outputPort.send(element);
+		if (legalDeployments.length > 0){
+			int i = 0;
+			i++;
+//			this.outputPort.send(element);
+		}
 	}
 
 }

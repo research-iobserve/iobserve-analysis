@@ -40,6 +40,7 @@ import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.privacyanalysis.PrivacyAnalysis;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.analysis.utils.TimingHelper;
 
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
@@ -132,7 +133,9 @@ public final class AnalysisMain {
 						System.out.println("Analysis configuration");
 						final Execution<Configuration> analysis = new Execution<>(configuration);
 						System.out.println("Analysis start");
+						TimingHelper.start("Start - TransformationAnaylsis");
 						analysis.executeBlocking();
+						TimingHelper.end("End - TransformationAnalysis");
 						System.out.println("Anaylsis complete");
 					} else {
 						System.err.println(String.format("the pcm dir %s does not exist?!", pcmModelsDirectory));

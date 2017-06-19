@@ -25,7 +25,7 @@ import teetime.framework.OutputPort;
 public class TGeoLocation extends AbstractConsumerStage<ServerGeoLocation> {
 
 	protected static final Logger LOG = LogManager.getLogger(TGeoLocation.class);
-	
+
 	ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
 
 	private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
@@ -46,6 +46,7 @@ public class TGeoLocation extends AbstractConsumerStage<ServerGeoLocation> {
 		ResourceEnvironment resourceEnvironment = resourceEnvironmentModelProvider.getModel();
 		EList<ResourceContainer> resContainers = resourceEnvironment.getResourceContainer_ResourceEnvironment();
 		Boolean makeSnapshot = false;
+		boolean foundServer = false;
 
 		for (ResourceContainer resContainer : resContainers) {
 			String entityName = resContainer.getEntityName();
@@ -57,9 +58,13 @@ public class TGeoLocation extends AbstractConsumerStage<ServerGeoLocation> {
 					makeSnapshot = true;
 					SnapshotBuilder.setSnapshotFlag();
 				}
+				foundServer = true;
 				break;
 			}
 		}
+
+		if (!foundServer)
+			LOG.warn(String.format("Server '%s' was not found!", element.getHostname()));
 		this.outputPortSnapshot.send(makeSnapshot);
 	}
 

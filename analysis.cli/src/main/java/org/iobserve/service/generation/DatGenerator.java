@@ -49,14 +49,14 @@ public class DatGenerator {
 		double percentageDepl = 0.3;
 		double percentageUnDepl = percentageDepl;
 		double delta = percentageDepl / ((double) this.assemblys.size());
-		
+
 		LOG.info(String.format("Values:\n\t-percentageUnDepl:  %f \n\t-Delta: %f", percentageDepl, delta));
 
 		for (int i = 0; i < commands; i++) {
 			boolean generated = false;
 			double random = ThreadLocalRandom.current().nextDouble();
-			
-			LOG.info(String.format("PercentageDepl: \t%f", percentageDepl));
+
+			// LOG.info(String.format("PercentageDepl: \t%f", percentageDepl));
 
 			if (random < percentageDepl) {
 				generated = this.generateDeployment();
@@ -75,6 +75,7 @@ public class DatGenerator {
 		}
 
 		this.saveFile(datUri);
+		LOG.info("Dat Generation completed!");
 	}
 
 	private boolean generateDeployment() {

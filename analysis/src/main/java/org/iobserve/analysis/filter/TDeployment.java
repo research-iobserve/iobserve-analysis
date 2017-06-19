@@ -140,7 +140,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 		LOG.info("New TDeploymentEvent: " + context + "\t ->\t" + service);
 
 		Opt.of(this.correspondence.getCorrespondent(context)).ifPresent().apply(correspondence -> this.updateModel(service, correspondence))
-				.elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
+				.elseApply(() -> LOG.warn(String.format("No correspondent found for %s \n", service)));
 	}
 
 	/**
@@ -161,7 +161,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 		if (resContainer.isPresent()) {
 			this.updateAllocationModel(resContainer.get(), context);
 		} else {
-			System.out.printf("No correspondent found for %s\n", service);
+			LOG.warn(String.format("No correspondent found for %s\n", service));
 		}
 
 		// Opt.of(this.correspondence.getCorrespondent(context)).ifPresent().apply(correspondent
@@ -216,11 +216,17 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 		if (optAssCtx.isPresent()) {
 			assemblyContext = optAssCtx.get();
 		} else {
-			assemblyContext = TDeployment.createAssemblyContextByName(this.systemModelProvider, asmContextName);
+			// assemblyContext =
+			// TDeployment.createAssemblyContextByName(this.systemModelProvider,
+			// asmContextName);
+			LOG.warn(String.format("The AssemblyContext '%s' does not exist! Ignoring event!", asmContextName));
+			assemblyContext = null;
+			return;
 		}
 
 		// update the allocation model
-		boolean added = AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,	assemblyContext);
+		boolean added = AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
+				assemblyContext);
 		if (added) {
 			this.allocationModelProvider.save();
 			AllocationContext allocContext = this.allocationModelProvider.getAllocationContext(assemblyContext, resourceContainer);
@@ -235,7 +241,8 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 			// Make SnapshotBuilder create a snapshot
 			SnapshotBuilder.setSnapshotFlag();
 			this.outputPort.send(new AddAllocationContextEvent(resourceContainer));
-		}
+		} else
+			LOG.warn(String.format("The AssemblyContext '%s' is already deployed! Ignoring event!", assemblyContext.getEntityName()));
 	}
 
 	/**

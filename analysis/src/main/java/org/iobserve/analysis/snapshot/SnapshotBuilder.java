@@ -186,8 +186,8 @@ public class SnapshotBuilder extends AbstractStage {
 	 * execution.
 	 */
 	public static void setSnapshotFlag() {
-		// SnapshotBuilder.createSnapshot = true;
-		SnapshotBuilder.createSnapshot = false;
+		SnapshotBuilder.createSnapshot = true;
+		// SnapshotBuilder.createSnapshot = false;
 	}
 
 	/**

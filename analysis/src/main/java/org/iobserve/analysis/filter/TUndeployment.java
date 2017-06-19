@@ -117,7 +117,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 		final String service = event.getSerivce();
 		final String context = event.getContext();
 		Opt.of(this.correspondence.getCorrespondent(context)).ifPresent().apply(correspondence -> this.updateModel(service, correspondence))
-				.elseApply(() -> LOG.error(String.format("No correspondent found for %s \n", service)));
+				.elseApply(() -> LOG.warn(String.format("No correspondent found for %s \n", service)));
 	}
 
 	/**
@@ -138,7 +138,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 		if (resContainer.isPresent()) {
 			this.updateModel(resContainer.get(), context);
 		} else {
-			LOG.error(String.format("No correspondent found for %s\n", service));
+			LOG.warn(String.format("No ResourceContainer '%s' found!\n", service));
 		}
 
 		// Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
@@ -169,7 +169,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 		// this can not happen since TAllocation should have created the
 		// resource container already.
 		Opt.of(optResourceContainer).ifPresent().apply(resourceContainer -> this.updateModel(resourceContainer, asmContextName))
-				.elseApply(() -> LOG.error("AssemblyContext %s was not available?!\n"));
+				.elseApply(() -> LOG.warn(String.format("AssemblyContext '%s' was not available?!\n", asmContextName)));
 	}
 
 	/**
@@ -202,11 +202,12 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
 				this.outputPort.send(new RemoveAllocationContextEvent(resourceContainer));
 			} else {
-				LOG.info("AllocationContext for " + optAssemblyContext.get().getEntityName() + " @ " + resourceContainer.getEntityName()
-						+ "not found! \n");
+				String errorMsg = String.format("AllocationContext for '%s' at '%s' not found! Ignoring event!\n", optAssemblyContext.get().getEntityName(),
+						resourceContainer.getEntityName());
+				LOG.warn(errorMsg);
 			}
 		} else {
-			LOG.info("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n");
+			LOG.warn("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n");
 		}
 	}
 
