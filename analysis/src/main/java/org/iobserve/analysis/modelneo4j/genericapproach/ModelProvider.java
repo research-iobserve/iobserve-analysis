@@ -279,7 +279,7 @@ public class ModelProvider<T extends EObject> {
 
     /**
      * Updates a specified component in the the provider's {@link #graph}.
-     * 
+     *
      * @param clazz
      *            Data type of component to be updated
      * @param component
@@ -287,12 +287,15 @@ public class ModelProvider<T extends EObject> {
      */
     public void updateComponent(final Class<T> clazz, final T component) {
         final EAttribute idAttr = component.eClass().getEIDAttribute();
-        this.deleteComponent(clazz, component.eGet(idAttr).toString());
+        this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
         this.createComponent(component);
     }
 
     /**
-     * Deletes a specified component from the provider's {@link #graph}.
+     * Deletes a specified component from the provider's {@link #graph}. This method only deletes a
+     * component and its containments but not the referenced data types which can result in
+     * unreferenced data type nodes in the graph. If data types shall not remain in the graph, use
+     * {@link #deleteComponentAndDatatypes(Class, String)} instead.
      *
      * @param clazz
      *            Data type of component to be deleted
@@ -300,6 +303,49 @@ public class ModelProvider<T extends EObject> {
      *            Id of component to be deleted
      */
     public void deleteComponent(final Class<T> clazz, final String id) {
+        final Label label = Label.label(clazz.getSimpleName());
+        Node node;
+
+        try (Transaction tx = this.getGraph().beginTx()) {
+            node = this.getGraph().findNode(label, ModelProvider.ID, id);
+            this.deleteComponent(node);
+            tx.success();
+        }
+    }
+
+    /**
+     * Helper method for deleting: Starting with a given node this method recursively traverses down
+     * through all nodes accessible via {@link PcmRelationshipType#CONTAINS} edges and then deletes
+     * them from bottom to the top.
+     *
+     * @param node
+     *            The node to start with
+     */
+    private void deleteComponent(final Node node) {
+
+        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS)) {
+            this.deleteComponent(rel.getEndNode());
+        }
+
+        for (final Relationship rel : node.getRelationships()) {
+            rel.delete();
+        }
+
+        node.delete();
+    }
+
+    /**
+     * Deletes a specified component from the provider's {@link #graph}. This method also deletes
+     * data types which are referenced by the deleted component and not referenced by any other
+     * component. If data types shall remain in the graph, use
+     * {@link #deleteComponent(Class, String)} or {@link #deleteComponent(Node)} instead.
+     *
+     * @param clazz
+     *            Data type of component to be deleted
+     * @param id
+     *            Id of component to be deleted
+     */
+    public void deleteComponentAndDatatypes(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
 

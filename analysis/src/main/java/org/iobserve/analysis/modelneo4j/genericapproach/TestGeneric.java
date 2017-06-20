@@ -22,8 +22,6 @@ import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.palladiosimulator.pcm.repository.OperationInterface;
-import org.palladiosimulator.pcm.repository.OperationSignature;
-import org.palladiosimulator.pcm.repository.Parameter;
 import org.palladiosimulator.pcm.repository.Repository;
 
 /**
@@ -92,25 +90,26 @@ public class TestGeneric {
         // System.out.println(ids);
 
         /** Updating in DB1 */
-        System.out.println("Updating DB1");
-        inter.setEntityName("UPDATED" + inter.getEntityName());
-        final OperationSignature sig = inter.getSignatures__OperationInterface().get(0);
-        sig.setEntityName("UPDATED" + sig.getEntityName());
-        final Parameter param = (Parameter) ModelProviderUtil.instantiateEObject("Parameter");
-        param.setParameterName("ADDEDParam");
-        sig.getParameters__OperationSignature().add(param);
-        new ModelProvider<OperationInterface>(graph).updateComponent(OperationInterface.class, inter);
+        // System.out.println("Updating DB1");
+        // inter.setEntityName("UPDATED" + inter.getEntityName());
+        // final OperationSignature sig = inter.getSignatures__OperationInterface().get(0);
+        // sig.setEntityName("UPDATED" + sig.getEntityName());
+        // final Parameter param = (Parameter) ModelProviderUtil.instantiateEObject("Parameter");
+        // param.setParameterName("ADDEDParam");
+        // sig.getParameters__OperationSignature().add(param);
+        // new ModelProvider<OperationInterface>(graph).updateComponent(OperationInterface.class,
+        // inter);
 
         /** Writing to DB2 */
-        // System.out.println("Writing to DB2");
-        // new ModelProvider<>(graph2).createComponent(repositoryModel2);
+        System.out.println("Writing to DB2");
+        new ModelProvider<>(graph2).createComponent(inter);
 
         /** Deleting from DB2 */
-        // System.out.println("Deleting from DB2");
-        // new ModelProvider<Repository>(graph).deleteComponent(Repository.class,
-        // repositoryModel.getId());
+        System.out.println("Deleting from DB2");
         // new ModelProvider<Repository>(graph2).deleteComponent(Repository.class,
         // repositoryModel.getId());
+        new ModelProvider<OperationInterface>(graph2).deleteComponentAndDatatypes(OperationInterface.class,
+                inter.getId());
 
         graph.shutdown();
         graph2.shutdown();
