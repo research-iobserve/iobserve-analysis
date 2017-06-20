@@ -16,6 +16,7 @@
 package org.iobserve.analysis.modelneo4j.genericapproach;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +38,8 @@ import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  *
@@ -74,6 +77,52 @@ public class ModelProvider<T extends EObject> {
             tx.success();
         }
         return node;
+    }
+
+    public Node createComponent(final Repository repositoryModel) {
+        final Node node;
+        try (Transaction tx = this.getGraph().beginTx()) {
+            final HashSet<EObject> containments = this.getAllContainments(repositoryModel, new HashSet<>());
+            node = this.createNodes(repositoryModel, containments, new HashMap<>());
+            tx.success();
+        }
+        return node;
+    }
+
+    public Node createComponent(final UsageModel usageModel) {
+        System.out.println("richtige methode");
+        final Node node;
+        try (Transaction tx = this.getGraph().beginTx()) {
+            final HashSet<EObject> containments = this.getAllContainments(usageModel, new HashSet<>());
+            System.out.println(containments);
+            node = this.createNodes(usageModel, containments, new HashMap<>());
+            tx.success();
+        }
+        return node;
+    }
+
+    private HashSet<EObject> getAllContainments(final EObject component, final HashSet<EObject> containments) {
+        containments.add(component);
+
+        for (final EReference ref : component.eClass().getEAllContainments()) {
+
+            final Object refReprensation = component.eGet(ref);
+
+            if (refReprensation instanceof EList<?>) {
+
+                for (final Object o : (EList<?>) component.eGet(ref)) {
+                    this.getAllContainments((EObject) o, containments);
+                }
+
+            } else {
+
+                if (refReprensation != null) {
+                    this.getAllContainments((EObject) refReprensation, containments);
+                }
+            }
+        }
+
+        return containments;
     }
 
     /**
@@ -150,6 +199,69 @@ public class ModelProvider<T extends EObject> {
             }
         }
 
+        return node;
+    }
+
+    private Node createNodes(final EObject component, final HashSet<EObject> containments,
+            final HashMap<EObject, Node> addedObjects) {
+        // Create a label representing the type of the component
+        final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
+        Node node = addedObjects.get(component);
+
+        // If there is no node yet, create one
+        if (node == null) {
+
+            node = this.getGraph().createNode(label);
+            addedObjects.put(component, node);
+
+            // System.out.println("writing " + component + " " + label.name());
+
+            // Save attributes as node properties
+            for (final EAttribute attr : component.eClass().getEAllAttributes()) {
+                final Object value = component.eGet(attr);
+                if (value != null) {
+                    node.setProperty(attr.getName(), value.toString());
+                    // System.out.println("\t" + component + " attribute " + attr.getName() + "
+                    // " + value.toString());
+                }
+            }
+
+            if (containments.contains(component)) {
+                // Save references as relations between nodes
+                for (final EReference ref : component.eClass().getEAllReferences()) {
+
+                    final Object refReprensation = component.eGet(ref);
+                    // System.out.println("\t" + component + " all refs " + ref + " " +
+                    // refReprensation);
+
+                    // 0..* refs are represented as a list and 1 refs are represented directly
+                    if (refReprensation instanceof EList<?>) {
+
+                        for (final Object o : (EList<?>) component.eGet(ref)) {
+                            // System.out.println("\t" + component + " reference " + o);
+
+                            final Node refNode = this.createNodes((EObject) o, containments, addedObjects);
+
+                            final Relationship rel = node.createRelationshipTo(refNode,
+                                    ModelProviderUtil.getRelationshipType(ref, o));
+                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                        }
+                    } else {
+                        if (refReprensation != null) {
+                            // System.out.println("\t" + component + " reference " +
+                            // refReprensation);
+
+                            final Node refNode = this.createNodes((EObject) refReprensation, containments,
+                                    addedObjects);
+
+                            final Relationship rel = node.createRelationshipTo(refNode,
+                                    ModelProviderUtil.getRelationshipType(ref, refReprensation));
+                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                        }
+                    }
+                }
+            }
+        }
         return node;
     }
 

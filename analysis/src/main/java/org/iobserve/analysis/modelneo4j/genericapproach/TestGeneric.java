@@ -19,10 +19,11 @@ import java.io.File;
 
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.RepositoryModelProvider;
+import org.iobserve.analysis.model.UsageModelProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  *
@@ -50,9 +51,8 @@ public class TestGeneric {
         final Repository repositoryModel = repositoryModelProvider.getModel();
 
         /** Load usage model */
-        // final UsageModelProvider usageModelProvider =
-        // modelProviderPlatform.getUsageModelProvider();
-        // final UsageModel usageModel = usageModelProvider.getModel();
+        final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
+        final UsageModel usageModel = usageModelProvider.getModel();
 
         /** Load system model */
         // final SystemModelProvider systemModelProvider =
@@ -79,9 +79,10 @@ public class TestGeneric {
         // new ModelProvider<>(graph).createComponent(repositoryModel);
 
         /** Reading (id -> object) from DB1 */
-        System.out.println("Reading (id -> object) from DB1");
-        final OperationInterface inter = (OperationInterface) new ModelProvider<OperationInterface>(graph)
-                .readComponent(OperationInterface.class, "_5atmgaZiEea90o6iaEaVPw");
+        // System.out.println("Reading (id -> object) from DB1");
+        // final OperationInterface inter = (OperationInterface) new
+        // ModelProvider<OperationInterface>(graph)
+        // .readComponent(OperationInterface.class, "_5atmgaZiEea90o6iaEaVPw");
 
         // /** Reading (type -> ids) from DB1 */
         // System.out.println("Reading (type -> ids) from DB1");
@@ -102,14 +103,15 @@ public class TestGeneric {
 
         /** Writing to DB2 */
         System.out.println("Writing to DB2");
-        new ModelProvider<>(graph2).createComponent(inter);
+        new ModelProvider<>(graph2).createComponent(repositoryModel);
 
         /** Deleting from DB2 */
-        System.out.println("Deleting from DB2");
+        // System.out.println("Deleting from DB2");
         // new ModelProvider<Repository>(graph2).deleteComponent(Repository.class,
         // repositoryModel.getId());
-        new ModelProvider<OperationInterface>(graph2).deleteComponentAndDatatypes(OperationInterface.class,
-                inter.getId());
+        // new
+        // ModelProvider<OperationInterface>(graph2).deleteComponentAndDatatypes(OperationInterface.class,
+        // inter.getId());
 
         graph.shutdown();
         graph2.shutdown();
