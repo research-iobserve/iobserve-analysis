@@ -75,11 +75,13 @@ public class TestGeneric {
         /*************************************************************************************************/
 
         /** Write to DB1 */
-        // System.out.println("Writing to DB1");
-        // new ModelProvider<>(graph).createComponent(repositoryModel);
+        System.out.println("Writing to DB1");
+        new ModelProvider<>(graph).createComponent(repositoryModel);
 
         /** Reading (id -> object) from DB1 */
-        // System.out.println("Reading (id -> object) from DB1");
+        System.out.println("Reading (id -> object) from DB1");
+        final Repository repositoryModel2 = (Repository) new ModelProvider<Repository>(graph)
+                .readComponent(Repository.class, repositoryModel.getId());
         // final OperationInterface inter = (OperationInterface) new
         // ModelProvider<OperationInterface>(graph)
         // .readComponent(OperationInterface.class, "_5atmgaZiEea90o6iaEaVPw");
@@ -103,7 +105,7 @@ public class TestGeneric {
 
         /** Writing to DB2 */
         System.out.println("Writing to DB2");
-        new ModelProvider<>(graph2).createComponentExperimental(usageModel);
+        new ModelProvider<>(graph2).createComponent(repositoryModel2);
 
         /** Deleting from DB2 */
         // System.out.println("Deleting from DB2");
@@ -114,8 +116,18 @@ public class TestGeneric {
         // inter.getId());
 
         graph.shutdown();
+
+        /** Test old provider */
+        // final org.iobserve.analysis.modelneo4j.RepositoryModelProvider repositoryModelProvider2 =
+        // new org.iobserve.analysis.modelneo4j.RepositoryModelProvider(
+        // TestGeneric.DB_PATH);
+        // repositoryModelProvider2.save();
+        // repositoryModelProvider2.loadModel();
+        // new ModelProvider<>(graph2).createComponent(repositoryModelProvider2.getModel());
+
         graph2.shutdown();
         System.out.print("Shut down DBs");
+
     }
 
     private static void registerShutdownHook(final GraphDatabaseService graphDb) {

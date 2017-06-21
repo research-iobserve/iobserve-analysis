@@ -39,6 +39,7 @@ import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
@@ -64,6 +65,13 @@ public class ModelProvider<T extends EObject> {
         this.graph = graph;
     }
 
+    public void clearGraph() {
+        try (Transaction tx = this.getGraph().beginTx()) {
+            this.graph.execute("MATCH (n) DETACH DELETE (n)");
+            tx.success();
+        }
+    }
+
     /**
      * Writes the given component into the provider's {@link #graph}.
      *
@@ -75,6 +83,7 @@ public class ModelProvider<T extends EObject> {
         final Node node;
         try (Transaction tx = this.getGraph().beginTx()) {
             final HashSet<EObject> containments = this.getAllContainments(component, new HashSet<>());
+            System.out.println(containments.size());
             node = this.createNodes(component, containments, new HashMap<>());
             tx.success();
         }
@@ -222,7 +231,8 @@ public class ModelProvider<T extends EObject> {
                     }
                 }
             } else {
-                node.addLabel(Label.label("PROXY"));
+                // node.addLabel(Label.label("PROXY")); TODO: causes conflict at reading (if
+                // label.name() returns PROXY ModelProviderUtil.instantiateEObject(label.name()));
             }
         }
         return node;
@@ -350,6 +360,23 @@ public class ModelProvider<T extends EObject> {
             tx.success();
             return ids;
         }
+    }
+
+    public T readRootComponent(final Class<T> clazz) {
+        EObject component = null;
+        try (Transaction tx = this.getGraph().beginTx()) {
+            if (clazz.equals(Repository.class) || clazz.equals(org.palladiosimulator.pcm.system.System.class)
+                    || clazz.equals(Allocation.class) || clazz.equals(UsageModel.class)
+                    || clazz.equals(ResourceEnvironment.class)) {
+                final ResourceIterator<Node> nodes = this.graph.findNodes(Label.label(clazz.getSimpleName()));
+                if (nodes.hasNext()) {
+                    final Node node = nodes.next();
+                    component = this.readComponent(node, new HashMap<Long, DataType>());
+                }
+            }
+            tx.success();
+        }
+        return (T) component;
     }
 
     /**
