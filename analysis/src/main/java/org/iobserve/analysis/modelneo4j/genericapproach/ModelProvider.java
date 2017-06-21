@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -79,6 +80,30 @@ public class ModelProvider<T extends EObject> {
             tx.success();
         }
         return node;
+    }
+
+    public void createComponentExperimental(final T component) {
+        final TreeIterator<EObject> containmentTree = component.eAllContents();
+        int i = 0;
+        while (containmentTree.hasNext()) {
+            final EObject c = containmentTree.next();
+
+            // Create node if not already in the graph
+
+            // Add attributes
+
+            // Create map EObject/Node
+
+            System.out.println(i++ + " " + c);
+        }
+
+        // Iterate over pairs in EObject/Node map
+
+        // For each reference
+        // if its in the map: create a relation
+        // else if it is a data type: create a node if not already in the graph (special treatment
+        // for data types as they might not be in the map with partial writing)
+
     }
 
     private HashSet<EObject> getAllContainments(final EObject component, final HashSet<EObject> containments) {

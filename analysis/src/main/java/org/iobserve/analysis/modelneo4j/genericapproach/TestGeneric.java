@@ -19,7 +19,6 @@ import java.io.File;
 
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
@@ -55,9 +54,11 @@ public class TestGeneric {
         final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
         final UsageModel usageModel = usageModelProvider.getModel();
 
-        /** Load system model */
-        final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
-        final org.palladiosimulator.pcm.system.System systemModel = systemModelProvider.getModel();
+        // /** Load system model */
+        // final SystemModelProvider systemModelProvider =
+        // modelProviderPlatform.getSystemModelProvider();
+        // final org.palladiosimulator.pcm.system.System systemModel =
+        // systemModelProvider.getModel();
 
         /** Load resource environment model */
         // final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider =
@@ -102,7 +103,7 @@ public class TestGeneric {
 
         /** Writing to DB2 */
         System.out.println("Writing to DB2");
-        new ModelProvider<>(graph2).createComponent(systemModel);
+        new ModelProvider<>(graph2).createComponentExperimental(usageModel);
 
         /** Deleting from DB2 */
         // System.out.println("Deleting from DB2");
