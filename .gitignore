@@ -36,3 +36,4 @@ repos/
 /analysis/res/working_dir/
 peropteryx.plugin/build.xml
 peropteryx.plugin/javaCompiler...args
+analysis.cli/time.csv

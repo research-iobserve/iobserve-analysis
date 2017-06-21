@@ -23,21 +23,45 @@ import teetime.stage.basic.AbstractTransformation;
  */
 public class CandidateProcessing extends AbstractTransformation<PlanningData, AdaptationData> {
 
+	private IPlanningEventListener eventListener;
+
+	public CandidateProcessing() {
+		eventListener = null;
+	}
+
+	public CandidateProcessing(IPlanningEventListener eventListner) {
+		this.eventListener = eventListner;
+	}
+
 	@Override
 	protected void execute(PlanningData element) throws Exception {
 		CandidateGeneration.LOG.info("Candiate Processing");
-		
+
 		AdaptationData adapdationData = element.getAdaptationData();
-		
+
 		// Set adaptation data
 		String reDeploymentURIString = adapdationData.getReDeploymentURI().toFileString();
-		InitializeModelProviders initModelProvider = new InitializeModelProviders(new File(reDeploymentURIString));
+		File inputFolder = new File(reDeploymentURIString);
+
+		// Check if model even exists
+		if (inputFolder.exists() && inputFolder.listFiles().length == 0) {
+			String errorString = "No PerOpteryx output model was found!";
+			if (this.eventListener != null) {
+				this.eventListener.notifyNonValidRedeploymentModelFound(errorString);
+			} else {
+				CandidateGeneration.LOG.error(errorString);
+			}
+			return;
+		}
+
+		// Finish candidate
+		InitializeModelProviders initModelProvider = new InitializeModelProviders(inputFolder);
 		adapdationData.setReDeploymentModelProviders(initModelProvider);
-		
+
 		GraphFactory factory = new GraphFactory();
 		ModelGraph graph = factory.buildGraph(initModelProvider.getModelCollection());
 		adapdationData.setReDeploymentGraph(graph);
-		
+
 		// Evaluate if ReDeploymentModel is privacy compliant
 		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(graph);
 		classificationAnalysis.start();
@@ -46,12 +70,18 @@ public class CandidateProcessing extends AbstractTransformation<PlanningData, Ad
 
 		if (legalDeployment.length == 0)
 			CandidateGeneration.LOG.info("ReDeployment Model is legal!");
-		else
-			CandidateGeneration.LOG.error("ReDeployment Model is ILLEGAL");
-		
+		else {
+			if (this.eventListener != null) {
+				this.eventListener.notifyNonValidRedeploymentModelFound(initModelProvider);
+			} else {
+				CandidateGeneration.LOG.error("ReDeployment Model is ILLEGAL");
+			}
+		}
+
 		CandidateGeneration.LOG.info("\n" + graph.printGraph(true));
 
-		// this.outputPort.send(adapdationData);
+//		if (legalDeployment.length == 0)
+//			this.outputPort.send(adapdationData);
 	}
 
 }
