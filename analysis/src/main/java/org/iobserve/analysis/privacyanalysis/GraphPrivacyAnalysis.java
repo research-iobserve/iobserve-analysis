@@ -1,16 +1,10 @@
 package org.iobserve.analysis.privacyanalysis;
 
-import java.util.Optional;
-
-import org.eclipse.emf.common.util.EList;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.graph.ComponentNode;
 import org.iobserve.analysis.graph.ModelGraph;
-import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.privacy.ComponentClassificationAnalysis;
 import org.iobserve.analysis.privacy.DeploymentAnalysis;
-import org.palladiosimulator.pcm.compositionprivacy.AssemblyContextPrivacy;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.iobserve.analysis.utils.TimingHelper;
 
 import teetime.stage.basic.AbstractTransformation;
 
@@ -33,20 +27,25 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 
 		ModelGraph graph = element.getRuntimeGraph();
 
-		PrivacyAnalysis.LOG.info("Initial Categorization");
-		PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
+		// PrivacyAnalysis.LOG.info("Initial Categorization");
+		// PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
 
 		ComponentClassificationAnalysis classificationAnalysis = new ComponentClassificationAnalysis(graph);
 		classificationAnalysis.start();
-	
-		PrivacyAnalysis.LOG.info("Classification Analysis");
-		PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
+
+		// PrivacyAnalysis.LOG.info("Classification Analysis");
+		// PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
 
 		DeploymentAnalysis deploymentAnalysis = new DeploymentAnalysis(graph, PrivacyAnalysis.getLegalPersonalGeoLocations());
 		String[] legalDeployments = deploymentAnalysis.start();
 
+		TimingHelper.end("End");
+
 		if (legalDeployments.length == 0) {
+			
 			PrivacyAnalysis.LOG.info("Legal Deployment");
+			PrivacyAnalysis.LOG.info("\n" + graph.printGraph(true));
+			
 		} else {
 			PrivacyAnalysis.LOG.error("ILLEGAL Deployment");
 
@@ -57,10 +56,8 @@ public class GraphPrivacyAnalysis extends AbstractTransformation<AdaptationData,
 			}
 		}
 
-		if (legalDeployments.length > 0){
-			int i = 0;
-			i++;
-//			this.outputPort.send(element);
+		if (legalDeployments.length > 0) {
+			 this.outputPort.send(element);
 		}
 	}
 

@@ -7,6 +7,7 @@ import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.GraphFactory;
 import org.iobserve.analysis.graph.ModelGraph;
+import org.iobserve.analysis.utils.TimingHelper;
 
 import teetime.stage.basic.AbstractTransformation;
 
@@ -31,6 +32,7 @@ public class GraphCreation extends AbstractTransformation<URI, AdaptationData> {
 	@Override
 	protected void execute(URI element) throws Exception {
 		PrivacyAnalysis.LOG.info("Creating graph \tModel: " + element.toFileString());
+		TimingHelper.start("Start - Reading Model");
 
 		AdaptationData adaptionData = new AdaptationData();
 		adaptionData.setRuntimeModelURI(element);
@@ -39,6 +41,7 @@ public class GraphCreation extends AbstractTransformation<URI, AdaptationData> {
 		InitializeModelProviders initModelProvider = new InitializeModelProviders(new File(element.toFileString()));
 		PrivacyAnalysis.LOG.info("DONE!");
 		adaptionData.setRuntimeModelProviders(initModelProvider);
+		TimingHelper.createRound("Building Graph");
 
 		ModelGraph graph = this.graphFactory.buildGraph(initModelProvider.getModelCollection());
 		adaptionData.setRuntimeGraph(graph);

@@ -234,7 +234,7 @@ public class SystemGeneration {
 					this.createAssemblyConnector(requAC, provAC, interfaceID);
 					this.connectedProvidedInterfaces.get(interfaceID).add(provAC);
 				} else {
-					throw new RuntimeException("A required interface has no matching provided interface!");
+					throw new RuntimeException("A required interface has no matching provided interface! ID: " + interfaceID);
 				}
 			}
 		}
@@ -357,7 +357,7 @@ public class SystemGeneration {
 		float randFloat = ThreadLocalRandom.current().nextFloat();
 		if (randFloat < 0.15) {
 			connector.setPrivacyLevel(DataPrivacyLvl.PERSONAL);
-		} else if (randFloat < 0.50) {
+		} else if (randFloat < 0.65) {
 			connector.setPrivacyLevel(DataPrivacyLvl.DEPERSONALIZED);
 		} else {
 			connector.setPrivacyLevel(DataPrivacyLvl.ANONYMIZED);

@@ -49,8 +49,9 @@ public class CandidateProcessing extends AbstractTransformation<PlanningData, Ad
 		else
 			CandidateGeneration.LOG.error("ReDeployment Model is ILLEGAL");
 		
+		CandidateGeneration.LOG.info("\n" + graph.printGraph(true));
 
-		this.outputPort.send(adapdationData);
+		// this.outputPort.send(adapdationData);
 	}
 
 }

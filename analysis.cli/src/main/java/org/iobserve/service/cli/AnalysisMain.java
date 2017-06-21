@@ -26,6 +26,8 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.FileObservationConfiguration;
@@ -53,6 +55,8 @@ import teetime.framework.Execution;
  * @author Alessandro Giusa
  */
 public final class AnalysisMain {
+	
+	protected static final Logger LOG = LogManager.getLogger(AnalysisMain.class);
 
 	private static final String VARIANCE_OF_USER_GROUPS = "variance-of-user-groups";
 	private static final String THINK_TIME = "think-time";
@@ -95,6 +99,7 @@ public final class AnalysisMain {
 					final File pcmModelsDirectory = new File(commandLine.getOptionValue("p"));
 					if (pcmModelsDirectory.exists()) {
 						/** create and run application */
+						LOG.info("Starting iObserve Privacy");
 						final Collection<File> monitoringDataDirectories = new ArrayList<>();
 						AnalysisMain.findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
 
@@ -130,13 +135,11 @@ public final class AnalysisMain {
 								systemModelProvider, designDecisionModelProvider, snapshotBuilder, perOpteryxUri, lqnsUri, privacyAnalysisFile,
 								varianceOfUserGroups, thinkTime, closedWorkload, eventListener, deployablesFolder);
 
-						System.out.println("Analysis configuration");
+						LOG.info("Analysis configuration");
 						final Execution<Configuration> analysis = new Execution<>(configuration);
-						System.out.println("Analysis start");
-						TimingHelper.start("Start - TransformationAnaylsis");
+						LOG.info("Analysis start");
 						analysis.executeBlocking();
-						TimingHelper.end("End - TransformationAnalysis");
-						System.out.println("Anaylsis complete");
+						LOG.info("Anaylsis complete");
 					} else {
 						System.err.println(String.format("the pcm dir %s does not exist?!", pcmModelsDirectory));
 					}
