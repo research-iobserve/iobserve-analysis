@@ -36,9 +36,10 @@ import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
-import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
@@ -73,29 +74,8 @@ public class ModelProvider<T extends EObject> {
     public Node createComponent(final T component) {
         final Node node;
         try (Transaction tx = this.getGraph().beginTx()) {
-            node = this.createNodes(component);
-            tx.success();
-        }
-        return node;
-    }
-
-    public Node createComponent(final Repository repositoryModel) {
-        final Node node;
-        try (Transaction tx = this.getGraph().beginTx()) {
-            final HashSet<EObject> containments = this.getAllContainments(repositoryModel, new HashSet<>());
-            node = this.createNodes(repositoryModel, containments, new HashMap<>());
-            tx.success();
-        }
-        return node;
-    }
-
-    public Node createComponent(final UsageModel usageModel) {
-        System.out.println("richtige methode");
-        final Node node;
-        try (Transaction tx = this.getGraph().beginTx()) {
-            final HashSet<EObject> containments = this.getAllContainments(usageModel, new HashSet<>());
-            System.out.println(containments);
-            node = this.createNodes(usageModel, containments, new HashMap<>());
+            final HashSet<EObject> containments = this.getAllContainments(component, new HashSet<>());
+            node = this.createNodes(component, containments, new HashMap<>());
             tx.success();
         }
         return node;
@@ -131,82 +111,38 @@ public class ModelProvider<T extends EObject> {
      *
      * @param component
      *            Component to save
+     * @param containments
+     *            Set of EObjects contained in the root
+     * @param addedObjects
+     *            Map of already added EObjects to the correspondent nodes
      * @return Root node of the component's graph
      */
-    private Node createNodes(final EObject component) {
+    private Node createNodes(final EObject component, final HashSet<EObject> containments,
+            final HashMap<EObject, Node> addedObjects) {
         // Create a label representing the type of the component
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         Node node = null;
 
-        // For components with an unique id and primitive data types: Look if there already is a
-        // node for the component in the graph. For everything else: Always create a new node.
+        // For components with an unique id, primitive data types, an usage, a resource environment
+        // or an allocation model: Look if there already is a node for the component in the graph.
+        // For everything else: Check if the component is in the added objects list and if not:
+        // Always create a new node
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
             node = this.getGraph().findNode(label, ModelProvider.ID, component.eGet(idAttr));
         } else if (component instanceof PrimitiveDataType) {
             node = this.getGraph().findNode(label, ModelProvider.TYPE,
                     ((PrimitiveDataType) component).getType().name());
-        }
-
-        // If there is no node yet, create one
-        if (node == null) {
-
-            node = this.getGraph().createNode(label);
-
-            // System.out.println("writing " + component + " " + label.name());
-
-            // Save attributes as node properties
-            for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                final Object value = component.eGet(attr);
-                if (value != null) {
-                    node.setProperty(attr.getName(), value.toString());
-                    // System.out.println("\t" + component + " attribute " + attr.getName() + "
-                    // " + value.toString());
-                }
+        } else if ((component instanceof UsageModel) || (component instanceof ResourceEnvironment)
+                || (component instanceof Allocation)) {
+            final ResourceIterator<Node> nodes = this.getGraph().findNodes(Label.label(component.eClass().getName()));
+            if (nodes.hasNext()) {
+                node = nodes.next();
             }
-
-            // Save references as relations between nodes
-            for (final EReference ref : component.eClass().getEAllReferences()) {
-
-                final Object refReprensation = component.eGet(ref);
-                // System.out.println("\t" + component + " all refs " + ref + " " +
-                // refReprensation);
-
-                // 0..* refs are represented as a list and 1 refs are represented directly
-                if (refReprensation instanceof EList<?>) {
-
-                    for (final Object o : (EList<?>) component.eGet(ref)) {
-                        // System.out.println("\t" + component + " reference " + o);
-
-                        final Node refNode = this.createNodes((EObject) o);
-
-                        final Relationship rel = node.createRelationshipTo(refNode,
-                                ModelProviderUtil.getRelationshipType(ref, o));
-                        rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                    }
-                } else {
-                    if (refReprensation != null) {
-                        // System.out.println("\t" + component + " reference " +
-                        // refReprensation);
-
-                        final Node refNode = this.createNodes((EObject) refReprensation);
-
-                        final Relationship rel = node.createRelationshipTo(refNode,
-                                ModelProviderUtil.getRelationshipType(ref, refReprensation));
-                        rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                    }
-                }
-            }
+        } else {
+            // Extra check for components without any attributes to find them in the graph
+            node = addedObjects.get(component);
         }
-
-        return node;
-    }
-
-    private Node createNodes(final EObject component, final HashSet<EObject> containments,
-            final HashMap<EObject, Node> addedObjects) {
-        // Create a label representing the type of the component
-        final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
-        Node node = addedObjects.get(component);
 
         // If there is no node yet, create one
         if (node == null) {
@@ -226,6 +162,7 @@ public class ModelProvider<T extends EObject> {
                 }
             }
 
+            // Only create references for containments of the root
             if (containments.contains(component)) {
                 // Save references as relations between nodes
                 for (final EReference ref : component.eClass().getEAllReferences()) {
@@ -260,6 +197,8 @@ public class ModelProvider<T extends EObject> {
                         }
                     }
                 }
+            } else {
+                node.addLabel(Label.label("PROXY"));
             }
         }
         return node;
