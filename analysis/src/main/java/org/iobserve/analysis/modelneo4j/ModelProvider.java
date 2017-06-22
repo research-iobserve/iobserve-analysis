@@ -90,51 +90,127 @@ public class ModelProvider<T extends EObject> {
         return node;
     }
 
-    public void createComponentExperimental(final T component) {
-        final TreeIterator<EObject> containmentTree = component.eAllContents();
+    public void createComponentExperimental(final T rootComponent) {
+        final TreeIterator<EObject> containmentTree = rootComponent.eAllContents();
+        final HashMap<EObject, Node> componentsToNodes = new HashMap<>();
         int i = 0;
+
+        // Create a map component to node for each component
         while (containmentTree.hasNext()) {
-            final EObject c = containmentTree.next();
+            final EObject component = containmentTree.next();
+            final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
+            Node node = null;
 
-            // Create node if not already in the graph
+            // Check if node is in graph or has already been written in this call
+            if (component.eClass().getEIDAttribute() != null) {
+                node = this.graph.findNode(label, "id", component.eGet(component.eClass().getEIDAttribute()));
+            } else if (component instanceof PrimitiveDataType) {
+                node = this.graph.findNode(label, "type", ((PrimitiveDataType) component).getType().name());
+            } else if ((component instanceof Allocation) || (component instanceof ResourceEnvironment)
+                    || (component instanceof UsageModel)) {
+                final ResourceIterator<Node> nodes = this.graph.findNodes(Label.label(component.eClass().getName()));
+                if (nodes.hasNext()) {
+                    node = nodes.next();
+                }
+            } else {
+                node = componentsToNodes.get(component);
+            }
 
-            // Add attributes
+            if (node == null) {
+                node = this.graph.createNode(label);
 
-            // Create map EObject/Node
+                // Save attributes as node properties
+                for (final EAttribute attr : component.eClass().getEAllAttributes()) {
+                    final Object value = component.eGet(attr);
+                    if (value != null) {
+                        node.setProperty(attr.getName(), value.toString());
+                        // System.out.println("\t" + component + " attribute " + attr.getName() + "
+                        // " + value.toString());
+                    }
+                }
+            }
 
-            System.out.println(i++ + " " + c);
+            // Add to map
+            componentsToNodes.put(component, node);
+
+            System.out.println(i++ + " " + component);
         }
 
         // Iterate over pairs in EObject/Node map
+        final Iterator<Entry<EObject, Node>> iter = componentsToNodes.entrySet().iterator();
+        while (iter.hasNext()) {
+            final Entry<EObject, Node> entry = iter.next();
+            final EObject component = entry.getKey();
+            final Node node = entry.getValue();
 
-        // For each reference
-        // if its in the map: create a relation
-        // else if it is a data type: create a node if not already in the graph (special treatment
-        // for data types as they might not be in the map with partial writing)
+            for (final EReference ref : component.eClass().getEAllReferences()) {
+
+                final Object refReprensation = component.eGet(ref);
+                // System.out.println("\t" + component + " all refs " + ref + " " +
+                // refReprensation);
+
+                // 0..* refs are represented as a list and 1 refs are represented directly
+                if (refReprensation instanceof EList<?>) {
+
+                    for (final Object o : (EList<?>) component.eGet(ref)) {
+                        // System.out.println("\t" + component + " reference " + o);
+
+                        if (componentsToNodes.containsKey(o)) {
+                            final Node refNode = componentsToNodes.get(o);
+                            final Relationship rel = node.createRelationshipTo(refNode,
+                                    ModelProviderUtil.getRelationshipType(ref, o));
+                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                        }
+                        // else if (o instanceof DataType) {
+                        // problem for data types: it's not possible to
+                        // }
+                    }
+                } else {
+                    if (refReprensation != null) {
+                        // System.out.println("\t" + component + " reference " +
+                        // refReprensation);
+
+                        if (componentsToNodes.containsKey(refReprensation)) {
+                            final Node refNode = componentsToNodes.get(refReprensation);
+                            final Relationship rel = node.createRelationshipTo(refNode,
+                                    ModelProviderUtil.getRelationshipType(ref, refReprensation));
+                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                        }
+                    }
+                }
+            }
+            // For each reference
+            // if its in the map: create a relation
+            // else if it is a data type: create a node if not already in the graph (special
+            // treatment
+            // for data types as they might not be in the map with partial writing)
+        }
 
     }
 
     private HashSet<EObject> getAllContainments(final EObject component, final HashSet<EObject> containments) {
-        containments.add(component);
+        if (!containments.contains(component)) {
+            containments.add(component);
 
-        for (final EReference ref : component.eClass().getEAllContainments()) {
+            for (final EReference ref : component.eClass().getEAllReferences()) {
 
-            final Object refReprensation = component.eGet(ref);
+                final Object refObject = component.eGet(ref);
 
-            if (refReprensation instanceof EList<?>) {
+                if (refObject instanceof EList<?>) {
+                    for (final Object o : (EList<?>) component.eGet(ref)) {
+                        if (ref.isContainment() || (ModelProviderUtil.isDatatype(ref, o))) {
+                            this.getAllContainments((EObject) o, containments);
+                        }
+                    }
 
-                for (final Object o : (EList<?>) component.eGet(ref)) {
-                    this.getAllContainments((EObject) o, containments);
-                }
-
-            } else {
-
-                if (refReprensation != null) {
-                    this.getAllContainments((EObject) refReprensation, containments);
+                } else {
+                    if ((refObject != null)
+                            && (ref.isContainment() || (ModelProviderUtil.isDatatype(ref, refObject)))) {
+                        this.getAllContainments((EObject) refObject, containments);
+                    }
                 }
             }
         }
-
         return containments;
     }
 
@@ -144,14 +220,14 @@ public class ModelProvider<T extends EObject> {
      *
      * @param component
      *            Component to save
-     * @param containments
+     * @param containmentsAndDatatypes
      *            Set of EObjects contained in the root
-     * @param addedObjects
-     *            Map of already added EObjects to the correspondent nodes
+     * @param createdObjectsToNodes
+     *            Map of already created EObjects to the correspondent nodes
      * @return Root node of the component's graph
      */
-    private Node createNodes(final EObject component, final HashSet<EObject> containments,
-            final HashMap<EObject, Node> addedObjects) {
+    private Node createNodes(final EObject component, final HashSet<EObject> containmentsAndDatatypes,
+            final HashMap<EObject, Node> createdObjectsToNodes) {
         // Create a label representing the type of the component
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         Node node = null;
@@ -174,14 +250,14 @@ public class ModelProvider<T extends EObject> {
             }
         } else {
             // Extra check for components without any attributes to find them in the graph
-            node = addedObjects.get(component);
+            node = createdObjectsToNodes.get(component);
         }
 
         // If there is no node yet, create one
         if (node == null) {
 
             node = this.getGraph().createNode(label);
-            addedObjects.put(component, node);
+            createdObjectsToNodes.put(component, node);
 
             // System.out.println("writing " + component + " " + label.name());
 
@@ -196,7 +272,11 @@ public class ModelProvider<T extends EObject> {
             }
 
             // Only create references for containments of the root
-            if (containments.contains(component)) {
+            // TODO: Problem: wenn ich patiell schreibe, dann sind die datentypen nicht mit in
+            // containments (da sie nur containments der root sind und diese beim partiellen
+            // schreiben fehlt). Sie werden in der akutellen Implementierung also nicht
+            // mitgeschrieben :( Lösung wäre, sie beim erstellen von containments mitzunehmen
+            if (containmentsAndDatatypes.contains(component)) {
                 // Save references as relations between nodes
                 for (final EReference ref : component.eClass().getEAllReferences()) {
 
@@ -210,7 +290,8 @@ public class ModelProvider<T extends EObject> {
                         for (final Object o : (EList<?>) component.eGet(ref)) {
                             // System.out.println("\t" + component + " reference " + o);
 
-                            final Node refNode = this.createNodes((EObject) o, containments, addedObjects);
+                            final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
+                                    createdObjectsToNodes);
 
                             final Relationship rel = node.createRelationshipTo(refNode,
                                     ModelProviderUtil.getRelationshipType(ref, o));
@@ -221,8 +302,8 @@ public class ModelProvider<T extends EObject> {
                             // System.out.println("\t" + component + " reference " +
                             // refReprensation);
 
-                            final Node refNode = this.createNodes((EObject) refReprensation, containments,
-                                    addedObjects);
+                            final Node refNode = this.createNodes((EObject) refReprensation, containmentsAndDatatypes,
+                                    createdObjectsToNodes);
 
                             final Relationship rel = node.createRelationshipTo(refNode,
                                     ModelProviderUtil.getRelationshipType(ref, refReprensation));
@@ -230,10 +311,10 @@ public class ModelProvider<T extends EObject> {
                         }
                     }
                 }
-            } else {
-                // node.addLabel(Label.label("PROXY")); TODO: causes conflict at reading (if
-                // label.name() returns PROXY ModelProviderUtil.instantiateEObject(label.name()));
             }
+            // else
+            // node.addLabel(Label.label("PROXY")); TODO: causes conflict at reading (if
+            // label.name() returns PROXY ModelProviderUtil.instantiateEObject(label.name()));
         }
         return node;
     }

@@ -83,8 +83,7 @@ public class ModelProviderUtil {
 
         if (ref.isContainment()) {
             return PcmRelationshipType.CONTAINS;
-        } else if ((refObj instanceof DataType) && !(ref.getName().equals("parentType_CompositeDataType")
-                || (ref.getName().equals("compositeDataType_InnerDeclaration")))) {
+        } else if (ModelProviderUtil.isDatatype(ref, refObj)) {
             return PcmRelationshipType.IS_TYPE;
         } else {
             return PcmRelationshipType.REFERENCES;
@@ -95,6 +94,11 @@ public class ModelProviderUtil {
         final String name = c.getInstanceTypeName();
         final int i = name.lastIndexOf(".");
         return name.substring(i + 1);
+    }
+
+    public static boolean isDatatype(final EReference ref, final Object refObj) {
+        return (refObj instanceof DataType) && !(ref.getName().equals("parentType_CompositeDataType")
+                || (ref.getName().equals("compositeDataType_InnerDeclaration")));
     }
 
     public static Object instantiateAttribute(final Class<?> clazz, final String value) {
