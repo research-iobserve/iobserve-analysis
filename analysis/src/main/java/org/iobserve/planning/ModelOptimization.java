@@ -26,17 +26,20 @@ public class ModelOptimization extends AbstractTransformation<PlanningData, Plan
 
 		URI inputModelDir = planningData.getProcessedModelDir();
 		AdaptationData adaptationData = planningData.getAdaptationData();
+
 		ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir(), planningData.getLqnsDir(),
 				planningData.getPrivacyAnalysisFile());
 
-		int result = exec.startModelGeneration();
+		CandidateGeneration.LOG.warn("Skipping actual generation for evaluation purposes!");
+		int result = -1;// exec.startModelGeneration();
 
 		if (result != EXEC_SUCCESS) {
-			// String uriString = "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\processedModel\\PerOpteryx_results\\costOptimalModel";
-			// String uriString = "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\Test";
-
-			// adaptationData.setReDeploymentURI(URI.createFileURI(uriString));
-			throw new RuntimeException("PerOpteryx exited with error code " + result);
+			String uriString = "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\Test";
+			
+			CandidateGeneration.LOG.warn(String.format("Setting %s as geneartion output string", uriString));
+			
+			adaptationData.setReDeploymentURI(URI.createFileURI(uriString));
+			// throw new RuntimeException("PerOpteryx exited with error code " + result);
 		} else {
 			URI redeploymentURI = planningData.getProcessedModelDir().appendSegments(PerOpteryxOutputSubFolders);
 			adaptationData.setReDeploymentURI(redeploymentURI);

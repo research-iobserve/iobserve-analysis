@@ -1,7 +1,9 @@
 package org.iobserve.analysis.graph;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -51,7 +53,7 @@ public class ModelGraph {
 	public ModelCollection getPcmModels() {
 		return pcmModels;
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ModelGraph) {

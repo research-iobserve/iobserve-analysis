@@ -1,6 +1,7 @@
 package org.iobserve.service.generation;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -55,9 +56,28 @@ public class EvaluationGeneration {
 				if (commandLine.hasOption("d")) {
 					InitializeModelProviders modelProviers = new InitializeModelProviders(new File(commandLine.getOptionValue("i")));
 					DatGenerator datGen = new DatGenerator(modelProviers.getModelCollection());
-					
+
 					URI outputFile = URI.createFileURI(commandLine.getOptionValue("o"));
 					datGen.generateDatFile(Integer.parseInt(commandLine.getOptionValue("c")), outputFile);
+				}
+				if (commandLine.hasOption("dif")) {
+					InitializeModelProviders initModels = new InitializeModelProviders(new File(commandLine.getOptionValue("i")));
+					InitializeModelProviders difModels = new InitializeModelProviders(new File(commandLine.getOptionValue("o")));
+
+					ModelDif difCreator = new ModelDif();
+					List<String> difs = difCreator.difModels(initModels.getModelCollection(), difModels.getModelCollection());
+
+					if (difs.size() == 0) {
+						LOG.info("NO difs detected!");
+					} else {
+						StringBuilder sb = new StringBuilder();
+						for (String dif : difs) {
+							sb.append(dif + "\n");
+						}
+
+						LOG.warn("The difs are:\n" + sb.toString());
+					}
+
 				}
 			}
 		} catch (Exception e) {
@@ -92,6 +112,7 @@ public class EvaluationGeneration {
 		options.addOption(Option.builder("n").required(false).longOpt("generate-new").desc("generates new model, based on input repo").build());
 		options.addOption(Option.builder("m").required(false).longOpt("modify").desc("modify the input model").build());
 		options.addOption(Option.builder("d").required(false).longOpt("datFile").desc("creates a dat file").build());
+		options.addOption(Option.builder("dif").required(false).longOpt("make-dif").desc("prints out the diferences between the models").build());
 
 		options.addOption(Option.builder("a").required(false).longOpt("allocation-contexts").hasArg().desc("allocation context count").build());
 		options.addOption(Option.builder("r").required(false).longOpt("resource-container").hasArg().desc("resource container count").build());
@@ -104,7 +125,7 @@ public class EvaluationGeneration {
 		options.addOption(Option.builder("ac").required(false).longOpt("acquire").hasArg().desc("acquire actions").build());
 		options.addOption(Option.builder("re").required(false).longOpt("replicate").hasArg().desc("replicate actions").build());
 		options.addOption(Option.builder("te").required(false).longOpt("terminate").hasArg().desc("terminate actions").build());
-		
+
 		options.addOption(Option.builder("c").required(false).longOpt("commands").hasArg().desc("command counts in dat file").build());
 
 		/** help */
@@ -125,6 +146,7 @@ public class EvaluationGeneration {
 		options.addOption(Option.builder("n").required(false).longOpt("generate-new").desc("generates new model, based on input repo").build());
 		options.addOption(Option.builder("m").required(false).longOpt("modify").desc("modify the input model").build());
 		options.addOption(Option.builder("d").required(false).longOpt("datFile").desc("creates a dat file").build());
+		options.addOption(Option.builder("dif").required(false).longOpt("make-dif").desc("prints out the diferences between the models").build());
 
 		options.addOption(Option.builder("a").required(false).longOpt("allocation-contexts").hasArg().desc("allocation context count").build());
 		options.addOption(Option.builder("r").required(false).longOpt("resource-container").hasArg().desc("resource container count").build());
@@ -137,7 +159,7 @@ public class EvaluationGeneration {
 		options.addOption(Option.builder("ac").required(false).longOpt("acquire").hasArg().desc("acquire actions").build());
 		options.addOption(Option.builder("re").required(false).longOpt("replicate").hasArg().desc("replicate actions").build());
 		options.addOption(Option.builder("te").required(false).longOpt("terminate").hasArg().desc("terminate actions").build());
-		
+
 		options.addOption(Option.builder("c").required(false).longOpt("commands").hasArg().desc("command counts in dat file").build());
 
 		/** help */

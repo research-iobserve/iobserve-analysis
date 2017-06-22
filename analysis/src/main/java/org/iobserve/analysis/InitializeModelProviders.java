@@ -60,20 +60,26 @@ public final class InitializeModelProviders {
 	 */
 	public InitializeModelProviders(final File dirPcm) {
 		final File[] files = dirPcm.listFiles();
+
 		for (final File nextFile : files) {
 			final String extension = this.getFileExtension(nextFile.getName());
-
+			
 			if ("repository".equalsIgnoreCase(extension)) {
 				final URI uri = this.getUri(nextFile);
 				this.repositoryModelProvider = new RepositoryModelProvider(uri);
-
-			} else if ("allocation".equalsIgnoreCase(extension)) {
-				final URI uri = this.getUri(nextFile);
-				this.allocationModelProvider = new AllocationModelProvider(uri);
-
+				
 			} else if ("resourceenvironment".equalsIgnoreCase(extension)) {
 				final URI uri = this.getUri(nextFile);
 				this.resourceEnvironmentModelProvider = new ResourceEnvironmentModelProvider(uri);
+			}
+		}
+
+		for (final File nextFile : files) {
+			final String extension = this.getFileExtension(nextFile.getName());
+
+			if ("allocation".equalsIgnoreCase(extension)) {
+				final URI uri = this.getUri(nextFile);
+				this.allocationModelProvider = new AllocationModelProvider(uri);
 
 			} else if ("system".equalsIgnoreCase(extension)) {
 				final URI uri = this.getUri(nextFile);
@@ -167,7 +173,7 @@ public final class InitializeModelProviders {
 	public DesignDecisionModelProvider getDesignDecisionModelProvider() {
 		return this.designDecisionModelProvider;
 	}
-	
+
 	/**
 	 * @return QML declarations model provider
 	 */
