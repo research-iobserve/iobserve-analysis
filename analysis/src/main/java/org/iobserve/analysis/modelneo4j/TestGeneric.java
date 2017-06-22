@@ -76,15 +76,17 @@ public class TestGeneric {
 
         // /** Write to DB1 */
         System.out.println("Writing to DB1");
-        new ModelProvider<>(graph).createComponent(repositoryModel);
+        new ModelProvider<>(graph).createComponent(usageModel);
 
-        // /** Reading (id -> object) from DB1 */
-        // System.out.println("Reading (id -> object) from DB1");
+        /** Reading (id -> object) from DB1 */
+        System.out.println("Reading (id -> object) from DB1");
         // final Repository repositoryModel2 = (Repository) new ModelProvider<Repository>(graph)
-        // .readComponent(Repository.class, repositoryModel.getId());
+        // .readComponent2(Repository.class, repositoryModel.getId());
         // final OperationInterface inter = (OperationInterface) new
         // ModelProvider<OperationInterface>(graph)
-        // .readComponent(OperationInterface.class, "_5atmgaZiEea90o6iaEaVPw");
+        // .readComponent2(OperationInterface.class,
+        // repositoryModel.getInterfaces__Repository().get(0).getId());
+        final UsageModel usageModel2 = new ModelProvider<UsageModel>(graph).readRootComponent(UsageModel.class);
 
         // /** Reading (type -> ids) from DB1 */
         // System.out.println("Reading (type -> ids) from DB1");
@@ -105,7 +107,9 @@ public class TestGeneric {
 
         /** Writing to DB2 */
         System.out.println("Writing to DB2");
-        new ModelProvider<>(graph2).createComponent(usageModel);
+        // new
+        // ModelProvider<>(graph2).createComponent(repositoryModel.getInterfaces__Repository().get(0));
+        new ModelProvider<>(graph2).createComponent(usageModel2);
 
         /** Deleting from DB2 */
         // System.out.println("Deleting from DB2");

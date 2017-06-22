@@ -91,9 +91,9 @@ public class ModelProvider<T extends EObject> {
     }
 
     private HashSet<EObject> getAllContainmentsAndDatatypes(final EObject component,
-            final HashSet<EObject> containments) {
-        if (!containments.contains(component)) {
-            containments.add(component);
+            final HashSet<EObject> containmentsAndDatatypes) {
+        if (!containmentsAndDatatypes.contains(component)) {
+            containmentsAndDatatypes.add(component);
 
             for (final EReference ref : component.eClass().getEAllReferences()) {
 
@@ -102,19 +102,19 @@ public class ModelProvider<T extends EObject> {
                 if (refObject instanceof EList<?>) {
                     for (final Object o : (EList<?>) component.eGet(ref)) {
                         if (ref.isContainment() || (ModelProviderUtil.isDatatype(ref, o))) {
-                            this.getAllContainmentsAndDatatypes((EObject) o, containments);
+                            this.getAllContainmentsAndDatatypes((EObject) o, containmentsAndDatatypes);
                         }
                     }
 
                 } else {
                     if ((refObject != null)
                             && (ref.isContainment() || (ModelProviderUtil.isDatatype(ref, refObject)))) {
-                        this.getAllContainmentsAndDatatypes((EObject) refObject, containments);
+                        this.getAllContainmentsAndDatatypes((EObject) refObject, containmentsAndDatatypes);
                     }
                 }
             }
         }
-        return containments;
+        return containmentsAndDatatypes;
     }
 
     /**
@@ -125,12 +125,12 @@ public class ModelProvider<T extends EObject> {
      *            Component to save
      * @param containmentsAndDatatypes
      *            Set of EObjects contained in the root
-     * @param createdObjectsToNodes
+     * @param objectsToCreatedNodes
      *            Map of already created EObjects to the correspondent nodes
      * @return Root node of the component's graph
      */
     private Node createNodes(final EObject component, final HashSet<EObject> containmentsAndDatatypes,
-            final HashMap<EObject, Node> createdObjectsToNodes) {
+            final HashMap<EObject, Node> objectsToCreatedNodes) {
         // Create a label representing the type of the component
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         Node node = null;
@@ -154,14 +154,14 @@ public class ModelProvider<T extends EObject> {
         } else {
             // For components that are not found in the graph (e.g. due to missing id) but have been
             // created in this recursion
-            node = createdObjectsToNodes.get(component);
+            node = objectsToCreatedNodes.get(component);
         }
 
         // If there is no node yet, create one
         if (node == null) {
 
             node = this.getGraph().createNode(label);
-            createdObjectsToNodes.put(component, node);
+            objectsToCreatedNodes.put(component, node);
 
             // System.out.println("writing " + component + " " + label.name());
 
@@ -192,7 +192,7 @@ public class ModelProvider<T extends EObject> {
                             // System.out.println("\t" + component + " reference " + o);
 
                             final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
-                                    createdObjectsToNodes);
+                                    objectsToCreatedNodes);
 
                             final Relationship rel = node.createRelationshipTo(refNode,
                                     ModelProviderUtil.getRelationshipType(ref, o));
@@ -204,7 +204,7 @@ public class ModelProvider<T extends EObject> {
                             // refReprensation);
 
                             final Node refNode = this.createNodes((EObject) refReprensation, containmentsAndDatatypes,
-                                    createdObjectsToNodes);
+                                    objectsToCreatedNodes);
 
                             final Relationship rel = node.createRelationshipTo(refNode,
                                     ModelProviderUtil.getRelationshipType(ref, refReprensation));
@@ -237,6 +237,22 @@ public class ModelProvider<T extends EObject> {
         try (Transaction tx = this.getGraph().beginTx()) {
             node = this.getGraph().findNode(label, ModelProvider.ID, id);
             component = this.readComponent(node, new HashMap<Long, DataType>());
+            tx.success();
+        }
+
+        return component;
+    }
+
+    public EObject readComponent2(final Class<T> clazz, final String id) {
+        final Label label = Label.label(clazz.getSimpleName());
+        Node node;
+        EObject component;
+
+        try (Transaction tx = this.getGraph().beginTx()) {
+            node = this.getGraph().findNode(label, ModelProvider.ID, id);
+            final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
+                    new HashSet<Node>());
+            component = this.readComponent2(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             tx.success();
         }
 
@@ -322,6 +338,74 @@ public class ModelProvider<T extends EObject> {
         return component;
     }
 
+    private HashSet<Node> getAllContainmentsAndDatatypes(final Node node,
+            final HashSet<Node> containmentsAndDatatypes) {
+
+        if (!containmentsAndDatatypes.contains(node)) {
+            containmentsAndDatatypes.add(node);
+
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
+                    PcmRelationshipType.IS_TYPE)) {
+                this.getAllContainmentsAndDatatypes(rel.getEndNode(), containmentsAndDatatypes);
+            }
+        }
+
+        return containmentsAndDatatypes;
+    }
+
+    private EObject readComponent2(final Node node, final HashSet<Node> containmentsAndDatatypes,
+            final HashMap<Node, EObject> nodesToCreatedObjects) {
+        EObject component;
+
+        if (!nodesToCreatedObjects.containsKey(node)) {
+            // Get node's data type label and instantiate a new empty object of this data type
+            final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
+            component = ModelProviderUtil.instantiateEObject(label.name());
+
+            // Load attribute values from the node
+            final Iterator<Map.Entry<String, Object>> i = node.getAllProperties().entrySet().iterator();
+            while (i.hasNext()) {
+                final Entry<String, Object> property = i.next();
+                final EAttribute attr = (EAttribute) component.eClass().getEStructuralFeature(property.getKey());
+                final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
+                        property.getValue().toString());
+
+                if (value != null) {
+                    component.eSet(attr, value);
+                }
+            }
+
+            nodesToCreatedObjects.putIfAbsent(node, component);
+
+            // Load related nodes representing referenced components
+            for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
+
+                final Node endNode = rel.getEndNode();
+
+                // Only load containments and data types of the root
+                if (containmentsAndDatatypes.contains(endNode)) {
+                    final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
+                    final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
+                    Object refReprensation = component.eGet(ref);
+
+                    if (refReprensation instanceof EList<?>) {
+                        final EObject endComponent = this.readComponent2(endNode, containmentsAndDatatypes,
+                                nodesToCreatedObjects);
+                        ((EList<EObject>) refReprensation).add(endComponent);
+                    } else {
+                        refReprensation = this.readComponent2(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
+                        component.eSet(ref, refReprensation);
+
+                    }
+
+                }
+            }
+        } else {
+            component = nodesToCreatedObjects.get(node);
+        }
+        return component;
+    }
+
     /**
      * Reads the ids of all components of a specified data type.
      *
@@ -353,7 +437,9 @@ public class ModelProvider<T extends EObject> {
                 final ResourceIterator<Node> nodes = this.graph.findNodes(Label.label(clazz.getSimpleName()));
                 if (nodes.hasNext()) {
                     final Node node = nodes.next();
-                    component = this.readComponent(node, new HashMap<Long, DataType>());
+                    final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
+                            new HashSet<Node>());
+                    component = this.readComponent2(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 }
             }
             tx.success();
