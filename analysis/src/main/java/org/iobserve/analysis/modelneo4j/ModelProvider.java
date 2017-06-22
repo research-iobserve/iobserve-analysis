@@ -43,10 +43,13 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
+ * This class provides methods to access the pcm models stored in a neo4j graph database. Enables
+ * partial access, to access only parts of a model, i.e. a submodel.
  *
  * @author Lars Bluemke
  *
  * @param <T>
+ *            Type of the model's or submodel's root component
  */
 public class ModelProvider<T extends EObject> {
 
@@ -60,10 +63,19 @@ public class ModelProvider<T extends EObject> {
 
     private final GraphDatabaseService graph;
 
+    /**
+     * Creates a new model provider.
+     *
+     * @param graph
+     *            The neo4j graph database
+     */
     public ModelProvider(final GraphDatabaseService graph) {
         this.graph = graph;
     }
 
+    /**
+     * Deletes all nodes and relationships in the {@link #graph}.
+     */
     public void clearGraph() {
         try (Transaction tx = this.getGraph().beginTx()) {
             this.graph.execute("MATCH (n) DETACH DELETE (n)");
@@ -90,6 +102,16 @@ public class ModelProvider<T extends EObject> {
         return node;
     }
 
+    /**
+     * Helper method for writing: Recursively returns all containments and data types of a given
+     * component.
+     *
+     * @param component
+     *            The component to start with
+     * @param containmentsAndDatatypes
+     *            Pass an empty set
+     * @return The passed containmentsAndDatatypes set now filled with containments and data types
+     */
     private HashSet<EObject> getAllContainmentsAndDatatypes(final EObject component,
             final HashSet<EObject> containmentsAndDatatypes) {
         if (!containmentsAndDatatypes.contains(component)) {
@@ -135,10 +157,7 @@ public class ModelProvider<T extends EObject> {
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         Node node = null;
 
-        // For components with an unique id, primitive data types, an usage, a resource environment
-        // or an allocation model: Look if there already is a node for the component in the graph.
-        // For everything else: Check if the component is in the added objects list and if not:
-        // Always create a new node
+        // Check if node has already been created
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
             node = this.getGraph().findNode(label, ModelProvider.ID, component.eGet(idAttr));
@@ -152,8 +171,8 @@ public class ModelProvider<T extends EObject> {
                 node = nodes.next();
             }
         } else {
-            // For components that are not found in the graph (e.g. due to missing id) but have been
-            // created in this recursion
+            // For components that cannot be found in the graph (e.g. due to missing id) but have
+            // been created in this recursion
             node = objectsToCreatedNodes.get(component);
         }
 
@@ -163,49 +182,35 @@ public class ModelProvider<T extends EObject> {
             node = this.getGraph().createNode(label);
             objectsToCreatedNodes.put(component, node);
 
-            // System.out.println("writing " + component + " " + label.name());
-
             // Save attributes as node properties
             for (final EAttribute attr : component.eClass().getEAllAttributes()) {
                 final Object value = component.eGet(attr);
                 if (value != null) {
                     node.setProperty(attr.getName(), value.toString());
-                    // System.out.println("\t" + component + " attribute " + attr.getName() + "
-                    // " + value.toString());
                 }
             }
 
-            // Only create references for containments or data types of the root otherwise just keep
-            // the node as a proxy
+            // Outgoing references are only stored for containments and data types of the root,
+            // otherwise we just store the blank node as a proxy
             if (containmentsAndDatatypes.contains(component)) {
-                // Save references as relations between nodes
-                for (final EReference ref : component.eClass().getEAllReferences()) {
 
+                for (final EReference ref : component.eClass().getEAllReferences()) {
                     final Object refReprensation = component.eGet(ref);
-                    // System.out.println("\t" + component + " all refs " + ref + " " +
-                    // refReprensation);
 
                     // 0..* refs are represented as a list and 1 refs are represented directly
                     if (refReprensation instanceof EList<?>) {
 
                         for (final Object o : (EList<?>) component.eGet(ref)) {
-                            // System.out.println("\t" + component + " reference " + o);
-
                             final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
                                     objectsToCreatedNodes);
-
                             final Relationship rel = node.createRelationshipTo(refNode,
                                     ModelProviderUtil.getRelationshipType(ref, o));
                             rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                         }
                     } else {
                         if (refReprensation != null) {
-                            // System.out.println("\t" + component + " reference " +
-                            // refReprensation);
-
                             final Node refNode = this.createNodes((EObject) refReprensation, containmentsAndDatatypes,
                                     objectsToCreatedNodes);
-
                             final Relationship rel = node.createRelationshipTo(refNode,
                                     ModelProviderUtil.getRelationshipType(ref, refReprensation));
                             rel.setProperty(ModelProvider.REF_NAME, ref.getName());
@@ -213,10 +218,8 @@ public class ModelProvider<T extends EObject> {
                     }
                 }
             }
-            // else
-            // node.addLabel(Label.label("PROXY")); TODO: causes conflict at reading (if
-            // label.name() returns PROXY ModelProviderUtil.instantiateEObject(label.name()));
         }
+
         return node;
     }
 
@@ -375,18 +378,19 @@ public class ModelProvider<T extends EObject> {
                 }
             }
 
+            // Already register unfinished components because there might be circles
             nodesToCreatedObjects.putIfAbsent(node, component);
 
             // Load related nodes representing referenced components
             for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
 
                 final Node endNode = rel.getEndNode();
+                final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
+                final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
+                Object refReprensation = component.eGet(ref);
 
-                // Only load containments and data types of the root
+                // For partial reading: Only load containments and data types of the root
                 if (containmentsAndDatatypes.contains(endNode)) {
-                    final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
-                    final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
-                    Object refReprensation = component.eGet(ref);
 
                     if (refReprensation instanceof EList<?>) {
                         final EObject endComponent = this.readComponent2(endNode, containmentsAndDatatypes,
@@ -395,7 +399,34 @@ public class ModelProvider<T extends EObject> {
                     } else {
                         refReprensation = this.readComponent2(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
                         component.eSet(ref, refReprensation);
+                    }
 
+                } else {
+                    // Create proxy here...
+                    final Label endLabel = ModelProviderUtil.getFirstLabel(endNode.getLabels());
+                    final EObject endComponent = ModelProviderUtil.instantiateEObject(endLabel.name());
+
+                    if (endComponent != null) {
+
+                        // Load attribute values from the node
+                        final Iterator<Map.Entry<String, Object>> i2 = endNode.getAllProperties().entrySet().iterator();
+                        while (i2.hasNext()) {
+                            final Entry<String, Object> property = i2.next();
+                            final EAttribute attr = (EAttribute) endComponent.eClass()
+                                    .getEStructuralFeature(property.getKey());
+                            final Object value = ModelProviderUtil.instantiateAttribute(
+                                    attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
+
+                            if (value != null) {
+                                endComponent.eSet(attr, value);
+                            }
+                        }
+
+                        if (refReprensation instanceof EList<?>) {
+                            ((EList<EObject>) refReprensation).add(endComponent);
+                        } else {
+                            component.eSet(ref, endComponent);
+                        }
                     }
 
                 }
