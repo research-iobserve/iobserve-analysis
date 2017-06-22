@@ -30,8 +30,8 @@ import org.palladiosimulator.pcm.repository.Repository;
  *
  */
 public class TestGeneric {
-    private static final File DB_PATH = new File("neo4jdb");
-    private static final File DB_PATH2 = new File("neo4jdb2");
+    private static final File DB_PATH = new File("/Users/LarsBlumke/Desktop/neo4jdb");
+    private static final File DB_PATH2 = new File("/Users/LarsBlumke/Desktop/neo4jdb2");
     private static final File PCM_MODELS_DIRECTORY = new File(
             "/Users/LarsBlumke/Documents/CAU/Masterprojekt/iObserveWorkspace/models/WorkingTestPCM/pcm");
 

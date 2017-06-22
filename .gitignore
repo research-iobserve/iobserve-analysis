@@ -37,5 +37,3 @@ rac.creator/mapped.txt
 rac.creator/mapping.rac
 rac.creator/unmapped.txt
 test.setup/kieker*tgz
-**/neo4jdb/**
-**/neo4jdb2/**
