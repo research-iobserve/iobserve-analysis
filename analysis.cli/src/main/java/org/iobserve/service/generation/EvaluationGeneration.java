@@ -61,6 +61,9 @@ public class EvaluationGeneration {
 					datGen.generateDatFile(Integer.parseInt(commandLine.getOptionValue("c")), outputFile);
 				}
 				if (commandLine.hasOption("dif")) {
+					LOG.info("Starting ModelDif:");
+					LOG.info("Input Models Dir: " + commandLine.getOptionValue("i"));
+					LOG.info("Output Models Dir: " + commandLine.getOptionValue("o"));
 					InitializeModelProviders initModels = new InitializeModelProviders(new File(commandLine.getOptionValue("i")));
 					InitializeModelProviders difModels = new InitializeModelProviders(new File(commandLine.getOptionValue("o")));
 
@@ -77,7 +80,6 @@ public class EvaluationGeneration {
 
 						LOG.warn("The difs are:\n" + sb.toString());
 					}
-
 				}
 			}
 		} catch (Exception e) {

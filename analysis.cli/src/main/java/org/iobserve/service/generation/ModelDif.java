@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.iobserve.analysis.graph.GraphFactory;
 import org.iobserve.analysis.graph.ModelCollection;
 import org.iobserve.analysis.graph.ModelGraph;
@@ -21,6 +23,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
 
 public class ModelDif {
+
+	private static final Logger LOG = LogManager.getLogger(ModelDif.class);
 
 	public List<String> difModels(ModelCollection initModels, ModelCollection difModels) {
 		List<String> dif = new ArrayList<String>();
@@ -75,8 +79,8 @@ public class ModelDif {
 				ResourceContainerPrivacy difRCP = (ResourceContainerPrivacy) difResContainer;
 
 				if (initRCP.getGeolocation() != difRCP.getGeolocation()) {
-					resEnvDifs.add(String.format("Unmatchig Geo-locations for ResoruceContainer %s: INIT (%d) vs DIF (%d)!", initRCP.getId(),
-							initRCP.getGeolocation(), difRCP.getGeolocation()));
+					resEnvDifs.add(String.format("Unmatchig Geo-locations for ResoruceContainer (%s: %s): INIT (%d) vs DIF (%d)!", initRCP.getId(),
+							initRCP.getEntityName(), initRCP.getGeolocation(), difRCP.getGeolocation()));
 				}
 			} else {
 				if (!(initResContainer instanceof ResourceContainerPrivacy))
@@ -90,7 +94,8 @@ public class ModelDif {
 		}
 
 		for (String key : initResCon.keySet()) {
-			resEnvDifs.add(String.format("ResourceContainer %s does not exist in DIF model!", key));
+			ResourceContainer resContainer = initResCon.get(key);
+			resEnvDifs.add(String.format("ResourceContainer (%s: %s) does not exist in DIF model!", key, resContainer.getEntityName()));
 		}
 
 		return resEnvDifs;
@@ -104,16 +109,19 @@ public class ModelDif {
 
 		this.initAllocs = new HashMap<String, AllocationContext>();
 		for (AllocationContext initAC : initAlloc.getAllocationContexts_Allocation()) {
-			this.initAllocs.put(initAC.getId(), initAC);
+			AssemblyContext initAC_AC = initAC.getAssemblyContext_AllocationContext();
+			this.initAllocs.put(initAC_AC.getId(), initAC);
 		}
 
 		for (AllocationContext difAC : difAlloc.getAllocationContexts_Allocation()) {
-			if (!this.initAllocs.containsKey(difAC.getId())) {
-				resEnvDifs.add(String.format("AllocationContext %s does not exist in INIT model!", difAC.getId()));
+			AssemblyContext difAC_AC = difAC.getAssemblyContext_AllocationContext();
+
+			if (!this.initAllocs.containsKey(difAC_AC.getId())) {
+				resEnvDifs.add(String.format("AllocationContext containing AssemblyConstext (%s) does not exist in INIT model!", difAC.getId()));
 				continue;
 			}
 
-			AllocationContext initAC = this.initAllocs.get(difAC.getId());
+			AllocationContext initAC = this.initAllocs.get(difAC_AC.getId());
 
 			if (!(initAC.getResourceContainer_AllocationContext().getId().equals(difAC.getResourceContainer_AllocationContext().getId()))) {
 				ResourceContainer initAC_RC = initAC.getResourceContainer_AllocationContext();
@@ -123,16 +131,19 @@ public class ModelDif {
 			}
 			if (!(initAC.getAssemblyContext_AllocationContext().getId().equals(difAC.getAssemblyContext_AllocationContext().getId()))) {
 				AssemblyContext initAC_AC = initAC.getAssemblyContext_AllocationContext();
-				AssemblyContext difAC_AC = difAC.getAssemblyContext_AllocationContext();
+				// AssemblyContext difAC_AC =
+				// difAC.getAssemblyContext_AllocationContext();
 				resEnvDifs.add(String.format("Unmatchig AssemblyContexts for AllocationContext %s: INIT (%s: %s) vs DIF (%s: %s)!", initAC.getId(),
 						initAC_AC.getId(), initAC_AC.getEntityName(), difAC_AC.getId(), difAC_AC.getEntityName()));
 			}
 
-			initAllocs.remove(initAC.getId(), initAC);
+			initAllocs.remove(difAC_AC.getId(), initAC);
 		}
 
 		for (String key : initAllocs.keySet()) {
-			resEnvDifs.add(String.format("AllocationContext %s does not exist in DIF model!", key));
+			AllocationContext ac = initAllocs.get(key);
+			resEnvDifs.add(
+					String.format("AllocationContext containing AssemblyConstext (%s: %s) does not exist in DIF model!", key, ac.getEntityName()));
 		}
 
 		return resEnvDifs;
@@ -151,7 +162,7 @@ public class ModelDif {
 
 		for (AssemblyContext difAC : difSys.getAssemblyContexts__ComposedStructure()) {
 			if (!this.initAssemblys.containsKey(difAC.getId())) {
-				resEnvDifs.add(String.format("AssemblyContext %s does not exist in INIT model!", difAC.getId()));
+				resEnvDifs.add(String.format("AssemblyContext (%s: %s) does not exist in INIT model!", difAC.getId(), difAC.getEntityName()));
 				continue;
 			}
 
@@ -168,7 +179,8 @@ public class ModelDif {
 		}
 
 		for (String key : initAssemblys.keySet()) {
-			resEnvDifs.add(String.format("AssemblyContext %s does not exist in DIF model!", key));
+			AssemblyContext initAC = initAssemblys.get(key);
+			resEnvDifs.add(String.format("AssemblyContext (%s: %s) does not exist in DIF model!", key, initAC.getEntityName()));
 		}
 
 		return resEnvDifs;
@@ -249,7 +261,8 @@ public class ModelDif {
 		}
 
 		for (String key : initConnectors.keySet()) {
-			resEnvDifs.add(String.format("AssemblyConnector %s does not exist in DIF model!", key));
+			AssemblyConnector ac = initConnectors.get(key);
+			resEnvDifs.add(String.format("AssemblyConnector (%s: %s) does not exist in DIF model!", key, ac.getEntityName()));
 		}
 
 		return resEnvDifs;
