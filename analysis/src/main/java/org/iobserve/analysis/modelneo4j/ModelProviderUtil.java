@@ -65,12 +65,20 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 /**
+ * Provides different utilities for the {@link #ModelProvider}.
  *
  * @author Lars Bluemke
  *
  */
 public class ModelProviderUtil {
 
+    /**
+     * Returns the first of several labels.
+     *
+     * @param labels
+     *            Several labels
+     * @return The first label
+     */
     public static Label getFirstLabel(final Iterable<Label> labels) {
         for (final Label l : labels) {
             return l;
@@ -79,6 +87,15 @@ public class ModelProviderUtil {
         return null;
     }
 
+    /**
+     * Returns a {@link #PcmRelationshipType} for a given reference and the referenced object.
+     *
+     * @param ref
+     *            The reference
+     * @param refObj
+     *            The referenced object
+     * @return The proper relationship type
+     */
     public static RelationshipType getRelationshipType(final EReference ref, final Object refObj) {
 
         if (ref.isContainment()) {
@@ -90,17 +107,42 @@ public class ModelProviderUtil {
         }
     }
 
+    /**
+     * Returns only an EClasses simple name, not the fully qualified name.
+     *
+     * @param c
+     *            The EClass
+     * @return The EClasses simple name
+     */
     public static String getTypeName(final EClass c) {
         final String name = c.getInstanceTypeName();
         final int i = name.lastIndexOf(".");
         return name.substring(i + 1);
     }
 
+    /**
+     * Checks whether a referenced object is the referencer's data type.
+     *
+     * @param ref
+     *            The reference
+     * @param refObj
+     *            The referenced object
+     * @return True, if the referenced object is the referencer's data type, false otherwise
+     */
     public static boolean isDatatype(final EReference ref, final Object refObj) {
         return (refObj instanceof DataType) && !(ref.getName().equals("parentType_CompositeDataType")
                 || (ref.getName().equals("compositeDataType_InnerDeclaration")));
     }
 
+    /**
+     * Instantiates attributes of pcm model components.
+     *
+     * @param clazz
+     *            The attribute's data type
+     * @param value
+     *            The attribute's string value from the property of the neo4j graph
+     * @return The attribute's value in the proper data type
+     */
     public static Object instantiateAttribute(final Class<?> clazz, final String value) {
         if (clazz == String.class) {
             return value;
@@ -153,6 +195,13 @@ public class ModelProviderUtil {
         return null;
     }
 
+    /**
+     * Instantiates a pcm model component from a given type name.
+     *
+     * @param name
+     *            The component's data type name
+     * @return New object of the given data type
+     */
     public static EObject instantiateEObject(final String name) {
 
         if (CorePackage.eINSTANCE.getEClassifier(name) != null) {

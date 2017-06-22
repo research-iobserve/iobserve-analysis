@@ -18,6 +18,8 @@ package org.iobserve.analysis.modelneo4j;
 import org.neo4j.graphdb.RelationshipType;
 
 /**
+ * Defines the different relationship types in the neo4j graph representation of a pcm component
+ * model.
  *
  * @author Lars Bluemke
  *

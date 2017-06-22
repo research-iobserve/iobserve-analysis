@@ -24,6 +24,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.palladiosimulator.pcm.repository.Repository;
 
 /**
+ * An ugly test class for debugging
  *
  * @author Lars Bluemke
  *

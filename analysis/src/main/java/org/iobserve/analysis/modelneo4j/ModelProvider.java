@@ -36,15 +36,14 @@ import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.ResourceIterator;
 import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
- * This class provides methods to access the pcm models stored in a neo4j graph database. Enables
- * partial access, to access only parts of a model, i.e. a submodel.
+ * Provides methods to access the pcm models stored in a neo4j graph database. Enables partial
+ * access, to access only parts of a pcm component model, i.e. a submodel.
  *
  * @author Lars Bluemke
  *
@@ -95,7 +94,6 @@ public class ModelProvider<T extends EObject> {
         try (Transaction tx = this.getGraph().beginTx()) {
             final HashSet<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
                     new HashSet<>());
-            System.out.println(containmentsAndDatatypes.size());
             node = this.createNodes(component, containmentsAndDatatypes, new HashMap<>());
             tx.success();
         }
@@ -109,7 +107,7 @@ public class ModelProvider<T extends EObject> {
      * @param component
      *            The component to start with
      * @param containmentsAndDatatypes
-     *            Pass an empty set
+     *            Initially empty set of all containments and data types
      * @return The passed containmentsAndDatatypes set now filled with containments and data types
      */
     private HashSet<EObject> getAllContainmentsAndDatatypes(final EObject component,
@@ -146,9 +144,11 @@ public class ModelProvider<T extends EObject> {
      * @param component
      *            Component to save
      * @param containmentsAndDatatypes
-     *            Set of EObjects contained in the root
+     *            Set of EObjects contained in the root preferably created by
+     *            {@link #getAllContainmentsAndDatatypes(EObject, HashSet)}
      * @param objectsToCreatedNodes
-     *            Map of already created EObjects to the correspondent nodes
+     *            Initially empty map of EObjects to already created correspondent nodes to make
+     *            sure nodes are written just once
      * @return Root node of the component's graph
      */
     private Node createNodes(final EObject component, final HashSet<EObject> containmentsAndDatatypes,
@@ -239,23 +239,9 @@ public class ModelProvider<T extends EObject> {
 
         try (Transaction tx = this.getGraph().beginTx()) {
             node = this.getGraph().findNode(label, ModelProvider.ID, id);
-            component = this.readComponent(node, new HashMap<Long, DataType>());
-            tx.success();
-        }
-
-        return component;
-    }
-
-    public EObject readComponent2(final Class<T> clazz, final String id) {
-        final Label label = Label.label(clazz.getSimpleName());
-        Node node;
-        EObject component;
-
-        try (Transaction tx = this.getGraph().beginTx()) {
-            node = this.getGraph().findNode(label, ModelProvider.ID, id);
             final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                     new HashSet<Node>());
-            component = this.readComponent2(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
+            component = this.readComponent(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             tx.success();
         }
 
@@ -263,84 +249,15 @@ public class ModelProvider<T extends EObject> {
     }
 
     /**
-     * Helper method for reading: Starting from a given node this method recursively reads all
-     * contained successor nodes and instantiates the correspondent ecore objects. To make sure that
-     * data types are instantiated just once a map from node ids to ecore objects is passed for data
-     * types. Calls to this method have to be performed from inside a {@link Transaction}.
+     * Helper method for reading: Recursively returns all containments and data types of a given
+     * node.
      *
      * @param node
      *            The node to start with
-     * @param dataTypes
-     *            Map of node ids to already instantiated ecore objects
-     * @return The root's ecore object
+     * @param containmentsAndDatatypes
+     *            Initially empty set of all containments and data types
+     * @return The passed containmentsAndDatatypes set now filled with containments and data types
      */
-    private EObject readComponent(final Node node, final HashMap<Long, DataType> dataTypes) {
-        // Get node's data type label and instantiate a new empty object of this data type
-        final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
-        final EObject component = ModelProviderUtil.instantiateEObject(label.name());
-
-        // Load attribute values from the node
-        final Iterator<Map.Entry<String, Object>> i = node.getAllProperties().entrySet().iterator();
-        while (i.hasNext()) {
-            final Entry<String, Object> property = i.next();
-            final EAttribute attr = (EAttribute) component.eClass().getEStructuralFeature(property.getKey());
-            final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
-                    property.getValue().toString());
-
-            if (value != null) {
-                component.eSet(attr, value);
-            }
-        }
-
-        // Already register unfinished types because there might be circles with inner declarations
-        if (component instanceof DataType) {
-            dataTypes.putIfAbsent(node.getId(), (DataType) component);
-        }
-
-        // Load related nodes representing referenced components
-        for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
-                PcmRelationshipType.IS_TYPE)) {
-
-            final Node endNode = rel.getEndNode();
-            final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
-            final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
-            Object refReprensation = component.eGet(ref);
-
-            if (rel.isType(PcmRelationshipType.CONTAINS)) {
-                // System.out.println("\t" + component + " reference " + refName);
-
-                if (refReprensation instanceof EList<?>) {
-                    final EObject endComponent = this.readComponent(endNode, dataTypes);
-                    ((EList<EObject>) refReprensation).add(endComponent);
-                } else {
-                    refReprensation = this.readComponent(endNode, dataTypes);
-                    component.eSet(ref, refReprensation);
-
-                }
-            } else if (rel.isType(PcmRelationshipType.IS_TYPE)) {
-                // System.out.println("\t" + component + " reference " + refName);
-
-                // Look if this data type has already been created
-                EObject endComponent = dataTypes.get(endNode.getId());
-
-                if (endComponent == null) {
-                    endComponent = this.readComponent(endNode, dataTypes);
-                }
-
-                if (refReprensation instanceof EList<?>) {
-                    ((EList<EObject>) refReprensation).add(endComponent);
-                } else {
-                    component.eSet(ref, endComponent);
-                }
-
-                // Replace possibly unfinished data type
-                dataTypes.replace(node.getId(), (DataType) endComponent);
-            }
-        }
-
-        return component;
-    }
-
     private HashSet<Node> getAllContainmentsAndDatatypes(final Node node,
             final HashSet<Node> containmentsAndDatatypes) {
 
@@ -356,7 +273,22 @@ public class ModelProvider<T extends EObject> {
         return containmentsAndDatatypes;
     }
 
-    private EObject readComponent2(final Node node, final HashSet<Node> containmentsAndDatatypes,
+    /**
+     * Helper method for reading: Starting from a given node this method recursively reads all
+     * contained successor nodes and instantiates the correspondent EObjects. Calls to this method
+     * have to be performed from inside a {@link Transaction}.
+     *
+     * @param node
+     *            The node to start with
+     * @param containmentsAndDatatypes
+     *            Set of all containments and data types of the root node
+     * @param nodesToCreatedObjects
+     *            Initially empty map of nodes to already created objects to make sure that objects
+     *            are instantiated just once
+     * @return The root
+     */
+    @SuppressWarnings("unchecked")
+    private EObject readComponent(final Node node, final HashSet<Node> containmentsAndDatatypes,
             final HashMap<Node, EObject> nodesToCreatedObjects) {
         EObject component;
 
@@ -383,7 +315,6 @@ public class ModelProvider<T extends EObject> {
 
             // Load related nodes representing referenced components
             for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
-
                 final Node endNode = rel.getEndNode();
                 final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
                 final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
@@ -393,16 +324,16 @@ public class ModelProvider<T extends EObject> {
                 if (containmentsAndDatatypes.contains(endNode)) {
 
                     if (refReprensation instanceof EList<?>) {
-                        final EObject endComponent = this.readComponent2(endNode, containmentsAndDatatypes,
+                        final EObject endComponent = this.readComponent(endNode, containmentsAndDatatypes,
                                 nodesToCreatedObjects);
                         ((EList<EObject>) refReprensation).add(endComponent);
                     } else {
-                        refReprensation = this.readComponent2(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
+                        refReprensation = this.readComponent(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
                         component.eSet(ref, refReprensation);
                     }
 
                 } else {
-                    // Create proxy here...
+                    // Create proxy EObject here...
                     final Label endLabel = ModelProviderUtil.getFirstLabel(endNode.getLabels());
                     final EObject endComponent = ModelProviderUtil.instantiateEObject(endLabel.name());
 
@@ -459,6 +390,15 @@ public class ModelProvider<T extends EObject> {
         }
     }
 
+    /**
+     * Reads the pcm models root components Repository, System, Allocation, ResourceEnvironment or
+     * UsageModel.
+     *
+     * @param clazz
+     *            Data type of the root component
+     * @return The read component
+     */
+    @SuppressWarnings("unchecked")
     public T readRootComponent(final Class<T> clazz) {
         EObject component = null;
         try (Transaction tx = this.getGraph().beginTx()) {
@@ -470,9 +410,13 @@ public class ModelProvider<T extends EObject> {
                     final Node node = nodes.next();
                     final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                             new HashSet<Node>());
-                    component = this.readComponent2(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
+                    component = this.readComponent(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 }
+            } else {
+                System.err.println(
+                        "Passed type has to be one of Repository, System, Allocation, ResourceEnvironment or UsageModel!");
             }
+
             tx.success();
         }
         return (T) component;
@@ -678,6 +622,11 @@ public class ModelProvider<T extends EObject> {
         return;
     }
 
+    /**
+     * Returns the provider's graph.
+     *
+     * @return The graph
+     */
     public GraphDatabaseService getGraph() {
         return this.graph;
     }
