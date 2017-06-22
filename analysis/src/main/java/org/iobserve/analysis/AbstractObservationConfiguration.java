@@ -46,6 +46,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
     protected final TDeployment deployment;
 
+    protected final TDeployment deploymentTwo;
+
     protected final TUndeployment undeployment;
 
     /**
@@ -81,6 +83,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
         this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
+        this.deploymentTwo = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
+                resourceEnvironmentModelProvider);
         this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
 
@@ -92,12 +96,13 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 resourceEnvironmentModelProvider);
 
         /** dispatch different monitoring data. */
-        this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), tAllocation.getInputPort());
+        this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), this.deployment.getInputPort());
         this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), this.undeployment.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
         this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
-        this.connectPorts(tAllocation.getDeploymentOutputPort(), this.deployment.getInputPort());
+        this.connectPorts(this.deployment.getAllocationOutputPort(), tAllocation.getInputPort());
+        this.connectPorts(tAllocation.getDeploymentOutputPort(), this.deploymentTwo.getInputPort());
         this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
         this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
 
