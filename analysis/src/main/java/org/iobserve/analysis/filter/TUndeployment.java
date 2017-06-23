@@ -117,7 +117,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 		final String service = event.getSerivce();
 		final String context = event.getContext();
 		Opt.of(this.correspondence.getCorrespondent(context)).ifPresent().apply(correspondence -> this.updateModel(service, correspondence))
-				.elseApply(() -> LOG.warn(String.format("No correspondent found for %s \n", service)));
+				.elseApply(() -> LOG.warn(String.format("No correspondent found for %s\n", service)));
 	}
 
 	/**
@@ -207,7 +207,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 				LOG.warn(errorMsg);
 			}
 		} else {
-			LOG.warn("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n");
+			LOG.warn(String.format("AssemblyContext for %s not found!\n", asmContextName));
 		}
 	}
 

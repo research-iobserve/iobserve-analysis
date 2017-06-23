@@ -117,7 +117,7 @@ public class ModelDif {
 			AssemblyContext difAC_AC = difAC.getAssemblyContext_AllocationContext();
 
 			if (!this.initAllocs.containsKey(difAC_AC.getId())) {
-				resEnvDifs.add(String.format("AllocationContext containing AssemblyConstext (%s) does not exist in INIT model!", difAC.getId()));
+				resEnvDifs.add(String.format("AllocationContext containing AssemblyContext (%s: %s) does not exist in INIT model!", difAC.getId(), difAC_AC.getEntityName()));
 				continue;
 			}
 

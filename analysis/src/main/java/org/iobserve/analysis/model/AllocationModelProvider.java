@@ -60,6 +60,43 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
 		return AllocationModelProvider.getAllocationContext(this.getModel(), assemblyContext, resourceContainer);
 	}
 
+	
+	/**
+	 * Return the assembly context representing the given input.
+	 * 
+	 * @param assemblyContext
+	 *            the containing assembly context
+	 * @return the allocation context or NULL if not existent
+	 */
+	public AllocationContext getAllocationContext(AssemblyContext assemblyContext) {
+		return AllocationModelProvider.getAllocationContext(super.getModel(), assemblyContext);
+	}
+	
+	
+	/**
+	 * Return the assembly context representing the given input.
+	 * 
+	 * @param model
+	 *            the allocation model
+	 * @param assemblyContext
+	 *            the containing assembly context
+	 * @return the allocation context or NULL if not existent
+	 */
+	public static AllocationContext getAllocationContext(Allocation model, AssemblyContext assemblyContext) {
+		AllocationContext requestedAllocCon = null;
+		String assemblyContextID = assemblyContext.getId();
+
+		for (AllocationContext allocCon : model.getAllocationContexts_Allocation()) {
+			String currentAssemblyConID = allocCon.getAssemblyContext_AllocationContext().getId();
+			if (currentAssemblyConID.equals(assemblyContextID)) {
+				requestedAllocCon = allocCon;
+				break;
+			}
+		}
+
+		return requestedAllocCon;
+	}
+
 	/**
 	 * Return the assembly context representing the given input.
 	 * 
@@ -79,15 +116,14 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
 			String currentAssemblyConID = allocCon.getAssemblyContext_AllocationContext().getId();
 			if (currentAssemblyConID.equals(assemblyContextID)) {
 				String currentResContainerID = allocCon.getResourceContainer_AllocationContext().getId();
-				// if (currentResContainerID.equals(resourceContainerID)) {
-				requestedAllocCon = allocCon;
-				break;
-				// }
+				if (currentResContainerID.equals(resourceContainerID)) {
+					requestedAllocCon = allocCon;
+					break;
+				}
 			}
 		}
 
 		return requestedAllocCon;
-
 	}
 
 	/**

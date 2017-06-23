@@ -219,8 +219,15 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 			// assemblyContext =
 			// TDeployment.createAssemblyContextByName(this.systemModelProvider,
 			// asmContextName);
-			LOG.warn(String.format("The AssemblyContext '%s' does not exist! Ignoring event!", asmContextName));
+			LOG.warn(String.format("The AssemblyContext '%s' does not exist! Ignoring event!\n", asmContextName));
 			assemblyContext = null;
+			return;
+		}
+
+		AllocationContext currentDeployment = this.allocationModelProvider.getAllocationContext(assemblyContext);
+		if (currentDeployment != null) {
+			LOG.warn(String.format("The AssemblyContext '%s' is already in AllocationContext (%s: %s) depoyed! Ignoring event!\n", asmContextName,
+					currentDeployment.getId(), currentDeployment.getEntityName()));
 			return;
 		}
 
@@ -242,7 +249,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 			SnapshotBuilder.setSnapshotFlag();
 			this.outputPort.send(new AddAllocationContextEvent(resourceContainer));
 		} else
-			LOG.warn(String.format("The AssemblyContext '%s' is already deployed! Ignoring event!", assemblyContext.getEntityName()));
+			LOG.warn(String.format("The AssemblyContext '%s' is already deployed! Ignoring event!\n", assemblyContext.getEntityName()));
 	}
 
 	/**

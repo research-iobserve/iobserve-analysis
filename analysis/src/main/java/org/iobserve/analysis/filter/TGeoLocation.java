@@ -64,7 +64,7 @@ public class TGeoLocation extends AbstractConsumerStage<ServerGeoLocation> {
 		}
 
 		if (!foundServer)
-			LOG.warn(String.format("Server '%s' was not found!", element.getHostname()));
+			LOG.warn(String.format("Server '%s' was not found!\n", element.getHostname()));
 		this.outputPortSnapshot.send(makeSnapshot);
 	}
 
