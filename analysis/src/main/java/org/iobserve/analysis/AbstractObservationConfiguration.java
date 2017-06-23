@@ -44,9 +44,13 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      */
     protected final RecordSwitch recordSwitch;
 
+    protected final TAllocation tAllocationSuccDeploy;
+
+    protected final TAllocationFinished tAllocationFinished;
+
     protected final TDeployment deployment;
 
-    protected final TDeployment deploymentTwo;
+    protected final TDeployment deploymentSuccAllocation;
 
     protected final TUndeployment undeployment;
 
@@ -83,8 +87,10 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
         this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
-        this.deploymentTwo = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
+        this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider);
+        this.tAllocationFinished = new TAllocationFinished();
+        this.deploymentSuccAllocation = new TDeployment(correspondenceModel, allocationModelProvider,
+                systemModelProvider, resourceEnvironmentModelProvider);
         this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
 
@@ -98,11 +104,16 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), this.deployment.getInputPort());
         this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), this.undeployment.getInputPort());
+        this.connectPorts(this.recordSwitch.getAllocationOutputPort(), tAllocation.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
         this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
-        this.connectPorts(this.deployment.getAllocationOutputPort(), tAllocation.getInputPort());
-        this.connectPorts(tAllocation.getDeploymentOutputPort(), this.deploymentTwo.getInputPort());
+        this.connectPorts(this.deployment.getDeploymentOutputPort(), this.tAllocationFinished.getDeploymentInputPort());
+        this.connectPorts(this.deployment.getAllocationOutputPort(), this.tAllocationSuccDeploy.getInputPort());
+        this.connectPorts(this.tAllocationSuccDeploy.getAllocationFinishedOutputPort(),
+                this.tAllocationFinished.getAllocationFinishedInputPort());
+        this.connectPorts(this.tAllocationFinished.getDeploymentOutputPort(),
+                this.deploymentSuccAllocation.getInputPort());
         this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
         this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
 

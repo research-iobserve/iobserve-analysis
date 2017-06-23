@@ -18,19 +18,19 @@ package org.iobserve.analysis.filter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.iobserve.common.record.IAllocationRecord;
+import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.ServletTraceHelper;
+
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.misc.KiekerMetadataRecord;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.iobserve.common.record.IDeploymentRecord;
-import org.iobserve.common.record.IUndeploymentRecord;
-import org.iobserve.common.record.ServletTraceHelper;
 
 /**
  * The record switch filter is used to scan the event stream and send events based on their type to
@@ -47,6 +47,8 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
     /** output port for undeployment events. */
     private final OutputPort<IUndeploymentRecord> undeploymentOutputPort = this.createOutputPort();
+    /** output port for allocation events. */
+    private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
     /** output port for flow events. */
     private final OutputPort<IFlowRecord> flowOutputPort = this.createOutputPort();
     /** output port for {@link TraceMetadata}. */
@@ -72,6 +74,8 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             this.deploymentOutputPort.send((IDeploymentRecord) element);
         } else if (element instanceof IUndeploymentRecord) {
             this.undeploymentOutputPort.send((IUndeploymentRecord) element);
+        } else if (element instanceof IAllocationRecord) {
+            this.allocationOutputPort.send((IAllocationRecord) element);
         } else if (element instanceof ServletTraceHelper) { // NOCS
             // TODO this is later used to improve trace information
         } else if (element instanceof IFlowRecord) {
@@ -115,6 +119,13 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
      */
     public final OutputPort<IUndeploymentRecord> getUndeploymentOutputPort() {
         return this.undeploymentOutputPort;
+    }
+
+    /**
+     * @return the allocationOutputPort
+     */
+    public final OutputPort<IAllocationRecord> getAllocationOutputPort() {
+        return this.allocationOutputPort;
     }
 
     /**

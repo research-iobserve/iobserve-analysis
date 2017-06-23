@@ -19,27 +19,27 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
-import org.iobserve.common.record.EJBDeployedEvent;
-import org.iobserve.common.record.IDeploymentRecord;
-import org.iobserve.common.record.ServletDeployedEvent;
+import org.iobserve.common.record.IAllocationRecord;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * TAllocation creates a new resource container if and only if there is no corresponding container
- * already available.
+ * This class processes allocation events. TAllocation creates a new resource container if and only
+ * if there is no corresponding container already available.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> {
+public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> {
 
     /** reference to {@link ResourceEnvironment} provider. */
     private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
-    /** output port. */
-    private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
+
+    /** output ports */
+    private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
+    private final OutputPort<IAllocationRecord> allocationFinishedOutputPort = this.createOutputPort();
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -53,10 +53,18 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
     }
 
     /**
-     * @return the deploymentOutputPort
+     * @return the allocationOutputPort
      */
-    public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
-        return this.deploymentOutputPort;
+    public OutputPort<IAllocationRecord> getAllocationOutputPort() {
+        return this.allocationOutputPort;
+    }
+
+    /**
+     *
+     * @return allocationFinishedOutputPort
+     */
+    public OutputPort<IAllocationRecord> getAllocationFinishedOutputPort() {
+        return this.allocationFinishedOutputPort;
     }
 
     /**
@@ -66,21 +74,26 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
      *            one deployment event to be processed
      */
     @Override
-    protected void execute(final IDeploymentRecord event) {
+    protected void execute(final IAllocationRecord event) {
         ExecutionTimeLogger.getInstance().startLogging(event);
 
-        if (event instanceof ServletDeployedEvent) {
-            final String serivce = ((ServletDeployedEvent) event).getSerivce();
-            this.updateModel(serivce);
-        } else if (event instanceof EJBDeployedEvent) {
-            final String service = ((EJBDeployedEvent) event).getSerivce();
-            this.updateModel(service);
-        }
+        System.out.printf("structure of IAllocationRecord: %s", event.toString());
+        final String serverNames = event.getValueNames().toString();
+        System.out.printf("serverName in TAllocation: %s", serverNames);
+        // this.updateModel(serverName);
+
+        // if (event instanceof ServletDeployedEvent) {
+        // final String serivce = ((ServletDeployedEvent) event).getSerivce();
+        // this.updateModel(serivce);
+        // } else if (event instanceof EJBDeployedEvent) {
+        // final String service = ((EJBDeployedEvent) event).getSerivce();
+        // this.updateModel(service);
+        // }
 
         ExecutionTimeLogger.getInstance().stopLogging(event);
 
         // forward the event
-        this.deploymentOutputPort.send(event);
+        this.allocationFinishedOutputPort.send(event);
     }
 
     /**
@@ -99,4 +112,5 @@ public final class TAllocation extends AbstractConsumerStage<IDeploymentRecord> 
                     TAllocation.this.resourceEnvModelProvider.save();
                 }).elseApply(serverNamePresent -> System.out.printf("ResourceContainer %s was available.", serverName));
     }
+
 }
