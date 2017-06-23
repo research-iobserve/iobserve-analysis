@@ -232,7 +232,8 @@ public class ModelProvider<T extends EObject> {
      *            Id of component to be read
      * @return The read component
      */
-    public EObject readComponent(final Class<T> clazz, final String id) {
+    @SuppressWarnings("unchecked")
+    public T readComponent(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
         EObject component;
@@ -245,7 +246,7 @@ public class ModelProvider<T extends EObject> {
             tx.success();
         }
 
-        return component;
+        return (T) component;
     }
 
     /**
@@ -338,7 +339,8 @@ public class ModelProvider<T extends EObject> {
                     final EObject endComponent = ModelProviderUtil.instantiateEObject(endLabel.name());
 
                     if (endComponent != null) {
-
+                        // ((EObjectImpl)endComponent).eSetProxyURI(uri); // uri bei schreiben schon
+                        // setzen
                         // Load attribute values from the node
                         final Iterator<Map.Entry<String, Object>> i2 = endNode.getAllProperties().entrySet().iterator();
                         while (i2.hasNext()) {
