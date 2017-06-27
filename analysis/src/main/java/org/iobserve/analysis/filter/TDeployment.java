@@ -17,7 +17,6 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.data.AddAllocationContextEvent;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
@@ -58,7 +57,8 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
 
-    private final OutputPort<AddAllocationContextEvent> allocationContextOutputPort = this.createOutputPort();
+    // private final OutputPort<AddAllocationContextEvent> allocationContextOutputPort =
+    // this.createOutputPort();
     private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
     private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
     private final OutputPort<IDeploymentRecord> deploymentFinishedOutputPort = this.createOutputPort();
@@ -104,14 +104,15 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         }
 
         ExecutionTimeLogger.getInstance().stopLogging(event);
+        this.deploymentFinishedOutputPort.send(event);
     }
 
     /**
      * @return allocationContextOutputPort
      */
-    public OutputPort<AddAllocationContextEvent> getallocationContextOutputPort() {
-        return this.allocationContextOutputPort;
-    }
+    // public OutputPort<AddAllocationContextEvent> getallocationContextOutputPort() {
+    // return this.allocationContextOutputPort;
+    // }
 
     /**
      * @return allocationOutputPort
@@ -128,7 +129,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     }
 
     /**
-     * @return deploymentOutputPort
+     * @return deploymentFinishedOutputPort
      */
     public OutputPort<IDeploymentRecord> getDeploymentFinishedOutputPort() {
         return this.deploymentOutputPort;
@@ -145,7 +146,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         final String context = event.getContext();
 
         // build the containerAllocationEvent
-        final String urlContext = context.replaceAll(".", "/");
+        final String urlContext = context.replaceAll("\\.", "/");
         final String url = "http://" + service + '/' + urlContext;
 
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
@@ -191,16 +192,17 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 
         // get the model parts by name
         final Optional<ResourceContainer> optResourceContainer = ResourceEnvironmentModelBuilder
-                .getResourceContainerByName(this.resourceEnvModelProvider.getModel(), serverName);
+                .getResourceContainerByName(this.resourceEnvModelProvider.getModel(), serverName + Math.random());
 
         Opt.of(optResourceContainer).ifPresent()
-                .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName, event))
+                .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName))
                 // .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n",
                 // asmContextName));
                 .elseApply(() -> {
                     this.allocationOutputPort.send(new ContainerAllocationEvent(url));
-                    this.deploymentOutputPort.send(event);
+
                 });
+        this.deploymentOutputPort.send(event);
     }
 
     /**
@@ -212,8 +214,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      * @param asmContextName
      *            entity name of assembly context
      */
-    private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName,
-            final IDeploymentRecord event) {
+    private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName) {
         // get assembly context by name or create it if necessary.
         final AssemblyContext assemblyContext;
         final Optional<AssemblyContext> optAssCtx = SystemModelBuilder
@@ -229,7 +230,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
                 assemblyContext);
         this.allocationModelProvider.save();
-        this.deploymentFinishedOutputPort.send(event);
+        // this.allocationContextOutputPort.send(new AddAllocationContextEvent(resourceContainer));
     }
 
     /**

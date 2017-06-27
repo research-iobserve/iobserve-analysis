@@ -15,6 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
@@ -72,23 +75,15 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      *
      * @param event
      *            one deployment event to be processed
+     * @throws MalformedURLException
      */
     @Override
-    protected void execute(final IAllocationRecord event) {
+    protected void execute(final IAllocationRecord event) throws MalformedURLException {
         ExecutionTimeLogger.getInstance().startLogging(event);
 
-        System.out.printf("structure of IAllocationRecord: %s", event.toString());
-        final String serverNames = event.getValueNames().toString();
-        System.out.printf("serverName in TAllocation: %s", serverNames);
-        // this.updateModel(serverName);
-
-        // if (event instanceof ServletDeployedEvent) {
-        // final String serivce = ((ServletDeployedEvent) event).getSerivce();
-        // this.updateModel(serivce);
-        // } else if (event instanceof EJBDeployedEvent) {
-        // final String service = ((EJBDeployedEvent) event).getSerivce();
-        // this.updateModel(service);
-        // }
+        final URL url = new URL(event.toArray()[0].toString());
+        final String hostName = url.getHost();
+        this.updateModel(hostName);
 
         ExecutionTimeLogger.getInstance().stopLogging(event);
 
@@ -110,7 +105,8 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
                     final ResourceEnvironment model = TAllocation.this.resourceEnvModelProvider.getModel();
                     ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
                     TAllocation.this.resourceEnvModelProvider.save();
-                }).elseApply(serverNamePresent -> System.out.printf("ResourceContainer %s was available.", serverName));
+                })
+                .elseApply(serverNamePresent -> System.out.printf("ResourceContainer %s was available.\n", serverName));
     }
 
 }

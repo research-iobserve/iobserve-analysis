@@ -1,4 +1,7 @@
-package org.iobserve.analysis;
+package org.iobserve.analysis.filter;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 import org.iobserve.common.record.IAllocationRecord;
 import org.iobserve.common.record.IDeploymentRecord;
@@ -8,6 +11,13 @@ import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
 /**
+ * Wait until the allocation (triggered by a deployment) is finished. Then forward the deployment
+ * event in order to complete the deployment.
+ *
+ * The functionality of this stage can be implemented in a better way by extending the TeeTime stage
+ * AbstractBiCombinerStage<I,J>. The AbstractBiCombinerStage<I,J> will be part of TeeTime in near
+ * future. Please use the TeeTime implementation, if it is available in your version of TeeTime.
+ *
  *
  * @author jweg
  *
@@ -17,6 +27,8 @@ public class TAllocationFinished extends AbstractStage {
 
     private final InputPort<IDeploymentRecord> deploymentInputPort = super.createInputPort();
     private final InputPort<IAllocationRecord> allocationFinishedInputPort = super.createInputPort();
+    private final Queue<IDeploymentRecord> deployments = new LinkedList<>();
+    private final Queue<IAllocationRecord> allocations = new LinkedList<>();
 
     private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
 
@@ -55,11 +67,21 @@ public class TAllocationFinished extends AbstractStage {
 
     @Override
     protected void execute() throws Exception {
-        final IDeploymentRecord deployEvent = this.deploymentInputPort.receive();
         final IAllocationRecord allocationFinished = this.allocationFinishedInputPort.receive();
-        if ((deployEvent != null) && (allocationFinished != null)) {
-            this.deploymentOutputPort.send(deployEvent);
+        final IDeploymentRecord deploymentEvent = this.deploymentInputPort.receive();
+
+        if (allocationFinished != null) {
+            this.allocations.add(allocationFinished);
         }
+
+        if (deploymentEvent != null) {
+            this.deployments.add(deploymentEvent);
+        }
+
+        if ((this.allocations.size() > 0) && (this.deployments.size() > 0)) {
+            this.deploymentOutputPort.send(this.deployments.poll());
+        }
+
     }
 
 }
