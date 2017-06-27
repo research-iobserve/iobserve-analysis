@@ -25,7 +25,9 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.service.updater.VisualizationDeploymentStage;
+import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
+import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
+import org.neo4j.graphdb.GraphDatabaseService;
 
 /**
  * @author Reiner Jung
@@ -71,6 +73,7 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
             final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
+            final GraphDatabaseService resourceEnvironmentModelGraph,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider)
             throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
@@ -79,10 +82,14 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
 
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
-        final VisualizationDeploymentStage visualizationDeploymentStage = new VisualizationDeploymentStage(url);
+        final DeploymentVisualizationStage visualizationDeploymentStage = new DeploymentVisualizationStage(url);
+        final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
+                resourceEnvironmentModelGraph);
 
         this.connectPorts(this.deploymentSuccAllocation.getDeploymentFinishedOutputPort(),
                 visualizationDeploymentStage.getInputPort());
+        this.connectPorts(this.tAllocationSuccDeploy.getAllocationOutputPort(),
+                allocationVisualizationStage.getInputPort());
     }
 
 }

@@ -29,6 +29,8 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.GraphLoader;
+import org.neo4j.graphdb.GraphDatabaseService;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -74,6 +76,10 @@ public class AnalysisDaemon implements Daemon {
             "--pcm" }, required = true, description = "Directory containing PCM model data.", converter = FileConverter.class)
     private File pcmModelsDirectory;
 
+    @Parameter(names = { "-pn4j",
+            "--pcmneo4j" }, required = true, description = "Directory containing Neo4j database with PCM model data.", converter = FileConverter.class)
+    private File pcmModelsNeo4jDirectory;
+
     private AnalysisThread thread;
     private boolean running = false;
 
@@ -115,15 +121,20 @@ public class AnalysisDaemon implements Daemon {
             final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
             final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
             final RepositoryModelProvider repositoryModelProvider = modelProvider.getRepositoryModelProvider();
-            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider
+            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider = modelProvider
                     .getResourceEnvironmentModelProvider();
             final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
             final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
 
+            final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
+            graphLoader.initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
+            System.out.println("Initialized resource environment model graph");
+            final GraphDatabaseService resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
+
             final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname, outputPort,
                     this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
-                    usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
-                    allocationModelProvider, systemModelProvider);
+                    usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
+                    resourceEnvironmentModelGraph, allocationModelProvider, systemModelProvider);
 
             this.thread = new AnalysisThread(this, configuration);
         } else {

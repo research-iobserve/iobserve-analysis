@@ -38,7 +38,7 @@ import teetime.framework.AbstractConsumerStage;
  * @author Reiner Jung
  *
  */
-public class VisualizationDeploymentStage extends AbstractConsumerStage<IDeploymentRecord> {
+public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploymentRecord> {
 
     private static final String USER_AGENT = "iObserve/0.0.2";
 
@@ -50,31 +50,33 @@ public class VisualizationDeploymentStage extends AbstractConsumerStage<IDeploym
      * @param outputURL
      *            the output URL
      */
-    public VisualizationDeploymentStage(final URL outputURL) {
+    public DeploymentVisualizationStage(final URL outputURL) {
         this.outputURL = outputURL;
     }
 
     @Override
     protected void execute(final IDeploymentRecord allocate) {
-        try {
-            if (allocate != null) {
-                this.sendPostRequest(this.deployment(allocate));
+        // try {
+        if (allocate != null) {
+            System.out.println("nothing to do");
+            // this.sendPostRequest(this.deployment(allocate));
 
-            }
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
+        // } catch (final IOException e) {
+        // // TODO Auto-generated catch block
+        // e.printStackTrace();
     }
+    // }
 
     private JsonArray deployment(final IDeploymentRecord allocate) {
 
         final JsonObject nodeGroup = Json.createObjectBuilder().add("type", "nodeGroup")
                 .add("id", "node-group-id-analysis").add("systemId", "CoCoME").add("name", "XUbuntu VM").build();
 
-        final JsonObject node1 = Json.createObjectBuilder().add("type", "node").add("id", "node-id-analysis-1")
-                .add("systemId", "CoCoME").add("nodeGroupId", "node-group-id-analysis").add("hostname", "localhost")
-                .add("ip", "127.0.0.1").build();
+        final JsonObject node1 = Json.createObjectBuilder().add("type", "node")
+                .add("id", "node-id-analysis-1" + Math.random()).add("systemId", "CoCoME")
+                .add("nodeGroupId", "node-group-id-analysis").add("hostname", "localhost").add("ip", "127.0.0.1")
+                .build();
 
         final JsonObject service = Json.createObjectBuilder().add("type", "service").add("id", "service-id-analysis")
                 .add("systemId", "CoCoME").add("name", "analysis-service").build();
@@ -106,7 +108,7 @@ public class VisualizationDeploymentStage extends AbstractConsumerStage<IDeploym
         final JsonObject communicationInstData = Json.createObjectBuilder().add("type", "changelog")
                 .add("operation", "CREATE").add("data", communicationInst).build();
 
-        final JsonArray dataArray = Json.createArrayBuilder().add(communicationInstData).build();
+        final JsonArray dataArray = Json.createArrayBuilder().add(nodeData).build();
 
         return dataArray;
     }
@@ -125,7 +127,7 @@ public class VisualizationDeploymentStage extends AbstractConsumerStage<IDeploym
         // add request header
         connection.setRequestMethod("POST");
         connection.setRequestProperty("content-type", "application/json; charset=utf-8");
-        connection.setRequestProperty("User-Agent", VisualizationDeploymentStage.USER_AGENT);
+        connection.setRequestProperty("User-Agent", DeploymentVisualizationStage.USER_AGENT);
         connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
 
         // Send post request

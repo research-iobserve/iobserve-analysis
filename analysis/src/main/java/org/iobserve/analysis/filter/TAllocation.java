@@ -83,7 +83,7 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
 
         final URL url = new URL(event.toArray()[0].toString());
         final String hostName = url.getHost();
-        this.updateModel(hostName);
+        this.updateModel(hostName, event);
 
         ExecutionTimeLogger.getInstance().stopLogging(event);
 
@@ -97,7 +97,7 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      * @param serverName
      *            server name
      */
-    private void updateModel(final String serverName) {
+    private void updateModel(final String serverName, final IAllocationRecord event) {
 
         Opt.of(ResourceEnvironmentModelBuilder.getResourceContainerByName(this.resourceEnvModelProvider.getModel(),
                 serverName)).ifNotPresent().apply(() -> {
@@ -105,6 +105,9 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
                     final ResourceEnvironment model = TAllocation.this.resourceEnvModelProvider.getModel();
                     ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
                     TAllocation.this.resourceEnvModelProvider.save();
+                    // hier dann noch den Graphen updaten, damit ich AllocationVisualization testen
+                    // kann
+                    this.allocationOutputPort.send(event);
                 })
                 .elseApply(serverNamePresent -> System.out.printf("ResourceContainer %s was available.\n", serverName));
     }

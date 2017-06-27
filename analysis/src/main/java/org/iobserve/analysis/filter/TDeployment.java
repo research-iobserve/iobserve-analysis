@@ -107,9 +107,9 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         this.deploymentFinishedOutputPort.send(event);
     }
 
-    /**
-     * @return allocationContextOutputPort
-     */
+    // /**
+    // * @return allocationContextOutputPort
+    // */
     // public OutputPort<AddAllocationContextEvent> getallocationContextOutputPort() {
     // return this.allocationContextOutputPort;
     // }

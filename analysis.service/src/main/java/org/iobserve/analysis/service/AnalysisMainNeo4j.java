@@ -136,11 +136,6 @@ public final class AnalysisMainNeo4j {
                 final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
                 final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
 
-                final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
-                        outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
-                        correspondenceModel, usageModelProvider, repositoryModelProvider,
-                        resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider);
-
                 /** Neo4j database ************************************************************/
                 // Create a graph loader to receive the different neo4j graphs for each model
                 final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
@@ -180,6 +175,12 @@ public final class AnalysisMainNeo4j {
                 final OperationInterface opInter = new ModelProvider<OperationInterface>(repositoryModelGraph)
                         .readComponent(OperationInterface.class, idOfInterfaceIWant);
                 /******************************************************************************/
+
+                final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
+                        outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
+                        correspondenceModel, usageModelProvider, repositoryModelProvider,
+                        resourceEvnironmentModelProvider, resourceEnvironmentModelGraph, allocationModelProvider,
+                        systemModelProvider);
 
                 System.out.println("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);
