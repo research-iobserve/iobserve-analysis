@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j;
 
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -71,6 +72,63 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  *
  */
 public class ModelProviderUtil {
+
+    public static String generateUriString(final String predUriString, final EObject component) {
+        final String label = ModelProviderUtil.getTypeName(component.eClass());
+        final EAttribute idAttr = component.eClass().getEIDAttribute();
+        String uriString;
+
+        if (predUriString.isEmpty()) {
+            if (idAttr != null) {
+                uriString = label + "#" + component.eGet(idAttr);
+            } else {
+                uriString = label;
+            }
+        } else {
+            if (idAttr != null) {
+                uriString = predUriString + "." + label + "#" + component.eGet(idAttr);
+            } else {
+                uriString = predUriString + "." + label;
+            }
+        }
+
+        return uriString;
+    }
+
+    public static String getUriString(final EObject component) {
+        EObject comp = component;
+        EObject container;
+        String label;
+        String uri = "";
+        EAttribute idAttr;
+
+        do {
+            container = comp.eContainer();
+            label = ModelProviderUtil.getTypeName(comp.eClass());
+            idAttr = comp.eClass().getEIDAttribute();
+
+            if (uri.isEmpty()) {
+                if (idAttr != null) {
+                    uri = label + "#" + comp.eGet(idAttr);
+                } else {
+                    uri = label;
+                }
+            } else {
+                if (idAttr != null) {
+                    uri = label + "#" + comp.eGet(idAttr) + "." + uri;
+                } else {
+                    uri = label + "." + uri;
+                }
+            }
+
+            comp = container;
+
+        } while (container != null);
+
+        System.out.println(uri);
+
+        return uri;
+    }
 
     /**
      * Returns the first of several labels.

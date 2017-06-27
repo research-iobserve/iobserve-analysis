@@ -18,10 +18,10 @@ package org.iobserve.analysis.modelneo4j;
 import java.io.File;
 
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.RepositoryModelProvider;
+import org.iobserve.analysis.model.UsageModelProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * An ugly test class for debugging
@@ -46,13 +46,13 @@ public class TestGeneric {
                 TestGeneric.PCM_MODELS_DIRECTORY);
 
         /** Load repository model */
-        final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
-        final Repository repositoryModel = repositoryModelProvider.getModel();
+        // final RepositoryModelProvider repositoryModelProvider =
+        // modelProviderPlatform.getRepositoryModelProvider();
+        // final Repository repositoryModel = repositoryModelProvider.getModel();
 
         /** Load usage model */
-        // final UsageModelProvider usageModelProvider =
-        // modelProviderPlatform.getUsageModelProvider();
-        // final UsageModel usageModel = usageModelProvider.getModel();
+        final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
+        final UsageModel usageModel = usageModelProvider.getModel();
 
         // /** Load system model */
         // final SystemModelProvider systemModelProvider =
@@ -76,7 +76,7 @@ public class TestGeneric {
 
         /** Write to DB1 */
         System.out.println("Writing to DB1");
-        new ModelProvider<>(graph).createComponent(repositoryModel);
+        new ModelProvider<>(graph).createComponent(usageModel);
 
         /** Reading (id -> object) from DB1 */
         System.out.println("Reading (id -> object) from DB1");
@@ -86,8 +86,7 @@ public class TestGeneric {
         // ModelProvider<OperationInterface>(graph)
         // .readComponent2(OperationInterface.class,
         // repositoryModel.getInterfaces__Repository().get(0).getId());
-        // final UsageModel usageModel2 = new
-        // ModelProvider<UsageModel>(graph).readRootComponent(UsageModel.class);
+        final UsageModel usageModel2 = new ModelProvider<UsageModel>(graph).readRootComponent(UsageModel.class);
 
         // /** Reading (type -> ids) from DB1 */
         // System.out.println("Reading (type -> ids) from DB1");
@@ -107,10 +106,10 @@ public class TestGeneric {
         // inter);
 
         /** Writing to DB2 */
-        // System.out.println("Writing to DB2");
+        System.out.println("Writing to DB2");
         // new
         // ModelProvider<>(graph2).createComponent(repositoryModel.getInterfaces__Repository().get(0));
-        // new ModelProvider<>(graph2).createComponent(usageModel2);
+        new ModelProvider<>(graph2).createComponent(usageModel2);
 
         /** Deleting from DB2 */
         // System.out.println("Deleting from DB2");
@@ -123,15 +122,17 @@ public class TestGeneric {
         graph.shutdown();
 
         /** Test old provider */
-        System.out.println("Create old provider");
-        final org.iobserve.analysis.modelneo4j.legacyprovider.RepositoryModelProvider repositoryModelProvider2 = new org.iobserve.analysis.modelneo4j.legacyprovider.RepositoryModelProvider(
-                TestGeneric.DB_PATH);
-        System.out.println("Save with old provider");
-        repositoryModelProvider2.save();
-        System.out.println("Load with old provider");
-        repositoryModelProvider2.loadModel();
-        System.out.println("Write to DB2");
-        new ModelProvider<>(graph2).createComponent(repositoryModelProvider2.getModel());
+        // System.out.println("Create old provider");
+        // final org.iobserve.analysis.modelneo4j.legacyprovider.RepositoryModelProvider
+        // repositoryModelProvider2 = new
+        // org.iobserve.analysis.modelneo4j.legacyprovider.RepositoryModelProvider(
+        // TestGeneric.DB_PATH);
+        // System.out.println("Save with old provider");
+        // repositoryModelProvider2.save();
+        // System.out.println("Load with old provider");
+        // repositoryModelProvider2.loadModel();
+        // System.out.println("Write to DB2");
+        // new ModelProvider<>(graph2).createComponent(repositoryModelProvider2.getModel());
 
         graph2.shutdown();
         System.out.print("Shut down DBs");

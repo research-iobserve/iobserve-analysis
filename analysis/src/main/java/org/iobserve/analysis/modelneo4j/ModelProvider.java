@@ -24,9 +24,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.neo4j.graphdb.Direction;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
@@ -52,9 +54,10 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  */
 public class ModelProvider<T extends EObject> {
 
+    private static final String EMF_URI = "emfUri";
     private static final String ID = "id";
-    private static final String TYPE = "type";
     private static final String REF_NAME = "refName";
+    private static final String TYPE = "type";
 
     private static final String ACCESSIBLE = "accessible";
     private static final String DELETE = "delete";
@@ -182,6 +185,14 @@ public class ModelProvider<T extends EObject> {
             node = this.getGraph().createNode(label);
             objectsToCreatedNodes.put(component, node);
 
+            // Create a URI to enable proxy resolving
+            final URI uri = ((BasicEObjectImpl) component).eProxyURI();
+            if (uri == null) {
+                node.setProperty(ModelProvider.EMF_URI, ModelProviderUtil.getUriString(component));
+            } else {
+                node.setProperty(ModelProvider.EMF_URI, uri.toString());
+            }
+
             // Save attributes as node properties
             for (final EAttribute attr : component.eClass().getEAllAttributes()) {
                 final Object value = component.eGet(attr);
@@ -298,16 +309,24 @@ public class ModelProvider<T extends EObject> {
             final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
             component = ModelProviderUtil.instantiateEObject(label.name());
 
+            // Set Uri
+            final URI uri = URI.createURI(node.getProperty(ModelProvider.EMF_URI).toString());
+            ((BasicEObjectImpl) component).eSetProxyURI(uri);
+
             // Load attribute values from the node
             final Iterator<Map.Entry<String, Object>> i = node.getAllProperties().entrySet().iterator();
             while (i.hasNext()) {
                 final Entry<String, Object> property = i.next();
                 final EAttribute attr = (EAttribute) component.eClass().getEStructuralFeature(property.getKey());
-                final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
-                        property.getValue().toString());
 
-                if (value != null) {
-                    component.eSet(attr, value);
+                // attr == null for the emfUri property stored in the graph
+                if (attr != null) {
+                    final Object value = ModelProviderUtil.instantiateAttribute(
+                            attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
+
+                    if (value != null) {
+                        component.eSet(attr, value);
+                    }
                 }
             }
 
@@ -339,19 +358,24 @@ public class ModelProvider<T extends EObject> {
                     final EObject endComponent = ModelProviderUtil.instantiateEObject(endLabel.name());
 
                     if (endComponent != null) {
-                        // ((EObjectImpl)endComponent).eSetProxyURI(uri); // uri bei schreiben schon
-                        // setzen
+                        final URI endUri = URI.createURI(endNode.getProperty(ModelProvider.EMF_URI).toString());
+                        ((BasicEObjectImpl) endComponent).eSetProxyURI(endUri);
+
                         // Load attribute values from the node
                         final Iterator<Map.Entry<String, Object>> i2 = endNode.getAllProperties().entrySet().iterator();
                         while (i2.hasNext()) {
                             final Entry<String, Object> property = i2.next();
                             final EAttribute attr = (EAttribute) endComponent.eClass()
                                     .getEStructuralFeature(property.getKey());
-                            final Object value = ModelProviderUtil.instantiateAttribute(
-                                    attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
 
-                            if (value != null) {
-                                endComponent.eSet(attr, value);
+                            // attr == null for the emfUri property stored in the graph
+                            if (attr != null) {
+                                final Object value = ModelProviderUtil.instantiateAttribute(
+                                        attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
+
+                                if (value != null) {
+                                    endComponent.eSet(attr, value);
+                                }
                             }
                         }
 
