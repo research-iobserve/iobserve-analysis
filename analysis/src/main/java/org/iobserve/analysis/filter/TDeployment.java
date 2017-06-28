@@ -28,7 +28,9 @@ import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
+import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.EJBDeployedEvent;
+import org.iobserve.common.record.IAllocationRecord;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -56,7 +58,10 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
 
-    private final OutputPort<AddAllocationContextEvent> outputPort = this.createOutputPort();
+    private final OutputPort<AddAllocationContextEvent> allocationContextOutputPort = this.createOutputPort();
+    private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
+    private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
+    private final OutputPort<IDeploymentRecord> deploymentFinishedOutputPort = this.createOutputPort();
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -89,23 +94,44 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      */
     @Override
     protected void execute(final IDeploymentRecord event) {
-    	ExecutionTimeLogger.getInstance().startLogging(event);
-    	
+        ExecutionTimeLogger.getInstance().startLogging(event);
+
         if (event instanceof ServletDeployedEvent) {
             this.process((ServletDeployedEvent) event);
 
         } else if (event instanceof EJBDeployedEvent) {
             this.process((EJBDeployedEvent) event);
         }
-        
+
         ExecutionTimeLogger.getInstance().stopLogging(event);
     }
 
     /**
-     * @return output port
+     * @return allocationContextOutputPort
      */
-    public OutputPort<AddAllocationContextEvent> getOutputPort() {
-        return this.outputPort;
+    public OutputPort<AddAllocationContextEvent> getallocationContextOutputPort() {
+        return this.allocationContextOutputPort;
+    }
+
+    /**
+     * @return allocationOutputPort
+     */
+    public OutputPort<IAllocationRecord> getAllocationOutputPort() {
+        return this.allocationOutputPort;
+    }
+
+    /**
+     * @return deploymentOutputPort
+     */
+    public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
+        return this.deploymentOutputPort;
+    }
+
+    /**
+     * @return deploymentOutputPort
+     */
+    public OutputPort<IDeploymentRecord> getDeploymentFinishedOutputPort() {
+        return this.deploymentOutputPort;
     }
 
     /**
@@ -117,8 +143,13 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     private void process(final ServletDeployedEvent event) {
         final String service = event.getSerivce();
         final String context = event.getContext();
+
+        // build the containerAllocationEvent
+        final String urlContext = context.replaceAll(".", "/");
+        final String url = "http://" + service + '/' + urlContext;
+
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
-                .apply(correspondence -> this.updateModel(service, correspondence))
+                .apply(correspondence -> this.updateModel(service, correspondence, url, event))
                 .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
     }
 
@@ -132,8 +163,12 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         final String service = event.getSerivce();
         final String context = event.getContext();
 
+        // build the containerAllocationEvent
+        final String urlContext = context.replaceAll("\\.", "/");
+        final String url = "http://" + service + '/' + urlContext;
+
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
-                .apply(correspondent -> this.updateModel(service, correspondent))
+                .apply(correspondent -> this.updateModel(service, correspondent, url, event))
                 .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
     }
 
@@ -144,8 +179,10 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      *            name of the server
      * @param correspondent
      *            correspondent
+     *
      */
-    private void updateModel(final String serverName, final Correspondent correspondent) {
+    private void updateModel(final String serverName, final Correspondent correspondent, final String url,
+            final IDeploymentRecord event) {
         // get the model entity name
         final String entityName = correspondent.getPcmEntityName();
 
@@ -156,10 +193,14 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         final Optional<ResourceContainer> optResourceContainer = ResourceEnvironmentModelBuilder
                 .getResourceContainerByName(this.resourceEnvModelProvider.getModel(), serverName);
 
-        // this can not happen since TAllocation should have created the resource container already.
         Opt.of(optResourceContainer).ifPresent()
-                .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName))
-                .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n", asmContextName));
+                .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName, event))
+                // .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n",
+                // asmContextName));
+                .elseApply(() -> {
+                    this.allocationOutputPort.send(new ContainerAllocationEvent(url));
+                    this.deploymentOutputPort.send(event);
+                });
     }
 
     /**
@@ -171,7 +212,8 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      * @param asmContextName
      *            entity name of assembly context
      */
-    private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName) {
+    private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName,
+            final IDeploymentRecord event) {
         // get assembly context by name or create it if necessary.
         final AssemblyContext assemblyContext;
         final Optional<AssemblyContext> optAssCtx = SystemModelBuilder
@@ -187,7 +229,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
                 assemblyContext);
         this.allocationModelProvider.save();
-        this.outputPort.send(new AddAllocationContextEvent(resourceContainer));
+        this.deploymentFinishedOutputPort.send(event);
     }
 
     /**

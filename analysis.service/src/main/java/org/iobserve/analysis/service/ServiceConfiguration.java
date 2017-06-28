@@ -25,7 +25,7 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.service.updater.VisualizationUpdateStage;
+import org.iobserve.analysis.service.updater.VisualizationDeploymentStage;
 
 /**
  * @author Reiner Jung
@@ -79,10 +79,10 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
 
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
+        final VisualizationDeploymentStage visualizationDeploymentStage = new VisualizationDeploymentStage(url);
 
-        final VisualizationUpdateStage visualizationUpdateStage = new VisualizationUpdateStage(url);
-        this.connectPorts(this.deployment.getOutputPort(), visualizationUpdateStage.getDeploymentInputPort());
-        this.connectPorts(this.undeployment.getOutputPort(), visualizationUpdateStage.getUndeploymentInputPort());
+        this.connectPorts(this.deploymentSuccAllocation.getDeploymentFinishedOutputPort(),
+                visualizationDeploymentStage.getInputPort());
     }
 
 }
