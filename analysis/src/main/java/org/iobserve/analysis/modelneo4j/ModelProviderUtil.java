@@ -73,28 +73,13 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  */
 public class ModelProviderUtil {
 
-    public static String generateUriString(final String predUriString, final EObject component) {
-        final String label = ModelProviderUtil.getTypeName(component.eClass());
-        final EAttribute idAttr = component.eClass().getEIDAttribute();
-        String uriString;
-
-        if (predUriString.isEmpty()) {
-            if (idAttr != null) {
-                uriString = label + "#" + component.eGet(idAttr);
-            } else {
-                uriString = label;
-            }
-        } else {
-            if (idAttr != null) {
-                uriString = predUriString + "." + label + "#" + component.eGet(idAttr);
-            } else {
-                uriString = predUriString + "." + label;
-            }
-        }
-
-        return uriString;
-    }
-
+    /**
+     * Returns a URI based on the components containing the passed component.
+     * 
+     * @param component
+     *            The component to compute a URI to
+     * @return The URI
+     */
     public static String getUriString(final EObject component) {
         EObject comp = component;
         EObject container;
@@ -124,8 +109,6 @@ public class ModelProviderUtil {
             comp = container;
 
         } while (container != null);
-
-        System.out.println(uri);
 
         return uri;
     }

@@ -16,11 +16,15 @@
 package org.iobserve.analysis.modelneo4j;
 
 import java.io.File;
+import java.util.List;
 
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.UsageModelProvider;
+import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
+import org.palladiosimulator.pcm.repository.OperationInterface;
+import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
@@ -46,13 +50,13 @@ public class TestGeneric {
                 TestGeneric.PCM_MODELS_DIRECTORY);
 
         /** Load repository model */
-        // final RepositoryModelProvider repositoryModelProvider =
-        // modelProviderPlatform.getRepositoryModelProvider();
-        // final Repository repositoryModel = repositoryModelProvider.getModel();
+        final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
+        final Repository repositoryModel = repositoryModelProvider.getModel();
 
         /** Load usage model */
-        final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
-        final UsageModel usageModel = usageModelProvider.getModel();
+        // final UsageModelProvider usageModelProvider =
+        // modelProviderPlatform.getUsageModelProvider();
+        // final UsageModel usageModel = usageModelProvider.getModel();
 
         // /** Load system model */
         // final SystemModelProvider systemModelProvider =
@@ -75,13 +79,14 @@ public class TestGeneric {
         /*************************************************************************************************/
 
         /** Write to DB1 */
-        System.out.println("Writing to DB1");
-        new ModelProvider<>(graph).createComponent(usageModel);
+        // System.out.println("Writing to DB1");
+        // new ModelProvider<>(graph).createComponent(repositoryModel);
 
         /** Reading (id -> object) from DB1 */
         System.out.println("Reading (id -> object) from DB1");
-        // final Repository repositoryModel2 = (Repository) new ModelProvider<Repository>(graph)
-        // .readComponent2(Repository.class, repositoryModel.getId());
+        // final Repository repositoryModel2 = new
+        // ModelProvider<Repository>(graph).readComponentById(Repository.class,
+        // repositoryModel.getId());
         // final OperationInterface inter = (OperationInterface) new
         // ModelProvider<OperationInterface>(graph)
         // .readComponent2(OperationInterface.class,
@@ -109,7 +114,16 @@ public class TestGeneric {
         System.out.println("Writing to DB2");
         // new
         // ModelProvider<>(graph2).createComponent(repositoryModel.getInterfaces__Repository().get(0));
-        new ModelProvider<>(graph2).createComponent(usageModel2);
+        // new ModelProvider<>(graph2).createComponent(repositoryModel);
+
+        /** Reading from DB2 */
+        System.out.println("Reading from DB2");
+        final List<OperationInterface> inters = new ModelProvider<OperationInterface>(graph2)
+                .readComponentByName(OperationInterface.class, "ITradingEnterprise");
+        System.out.println(inters.size() + " " + inters);
+        final List<OperationSignature> sigs = new ModelProvider<OperationSignature>(graph2)
+                .readComponentByName(OperationSignature.class, "getId");
+        System.out.println(sigs.size() + " " + sigs);
 
         /** Deleting from DB2 */
         // System.out.println("Deleting from DB2");
