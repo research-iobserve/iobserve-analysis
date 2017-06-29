@@ -175,6 +175,8 @@ public final class AnalysisMainNeo4j {
                 final OperationInterface opInter = new ModelProvider<OperationInterface>(repositoryModelGraph)
                         .readComponentById(OperationInterface.class, idOfInterfaceIWant);
                 /******************************************************************************/
+                final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
+                        allocationModelGraph, systemModelGraph, systemModelProvider, resourceEnvironmentModelGraph);
 
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
                         outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
