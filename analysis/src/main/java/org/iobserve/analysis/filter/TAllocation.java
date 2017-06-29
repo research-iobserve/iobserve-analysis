@@ -15,20 +15,16 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.IAllocationRecord;
 import org.neo4j.graphdb.GraphDatabaseService;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.AbstractConsumerStage;
@@ -40,6 +36,7 @@ import teetime.framework.OutputPort;
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
+ * @author jweg
  */
 public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> {
 
@@ -55,12 +52,15 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
-     * @param resourceEvnironmentModelProvider
+     * @param resourceEnvironmentModelProvider
      *            the resource environment model provider
+     *
+     * @param resourceEnvironmentModelGraph
+     *            the resource environment model graph
      */
-    public TAllocation(final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
+    public TAllocation(final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final GraphDatabaseService resourceEnvironmentModelGraph) {
-        this.resourceEnvModelProvider = resourceEvnironmentModelProvider;
+        this.resourceEnvModelProvider = resourceEnvironmentModelProvider;
         this.resourceEnvironmentModelGraph = resourceEnvironmentModelGraph;
     }
 
@@ -80,10 +80,10 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
     }
 
     /**
-     * This method is triggered for every deployment event.
+     * This method is triggered for every allocation event.
      *
      * @param event
-     *            one deployment event to be processed
+     *            one allocation event to be processed
      * @throws MalformedURLException
      */
     @Override
@@ -96,15 +96,17 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
 
         ExecutionTimeLogger.getInstance().stopLogging(event);
 
-        // forward the event
+        // signal allocation finished
         this.allocationFinishedOutputPort.send(event);
     }
 
     /**
-     * Update the allocation model with the given server-name if necessary.
+     * Update the resource environment model with the given server-name if necessary.
      *
      * @param serverName
      *            server name
+     * @param event
+     *            allocation event
      */
     private void updateModel(final String serverName, final IAllocationRecord event) {
 
@@ -115,21 +117,12 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
                     ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
                     TAllocation.this.resourceEnvModelProvider.save();
 
-                    // workaround for updating the graph: there will be a method for this
-                    final ModelProvider<ResourceContainer> resourceEnvironmentModel = new ModelProvider<>(
+                    // workaround for updating the graph: clear graph and create new one based on
+                    // updated resource environment model
+                    final ModelProvider<ResourceEnvironment> resourceEnvironmentModel = new ModelProvider<>(
                             this.resourceEnvironmentModelGraph);
                     resourceEnvironmentModel.clearGraph();
-
-                    final InitializeModelProviders modelProvider = new InitializeModelProviders(
-                            new File("/home/jweg/models/WorkingTestPCM/pcm/"));
-                    final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider = modelProvider
-                            .getResourceEnvironmentModelProvider();
-                    final GraphLoader graphLoader = new GraphLoader(new File("/home/jweg/iobserve-neo4j/tallocation"));
-
-                    graphLoader.initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
-                    System.out.println("Initialized resource environment model graph");
-                    final GraphDatabaseService resourceEnvironmentModelGraph = graphLoader
-                            .getResourceEnvironmentModelGraph();
+                    resourceEnvironmentModel.createComponent(this.resourceEnvModelProvider.getModel());
 
                     this.allocationOutputPort.send(event);
                 })

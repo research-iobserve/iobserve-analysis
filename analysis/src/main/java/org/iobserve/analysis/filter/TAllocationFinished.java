@@ -65,6 +65,9 @@ public class TAllocationFinished extends AbstractStage {
         return this.deploymentOutputPort;
     }
 
+    /**
+     * Forwards the deployment event after the allocation is finished.
+     */
     @Override
     protected void execute() throws Exception {
         final IAllocationRecord allocationFinished = this.allocationFinishedInputPort.receive();
