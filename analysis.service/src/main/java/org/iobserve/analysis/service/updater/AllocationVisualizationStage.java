@@ -77,6 +77,8 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
 
         }
 
+        // final List<String> resourceContainerIds = resourceEnvironmentModel
+
         // brauchen dafür systemId und nodeGroupId
         final JsonObject node = Json.createObjectBuilder().add("type", "node").add("id", nodeId)
                 .add("systemId", "CoCoME").add("nodeGroupId", "node-group-id-analysis").add("hostname", hostname)

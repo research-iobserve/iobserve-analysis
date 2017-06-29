@@ -30,6 +30,7 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.neo4j.graphdb.GraphDatabaseService;
 
 import teetime.framework.Configuration;
 
@@ -78,18 +79,20 @@ public abstract class AbstractObservationConfiguration extends Configuration {
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
+            final GraphDatabaseService resourceEnvironmentModelGraph,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
-        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
+        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider,
+                resourceEnvironmentModelGraph);
         final TAllocationFinished tAllocationFinished = new TAllocationFinished();
         this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
         this.deploymentSuccAllocation = new TDeployment(correspondenceModel, allocationModelProvider,
                 systemModelProvider, resourceEnvironmentModelProvider);
-        this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider);
+        this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider, resourceEnvironmentModelGraph);
         this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
 

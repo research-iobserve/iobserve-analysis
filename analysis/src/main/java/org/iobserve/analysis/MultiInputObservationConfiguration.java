@@ -22,6 +22,7 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.neo4j.graphdb.GraphDatabaseService;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -60,10 +61,12 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
     public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
+            final GraphDatabaseService resourceEnvironmentModelGraph,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+                resourceEnvironmentModelGraph, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
+                thinkTime, closedWorkload);
 
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
                 MultiInputObservationConfiguration.CAPACITY);

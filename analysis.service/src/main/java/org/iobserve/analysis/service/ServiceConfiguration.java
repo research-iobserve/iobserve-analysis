@@ -77,8 +77,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider)
             throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
-                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
-                thinkTime, closedWorkload);
+                resourceEvnironmentModelProvider, resourceEnvironmentModelGraph, allocationModelProvider,
+                systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
 
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
