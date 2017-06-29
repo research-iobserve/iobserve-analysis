@@ -173,7 +173,7 @@ public final class AnalysisMainNeo4j {
                 final String idOfInterfaceIWant = repositoryModelProvider.getModel().getInterfaces__Repository().get(0)
                         .getId();
                 final OperationInterface opInter = new ModelProvider<OperationInterface>(repositoryModelGraph)
-                        .readComponent(OperationInterface.class, idOfInterfaceIWant);
+                        .readComponentById(OperationInterface.class, idOfInterfaceIWant);
                 /******************************************************************************/
 
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,

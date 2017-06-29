@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j;
 
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
@@ -71,6 +72,46 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  *
  */
 public class ModelProviderUtil {
+
+    /**
+     * Returns a URI based on the components containing the passed component.
+     * 
+     * @param component
+     *            The component to compute a URI to
+     * @return The URI
+     */
+    public static String getUriString(final EObject component) {
+        EObject comp = component;
+        EObject container;
+        String label;
+        String uri = "";
+        EAttribute idAttr;
+
+        do {
+            container = comp.eContainer();
+            label = ModelProviderUtil.getTypeName(comp.eClass());
+            idAttr = comp.eClass().getEIDAttribute();
+
+            if (uri.isEmpty()) {
+                if (idAttr != null) {
+                    uri = label + "#" + comp.eGet(idAttr);
+                } else {
+                    uri = label;
+                }
+            } else {
+                if (idAttr != null) {
+                    uri = label + "#" + comp.eGet(idAttr) + "." + uri;
+                } else {
+                    uri = label + "." + uri;
+                }
+            }
+
+            comp = container;
+
+        } while (container != null);
+
+        return uri;
+    }
 
     /**
      * Returns the first of several labels.
