@@ -495,181 +495,12 @@ public class ModelProvider<T extends EObject> {
      */
     public void updateComponent(final Class<T> clazz, final T component) {
         final EAttribute idAttr = component.eClass().getEIDAttribute();
-        this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
-        this.createComponent(component);
-    }
-
-    public Node updateComponent2(final T component) {
-        final Node node;
-        try (Transaction tx = this.getGraph().beginTx()) {
-            final HashSet<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
-                    new HashSet<>());
-            node = this.updateNodes(component, containmentsAndDatatypes, new HashMap<>());
-            tx.success();
-        }
-        return node;
-    }
-
-    private Node updateNodes(final EObject component, final HashSet<EObject> containmentsAndDatatypes,
-            final HashMap<EObject, Node> objectsToCreatedNodes) {
-        // Create a label representing the type of the component
-        final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
-        Node node = null;
-
-        // Check if node has already been created
-        final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
-            node = this.getGraph().findNode(label, ModelProvider.ID, component.eGet(idAttr));
-        } else if (component instanceof PrimitiveDataType) {
-            node = this.getGraph().findNode(label, ModelProvider.TYPE,
-                    ((PrimitiveDataType) component).getType().name());
-        } else if ((component instanceof UsageModel) || (component instanceof ResourceEnvironment)
-                || (component instanceof Allocation)) {
-            final ResourceIterator<Node> nodes = this.getGraph().findNodes(Label.label(component.eClass().getName()));
-            if (nodes.hasNext()) {
-                node = nodes.next();
-            }
+            this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
+            this.createComponent(component);
         } else {
-            // For components that cannot be found in the graph (e.g. due to missing id) but have
-            // been created in this recursion
-            node = objectsToCreatedNodes.get(component);
+            System.err.println("Updated component needs to have an id");
         }
-
-        // if node==null || update
-        if (!objectsToCreatedNodes.containsKey(component)) {
-
-            // If there is no node yet, create one
-            if (node == null) { // && update
-
-                node = this.getGraph().createNode(label);
-            }
-            objectsToCreatedNodes.put(component, node);
-
-            System.out.println(ModelProviderUtil.getFirstLabel(node.getLabels()));
-
-            // if update
-            node.getAllProperties().clear();
-
-            // Create a URI to enable proxy resolving
-            final URI uri = ((BasicEObjectImpl) component).eProxyURI();
-            if (uri == null) {
-                node.setProperty(ModelProvider.EMF_URI, ModelProviderUtil.getUriString(component));
-            } else {
-                node.setProperty(ModelProvider.EMF_URI, uri.toString());
-            }
-
-            // Save attributes as node properties
-            for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-                final Object value = component.eGet(attr);
-                if (value != null) {
-                    node.setProperty(attr.getName(), value.toString());
-                }
-            }
-
-            // Outgoing references are only stored for containments and data types of the root,
-            // otherwise we just store the blank node as a proxy
-            if (containmentsAndDatatypes.contains(component)) {
-
-                for (final EReference ref : component.eClass().getEAllReferences()) {
-                    final Object refReprensation = component.eGet(ref);
-
-                    // 0..* refs are represented as a list and 1 refs are represented directly
-                    if (refReprensation instanceof EList<?>) {
-
-                        for (final Object o : (EList<?>) component.eGet(ref)) {
-                            final Node refNode = this.updateNodes((EObject) o, containmentsAndDatatypes,
-                                    objectsToCreatedNodes);
-                            final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelProviderUtil.getRelationshipType(ref, o));
-                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                        }
-                    } else {
-                        if (refReprensation != null) {
-                            final Node refNode = this.updateNodes((EObject) refReprensation, containmentsAndDatatypes,
-                                    objectsToCreatedNodes);
-                            final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelProviderUtil.getRelationshipType(ref, refReprensation));
-                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                        }
-                    }
-                }
-            }
-        }
-
-        return node;
-    }
-
-    private Node updateNodes2(final EObject component, final Node node,
-            final HashSet<EObject> containmentsAndDatatypes) {
-
-        // Save attributes as node properties
-        for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-            final Object value = component.eGet(attr);
-            if (value != null) {
-                node.setProperty(attr.getName(), value.toString());
-            }
-        }
-
-        // Outgoing references are only stored for containments and data types of the root,
-        // otherwise we just store the blank node as a proxy
-        if (containmentsAndDatatypes.contains(component)) {
-
-            for (final EReference ref : component.eClass().getEAllReferences()) {
-                final Object refReprensation = component.eGet(ref);
-                final String refName = ref.getName();
-
-                final Iterator<Relationship> relIter = node.getRelationships(Direction.OUTGOING).iterator();
-
-                // 0..* refs are represented as a list and 1 refs are represented directly
-                if (refReprensation instanceof EList<?>) {
-
-                    for (final Object o : (EList<?>) component.eGet(ref)) {
-                        // find node matching o
-                        final Node endNode = null; // = findNodeFromRels(o, relIter)
-                        // in findNodeFromRels relIter.iterator().remove();
-
-                        if (endNode != null) { // update already existing node
-                            this.updateNodes2((EObject) o, endNode, containmentsAndDatatypes);
-                        } else { // create a non existing node
-                            final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
-                                    new HashMap<>());
-                            final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelProviderUtil.getRelationshipType(ref, o));
-                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                        }
-
-                    }
-
-                } else {
-                    if (refReprensation != null) {
-                        // find node matching refrepresentation
-                        final Node endNode = null; // = findNodeFromRels(o, relIter)
-                        // in findNodeFromRels relIter.iterator().remove();
-
-                        if (endNode != null) {
-                            this.updateNodes2((EObject) refReprensation, endNode, containmentsAndDatatypes);
-                        } else {
-
-                            final Node refNode = this.createNodes((EObject) refReprensation, containmentsAndDatatypes,
-                                    new HashMap<>());
-                            final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelProviderUtil.getRelationshipType(ref, refReprensation));
-                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                        }
-                    }
-                }
-
-                // Delete stuff that is not referenced anymore
-                while (relIter.hasNext()) {
-                    final Relationship rel = relIter.next();
-                    final Node endNode = rel.getEndNode();
-                    rel.delete();
-                    this.deleteComponentAndDatatypes(endNode);
-                }
-            }
-        }
-
-        return node;
     }
 
     /**
@@ -719,7 +550,7 @@ public class ModelProvider<T extends EObject> {
      * Deletes a specified component from the provider's {@link #graph}. This method also deletes
      * data types which are referenced by the deleted component and not referenced by any other
      * component. If data types shall remain in the graph, use
-     * {@link #deleteComponent(Class, String)} or {@link #deleteComponent(Node)} instead.
+     * {@link #deleteComponent(Class, String)} or instead.
      *
      * @param clazz
      *            Data type of component to be deleted
@@ -738,12 +569,6 @@ public class ModelProvider<T extends EObject> {
             tx.success();
         }
 
-    }
-
-    private void deleteComponentAndDatatypes(final Node node) {
-        this.markAccessibleNodes(node);
-        this.markDeletableNodes(node, true);
-        this.deleteNodes(node);
     }
 
     /**
