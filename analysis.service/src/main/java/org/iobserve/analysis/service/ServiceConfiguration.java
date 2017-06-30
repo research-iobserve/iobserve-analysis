@@ -25,9 +25,11 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  * @author Reiner Jung
@@ -80,11 +82,14 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
                 resourceEvnironmentModelProvider, resourceEnvironmentModelGraph, allocationModelProvider,
                 systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
 
+        final ModelProvider<ResourceContainer> resourceEnvironmentModelProvider = new ModelProvider<>(
+                resourceEnvironmentModelGraph);
+
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
         final DeploymentVisualizationStage visualizationDeploymentStage = new DeploymentVisualizationStage(url);
         final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
-                resourceEnvironmentModelGraph);
+                resourceEnvironmentModelProvider, systemId);
 
         this.connectPorts(this.deploymentSuccAllocation.getDeploymentFinishedOutputPort(),
                 visualizationDeploymentStage.getInputPort());

@@ -137,8 +137,17 @@ public final class AnalysisMain {
                 final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
                 graphLoader.initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
                 System.out.println("Initialized resource environment model graph");
+                graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
+                System.out.println("Initialized allocation model graph");
+                graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
+                System.out.println("Initialized system model graph");
+                
                 final GraphDatabaseService resourceEnvironmentModelGraph = graphLoader
                         .getResourceEnvironmentModelGraph();
+                final GraphDatabaseService allocationModelGraph = graphLoader.getAllocationModelGraph();
+                System.out.println("Loaded allocation model graph");
+                final GraphDatabaseService systemModelGraph = graphLoader.getSystemModelGraph();
+                System.out.println("Loaded system model graph");
 
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
                         outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,

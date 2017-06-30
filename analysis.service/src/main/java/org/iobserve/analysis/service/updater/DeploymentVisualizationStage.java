@@ -55,18 +55,16 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
     }
 
     @Override
-    protected void execute(final IDeploymentRecord allocate) {
-        // try {
-        if (allocate != null) {
-            System.out.println("nothing to do");
-            // this.sendPostRequest(this.deployment(allocate));
+    protected void execute(final IDeploymentRecord deployment) {
 
+        try {
+            this.sendPostRequest(this.deployment(deployment));
+        } catch (final IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        // } catch (final IOException e) {
-        // // TODO Auto-generated catch block
-        // e.printStackTrace();
+
     }
-    // }
 
     private JsonArray deployment(final IDeploymentRecord allocate) {
 
@@ -108,7 +106,7 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
         final JsonObject communicationInstData = Json.createObjectBuilder().add("type", "changelog")
                 .add("operation", "CREATE").add("data", communicationInst).build();
 
-        final JsonArray dataArray = Json.createArrayBuilder().add(nodeData).build();
+        final JsonArray dataArray = Json.createArrayBuilder().add(nodeData).add(serviceData).build();
 
         return dataArray;
     }

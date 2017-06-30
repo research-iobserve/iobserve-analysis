@@ -24,7 +24,6 @@ import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.IAllocationRecord;
-import org.neo4j.graphdb.GraphDatabaseService;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.AbstractConsumerStage;
@@ -42,7 +41,7 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
 
     /** reference to {@link ResourceEnvironment} provider. */
     private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
-    private final GraphDatabaseService resourceEnvironmentModelGraph;
+    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModel;
 
     /** output ports */
     private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
@@ -55,13 +54,13 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      * @param resourceEnvironmentModelProvider
      *            the resource environment model provider
      *
-     * @param resourceEnvironmentModelGraph
-     *            the resource environment model graph
+     * @param resourceEnvironmentModel
+     *            the resource environment model
      */
     public TAllocation(final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final GraphDatabaseService resourceEnvironmentModelGraph) {
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModel) {
         this.resourceEnvModelProvider = resourceEnvironmentModelProvider;
-        this.resourceEnvironmentModelGraph = resourceEnvironmentModelGraph;
+        this.resourceEnvironmentModel = resourceEnvironmentModel;
     }
 
     /**
@@ -119,10 +118,8 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
 
                     // workaround for updating the graph: clear graph and create new one based on
                     // updated resource environment model
-                    final ModelProvider<ResourceEnvironment> resourceEnvironmentModel = new ModelProvider<>(
-                            this.resourceEnvironmentModelGraph);
-                    resourceEnvironmentModel.clearGraph();
-                    resourceEnvironmentModel.createComponent(this.resourceEnvModelProvider.getModel());
+                    this.resourceEnvironmentModel.clearGraph();
+                    this.resourceEnvironmentModel.createComponent(this.resourceEnvModelProvider.getModel());
 
                     this.allocationOutputPort.send(event);
                 })

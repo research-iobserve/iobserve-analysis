@@ -30,7 +30,9 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.Configuration;
 
@@ -82,17 +84,19 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             final GraphDatabaseService resourceEnvironmentModelGraph,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+
+        final ModelProvider<ResourceEnvironment> resourceEnvironmentModel = new ModelProvider<>(
+                resourceEnvironmentModelGraph);
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
-        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider,
-                resourceEnvironmentModelGraph);
+        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider, resourceEnvironmentModel);
         final TAllocationFinished tAllocationFinished = new TAllocationFinished();
         this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
         this.deploymentSuccAllocation = new TDeployment(correspondenceModel, allocationModelProvider,
                 systemModelProvider, resourceEnvironmentModelProvider);
-        this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider, resourceEnvironmentModelGraph);
+        this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider, resourceEnvironmentModel);
         this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
 
