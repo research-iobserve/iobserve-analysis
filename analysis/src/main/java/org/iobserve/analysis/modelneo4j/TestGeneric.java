@@ -77,7 +77,6 @@ public class TestGeneric {
         /** Write to DB1 */
         System.out.println("Writing to DB1");
         new ModelProvider<>(graph).createComponent(usageModel);
-        new ModelProvider<>(graph).updateComponent2(usageModel);
 
         /** Reading (id -> object) from DB1 */
         // System.out.println("Reading (id -> object) from DB1");
