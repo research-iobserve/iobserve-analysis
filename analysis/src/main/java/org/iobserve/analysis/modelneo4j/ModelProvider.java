@@ -52,7 +52,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  * @param <T>
  *            Type of the model's or submodel's root component
  */
-public class ModelProvider<T extends EObject> {
+public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
     private static final String EMF_URI = "emfUri";
     private static final String ENTITY_NAME = "entityName";
@@ -86,13 +86,10 @@ public class ModelProvider<T extends EObject> {
         }
     }
 
-    /**
-     * Writes the given component into the provider's {@link #graph}.
-     *
-     * @param component
-     *            Component to save
-     * @return Root node of the component's graph
+    /* (non-Javadoc)
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#createComponent(T)
      */
+    @Override
     public Node createComponent(final T component) {
         final Node node;
         try (Transaction tx = this.getGraph().beginTx()) {
@@ -235,15 +232,10 @@ public class ModelProvider<T extends EObject> {
         return node;
     }
 
-    /**
-     * Reads a specified component from the provider's {@link #graph}.
-     *
-     * @param clazz
-     *            Data type of component to be read
-     * @param id
-     *            Id of component to be read
-     * @return The read component
+    /* (non-Javadoc)
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#readComponentById(java.lang.Class, java.lang.String)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public T readComponentById(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
@@ -261,18 +253,10 @@ public class ModelProvider<T extends EObject> {
         return (T) component;
     }
 
-    /**
-     * Reads components from the provider's {@link #graph} by their entityName. Note that not all
-     * components in the PCM models have an entityName and that an entityName doesn't need to be
-     * unique. If multiple components of the specified type have the specified name, the returned
-     * list contains all of them.
-     *
-     * @param clazz
-     *            Data type of component(s) to be read
-     * @param entityName
-     *            EntityName of the component(s) to be read
-     * @return List of the read component(s)
+    /* (non-Javadoc)
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#readComponentByName(java.lang.Class, java.lang.String)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List<T> readComponentByName(final Class<T> clazz, final String entityName) {
         final Label label = Label.label(clazz.getSimpleName());
@@ -431,13 +415,10 @@ public class ModelProvider<T extends EObject> {
         return component;
     }
 
-    /**
-     * Reads the ids of all components of a specified data type.
-     *
-     * @param clazz
-     *            The data type
-     * @return List of ids of the specified data type
+    /* (non-Javadoc)
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#readComponentByType(java.lang.Class)
      */
+    @Override
     public List<String> readComponentByType(final Class<T> clazz) {
         try (Transaction tx = this.getGraph().beginTx()) {
             final ResourceIterator<Node> nodes = this.graph.findNodes(Label.label(clazz.getSimpleName()));
@@ -453,14 +434,10 @@ public class ModelProvider<T extends EObject> {
         }
     }
 
-    /**
-     * Reads the pcm models root components Repository, System, Allocation, ResourceEnvironment or
-     * UsageModel.
-     *
-     * @param clazz
-     *            Data type of the root component
-     * @return The read component
+    /* (non-Javadoc)
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#readRootComponent(java.lang.Class)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public T readRootComponent(final Class<T> clazz) {
         EObject component = null;
@@ -485,31 +462,24 @@ public class ModelProvider<T extends EObject> {
         return (T) component;
     }
 
-    /**
-     * Updates a specified component in the the provider's {@link #graph}.
-     *
-     * @param clazz
-     *            Data type of component to be updated
-     * @param component
-     *            The new component
+    /* (non-Javadoc)
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#updateComponent(java.lang.Class, T)
      */
+    @Override
     public void updateComponent(final Class<T> clazz, final T component) {
         final EAttribute idAttr = component.eClass().getEIDAttribute();
-        this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
-        this.createComponent(component);
+        if (idAttr != null) {
+            this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
+            this.createComponent(component);
+        } else {
+            System.err.println("Updated component needs to have an id");
+        }
     }
 
-    /**
-     * Deletes a specified component from the provider's {@link #graph}. This method only deletes a
-     * component and its containments but not the referenced data types which can result in
-     * unreferenced data type nodes in the graph. If data types shall not remain in the graph, use
-     * {@link #deleteComponentAndDatatypes(Class, String)} instead.
-     *
-     * @param clazz
-     *            Data type of component to be deleted
-     * @param id
-     *            Id of component to be deleted
+    /* (non-Javadoc)
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#deleteComponent(java.lang.Class, java.lang.String)
      */
+    @Override
     public void deleteComponent(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
@@ -542,17 +512,10 @@ public class ModelProvider<T extends EObject> {
         node.delete();
     }
 
-    /**
-     * Deletes a specified component from the provider's {@link #graph}. This method also deletes
-     * data types which are referenced by the deleted component and not referenced by any other
-     * component. If data types shall remain in the graph, use
-     * {@link #deleteComponent(Class, String)} or {@link #deleteComponent(Node)} instead.
-     *
-     * @param clazz
-     *            Data type of component to be deleted
-     * @param id
-     *            Id of component to be deleted
+    /* (non-Javadoc)
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#deleteComponentAndDatatypes(java.lang.Class, java.lang.String)
      */
+    @Override
     public void deleteComponentAndDatatypes(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
