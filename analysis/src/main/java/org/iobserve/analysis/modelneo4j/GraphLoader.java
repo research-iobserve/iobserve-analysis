@@ -17,8 +17,6 @@ package org.iobserve.analysis.modelneo4j;
 
 import java.io.File;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -26,7 +24,7 @@ import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
- * Used to load a {@link GraphDatabaseService} including each of the different PCM models.
+ * Used to load a {@link Graph} including each of the different PCM models.
  *
  * @author Lars Bluemke
  *
@@ -56,11 +54,8 @@ public class GraphLoader {
      *
      * @return The allocation model graph
      */
-    public GraphDatabaseService getAllocationModelGraph() {
-        final GraphDatabaseService graph = new GraphDatabaseFactory()
-                .newEmbeddedDatabase(new File(this.pcmModelsNeo4jDirectory, GraphLoader.allocationGraphDir));
-        this.registerShutdownHook(graph);
-        return graph;
+    public Graph getAllocationModelGraph() {
+        return new Graph(new File(this.pcmModelsNeo4jDirectory, GraphLoader.allocationGraphDir));
     }
 
     /**
@@ -68,11 +63,8 @@ public class GraphLoader {
      *
      * @return The repository model graph
      */
-    public GraphDatabaseService getRepositoryModelGraph() {
-        final GraphDatabaseService graph = new GraphDatabaseFactory()
-                .newEmbeddedDatabase(new File(this.pcmModelsNeo4jDirectory, GraphLoader.repositoryGraphDir));
-        this.registerShutdownHook(graph);
-        return graph;
+    public Graph getRepositoryModelGraph() {
+        return new Graph(new File(this.pcmModelsNeo4jDirectory, GraphLoader.repositoryGraphDir));
     }
 
     /**
@@ -80,11 +72,8 @@ public class GraphLoader {
      *
      * @return The resourceEnvironment model graph
      */
-    public GraphDatabaseService getResourceEnvironmentModelGraph() {
-        final GraphDatabaseService graph = new GraphDatabaseFactory()
-                .newEmbeddedDatabase(new File(this.pcmModelsNeo4jDirectory, GraphLoader.resourceEnvironmentGraphDir));
-        this.registerShutdownHook(graph);
-        return graph;
+    public Graph getResourceEnvironmentModelGraph() {
+        return new Graph(new File(this.pcmModelsNeo4jDirectory, GraphLoader.resourceEnvironmentGraphDir));
     }
 
     /**
@@ -92,11 +81,8 @@ public class GraphLoader {
      *
      * @return The system model graph
      */
-    public GraphDatabaseService getSystemModelGraph() {
-        final GraphDatabaseService graph = new GraphDatabaseFactory()
-                .newEmbeddedDatabase(new File(this.pcmModelsNeo4jDirectory, GraphLoader.systemGraphDir));
-        this.registerShutdownHook(graph);
-        return graph;
+    public Graph getSystemModelGraph() {
+        return new Graph(new File(this.pcmModelsNeo4jDirectory, GraphLoader.systemGraphDir));
     }
 
     /**
@@ -104,11 +90,8 @@ public class GraphLoader {
      *
      * @return The usage model graph
      */
-    public GraphDatabaseService getUsageModelGraph() {
-        final GraphDatabaseService graph = new GraphDatabaseFactory()
-                .newEmbeddedDatabase(new File(this.pcmModelsNeo4jDirectory, GraphLoader.usageGraphDir));
-        this.registerShutdownHook(graph);
-        return graph;
+    public Graph getUsageModelGraph() {
+        return new Graph(new File(this.pcmModelsNeo4jDirectory, GraphLoader.usageGraphDir));
     }
 
     /**
@@ -119,13 +102,11 @@ public class GraphLoader {
      *            The model
      */
     public void initializeAllocationModelGraph(final Allocation allocationModel) {
-        final GraphDatabaseService graph = new GraphDatabaseFactory()
-                .newEmbeddedDatabase(new File(this.pcmModelsNeo4jDirectory, GraphLoader.allocationGraphDir));
-        this.registerShutdownHook(graph);
+        final Graph graph = new Graph(new File(this.pcmModelsNeo4jDirectory, GraphLoader.allocationGraphDir));
         final ModelProvider<Allocation> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(allocationModel);
-        graph.shutdown();
+        graph.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -136,13 +117,11 @@ public class GraphLoader {
      *            The model
      */
     public void initializeRepositoryModelGraph(final Repository repositoryModel) {
-        final GraphDatabaseService graph = new GraphDatabaseFactory()
-                .newEmbeddedDatabase(new File(this.pcmModelsNeo4jDirectory, GraphLoader.repositoryGraphDir));
-        this.registerShutdownHook(graph);
+        final Graph graph = new Graph(new File(this.pcmModelsNeo4jDirectory, GraphLoader.repositoryGraphDir));
         final ModelProvider<Repository> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(repositoryModel);
-        graph.shutdown();
+        graph.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -153,13 +132,11 @@ public class GraphLoader {
      *            The model
      */
     public void initializeResourceEnvironmentModelGraph(final ResourceEnvironment resourceEnvironmentModel) {
-        final GraphDatabaseService graph = new GraphDatabaseFactory()
-                .newEmbeddedDatabase(new File(this.pcmModelsNeo4jDirectory, GraphLoader.resourceEnvironmentGraphDir));
-        this.registerShutdownHook(graph);
+        final Graph graph = new Graph(new File(this.pcmModelsNeo4jDirectory, GraphLoader.resourceEnvironmentGraphDir));
         final ModelProvider<ResourceEnvironment> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(resourceEnvironmentModel);
-        graph.shutdown();
+        graph.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -170,13 +147,11 @@ public class GraphLoader {
      *            The model
      */
     public void initializeSystemModelGraph(final System systemModel) {
-        final GraphDatabaseService graph = new GraphDatabaseFactory()
-                .newEmbeddedDatabase(new File(this.pcmModelsNeo4jDirectory, GraphLoader.systemGraphDir));
-        this.registerShutdownHook(graph);
+        final Graph graph = new Graph(new File(this.pcmModelsNeo4jDirectory, GraphLoader.systemGraphDir));
         final ModelProvider<System> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(systemModel);
-        graph.shutdown();
+        graph.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -187,28 +162,11 @@ public class GraphLoader {
      *            The model
      */
     public void initializeUsageModelGraph(final UsageModel usageModel) {
-        final GraphDatabaseService graph = new GraphDatabaseFactory()
-                .newEmbeddedDatabase(new File(this.pcmModelsNeo4jDirectory, GraphLoader.usageGraphDir));
-        this.registerShutdownHook(graph);
+        final Graph graph = new Graph(new File(this.pcmModelsNeo4jDirectory, GraphLoader.usageGraphDir));
         final ModelProvider<UsageModel> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(usageModel);
-        graph.shutdown();
+        graph.getGraphDatabaseService().shutdown();
     }
 
-    /**
-     * Registers a shutdown hook for the Neo4j instance so that it shuts down when the VM exits
-     * (even if you "Ctrl-C" the running application).
-     *
-     * @param graph
-     *            The Neo4j graph instance
-     */
-    private void registerShutdownHook(final GraphDatabaseService graph) {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                graph.shutdown();
-            }
-        });
-    }
 }

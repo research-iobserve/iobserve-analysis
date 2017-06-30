@@ -30,7 +30,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.BasicEObjectImpl;
 import org.neo4j.graphdb.Direction;
-import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.NotFoundException;
@@ -64,7 +63,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     private static final String DELETE = "delete";
     private static final String VISITED = "visited";
 
-    private final GraphDatabaseService graph;
+    private final Graph graph;
 
     /**
      * Creates a new model provider.
@@ -72,7 +71,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @param graph
      *            The neo4j graph database
      */
-    public ModelProvider(final GraphDatabaseService graph) {
+    public ModelProvider(final Graph graph) {
         this.graph = graph;
     }
 
@@ -80,19 +79,21 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * Deletes all nodes and relationships in the {@link #graph}.
      */
     public void clearGraph() {
-        try (Transaction tx = this.getGraph().beginTx()) {
-            this.graph.execute("MATCH (n) DETACH DELETE (n)");
+        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
+            this.graph.getGraphDatabaseService().execute("MATCH (n) DETACH DELETE (n)");
             tx.success();
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#createComponent(T)
      */
     @Override
     public Node createComponent(final T component) {
         final Node node;
-        try (Transaction tx = this.getGraph().beginTx()) {
+        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final HashSet<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
                     new HashSet<>());
             node = this.createNodes(component, containmentsAndDatatypes, new HashMap<>());
@@ -161,13 +162,14 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         // Check if node has already been created
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
-            node = this.getGraph().findNode(label, ModelProvider.ID, component.eGet(idAttr));
+            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, component.eGet(idAttr));
         } else if (component instanceof PrimitiveDataType) {
-            node = this.getGraph().findNode(label, ModelProvider.TYPE,
+            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
                     ((PrimitiveDataType) component).getType().name());
         } else if ((component instanceof UsageModel) || (component instanceof ResourceEnvironment)
                 || (component instanceof Allocation)) {
-            final ResourceIterator<Node> nodes = this.getGraph().findNodes(Label.label(component.eClass().getName()));
+            final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
+                    .findNodes(Label.label(component.eClass().getName()));
             if (nodes.hasNext()) {
                 node = nodes.next();
             }
@@ -180,7 +182,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         // If there is no node yet, create one
         if (node == null) {
 
-            node = this.getGraph().createNode(label);
+            node = this.graph.getGraphDatabaseService().createNode(label);
             objectsToCreatedNodes.put(component, node);
 
             // Create a URI to enable proxy resolving
@@ -232,8 +234,11 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         return node;
     }
 
-    /* (non-Javadoc)
-     * @see org.iobserve.analysis.modelneo4j.IModelProvider#readComponentById(java.lang.Class, java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#readComponentById(java.lang.Class,
+     * java.lang.String)
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -242,8 +247,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         Node node;
         EObject component;
 
-        try (Transaction tx = this.getGraph().beginTx()) {
-            node = this.getGraph().findNode(label, ModelProvider.ID, id);
+        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
+            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                     new HashSet<Node>());
             component = this.readComponent(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
@@ -253,8 +258,11 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         return (T) component;
     }
 
-    /* (non-Javadoc)
-     * @see org.iobserve.analysis.modelneo4j.IModelProvider#readComponentByName(java.lang.Class, java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#readComponentByName(java.lang.Class,
+     * java.lang.String)
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -262,9 +270,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         final Label label = Label.label(clazz.getSimpleName());
         final List<T> nodes = new LinkedList<>();
 
-        try (Transaction tx = this.getGraph().beginTx()) {
-            final ResourceIterator<Node> nodesIter = this.getGraph().findNodes(label, ModelProvider.ENTITY_NAME,
-                    entityName);
+        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
+            final ResourceIterator<Node> nodesIter = this.graph.getGraphDatabaseService().findNodes(label,
+                    ModelProvider.ENTITY_NAME, entityName);
 
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
@@ -415,13 +423,16 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         return component;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#readComponentByType(java.lang.Class)
      */
     @Override
     public List<String> readComponentByType(final Class<T> clazz) {
-        try (Transaction tx = this.getGraph().beginTx()) {
-            final ResourceIterator<Node> nodes = this.graph.findNodes(Label.label(clazz.getSimpleName()));
+        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
+            final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
+                    .findNodes(Label.label(clazz.getSimpleName()));
             final LinkedList<String> ids = new LinkedList<>();
 
             while (nodes.hasNext()) {
@@ -434,18 +445,21 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#readRootComponent(java.lang.Class)
      */
     @Override
     @SuppressWarnings("unchecked")
     public T readRootComponent(final Class<T> clazz) {
         EObject component = null;
-        try (Transaction tx = this.getGraph().beginTx()) {
+        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             if (clazz.equals(Repository.class) || clazz.equals(org.palladiosimulator.pcm.system.System.class)
                     || clazz.equals(Allocation.class) || clazz.equals(UsageModel.class)
                     || clazz.equals(ResourceEnvironment.class)) {
-                final ResourceIterator<Node> nodes = this.graph.findNodes(Label.label(clazz.getSimpleName()));
+                final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
+                        .findNodes(Label.label(clazz.getSimpleName()));
                 if (nodes.hasNext()) {
                     final Node node = nodes.next();
                     final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
@@ -462,7 +476,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         return (T) component;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#updateComponent(java.lang.Class, T)
      */
     @Override
@@ -476,16 +492,19 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.iobserve.analysis.modelneo4j.IModelProvider#deleteComponent(java.lang.Class, java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#deleteComponent(java.lang.Class,
+     * java.lang.String)
      */
     @Override
     public void deleteComponent(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
 
-        try (Transaction tx = this.getGraph().beginTx()) {
-            node = this.getGraph().findNode(label, ModelProvider.ID, id);
+        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
+            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             this.deleteComponent(node);
             tx.success();
         }
@@ -512,16 +531,20 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         node.delete();
     }
 
-    /* (non-Javadoc)
-     * @see org.iobserve.analysis.modelneo4j.IModelProvider#deleteComponentAndDatatypes(java.lang.Class, java.lang.String)
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.iobserve.analysis.modelneo4j.IModelProvider#deleteComponentAndDatatypes(java.lang.Class,
+     * java.lang.String)
      */
     @Override
     public void deleteComponentAndDatatypes(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
 
-        try (Transaction tx = this.getGraph().beginTx()) {
-            node = this.getGraph().findNode(label, ModelProvider.ID, id);
+        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
+            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             this.markAccessibleNodes(node);
             this.markDeletableNodes(node, true);
             this.deleteNodes(node);
@@ -653,7 +676,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *
      * @return The graph
      */
-    public GraphDatabaseService getGraph() {
+    public Graph getGraph() {
         return this.graph;
     }
 }

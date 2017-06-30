@@ -25,10 +25,10 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
-import org.neo4j.graphdb.GraphDatabaseService;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 
 import com.beust.jcommander.JCommander;
@@ -162,16 +162,15 @@ public final class AnalysisMainNeo4j {
 
                 // Instead of passing the old providers to the analysis you can now pass the graph
                 // of the model you want to use...
-                final GraphDatabaseService allocationModelGraph = graphLoader.getAllocationModelGraph();
+                final Graph allocationModelGraph = graphLoader.getAllocationModelGraph();
                 System.out.println("Loaded allocation model graph");
-                final GraphDatabaseService repositoryModelGraph = graphLoader.getRepositoryModelGraph();
+                final Graph repositoryModelGraph = graphLoader.getRepositoryModelGraph();
                 System.out.println("Loaded repository model graph");
-                final GraphDatabaseService resourceEnvironmentModelGraph = graphLoader
-                        .getResourceEnvironmentModelGraph();
+                final Graph resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
                 System.out.println("Loaded resource environment model graph");
-                final GraphDatabaseService systemModelGraph = graphLoader.getSystemModelGraph();
+                final Graph systemModelGraph = graphLoader.getSystemModelGraph();
                 System.out.println("Loaded system model graph");
-                final GraphDatabaseService usageModelGraph = graphLoader.getUsageModelGraph();
+                final Graph usageModelGraph = graphLoader.getUsageModelGraph();
                 System.out.println("Loaded usage model graph");
 
                 // You can access it with a model provider, for example
@@ -179,6 +178,7 @@ public final class AnalysisMainNeo4j {
                         .getId();
                 final OperationInterface opInter = new ModelProvider<OperationInterface>(repositoryModelGraph)
                         .readComponentById(OperationInterface.class, idOfInterfaceIWant);
+                System.out.println(opInter);
                 /******************************************************************************/
 
                 System.out.println("Analysis configuration");
