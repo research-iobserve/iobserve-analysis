@@ -23,7 +23,7 @@ import org.neo4j.graphdb.Node;
 public interface IModelProvider<T extends EObject> {
 
     /**
-     * Writes the given component into the provider's {@link #graph}.
+     * Writes the given component into the provider's model serialization.
      *
      * @param component
      *            Component to save
@@ -32,7 +32,7 @@ public interface IModelProvider<T extends EObject> {
     Node createComponent(T component);
 
     /**
-     * Reads a specified component from the provider's {@link #graph}.
+     * Reads a specified component from the provider's model serialization.
      *
      * @param clazz
      *            Data type of component to be read
@@ -43,8 +43,8 @@ public interface IModelProvider<T extends EObject> {
     T readComponentById(Class<T> clazz, String id);
 
     /**
-     * Reads components from the provider's {@link #graph} by their entityName. Note that not all
-     * components in the PCM models have an entityName and that an entityName doesn't need to be
+     * Reads components from the provider's model serialization by their entityName. Note that not
+     * all components in the PCM models have an entityName and that an entityName doesn't need to be
      * unique. If multiple components of the specified type have the specified name, the returned
      * list contains all of them.
      *
@@ -76,7 +76,7 @@ public interface IModelProvider<T extends EObject> {
     T readRootComponent(Class<T> clazz);
 
     /**
-     * Updates a specified component in the the provider's {@link #graph}.
+     * Updates a specified component in the the provider's model serialization.
      *
      * @param clazz
      *            Data type of component to be updated
@@ -86,10 +86,10 @@ public interface IModelProvider<T extends EObject> {
     void updateComponent(Class<T> clazz, T component);
 
     /**
-     * Deletes a specified component from the provider's {@link #graph}. This method only deletes a
-     * component and its containments but not the referenced data types which can result in
-     * unreferenced data type nodes in the graph. If data types shall not remain in the graph, use
-     * {@link #deleteComponentAndDatatypes(Class, String)} instead.
+     * Deletes a specified component from the provider's model serialization. This method only
+     * deletes a component and its containments but not the referenced data types which can result
+     * in unreferenced data type nodes in the graph. If data types shall not remain in the graph,
+     * use {@link #deleteComponentAndDatatypes(Class, String)} instead.
      *
      * @param clazz
      *            Data type of component to be deleted
@@ -99,9 +99,9 @@ public interface IModelProvider<T extends EObject> {
     void deleteComponent(Class<T> clazz, String id);
 
     /**
-     * Deletes a specified component from the provider's {@link #graph}. This method also deletes
-     * data types which are referenced by the deleted component and not referenced by any other
-     * component. If data types shall remain in the graph, use
+     * Deletes a specified component from the provider's model serialization. This method also
+     * deletes data types which are referenced by the deleted component and not referenced by any
+     * other component. If data types shall remain in the graph, use
      * {@link #deleteComponent(Class, String)} or instead.
      *
      * @param clazz
