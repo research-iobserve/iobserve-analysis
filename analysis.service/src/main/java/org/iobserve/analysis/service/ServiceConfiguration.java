@@ -76,7 +76,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
             final GraphDatabaseService resourceEnvironmentModelGraph,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider)
+            final AllocationModelProvider allocationModelProvider, final GraphDatabaseService allocationModelGraph,
+            final SystemModelProvider systemModelProvider, final GraphDatabaseService systemModelGraph)
             throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEvnironmentModelProvider, resourceEnvironmentModelGraph, allocationModelProvider,
@@ -85,14 +86,17 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
         final ModelProvider<ResourceContainer> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentModelGraph);
 
-        final URL url = new URL(
-                "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
-        final DeploymentVisualizationStage visualizationDeploymentStage = new DeploymentVisualizationStage(url);
+        final URL url = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");// +
+                                                                                                // systemId
+                                                                                                // +
+                                                                                                // "/changelogs"
+
+        final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(url);
         final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
                 resourceEnvironmentModelProvider, systemId);
 
         this.connectPorts(this.deploymentSuccAllocation.getDeploymentFinishedOutputPort(),
-                visualizationDeploymentStage.getInputPort());
+                deploymentVisualizationStage.getInputPort());
         this.connectPorts(this.tAllocationSuccDeploy.getAllocationOutputPort(),
                 allocationVisualizationStage.getInputPort());
     }

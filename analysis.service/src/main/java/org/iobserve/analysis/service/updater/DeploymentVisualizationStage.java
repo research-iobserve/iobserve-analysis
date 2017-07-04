@@ -57,12 +57,62 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
     @Override
     protected void execute(final IDeploymentRecord deployment) {
 
-        try {
-            this.sendPostRequest(this.deployment(deployment));
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        // this.sendPostRequest(this.deployment(deployment));
+        // this.sendSystemRequest(this.createSystem());
+        System.out.println("deploymentVisualization has nothing to do");
+
+    }
+
+    private JsonObject createSystem() {
+        // system data
+
+        final String systemId = "123";
+        final String systemName = "iobserve-analysis-system";
+
+        final JsonObject system = Json.createObjectBuilder().add("type", "system").add("id", systemId)
+                .add("name", systemName).build();
+        return system;
+    }
+
+    /**
+     * Send new system to the visualization.
+     *
+     * @param message
+     * @throws IOException
+     */
+    private void sendSystemRequest(final JsonObject message) throws IOException {
+        final HttpURLConnection connection = (HttpURLConnection) this.outputURL.openConnection();
+
+        // add request header
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("content-type", "application/json; charset=utf-8");
+        connection.setRequestProperty("User-Agent", DeploymentVisualizationStage.USER_AGENT);
+        connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
+
+        // Send post request
+        connection.setDoOutput(true);
+
+        final JsonWriter jsonWriter = Json.createWriter(connection.getOutputStream());
+
+        jsonWriter.write(message);
+        jsonWriter.close();
+
+        final int responseCode = connection.getResponseCode();
+        System.out.println("\nSending 'POST' request to URL : " + this.outputURL);
+        System.out.println("Post parameters : " + message);
+        System.out.println("Response Code : " + responseCode);
+
+        final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String inputLine;
+        final StringBuffer response = new StringBuffer();
+
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
         }
+        in.close();
+
+        // print result
+        System.out.println(response.toString());
 
     }
 
@@ -106,7 +156,7 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
         final JsonObject communicationInstData = Json.createObjectBuilder().add("type", "changelog")
                 .add("operation", "CREATE").add("data", communicationInst).build();
 
-        final JsonArray dataArray = Json.createArrayBuilder().add(nodeData).add(serviceData).build();
+        final JsonArray dataArray = Json.createArrayBuilder().add(nodeData).build();
 
         return dataArray;
     }

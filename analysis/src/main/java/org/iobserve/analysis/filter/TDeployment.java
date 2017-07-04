@@ -76,6 +76,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      * @param resourceEnvironmentModelProvider
      *            resource environment model provider
      */
+    // TODO replace old ModelProvider with new GraphModelProvider
     public TDeployment(final ICorrespondence correspondence, final AllocationModelProvider allocationModelProvider,
             final SystemModelProvider systemModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
@@ -106,13 +107,6 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         ExecutionTimeLogger.getInstance().stopLogging(event);
         this.deploymentFinishedOutputPort.send(event);
     }
-
-    // /**
-    // * @return allocationContextOutputPort
-    // */
-    // public OutputPort<AddAllocationContextEvent> getallocationContextOutputPort() {
-    // return this.allocationContextOutputPort;
-    // }
 
     /**
      * @return allocationOutputPort
@@ -164,7 +158,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         final String service = event.getSerivce();
         final String context = event.getContext();
 
-        // build the containerAllocationEvent
+        // build the url for the containerAllocationEvent
         final String urlContext = context.replaceAll("\\.", "/");
         final String url = "http://" + service + '/' + urlContext;
 
@@ -180,6 +174,10 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      *            name of the server
      * @param correspondent
      *            correspondent
+     * @param url
+     *            url for {@link ContainerAllocationEvent}
+     * @param event
+     *            initial deployment event
      *
      */
     private void updateModel(final String serverName, final Correspondent correspondent, final String url,
@@ -192,17 +190,18 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 
         // get the model parts by name
         final Optional<ResourceContainer> optResourceContainer = ResourceEnvironmentModelBuilder
-                .getResourceContainerByName(this.resourceEnvModelProvider.getModel(), serverName + Math.random());
+                .getResourceContainerByName(this.resourceEnvModelProvider.getModel(), serverName);
 
         Opt.of(optResourceContainer).ifPresent()
                 .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName))
-                // .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n",
-                // asmContextName));
                 .elseApply(() -> {
+                    // if the resource container with this serverName is not available, send an
+                    // event to TAllocation (creating the resource container) and forward the
+                    // deployment event to TDeployment (deploying on created resource container)
                     this.allocationOutputPort.send(new ContainerAllocationEvent(url));
-
+                    this.deploymentOutputPort.send(event);
                 });
-        this.deploymentOutputPort.send(event);
+
     }
 
     /**
@@ -230,7 +229,6 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
                 assemblyContext);
         this.allocationModelProvider.save();
-        // this.allocationContextOutputPort.send(new AddAllocationContextEvent(resourceContainer));
     }
 
     /**

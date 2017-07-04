@@ -46,6 +46,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      * record switch filter. Is required to be global so we can cheat and get measurements from the
      * filter.
      */
+
     protected final RecordSwitch recordSwitch;
 
     protected final TDeployment deployment;

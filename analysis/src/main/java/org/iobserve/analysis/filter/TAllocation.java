@@ -17,6 +17,7 @@ package org.iobserve.analysis.filter;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -24,6 +25,7 @@ import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.IAllocationRecord;
+import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.AbstractConsumerStage;
@@ -108,7 +110,6 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      *            allocation event
      */
     private void updateModel(final String serverName, final IAllocationRecord event) {
-
         Opt.of(ResourceEnvironmentModelBuilder.getResourceContainerByName(this.resourceEnvModelProvider.getModel(),
                 serverName)).ifNotPresent().apply(() -> {
                     TAllocation.this.resourceEnvModelProvider.loadModel();
@@ -122,8 +123,16 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
                     this.resourceEnvironmentModel.createComponent(this.resourceEnvModelProvider.getModel());
 
                     this.allocationOutputPort.send(event);
-                })
-                .elseApply(serverNamePresent -> System.out.printf("ResourceContainer %s was available.\n", serverName));
+                }).elseApply(serverNamePresent -> {
+                    System.out.printf("ResourceContainer %s was available.\n", serverName);
+                    final List<ProcessingResourceSpecification> procResSpec = serverNamePresent
+                            .getActiveResourceSpecifications_ResourceContainer();
+                    for (int i = 0; i < procResSpec.size(); i++) {
+                        final String nodeGroupName = procResSpec.get(i)
+                                .getActiveResourceType_ActiveResourceSpecification().getEntityName();
+                        System.out.println(nodeGroupName);
+                    }
+                });
     }
 
 }

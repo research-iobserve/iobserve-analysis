@@ -17,7 +17,6 @@ package org.iobserve.analysis.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
@@ -176,15 +175,12 @@ public final class AnalysisMainNeo4j {
                 final OperationInterface opInter = new ModelProvider<OperationInterface>(repositoryModelGraph)
                         .readComponentById(OperationInterface.class, idOfInterfaceIWant);
                 /******************************************************************************/
-                final URL outputURL = new URL("");
-                final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                        outputURL, allocationModelGraph, systemModelGraph, resourceEnvironmentModelGraph);
 
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
                         outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
                         correspondenceModel, usageModelProvider, repositoryModelProvider,
                         resourceEvnironmentModelProvider, resourceEnvironmentModelGraph, allocationModelProvider,
-                        systemModelProvider);
+                        allocationModelGraph, systemModelProvider, systemModelGraph);
 
                 System.out.println("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);

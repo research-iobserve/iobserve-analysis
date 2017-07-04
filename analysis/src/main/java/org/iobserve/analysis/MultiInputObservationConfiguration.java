@@ -71,6 +71,7 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
                 MultiInputObservationConfiguration.CAPACITY);
         this.connectPorts(reader.getOutputPort(), this.recordSwitch.getInputPort());
+
     }
 
 }

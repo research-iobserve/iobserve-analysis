@@ -17,6 +17,7 @@ package org.iobserve.analysis.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
@@ -141,7 +142,7 @@ public final class AnalysisMain {
                 System.out.println("Initialized allocation model graph");
                 graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
                 System.out.println("Initialized system model graph");
-                
+
                 final GraphDatabaseService resourceEnvironmentModelGraph = graphLoader
                         .getResourceEnvironmentModelGraph();
                 final GraphDatabaseService allocationModelGraph = graphLoader.getAllocationModelGraph();
@@ -149,11 +150,23 @@ public final class AnalysisMain {
                 final GraphDatabaseService systemModelGraph = graphLoader.getSystemModelGraph();
                 System.out.println("Loaded system model graph");
 
+                final URL changelogUrl = new URL(
+                        "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + this.systemId + "/changelogs");
+                final URL systemUrl = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");
+                final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
+                        systemUrl, changelogUrl, allocationModelGraph, systemModelGraph, resourceEnvironmentModelGraph);
+                try {
+                    deploymentVisualization.initialize();
+                } catch (final Exception e) {
+                    System.out.println("deploymentVisualization.initialize() went wrong!");
+                    e.printStackTrace();
+                }
+
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
                         outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
                         correspondenceModel, usageModelProvider, repositoryModelProvider,
                         resourceEnvironmentModelProvider, resourceEnvironmentModelGraph, allocationModelProvider,
-                        systemModelProvider);
+                        allocationModelGraph, systemModelProvider, systemModelGraph);
 
                 System.out.println("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);

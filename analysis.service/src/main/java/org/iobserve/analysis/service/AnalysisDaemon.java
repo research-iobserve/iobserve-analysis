@@ -129,12 +129,23 @@ public class AnalysisDaemon implements Daemon {
             final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
             graphLoader.initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
             System.out.println("Initialized resource environment model graph");
+            graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
+            System.out.println("Initialized allocation model graph");
+            graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
+            System.out.println("Initialized system model graph");
+
             final GraphDatabaseService resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
+            System.out.println("Loaded resource environment model graph");
+            final GraphDatabaseService allocationModelGraph = graphLoader.getAllocationModelGraph();
+            System.out.println("Loaded allocation model graph");
+            final GraphDatabaseService systemModelGraph = graphLoader.getSystemModelGraph();
+            System.out.println("Loaded system model graph");
 
             final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname, outputPort,
                     this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
                     usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                    resourceEnvironmentModelGraph, allocationModelProvider, systemModelProvider);
+                    resourceEnvironmentModelGraph, allocationModelProvider, allocationModelGraph, systemModelProvider,
+                    systemModelGraph);
 
             this.thread = new AnalysisThread(this, configuration);
         } else {

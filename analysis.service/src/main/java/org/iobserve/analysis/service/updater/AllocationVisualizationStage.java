@@ -30,20 +30,20 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
 
     private final URL outputURL;
 
-    private final ModelProvider<ResourceContainer> resourceEnvironmentModelGraph;
+    private final ModelProvider<ResourceContainer> resourceEnvironmentModelProvider;
     private final String systemId;
 
     /**
      *
      * @param outputURL
      *            the output URL
-     * @param resourceEnvironmentModelGraph
+     * @param resourceEnvironmentModelProvider
      *            the resource environment model graph
      */
     public AllocationVisualizationStage(final URL outputURL,
-            final ModelProvider<ResourceContainer> resourceEnvironmentModelGraph, final String systemId) {
+            final ModelProvider<ResourceContainer> resourceEnvironmentModelProvider, final String systemId) {
         this.outputURL = outputURL;
-        this.resourceEnvironmentModelGraph = resourceEnvironmentModelGraph;
+        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
         this.systemId = systemId;
     }
 
@@ -63,16 +63,17 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
 
         // final String path = url.getPath(); -> für die Serviceinstanz
 
-        String resourceContainerId = "test-id";
-
-        final List<ResourceContainer> resourceContainers = this.resourceEnvironmentModelGraph
+        final List<ResourceContainer> resourceContainerHostname = this.resourceEnvironmentModelProvider
                 .readComponentByName(ResourceContainer.class, hostname);
-        System.out.printf("resourceContainerIds:%s\n", resourceContainers);
 
-        resourceContainerId = resourceContainers.get(0).getId();
+        final ResourceContainer resourceContainer = resourceContainerHostname.get(0);
+        final String resourceContainerId = resourceContainer.getId();
 
         // nodeGroupId(knotengruppe erst noch
         // bilden)
+        final List<String> resourceContainerIds = this.resourceEnvironmentModelProvider
+                .readComponentByType(ResourceContainer.class);
+
         final JsonObject node = Json.createObjectBuilder().add("type", "node").add("id", resourceContainerId)
                 .add("systemId", this.systemId).add("nodeGroupId", "node-group-id-analysis").add("hostname", hostname)
                 .add("ip", "127.0.0.1").build();
