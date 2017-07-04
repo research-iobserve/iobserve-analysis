@@ -19,8 +19,6 @@ import java.io.File;
 
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.UsageModelProvider;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
@@ -36,10 +34,8 @@ public class TestGeneric {
             "/Users/LarsBlumke/Documents/CAU/Masterprojekt/iObserveWorkspace/models/WorkingTestPCM/pcm");
 
     public static void main(final String[] args) {
-        final GraphDatabaseService graph = new GraphDatabaseFactory().newEmbeddedDatabase(TestGeneric.DB_PATH);
-        TestGeneric.registerShutdownHook(graph);
-        final GraphDatabaseService graph2 = new GraphDatabaseFactory().newEmbeddedDatabase(TestGeneric.DB_PATH2);
-        TestGeneric.registerShutdownHook(graph2);
+        final Graph graph = new Graph(TestGeneric.DB_PATH);
+        final Graph graph2 = new Graph(TestGeneric.DB_PATH2);
         System.out.println("Started DBs");
 
         final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
@@ -130,8 +126,6 @@ public class TestGeneric {
         // ModelProvider<OperationInterface>(graph2).deleteComponentAndDatatypes(OperationInterface.class,
         // inter.getId());
 
-        graph.shutdown();
-
         /** Test old provider */
         // System.out.println("Create old provider");
         // final org.iobserve.analysis.modelneo4j.legacyprovider.RepositoryModelProvider
@@ -145,20 +139,8 @@ public class TestGeneric {
         // System.out.println("Write to DB2");
         // new ModelProvider<>(graph2).createComponent(repositoryModelProvider2.getModel());
 
-        graph2.shutdown();
         System.out.print("Shut down DBs");
 
     }
 
-    private static void registerShutdownHook(final GraphDatabaseService graphDb) {
-        // Registers a shutdown hook for the Neo4j instance so that it
-        // shuts down nicely when the VM exits (even if you "Ctrl-C" the
-        // running application).
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                graphDb.shutdown();
-            }
-        });
-    }
 }
