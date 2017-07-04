@@ -28,8 +28,7 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.iobserve.analysis.utils.ExecutionTimeLogger;
-import org.palladiosimulator.pcm.repository.OperationInterface;
+import org.palladiosimulator.pcm.allocation.Allocation;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -38,7 +37,6 @@ import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
 import teetime.framework.Configuration;
-import teetime.framework.Execution;
 
 /**
  * Main class for starting the iObserve application.
@@ -149,44 +147,51 @@ public final class AnalysisMainNeo4j {
                 // initialize the graph with a model from an old provider. Note: The initialization
                 // overwrites possibly existing models, so you want to do this just on the very
                 // first setup or if you want to return to clean test data in the graph.
-                graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
+                Graph allocationModelGraph = graphLoader
+                        .initializeAllocationModelGraph(allocationModelProvider.getModel());
                 System.out.println("Initialized allocation model graph");
-                graphLoader.initializeRepositoryModelGraph(repositoryModelProvider.getModel());
+                Graph repositoryModelGraph = graphLoader
+                        .initializeRepositoryModelGraph(repositoryModelProvider.getModel());
                 System.out.println("Initialized repository model graph");
-                graphLoader.initializeResourceEnvironmentModelGraph(resourceEvnironmentModelProvider.getModel());
+                Graph resourceEnvironmentModelGraph = graphLoader
+                        .initializeResourceEnvironmentModelGraph(resourceEvnironmentModelProvider.getModel());
                 System.out.println("Initialized resource environment model graph");
-                graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
+                Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
                 System.out.println("Initialized system model graph");
-                graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
+                Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
                 System.out.println("Initialized usage model graph");
 
-                // Instead of passing the old providers to the analysis you can now pass the graph
-                // of the model you want to use...
-                final Graph allocationModelGraph = graphLoader.getAllocationModelGraph();
+                // If graphs are initialized you get get them
+                allocationModelGraph = graphLoader.getAllocationModelGraph();
                 System.out.println("Loaded allocation model graph");
-                final Graph repositoryModelGraph = graphLoader.getRepositoryModelGraph();
+                repositoryModelGraph = graphLoader.getRepositoryModelGraph();
                 System.out.println("Loaded repository model graph");
-                final Graph resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
+                resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
                 System.out.println("Loaded resource environment model graph");
-                final Graph systemModelGraph = graphLoader.getSystemModelGraph();
+                systemModelGraph = graphLoader.getSystemModelGraph();
                 System.out.println("Loaded system model graph");
-                final Graph usageModelGraph = graphLoader.getUsageModelGraph();
+                usageModelGraph = graphLoader.getUsageModelGraph();
                 System.out.println("Loaded usage model graph");
 
                 // You can access it with a model provider, for example
-                final String idOfInterfaceIWant = repositoryModelProvider.getModel().getInterfaces__Repository().get(0)
-                        .getId();
-                final OperationInterface opInter = new ModelProvider<OperationInterface>(repositoryModelGraph)
-                        .readComponentById(OperationInterface.class, idOfInterfaceIWant);
-                System.out.println(opInter);
+                // final String idOfInterfaceIWant =
+                // repositoryModelProvider.getModel().getInterfaces__Repository().get(0)
+                // .getId();
+                // final OperationInterface opInter = new
+                // ModelProvider<OperationInterface>(repositoryModelGraph)
+                // .readComponentById(OperationInterface.class, idOfInterfaceIWant);
+                // System.out.println(opInter);
+
+                final ModelProvider<Allocation> prov = new ModelProvider<>(allocationModelGraph);
+                prov.createNewGraphCopy(Allocation.class);
                 /******************************************************************************/
 
-                System.out.println("Analysis configuration");
-                final Execution<Configuration> analysis = new Execution<>(configuration);
-                System.out.println("Analysis start");
-                analysis.executeBlocking();
-                System.out.println("Anaylsis complete");
-                ExecutionTimeLogger.getInstance().exportAsCsv();
+                // System.out.println("Analysis configuration");
+                // final Execution<Configuration> analysis = new Execution<>(configuration);
+                // System.out.println("Analysis start");
+                // analysis.executeBlocking();
+                // System.out.println("Anaylsis complete");
+                // ExecutionTimeLogger.getInstance().exportAsCsv();
             }
         }
     }

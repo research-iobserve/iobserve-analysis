@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -73,6 +74,23 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     public ModelProvider(final Graph graph) {
         this.graph = graph;
+    }
+
+    public void createNewGraphCopy(final Class<T> clazz) {
+        final File baseDirectory = this.graph.getGraphDirectory().getParentFile().getParentFile();
+        final GraphLoader graphLoader = new GraphLoader(baseDirectory);
+
+        if (clazz.equals(Allocation.class)) {
+            graphLoader.createNewAllocationModelGraphVersion();
+        } else if (clazz.equals(Repository.class)) {
+            graphLoader.createNewRepositoryModelGraphVersion();
+        } else if (clazz.equals(ResourceEnvironment.class)) {
+            graphLoader.createNewResourceEnvironmentModelGraphVersion();
+        } else if (clazz.equals(org.palladiosimulator.pcm.system.System.class)) {
+            graphLoader.createNewSystemModelGraphVersion();
+        } else if (clazz.equals(UsageModel.class)) {
+            graphLoader.createNewUsageModelGraphVersion();
+        }
     }
 
     /**
