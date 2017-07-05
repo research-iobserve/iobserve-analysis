@@ -41,6 +41,7 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
@@ -76,23 +77,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         this.graph = graph;
     }
 
-    public void createNewGraphCopy(final Class<T> clazz) {
-        final File baseDirectory = this.graph.getGraphDirectory().getParentFile().getParentFile();
-        final GraphLoader graphLoader = new GraphLoader(baseDirectory);
-
-        if (clazz.equals(Allocation.class)) {
-            graphLoader.createNewAllocationModelGraphVersion();
-        } else if (clazz.equals(Repository.class)) {
-            graphLoader.createNewRepositoryModelGraphVersion();
-        } else if (clazz.equals(ResourceEnvironment.class)) {
-            graphLoader.createNewResourceEnvironmentModelGraphVersion();
-        } else if (clazz.equals(org.palladiosimulator.pcm.system.System.class)) {
-            graphLoader.createNewSystemModelGraphVersion();
-        } else if (clazz.equals(UsageModel.class)) {
-            graphLoader.createNewUsageModelGraphVersion();
-        }
-    }
-
     /**
      * Deletes all nodes and relationships in the {@link #graph}.
      */
@@ -100,6 +84,34 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             this.graph.getGraphDatabaseService().execute("MATCH (n) DETACH DELETE (n)");
             tx.success();
+        }
+    }
+
+    /**
+     * Clones and returns a new version from the current newest version of the model graph. If there
+     * is none yet an empty graph is returned.
+     *
+     * @param clazz
+     *            The model type (only {@link Allocation}, {@link Repository},
+     *            {@link ResourceEnvironment}, {@link System} or {@link UsageModel} are allowed)
+     */
+    public void cloneNewGraphVersion(final Class<T> clazz) {
+        final File baseDirectory = this.graph.getGraphDirectory().getParentFile().getParentFile();
+        final GraphLoader graphLoader = new GraphLoader(baseDirectory);
+
+        if (clazz.equals(Allocation.class)) {
+            graphLoader.cloneNewAllocationModelGraphVersion();
+        } else if (clazz.equals(Repository.class)) {
+            graphLoader.cloneNewRepositoryModelGraphVersion();
+        } else if (clazz.equals(ResourceEnvironment.class)) {
+            graphLoader.cloneNewResourceEnvironmentModelGraphVersion();
+        } else if (clazz.equals(System.class)) {
+            graphLoader.cloneNewSystemModelGraphVersion();
+        } else if (clazz.equals(UsageModel.class)) {
+            graphLoader.cloneNewUsageModelGraphVersion();
+        } else {
+            java.lang.System.err.println("Passed type of createNewGraphVersion(final Class<T> clazz) "
+                    + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
         }
     }
 
@@ -473,9 +485,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     public T readRootComponent(final Class<T> clazz) {
         EObject component = null;
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            if (clazz.equals(Repository.class) || clazz.equals(org.palladiosimulator.pcm.system.System.class)
-                    || clazz.equals(Allocation.class) || clazz.equals(UsageModel.class)
-                    || clazz.equals(ResourceEnvironment.class)) {
+            if (clazz.equals(Allocation.class) || clazz.equals(Repository.class)
+                    || clazz.equals(ResourceEnvironment.class) || clazz.equals(System.class)
+                    || clazz.equals(UsageModel.class)) {
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                         .findNodes(Label.label(clazz.getSimpleName()));
                 if (nodes.hasNext()) {
@@ -485,8 +497,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     component = this.readComponent(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 }
             } else {
-                System.err.println(
-                        "Passed type has to be one of Repository, System, Allocation, ResourceEnvironment or UsageModel!");
+                java.lang.System.err.println("Passed type of readRootComponent(final Class<T> clazz)"
+                        + " has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
             }
 
             tx.success();
@@ -506,7 +518,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
             this.createComponent(component);
         } else {
-            System.err.println("Updated component needs to have an id");
+            java.lang.System.err.println("Updated component needs to have an id");
         }
     }
 

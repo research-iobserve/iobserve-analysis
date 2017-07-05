@@ -28,7 +28,9 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.palladiosimulator.pcm.allocation.Allocation;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
+import org.palladiosimulator.pcm.repository.OperationInterface;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -37,6 +39,7 @@ import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
 import teetime.framework.Configuration;
+import teetime.framework.Execution;
 
 /**
  * Main class for starting the iObserve application.
@@ -161,7 +164,8 @@ public final class AnalysisMainNeo4j {
                 Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
                 System.out.println("Initialized usage model graph");
 
-                // If graphs are initialized you get get them
+                // Alternatively, if there are already graphs in the database, you can simply get
+                // them
                 allocationModelGraph = graphLoader.getAllocationModelGraph();
                 System.out.println("Loaded allocation model graph");
                 repositoryModelGraph = graphLoader.getRepositoryModelGraph();
@@ -174,24 +178,23 @@ public final class AnalysisMainNeo4j {
                 System.out.println("Loaded usage model graph");
 
                 // You can access it with a model provider, for example
-                // final String idOfInterfaceIWant =
-                // repositoryModelProvider.getModel().getInterfaces__Repository().get(0)
-                // .getId();
-                // final OperationInterface opInter = new
-                // ModelProvider<OperationInterface>(repositoryModelGraph)
-                // .readComponentById(OperationInterface.class, idOfInterfaceIWant);
-                // System.out.println(opInter);
+                final String idOfInterfaceIWant = repositoryModelProvider.getModel().getInterfaces__Repository().get(0)
+                        .getId();
+                final OperationInterface opInter = new ModelProvider<OperationInterface>(repositoryModelGraph)
+                        .readComponentById(OperationInterface.class, idOfInterfaceIWant);
+                System.out.println(opInter);
 
-                final ModelProvider<Allocation> prov = new ModelProvider<>(allocationModelGraph);
-                prov.createNewGraphCopy(Allocation.class);
+                // Or you can clone the current graph to a new version
+                new ModelProvider<ResourceEnvironment>(resourceEnvironmentModelGraph)
+                        .cloneNewGraphVersion(ResourceEnvironment.class);
                 /******************************************************************************/
 
-                // System.out.println("Analysis configuration");
-                // final Execution<Configuration> analysis = new Execution<>(configuration);
-                // System.out.println("Analysis start");
-                // analysis.executeBlocking();
-                // System.out.println("Anaylsis complete");
-                // ExecutionTimeLogger.getInstance().exportAsCsv();
+                System.out.println("Analysis configuration");
+                final Execution<Configuration> analysis = new Execution<>(configuration);
+                System.out.println("Analysis start");
+                analysis.executeBlocking();
+                System.out.println("Anaylsis complete");
+                ExecutionTimeLogger.getInstance().exportAsCsv();
             }
         }
     }

@@ -53,7 +53,15 @@ public class GraphLoader {
         this.neo4jPcmModelDirectory = neo4jPcmModelDirectory;
     }
 
-    private Graph createNewModelGraphVersion(final String graphTypeDirName) {
+    /**
+     * Helper method for cloning: Clones and returns a new version from the current newest version
+     * of the model graph.
+     *
+     * @param graphTypeDirName
+     *            Name of root directory for a certain graph type
+     * @return The the model graph
+     */
+    private Graph cloneNewModelGraphVersion(final String graphTypeDirName) {
         final File graphTypeDir = new File(this.neo4jPcmModelDirectory, graphTypeDirName);
         final int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
         final File newGraphDir = new File(graphTypeDir,
@@ -78,10 +86,9 @@ public class GraphLoader {
      * graph. If there is none yet an empty graph is returned.
      *
      * @return The allocation model graph
-     * @throws IOException
      */
-    public Graph createNewAllocationModelGraphVersion() {
-        return this.createNewModelGraphVersion(GraphLoader.ALLOCATION_GRAPH_DIR);
+    public Graph cloneNewAllocationModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(GraphLoader.ALLOCATION_GRAPH_DIR);
     }
 
     /**
@@ -90,8 +97,8 @@ public class GraphLoader {
      *
      * @return The repository model graph
      */
-    public Graph createNewRepositoryModelGraphVersion() {
-        return this.createNewModelGraphVersion(GraphLoader.REPOSITORY_GRAPH_DIR);
+    public Graph cloneNewRepositoryModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(GraphLoader.REPOSITORY_GRAPH_DIR);
     }
 
     /**
@@ -100,8 +107,8 @@ public class GraphLoader {
      *
      * @return The resourceEnvironment model graph
      */
-    public Graph createNewResourceEnvironmentModelGraphVersion() {
-        return this.createNewModelGraphVersion(GraphLoader.RESOURCEENVIRONMENT_GRAPH_DIR);
+    public Graph cloneNewResourceEnvironmentModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(GraphLoader.RESOURCEENVIRONMENT_GRAPH_DIR);
     }
 
     /**
@@ -110,8 +117,8 @@ public class GraphLoader {
      *
      * @return The system model graph
      */
-    public Graph createNewSystemModelGraphVersion() {
-        return this.createNewModelGraphVersion(GraphLoader.SYSTEM_GRAPH_DIR);
+    public Graph cloneNewSystemModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(GraphLoader.SYSTEM_GRAPH_DIR);
     }
 
     /**
@@ -120,10 +127,17 @@ public class GraphLoader {
      *
      * @return The usage model graph
      */
-    public Graph createNewUsageModelGraphVersion() {
-        return this.createNewModelGraphVersion(GraphLoader.USAGE_GRAPH_DIR);
+    public Graph cloneNewUsageModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(GraphLoader.USAGE_GRAPH_DIR);
     }
 
+    /**
+     * Helper method for getting graphs: Returns the newest version of the model graph.
+     *
+     * @param graphTypeDirName
+     *            Name of root directory for a certain graph type
+     * @return The model graph
+     */
     private Graph getModelGraphVersion(final String graphTypeDirName) {
         final File graphTypeDir = new File(this.neo4jPcmModelDirectory, graphTypeDirName);
         int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
