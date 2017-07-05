@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.iobserve.analysis.modelneo4j.Graph;
+import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.repository.OperationInterface;
@@ -53,11 +55,11 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
     /**
      * Create model provider to provide {@link Repository} model.
      *
-     * @param dirRepositoryModelDb
-     *            DB directory
+     * @param neo4jPcmModelDirectory
+     *            DB root directory
      */
-    public RepositoryModelProvider(final File dirRepositoryModelDb) {
-        super(dirRepositoryModelDb);
+    public RepositoryModelProvider(final File neo4jPcmModelDirectory) {
+        super(neo4jPcmModelDirectory);
         this.loadData();
     }
 
@@ -109,7 +111,7 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
         this.model = this.modelProvider.readRootComponent(Repository.class);
 
         if (this.model == null) {
-            System.out.printf("Model at %s could not be loaded!\n", this.dirModelDb.getAbsolutePath());
+            System.out.printf("Model at %s could not be loaded!\n", this.neo4jPcmModelDirectory.getAbsolutePath());
         }
     }
 
@@ -142,6 +144,11 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
     public OperationProvidedRole getOperationProvidedRole(final OperationInterface operationInterface) {
         final String provRoleId = this.opInfToProvInfMap.get(operationInterface.getId());
         return this.opProvidedRoleMap.get(provRoleId);
+    }
+
+    @Override
+    protected Graph getModelTypeGraph(final File neo4jPcmModelDirectory) {
+        return new GraphLoader(neo4jPcmModelDirectory).getRepositoryModelGraph();
     }
 
 }
