@@ -17,11 +17,8 @@ package org.iobserve.analysis.modelneo4j;
 
 import java.io.File;
 
-import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.repository.Repository;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * An ugly test class for debugging
@@ -36,16 +33,17 @@ public class TestGeneric {
             "/Users/LarsBlumke/Documents/CAU/Masterprojekt/iObserveWorkspace/models/WorkingTestPCM/pcm");
 
     public static void main(final String[] args) {
-        final Graph graph = new Graph(TestGeneric.DB_PATH);
-        final Graph graph2 = new Graph(TestGeneric.DB_PATH2);
-        System.out.println("Started DBs");
-
-        final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
-                TestGeneric.PCM_MODELS_DIRECTORY);
+        // final Graph graph = new Graph(TestGeneric.DB_PATH);
+        // final Graph graph2 = new Graph(TestGeneric.DB_PATH2);
+        // System.out.println("Started DBs");
+        //
+        // final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
+        // TestGeneric.PCM_MODELS_DIRECTORY);
 
         /** Load repository model */
-        final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
-        final Repository repositoryModel = repositoryModelProvider.getModel();
+        // final RepositoryModelProvider repositoryModelProvider =
+        // modelProviderPlatform.getRepositoryModelProvider();
+        // final Repository repositoryModel = repositoryModelProvider.getModel();
         //
         /** Load usage model */
         // final UsageModelProvider usageModelProvider =
@@ -66,8 +64,9 @@ public class TestGeneric {
         // resourceEnvironmentModelProvider.getModel();
 
         /** Load allocation model */
-        final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
-        final Allocation allocationModel = allocationModelProvider.getModel();
+        // final AllocationModelProvider allocationModelProvider =
+        // modelProviderPlatform.getAllocationModelProvider();
+        // final Allocation allocationModel = allocationModelProvider.getModel();
 
         /*************************************************************************************************/
 
@@ -141,13 +140,18 @@ public class TestGeneric {
         // new ModelProvider<>(graph2).createComponent(repositoryModelProvider2.getModel());
 
         /** Test parallel access */
-        System.out.println("Starting parallel access");
-        new ModelProvider<>(graph).clearGraph();
-        new TestThread(graph, repositoryModel).start();
-        new TestThread(graph, allocationModel).start();
+        // System.out.println("Starting parallel access");
+        // new ModelProvider<>(graph).clearGraph();
+        // new TestThread(graph, repositoryModel).start();
+        // new TestThread(graph, allocationModel).start();
+        //
+        //
+        //
+        // System.out.println("Shut down DBs");
 
-        System.out.println("Shut down DBs");
-
+        final Logger logger = LogManager.getLogger(TestGeneric.class); // oder this bei nicht
+                                                                       // staticher klasse
+        logger.debug("Hello World");
     }
 
 }
