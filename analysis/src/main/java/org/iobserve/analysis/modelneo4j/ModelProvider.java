@@ -121,7 +121,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#createComponent(T)
      */
     @Override
-    public Node createComponent(final T component) {
+    public void createComponent(final T component) {
         ModelProviderSynchronizer.getLock(this);
         final Node node;
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
@@ -131,7 +131,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             tx.success();
         }
         ModelProviderSynchronizer.releaseLock(this);
-        return node;
     }
 
     /**
@@ -514,7 +513,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#updateComponent(java.lang.Class, T)
      */
     @Override
-    public void updateComponent(final Class<T> clazz, final T component) throws InterruptedException {
+    public void updateComponent(final Class<T> clazz, final T component) {
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
             this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
