@@ -81,10 +81,14 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * Deletes all nodes and relationships in the {@link #graph}.
      */
     public void clearGraph() {
+        ModelProviderSynchronizer.getLock(this);
+
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             this.graph.getGraphDatabaseService().execute("MATCH (n) DETACH DELETE (n)");
             tx.success();
         }
+
+        ModelProviderSynchronizer.releaseLock(this);
     }
 
     /**
@@ -123,13 +127,14 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     @Override
     public void createComponent(final T component) {
         ModelProviderSynchronizer.getLock(this);
-        final Node node;
+
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final HashSet<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
                     new HashSet<>());
-            node = this.createNodes(component, containmentsAndDatatypes, new HashMap<>());
+            this.createNodes(component, containmentsAndDatatypes, new HashMap<>());
             tx.success();
         }
+
         ModelProviderSynchronizer.releaseLock(this);
     }
 
@@ -272,8 +277,22 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * java.lang.String)
      */
     @Override
-    @SuppressWarnings("unchecked")
     public T readComponentById(final Class<T> clazz, final String id) {
+        ModelProviderSynchronizer.getLock(this);
+        return this.readOnlyComponentById(clazz, id);
+    }
+
+    /**
+     * Reads a specified component from the provider's graph without locking it for other providers.
+     *
+     * @param clazz
+     *            Data type of component to be read
+     * @param id
+     *            Id of component to be read
+     * @return The read component
+     */
+    @SuppressWarnings("unchecked")
+    public T readOnlyComponentById(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
         EObject component;
@@ -296,8 +315,25 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * java.lang.String)
      */
     @Override
-    @SuppressWarnings("unchecked")
     public List<T> readComponentByName(final Class<T> clazz, final String entityName) {
+        ModelProviderSynchronizer.getLock(this);
+        return this.readOnlyComponentByName(clazz, entityName);
+    }
+
+    /**
+     * Reads components from the provider's graph by their entityName without locking it for other
+     * providers. Note that not all components in the PCM models have an entityName and that an
+     * entityName doesn't need to be unique. If multiple components of the specified type have the
+     * specified name, the returned list contains all of them.
+     *
+     * @param clazz
+     *            Data type of component(s) to be read
+     * @param entityName
+     *            EntityName of the component(s) to be read
+     * @return List of the read component(s)
+     */
+    @SuppressWarnings("unchecked")
+    public List<T> readOnlyComponentByName(final Class<T> clazz, final String entityName) {
         final Label label = Label.label(clazz.getSimpleName());
         final List<T> nodes = new LinkedList<>();
 
@@ -482,8 +518,21 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#readRootComponent(java.lang.Class)
      */
     @Override
-    @SuppressWarnings("unchecked")
     public T readRootComponent(final Class<T> clazz) {
+        ModelProviderSynchronizer.getLock(this);
+        return this.readOnlyRootComponent(clazz);
+    }
+
+    /**
+     * Reads the pcm models root components Allocation, Repository, ResourceEnvironment, System or
+     * UsageModel without locking the graph for other providers.
+     *
+     * @param clazz
+     *            Data type of the root component
+     * @return The read component
+     */
+    @SuppressWarnings("unchecked")
+    public T readOnlyRootComponent(final Class<T> clazz) {
         EObject component = null;
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             if (clazz.equals(Allocation.class) || clazz.equals(Repository.class)
@@ -514,6 +563,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     @Override
     public void updateComponent(final Class<T> clazz, final T component) {
+        ModelProviderSynchronizer.getLock(this);
+
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
             this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
@@ -521,6 +572,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         } else {
             java.lang.System.err.println("Updated component needs to have an id");
         }
+
+        ModelProviderSynchronizer.releaseLock(this);
     }
 
     /*
@@ -531,6 +584,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     @Override
     public void deleteComponent(final Class<T> clazz, final String id) {
+        ModelProviderSynchronizer.getLock(this);
+
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
 
@@ -539,6 +594,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             this.deleteComponent(node);
             tx.success();
         }
+
+        ModelProviderSynchronizer.releaseLock(this);
     }
 
     /**
@@ -571,6 +628,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     @Override
     public void deleteComponentAndDatatypes(final Class<T> clazz, final String id) {
+        ModelProviderSynchronizer.getLock(this);
+
         final Label label = Label.label(clazz.getSimpleName());
         Node node;
 
@@ -582,6 +641,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             tx.success();
         }
 
+        ModelProviderSynchronizer.releaseLock(this);
     }
 
     /**
