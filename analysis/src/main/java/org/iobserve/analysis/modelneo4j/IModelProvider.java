@@ -18,7 +18,6 @@ package org.iobserve.analysis.modelneo4j;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.neo4j.graphdb.Node;
 
 /**
  * Provides methods to access pcm models or parts of them. Implementing classes have to define how
@@ -36,9 +35,8 @@ public interface IModelProvider<T extends EObject> {
      *
      * @param component
      *            Component to save
-     * @return Root node of the component's graph
      */
-    Node createComponent(T component);
+    void createComponent(T component);
 
     /**
      * Reads a specified component from the provider's model serialization.
