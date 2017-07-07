@@ -39,15 +39,18 @@ public class ModelProviderSynchronizer {
      *
      * @param modelProvider
      *            The model provider trying for the lock
-     * @throws InterruptedException
-     *             If any thread interrupted the current thread before or while the current thread
-     *             was waiting for a notification
      */
-    public static synchronized void getLock(final ModelProvider<?> modelProvider) throws InterruptedException {
+    public static synchronized void getLock(final ModelProvider<?> modelProvider) {
         final Graph graph = modelProvider.getGraph();
         while ((ModelProviderSynchronizer.locks.get(graph) != null)
                 && (ModelProviderSynchronizer.locks.get(graph) != modelProvider)) {
-            graph.wait();
+            try {
+                graph.wait();
+            } catch (final InterruptedException e) {
+                ModelProviderSynchronizer.LOGGER
+                        .error("Thread was interrupted before or while waiting for a notification to "
+                                + "get the database lock.");
+            }
         }
         ModelProviderSynchronizer.locks.put(graph, modelProvider);
     }

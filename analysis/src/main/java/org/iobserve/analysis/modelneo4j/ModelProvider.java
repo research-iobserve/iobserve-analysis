@@ -122,6 +122,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     @Override
     public Node createComponent(final T component) {
+        ModelProviderSynchronizer.getLock(this);
         final Node node;
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final HashSet<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
@@ -129,6 +130,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             node = this.createNodes(component, containmentsAndDatatypes, new HashMap<>());
             tx.success();
         }
+        ModelProviderSynchronizer.releaseLock(this);
         return node;
     }
 
@@ -512,7 +514,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @see org.iobserve.analysis.modelneo4j.IModelProvider#updateComponent(java.lang.Class, T)
      */
     @Override
-    public void updateComponent(final Class<T> clazz, final T component) {
+    public void updateComponent(final Class<T> clazz, final T component) throws InterruptedException {
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
             this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
