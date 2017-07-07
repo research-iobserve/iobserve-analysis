@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -66,6 +68,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     private static final String VISITED = "visited";
 
     private final Graph graph;
+    private final Logger logger;
 
     /**
      * Creates a new model provider.
@@ -75,6 +78,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     public ModelProvider(final Graph graph) {
         this.graph = graph;
+        this.logger = LogManager.getLogger(this);
     }
 
     /**
@@ -114,7 +118,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         } else if (clazz.equals(UsageModel.class)) {
             graphLoader.cloneNewUsageModelGraphVersion();
         } else {
-            java.lang.System.err.println("Passed type of createNewGraphVersion(final Class<T> clazz) "
+            this.logger.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
                     + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
         }
     }
@@ -547,7 +551,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     component = this.readComponent(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 }
             } else {
-                java.lang.System.err.println("Passed type of readRootComponent(final Class<T> clazz)"
+                this.logger.warn("Passed type of readRootComponent(final Class<T> clazz)"
                         + " has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
             }
 
@@ -570,7 +574,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
             this.createComponent(component);
         } else {
-            java.lang.System.err.println("Updated component needs to have an id");
+            this.logger.warn("Updated component needs to have an id.");
         }
 
         ModelProviderSynchronizer.releaseLock(this);
