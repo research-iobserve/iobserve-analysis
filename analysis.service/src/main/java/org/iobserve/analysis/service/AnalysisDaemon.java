@@ -29,8 +29,12 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
-import org.neo4j.graphdb.GraphDatabaseService;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -134,18 +138,26 @@ public class AnalysisDaemon implements Daemon {
             graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
             System.out.println("Initialized system model graph");
 
-            final GraphDatabaseService resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
+            final Graph resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
             System.out.println("Loaded resource environment model graph");
-            final GraphDatabaseService allocationModelGraph = graphLoader.getAllocationModelGraph();
+            final Graph allocationModelGraph = graphLoader.getAllocationModelGraph();
             System.out.println("Loaded allocation model graph");
-            final GraphDatabaseService systemModelGraph = graphLoader.getSystemModelGraph();
+            final Graph systemModelGraph = graphLoader.getSystemModelGraph();
             System.out.println("Loaded system model graph");
+
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
+                    resourceEnvironmentModelGraph);
+            final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
+                    resourceEnvironmentModelGraph);
+            final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(allocationModelGraph);
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
+                    systemModelGraph);
 
             final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname, outputPort,
                     this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
                     usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                    resourceEnvironmentModelGraph, allocationModelProvider, allocationModelGraph, systemModelProvider,
-                    systemModelGraph);
+                    resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider, allocationModelProvider,
+                    allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider);
 
             this.thread = new AnalysisThread(this, configuration);
         } else {

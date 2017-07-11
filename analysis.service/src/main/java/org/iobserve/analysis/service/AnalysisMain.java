@@ -164,7 +164,8 @@ public final class AnalysisMain {
                         "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + this.systemId + "/changelogs");
                 final URL systemUrl = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");
                 final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                        systemUrl, changelogUrl, allocationModelGraph, systemModelGraph, resourceEnvironmentModelGraph);
+                        systemUrl, changelogUrl, allocationModelGraphProvider, systemModelGraphProvider,
+                        resourceEnvironmentModelGraphProvider);
                 try {
                     deploymentVisualization.initialize();
                 } catch (final Exception e) {

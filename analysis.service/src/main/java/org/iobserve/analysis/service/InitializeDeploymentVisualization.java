@@ -14,12 +14,12 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonWriter;
 
-import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  *
@@ -29,11 +29,11 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 public final class InitializeDeploymentVisualization {
 
     /** reference to allocation model graph. */
-    private final Graph allocationModelGraph;
+    private final ModelProvider<Allocation> allocationModelGraphProvider;
     /** reference to system model graph. */
-    private final Graph systemModelGraph;
+    private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
     /** reference to resource environment model graph. */
-    private final Graph resourceEnvironmentModelGraph;
+    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     private static final String USER_AGENT = "iObserve/0.0.2";
 
@@ -42,20 +42,24 @@ public final class InitializeDeploymentVisualization {
 
     /**
      * constructor
-     *
-     * @param allocationModelProvider
-     * @param systemModelProvider
-     * @param resourceEnvironmentModelProvider
+     * 
+     * @param systemURL
+     * @param changelogURL
+     * @param allocationModelGraphProvider
+     * @param systemModelGraphProvider
+     * @param resourceEnvironmentModelGraphProvider
      */
 
     public InitializeDeploymentVisualization(final URL systemURL, final URL changelogURL,
-            final Graph allocationModelGraph, final Graph systemModelGraph, final Graph resourceEnvironmentModelGraph) {
+            final ModelProvider<Allocation> allocationModelGraphProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         // get all model references
         this.systemURL = systemURL;
         this.changelogURL = changelogURL;
-        this.allocationModelGraph = allocationModelGraph;
-        this.systemModelGraph = systemModelGraph;
-        this.resourceEnvironmentModelGraph = resourceEnvironmentModelGraph;
+        this.allocationModelGraphProvider = allocationModelGraphProvider;
+        this.systemModelGraphProvider = systemModelGraphProvider;
+        this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
 
     protected void initialize() throws Exception {
@@ -71,10 +75,8 @@ public final class InitializeDeploymentVisualization {
      * @return
      */
     private JsonArray createSystem() {
-        final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider = new ModelProvider<>(
-                this.systemModelGraph);
 
-        final org.palladiosimulator.pcm.system.System systemModel = systemModelProvider
+        final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
                 .readRootComponent(org.palladiosimulator.pcm.system.System.class);
         final String systemId = systemModel.getId();
         final String systemName = systemModel.getEntityName();
@@ -93,16 +95,14 @@ public final class InitializeDeploymentVisualization {
     private JsonArray createChangelog() {
         final JsonArrayBuilder nodeArrayBuilder = Json.createArrayBuilder();
 
-        final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider = new ModelProvider<>(
-                this.systemModelGraph);
-        final org.palladiosimulator.pcm.system.System systemModel = systemModelProvider
+        final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
                 .readRootComponent(org.palladiosimulator.pcm.system.System.class);
         final String systemId = systemModel.getId();
 
-        final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(this.allocationModelGraph);
-        final List<String> allocationIds = allocationModelProvider.readComponentByType(Allocation.class);
+        final List<String> allocationIds = this.allocationModelGraphProvider.readComponentByType(Allocation.class);
         final String allocationId = allocationIds.get(0);
-        final Allocation allocation = allocationModelProvider.readComponentById(Allocation.class, allocationId);
+        final Allocation allocation = this.allocationModelGraphProvider.readComponentById(Allocation.class,
+                allocationId);
         final List<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
 
         for (int i = 0; i < allocationContexts.size(); i++) {

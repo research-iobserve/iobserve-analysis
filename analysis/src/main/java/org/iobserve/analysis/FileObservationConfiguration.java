@@ -25,7 +25,10 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.neo4j.graphdb.GraphDatabaseService;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
@@ -67,12 +70,15 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
     public FileObservationConfiguration(final Collection<File> directories, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
             final GraphDatabaseService resourceEnvironmentModelGraph,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+            final AllocationModelProvider allocationModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                resourceEnvironmentModelGraph, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
-                thinkTime, closedWorkload);
+                resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
+                systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload);
 
         this.files = new InitialElementProducer<>(directories);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
