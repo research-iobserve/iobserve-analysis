@@ -16,7 +16,9 @@
 package org.iobserve.analysis.modelneo4j;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -77,18 +79,19 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  */
 public class ModelProviderUtil {
 
-    public static Node findMatchingNode(final String componentUri, final Iterator<Relationship> rels) {
-        java.lang.System.out.println("ho");
+    public static Node findMatchingNode(final URI uri, final LinkedList<Relationship> rels) {
+        if (uri != null) {
+            final Iterator<Relationship> relsIter = rels.iterator();
 
-        while (rels.hasNext()) {
-            final Node node = rels.next().getEndNode();
-            final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
+            while (relsIter.hasNext()) {
+                final Node node = relsIter.next().getEndNode();
+                final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
 
-            java.lang.System.out.println(componentUri + "   " + nodeUri);
-
-            if (componentUri.equals(nodeUri)) {
-                rels.remove();
-                return node;
+                java.lang.System.out.println(uri + "  +  " + nodeUri);
+                if (uri.toString().equals(nodeUri)) {
+                    relsIter.remove();
+                    return node;
+                }
             }
         }
 

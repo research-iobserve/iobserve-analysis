@@ -102,13 +102,16 @@ public class TestGeneric {
         /** Updating in DB1 */
         System.out.println("Updating DB1");
         inter.setEntityName("UPDATED" + inter.getEntityName());
-        final OperationSignature sig = inter.getSignatures__OperationInterface().get(0);
+        final OperationSignature sig = inter.getSignatures__OperationInterface().get(8);
         sig.setEntityName("UPDATED" + sig.getEntityName());
         // inter.getSignatures__OperationInterface().remove(1);
         final Parameter param = (Parameter) ModelProviderUtil.instantiateEObject("Parameter");
         param.setParameterName("ADDEDParam");
         sig.getParameters__OperationSignature().add(param);
+
         new ModelProvider<OperationInterface>(graph).updateComponent2(OperationInterface.class, inter);
+
+        new ModelProvider<OperationInterface>(graph2).updateComponent(OperationInterface.class, inter);
 
         /** Writing to DB2 */
         // System.out.println("Writing to DB2");

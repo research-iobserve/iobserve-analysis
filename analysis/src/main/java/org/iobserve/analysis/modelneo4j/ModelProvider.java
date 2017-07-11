@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -200,7 +201,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         Node node = null;
 
-        java.lang.System.out.println("createNodes");
+        // java.lang.System.out.println("createNodes");
 
         // Check if node has already been created
         final EAttribute idAttr = component.eClass().getEIDAttribute();
@@ -593,7 +594,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                         component.eGet(idAttr));
                 final HashSet<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
                         new HashSet<>());
-                this.updateNodes(component, node, containmentsAndDatatypes);
+                this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
             }
 
@@ -604,106 +605,112 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         ModelProviderSynchronizer.releaseLock(this);
     }
 
-    private Node updateNodes(final EObject component, final Node node,
-            final HashSet<EObject> containmentsAndDatatypes) {
+    private Node updateNodes(final EObject component, final Node node, final HashSet<EObject> containmentsAndDatatypes,
+            final Set<EObject> updatedComponents) {
 
-        // Update node properties
-        final Map<String, Object> nodeProperties = node.getAllProperties();
+        if (!updatedComponents.contains(component)) {
+            updatedComponents.add(component);
 
-        for (final EAttribute attr : component.eClass().getEAllAttributes()) {
-            final String key = attr.getName();
-            final Object value = component.eGet(attr);
-            if (value != null) {
-                node.setProperty(key, value.toString());
-                nodeProperties.remove(key);
-            }
-        }
+            // Update node properties
+            final Map<String, Object> nodeProperties = node.getAllProperties();
 
-        // Remove possibly removed properties
-        final Iterator<Entry<String, Object>> i = nodeProperties.entrySet().iterator();
-        while (i.hasNext()) {
-            node.removeProperty(i.next().getKey());
-        }
-
-        // Create a URI to enable proxy resolving
-        final URI uri = ((BasicEObjectImpl) component).eProxyURI();
-        if (uri == null) {
-            node.setProperty(ModelProvider.EMF_URI, ModelProviderUtil.getUriString(component));
-        } else {
-            node.setProperty(ModelProvider.EMF_URI, uri.toString());
-        }
-
-        java.lang.System.out.println("updateNodes2");
-        if (component instanceof OperationSignature) {
-            final OperationSignature os = (OperationSignature) component;
-            java.lang.System.out.println(os.getEntityName());
-            if (os.getEntityName().equals("UPDATEDstartCreditCardPayment")) {
-                java.lang.System.out.println("found Signature");
-
-            }
-        }
-        // Outgoing references are only stored for containments and data types of the root,
-        // otherwise we just store the blank node as a proxy
-        if (containmentsAndDatatypes.contains(component)) {
-
-            final Iterator<Relationship> outRels = node.getRelationships(Direction.OUTGOING).iterator();
-            java.lang.System.out.println(outRels);
-
-            for (final EReference ref : component.eClass().getEAllReferences()) {
-                final Object refReprensation = component.eGet(ref);
-
-                // 0..* refs are represented as a list and 1 refs are represented directly
-                if (refReprensation instanceof EList<?>) {
-
-                    for (final Object o : (EList<?>) component.eGet(ref)) {
-                        // find node matching o
-                        final Node endNode = ModelProviderUtil
-                                .findMatchingNode(((BasicEObjectImpl) o).eProxyURI().toString(), outRels);
-
-                        if (endNode != null) {
-                            // update already existing node
-                            this.updateNodes((EObject) o, endNode, containmentsAndDatatypes);
-                        } else {
-                            // create a non existing node
-                            final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
-                                    new HashMap<>());
-                            final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelProviderUtil.getRelationshipType(ref, o));
-                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                        }
-
-                    }
-
-                } else {
-                    if (refReprensation != null) {
-                        // find node matching refrepresentation
-                        final Node endNode = ModelProviderUtil
-                                .findMatchingNode(((BasicEObjectImpl) refReprensation).eProxyURI().toString(), outRels);
-
-                        if (endNode != null) {
-                            // update already existing node
-                            this.updateNodes((EObject) refReprensation, endNode, containmentsAndDatatypes);
-                        } else {
-                            // create a non existing node
-                            final Node refNode = this.createNodes((EObject) refReprensation, containmentsAndDatatypes,
-                                    new HashMap<>());
-                            final Relationship rel = node.createRelationshipTo(refNode,
-                                    ModelProviderUtil.getRelationshipType(ref, refReprensation));
-                            rel.setProperty(ModelProvider.REF_NAME, ref.getName());
-                        }
-                    }
+            for (final EAttribute attr : component.eClass().getEAllAttributes()) {
+                final String key = attr.getName();
+                final Object value = component.eGet(attr);
+                if (value != null) {
+                    node.setProperty(key, value.toString());
+                    nodeProperties.remove(key);
                 }
+            }
 
+            // Remove possibly removed properties
+            final Iterator<Entry<String, Object>> i = nodeProperties.entrySet().iterator();
+            while (i.hasNext()) {
+                node.removeProperty(i.next().getKey());
+            }
+
+            // Create a URI to enable proxy resolving
+            final URI uri = ((BasicEObjectImpl) component).eProxyURI();
+            if (uri == null) {
+                node.setProperty(ModelProvider.EMF_URI, ModelProviderUtil.getUriString(component));
+            } else {
+                node.setProperty(ModelProvider.EMF_URI, uri.toString());
+            }
+
+            java.lang.System.out.println("updateNodes2");
+            if (component instanceof OperationSignature) {
+                final OperationSignature os = (OperationSignature) component;
+                java.lang.System.out.println(os.getEntityName());
+                if (os.getEntityName().equals("UPDATEDstartCreditCardPayment")) {
+                    java.lang.System.out.println("found Signature");
+
+                }
+            }
+            // Outgoing references are only stored for containments and data types of the root,
+            // otherwise we just store the blank node as a proxy
+            if (containmentsAndDatatypes.contains(component)) {
+
+                final LinkedList<Relationship> outRels = new LinkedList();
+                node.getRelationships(Direction.OUTGOING).forEach(outRels::add);
+
+                for (final EReference ref : component.eClass().getEAllReferences()) {
+                    final Object refReprensation = component.eGet(ref);
+
+                    java.lang.System.out.println("ho");
+                    // 0..* refs are represented as a list and 1 refs are represented directly
+                    if (refReprensation instanceof EList<?>) {
+
+                        for (final Object o : (EList<?>) component.eGet(ref)) {
+                            // find node matching o
+                            final Node endNode = ModelProviderUtil.findMatchingNode(((BasicEObjectImpl) o).eProxyURI(),
+                                    outRels);
+
+                            if (endNode != null) {
+                                // update already existing node
+                                this.updateNodes((EObject) o, endNode, containmentsAndDatatypes, updatedComponents);
+                            } else {
+                                // create a non existing node
+                                final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
+                                        new HashMap<>());
+                                final Relationship rel = node.createRelationshipTo(refNode,
+                                        ModelProviderUtil.getRelationshipType(ref, o));
+                                rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                            }
+
+                        }
+
+                    } else {
+                        if (refReprensation != null) {
+                            // find node matching refrepresentation
+                            final Node endNode = ModelProviderUtil
+                                    .findMatchingNode(((BasicEObjectImpl) refReprensation).eProxyURI(), outRels);
+
+                            if (endNode != null) {
+                                // update already existing node
+                                this.updateNodes((EObject) refReprensation, endNode, containmentsAndDatatypes,
+                                        updatedComponents);
+                            } else {
+                                // create a non existing node
+                                final Node refNode = this.createNodes((EObject) refReprensation,
+                                        containmentsAndDatatypes, new HashMap<>());
+                                final Relationship rel = node.createRelationshipTo(refNode,
+                                        ModelProviderUtil.getRelationshipType(ref, refReprensation));
+                                rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                            }
+                        }
+                    }
+
+                }
                 // Delete stuff that is not referenced anymore
-                while (outRels.hasNext()) {
-                    final Relationship rel = outRels.next();
+                final Iterator<Relationship> outRelsIter = outRels.iterator();
+                while (outRelsIter.hasNext()) {
+                    final Relationship rel = outRelsIter.next();
                     final Node endNode = rel.getEndNode();
                     rel.delete();
                     this.deleteComponent(endNode);
                 }
             }
         }
-
         return node;
     }
 
