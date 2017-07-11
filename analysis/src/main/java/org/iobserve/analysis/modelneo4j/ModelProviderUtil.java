@@ -66,7 +66,7 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 /**
- * Provides different utilities for the {@link #ModelProvider}.
+ * Provides different utilities for the {@link ModelProvider}.
  *
  * @author Lars Bluemke
  *
@@ -75,7 +75,7 @@ public class ModelProviderUtil {
 
     /**
      * Returns a URI based on the components containing the passed component.
-     * 
+     *
      * @param component
      *            The component to compute a URI to
      * @return The URI

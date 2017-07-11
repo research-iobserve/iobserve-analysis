@@ -20,6 +20,15 @@ import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.neo4j.graphdb.Node;
 
+/**
+ * Provides methods to access pcm models or parts of them. Implementing classes have to define how
+ * the models are serialized.
+ *
+ * @author Lars Bluemke
+ *
+ * @param <T>
+ *            Type of the model's or submodel's root component
+ */
 public interface IModelProvider<T extends EObject> {
 
     /**
@@ -66,7 +75,7 @@ public interface IModelProvider<T extends EObject> {
     List<String> readComponentByType(Class<T> clazz);
 
     /**
-     * Reads the pcm models root components Repository, System, Allocation, ResourceEnvironment or
+     * Reads the pcm models root components Allocation, Repository, ResourceEnvironment, System or
      * UsageModel.
      *
      * @param clazz

@@ -18,10 +18,10 @@ package org.iobserve.analysis.modelneo4j;
 import java.io.File;
 
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.UsageModelProvider;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.RepositoryModelProvider;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Repository;
 
 /**
  * An ugly test class for debugging
@@ -36,25 +36,23 @@ public class TestGeneric {
             "/Users/LarsBlumke/Documents/CAU/Masterprojekt/iObserveWorkspace/models/WorkingTestPCM/pcm");
 
     public static void main(final String[] args) {
-        final GraphDatabaseService graph = new GraphDatabaseFactory().newEmbeddedDatabase(TestGeneric.DB_PATH);
-        TestGeneric.registerShutdownHook(graph);
-        final GraphDatabaseService graph2 = new GraphDatabaseFactory().newEmbeddedDatabase(TestGeneric.DB_PATH2);
-        TestGeneric.registerShutdownHook(graph2);
+        final Graph graph = new Graph(TestGeneric.DB_PATH);
+        final Graph graph2 = new Graph(TestGeneric.DB_PATH2);
         System.out.println("Started DBs");
 
         final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
                 TestGeneric.PCM_MODELS_DIRECTORY);
 
         /** Load repository model */
-        // final RepositoryModelProvider repositoryModelProvider =
-        // modelProviderPlatform.getRepositoryModelProvider();
-        // final Repository repositoryModel = repositoryModelProvider.getModel();
-
+        final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
+        final Repository repositoryModel = repositoryModelProvider.getModel();
+        //
         /** Load usage model */
-        final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
-        final UsageModel usageModel = usageModelProvider.getModel();
+        // final UsageModelProvider usageModelProvider =
+        // modelProviderPlatform.getUsageModelProvider();
+        // final UsageModel usageModel = usageModelProvider.getModel();
 
-        // /** Load system model */
+        /** Load system model */
         // final SystemModelProvider systemModelProvider =
         // modelProviderPlatform.getSystemModelProvider();
         // final org.palladiosimulator.pcm.system.System systemModel =
@@ -68,15 +66,14 @@ public class TestGeneric {
         // resourceEnvironmentModelProvider.getModel();
 
         /** Load allocation model */
-        // final AllocationModelProvider allocationModelProvider =
-        // modelProviderPlatform.getAllocationModelProvider();
-        // final Allocation allocationModel = allocationModelProvider.getModel();
+        final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
+        final Allocation allocationModel = allocationModelProvider.getModel();
 
         /*************************************************************************************************/
 
         /** Write to DB1 */
-        System.out.println("Writing to DB1");
-        new ModelProvider<>(graph).createComponent(usageModel);
+        // System.out.println("Writing to DB1");
+        // new ModelProvider<>(graph).createComponent(repositoryModel);
 
         /** Reading (id -> object) from DB1 */
         // System.out.println("Reading (id -> object) from DB1");
@@ -90,7 +87,7 @@ public class TestGeneric {
         // final UsageModel usageModel2 = new
         // ModelProvider<UsageModel>(graph).readRootComponent(UsageModel.class);
 
-        // /** Reading (type -> ids) from DB1 */
+        /** Reading (type -> ids) from DB1 */
         // System.out.println("Reading (type -> ids) from DB1");
         // final List<String> ids = new
         // ModelProvider<OperationInterface>(graph).readComponent(OperationInterface.class);
@@ -130,8 +127,6 @@ public class TestGeneric {
         // ModelProvider<OperationInterface>(graph2).deleteComponentAndDatatypes(OperationInterface.class,
         // inter.getId());
 
-        graph.shutdown();
-
         /** Test old provider */
         // System.out.println("Create old provider");
         // final org.iobserve.analysis.modelneo4j.legacyprovider.RepositoryModelProvider
@@ -145,20 +140,14 @@ public class TestGeneric {
         // System.out.println("Write to DB2");
         // new ModelProvider<>(graph2).createComponent(repositoryModelProvider2.getModel());
 
-        graph2.shutdown();
-        System.out.print("Shut down DBs");
+        /** Test parallel access */
+        System.out.println("Starting parallel access");
+        new ModelProvider<>(graph).clearGraph();
+        new TestThread(graph, repositoryModel).start();
+        new TestThread(graph, allocationModel).start();
+
+        System.out.println("Shut down DBs");
 
     }
 
-    private static void registerShutdownHook(final GraphDatabaseService graphDb) {
-        // Registers a shutdown hook for the Neo4j instance so that it
-        // shuts down nicely when the VM exits (even if you "Ctrl-C" the
-        // running application).
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                graphDb.shutdown();
-            }
-        });
-    }
 }

@@ -18,6 +18,8 @@ package org.iobserve.analysis.modelneo4j.legacyprovider;
 import java.io.File;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.iobserve.analysis.modelneo4j.Graph;
+import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
 
@@ -34,11 +36,11 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
     /**
      * Create model provider to provide {@link System} model.
      *
-     * @param dirSystemModelDb
-     *            DB directory
+     * @param neo4jPcmModelDirectory
+     *            DB root directory
      */
-    public SystemModelProvider(final File dirSystemModelDb) {
-        super(dirSystemModelDb);
+    public SystemModelProvider(final File neo4jPcmModelDirectory) {
+        super(neo4jPcmModelDirectory);
     }
 
     @Override
@@ -46,7 +48,8 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
         this.model = this.modelProvider.readRootComponent(System.class);
 
         if (this.model == null) {
-            java.lang.System.out.printf("Model at %s could not be loaded!\n", this.dirModelDb.getAbsolutePath());
+            java.lang.System.out.printf("Model at %s could not be loaded!\n",
+                    this.neo4jPcmModelDirectory.getAbsolutePath());
         }
     }
 
@@ -59,6 +62,11 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
     @Override
     protected EPackage getPackage() {
         return SystemPackage.eINSTANCE;
+    }
+
+    @Override
+    protected Graph getModelTypeGraph(final File neo4jPcmModelDirectory) {
+        return new GraphLoader(neo4jPcmModelDirectory).getSystemModelGraph();
     }
 
 }
