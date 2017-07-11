@@ -19,6 +19,9 @@ import java.io.File;
 
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.RepositoryModelProvider;
+import org.palladiosimulator.pcm.repository.OperationInterface;
+import org.palladiosimulator.pcm.repository.OperationSignature;
+import org.palladiosimulator.pcm.repository.Parameter;
 import org.palladiosimulator.pcm.repository.Repository;
 
 /**
@@ -77,17 +80,16 @@ public class TestGeneric {
 
         /** Write to DB1 */
         System.out.println("Writing to DB1");
-        new ModelProvider<>(graph).createComponent(repositoryModel);
+        new ModelProvider<>(graph).createComponent(repositoryModel.getInterfaces__Repository().get(0));
+        new ModelProvider<>(graph2).createComponent(repositoryModel.getInterfaces__Repository().get(0));
 
         /** Reading (id -> object) from DB1 */
         // System.out.println("Reading (id -> object) from DB1");
         // final Repository repositoryModel2 = new
         // ModelProvider<Repository>(graph).readComponentById(Repository.class,
         // repositoryModel.getId());
-        // final OperationInterface inter = (OperationInterface) new
-        // ModelProvider<OperationInterface>(graph)
-        // .readComponent2(OperationInterface.class,
-        // repositoryModel.getInterfaces__Repository().get(0).getId());
+        final OperationInterface inter = new ModelProvider<OperationInterface>(graph).readOnlyComponentById(
+                OperationInterface.class, repositoryModel.getInterfaces__Repository().get(0).getId());
         // final UsageModel usageModel2 = new
         // ModelProvider<UsageModel>(graph).readRootComponent(UsageModel.class);
 
@@ -98,15 +100,15 @@ public class TestGeneric {
         // System.out.println(ids);
 
         /** Updating in DB1 */
-        // System.out.println("Updating DB1");
-        // inter.setEntityName("UPDATED" + inter.getEntityName());
-        // final OperationSignature sig = inter.getSignatures__OperationInterface().get(0);
-        // sig.setEntityName("UPDATED" + sig.getEntityName());
-        // final Parameter param = (Parameter) ModelProviderUtil.instantiateEObject("Parameter");
-        // param.setParameterName("ADDEDParam");
-        // sig.getParameters__OperationSignature().add(param);
-        // new ModelProvider<OperationInterface>(graph).updateComponent(OperationInterface.class,
-        // inter);
+        System.out.println("Updating DB1");
+        inter.setEntityName("UPDATED" + inter.getEntityName());
+        final OperationSignature sig = inter.getSignatures__OperationInterface().get(0);
+        sig.setEntityName("UPDATED" + sig.getEntityName());
+        // inter.getSignatures__OperationInterface().remove(1);
+        final Parameter param = (Parameter) ModelProviderUtil.instantiateEObject("Parameter");
+        param.setParameterName("ADDEDParam");
+        sig.getParameters__OperationSignature().add(param);
+        new ModelProvider<OperationInterface>(graph).updateComponent2(OperationInterface.class, inter);
 
         /** Writing to DB2 */
         // System.out.println("Writing to DB2");
@@ -145,9 +147,9 @@ public class TestGeneric {
         // new ModelProvider<>(graph2).createComponent(repositoryModelProvider2.getModel());
 
         /** Test parallel access */
-        System.out.println("Starting parallel access");
-        new TestThread(graph, repositoryModel).start();
-        new TestThread(graph, repositoryModel).start();
+        // System.out.println("Starting parallel access");
+        // new TestThread(graph, repositoryModel).start();
+        // new TestThread(graph, repositoryModel).start();
 
         System.out.println("Shut down DBs");
 

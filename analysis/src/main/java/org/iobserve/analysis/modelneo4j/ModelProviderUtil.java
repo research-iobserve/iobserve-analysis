@@ -15,11 +15,15 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j;
 
+import java.util.Iterator;
+
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.neo4j.graphdb.Label;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -72,6 +76,24 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  *
  */
 public class ModelProviderUtil {
+
+    public static Node findMatchingNode(final String componentUri, final Iterator<Relationship> rels) {
+        java.lang.System.out.println("ho");
+
+        while (rels.hasNext()) {
+            final Node node = rels.next().getEndNode();
+            final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
+
+            java.lang.System.out.println(componentUri + "   " + nodeUri);
+
+            if (componentUri.equals(nodeUri)) {
+                rels.remove();
+                return node;
+            }
+        }
+
+        return null;
+    }
 
     /**
      * Returns a URI based on the components containing the passed component.
