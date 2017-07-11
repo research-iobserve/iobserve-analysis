@@ -19,7 +19,8 @@ import org.iobserve.common.record.IAllocationRecord;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
- * This stage is triggered by an analysis allocation update.
+ * This stage is triggered by an analysis allocation update and updates the deployment
+ * visualization.
  *
  * @author jweg
  *

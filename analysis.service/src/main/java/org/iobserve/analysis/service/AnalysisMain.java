@@ -74,7 +74,7 @@ public final class AnalysisMain {
     @Parameter(names = { "-o",
             "--output" }, required = true, description = "hostname and port of the iobserve visualization, e.g., visualization:80.")
     private String output;
-
+    // TODO remove parameter
     @Parameter(names = { "-s", "--system" }, required = true, description = "system id.")
     private String systemId;
 
@@ -160,11 +160,12 @@ public final class AnalysisMain {
                 final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                         systemModelGraph);
 
-                final URL changelogUrl = new URL(
-                        "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + this.systemId + "/changelogs");
+                // final URL changelogUrl = new URL(
+                // "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + this.systemId +
+                // "/changelogs");
                 final URL systemUrl = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");
                 final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                        systemUrl, changelogUrl, allocationModelGraphProvider, systemModelGraphProvider,
+                        systemUrl, allocationModelGraphProvider, systemModelGraphProvider,
                         resourceEnvironmentModelGraphProvider);
                 try {
                     deploymentVisualization.initialize();

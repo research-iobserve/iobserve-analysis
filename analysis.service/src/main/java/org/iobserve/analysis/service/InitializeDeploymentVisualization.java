@@ -37,12 +37,13 @@ public final class InitializeDeploymentVisualization {
 
     private static final String USER_AGENT = "iObserve/0.0.2";
 
-    private final URL changelogURL;
+    private URL changelogURL;
     private final URL systemURL;
+    private String systemId;
 
     /**
      * constructor
-     * 
+     *
      * @param systemURL
      * @param changelogURL
      * @param allocationModelGraphProvider
@@ -50,23 +51,38 @@ public final class InitializeDeploymentVisualization {
      * @param resourceEnvironmentModelGraphProvider
      */
 
-    public InitializeDeploymentVisualization(final URL systemURL, final URL changelogURL,
+    public InitializeDeploymentVisualization(final URL systemURL,
             final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         // get all model references
         this.systemURL = systemURL;
-        this.changelogURL = changelogURL;
+        // this.changelogURL = changelogURL;
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
 
     protected void initialize() throws Exception {
-        // this.sendPostRequest(this.createSystem());
+        final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
+                .readRootComponent(org.palladiosimulator.pcm.system.System.class);
+        this.systemId = systemModel.getId();
+
+        final List<String> allocationIds = this.allocationModelGraphProvider.readComponentByType(Allocation.class);
+        // the allocation model contains exactly one allocation
+        final String allocationId = allocationIds.get(0);
+        final Allocation allocation = this.allocationModelGraphProvider.readComponentById(Allocation.class,
+                allocationId);
+        final List<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
+
+        // this.sendPostRequest(this.createSystem(systemModel));
         System.out.println("createSystem()");
-        this.sendPostRequest(this.createChangelog());
-        System.out.println("createChangelog()");
+        this.changelogURL = new URL(this.systemURL + this.systemId + "/changelogs");
+
+        for (int i = 0; i < allocationContexts.size(); i++) {
+            final AllocationContext allocationContext = allocationContexts.get(i);
+            this.sendPostRequest(this.createChangelog(allocationContext));
+        }
 
     }
 
@@ -74,14 +90,11 @@ public final class InitializeDeploymentVisualization {
      *
      * @return
      */
-    private JsonArray createSystem() {
+    private JsonArray createSystem(final org.palladiosimulator.pcm.system.System systemModel) {
 
-        final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
-                .readRootComponent(org.palladiosimulator.pcm.system.System.class);
-        final String systemId = systemModel.getId();
         final String systemName = systemModel.getEntityName();
 
-        final JsonObject system = Json.createObjectBuilder().add("type", "system").add("id", systemId)
+        final JsonObject system = Json.createObjectBuilder().add("type", "system").add("id", this.systemId)
                 .add("name", systemName).build();
         final JsonArray systemData = Json.createArrayBuilder().add(system).build();
 
@@ -90,66 +103,53 @@ public final class InitializeDeploymentVisualization {
 
     /**
      *
+     *
      * @return
      */
-    private JsonArray createChangelog() {
+    private JsonArray createChangelog(final AllocationContext allocationContext) {
         final JsonArrayBuilder nodeArrayBuilder = Json.createArrayBuilder();
 
-        final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
-                .readRootComponent(org.palladiosimulator.pcm.system.System.class);
-        final String systemId = systemModel.getId();
+        // resourceContainer
+        final ResourceContainer resourceContainer = allocationContext.getResourceContainer_AllocationContext();
 
-        final List<String> allocationIds = this.allocationModelGraphProvider.readComponentByType(Allocation.class);
-        final String allocationId = allocationIds.get(0);
-        final Allocation allocation = this.allocationModelGraphProvider.readComponentById(Allocation.class,
-                allocationId);
-        final List<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
+        final String resourceContainerId = resourceContainer.getId();
+        final String hostname = resourceContainer.getEntityName();
+        // as there is no grouping element available, each node gets its own nodegroup with a
+        // random id
+        final String nodeGroupId = "nodeGroup-" + Math.random();
+        final JsonObject nodeGroup = Json.createObjectBuilder().add("type", "nodeGroup").add("id", nodeGroupId)
+                .add("systemId", this.systemId).add("name", "nodeGroupName").build();
+        final JsonObject nodeGroupData = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
+                .add("data", nodeGroup).build();
+        final JsonObject node = Json.createObjectBuilder().add("type", "node").add("id", resourceContainerId)
+                .add("systemId", this.systemId).add("nodeGroupId", nodeGroupId).add("hostname", hostname).build();
+        final JsonObject nodeData = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
+                .add("data", node).build();
+        // assemblyContext
+        final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
 
-        for (int i = 0; i < allocationContexts.size(); i++) {
-            final AllocationContext allocationContext = allocationContexts.get(0);
+        final String assemblyContextId = assemblyContext.getId();
+        final String assemblyContextName = assemblyContext.getEntityName();
 
-            // resourceContainer
-            final ResourceContainer resourceContainer = allocationContext.getResourceContainer_AllocationContext();
+        final JsonObject service = Json.createObjectBuilder().add("type", "service").add("id", assemblyContextId)
+                .add("systemId", this.systemId).add("name", assemblyContextName).build();
+        final JsonObject serviceData = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
+                .add("data", service).build();
+        // TODO serviceInstance-id
+        final JsonObject serviceInstance = Json.createObjectBuilder().add("type", "serviceInstance")
+                .add("id", "serviceInstance-id-analysis" + Math.random()).add("systemId", this.systemId)
+                .add("name", "analysis-serviceInstance").add("serviceId", assemblyContextId)
+                .add("nodeId", resourceContainerId).build();
+        final JsonObject serviceInstanceData = Json.createObjectBuilder().add("type", "changelog")
+                .add("operation", "CREATE").add("data", serviceInstance).build();
 
-            final String resourceContainerId = resourceContainer.getId();
-            final String hostname = resourceContainer.getEntityName();
-            // as there is no grouping element available, each node gets its own nodegroup with a
-            // random id
-            final String nodeGroupId = "nodeGroup-" + Math.random();
-            final JsonObject nodeGroup = Json.createObjectBuilder().add("type", "nodeGroup").add("id", nodeGroupId)
-                    .add("systemId", systemId).add("name", "nodeGroupName").build();
-            final JsonObject nodeGroupData = Json.createObjectBuilder().add("type", "changelog")
-                    .add("operation", "CREATE").add("data", nodeGroup).build();
-            final JsonObject node = Json.createObjectBuilder().add("type", "node").add("id", resourceContainerId)
-                    .add("systemId", systemId).add("nodeGroupId", nodeGroupId).add("hostname", hostname).build();
-            final JsonObject nodeData = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
-                    .add("data", node).build();
-            // assemblyContext
-            final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
-
-            final String assemblyContextId = assemblyContext.getId();
-            final String assemblyContextName = assemblyContext.getEntityName();
-
-            final JsonObject service = Json.createObjectBuilder().add("type", "service").add("id", assemblyContextId)
-                    .add("systemId", systemId).add("name", assemblyContextName).build();
-            final JsonObject serviceData = Json.createObjectBuilder().add("type", "changelog")
-                    .add("operation", "CREATE").add("data", service).build();
-            final JsonObject serviceInstance = Json.createObjectBuilder().add("type", "serviceInstance")
-                    .add("id", "serviceInstance-id-analysis").add("systemId", systemId)
-                    .add("name", "analysis-serviceInstance").add("serviceId", assemblyContextId)
-                    .add("nodeId", resourceContainerId).build();
-            final JsonObject serviceInstanceData = Json.createObjectBuilder().add("type", "changelog")
-                    .add("operation", "CREATE").add("data", serviceInstance).build();
-            // das geht nicht, aber nodeGroup einzeln geht
-            nodeArrayBuilder.add(nodeGroupData).add(nodeData).add(serviceData).add(serviceInstanceData);
-        }
-
+        // nodeArrayBuilder.add(nodeGroupData).add(nodeData).add(serviceData);//
+        // .add(serviceInstanceData);
         // communication data
-
+        nodeArrayBuilder.add(serviceInstanceData);
         // communication instance data
 
         final JsonArray dataArray = nodeArrayBuilder.build();
-        System.out.printf("after for, nodeArray:%s\n", dataArray);
         return dataArray;
     }
 
@@ -161,10 +161,8 @@ public final class InitializeDeploymentVisualization {
      */
     private void sendPostRequest(final JsonArray modelData) throws IOException {
         final HttpURLConnection connection;
-        System.out.printf("system?:%s\n", modelData.get(0));
         final JsonObject obj = modelData.getJsonObject(0);
         final JsonString type = (JsonString) obj.get("type");
-        System.out.printf("type:%s\n", type);
         if (type.getString() == "system") {
             connection = (HttpURLConnection) this.systemURL.openConnection();
         } else {
@@ -180,23 +178,18 @@ public final class InitializeDeploymentVisualization {
         connection.setDoOutput(true);
         final JsonWriter jsonWriter = Json.createWriter(connection.getOutputStream());
         if (type.getString() == "system") {
-
-            System.out.printf("obj for JsonWriter:%s\n", obj);
             jsonWriter.write(obj);
-            jsonWriter.close();
 
             System.out.println("\nSending 'POST' request to URL : " + this.systemURL);
             System.out.println("Post parameters : " + obj);
 
         } else {
-            for (int i = 0; i < modelData.size(); i++) {
-                System.out.printf("modelData.getJsonObject(i):%s\n", modelData.getJsonObject(i));
-                jsonWriter.write(modelData.getJsonObject(i)); // work in progress
-            }
+            jsonWriter.writeArray(modelData); // work in progress
 
             System.out.println("\nSending 'POST' request to URL : " + this.changelogURL);
             System.out.println("Post parameters : " + modelData);
         }
+
         jsonWriter.close();
         final int responseCode = connection.getResponseCode();
         System.out.println("Response Code : " + responseCode);
