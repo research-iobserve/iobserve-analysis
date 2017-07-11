@@ -575,13 +575,10 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
             this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
-            this.createComponent(component);
+            this.createComponent(component); // also releases the lock
         } else {
             this.logger.warn("Updated component needs to have an id.");
         }
-
-        // TODO like this the lock has already been released at createComponent(component)
-        ModelProviderSynchronizer.releaseLock(this);
     }
 
     public void updateComponent2(final Class<T> clazz, final T component) {
@@ -650,6 +647,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         if (containmentsAndDatatypes.contains(component)) {
 
             final Iterator<Relationship> outRels = node.getRelationships(Direction.OUTGOING).iterator();
+            java.lang.System.out.println(outRels);
 
             for (final EReference ref : component.eClass().getEAllReferences()) {
                 final Object refReprensation = component.eGet(ref);
