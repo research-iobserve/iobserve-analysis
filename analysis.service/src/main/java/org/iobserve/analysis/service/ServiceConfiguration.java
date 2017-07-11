@@ -28,8 +28,9 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
-import org.neo4j.graphdb.GraphDatabaseService;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  * @author Reiner Jung
@@ -74,17 +75,17 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final String systemId, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
             final RepositoryModelProvider repositoryModelProvider,
-            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
-            final GraphDatabaseService resourceEnvironmentModelGraph,
-            final AllocationModelProvider allocationModelProvider, final GraphDatabaseService allocationModelGraph,
-            final SystemModelProvider systemModelProvider, final GraphDatabaseService systemModelGraph)
+            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+            final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
+            final AllocationModelProvider allocationModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider)
             throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
-                resourceEvnironmentModelProvider, resourceEnvironmentModelGraph, allocationModelProvider,
-                systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
-
-        final ModelProvider<ResourceContainer> resourceEnvironmentModelProvider = new ModelProvider<>(
-                resourceEnvironmentModelGraph);
+                resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider, allocationModelProvider,
+                allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider, varianceOfUserGroups,
+                thinkTime, closedWorkload);
 
         final URL url = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");// +
                                                                                                 // systemId
@@ -93,7 +94,7 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
 
         final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(url);
         final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
-                resourceEnvironmentModelProvider, systemId);
+                resourceContainerModelGraphProvider, systemId);
 
         this.connectPorts(this.deploymentSuccAllocation.getDeploymentFinishedOutputPort(),
                 deploymentVisualizationStage.getInputPort());

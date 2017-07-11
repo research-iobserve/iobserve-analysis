@@ -26,9 +26,13 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
-import org.neo4j.graphdb.GraphDatabaseService;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -125,6 +129,7 @@ public final class AnalysisMain {
                 final String outputPort = outputs[1];
 
                 /** process parameter. */
+                // old model providers without neo4j
                 final InitializeModelProviders modelProvider = new InitializeModelProviders(this.pcmModelsDirectory);
 
                 final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
@@ -134,21 +139,26 @@ public final class AnalysisMain {
                         .getResourceEnvironmentModelProvider();
                 final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
                 final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
-
+                // initialize neo4j graphs
                 final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
-                graphLoader.initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
-                System.out.println("Initialized resource environment model graph");
-                graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
-                System.out.println("Initialized allocation model graph");
-                graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
-                System.out.println("Initialized system model graph");
-
-                final GraphDatabaseService resourceEnvironmentModelGraph = graphLoader
-                        .getResourceEnvironmentModelGraph();
-                final GraphDatabaseService allocationModelGraph = graphLoader.getAllocationModelGraph();
-                System.out.println("Loaded allocation model graph");
-                final GraphDatabaseService systemModelGraph = graphLoader.getSystemModelGraph();
-                System.out.println("Loaded system model graph");
+                Graph resourceEnvironmentModelGraph = graphLoader
+                        .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
+                Graph allocationModelGraph = graphLoader
+                        .initializeAllocationModelGraph(allocationModelProvider.getModel());
+                Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
+                // load graphs
+                resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
+                allocationModelGraph = graphLoader.getAllocationModelGraph();
+                systemModelGraph = graphLoader.getSystemModelGraph();
+                // new graphModelProvider
+                final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
+                        resourceEnvironmentModelGraph);
+                final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
+                        resourceEnvironmentModelGraph);
+                final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(
+                        allocationModelGraph);
+                final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
+                        systemModelGraph);
 
                 final URL changelogUrl = new URL(
                         "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + this.systemId + "/changelogs");
@@ -165,8 +175,9 @@ public final class AnalysisMain {
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
                         outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
                         correspondenceModel, usageModelProvider, repositoryModelProvider,
-                        resourceEnvironmentModelProvider, resourceEnvironmentModelGraph, allocationModelProvider,
-                        allocationModelGraph, systemModelProvider, systemModelGraph);
+                        resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider,
+                        resourceContainerModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
+                        systemModelProvider, systemModelGraphProvider);
 
                 System.out.println("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);

@@ -14,8 +14,8 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonWriter;
 
+import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.neo4j.graphdb.GraphDatabaseService;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -29,11 +29,11 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 public final class InitializeDeploymentVisualization {
 
     /** reference to allocation model graph. */
-    private final GraphDatabaseService allocationModelGraph;
+    private final Graph allocationModelGraph;
     /** reference to system model graph. */
-    private final GraphDatabaseService systemModelGraph;
+    private final Graph systemModelGraph;
     /** reference to resource environment model graph. */
-    private final GraphDatabaseService resourceEnvironmentModelGraph;
+    private final Graph resourceEnvironmentModelGraph;
 
     private static final String USER_AGENT = "iObserve/0.0.2";
 
@@ -49,8 +49,7 @@ public final class InitializeDeploymentVisualization {
      */
 
     public InitializeDeploymentVisualization(final URL systemURL, final URL changelogURL,
-            final GraphDatabaseService allocationModelGraph, final GraphDatabaseService systemModelGraph,
-            final GraphDatabaseService resourceEnvironmentModelGraph) {
+            final Graph allocationModelGraph, final Graph systemModelGraph, final Graph resourceEnvironmentModelGraph) {
         // get all model references
         this.systemURL = systemURL;
         this.changelogURL = changelogURL;

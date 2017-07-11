@@ -22,7 +22,9 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.neo4j.graphdb.GraphDatabaseService;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -61,12 +63,14 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
     public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final GraphDatabaseService resourceEnvironmentModelGraph,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+            final AllocationModelProvider allocationModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                resourceEnvironmentModelGraph, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
-                thinkTime, closedWorkload);
+                resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
+                systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload);
 
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
                 MultiInputObservationConfiguration.CAPACITY);

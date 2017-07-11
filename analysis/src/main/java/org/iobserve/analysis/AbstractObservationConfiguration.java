@@ -31,7 +31,7 @@ import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.neo4j.graphdb.GraphDatabaseService;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.Configuration;
@@ -82,22 +82,24 @@ public abstract class AbstractObservationConfiguration extends Configuration {
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final GraphDatabaseService resourceEnvironmentModelGraph,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+            final AllocationModelProvider allocationModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
 
-        final ModelProvider<ResourceEnvironment> resourceEnvironmentModel = new ModelProvider<>(
-                resourceEnvironmentModelGraph);
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
-        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider, resourceEnvironmentModel);
+        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider,
+                resourceEnvironmentModelGraphProvider);
         final TAllocationFinished tAllocationFinished = new TAllocationFinished();
         this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
         this.deploymentSuccAllocation = new TDeployment(correspondenceModel, allocationModelProvider,
                 systemModelProvider, resourceEnvironmentModelProvider);
-        this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider, resourceEnvironmentModel);
+        this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider,
+                resourceEnvironmentModelGraphProvider);
         this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
 

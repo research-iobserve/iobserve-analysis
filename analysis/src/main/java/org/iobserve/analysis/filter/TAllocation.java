@@ -59,6 +59,7 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      * @param resourceEnvironmentModel
      *            the resource environment model
      */
+    // TODO replace old ModelProvider with new GraphModelProvider (uses both now)
     public TAllocation(final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModel) {
         this.resourceEnvModelProvider = resourceEnvironmentModelProvider;

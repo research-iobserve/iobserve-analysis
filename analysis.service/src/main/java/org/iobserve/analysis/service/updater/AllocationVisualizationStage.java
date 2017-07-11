@@ -30,7 +30,7 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
 
     private final URL outputURL;
 
-    private final ModelProvider<ResourceContainer> resourceEnvironmentModelProvider;
+    private final ModelProvider<ResourceContainer> resourceContainerModelProvider;
     private final String systemId;
 
     /**
@@ -41,9 +41,9 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
      *            the resource environment model graph
      */
     public AllocationVisualizationStage(final URL outputURL,
-            final ModelProvider<ResourceContainer> resourceEnvironmentModelProvider, final String systemId) {
+            final ModelProvider<ResourceContainer> resourceContainerModelProvider, final String systemId) {
         this.outputURL = outputURL;
-        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
+        this.resourceContainerModelProvider = resourceContainerModelProvider;
         this.systemId = systemId;
     }
 
@@ -63,7 +63,7 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
 
         // final String path = url.getPath(); -> für die Serviceinstanz
 
-        final List<ResourceContainer> resourceContainerHostname = this.resourceEnvironmentModelProvider
+        final List<ResourceContainer> resourceContainerHostname = this.resourceContainerModelProvider
                 .readComponentByName(ResourceContainer.class, hostname);
 
         final ResourceContainer resourceContainer = resourceContainerHostname.get(0);
@@ -71,7 +71,7 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
 
         // nodeGroupId(knotengruppe erst noch
         // bilden)
-        final List<String> resourceContainerIds = this.resourceEnvironmentModelProvider
+        final List<String> resourceContainerIds = this.resourceContainerModelProvider
                 .readComponentByType(ResourceContainer.class);
 
         final JsonObject node = Json.createObjectBuilder().add("type", "node").add("id", resourceContainerId)
