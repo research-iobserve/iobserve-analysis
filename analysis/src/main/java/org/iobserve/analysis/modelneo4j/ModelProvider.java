@@ -722,7 +722,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
-            this.deleteComponent(node);
+            if (node != null) {
+                this.deleteComponent(node);
+            }
             tx.success();
         }
 
