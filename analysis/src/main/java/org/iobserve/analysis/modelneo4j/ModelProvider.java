@@ -572,13 +572,11 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
             this.deleteComponentAndDatatypes(clazz, component.eGet(idAttr).toString());
-            this.createComponent(component);
+            this.createComponent(component); // also releases the lock
         } else {
             this.logger.warn("Updated component needs to have an id.");
         }
 
-        // TODO like this the lock has already been released at createComponent(component)
-        ModelProviderSynchronizer.releaseLock(this);
     }
 
     /*
@@ -596,7 +594,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
-            this.deleteComponent(node);
+            if (node != null) {
+                this.deleteComponent(node);
+            }
             tx.success();
         }
 
