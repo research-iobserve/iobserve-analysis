@@ -17,8 +17,9 @@ package org.iobserve.analysis.modelneo4j;
 
 import java.io.File;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.analysis.model.RepositoryModelProvider;
+import org.palladiosimulator.pcm.repository.Repository;
 
 /**
  * An ugly test class for debugging
@@ -33,17 +34,16 @@ public class TestGeneric {
             "/Users/LarsBlumke/Documents/CAU/Masterprojekt/iObserveWorkspace/models/WorkingTestPCM/pcm");
 
     public static void main(final String[] args) {
-        // final Graph graph = new Graph(TestGeneric.DB_PATH);
-        // final Graph graph2 = new Graph(TestGeneric.DB_PATH2);
-        // System.out.println("Started DBs");
-        //
-        // final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
-        // TestGeneric.PCM_MODELS_DIRECTORY);
+        final Graph graph = new Graph(TestGeneric.DB_PATH);
+        final Graph graph2 = new Graph(TestGeneric.DB_PATH2);
+        System.out.println("Started DBs");
+
+        final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
+                TestGeneric.PCM_MODELS_DIRECTORY);
 
         /** Load repository model */
-        // final RepositoryModelProvider repositoryModelProvider =
-        // modelProviderPlatform.getRepositoryModelProvider();
-        // final Repository repositoryModel = repositoryModelProvider.getModel();
+        final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
+        final Repository repositoryModel = repositoryModelProvider.getModel();
         //
         /** Load usage model */
         // final UsageModelProvider usageModelProvider =
@@ -70,9 +70,14 @@ public class TestGeneric {
 
         /*************************************************************************************************/
 
+        /** Clear graph */
+        System.out.println("Clearing graphs");
+        new ModelProvider<>(graph).clearGraph();
+        new ModelProvider<>(graph2).clearGraph();
+
         /** Write to DB1 */
-        // System.out.println("Writing to DB1");
-        // new ModelProvider<>(graph).createComponent(repositoryModel);
+        System.out.println("Writing to DB1");
+        new ModelProvider<>(graph).createComponent(repositoryModel);
 
         /** Reading (id -> object) from DB1 */
         // System.out.println("Reading (id -> object) from DB1");
@@ -140,18 +145,12 @@ public class TestGeneric {
         // new ModelProvider<>(graph2).createComponent(repositoryModelProvider2.getModel());
 
         /** Test parallel access */
-        // System.out.println("Starting parallel access");
-        // new ModelProvider<>(graph).clearGraph();
-        // new TestThread(graph, repositoryModel).start();
-        // new TestThread(graph, allocationModel).start();
-        //
-        //
-        //
-        // System.out.println("Shut down DBs");
+        System.out.println("Starting parallel access");
+        new TestThread(graph, repositoryModel).start();
+        new TestThread(graph, repositoryModel).start();
 
-        final Logger logger = LogManager.getLogger(TestGeneric.class); // oder this bei nicht
-                                                                       // staticher klasse
-        logger.debug("Hello World");
+        System.out.println("Shut down DBs");
+
     }
 
 }

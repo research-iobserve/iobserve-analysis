@@ -577,6 +577,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             this.logger.warn("Updated component needs to have an id.");
         }
 
+        // TODO like this the lock has already been released at createComponent(component)
         ModelProviderSynchronizer.releaseLock(this);
     }
 

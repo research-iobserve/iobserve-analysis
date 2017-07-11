@@ -16,6 +16,7 @@
 package org.iobserve.analysis.modelneo4j;
 
 import org.eclipse.emf.ecore.EObject;
+import org.palladiosimulator.pcm.repository.Repository;
 
 public class TestThread extends Thread {
 
@@ -29,18 +30,13 @@ public class TestThread extends Thread {
 
     @Override
     public void run() {
-        final ModelProvider<EObject> prov = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> prov = new ModelProvider<>(this.graph);
 
-        for (int i = 0; i < 5; i++) {
-            // System.out.println("Thread " + this.getId() + " clearing...");
-            // prov.clearGraph();
-            // System.out.println("Thread " + this.getId() + " reading...");
-            // final Repository rep = prov.readRootComponent(Repository.class);
-            // System.out.println("Thread " + this.getId() + " deleting...");
-            // prov.deleteComponentAndDatatypes(Repository.class, rep.getId());
-            System.out.println("Thread " + this.getId() + " creating...");
-            prov.createComponent(this.component);
-        }
+        System.out.println("Thread " + this.getId() + " starts his action");
+
+        final Repository r = prov.readRootComponent(Repository.class);
+        System.out.println("I read " + r);
+        prov.deleteComponent(Repository.class, ((Repository) this.component).getId());
 
         System.out.println("Thread " + this.getId() + " is done");
     }
