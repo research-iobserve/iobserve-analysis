@@ -159,7 +159,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             containmentsAndDatatypes.add(component);
 
             for (final EReference ref : component.eClass().getEAllReferences()) {
-
                 final Object refObject = component.eGet(ref);
 
                 if (refObject instanceof EList<?>) {
@@ -177,6 +176,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 }
             }
         }
+
         return containmentsAndDatatypes;
     }
 
@@ -488,12 +488,12 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                             component.eSet(ref, endComponent);
                         }
                     }
-
                 }
             }
         } else {
             component = nodesToCreatedObjects.get(node);
         }
+
         return component;
     }
 
@@ -560,6 +560,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             tx.success();
         }
+
         return (T) component;
     }
 
@@ -666,9 +667,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                                         ModelProviderUtil.getRelationshipType(ref, o));
                                 rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                             }
-
                         }
-
                     } else {
                         if (refReprensation != null) {
                             // Find node matching refRepresentation
@@ -689,7 +688,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                             }
                         }
                     }
-
                 }
 
                 // Delete nodes that are not referenced anymore
@@ -824,7 +822,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Flag if predecessor may be deleted
      */
     private void markDeletableNodes(final Node node, final boolean reallyDeletePred) {
-
         boolean reallyDelete = reallyDeletePred;
 
         // Check if there are incoming IS_TYPE relations from outside
@@ -865,7 +862,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            The node to start with
      */
     private void deleteMarkedNodes(final Node node) {
-
         // Recursively go to the lowest node and mark already visited edges to prevent call circles
         for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
                 PcmRelationshipType.IS_TYPE)) {
@@ -882,7 +878,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         try {
             if (node.hasProperty(ModelProvider.DELETE)) {
-
                 // Delete node and its relationships
                 for (final Relationship rel : node.getRelationships()) {
                     rel.delete();
@@ -890,7 +885,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 node.delete();
 
             } else {
-
                 // Only remove visited mark
                 for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS,
                         PcmRelationshipType.IS_TYPE)) {

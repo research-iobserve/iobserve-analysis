@@ -92,6 +92,7 @@ public class ModelProviderUtil {
      * @return The node representing the component or null if there is none
      */
     public static Node findMatchingNode(final URI uri, final List<Relationship> rels) {
+
         if (uri != null) {
             for (final Relationship r : rels) {
                 final Node node = r.getEndNode();
@@ -219,6 +220,7 @@ public class ModelProviderUtil {
      * @return The attribute's value in the proper data type
      */
     public static Object instantiateAttribute(final Class<?> clazz, final String value) {
+
         if (clazz == String.class) {
             return value;
         } else if (clazz == ParameterModifier.class) {

@@ -42,6 +42,7 @@ public class ModelProviderSynchronizer {
      */
     public static void getLock(final ModelProvider<?> modelProvider) {
         final Graph graph = modelProvider.getGraph();
+
         synchronized (graph) {
             while ((ModelProviderSynchronizer.locks.get(graph) != null)
                     && (ModelProviderSynchronizer.locks.get(graph) != modelProvider)) {
@@ -65,6 +66,7 @@ public class ModelProviderSynchronizer {
      */
     public static void releaseLock(final ModelProvider<?> modelProvider) {
         final Graph graph = modelProvider.getGraph();
+
         synchronized (graph) {
             if (ModelProviderSynchronizer.locks.get(graph) == modelProvider) {
                 ModelProviderSynchronizer.locks.remove(graph);
