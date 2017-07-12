@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +31,7 @@ import org.apache.logging.log4j.Logger;
 public class ModelProviderSynchronizer {
 
     private static final Logger LOGGER = LogManager.getLogger(ModelProviderSynchronizer.class);
-    private static HashMap<Graph, ModelProvider<?>> locks = new HashMap<>();
+    private static ConcurrentHashMap<Graph, ModelProvider<?>> locks = new ConcurrentHashMap<>();
 
     /**
      * Gets the lock for the graph database of the calling {@link ModelProvider}. Blocks if the lock
