@@ -43,11 +43,9 @@ public class ModelProviderSynchronizer {
     public static void getLock(final ModelProvider<?> modelProvider) {
         final Graph graph = modelProvider.getGraph();
         synchronized (graph) {
-            System.out.println("locks.get(graph) " + ModelProviderSynchronizer.locks.get(graph));
             while ((ModelProviderSynchronizer.locks.get(graph) != null)
                     && (ModelProviderSynchronizer.locks.get(graph) != modelProvider)) {
                 try {
-                    System.out.println("I'm blocked.");
                     graph.wait();
                 } catch (final InterruptedException e) {
                     ModelProviderSynchronizer.LOGGER
