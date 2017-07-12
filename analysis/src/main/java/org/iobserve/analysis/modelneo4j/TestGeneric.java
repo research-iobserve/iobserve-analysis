@@ -18,11 +18,11 @@ package org.iobserve.analysis.modelneo4j;
 import java.io.File;
 
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.palladiosimulator.pcm.repository.OperationInterface;
-import org.palladiosimulator.pcm.repository.OperationSignature;
-import org.palladiosimulator.pcm.repository.Parameter;
-import org.palladiosimulator.pcm.repository.Repository;
+import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourcetype.ProcessingResourceType;
 
 /**
  * An ugly test class for debugging
@@ -45,8 +45,9 @@ public class TestGeneric {
                 TestGeneric.PCM_MODELS_DIRECTORY);
 
         /** Load repository model */
-        final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
-        final Repository repositoryModel = repositoryModelProvider.getModel();
+        // final RepositoryModelProvider repositoryModelProvider =
+        // modelProviderPlatform.getRepositoryModelProvider();
+        // final Repository repositoryModel = repositoryModelProvider.getModel();
         //
         /** Load usage model */
         // final UsageModelProvider usageModelProvider =
@@ -60,11 +61,9 @@ public class TestGeneric {
         // systemModelProvider.getModel();
 
         /** Load resource environment model */
-        // final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider =
-        // modelProviderPlatform
-        // .getResourceEnvironmentModelProvider();
-        // final ResourceEnvironment resourceEnvironmentModel =
-        // resourceEnvironmentModelProvider.getModel();
+        final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider = modelProviderPlatform
+                .getResourceEnvironmentModelProvider();
+        final ResourceEnvironment resourceEnvironmentModel = resourceEnvironmentModelProvider.getModel();
 
         /** Load allocation model */
         // final AllocationModelProvider allocationModelProvider =
@@ -80,18 +79,27 @@ public class TestGeneric {
 
         /** Write to DB1 */
         System.out.println("Writing to DB1");
-        new ModelProvider<>(graph).createComponent(repositoryModel.getInterfaces__Repository().get(0));
-        new ModelProvider<>(graph2).createComponent(repositoryModel.getInterfaces__Repository().get(0));
+        // new
+        // ModelProvider<>(graph).createComponent(repositoryModel.getInterfaces__Repository().get(0));
+        // new
+        // ModelProvider<>(graph2).createComponent(repositoryModel.getInterfaces__Repository().get(0));
+        new ModelProvider<>(graph).createComponent(resourceEnvironmentModel);
+        new ModelProvider<>(graph2).createComponent(resourceEnvironmentModel);
 
         /** Reading (id -> object) from DB1 */
         // System.out.println("Reading (id -> object) from DB1");
         // final Repository repositoryModel2 = new
         // ModelProvider<Repository>(graph).readComponentById(Repository.class,
         // repositoryModel.getId());
-        final OperationInterface inter = new ModelProvider<OperationInterface>(graph).readOnlyComponentById(
-                OperationInterface.class, repositoryModel.getInterfaces__Repository().get(0).getId());
+        // final OperationInterface inter = new
+        // ModelProvider<OperationInterface>(graph).readOnlyComponentById(
+        // OperationInterface.class, repositoryModel.getInterfaces__Repository().get(0).getId());
         // final UsageModel usageModel2 = new
         // ModelProvider<UsageModel>(graph).readRootComponent(UsageModel.class);
+
+        final ModelProvider<ResourceContainer> containerProvider = new ModelProvider<>(graph);
+        final ResourceContainer cont = containerProvider.readComponentById(ResourceContainer.class,
+                "_BgmykK2VEeaxN4gXuIkS2A");
 
         /** Reading (type -> ids) from DB1 */
         // System.out.println("Reading (type -> ids) from DB1");
@@ -100,18 +108,37 @@ public class TestGeneric {
         // System.out.println(ids);
 
         /** Updating in DB1 */
-        System.out.println("Updating DB1");
-        inter.setEntityName("UPDATED" + inter.getEntityName());
-        final OperationSignature sig = inter.getSignatures__OperationInterface().get(8);
-        sig.setEntityName("UPDATED" + sig.getEntityName());
-        // inter.getSignatures__OperationInterface().remove(1);
-        final Parameter param = (Parameter) ModelProviderUtil.instantiateEObject("Parameter");
-        param.setParameterName("ADDEDParam");
-        sig.getParameters__OperationSignature().add(param);
+        // System.out.println("Updating DB1");
+        // inter.setEntityName("UPDATED" + inter.getEntityName());
+        // final OperationSignature sig = inter.getSignatures__OperationInterface().get(8);
+        // inter.getSignatures__OperationInterface().remove(0);
+        // sig.setEntityName("UPDATED" + sig.getEntityName());
+        // // inter.getSignatures__OperationInterface().remove(1);
+        // final Parameter param = (Parameter) ModelProviderUtil.instantiateEObject("Parameter");
+        // param.setParameterName("ADDEDParam");
+        // sig.getParameters__OperationSignature().add(param);
+        //
+        // new ModelProvider<OperationInterface>(graph).updateComponent2(OperationInterface.class,
+        // inter);
+        //
+        // new ModelProvider<OperationInterface>(graph2).updateComponent(OperationInterface.class,
+        // inter);
 
-        new ModelProvider<OperationInterface>(graph).updateComponent2(OperationInterface.class, inter);
+        final ProcessingResourceSpecification spec = (ProcessingResourceSpecification) ModelProviderUtil
+                .instantiateEObject("ProcessingResourceSpecification");
+        final ProcessingResourceType type = (ProcessingResourceType) ModelProviderUtil
+                .instantiateEObject("ProcessingResourceType");
+        spec.setMTTR(42.0);
+        spec.setRequiredByContainer(true);
+        type.setEntityName("ADDED TYPE");
+        spec.setActiveResourceType_ActiveResourceSpecification(type);
+        cont.getActiveResourceSpecifications_ResourceContainer().remove(0);
+        cont.getActiveResourceSpecifications_ResourceContainer().add(spec);
 
-        new ModelProvider<OperationInterface>(graph2).updateComponent(OperationInterface.class, inter);
+        containerProvider.updateComponent(ResourceContainer.class, cont);
+
+        // new ModelProvider<ResourceContainer>(graph2).updateComponent(ResourceContainer.class,
+        // cont);
 
         /** Writing to DB2 */
         // System.out.println("Writing to DB2");

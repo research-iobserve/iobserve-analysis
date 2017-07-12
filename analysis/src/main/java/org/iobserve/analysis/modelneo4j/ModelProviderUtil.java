@@ -15,8 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j;
 
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -79,17 +78,27 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  */
 public class ModelProviderUtil {
 
-    public static Node findMatchingNode(final URI uri, final LinkedList<Relationship> rels) {
+    /**
+     * Based on a certain component's URI and a list of references to nodes which possibly represent
+     * that component, this method returns the node which actually represents the component or null
+     * if there is none in the list. Relationships to matching nodes are removed from the list, so
+     * this method can also be used to reduce a list of references to those references which link to
+     * nodes whose component does not exist anymore.
+     *
+     * @param uri
+     *            The component's URI
+     * @param rels
+     *            The relationships to possibly matching nodes
+     * @return The node representing the component or null if there is none
+     */
+    public static Node findMatchingNode(final URI uri, final List<Relationship> rels) {
         if (uri != null) {
-            final Iterator<Relationship> relsIter = rels.iterator();
-
-            while (relsIter.hasNext()) {
-                final Node node = relsIter.next().getEndNode();
+            for (final Relationship r : rels) {
+                final Node node = r.getEndNode();
                 final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
 
-                java.lang.System.out.println(uri + "  +  " + nodeUri);
                 if (uri.toString().equals(nodeUri)) {
-                    relsIter.remove();
+                    rels.remove(r);
                     return node;
                 }
             }
