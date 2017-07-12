@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ModelProviderSynchronizer {
 
-    private static final Logger LOGGER = LogManager.getLogger(TestGeneric.class);
+    private static final Logger LOGGER = LogManager.getLogger(ModelProviderSynchronizer.class);
     private static HashMap<Graph, ModelProvider<?>> locks = new HashMap<>();
 
     /**
