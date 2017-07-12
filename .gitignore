@@ -37,5 +37,6 @@ rac.creator/mapped.txt
 rac.creator/mapping.rac
 rac.creator/unmapped.txt
 test.setup/kieker*tgz
-
 *.csv
+!/analysis/src/main/java/log4j2.properties
+

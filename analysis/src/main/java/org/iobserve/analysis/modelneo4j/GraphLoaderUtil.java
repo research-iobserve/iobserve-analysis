@@ -25,6 +25,13 @@ import java.io.File;
  */
 public class GraphLoaderUtil {
 
+    /**
+     * Returns the highest version number from all passed graph database directories.
+     * 
+     * @param files
+     *            The graph database directories
+     * @return The highest version number
+     */
     public static int getMaxVersionNumber(final File[] files) {
         int max = 0;
 
@@ -41,11 +48,20 @@ public class GraphLoaderUtil {
         return max;
     }
 
+    /**
+     * Returns the version number of a given graph database directory.
+     *
+     * @param file
+     *            The graph database directory
+     * @return The version number
+     */
     public static int getVersionNumber(final File file) {
         final int versionNumberIndex = file.getName().lastIndexOf(GraphLoader.VERSION_PREFIX);
+
         if (versionNumberIndex == -1) {
             return 0;
         }
+
         final int versionNumber = Integer
                 .valueOf(file.getName().substring(versionNumberIndex + GraphLoader.VERSION_PREFIX.length()));
 

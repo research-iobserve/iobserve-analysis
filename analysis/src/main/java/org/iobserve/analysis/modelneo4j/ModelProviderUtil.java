@@ -15,11 +15,16 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j;
 
+import java.util.List;
+
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.neo4j.graphdb.Label;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -72,6 +77,36 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  *
  */
 public class ModelProviderUtil {
+
+    /**
+     * Based on a certain component's URI and a list of references to nodes which possibly represent
+     * that component, this method returns the node which actually represents the component or null
+     * if there is none in the list. Relationships to matching nodes are removed from the list, so
+     * this method can also be used to reduce a list of references to those references which link to
+     * nodes whose component does not exist anymore.
+     *
+     * @param uri
+     *            The component's URI
+     * @param rels
+     *            The relationships to possibly matching nodes
+     * @return The node representing the component or null if there is none
+     */
+    public static Node findMatchingNode(final URI uri, final List<Relationship> rels) {
+
+        if (uri != null) {
+            for (final Relationship r : rels) {
+                final Node node = r.getEndNode();
+                final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
+
+                if (uri.toString().equals(nodeUri)) {
+                    rels.remove(r);
+                    return node;
+                }
+            }
+        }
+
+        return null;
+    }
 
     /**
      * Returns a URI based on the components containing the passed component.
@@ -185,6 +220,7 @@ public class ModelProviderUtil {
      * @return The attribute's value in the proper data type
      */
     public static Object instantiateAttribute(final Class<?> clazz, final String value) {
+
         if (clazz == String.class) {
             return value;
         } else if (clazz == ParameterModifier.class) {
