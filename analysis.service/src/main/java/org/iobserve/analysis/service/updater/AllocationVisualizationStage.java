@@ -10,10 +10,10 @@ import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonWriter;
 
 import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.service.services.NodeService;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationRecord;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -26,6 +26,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  *
  */
 public class AllocationVisualizationStage extends AbstractVisualizationStage<IAllocationRecord> {
+
+    private final NodeService nodeService = new NodeService();
 
     private static final String USER_AGENT = "iObserve/0.0.2";
 
@@ -65,24 +67,18 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
         // final String path = url.getPath(); -> für die Serviceinstanz
 
         final List<ResourceContainer> resourceContainerHostname = this.resourceContainerModelProvider
-                .readComponentByName(ResourceContainer.class, hostname);
+                .readOnlyComponentByName(ResourceContainer.class, hostname);
 
         final ResourceContainer resourceContainer = resourceContainerHostname.get(0);
         final String resourceContainerId = resourceContainer.getId();
 
-        // nodeGroupId(knotengruppe erst noch
-        // bilden)
+        // nodeGroupId reinreichen?
         final List<String> resourceContainerIds = this.resourceContainerModelProvider
                 .readComponentByType(ResourceContainer.class);
+        final String systemId = "systemId";
+        final String nodegroupId = "nodegroupId";
 
-        final JsonObject node = Json.createObjectBuilder().add("type", "node").add("id", resourceContainerId)
-                .add("systemId", this.systemId).add("nodeGroupId", "node-group-id-analysis").add("hostname", hostname)
-                .add("ip", "127.0.0.1").build();
-
-        final JsonObject nodeData = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
-                .add("data", node).build();
-        final JsonArray dataArray = Json.createArrayBuilder().add(nodeData).build();
-
+        final JsonArray dataArray = this.nodeService.createNode(resourceContainer, systemId, nodegroupId);
         return dataArray;
     }
 

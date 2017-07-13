@@ -23,9 +23,11 @@ import java.net.URL;
 
 import javax.json.Json;
 import javax.json.JsonArray;
-import javax.json.JsonObject;
 import javax.json.JsonWriter;
 
+import org.iobserve.analysis.service.services.NodeService;
+import org.iobserve.analysis.service.services.ServiceService;
+import org.iobserve.analysis.service.services.ServiceinstanceService;
 import org.iobserve.common.record.IDeploymentRecord;
 
 import teetime.framework.AbstractConsumerStage;
@@ -39,6 +41,10 @@ import teetime.framework.AbstractConsumerStage;
  *
  */
 public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploymentRecord> {
+
+    private final NodeService nodeService = new NodeService();
+    private final ServiceService serviceService = new ServiceService();
+    private final ServiceinstanceService serviceinstanceService = new ServiceinstanceService();
 
     private static final String USER_AGENT = "iObserve/0.0.2";
 
@@ -58,107 +64,7 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
     protected void execute(final IDeploymentRecord deployment) {
 
         // this.sendPostRequest(this.deployment(deployment));
-        // this.sendSystemRequest(this.createSystem());
-        System.out.println("deploymentVisualization has nothing to do");
 
-    }
-
-    private JsonObject createSystem() {
-        // system data
-
-        final String systemId = "123";
-        final String systemName = "iobserve-analysis-system";
-
-        final JsonObject system = Json.createObjectBuilder().add("type", "system").add("id", systemId)
-                .add("name", systemName).build();
-        return system;
-    }
-
-    /**
-     * Send new system to the visualization.
-     *
-     * @param message
-     * @throws IOException
-     */
-    private void sendSystemRequest(final JsonObject message) throws IOException {
-        final HttpURLConnection connection = (HttpURLConnection) this.outputURL.openConnection();
-
-        // add request header
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("content-type", "application/json; charset=utf-8");
-        connection.setRequestProperty("User-Agent", DeploymentVisualizationStage.USER_AGENT);
-        connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
-        // Send post request
-        connection.setDoOutput(true);
-
-        final JsonWriter jsonWriter = Json.createWriter(connection.getOutputStream());
-
-        jsonWriter.write(message);
-        jsonWriter.close();
-
-        final int responseCode = connection.getResponseCode();
-        System.out.println("\nSending 'POST' request to URL : " + this.outputURL);
-        System.out.println("Post parameters : " + message);
-        System.out.println("Response Code : " + responseCode);
-
-        final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String inputLine;
-        final StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-
-        // print result
-        System.out.println(response.toString());
-
-    }
-
-    private JsonArray deployment(final IDeploymentRecord allocate) {
-
-        final JsonObject nodeGroup = Json.createObjectBuilder().add("type", "nodeGroup")
-                .add("id", "node-group-id-analysis").add("systemId", "CoCoME").add("name", "XUbuntu VM").build();
-
-        final JsonObject node1 = Json.createObjectBuilder().add("type", "node")
-                .add("id", "node-id-analysis-1" + Math.random()).add("systemId", "CoCoME")
-                .add("nodeGroupId", "node-group-id-analysis").add("hostname", "localhost").add("ip", "127.0.0.1")
-                .build();
-
-        final JsonObject service = Json.createObjectBuilder().add("type", "service").add("id", "service-id-analysis")
-                .add("systemId", "CoCoME").add("name", "analysis-service").build();
-        final JsonObject serviceInstance = Json.createObjectBuilder().add("type", "serviceInstance")
-                .add("id", "serviceInstance-id-analysis").add("systemId", "CoCoME")
-                .add("name", "analysis-serviceInstance").add("serviceId", "service-id-analysis")
-                .add("nodeId", "node-id-analysis-1").build();
-
-        final JsonObject communication = Json.createObjectBuilder().add("type", "communication")
-                .add("id", "communication-id-analysis").add("systemId", "CoCoME").add("technology", "TCP/IP")
-                .add("sourceId", "service-id-analysis").add("targetId", "test-CoCoME-service-1").build();
-        final JsonObject communicationInst = Json.createObjectBuilder().add("type", "communicationInstance")
-                .add("id", "communicationInst-id-analysis" + Math.random()).add("systemId", "CoCoME")
-                .add("communicationId", "communication-id-analysis").add("workload", "17")
-                .add("sourceId", "serviceInstance-id-analysis").add("targetId", "test-CoCoME-serviceInstance-1")
-                .build();
-
-        final JsonObject nodeGroupData = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
-                .add("data", nodeGroup).build();
-        final JsonObject nodeData = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
-                .add("data", node1).build();
-        final JsonObject serviceData = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
-                .add("data", service).build();
-        final JsonObject serviceInstData = Json.createObjectBuilder().add("type", "changelog")
-                .add("operation", "CREATE").add("data", serviceInstance).build();
-
-        final JsonObject communicationData = Json.createObjectBuilder().add("type", "changelog")
-                .add("operation", "CREATE").add("data", communication).build();
-        final JsonObject communicationInstData = Json.createObjectBuilder().add("type", "changelog")
-                .add("operation", "CREATE").add("data", communicationInst).build();
-
-        final JsonArray dataArray = Json.createArrayBuilder().add(nodeData).build();
-
-        return dataArray;
     }
 
     /**

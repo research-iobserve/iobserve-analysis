@@ -5,7 +5,6 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 
-import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 public class NodeService {
@@ -16,10 +15,9 @@ public class NodeService {
 
     }
 
-    public JsonArray createNode(final AllocationContext allocationContext, final String systemId,
+    public JsonArray createNode(final ResourceContainer resourceContainer, final String systemId,
             final String nodegroupId) {
         final JsonArrayBuilder nodeArrayBuilder = Json.createArrayBuilder();
-        final ResourceContainer resourceContainer = allocationContext.getResourceContainer_AllocationContext();
 
         this.nodeId = resourceContainer.getId();
         final String hostname = resourceContainer.getEntityName();

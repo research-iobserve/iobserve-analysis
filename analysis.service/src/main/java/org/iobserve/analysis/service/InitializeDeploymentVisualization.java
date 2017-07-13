@@ -23,6 +23,9 @@ import org.iobserve.analysis.service.services.ServiceinstanceService;
 import org.iobserve.analysis.service.services.SystemService;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
+import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -30,7 +33,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 /**
  * Initializes the deployment visualization by mapping the initial palladio components to
  * visualization elements.
- * 
+ *
  * @author jweg
  *
  */
@@ -52,27 +55,26 @@ public final class InitializeDeploymentVisualization {
 
     private static final String USER_AGENT = "iObserve/0.0.2";
 
-    private URL changelogURL;
-    private final URL systemURL;
+    private final URL changelogUrl;
+    private final URL systemUrl;
     private String systemId;
 
     /**
      * constructor
      *
-     * @param systemURL
-     * @param changelogURL
+     * @param systemUrl
+     * @param changelogUrl
      * @param allocationModelGraphProvider
      * @param systemModelGraphProvider
      * @param resourceEnvironmentModelGraphProvider
      */
 
-    public InitializeDeploymentVisualization(final URL systemURL,
+    public InitializeDeploymentVisualization(final URL systemUrl, final URL changelogUrl,
             final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
-        // get all model references
-        this.systemURL = systemURL;
-        // this.changelogURL = changelogURL;
+        this.systemUrl = systemUrl;
+        this.changelogUrl = changelogUrl;
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
@@ -80,40 +82,41 @@ public final class InitializeDeploymentVisualization {
 
     protected void initialize() throws Exception {
         final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
-                .readRootComponent(org.palladiosimulator.pcm.system.System.class);
+                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+
+        final List<AssemblyContext> assemblyContexts = systemModel.getAssemblyContexts__ComposedStructure();
+        final List<Connector> connectors = systemModel.getConnectors__ComposedStructure();
         final List<String> allocationIds = this.allocationModelGraphProvider.readComponentByType(Allocation.class);
         // an allocation model contains exactly one allocation
         final String allocationId = allocationIds.get(0);
-        final Allocation allocation = this.allocationModelGraphProvider.readComponentById(Allocation.class,
+        final Allocation allocation = this.allocationModelGraphProvider.readOnlyComponentById(Allocation.class,
                 allocationId);
         final List<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
         final ResourceEnvironment resourceEnvironmentModel = this.resourceEnvironmentModelGraphProvider
-                .readRootComponent(ResourceEnvironment.class);
+                .readOnlyRootComponent(ResourceEnvironment.class);
         final List<LinkingResource> linkingResources = resourceEnvironmentModel
                 .getLinkingResources__ResourceEnvironment();
 
         this.sendPostRequest(this.systemService.createSystem(systemModel));
-        // create URL for changelogs
-        this.changelogURL = new URL(this.systemURL + this.systemService.getSystemId() + "/changelogs");
 
         for (int i = 0; i < allocationContexts.size(); i++) {
             final AllocationContext allocationContext = allocationContexts.get(i);
+            final ResourceContainer resourceContainer = allocationContext.getResourceContainer_AllocationContext();
             this.sendPostRequest(this.nodegroupService.createNodegroup(this.systemService.getSystemId()));
-            this.sendPostRequest(this.nodeService.createNode(allocationContext, this.systemService.getSystemId(),
+            this.sendPostRequest(this.nodeService.createNode(resourceContainer, this.systemService.getSystemId(),
                     this.nodegroupService.getNodegroupId()));
-            this.sendPostRequest(
-                    this.serviceService.createService(allocationContext, this.systemService.getSystemId()));
+
+            final AssemblyContext assemblyContext = assemblyContexts.get(i);
+            this.sendPostRequest(this.serviceService.createService(assemblyContext, this.systemService.getSystemId()));
             this.sendPostRequest(this.serviceinstanceService.createServiceInstance(this.systemService.getSystemId(),
                     this.nodeService.getNodeId(), this.serviceService.getServiceId()));
-
         }
 
-        for (int i = 0; i < linkingResources.size(); i++) {
-            final List<ResourceContainer> connectedResourceContainers = linkingResources.get(i)
-                    .getConnectedResourceContainers_LinkingResource();
-
-            this.sendPostRequest(this.communicationService.createCommunication(resourceEnvironmentModel,
-                    this.systemService.getSystemId()));
+        // communication and communicationinstance
+        for (int i = 0; i < connectors.size(); i++) {
+            final AssemblyConnector connector = (AssemblyConnector) connectors.get(i);
+            this.sendPostRequest(
+                    this.communicationService.createCommunication(connector, this.systemService.getSystemId()));
 
         }
 
@@ -130,9 +133,9 @@ public final class InitializeDeploymentVisualization {
         final JsonObject obj = modelData.getJsonObject(0);
         final JsonString type = (JsonString) obj.get("type");
         if (type.getString() == "system") {
-            connection = (HttpURLConnection) this.systemURL.openConnection();
+            connection = (HttpURLConnection) this.systemUrl.openConnection();
         } else {
-            connection = (HttpURLConnection) this.changelogURL.openConnection();
+            connection = (HttpURLConnection) this.changelogUrl.openConnection();
         }
 
         // add request header
@@ -146,13 +149,13 @@ public final class InitializeDeploymentVisualization {
         if (type.getString() == "system") {
             jsonWriter.write(obj);
 
-            System.out.println("\nSending 'POST' request to URL : " + this.systemURL);
+            System.out.println("\nSending 'POST' request to URL : " + this.systemUrl);
             System.out.println("Post parameters : " + obj);
 
         } else {
             jsonWriter.writeArray(modelData); // work in progress
 
-            System.out.println("\nSending 'POST' request to URL : " + this.changelogURL);
+            System.out.println("\nSending 'POST' request to URL : " + this.changelogUrl);
             System.out.println("Post parameters : " + modelData);
         }
 

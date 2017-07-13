@@ -5,7 +5,6 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 
-import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 public class ServiceService {
@@ -20,10 +19,8 @@ public class ServiceService {
 
     }
 
-    public JsonArray createService(final AllocationContext allocationContext, final String systemId) {
+    public JsonArray createService(final AssemblyContext assemblyContext, final String systemId) {
         final JsonArrayBuilder nodeArrayBuilder = Json.createArrayBuilder();
-
-        final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
 
         this.serviceId = assemblyContext.getId();
         final String serviceName = assemblyContext.getEntityName();

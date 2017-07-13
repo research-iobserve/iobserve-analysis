@@ -18,6 +18,7 @@ package org.iobserve.analysis.service;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
@@ -31,6 +32,7 @@ import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -74,9 +76,6 @@ public final class AnalysisMain {
     @Parameter(names = { "-o",
             "--output" }, required = true, description = "hostname and port of the iobserve visualization, e.g., visualization:80.")
     private String output;
-    // TODO remove parameter
-    @Parameter(names = { "-s", "--system" }, required = true, description = "system id.")
-    private String systemId;
 
     @Parameter(names = { "-p",
             "--pcm" }, required = true, description = "Directory containing PCM model data.", converter = FileConverter.class)
@@ -146,7 +145,7 @@ public final class AnalysisMain {
                 Graph allocationModelGraph = graphLoader
                         .initializeAllocationModelGraph(allocationModelProvider.getModel());
                 Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
-                // load graphs
+                // load neo4j graphs
                 resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
                 allocationModelGraph = graphLoader.getAllocationModelGraph();
                 systemModelGraph = graphLoader.getSystemModelGraph();
@@ -159,13 +158,23 @@ public final class AnalysisMain {
                         allocationModelGraph);
                 final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                         systemModelGraph);
-
-                // final URL changelogUrl = new URL(
-                // "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + this.systemId +
-                // "/changelogs");
+                // get systemId
+                final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
+                        .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+                final String systemId = systemModel.getId();
+                // URLs for sending updates to the deployment visualization
                 final URL systemUrl = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");
+                final URL changelogUrl = new URL(systemUrl + systemId + "/changelogs");
+
+                /**
+                 * Tests
+                 */
+                final String idOfInterfaceIWant = repositoryModelProvider.getModel().getInterfaces__Repository().get(0)
+                        .getId();
+                final List<Interface> interfaces = repositoryModelProvider.getModel().getInterfaces__Repository();
+
                 final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                        systemUrl, allocationModelGraphProvider, systemModelGraphProvider,
+                        systemUrl, changelogUrl, allocationModelGraphProvider, systemModelGraphProvider,
                         resourceEnvironmentModelGraphProvider);
                 try {
                     deploymentVisualization.initialize();
@@ -175,7 +184,7 @@ public final class AnalysisMain {
                 }
 
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
-                        outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
+                        outputPort, systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
                         correspondenceModel, usageModelProvider, repositoryModelProvider,
                         resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider,
                         resourceContainerModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
