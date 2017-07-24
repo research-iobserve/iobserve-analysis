@@ -1,0 +1,14 @@
+As suggested by the class comment in the RacCreator file, the RacCreator should only be used for testing purposes until the final solution for creating the correspondent model is finished.
+
+1. Since the RacCreator is only temporary class used to create a rac file most of the settings have to be adjusted directly in the class itself:
+    - set input and output paths in the main-method
+    - set the shortcuts, from the kieker.map file, for BeforeOperationObjectInterfaceEvent, BeforeOperationObjectEvent and AfterOperationObjectEvent in the createCorrespondentMapping-method.
+
+2. The RacCreator uses a palladio repository and a kieker monitoring file to map known functioncalls to existing pcm repository entities. 
+   Additionally there is a model mapping file that is used to map call/classes that can not be mapped by name. 
+   (On the left side is the class of the call from the monitoring file and on the right the pcm entity that it should be mapped to).
+   
+3. Next to the mapping.rac, the RacCreator produces two convenience files:
+    - unmapped.txt: Contains all entities from the monitoring files that could not be mapped to any pcm repository entity.
+    - mapped.txt: Contains all calls(in a convenience format) from the monitoring files that have a direct mapping to a pcm repository entity function.
+        - Since the rac contains all functions a correspondent proviedes, even if there is only one function that is mapped to the pcm entity, it is hard to know which calls can actualy be proccesed by iobserve.

@@ -33,6 +33,10 @@ teetime.log
 gradle.properties
 repos/
 *.log
+rac.creator/mapped.txt
+rac.creator/mapping.rac
+rac.creator/unmapped.txt
+test.setup/kieker*tgz
 
 
 # Created by https://www.gitignore.io/api/eclipse,linux,windows
@@ -130,4 +134,3 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/eclipse,linux,windows
-
