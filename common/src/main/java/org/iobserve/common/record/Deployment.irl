@@ -18,23 +18,13 @@ package org.iobserve.common.record
 import kieker.common.record.flow.IEventRecord
 import kieker.common.record.flow.AbstractEvent
 
-template GeoLocation {
-	short countryCode = 049 // country code ISO				
-		
-}
 	 
 /** 
  * Marker interfaces for deployment and undeployment.	 
  */ 
 template IDeploymentRecord
 template IUndeploymentRecord
-	 
-/**
- * Marker interfaces for allocation and deallocation.	 
- */
-template IAllocationRecord 
-template IDeallocationRecord
- 
+	  
 /**
  * Event records for PaaS servlet/WAR deployment/undeployment.
  */	 
@@ -59,30 +49,6 @@ abstract entity EJBDeploymentEvent extends AbstractEvent {
 entity EJBDeployedEvent extends EJBDeploymentEvent : IDeploymentRecord
 entity EJBUndeployedEvent extends EJBDeploymentEvent : IUndeploymentRecord
 
-/**	 
- * Event records for PaaS allocation deallocation.
- */
-abstract entity ContainerEvent {
-	string url 
-}
 
-entity ContainerAllocationEvent extends ContainerEvent : IAllocationRecord
-entity ContainerDeallocationEvent extends ContainerEvent : IDeallocationRecord
 
-/** 
- * Certain DNS configuration return different IP addresses
- * for the same host name. Therefore, the hostname may only 
- * describe the logical unit while the IP specifies a concrete
- * server. 	 
- */	 
-entity ServerGeoLocation extends AbstractEvent : GeoLocation {
-	string hostname
-	string address
-}
 
-template ISessionEvent {
-	string sessionId
-}
-
-entity SessionStartEvent extends AbstractEvent : ISessionEvent
-entity SessionEndEvent extends AbstractEvent : ISessionEvent
