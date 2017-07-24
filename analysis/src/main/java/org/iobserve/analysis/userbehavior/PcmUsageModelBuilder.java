@@ -191,8 +191,13 @@ public class PcmUsageModelBuilder {
             // Element is a entryLevelSystemCall
             if (branchElement.getClass().equals(CallElement.class)) {
                 EntryLevelSystemCall eSysCall = null;
+
+                // Workaround TODO
+                final String operationSignature = branchElement.getOperationSignature().replaceAll("\\(.*\\)", "()");
+                final String[] operationSplit = operationSignature.split(" ");
+
                 final Optional<Correspondent> optionCorrespondent = this.correspondenceModel
-                        .getCorrespondent(branchElement.getClassSignature(), branchElement.getOperationSignature());
+                        .getCorrespondent(branchElement.getClassSignature(), operationSplit[operationSplit.length - 1]);
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
                     System.out.println("Usage: Found Correspondent: " + correspondent.getPcmEntityName() + " "

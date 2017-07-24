@@ -25,9 +25,9 @@ import kieker.common.util.registry.IRegistry;
 import org.iobserve.common.record.IUndeploymentRecord;
 
 /**
- * @author Generic Kieker
+ * @author iObserve
  * 
- * @since 1.13
+ * @since 1.10
  */
 public class ServletUndeployedEvent extends ServletDeploymentEvent implements IUndeploymentRecord {
 	private static final long serialVersionUID = 5313323648401206208L;
@@ -123,6 +123,10 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
 			this.getDeploymentId()
 		};
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServletUndeployedEvent.java
+	
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServletUndeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -132,6 +136,10 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
 		stringRegistry.get(this.getContext());
 		stringRegistry.get(this.getDeploymentId());
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServletUndeployedEvent.java
+	
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServletUndeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -142,6 +150,10 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
 		buffer.putInt(stringRegistry.get(this.getContext()));
 		buffer.putInt(stringRegistry.get(this.getDeploymentId()));
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServletUndeployedEvent.java
+	
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServletUndeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -150,6 +162,8 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
 		return TYPES; // NOPMD
 	}
 	
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServletUndeployedEvent.java
+=======
 	/**
 	 * {@inheritDoc}
 	 */
@@ -158,6 +172,7 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
 		return PROPERTY_NAMES; // NOPMD
 	}
 	
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServletUndeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -205,5 +220,14 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
 		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		return true;
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServletUndeployedEvent.java
+
+    @Override
+    public String[] getValueNames() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServletUndeployedEvent.java
 	
 }

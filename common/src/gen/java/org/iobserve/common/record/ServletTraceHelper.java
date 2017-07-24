@@ -147,6 +147,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 			this.getRequestURI()
 		};
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -231,7 +232,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	
 	public final long getTraceId() {
 		return this.traceId;
-	}
+	}	
 	
 	public final void setTraceId(long traceId) {
 		this.traceId = traceId;
@@ -239,7 +240,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	
 	public final String getHost() {
 		return this.host;
-	}
+	}	
 	
 	public final void setHost(String host) {
 		this.host = host;
@@ -247,7 +248,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	
 	public final int getPort() {
 		return this.port;
-	}
+	}	
 	
 	public final void setPort(int port) {
 		this.port = port;
@@ -256,6 +257,11 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	public final String getRequestURI() {
 		return this.requestURI;
 	}
+
+    @Override
+    public String[] getValueNames() {
+        // TODO Auto-generated method stub
+        return null;
 	
 	public final void setRequestURI(String requestURI) {
 		this.requestURI = requestURI;

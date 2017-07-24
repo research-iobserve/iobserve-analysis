@@ -22,6 +22,10 @@ import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
+
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -34,6 +38,7 @@ import teetime.framework.AbstractConsumerStage;
  * @author Alessandro Guisa
  * @author Nicolas Boltz
  * @author David Peter
+ * @author Christoph Dornieden
  *
  * @version 1.0
  */
@@ -51,6 +56,8 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
     private final boolean closedWorkload;
 
     private final RepositoryModelProvider repositoryModelProvider;
+
+    private final OutputPort<UsageModel> outputPort;
 
     /**
      * Create a entry event sequence filter.
@@ -78,6 +85,8 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
         this.varianceOfUserGroups = varianceOfUserGroups;
         this.thinkTime = thinkTime;
         this.closedWorkload = closedWorkload;
+
+        this.outputPort = this.createOutputPort();
     }
 
     @Override
@@ -102,7 +111,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
         } catch (final IOException e) {
             e.printStackTrace();
         }
-
+        this.outputPort.send(behaviorModeling.getPcmUsageModel());
         // Sets the new usage model within iObserve
         // this.usageModelProvider.save();
     }

@@ -1,3 +1,5 @@
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
+=======
 /***************************************************************************
  * Copyright 2017 iObserve Project
  *
@@ -13,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
@@ -25,9 +28,9 @@ import kieker.common.util.registry.IRegistry;
 import org.iobserve.common.record.IUndeploymentRecord;
 
 /**
- * @author Generic Kieker
+ * @author iObserve
  * 
- * @since 1.13
+ * @since 1.10
  */
 public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploymentRecord {
 	private static final long serialVersionUID = 918721494471850423L;
@@ -46,6 +49,13 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 		String.class, // EJBDeploymentEvent.deploymentId
 	};
 	
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
+	/** user-defined constants */
+	
+	/** default constants */
+	
+	/** property declarations */
+=======
 	
 	
 	/** property name array. */
@@ -56,6 +66,7 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 		"deploymentId",
 	};
 	
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -123,6 +134,10 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 			this.getDeploymentId()
 		};
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
+	
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -132,6 +147,10 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 		stringRegistry.get(this.getContext());
 		stringRegistry.get(this.getDeploymentId());
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
+	
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -142,6 +161,10 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 		buffer.putInt(stringRegistry.get(this.getContext()));
 		buffer.putInt(stringRegistry.get(this.getDeploymentId()));
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
+	
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -150,6 +173,8 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 		return TYPES; // NOPMD
 	}
 	
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
+=======
 	/**
 	 * {@inheritDoc}
 	 */
@@ -158,6 +183,7 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 		return PROPERTY_NAMES; // NOPMD
 	}
 	
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -205,5 +231,14 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
 		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		return true;
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
+
+    @Override
+    public String[] getValueNames() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBUndeployedEvent.java
 	
 }

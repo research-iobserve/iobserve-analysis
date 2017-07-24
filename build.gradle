@@ -47,7 +47,7 @@ subprojects {
         appName = "org.iobserve"
     }
     sourceCompatibility = 1.8
-
+    
     repositories {
         mavenCentral()
         mavenLocal()

@@ -15,13 +15,23 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import java.io.IOException;
+
+import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelComparison;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.GetLastXSignatureStrategy;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryCallFilterRules;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.XMeansClustering;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.CoCoMEEntryCallRulesFactory;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetStoreEntryCallRulesFactory;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetstoreStrategy;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
-import org.iobserve.analysis.filter.TEntryEventSequence;
-import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -31,6 +41,7 @@ import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 
 import teetime.framework.Configuration;
+import weka.core.ManhattanDistance;
 
 /**
  * @author Reiner Jung
@@ -95,18 +106,61 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 resourceEnvironmentModelProvider);
 
         final TEntryCall tEntryCall = new TEntryCall();
+        if (modeCdor) {
+        final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
+
+        // final TEntryEventSequence tEntryEventSequence = new
+        // TEntryEventSequence(correspondenceModel, usageModelProvider,
+        // repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+
+        // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
+        // systemModelProvider,
+        // resourceEnvironmentModelProvider);
+
+        final EntryCallFilterRules modelGenerationFilter;
+        final ISignatureCreationStrategy signatureStrategy;
+        final int expectedUserGroups;
+        if (thinkTime == 1) {
+            modelGenerationFilter = new JPetStoreEntryCallRulesFactory().createFilter();
+            expectedUserGroups = 9;
+            signatureStrategy = new GetLastXSignatureStrategy(2);
+        } else {
+            modelGenerationFilter = new CoCoMEEntryCallRulesFactory().createFilter();
+            signatureStrategy = new GetLastXSignatureStrategy(1);
+            expectedUserGroups = 4;
+        }
+
+        // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+        final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
+                new ManhattanDistance());
+
+        final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
+        behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
+        behaviorModelConfiguration.setVisualizationUrl("http://localhost:8080/ubm-backend/v1");
+        behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
+        behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
+        behaviorModelConfiguration.setSignatureCreationStrategy(signatureStrategy);
+        behaviorModelConfiguration.setClustering(behaviorModelClustering);
+
+        // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
+
+        final TBehaviorModelComparison tBehaviorModelComparison = new TBehaviorModelComparison(
+                behaviorModelConfiguration, correspondenceModel, usageModelProvider, repositoryModelProvider,
+                varianceOfUserGroups, thinkTime, closedWorkload);
+        } else {
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence(correspondenceModel);
         final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
                 repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
         final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
+        }
 
         /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), this.deployment.getInputPort());
         this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), this.undeployment.getInputPort());
         this.connectPorts(this.recordSwitch.getAllocationOutputPort(), tAllocation.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
-        this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
+        // this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
         this.connectPorts(this.deployment.getDeploymentOutputPort(), this.tAllocationFinished.getDeploymentInputPort());
         this.connectPorts(this.deployment.getAllocationOutputPort(), this.tAllocationSuccDeploy.getInputPort());
@@ -115,7 +169,15 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(this.tAllocationFinished.getDeploymentOutputPort(),
                 this.deploymentSuccAllocation.getInputPort());
         this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
+
+        if (modeCdor) {
+        // this.connectPorts(tEntryCallSequence.getOutputPort(),
+        // tEntryEventSequence.getInputPort());
+        this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
+                tBehaviorModelComparison.getInputPort());
+        } else {
         this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
+        }
 
     }
 

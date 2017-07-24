@@ -1,3 +1,5 @@
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBDeploymentEvent.java
+=======
 /***************************************************************************
  * Copyright 2017 iObserve Project
  *
@@ -13,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBDeploymentEvent.java
 package org.iobserve.common.record;
 
 import java.nio.BufferUnderflowException;
@@ -23,25 +26,37 @@ import kieker.common.util.registry.IRegistry;
 
 
 /**
- * @author Generic Kieker
+ * @author iObserve
  * 
- * @since 1.13
+ * @since 1.10
  */
 public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	private static final long serialVersionUID = 5051017441001857971L;
 
 	
+	/** user-defined constants */
 	
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBDeploymentEvent.java
+	/** default constants */
+=======
 	/** default constants. */
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBDeploymentEvent.java
 	public static final String SERIVCE = "";
 	public static final String CONTEXT = "";
 	public static final String DEPLOYMENT_ID = "";
 	
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBDeploymentEvent.java
+	/** property declarations */
+	private final String serivce;
+	private final String context;
+	private final String deploymentId;
+=======
 		
 	/** property declarations. */
 	private String serivce;
 	private String context;
 	private String deploymentId;
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBDeploymentEvent.java
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -97,6 +112,7 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	}
 	
 
+
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -139,7 +155,7 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	
 	public final String getSerivce() {
 		return this.serivce;
-	}
+	}	
 	
 	public final void setSerivce(String serivce) {
 		this.serivce = serivce;
@@ -147,7 +163,7 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	
 	public final String getContext() {
 		return this.context;
-	}
+	}	
 	
 	public final void setContext(String context) {
 		this.context = context;
@@ -155,9 +171,13 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	
 	public final String getDeploymentId() {
 		return this.deploymentId;
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBDeploymentEvent.java
+	}	
+=======
 	}
 	
 	public final void setDeploymentId(String deploymentId) {
 		this.deploymentId = deploymentId;
 	}
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBDeploymentEvent.java
 }

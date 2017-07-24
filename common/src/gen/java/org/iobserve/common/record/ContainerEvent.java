@@ -1,3 +1,5 @@
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerEvent.java
+=======
 /***************************************************************************
  * Copyright 2017 iObserve Project
  *
@@ -13,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerEvent.java
 package org.iobserve.common.record;
 
 import java.nio.BufferUnderflowException;
@@ -24,21 +27,33 @@ import kieker.common.util.registry.IRegistry;
 
 
 /**
- * @author Generic Kieker
+ * @author iObserve
  * 
- * @since 1.13
+ * @since 1.10
  */
 public abstract class ContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {
 	private static final long serialVersionUID = -2037622396753518154L;
 
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerEvent.java
 	
+	/** user-defined constants */
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerEvent.java
 	
+	/** default constants */
+	public static final String URL = "";
+	
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerEvent.java
+	/** property declarations */
+	private final String url;
+=======
 	/** default constants. */
 	public static final String URL = "";
 	
 		
 	/** property declarations. */
 	private String url;
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerEvent.java
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -80,6 +95,7 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	}
 	
 
+
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -119,9 +135,13 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	
 	public final String getUrl() {
 		return this.url;
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerEvent.java
+	}	
+=======
 	}
 	
 	public final void setUrl(String url) {
 		this.url = url;
 	}
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerEvent.java
 }

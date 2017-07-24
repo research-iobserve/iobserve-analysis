@@ -1,3 +1,5 @@
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/GeoLocation.java
+=======
 /***************************************************************************
  * Copyright 2017 iObserve Project
  *
@@ -13,14 +15,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/GeoLocation.java
 package org.iobserve.common.record;
 
 import kieker.common.record.IMonitoringRecord;
 
 /**
- * @author Generic Kieker
+ * @author iObserve
  * 
- * @since 1.13
+ * @since 1.10
  */
 public interface GeoLocation extends IMonitoringRecord {
 	public short getCountryCode() ;

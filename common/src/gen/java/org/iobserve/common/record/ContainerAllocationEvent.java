@@ -1,3 +1,5 @@
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
+=======
 /***************************************************************************
  * Copyright 2017 iObserve Project
  *
@@ -13,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
@@ -25,9 +28,9 @@ import kieker.common.util.registry.IRegistry;
 import org.iobserve.common.record.IAllocationRecord;
 
 /**
- * @author Generic Kieker
+ * @author iObserve
  * 
- * @since 1.13
+ * @since 1.10
  */
 public class ContainerAllocationEvent extends ContainerEvent implements IAllocationRecord {
 	private static final long serialVersionUID = 5666865394947027540L;
@@ -40,6 +43,13 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 		String.class, // ContainerEvent.url
 	};
 	
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
+	/** user-defined constants */
+	
+	/** default constants */
+	
+	/** property declarations */
+=======
 	
 	
 	/** property name array. */
@@ -47,6 +57,7 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 		"url",
 	};
 	
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -105,6 +116,10 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 			this.getUrl()
 		};
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
+	
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -112,6 +127,10 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
 		stringRegistry.get(this.getUrl());
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
+	
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -119,6 +138,10 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
 		buffer.putInt(stringRegistry.get(this.getUrl()));
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
+	
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -127,6 +150,8 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 		return TYPES; // NOPMD
 	}
 	
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
+=======
 	/**
 	 * {@inheritDoc}
 	 */
@@ -135,6 +160,7 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 		return PROPERTY_NAMES; // NOPMD
 	}
 	
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -179,5 +205,14 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 		if (!this.getUrl().equals(castedRecord.getUrl())) return false;
 		return true;
 	}
+<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
+
+    @Override
+    public String[] getValueNames() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+=======
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerAllocationEvent.java
 	
 }

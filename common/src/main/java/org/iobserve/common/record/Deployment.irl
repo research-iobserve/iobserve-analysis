@@ -19,7 +19,8 @@ import kieker.common.record.flow.IEventRecord
 import kieker.common.record.flow.AbstractEvent
 
 template GeoLocation {
-	short countryCode = 049 // country code ISO
+	short countryCode = 049 // country code ISO				
+		
 }
 	 
 /** 
@@ -40,7 +41,7 @@ template IDeallocationRecord
 abstract entity ServletDeploymentEvent extends AbstractEvent { 
 	string serivce
 	string context
-	string deploymentId
+	string deploymentId	
 }
 
 entity ServletDeployedEvent extends ServletDeploymentEvent : IDeploymentRecord
@@ -52,7 +53,7 @@ entity ServletUndeployedEvent extends ServletDeploymentEvent : IUndeploymentReco
 abstract entity EJBDeploymentEvent extends AbstractEvent { 
 	string serivce
 	string context
-	string deploymentId  
+	string deploymentId
 }
 
 entity EJBDeployedEvent extends EJBDeploymentEvent : IDeploymentRecord
@@ -78,3 +79,10 @@ entity ServerGeoLocation extends AbstractEvent : GeoLocation {
 	string hostname
 	string address
 }
+
+template ISessionEvent {
+	string sessionId
+}
+
+entity SessionStartEvent extends AbstractEvent : ISessionEvent
+entity SessionEndEvent extends AbstractEvent : ISessionEvent

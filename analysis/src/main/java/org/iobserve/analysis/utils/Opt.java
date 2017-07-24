@@ -31,8 +31,8 @@ import java.util.function.Function;
  */
 public final class Opt<T> {
 
-	/** immutable optional. */
-	private Optional<T> optional = null;
+    /** immutable optional. */
+    private final Optional<T> optional;
 
 	/**
 	 * Actual logic to do the if-else dispatch in case the value is available.

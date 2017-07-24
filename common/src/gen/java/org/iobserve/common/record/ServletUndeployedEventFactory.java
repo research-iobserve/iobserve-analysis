@@ -21,9 +21,9 @@ import kieker.common.record.factory.IRecordFactory;
 import kieker.common.util.registry.IRegistry;
 
 /**
- * @author Generic Kieker
+ * @author iObserve
  * 
- * @since 1.13
+ * @since 1.10
  */
 public final class ServletUndeployedEventFactory implements IRecordFactory<ServletUndeployedEvent> {
 	

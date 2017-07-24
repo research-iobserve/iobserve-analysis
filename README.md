@@ -25,6 +25,8 @@ some parts are still located in other SVN repositories.
   `git clone git@github.com:research-iobserve/iobserve-repository.git`
 - You need Kieker example data, a RAC and a corresponding palladio model
 
+'Note: This is outdated, we switched to gradle'
+
 ## Setup Build Environment
 
 In the `iobserve-analysis` directory, create a file `gradle.properties`.

@@ -1,3 +1,5 @@
+<<<<<<< HEAD:org.iobserve.common/src/gen/java-factory/org/iobserve/common/record/ServerGeoLocationFactory.java
+=======
 /***************************************************************************
  * Copyright 2017 iObserve Project
  *
@@ -13,6 +15,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+>>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServerGeoLocationFactory.java
 package org.iobserve.common.record;
 
 import java.nio.ByteBuffer;
@@ -21,9 +24,9 @@ import kieker.common.record.factory.IRecordFactory;
 import kieker.common.util.registry.IRegistry;
 
 /**
- * @author Generic Kieker
+ * @author iObserve
  * 
- * @since 1.13
+ * @since 1.10
  */
 public final class ServerGeoLocationFactory implements IRecordFactory<ServerGeoLocation> {
 	
