@@ -1,17 +1,18 @@
 /***************************************************************************
  * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
  *
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License. You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  ***************************************************************************/
-
 package org.iobserve.analysis.cdoruserbehavior.filter;
 
 import java.util.List;
@@ -27,7 +28,7 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * Filters entry-calls from EntryCallSequenceModels
+ * Filters entry-calls from EntryCallSequenceModels.
  *
  * @author Christoph Dornieden
  *
@@ -37,8 +38,14 @@ public final class TEntryCallSequenceFilter extends AbstractConsumerStage<EntryC
     /** logger. */
     private static final Log LOG = LogFactory.getLog(TEntryCallSequenceFilter.class);
     private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
-    final EntryCallFilterRules filter;
+    private final EntryCallFilterRules filter;
 
+    /**
+     * Constructor.
+     *
+     * @param filter
+     *            filter rules to optimize data
+     */
     public TEntryCallSequenceFilter(final EntryCallFilterRules filter) {
         super();
         this.filter = filter;
@@ -56,7 +63,7 @@ public final class TEntryCallSequenceFilter extends AbstractConsumerStage<EntryC
     }
 
     /**
-     * getter
+     * getter.
      *
      * @return the outputPort
      */

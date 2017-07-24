@@ -64,9 +64,7 @@ public class EntryCallNode {
                 information -> information.getInformationSignature().equals(callInformation.getInformationSignature()))
                 .collect(new SingleOrNoneCollector<>());
 
-        if (match.isPresent()) {
-            // do nothing
-        } else {
+        if (!match.isPresent()) {
             this.entryCallInformations.add(callInformation);
         }
     }
@@ -86,6 +84,11 @@ public class EntryCallNode {
         } else {
             return super.equals(obj);
         }
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     /**

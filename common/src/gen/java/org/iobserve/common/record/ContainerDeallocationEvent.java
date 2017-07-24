@@ -1,5 +1,3 @@
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
-=======
 /***************************************************************************
  * Copyright 2017 iObserve Project
  *
@@ -15,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
@@ -28,7 +25,7 @@ import kieker.common.util.registry.IRegistry;
 import org.iobserve.common.record.IDeallocationRecord;
 
 /**
- * @author iObserve
+ * @author Generic Kieker
  * 
  * @since 1.10
  */
@@ -43,13 +40,6 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 		String.class, // ContainerEvent.url
 	};
 	
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
-	/** user-defined constants */
-	
-	/** default constants */
-	
-	/** property declarations */
-=======
 	
 	
 	/** property name array. */
@@ -57,7 +47,6 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 		"url",
 	};
 	
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -116,10 +105,6 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 			this.getUrl()
 		};
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
-	
-=======
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -127,10 +112,6 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
 		stringRegistry.get(this.getUrl());
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
-	
-=======
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -138,10 +119,6 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
 		buffer.putInt(stringRegistry.get(this.getUrl()));
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
-	
-=======
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -150,8 +127,6 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 		return TYPES; // NOPMD
 	}
 	
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
-=======
 	/**
 	 * {@inheritDoc}
 	 */
@@ -160,7 +135,6 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 		return PROPERTY_NAMES; // NOPMD
 	}
 	
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -205,14 +179,5 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 		if (!this.getUrl().equals(castedRecord.getUrl())) return false;
 		return true;
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
-
-    @Override
-    public String[] getValueNames() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-=======
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ContainerDeallocationEvent.java
 	
 }

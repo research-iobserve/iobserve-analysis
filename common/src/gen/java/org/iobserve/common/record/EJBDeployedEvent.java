@@ -1,5 +1,3 @@
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
-=======
 /***************************************************************************
  * Copyright 2017 iObserve Project
  *
@@ -15,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
@@ -28,7 +25,7 @@ import kieker.common.util.registry.IRegistry;
 import org.iobserve.common.record.IDeploymentRecord;
 
 /**
- * @author iObserve
+ * @author Generic Kieker
  * 
  * @since 1.10
  */
@@ -49,13 +46,6 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		String.class, // EJBDeploymentEvent.deploymentId
 	};
 	
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
-	/** user-defined constants */
-	
-	/** default constants */
-	
-	/** property declarations */
-=======
 	
 	
 	/** property name array. */
@@ -66,7 +56,6 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		"deploymentId",
 	};
 	
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -134,10 +123,6 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 			this.getDeploymentId()
 		};
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
-	
-=======
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -147,10 +132,6 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		stringRegistry.get(this.getContext());
 		stringRegistry.get(this.getDeploymentId());
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
-	
-=======
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -161,10 +142,6 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		buffer.putInt(stringRegistry.get(this.getContext()));
 		buffer.putInt(stringRegistry.get(this.getDeploymentId()));
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
-	
-=======
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -173,8 +150,6 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		return TYPES; // NOPMD
 	}
 	
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
-=======
 	/**
 	 * {@inheritDoc}
 	 */
@@ -183,7 +158,6 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		return PROPERTY_NAMES; // NOPMD
 	}
 	
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -231,14 +205,5 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		return true;
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
-
-    @Override
-    public String[] getValueNames() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-=======
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/EJBDeployedEvent.java
 	
 }

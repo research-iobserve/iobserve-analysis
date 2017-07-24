@@ -1,5 +1,3 @@
-<<<<<<< HEAD:org.iobserve.common/src/gen/java-factory/org/iobserve/common/record/ServletDeployedEventFactory.java
-=======
 /***************************************************************************
  * Copyright 2017 iObserve Project
  *
@@ -15,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServletDeployedEventFactory.java
 package org.iobserve.common.record;
 
 import java.nio.ByteBuffer;
@@ -24,7 +21,7 @@ import kieker.common.record.factory.IRecordFactory;
 import kieker.common.util.registry.IRegistry;
 
 /**
- * @author iObserve
+ * @author Generic Kieker
  * 
  * @since 1.10
  */

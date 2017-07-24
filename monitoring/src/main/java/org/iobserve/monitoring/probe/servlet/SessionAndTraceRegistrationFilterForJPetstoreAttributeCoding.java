@@ -29,8 +29,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.iobserve.analysis.data.ExtendedAfterOperationEvent;
 import org.iobserve.analysis.filter.models.CallInformation;
+import org.iobserve.common.record.ExtendedAfterOperationEvent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -85,7 +85,8 @@ public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implem
     protected static final ITimeSource TIMESOURCE = SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST
             .getTimeSource();
     /** Host name of the host the code is running on. */
-    protected static final String VM_NAME = SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST.getHostname();
+    protected static final String VM_NAME = SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST
+            .getHostname();
     /** Kieker trace registry. */
     private static final TraceRegistry TRACEREGISTRY = TraceRegistry.INSTANCE;
 
@@ -370,7 +371,8 @@ public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implem
 
                     final Long code = SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes
                             .containsKey(queryParameterSplit[1])
-                                    ? SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes.get(queryParameterSplit[1])
+                                    ? SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes
+                                            .get(queryParameterSplit[1])
                                     : -100L;
 
                     callInformations.add(new CallInformation(queryParameterSplit[0], code));
@@ -398,27 +400,34 @@ public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implem
                 // mapps Object to String
                 final ObjectMapper objectMapper = new ObjectMapper();
 
-                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST.newMonitoringRecord(
-                        new BeforeOperationEvent(SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TIMESOURCE.getTime(),
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST
+                        .newMonitoringRecord(new BeforeOperationEvent(
+                                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TIMESOURCE.getTime(),
                                 traceId, trace.getNextOrderId(), operationSignature, componentSignature));
 
                 chain.doFilter(request, response);
 
                 SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST
-                        .newMonitoringRecord(new ExtendedAfterOperationEvent(
-                                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TIMESOURCE.getTime(), traceId,
-                                trace.getNextOrderId(), operationSignature, componentSignature,
-                                objectMapper.writeValueAsString(callInformations)));
+                        .newMonitoringRecord(
+                                new ExtendedAfterOperationEvent(
+                                        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TIMESOURCE
+                                                .getTime(),
+                                        traceId, trace.getNextOrderId(), operationSignature, componentSignature,
+                                        objectMapper.writeValueAsString(callInformations)));
 
             } catch (final Throwable th) { // NOPMD NOCS (catch throw is ok here)
                 SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.CTRLINST
-                        .newMonitoringRecord(new AfterOperationFailedEvent(
-                                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TIMESOURCE.getTime(), traceId,
-                                trace.getNextOrderId(), operationSignature, componentSignature, th.toString()));
+                        .newMonitoringRecord(
+                                new AfterOperationFailedEvent(
+                                        SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TIMESOURCE
+                                                .getTime(),
+                                        traceId, trace.getNextOrderId(), operationSignature, componentSignature,
+                                        th.toString()));
                 throw new ServletException(th);
             } finally {
                 // is this correct?
-                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.SESSION_REGISTRY.unsetThreadLocalSessionId();
+                SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.SESSION_REGISTRY
+                        .unsetThreadLocalSessionId();
                 // Reset the thread-local trace information
                 if (newTrace) { // close the trace
                     SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.TRACEREGISTRY.unregisterTrace();
@@ -462,7 +471,8 @@ public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implem
         final HttpSession session = ((HttpServletRequest) request).getSession(false);
         if (session != null) {
             sessionId = session.getId();
-            SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.SESSION_REGISTRY.storeThreadLocalSessionId(sessionId);
+            SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.SESSION_REGISTRY
+                    .storeThreadLocalSessionId(sessionId);
         }
 
         return sessionId;

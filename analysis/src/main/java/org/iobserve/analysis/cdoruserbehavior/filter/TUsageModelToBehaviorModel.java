@@ -198,12 +198,12 @@ public class TUsageModelToBehaviorModel extends AbstractConsumerStage<UsageModel
         if (action instanceof Stop) { // LoopStart not found
             return Optional.empty();
 
-        } else if (action instanceof EntryLevelSystemCall) {// found loop start
+        } else if (action instanceof EntryLevelSystemCall) { // found loop start
             final EntryLevelSystemCall entryLevelSystemCall = (EntryLevelSystemCall) action;
             final EntryCallNode entryCallNode = this.createEntryCallNode(entryLevelSystemCall);
             return Optional.of(entryCallNode);
 
-        } else if (action instanceof Loop) {// search nested scenario
+        } else if (action instanceof Loop) { // search nested scenario
             final Loop loop = (Loop) action;
             final List<AbstractUserAction> userActions = loop.getBodyBehaviour_Loop().getActions_ScenarioBehaviour();
 
@@ -213,11 +213,11 @@ public class TUsageModelToBehaviorModel extends AbstractConsumerStage<UsageModel
                 return Optional.empty();
             }
 
-        } else if (action instanceof Branch) {// not possibleble in theory, a ENtryCallSystemCall
-                                              // will allways found before
+        } else if (action instanceof Branch) { // not possible in theory, a ENtryCallSystemCall
+                                               // will always found before
             return Optional.empty();
 
-        } else {// next action
+        } else { // next action
             return this.findLoopStart(action.getSuccessor());
         }
 

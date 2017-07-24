@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryCallFilterRules;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IModelGenerationFilterFactory;
 
 /**
  * factory class for creating a filter for CoCoME data
@@ -29,7 +29,8 @@ public class CoCoMEEntryCallRulesFactory implements IModelGenerationFilterFactor
     @Override
     public EntryCallFilterRules createFilter() {
         final EntryCallFilterRules modelGenerationFilter = new EntryCallFilterRules(false);
-        modelGenerationFilter.addFilterRule( // allow all operations of the package
+        modelGenerationFilter.addFilterRule(
+                // allow all operations of the package
                 // org.cocome.cloud.logic.webservice.cashdeskline.cashdesk.*
                 "p\\w+ (\\w*\\.)*\\w* (\\w*\\.)*(cashdeskservice|cashdesk)\\.(\\w*\\.)*\\w*\\(.*");
 

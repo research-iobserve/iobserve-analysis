@@ -22,8 +22,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.common.record.IAllocationRecord;
 import org.iobserve.common.record.IDeploymentRecord;
-import org.iobserve.common.record.IUndeploymentRecord;
 import org.iobserve.common.record.ISessionEvent;
+import org.iobserve.common.record.IUndeploymentRecord;
 import org.iobserve.common.record.ServletTraceHelper;
 
 import kieker.common.record.IMonitoringRecord;
@@ -102,17 +102,13 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             final String className = element.getClass().getCanonicalName();
             Integer hits = this.unknownRecords.get(className);
             if (hits == null) {
-                // TODO uncomment
-                // RecordSwitch.LOGGER.error("Configuration error: New unknown event type " +
-                // className);
+                RecordSwitch.LOGGER.error("Configuration error: New unknown event type " + className);
                 this.unknownRecords.put(className, Integer.valueOf(1));
             } else {
                 hits++;
                 this.unknownRecords.put(className, hits);
-                if ((hits % 100) == 0) {
-                    // TODO uncomment
-                    // RecordSwitch.LOGGER.error("Event occurances " + hits + " of unknown event
-                    // type " + className);
+                if ((hits % 1000) == 0) {
+                    RecordSwitch.LOGGER.error("Event occurances " + hits + " of unknown eventtype " + className);
                 }
             }
         }

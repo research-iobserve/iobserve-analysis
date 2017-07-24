@@ -1,5 +1,3 @@
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServletDeploymentEvent.java
-=======
 /***************************************************************************
  * Copyright 2017 iObserve Project
  *
@@ -15,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServletDeploymentEvent.java
 package org.iobserve.common.record;
 
 import java.nio.BufferUnderflowException;
@@ -26,7 +23,7 @@ import kieker.common.util.registry.IRegistry;
 
 
 /**
- * @author iObserve
+ * @author Generic Kieker
  * 
  * @since 1.10
  */
@@ -34,29 +31,17 @@ public abstract class ServletDeploymentEvent extends AbstractEvent  {
 	private static final long serialVersionUID = 8783132850967133880L;
 
 	
-	/** user-defined constants */
 	
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServletDeploymentEvent.java
-	/** default constants */
-=======
 	/** default constants. */
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServletDeploymentEvent.java
 	public static final String SERIVCE = "";
 	public static final String CONTEXT = "";
 	public static final String DEPLOYMENT_ID = "";
 	
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServletDeploymentEvent.java
-	/** property declarations */
-	private final String serivce;
-	private final String context;
-	private final String deploymentId;
-=======
 		
 	/** property declarations. */
 	private String serivce;
 	private String context;
 	private String deploymentId;
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServletDeploymentEvent.java
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -112,7 +97,6 @@ public abstract class ServletDeploymentEvent extends AbstractEvent  {
 	}
 	
 
-
 	/**
 	 * {@inheritDoc}
 	 * 
@@ -155,7 +139,7 @@ public abstract class ServletDeploymentEvent extends AbstractEvent  {
 	
 	public final String getSerivce() {
 		return this.serivce;
-	}	
+	}
 	
 	public final void setSerivce(String serivce) {
 		this.serivce = serivce;
@@ -163,7 +147,7 @@ public abstract class ServletDeploymentEvent extends AbstractEvent  {
 	
 	public final String getContext() {
 		return this.context;
-	}	
+	}
 	
 	public final void setContext(String context) {
 		this.context = context;
@@ -171,13 +155,9 @@ public abstract class ServletDeploymentEvent extends AbstractEvent  {
 	
 	public final String getDeploymentId() {
 		return this.deploymentId;
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServletDeploymentEvent.java
-	}	
-=======
 	}
 	
 	public final void setDeploymentId(String deploymentId) {
 		this.deploymentId = deploymentId;
 	}
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServletDeploymentEvent.java
 }

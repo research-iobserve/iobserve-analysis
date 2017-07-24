@@ -21,7 +21,7 @@ import kieker.common.record.factory.IRecordFactory;
 import kieker.common.util.registry.IRegistry;
 
 /**
- * @author iObserve
+ * @author Generic Kieker
  * 
  * @since 1.10
  */

@@ -99,6 +99,11 @@ public class EntryCallEdge {
         }
     }
 
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     /**
      * getter
      *

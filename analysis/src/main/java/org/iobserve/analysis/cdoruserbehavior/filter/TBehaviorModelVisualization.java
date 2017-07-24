@@ -44,14 +44,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import teetime.framework.AbstractConsumerStage;
 
 /**
- * Transform the behavior
+ * Transform the behavior.
  *
  * @author Christoph Dornieden
  *
  */
 public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorModel> {
     private static final Logger LOGGER = LogManager.getLogger(TBehaviorModelVisualization.class);
-    ISignatureCreationStrategy signatureStrategy;
+    private final ISignatureCreationStrategy signatureStrategy;
     private final String applicationUrl;
     private final Map<String, JsonNode> nodeMap;
     private final Pattern idPattern = Pattern.compile("\\\"@id\\\":\\\"1\\\",");
@@ -59,7 +59,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     private final ObjectMapper objectMapper;
 
     /**
-     * consturctor
+     * consturctor.
      */
     public TBehaviorModelVisualization(final String baseUrl, final ISignatureCreationStrategy signatureStrategy) {
         this.objectMapper = new ObjectMapper();
@@ -85,7 +85,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     }
 
     /**
-     * create graph at visualisation backend
+     * create graph at visualisation backend.
      *
      * @param name
      *            name
@@ -102,14 +102,14 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
         final JsonNode idJson = json.get("id");
         if (idJson != null) {
             return idJson.asLong();
-        } else {// server error
+        } else { // server error
             return -1L;
         }
 
     }
 
     /**
-     * reset the visualisation
+     * reset the visualisation.
      */
     private void resetVisualization() {
         final Optional<List<Long>> ids = this.getAllGraphsFromUI(this.applicationUrl);
@@ -119,7 +119,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     }
 
     /**
-     * get all graph ids present in the ui
+     * get all graph ids present in the ui.
      *
      * @param targetUrl
      *            targetUrl
@@ -159,7 +159,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     }
 
     /**
-     * Send delete request
+     * Send delete request.
      *
      * @param targetUrl
      *            targetUrl
@@ -182,7 +182,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     }
 
     /**
-     * Create new nodes at visualisation backend
+     * Create new nodes at visualisation backend.
      *
      * @param entryCallNodes
      *            entryCallNodes
@@ -210,7 +210,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     }
 
     /**
-     * create new edges at visualisation backend
+     * create new edges at visualisation backend.
      *
      * @param entryCallEdges
      *            entryCallEdges

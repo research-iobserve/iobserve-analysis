@@ -28,8 +28,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.iobserve.analysis.data.ExtendedAfterOperationEvent;
 import org.iobserve.analysis.filter.models.CallInformation;
+import org.iobserve.common.record.ExtendedAfterOperationEvent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -238,8 +238,6 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                     // pattern = "\\.action\\("
                     operationSignature = this.removeActionOfIndexPattern.matcher(operationSignature)
                             .replaceAll(".search(");
-                } else {
-
                 }
 
                 // pattern = "\\.action\\."

@@ -1,5 +1,3 @@
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
-=======
 /***************************************************************************
  * Copyright 2017 iObserve Project
  *
@@ -15,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
@@ -28,7 +25,7 @@ import kieker.common.util.registry.IRegistry;
 import org.iobserve.common.record.GeoLocation;
 
 /**
- * @author iObserve
+ * @author Generic Kieker
  * 
  * @since 1.10
  */
@@ -49,24 +46,12 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		String.class, // ServerGeoLocation.address
 	};
 	
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
-	/** user-defined constants */
-	
-	/** default constants */
-=======
 	
 	/** default constants. */
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
 	public static final short COUNTRY_CODE = 49;
 	public static final String HOSTNAME = "";
 	public static final String ADDRESS = "";
 	
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
-	/** property declarations */
-	private final short countryCode;
-	private final String hostname;
-	private final String address;
-=======
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
 		"timestamp",
@@ -79,7 +64,6 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	private short countryCode;
 	private String hostname;
 	private String address;
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -159,10 +143,6 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 			this.getAddress()
 		};
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
-	
-=======
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -171,10 +151,6 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		stringRegistry.get(this.getHostname());
 		stringRegistry.get(this.getAddress());
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
-	
-=======
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -185,10 +161,6 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		buffer.putInt(stringRegistry.get(this.getHostname()));
 		buffer.putInt(stringRegistry.get(this.getAddress()));
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
-	
-=======
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -197,8 +169,6 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		return TYPES; // NOPMD
 	}
 	
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
-=======
 	/**
 	 * {@inheritDoc}
 	 */
@@ -207,7 +177,6 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		return PROPERTY_NAMES; // NOPMD
 	}
 	
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
 	/**
 	 * {@inheritDoc}
 	 */
@@ -258,7 +227,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	
 	public final short getCountryCode() {
 		return this.countryCode;
-	}	
+	}
 	
 	public final void setCountryCode(short countryCode) {
 		this.countryCode = countryCode;
@@ -266,7 +235,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	
 	public final String getHostname() {
 		return this.hostname;
-	}	
+	}
 	
 	public final void setHostname(String hostname) {
 		this.hostname = hostname;
@@ -275,17 +244,8 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	public final String getAddress() {
 		return this.address;
 	}
-<<<<<<< HEAD:org.iobserve.common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
-
-    @Override
-    public String[] getValueNames() {
-        // TODO Auto-generated method stub
-        return null;
-    }	
-=======
 	
 	public final void setAddress(String address) {
 		this.address = address;
 	}
->>>>>>> master:common/src/gen/java/org/iobserve/common/record/ServerGeoLocation.java
 }

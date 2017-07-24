@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright 2017 iObserve Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.data;
 
 import java.nio.BufferOverflowException;
@@ -7,14 +22,15 @@ import java.nio.ByteBuffer;
 import org.iobserve.analysis.data.EntryCallEvent;
 import kieker.common.util.registry.IRegistry;
 
+import org.iobserve.common.record.IUserInformation;
 
 /**
  * @author Christoph Dornieden
  * 
- * @since 1.0
+ * @since 1.1
  */
-public class ExtendedEntryCallEvent extends EntryCallEvent  {
-	private static final long serialVersionUID = -5800400653208862798L;
+public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInformation {
+	private static final long serialVersionUID = -2306741230906112991L;
 
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // EntryCallEvent.entryTime
@@ -23,7 +39,7 @@ public class ExtendedEntryCallEvent extends EntryCallEvent  {
 			 + TYPE_SIZE_STRING // EntryCallEvent.classSignature
 			 + TYPE_SIZE_STRING // EntryCallEvent.sessionId
 			 + TYPE_SIZE_STRING // EntryCallEvent.hostname
-			 + TYPE_SIZE_STRING // ExtendedEntryCallEvent.informations
+			 + TYPE_SIZE_STRING // IUserInformation.informations
 	;
 	
 	public static final Class<?>[] TYPES = {
@@ -33,16 +49,26 @@ public class ExtendedEntryCallEvent extends EntryCallEvent  {
 		String.class, // EntryCallEvent.classSignature
 		String.class, // EntryCallEvent.sessionId
 		String.class, // EntryCallEvent.hostname
-		String.class, // ExtendedEntryCallEvent.informations
+		String.class, // IUserInformation.informations
 	};
 	
-	/** user-defined constants */
 	
-	/** default constants */
+	/** default constants. */
 	public static final String INFORMATIONS = "";
 	
-	/** property declarations */
-	private final String informations;
+	/** property name array. */
+	private static final String[] PROPERTY_NAMES = {
+		"entryTime",
+		"exitTime",
+		"operationSignature",
+		"classSignature",
+		"sessionId",
+		"hostname",
+		"informations",
+	};
+	
+	/** property declarations. */
+	private String informations;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -93,10 +119,12 @@ public class ExtendedEntryCallEvent extends EntryCallEvent  {
 	}
 
 	/**
-	 * This constructor converts the given array into a record.
+	 * This constructor converts the given buffer into a record.
 	 * 
 	 * @param buffer
-	 *            The bytes for the record.
+	 *            The bytes for the record
+	 * @param stringRegistry
+	 *            The string registry for deserialization
 	 * 
 	 * @throws BufferUnderflowException
 	 *             if buffer not sufficient
@@ -105,7 +133,7 @@ public class ExtendedEntryCallEvent extends EntryCallEvent  {
 		super(buffer, stringRegistry);
 		this.informations = stringRegistry.get(buffer.getInt());
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -121,7 +149,6 @@ public class ExtendedEntryCallEvent extends EntryCallEvent  {
 			this.getInformations()
 		};
 	}
-	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -133,7 +160,6 @@ public class ExtendedEntryCallEvent extends EntryCallEvent  {
 		stringRegistry.get(this.getHostname());
 		stringRegistry.get(this.getInformations());
 	}
-	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -147,13 +173,20 @@ public class ExtendedEntryCallEvent extends EntryCallEvent  {
 		buffer.putInt(stringRegistry.get(this.getHostname()));
 		buffer.putInt(stringRegistry.get(this.getInformations()));
 	}
-	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public Class<?>[] getValueTypes() {
 		return TYPES; // NOPMD
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String[] getValueNames() {
+		return PROPERTY_NAMES; // NOPMD
 	}
 	
 	/**
@@ -209,5 +242,9 @@ public class ExtendedEntryCallEvent extends EntryCallEvent  {
 	
 	public final String getInformations() {
 		return this.informations;
-	}	
+	}
+	
+	public final void setInformations(String informations) {
+		this.informations = informations;
+	}
 }

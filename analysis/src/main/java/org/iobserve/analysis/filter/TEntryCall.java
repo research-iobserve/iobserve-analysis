@@ -22,8 +22,6 @@ import java.util.regex.Pattern;
 import org.iobserve.analysis.data.ExtendedAfterOperationEvent;
 import org.iobserve.analysis.data.ExtendedBeforeOperationEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
-
-import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 import kieker.common.logging.Log;
@@ -34,6 +32,8 @@ import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+// TODO this filter must be reworked to support plain and extended records.
 
 /**
  * It could be interesting to combine DeploymentEventTransformation and
@@ -82,7 +82,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
             /** only recognize traces which no parent trace (i.e. would be internal traces) */
             // TODO how to detect proper original traces?
             if (metaData.getParentOrderId() < 0) {
-            // TODO this might be the better alternative if (metaData.getParentTraceId() < 0) {
+                // TODO this might be the better alternative if (metaData.getParentTraceId() < 0) {
                 this.traceMetaDatas.put(metaData.getTraceId(), metaData);
             }
         } else if (event instanceof BeforeOperationEvent) {
@@ -145,20 +145,18 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                          */
                         this.beforeOperationEvents.remove(metaData.getTraceId(), beforeOperationEvent);
 
-                        // TODO this is only a hack for debugging purposes and could probably be removed
+                        // TODO this is only a hack for debugging purposes and could probably be
+                        // removed
                         if (afterOperationEvent.getOperationSignature().matches(".*startSale.*")) {
                             System.out.println(afterOperationEvent.getOperationSignature());
 
                         }
+
                         this.outputPort.send(new ExtendedEntryCallEvent(beforeOperationEvent.getTimestamp(),
                                 afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
                                 beforeOperationEvent.getClassSignature(), metaData.getSessionId(),
                                 metaData.getHostname(), callInformations));
 
-//                        this.outputPort.send(new EntryCallEvent(beforeOperationEvent.getTimestamp(),
-//                                afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
-//                                beforeOperationEvent.getClassSignature(), metaData.getSessionId(),
-//                                metaData.getHostname()));
                     }
                 }
             }

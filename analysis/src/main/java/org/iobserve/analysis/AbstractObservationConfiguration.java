@@ -110,59 +110,51 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         final TEntryCall tEntryCall = new TEntryCall();
 
-        final TEntryCallSequence tEntryCallSequence;
-        final TBehaviorModelComparison tBehaviorModelComparison;
-
         final TEntryCallSequenceWithPCM tEntryCallSequenceWithPCM;
         final TEntryEventSequence tEntryEventSequence;
 
-        if (this.modeCdor) {
-            tEntryCallSequence = new TEntryCallSequence();
+        /** new extended clustering. */
+        final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
 
-            // final TEntryEventSequence tEntryEventSequence = new
-            // TEntryEventSequence(correspondenceModel, usageModelProvider,
-            // repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
-
-            // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
-            // systemModelProvider,
-            // resourceEnvironmentModelProvider);
-
-            final EntryCallFilterRules modelGenerationFilter;
-            final ISignatureCreationStrategy signatureStrategy;
-            final int expectedUserGroups;
-            if (thinkTime == 1) {
-                modelGenerationFilter = new JPetStoreEntryCallRulesFactory().createFilter();
-                expectedUserGroups = 9;
-                signatureStrategy = new GetLastXSignatureStrategy(2);
-            } else {
-                modelGenerationFilter = new CoCoMEEntryCallRulesFactory().createFilter();
-                signatureStrategy = new GetLastXSignatureStrategy(1);
-                expectedUserGroups = 4;
-            }
-
-            // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-            final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
-                    new ManhattanDistance());
-
-            final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
-            behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
-            behaviorModelConfiguration.setVisualizationUrl("http://localhost:8080/ubm-backend/v1");
-            behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
-            behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
-            behaviorModelConfiguration.setSignatureCreationStrategy(signatureStrategy);
-            behaviorModelConfiguration.setClustering(behaviorModelClustering);
-
-            // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
-
-            tBehaviorModelComparison = new TBehaviorModelComparison(behaviorModelConfiguration, correspondenceModel,
-                    usageModelProvider, repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+        final EntryCallFilterRules modelGenerationFilter;
+        final ISignatureCreationStrategy signatureStrategy;
+        final int expectedUserGroups;
+        if (thinkTime == 1) {
+            modelGenerationFilter = new JPetStoreEntryCallRulesFactory().createFilter();
+            expectedUserGroups = 9;
+            signatureStrategy = new GetLastXSignatureStrategy(2);
         } else {
-            tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);
-            tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
-                    repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
-            final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
-                    resourceEnvironmentModelProvider);
+            modelGenerationFilter = new CoCoMEEntryCallRulesFactory().createFilter();
+            signatureStrategy = new GetLastXSignatureStrategy(1);
+            expectedUserGroups = 4;
         }
+
+        // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+        final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
+                new ManhattanDistance());
+
+        final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
+        behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
+        behaviorModelConfiguration.setVisualizationUrl("http://localhost:8080/ubm-backend/v1");
+        behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
+        behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
+        behaviorModelConfiguration.setSignatureCreationStrategy(signatureStrategy);
+        behaviorModelConfiguration.setClustering(behaviorModelClustering);
+
+        // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
+
+        final TBehaviorModelComparison tBehaviorModelComparison = new TBehaviorModelComparison(
+                behaviorModelConfiguration, correspondenceModel, usageModelProvider, repositoryModelProvider,
+                varianceOfUserGroups, thinkTime, closedWorkload);
+
+        /** plain clustering. It might be included in the setup above. */
+        tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);
+        tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider, repositoryModelProvider,
+                varianceOfUserGroups, thinkTime, closedWorkload);
+        final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
+                resourceEnvironmentModelProvider);
+
+        /** -- end plain clustering. */
 
         /** dispatch different monitoring data. */
         this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), this.deployment.getInputPort());
@@ -178,18 +170,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(this.tAllocationFinished.getDeploymentOutputPort(),
                 this.deploymentSuccAllocation.getInputPort());
 
-        if (this.modeCdor) {
-            this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
-
-            // this.connectPorts(tEntryCallSequence.getOutputPort(),
-            // tEntryEventSequence.getInputPort());
-            this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
-                    tBehaviorModelComparison.getInputPort());
-        } else {
-            this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequenceWithPCM.getInputPort());
-            this.connectPorts(tEntryCallSequenceWithPCM.getOutputPort(), tEntryEventSequence.getInputPort());
-        }
-
+        this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
+                tBehaviorModelComparison.getInputPort());
     }
 
     public RecordSwitch getRecordSwitch() {

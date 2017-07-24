@@ -28,8 +28,8 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 public class GetLastXSignatureStrategy implements ISignatureCreationStrategy {
     private final int x;
     private final boolean keepBrackets;
-    final Pattern dotPattern;
-    final Pattern bracketPattern;
+    private final Pattern dotPattern;
+    private final Pattern bracketPattern;
 
     /**
      * constructor

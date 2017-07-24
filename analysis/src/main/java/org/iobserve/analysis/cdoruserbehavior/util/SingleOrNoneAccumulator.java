@@ -38,14 +38,14 @@ public class SingleOrNoneAccumulator<E> {
 
     /**
      * add an element to the accumulator
-     * 
+     *
      * @param e
      *            e
      * @return true if success, Exception else
      * @throws IllegalStateException
      *             if single element already added
      */
-    public boolean add(E e) throws IllegalStateException {
+    public boolean add(final E e) throws IllegalStateException {
         if (this.optional.isPresent()) {
             throw new IllegalStateException(
                     "Expected single element but found multiple elements: " + e + ", " + this.optional.get());

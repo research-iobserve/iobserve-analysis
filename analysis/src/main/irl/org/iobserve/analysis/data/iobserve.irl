@@ -18,7 +18,7 @@ package org.iobserve.analysis.data
 
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent
 import kieker.common.record.flow.trace.operation.AfterOperationEvent
-
+import org.iobserve.common.record.IUserInformation 
 
 
 @author "Reiner Jung" @since "1.0"
@@ -31,18 +31,6 @@ entity EntryCallEvent {
 	string hostname
 }
 
-@author 'Christoph Dornieden' @since "1.0"
-entity ExtendedAfterOperationEvent extends AfterOperationEvent {
-	string informations	
-}
 
-@author 'Christoph Dornieden' @since "1.0"
-entity ExtendedBeforeOperationEvent extends BeforeOperationEvent {
-	string informations	
-}
-
-
-@author "Christoph Dornieden" @since "1.0"
-entity ExtendedEntryCallEvent extends EntryCallEvent {
-	string informations	
-}
+@author "Christoph Dornieden" @since "1.1"
+entity ExtendedEntryCallEvent extends EntryCallEvent : IUserInformation
