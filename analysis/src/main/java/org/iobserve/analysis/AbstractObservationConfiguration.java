@@ -15,14 +15,12 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import java.io.IOException;
-
 import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelComparison;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.GetLastXSignatureStrategy;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.XMeansClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.CoCoMEEntryCallRulesFactory;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetStoreEntryCallRulesFactory;
@@ -32,6 +30,9 @@ import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
+import org.iobserve.analysis.filter.TEntryCallSequenceWithPCM;
+import org.iobserve.analysis.filter.TEntryEventSequence;
+import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -64,6 +65,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
     protected final TDeployment deploymentSuccAllocation;
 
     protected final TUndeployment undeployment;
+
+    private final boolean modeCdor = false;
 
     /**
      * Create a configuration with a ASCII file reader.
@@ -106,53 +109,59 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 resourceEnvironmentModelProvider);
 
         final TEntryCall tEntryCall = new TEntryCall();
-        if (modeCdor) {
-        final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
 
-        // final TEntryEventSequence tEntryEventSequence = new
-        // TEntryEventSequence(correspondenceModel, usageModelProvider,
-        // repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+        final TEntryCallSequence tEntryCallSequence;
+        final TBehaviorModelComparison tBehaviorModelComparison;
 
-        // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
-        // systemModelProvider,
-        // resourceEnvironmentModelProvider);
+        final TEntryCallSequenceWithPCM tEntryCallSequenceWithPCM;
+        final TEntryEventSequence tEntryEventSequence;
 
-        final EntryCallFilterRules modelGenerationFilter;
-        final ISignatureCreationStrategy signatureStrategy;
-        final int expectedUserGroups;
-        if (thinkTime == 1) {
-            modelGenerationFilter = new JPetStoreEntryCallRulesFactory().createFilter();
-            expectedUserGroups = 9;
-            signatureStrategy = new GetLastXSignatureStrategy(2);
+        if (this.modeCdor) {
+            tEntryCallSequence = new TEntryCallSequence();
+
+            // final TEntryEventSequence tEntryEventSequence = new
+            // TEntryEventSequence(correspondenceModel, usageModelProvider,
+            // repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+
+            // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
+            // systemModelProvider,
+            // resourceEnvironmentModelProvider);
+
+            final EntryCallFilterRules modelGenerationFilter;
+            final ISignatureCreationStrategy signatureStrategy;
+            final int expectedUserGroups;
+            if (thinkTime == 1) {
+                modelGenerationFilter = new JPetStoreEntryCallRulesFactory().createFilter();
+                expectedUserGroups = 9;
+                signatureStrategy = new GetLastXSignatureStrategy(2);
+            } else {
+                modelGenerationFilter = new CoCoMEEntryCallRulesFactory().createFilter();
+                signatureStrategy = new GetLastXSignatureStrategy(1);
+                expectedUserGroups = 4;
+            }
+
+            // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
+            final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
+                    new ManhattanDistance());
+
+            final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
+            behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
+            behaviorModelConfiguration.setVisualizationUrl("http://localhost:8080/ubm-backend/v1");
+            behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
+            behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
+            behaviorModelConfiguration.setSignatureCreationStrategy(signatureStrategy);
+            behaviorModelConfiguration.setClustering(behaviorModelClustering);
+
+            // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
+
+            tBehaviorModelComparison = new TBehaviorModelComparison(behaviorModelConfiguration, correspondenceModel,
+                    usageModelProvider, repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
         } else {
-            modelGenerationFilter = new CoCoMEEntryCallRulesFactory().createFilter();
-            signatureStrategy = new GetLastXSignatureStrategy(1);
-            expectedUserGroups = 4;
-        }
-
-        // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-        final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
-                new ManhattanDistance());
-
-        final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
-        behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
-        behaviorModelConfiguration.setVisualizationUrl("http://localhost:8080/ubm-backend/v1");
-        behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
-        behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
-        behaviorModelConfiguration.setSignatureCreationStrategy(signatureStrategy);
-        behaviorModelConfiguration.setClustering(behaviorModelClustering);
-
-        // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
-
-        final TBehaviorModelComparison tBehaviorModelComparison = new TBehaviorModelComparison(
-                behaviorModelConfiguration, correspondenceModel, usageModelProvider, repositoryModelProvider,
-                varianceOfUserGroups, thinkTime, closedWorkload);
-        } else {
-        final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence(correspondenceModel);
-        final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
-                repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
-        final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
+            tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);
+            tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
+                    repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+            final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
+                    resourceEnvironmentModelProvider);
         }
 
         /** dispatch different monitoring data. */
@@ -168,15 +177,17 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 this.tAllocationFinished.getAllocationFinishedInputPort());
         this.connectPorts(this.tAllocationFinished.getDeploymentOutputPort(),
                 this.deploymentSuccAllocation.getInputPort());
-        this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
 
-        if (modeCdor) {
-        // this.connectPorts(tEntryCallSequence.getOutputPort(),
-        // tEntryEventSequence.getInputPort());
-        this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
-                tBehaviorModelComparison.getInputPort());
+        if (this.modeCdor) {
+            this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
+
+            // this.connectPorts(tEntryCallSequence.getOutputPort(),
+            // tEntryEventSequence.getInputPort());
+            this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
+                    tBehaviorModelComparison.getInputPort());
         } else {
-        this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
+            this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequenceWithPCM.getInputPort());
+            this.connectPorts(tEntryCallSequenceWithPCM.getOutputPort(), tEntryEventSequence.getInputPort());
         }
 
     }

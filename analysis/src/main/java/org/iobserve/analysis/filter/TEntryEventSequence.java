@@ -27,8 +27,6 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import teetime.framework.AbstractConsumerStage;
-
 /**
  * Represents the TEntryEventSequence Transformation in the paper <i>Run-time Architecture Models
  * for Dynamic Adaptation and Evolution of Cloud Applications</i> Triggers the user behavior
@@ -114,5 +112,9 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
         this.outputPort.send(behaviorModeling.getPcmUsageModel());
         // Sets the new usage model within iObserve
         // this.usageModelProvider.save();
+    }
+
+    public OutputPort<UsageModel> getOutputPort() {
+        return this.outputPort;
     }
 }

@@ -26,11 +26,6 @@ import java.util.stream.Collectors;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.utils.ExecutionTimeLogger;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -47,9 +42,6 @@ import teetime.framework.OutputPort;
  */
 public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntryCallEvent> {
 
-    /** reference to the correspondence model. */
-    private final ICorrespondence correspondenceModel;
-
     /** threshold for user session elements until their are send to the next filter. */
     private static final int USER_SESSION_THRESHOLD = 0;
     /** time until a session expires */
@@ -63,14 +55,12 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
     /**
      * Create this filter.
      *
-     * @param correspondenceModel
-     *            reference to the correspondence model
      */
-    public TEntryCallSequence(final ICorrespondence correspondenceModel) {
-        this.correspondenceModel = correspondenceModel;
+    public TEntryCallSequence() {
     }
 
-    // TODO remove obsolte executeOld method after properly understanding difference with new version
+    // TODO remove obsolte executeOld method after properly understanding difference with new
+    // version
     @Override
     protected void execute(final ExtendedEntryCallEvent event) {
         // add the event to the corresponding user session
@@ -94,43 +84,7 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
 
         // check for expired sessions and send them to the
         // TODO Is this the right place for that?
-        // this.removeExpiredSessions();
-
-    }
-
-    protected void executeOld(final EntryCallEvent event) {
-        ExecutionTimeLogger.getInstance().startLogging(event);
-        /** check if operationEvent is from an known object */
-        if (this.correspondenceModel.containsCorrespondent(event.getClassSignature(), event.getOperationSignature())) {
-
-            // add the event to the corresponding user session
-            // in case the user session is not yet available, create one
-            final String userSessionId = UserSession.parseUserSessionId(event);
-            UserSession userSession = this.sessions.get(userSessionId);
-            if (userSession == null) {
-                userSession = new UserSession(event.getHostname(), event.getSessionId());
-                this.sessions.put(userSessionId, userSession);
-            }
-            // do not sort since TEntryEventSequence will sort any ways
-            userSession.add(event, false);
-
-            // collect all user sessions which have more elements as a defined threshold and send
-            // them
-            // to the next filter
-            final List<UserSession> listToSend = this.sessions.values().stream()
-                    .filter(session -> session.size() > TEntryCallSequence.USER_SESSION_THRESHOLD)
-                    .collect(Collectors.toList());
-
-            ExecutionTimeLogger.getInstance().stopLogging(event);
-
-            if (!listToSend.isEmpty()) {
-                this.outputPort.send(new EntryCallSequenceModel(listToSend));
-            }
-        }
-
-        // check for expired sessions and send them to the
-        // TODO Is this the right place for that?
-        // this.removeExpiredSessions();
+        this.removeExpiredSessions();
 
     }
 
