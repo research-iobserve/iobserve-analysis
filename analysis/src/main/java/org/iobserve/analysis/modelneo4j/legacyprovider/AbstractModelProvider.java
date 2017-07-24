@@ -111,7 +111,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
     protected abstract EPackage getPackage();
 
     /**
-     * Load the model from the graph database
+     * Load the model from the graph database.
      */
     public abstract void loadModel();
 

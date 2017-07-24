@@ -195,7 +195,8 @@ public class PcmUsageModelBuilder {
                         .getCorrespondent(branchElement.getClassSignature(), branchElement.getOperationSignature());
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                    System.out.println("Usage: Found Correspondent: " + correspondent.getPcmEntityName() + " " + correspondent.getPcmOperationName());
+                    System.out.println("Usage: Found Correspondent: " + correspondent.getPcmEntityName() + " "
+                            + correspondent.getPcmOperationName());
                     eSysCall = UsageModelBuilder.createEntryLevelSystemCall(this.repositoryModelProvider,
                             correspondent);
                 }

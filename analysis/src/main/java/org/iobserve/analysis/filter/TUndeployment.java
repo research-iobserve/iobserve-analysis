@@ -83,18 +83,21 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
     /**
      * This method is triggered for every undeployment event.
+     *
+     * @param event
+     *            undeployment event
      */
     @Override
     protected void execute(final IUndeploymentRecord event) {
-    	ExecutionTimeLogger.getInstance().startLogging(event);
-    	
+        ExecutionTimeLogger.getInstance().startLogging(event);
+
         if (event instanceof ServletUndeployedEvent) {
             this.process((ServletUndeployedEvent) event);
 
         } else if (event instanceof EJBUndeployedEvent) {
             this.process((EJBUndeployedEvent) event);
         }
-        
+
         ExecutionTimeLogger.getInstance().stopLogging(event);
     }
 

@@ -24,7 +24,7 @@ import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import org.palladiosimulator.pcm.repository.Repository;
 
 /**
- * An ugly test class for debugging
+ * An ugly test class for debugging.
  *
  * @author Lars Bluemke
  *
@@ -35,6 +35,12 @@ public class TestGeneric {
     private static final File PCM_MODELS_DIRECTORY = new File(
             "/Users/LarsBlumke/Documents/CAU/Masterprojekt/iObserveWorkspace/models/WorkingTestPCM/pcm");
 
+    /**
+     * Main routine.
+     *
+     * @param args
+     *            arguments
+     */
     public static void main(final String[] args) {
         final GraphDatabaseService graph = new GraphDatabaseFactory().newEmbeddedDatabase(TestGeneric.DB_PATH);
         TestGeneric.registerShutdownHook(graph);
