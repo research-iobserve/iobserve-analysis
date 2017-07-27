@@ -24,6 +24,7 @@ import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 /**
  * Represents the TEntryEventSequence Transformation in the paper <i>Run-time Architecture Models
@@ -82,6 +83,8 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 
 	@Override
 	protected void execute(final EntryCallSequenceModel entryCallSequenceModel) {
+	    ExecutionTimeLogger.getInstance().startLogging(entryCallSequenceModel);
+	    
 		// Resets the current usage model
 		this.usageModelProvider.loadModel();
 		int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
@@ -101,5 +104,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 
 		// Sets the new usage model within iObserve
 		this.usageModelProvider.save();
+		
+		ExecutionTimeLogger.getInstance().stopLogging(entryCallSequenceModel);
 	}
 }

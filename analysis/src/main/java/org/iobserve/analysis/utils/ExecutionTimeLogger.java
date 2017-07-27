@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IAllocationRecord;
@@ -49,6 +50,7 @@ public final class ExecutionTimeLogger {
     private final List<LoggingEntry> allocationTimes;
     private final List<LoggingEntry> entryCallTimes;
     private final List<LoggingEntry> entryCallSequenceTimes;
+    private final List<LoggingEntry> entryEventSequenceTimes;
 
     public static ExecutionTimeLogger getInstance() {
         if (ExecutionTimeLogger.instance == null) {
@@ -65,10 +67,26 @@ public final class ExecutionTimeLogger {
         this.allocationTimes = new ArrayList<>();
         this.entryCallTimes = new ArrayList<>();
         this.entryCallSequenceTimes = new ArrayList<>();
+        this.entryEventSequenceTimes = new ArrayList<>();
     }
 
     public void startLogging(final IMonitoringRecord record) {
         this.tmpTimes.put(record.hashCode(), System.nanoTime());
+    }
+    
+    public void startLogging(final EntryCallSequenceModel o) {
+        this.tmpTimes.put(o.hashCode(), System.nanoTime());
+    }
+    
+    public void stopLogging(final EntryCallSequenceModel model) {
+        final Long startTime = this.tmpTimes.get(model.hashCode());
+        if (startTime != null) {
+            final Long endTime = System.nanoTime();
+            final LoggingEntry entry = new LoggingEntry();
+            String userSessionsSize = Integer.toString(model.getUserSessions().size());
+            entry.setLoggingInfo("", userSessionsSize, endTime - startTime, startTime, endTime);
+            this.entryEventSequenceTimes.add(entry);
+        }
     }
 
     public void stopLogging(final IDeploymentRecord record) {
@@ -158,6 +176,8 @@ public final class ExecutionTimeLogger {
                 "TEntryCall");
         this.export(Arrays.asList("SessionId", "OperationSignature", "elapsed", "start", "end"),
                 this.entryCallSequenceTimes, "TEntryCallSequence");
+        this.export(Arrays.asList("", "UserSessionsCount", "elapsed", "start", "end"),
+                this.entryEventSequenceTimes, "TEntryEventSequence");
     }
 
     private void export(final List<String> headlines, final List<LoggingEntry> list, final String mapName) {

@@ -15,10 +15,10 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
@@ -47,6 +47,8 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
     private static final int USER_SESSION_THRESHOLD = 0;
     /** map of sessions. */
     private final Map<String, UserSession> sessions = new HashMap<>();
+    /** list of sessions with size bigger than TEntryCallSequence.USER_SESSION_THRESHOLD. */
+    private final Map<String, UserSession> approvedSessions = new HashMap<>();
     /** output port. */
     private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
 
@@ -76,18 +78,23 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
             }
             // do not sort since TEntryEventSequence will sort any ways
             userSession.add(event, false);
+            
+            // collect all user sessions which have more elements as a defined threshold
+            if(userSession.size() > TEntryCallSequence.USER_SESSION_THRESHOLD) {
+                approvedSessions.putIfAbsent(userSessionId, userSession);
+                
+                // only if a session has changed and has more elements than the threshold
+                // the list of approved the usagemodel needs to be newly build
+                final List<UserSession> listToSend = new ArrayList<UserSession>(this.approvedSessions.values());
+//                final List<UserSession> listToSend = this.sessions.values().stream()
+//                        .filter(session -> session.size() > TEntryCallSequence.USER_SESSION_THRESHOLD)
+//                        .collect(Collectors.toList());
 
-            // collect all user sessions which have more elements as a defined threshold and send
-            // them
-            // to the next filter
-            final List<UserSession> listToSend = this.sessions.values().stream()
-                    .filter(session -> session.size() > TEntryCallSequence.USER_SESSION_THRESHOLD)
-                    .collect(Collectors.toList());
+                ExecutionTimeLogger.getInstance().stopLogging(event);
 
-            ExecutionTimeLogger.getInstance().stopLogging(event);
-
-            if (!listToSend.isEmpty()) {
-                this.outputPort.send(new EntryCallSequenceModel(listToSend));
+                if (!listToSend.isEmpty()) {
+                    this.outputPort.send(new EntryCallSequenceModel(listToSend));
+                }
             }
         }
     }
