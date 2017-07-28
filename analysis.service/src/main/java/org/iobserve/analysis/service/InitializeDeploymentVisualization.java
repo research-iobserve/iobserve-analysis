@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.json.Json;
@@ -14,8 +15,8 @@ import javax.json.JsonString;
 import javax.json.JsonWriter;
 
 import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.service.services.CommunicationInstanceService;
 import org.iobserve.analysis.service.services.CommunicationService;
-import org.iobserve.analysis.service.services.CommunicationinstanceService;
 import org.iobserve.analysis.service.services.NodeService;
 import org.iobserve.analysis.service.services.NodegroupService;
 import org.iobserve.analysis.service.services.ServiceService;
@@ -29,6 +30,7 @@ import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
 
 /**
  * Initializes the deployment visualization by mapping the initial palladio components to
@@ -41,6 +43,7 @@ public final class InitializeDeploymentVisualization {
 
     /** model provider for palladio models */
     private final ModelProvider<Allocation> allocationModelGraphProvider;
+    private final ModelProvider<ResourceContainer> allocationResourceContainerModelGraphProvider;
     private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
@@ -51,7 +54,7 @@ public final class InitializeDeploymentVisualization {
     private final ServiceService serviceService = new ServiceService();
     private final ServiceinstanceService serviceinstanceService = new ServiceinstanceService();
     private final CommunicationService communicationService = new CommunicationService();
-    private final CommunicationinstanceService communicationinstanceService = new CommunicationinstanceService();
+    private final CommunicationInstanceService communicationinstanceService = new CommunicationInstanceService();
 
     private static final String USER_AGENT = "iObserve/0.0.2";
 
@@ -71,11 +74,13 @@ public final class InitializeDeploymentVisualization {
 
     public InitializeDeploymentVisualization(final URL systemUrl, final URL changelogUrl,
             final ModelProvider<Allocation> allocationModelGraphProvider,
+            final ModelProvider<ResourceContainer> allocationResourceContainerModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.systemUrl = systemUrl;
         this.changelogUrl = changelogUrl;
         this.allocationModelGraphProvider = allocationModelGraphProvider;
+        this.allocationResourceContainerModelGraphProvider = allocationResourceContainerModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
@@ -86,6 +91,7 @@ public final class InitializeDeploymentVisualization {
 
         final List<AssemblyContext> assemblyContexts = systemModel.getAssemblyContexts__ComposedStructure();
         final List<Connector> connectors = systemModel.getConnectors__ComposedStructure();
+
         final List<String> allocationIds = this.allocationModelGraphProvider.readComponentByType(Allocation.class);
         // an allocation model contains exactly one allocation
         final String allocationId = allocationIds.get(0);
@@ -96,27 +102,95 @@ public final class InitializeDeploymentVisualization {
                 .readOnlyRootComponent(ResourceEnvironment.class);
         final List<LinkingResource> linkingResources = resourceEnvironmentModel
                 .getLinkingResources__ResourceEnvironment();
+        // nodes
+        final List<ResourceContainer> resourceContainers = resourceEnvironmentModel
+                .getResourceContainer_ResourceEnvironment();
 
         this.sendPostRequest(this.systemService.createSystem(systemModel));
 
-        for (int i = 0; i < allocationContexts.size(); i++) {
-            final AllocationContext allocationContext = allocationContexts.get(i);
-            final ResourceContainer resourceContainer = allocationContext.getResourceContainer_AllocationContext();
+        for (int i = 0; i < resourceContainers.size(); i++) {
+            final ResourceContainer resourceContainer = resourceContainers.get(i);
             this.sendPostRequest(this.nodegroupService.createNodegroup(this.systemService.getSystemId()));
             this.sendPostRequest(this.nodeService.createNode(resourceContainer, this.systemService.getSystemId(),
                     this.nodegroupService.getNodegroupId()));
-
+        }
+        // architecture view in deployment visualization shows services and
+        // communication
+        for (int i = 0; i < assemblyContexts.size(); i++) {
             final AssemblyContext assemblyContext = assemblyContexts.get(i);
             this.sendPostRequest(this.serviceService.createService(assemblyContext, this.systemService.getSystemId()));
-            this.sendPostRequest(this.serviceinstanceService.createServiceInstance(this.systemService.getSystemId(),
-                    this.nodeService.getNodeId(), this.serviceService.getServiceId()));
         }
 
-        // communication and communicationinstance
+        // deployment view in deployment visualization shows nodegroups, nodes, serviceinstances and
+        // communicationinstances
+        for (int i = 0; i < allocationContexts.size(); i++) {
+            final AllocationContext allocationContext = allocationContexts.get(i);
+
+            final String resourceContainerId = allocationContext.getResourceContainer_AllocationContext().getId();
+            final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
+            final String assemblyContextId = allocationContext.getAssemblyContext_AllocationContext().getId();
+
+            this.sendPostRequest(this.serviceinstanceService.createServiceInstance(assemblyContext,
+                    this.systemService.getSystemId(), resourceContainerId, assemblyContextId));
+        }
+
+        String resourceSourceId = null;
+        String resourceTargetId = null;
+        String technology = null;
         for (int i = 0; i < connectors.size(); i++) {
-            final AssemblyConnector connector = (AssemblyConnector) connectors.get(i);
-            this.sendPostRequest(
-                    this.communicationService.createCommunication(connector, this.systemService.getSystemId()));
+            final Connector connector = connectors.get(i);
+            if (connector instanceof AssemblyConnector) {
+
+                // aim: find out which technology is used for communication
+                // howTo: (AllocationModel) get the resourceContainer(s) on which the
+                // source/targetAssemblyContext are deployed, (resourceEnvModel) get the
+                // linkingResource which includes the resourceContainer in
+                // connectedResourceContainers, entityName=technology
+                final String assemContSourceId = ((AssemblyConnector) connector)
+                        .getProvidingAssemblyContext_AssemblyConnector().getId();
+                final String assemContTargetId = ((AssemblyConnector) connector)
+                        .getRequiringAssemblyContext_AssemblyConnector().getId();
+
+                for (int j = 0; j < allocationContexts.size(); j++) {
+                    final AllocationContext allocationContext = allocationContexts.get(j);
+                    final String actualAssemblyContextId = allocationContext.getAssemblyContext_AllocationContext()
+                            .getId();
+                    if (actualAssemblyContextId.equals(assemContSourceId)) {
+                        resourceSourceId = allocationContext.getResourceContainer_AllocationContext().getId();
+                    }
+                    if (actualAssemblyContextId.equals(assemContTargetId)) {
+                        resourceTargetId = allocationContext.getResourceContainer_AllocationContext().getId();
+                    }
+                    if ((resourceSourceId != null) && (resourceTargetId != null)) {
+                        for (int l = 0; l < linkingResources.size(); l++) {
+                            final LinkingResource linkingResource = linkingResources.get(l);
+                            if (linkingResource instanceof LinkingResourceImpl) {
+                                final List<ResourceContainer> connectedResourceConts = linkingResource
+                                        .getConnectedResourceContainers_LinkingResource();
+                                final List<String> connectedResourceContsIds = new ArrayList<>();
+                                for (int k = 0; k < connectedResourceConts.size(); k++) {
+                                    connectedResourceContsIds.add(connectedResourceConts.get(k).getId());
+                                }
+                                if (connectedResourceContsIds.contains(resourceSourceId)) {
+                                    if (connectedResourceContsIds.contains(resourceTargetId)) {
+                                        technology = linkingResource.getEntityName();
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+                this.sendPostRequest(this.communicationService.createCommunication((AssemblyConnector) connector,
+                        this.systemService.getSystemId(), technology));
+
+                this.sendPostRequest(
+                        this.communicationinstanceService.createCommunicationinstance((AssemblyConnector) connector,
+                                this.systemService.getSystemId(), this.communicationService.getCommunicationId()));
+
+            } else {
+                System.out.printf("no AssemblyConnector: %s\n", connector.getEntityName());
+            }
 
         }
 

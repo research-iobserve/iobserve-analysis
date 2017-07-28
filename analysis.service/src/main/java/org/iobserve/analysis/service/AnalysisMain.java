@@ -154,6 +154,8 @@ public final class AnalysisMain {
                         resourceEnvironmentModelGraph);
                 final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
                         resourceEnvironmentModelGraph);
+                final ModelProvider<ResourceContainer> allocationResourceContainerModelGraphProvider = new ModelProvider<>(
+                        allocationModelGraph);
                 final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(
                         allocationModelGraph);
                 final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
@@ -174,7 +176,8 @@ public final class AnalysisMain {
                 final List<Interface> interfaces = repositoryModelProvider.getModel().getInterfaces__Repository();
 
                 final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                        systemUrl, changelogUrl, allocationModelGraphProvider, systemModelGraphProvider,
+                        systemUrl, changelogUrl, allocationModelGraphProvider,
+                        allocationResourceContainerModelGraphProvider, systemModelGraphProvider,
                         resourceEnvironmentModelGraphProvider);
                 try {
                     deploymentVisualization.initialize();

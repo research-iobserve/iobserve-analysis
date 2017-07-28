@@ -19,8 +19,8 @@ import org.iobserve.common.record.IAllocationRecord;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
- * This stage is triggered by an analysis allocation update and updates the deployment
- * visualization.
+ * This stage is triggered by an analysis allocation update and updates the deployment visualization
+ * by adding a node.
  *
  * @author jweg
  *
@@ -75,10 +75,9 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
         // nodeGroupId reinreichen?
         final List<String> resourceContainerIds = this.resourceContainerModelProvider
                 .readComponentByType(ResourceContainer.class);
-        final String systemId = "systemId";
         final String nodegroupId = "nodegroupId";
 
-        final JsonArray dataArray = this.nodeService.createNode(resourceContainer, systemId, nodegroupId);
+        final JsonArray dataArray = this.nodeService.createNode(resourceContainer, this.systemId, nodegroupId);
         return dataArray;
     }
 

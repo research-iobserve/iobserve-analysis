@@ -8,7 +8,6 @@ import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 
 public class CommunicationService {
 
-    private String communicationId;
     private String technology;
     private String sourceId;
     private String targetId;
@@ -17,16 +16,16 @@ public class CommunicationService {
 
     }
 
-    // TODO
-    public JsonArray createCommunication(final AssemblyConnector assemblyConnector, final String systemId) {
-
+    public JsonArray createCommunication(final AssemblyConnector assemblyConnector, final String systemId,
+            final String technology) {
+        // TODO source und target richtig herum?
         this.communicationId = assemblyConnector.getId();
-        // this.technology = assemblyConnector.get
+        this.technology = technology;
         this.sourceId = assemblyConnector.getProvidingAssemblyContext_AssemblyConnector().getId();
         this.targetId = assemblyConnector.getRequiringAssemblyContext_AssemblyConnector().getId();
 
         final JsonObject communication = Json.createObjectBuilder().add("type", "communication")
-                .add("id", this.communicationId).add("systemId", systemId).add("technology", "TCP/IP")
+                .add("id", this.communicationId).add("systemId", systemId).add("technology", this.technology)
                 .add("sourceId", this.sourceId).add("targetId", this.targetId).build();
 
         final JsonObject communicationData = Json.createObjectBuilder().add("type", "changelog")
@@ -39,6 +38,16 @@ public class CommunicationService {
     // TODO
     public void deleteCommunication() {
 
+    }
+
+    private String communicationId;
+
+    public String getCommunicationId() {
+        return this.communicationId;
+    }
+
+    public void setCommunicationId(final String communicationId) {
+        this.communicationId = communicationId;
     }
 
 }
