@@ -564,6 +564,97 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         return (T) component;
     }
 
+    /**
+     * Reads the containing component of the specified component from the provider's graph.
+     *
+     * @param clazz
+     *            Data type of the contained component
+     * @param id
+     *            Id of the contained component
+     * @return The containing component
+     */
+    public EObject readContainingComponentById(final Class<T> clazz, final String id) {
+        ModelProviderSynchronizer.getLock(this);
+        return this.readOnlyContainingComponentById(clazz, id);
+    }
+
+    /**
+     * Reads the containing component of the specified component from the provider's graph without
+     * locking it for other providers.
+     *
+     * @param clazz
+     *            Data type of the contained component
+     * @param id
+     *            Id of the contained component
+     * @return The containing component
+     */
+    public EObject readOnlyContainingComponentById(final Class<T> clazz, final String id) {
+        final Label label = Label.label(clazz.getSimpleName());
+        EObject component = null;
+
+        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Iterator<Relationship> inRels = node
+                    .getRelationships(Direction.INCOMING, PcmRelationshipType.CONTAINS).iterator();
+
+            if (inRels.hasNext()) {
+                final Node endNode = inRels.next().getStartNode();
+                final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
+                        new HashSet<Node>());
+                component = this.readComponent(endNode, containmentsAndDatatypes, new HashMap<Node, EObject>());
+            }
+
+            tx.success();
+        }
+
+        return component;
+    }
+
+    /**
+     * Reads components referencing to the specified component from the provider's graph.
+     *
+     * @param clazz
+     *            Data type of the referenced component
+     * @param id
+     *            Id of the referenced component
+     * @return The referencing components
+     */
+    public List<EObject> readReferencingComponentsById(final Class<T> clazz, final String id) {
+        ModelProviderSynchronizer.getLock(this);
+        return this.readOnlyReferencingComponentsById(clazz, id);
+    }
+
+    /**
+     * Reads components referencing to the specified component from the provider's graph without
+     * locking it for other providers.
+     *
+     * @param clazz
+     *            Data type of the referenced component
+     * @param id
+     *            Id of the referenced component
+     * @return The referencing components
+     */
+    public List<EObject> readOnlyReferencingComponentsById(final Class<T> clazz, final String id) {
+        final List<EObject> referencingComponents = new LinkedList<>();
+        final Label label = Label.label(clazz.getSimpleName());
+
+        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.REFERENCES)) {
+                final Node endNode = inRel.getStartNode();
+                final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
+                        new HashSet<Node>());
+                final EObject component = this.readComponent(endNode, containmentsAndDatatypes,
+                        new HashMap<Node, EObject>());
+                referencingComponents.add(component);
+            }
+
+            tx.success();
+        }
+
+        return referencingComponents;
+    }
+
     /*
      * (non-Javadoc)
      *
