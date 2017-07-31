@@ -60,14 +60,16 @@ public final class InitializeDeploymentVisualization {
 
     private final URL changelogUrl;
     private final URL systemUrl;
-    private String systemId;
 
     /**
      * constructor
      *
      * @param systemUrl
+     *            Url to send requests for creating a system to
      * @param changelogUrl
+     *            Url to send requests for changelogs
      * @param allocationModelGraphProvider
+     * @param allocationResourceContainerModelGraphProvider
      * @param systemModelGraphProvider
      * @param resourceEnvironmentModelGraphProvider
      */
@@ -85,7 +87,16 @@ public final class InitializeDeploymentVisualization {
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
 
+    /**
+     * Populates the database of the deployment visualization initially and respects the changelog
+     * constraints of iobserve-ui-deployment. It takes information from the system model, the
+     * allocation model and the resource environment model and creates corresponding visualization
+     * components, e.g. nodes and services.
+     *
+     * @throws Exception
+     */
     protected void initialize() throws Exception {
+        // set up the models
         final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
 
@@ -93,7 +104,7 @@ public final class InitializeDeploymentVisualization {
         final List<Connector> connectors = systemModel.getConnectors__ComposedStructure();
 
         final List<String> allocationIds = this.allocationModelGraphProvider.readComponentByType(Allocation.class);
-        // an allocation model contains exactly one allocation
+        // an allocation model contains exactly one allocation, therefore .get(0)
         final String allocationId = allocationIds.get(0);
         final Allocation allocation = this.allocationModelGraphProvider.readOnlyComponentById(Allocation.class,
                 allocationId);
@@ -102,10 +113,11 @@ public final class InitializeDeploymentVisualization {
                 .readOnlyRootComponent(ResourceEnvironment.class);
         final List<LinkingResource> linkingResources = resourceEnvironmentModel
                 .getLinkingResources__ResourceEnvironment();
-        // nodes
         final List<ResourceContainer> resourceContainers = resourceEnvironmentModel
                 .getResourceContainer_ResourceEnvironment();
 
+        // sending created components to visualization (in predefined order stated in changelog
+        // constraints)
         this.sendPostRequest(this.systemService.createSystem(systemModel));
 
         for (int i = 0; i < resourceContainers.size(); i++) {
@@ -139,12 +151,14 @@ public final class InitializeDeploymentVisualization {
         String technology = null;
         for (int i = 0; i < connectors.size(); i++) {
             final Connector connector = connectors.get(i);
+            // we are only interested in AssemblyConnectors
             if (connector instanceof AssemblyConnector) {
 
                 // aim: find out which technology is used for communication
                 // howTo: (AllocationModel) get the resourceContainer(s) on which the
-                // source/targetAssemblyContext are deployed, (resourceEnvModel) get the
-                // linkingResource which includes the resourceContainer in
+                // source/targetAssemblyContext are deployed (Lars implemented a method for that,
+                // TODO:include), (resourceEnvModel) get the
+                // linkingResource which includes the resourceContainers in
                 // connectedResourceContainers, entityName=technology
                 final String assemContSourceId = ((AssemblyConnector) connector)
                         .getProvidingAssemblyContext_AssemblyConnector().getId();

@@ -105,7 +105,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         }
 
         ExecutionTimeLogger.getInstance().stopLogging(event);
-        this.deploymentFinishedOutputPort.send(event);
+        // this.deploymentFinishedOutputPort.send(event);
     }
 
     /**
@@ -193,7 +193,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
                 .getResourceContainerByName(this.resourceEnvModelProvider.getModel(), serverName);
 
         Opt.of(optResourceContainer).ifPresent()
-                .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName))
+                .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName, event))
                 .elseApply(() -> {
                     // if the resource container with this serverName is not available, send an
                     // event to TAllocation (creating the resource container) and forward the
@@ -213,7 +213,8 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      * @param asmContextName
      *            entity name of assembly context
      */
-    private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName) {
+    private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName,
+            final IDeploymentRecord event) {
         // get assembly context by name or create it if necessary.
         final AssemblyContext assemblyContext;
         final Optional<AssemblyContext> optAssCtx = SystemModelBuilder
@@ -229,6 +230,9 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
                 assemblyContext);
         this.allocationModelProvider.save();
+
+        // update deployment visualization
+        this.deploymentFinishedOutputPort.send(event);
     }
 
     /**

@@ -7,13 +7,15 @@ import javax.json.JsonObject;
 
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
+/**
+ *
+ * @author jweg
+ *
+ */
 public class ServiceService {
 
     private String serviceId;
-
-    public String getServiceId() {
-        return this.serviceId;
-    }
+    private String serviceName;
 
     public ServiceService() {
 
@@ -23,10 +25,10 @@ public class ServiceService {
         final JsonArrayBuilder nodeArrayBuilder = Json.createArrayBuilder();
 
         this.serviceId = assemblyContext.getId();
-        final String serviceName = assemblyContext.getEntityName();
+        this.serviceName = assemblyContext.getEntityName();
 
         final JsonObject service = Json.createObjectBuilder().add("type", "service").add("id", this.serviceId)
-                .add("systemId", systemId).add("name", serviceName).build();
+                .add("systemId", systemId).add("name", this.serviceName).build();
         final JsonObject serviceData = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
                 .add("data", service).build();
 
@@ -38,6 +40,14 @@ public class ServiceService {
     // TODO
     public void deleteService() {
 
+    }
+
+    public String getServiceId() {
+        return this.serviceId;
+    }
+
+    public String getServiceName() {
+        return this.serviceName;
     }
 
 }

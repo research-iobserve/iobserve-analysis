@@ -25,10 +25,16 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonWriter;
 
-import org.iobserve.analysis.service.services.NodeService;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.service.services.ServiceinstanceService;
+import org.iobserve.analysis.utils.Opt;
+import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.ServletDeployedEvent;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -42,13 +48,18 @@ import teetime.framework.AbstractConsumerStage;
  */
 public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploymentRecord> {
 
-    private final NodeService nodeService = new NodeService();
     private final ServiceService serviceService = new ServiceService();
     private final ServiceinstanceService serviceinstanceService = new ServiceinstanceService();
 
     private static final String USER_AGENT = "iObserve/0.0.2";
 
     private final URL outputURL;
+    private final String systemId;
+    private final ModelProvider<ResourceContainer> resourceContainerModelProvider;
+    private final ModelProvider<AssemblyContext> allocationModelProvider;
+    private final ICorrespondence correspondenceModel;
+
+    private String entityName;
 
     /**
      * Output visualization configuration.
@@ -56,15 +67,61 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
      * @param outputURL
      *            the output URL
      */
-    public DeploymentVisualizationStage(final URL outputURL) {
+    public DeploymentVisualizationStage(final URL outputURL, final String systemId,
+            final ModelProvider<ResourceContainer> resourceContainerModelProvider,
+            final ModelProvider<AssemblyContext> allocationModelProvider, final ICorrespondence correspondenceModel) {
         this.outputURL = outputURL;
+        this.systemId = systemId;
+        this.resourceContainerModelProvider = resourceContainerModelProvider;
+        this.allocationModelProvider = allocationModelProvider;
+        this.correspondenceModel = correspondenceModel;
     }
 
     @Override
-    protected void execute(final IDeploymentRecord deployment) {
+    protected void execute(final IDeploymentRecord deployment) throws IOException {
+        if (deployment instanceof ServletDeployedEvent) {
+            this.sendPostRequest(this.createData((ServletDeployedEvent) deployment));
+        } else if (deployment instanceof EJBDeployedEvent) {
+            this.sendPostRequest(this.createData((EJBDeployedEvent) deployment));
+        }
 
-        // this.sendPostRequest(this.deployment(deployment));
+    }
 
+    private JsonArray createData(final ServletDeployedEvent deployment) {
+
+        final String serverName = deployment.getSerivce();
+        final String context = deployment.getContext();
+        final String nodeId = this.resourceContainerModelProvider
+                .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
+
+        Opt.of(this.correspondenceModel.getCorrespondent(context)).ifPresent()
+                .apply(correspondent -> this.entityName = correspondent.getPcmEntityName())
+                .elseApply(() -> System.out.printf(
+                        "This should not happen, because the service was created and the models were updated before."));
+        final String asmContextName = this.entityName + "_" + serverName;
+        final AssemblyContext assemblyContext = this.allocationModelProvider
+                .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
+
+        final JsonArray dataArray = this.serviceService.createService(assemblyContext, this.systemId);
+        dataArray.add(this.serviceinstanceService.createServiceInstance(assemblyContext, this.systemId, nodeId,
+                this.serviceService.getServiceId()));
+        return dataArray;
+    }
+
+    private JsonArray createData(final EJBDeployedEvent deployment) {
+
+        final String serverName = deployment.getSerivce();
+        final String nodeId = this.resourceContainerModelProvider
+                .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
+        
+        final String asmContextName = this.entityName + "_" + serverName;
+        final AssemblyContext assemblyContext = this.allocationModelProvider
+                .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
+
+        final JsonArray dataArray = this.serviceService.createService(assemblyContext, this.systemId);
+        dataArray.add(this.serviceinstanceService.createServiceInstance(assemblyContext, this.systemId, nodeId,
+                this.serviceService.getServiceId()));
+        return dataArray;
     }
 
     /**

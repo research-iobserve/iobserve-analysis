@@ -42,4 +42,8 @@ public class CommunicationInstanceService {
 
     }
 
+    public String getCommunicationInstanceId() {
+        return this.communicationInstanceId;
+    }
+
 }

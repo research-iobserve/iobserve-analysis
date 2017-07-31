@@ -30,6 +30,7 @@ import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -192,6 +193,8 @@ public final class AnalysisMainNeo4j {
                         resourceEnvironmentModelGraph);
                 final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(
                         allocationModelGraph);
+                final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider = new ModelProvider<>(
+                        allocationModelGraph);
                 final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                         systemModelGraph);
                 /******************************************************************************/
@@ -201,7 +204,7 @@ public final class AnalysisMainNeo4j {
                         correspondenceModel, usageModelProvider, repositoryModelProvider,
                         resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider,
                         resourceContainerModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
-                        systemModelProvider, systemModelGraphProvider);
+                        assemblyContextModelGraphProvider, systemModelProvider, systemModelGraphProvider);
 
                 System.out.println("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);

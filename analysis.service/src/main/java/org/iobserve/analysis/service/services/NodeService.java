@@ -7,6 +7,11 @@ import javax.json.JsonObject;
 
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+/**
+ *
+ * @author jweg
+ *
+ */
 public class NodeService {
 
     private String nodeId;
@@ -30,6 +35,11 @@ public class NodeService {
         nodeArrayBuilder.add(nodeData);
         final JsonArray dataArray = nodeArrayBuilder.build();
         return dataArray;
+    }
+
+    // TODO
+    public void deleteNode() {
+
     }
 
     public String getNodeId() {

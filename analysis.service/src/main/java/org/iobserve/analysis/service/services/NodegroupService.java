@@ -5,13 +5,14 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 
+/**
+ *
+ * @author jweg
+ *
+ */
 public class NodegroupService {
 
     public String nodegroupId;
-
-    public String getNodegroupId() {
-        return this.nodegroupId;
-    }
 
     /**
      * constructor
@@ -42,6 +43,10 @@ public class NodegroupService {
     // TODO
     public void deleteNodegroup() {
 
+    }
+
+    public String getNodegroupId() {
+        return this.nodegroupId;
     }
 
 }

@@ -7,6 +7,11 @@ import javax.json.JsonObject;
 
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
+/**
+ *
+ * @author jweg
+ *
+ */
 public class ServiceinstanceService {
 
     private String serviceinstanceName;
@@ -39,4 +44,13 @@ public class ServiceinstanceService {
     public void deleteServiceInstance() {
 
     }
+
+    public String getServiceinstanceName() {
+        return this.serviceinstanceName;
+    }
+
+    public String getServiceinstanceId() {
+        return this.serviceinstanceId;
+    }
+
 }

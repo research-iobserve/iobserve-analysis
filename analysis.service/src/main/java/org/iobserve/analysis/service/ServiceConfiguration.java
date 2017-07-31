@@ -29,6 +29,7 @@ import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -79,7 +80,9 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
             final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
             final AllocationModelProvider allocationModelProvider,
-            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider,
+            final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
+            final SystemModelProvider systemModelProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider)
             throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
@@ -87,14 +90,13 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
                 allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload);
 
-        final URL url = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");// +
-                                                                                                // systemId
-                                                                                                // +
-                                                                                                // "/changelogs"
+        final URL url = new URL(
+                "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
 
-        final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(url);
+        final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(url,
+                systemId, resourceContainerModelGraphProvider, assemblyContextModelGraphProvider, correspondenceModel);
         final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
-                resourceContainerModelGraphProvider, systemId);
+                systemId, resourceContainerModelGraphProvider);
 
         this.connectPorts(this.deploymentSuccAllocation.getDeploymentFinishedOutputPort(),
                 deploymentVisualizationStage.getInputPort());

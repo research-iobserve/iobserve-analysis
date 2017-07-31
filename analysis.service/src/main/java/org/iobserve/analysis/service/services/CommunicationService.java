@@ -6,8 +6,14 @@ import javax.json.JsonObject;
 
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 
+/**
+ *
+ * @author jweg
+ *
+ */
 public class CommunicationService {
 
+    private String communicationId;
     private String technology;
     private String sourceId;
     private String targetId;
@@ -40,14 +46,8 @@ public class CommunicationService {
 
     }
 
-    private String communicationId;
-
     public String getCommunicationId() {
         return this.communicationId;
-    }
-
-    public void setCommunicationId(final String communicationId) {
-        this.communicationId = communicationId;
     }
 
 }

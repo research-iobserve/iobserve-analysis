@@ -33,6 +33,7 @@ import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -150,6 +151,8 @@ public class AnalysisDaemon implements Daemon {
             final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
                     resourceEnvironmentModelGraph);
             final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(allocationModelGraph);
+            final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider = new ModelProvider<>(
+                    allocationModelGraph);
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                     systemModelGraph);
 
@@ -157,7 +160,8 @@ public class AnalysisDaemon implements Daemon {
                     this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
                     usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                     resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider, allocationModelProvider,
-                    allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider);
+                    allocationModelGraphProvider, assemblyContextModelGraphProvider, systemModelProvider,
+                    systemModelGraphProvider);
 
             this.thread = new AnalysisThread(this, configuration);
         } else {

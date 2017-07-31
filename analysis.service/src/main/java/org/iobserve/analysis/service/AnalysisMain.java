@@ -18,7 +18,6 @@ package org.iobserve.analysis.service;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
@@ -32,7 +31,7 @@ import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.repository.Interface;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -158,6 +157,8 @@ public final class AnalysisMain {
                         allocationModelGraph);
                 final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(
                         allocationModelGraph);
+                final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider = new ModelProvider<>(
+                        allocationModelGraph);
                 final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                         systemModelGraph);
                 // get systemId
@@ -168,30 +169,23 @@ public final class AnalysisMain {
                 final URL systemUrl = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");
                 final URL changelogUrl = new URL(systemUrl + systemId + "/changelogs");
 
-                /**
-                 * Tests
-                 */
-                final String idOfInterfaceIWant = repositoryModelProvider.getModel().getInterfaces__Repository().get(0)
-                        .getId();
-                final List<Interface> interfaces = repositoryModelProvider.getModel().getInterfaces__Repository();
-
                 final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
                         systemUrl, changelogUrl, allocationModelGraphProvider,
                         allocationResourceContainerModelGraphProvider, systemModelGraphProvider,
                         resourceEnvironmentModelGraphProvider);
-                try {
-                    deploymentVisualization.initialize();
-                } catch (final Exception e) {
-                    System.out.println("deploymentVisualization.initialize() went wrong!");
-                    e.printStackTrace();
-                }
+                // try {
+                // deploymentVisualization.initialize();
+                // } catch (final Exception e) {
+                // System.out.println("deploymentVisualization.initialize() went wrong!");
+                // e.printStackTrace();
+                // }
 
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
                         outputPort, systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
                         correspondenceModel, usageModelProvider, repositoryModelProvider,
                         resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider,
                         resourceContainerModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
-                        systemModelProvider, systemModelGraphProvider);
+                        assemblyContextModelGraphProvider, systemModelProvider, systemModelGraphProvider);
 
                 System.out.println("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);

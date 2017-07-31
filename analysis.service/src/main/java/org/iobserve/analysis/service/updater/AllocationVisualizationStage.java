@@ -14,27 +14,28 @@ import javax.json.JsonWriter;
 
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.services.NodeService;
+import org.iobserve.analysis.service.services.NodegroupService;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationRecord;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
- * This stage is triggered by an analysis allocation update and updates the deployment visualization
- * by adding a node.
+ * This stage is triggered by an analysis allocation update (resourceConatiner added) and updates
+ * the deployment visualization by adding a node.
  *
  * @author jweg
  *
  */
 public class AllocationVisualizationStage extends AbstractVisualizationStage<IAllocationRecord> {
 
+    private final NodegroupService nodegoupService = new NodegroupService();
     private final NodeService nodeService = new NodeService();
 
     private static final String USER_AGENT = "iObserve/0.0.2";
 
     private final URL outputURL;
-
-    private final ModelProvider<ResourceContainer> resourceContainerModelProvider;
     private final String systemId;
+    private final ModelProvider<ResourceContainer> resourceContainerModelProvider;
 
     /**
      *
@@ -43,8 +44,8 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
      * @param resourceEnvironmentModelProvider
      *            the resource environment model graph
      */
-    public AllocationVisualizationStage(final URL outputURL,
-            final ModelProvider<ResourceContainer> resourceContainerModelProvider, final String systemId) {
+    public AllocationVisualizationStage(final URL outputURL, final String systemId,
+            final ModelProvider<ResourceContainer> resourceContainerModelProvider) {
         this.outputURL = outputURL;
         this.resourceContainerModelProvider = resourceContainerModelProvider;
         this.systemId = systemId;
@@ -72,12 +73,13 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
         final ResourceContainer resourceContainer = resourceContainerHostname.get(0);
         final String resourceContainerId = resourceContainer.getId();
 
-        // nodeGroupId reinreichen?
         final List<String> resourceContainerIds = this.resourceContainerModelProvider
                 .readComponentByType(ResourceContainer.class);
-        final String nodegroupId = "nodegroupId";
 
-        final JsonArray dataArray = this.nodeService.createNode(resourceContainer, this.systemId, nodegroupId);
+        // each node has its own nodegroup
+        final JsonArray dataArray = this.nodegoupService.createNodegroup(this.systemId);
+        dataArray.add(
+                this.nodeService.createNode(resourceContainer, this.systemId, this.nodegoupService.getNodegroupId()));
         return dataArray;
     }
 
@@ -87,6 +89,7 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
      * @param allocationData
      * @throws IOException
      */
+    // TODO put this in AbstractVisualizationStage
     private void sendPostRequest(final JsonArray allocationData) throws IOException {
         final HttpURLConnection connection = (HttpURLConnection) this.outputURL.openConnection();
 
