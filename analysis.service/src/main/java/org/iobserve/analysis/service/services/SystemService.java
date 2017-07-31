@@ -1,7 +1,6 @@
 package org.iobserve.analysis.service.services;
 
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 
 /**
@@ -22,15 +21,14 @@ public class SystemService {
 
     }
 
-    public JsonArray createSystem(final org.palladiosimulator.pcm.system.System systemModel) {
+    public JsonObject createSystem(final org.palladiosimulator.pcm.system.System systemModel) {
         this.systemName = systemModel.getEntityName();
         this.systemId = systemModel.getId();
 
-        final JsonObject system = Json.createObjectBuilder().add("type", "system").add("id", this.systemId)
+        final JsonObject systemObject = Json.createObjectBuilder().add("type", "system").add("id", this.systemId)
                 .add("name", this.systemName).build();
-        final JsonArray systemData = Json.createArrayBuilder().add(system).build();
 
-        return systemData;
+        return systemObject;
     }
 
     // TODO: check whether all nodeGroups belonging to the system are deleted, then send

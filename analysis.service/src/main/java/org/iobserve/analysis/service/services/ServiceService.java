@@ -1,8 +1,6 @@
 package org.iobserve.analysis.service.services;
 
 import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -21,20 +19,17 @@ public class ServiceService {
 
     }
 
-    public JsonArray createService(final AssemblyContext assemblyContext, final String systemId) {
-        final JsonArrayBuilder nodeArrayBuilder = Json.createArrayBuilder();
+    public JsonObject createService(final AssemblyContext assemblyContext, final String systemId) {
 
         this.serviceId = assemblyContext.getId();
         this.serviceName = assemblyContext.getEntityName();
 
         final JsonObject service = Json.createObjectBuilder().add("type", "service").add("id", this.serviceId)
                 .add("systemId", systemId).add("name", this.serviceName).build();
-        final JsonObject serviceData = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
+        final JsonObject serviceObject = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
                 .add("data", service).build();
 
-        nodeArrayBuilder.add(serviceData);
-        final JsonArray dataArray = nodeArrayBuilder.build();
-        return dataArray;
+        return serviceObject;
     }
 
     // TODO

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonWriter;
@@ -216,10 +215,10 @@ public final class InitializeDeploymentVisualization {
      * @param modelData
      * @throws IOException
      */
-    private void sendPostRequest(final JsonArray modelData) throws IOException {
+    private void sendPostRequest(final JsonObject modelData) throws IOException {
         final HttpURLConnection connection;
-        final JsonObject obj = modelData.getJsonObject(0);
-        final JsonString type = (JsonString) obj.get("type");
+
+        final JsonString type = (JsonString) modelData.get("type");
         if (type.getString() == "system") {
             connection = (HttpURLConnection) this.systemUrl.openConnection();
         } else {
@@ -235,13 +234,13 @@ public final class InitializeDeploymentVisualization {
         connection.setDoOutput(true);
         final JsonWriter jsonWriter = Json.createWriter(connection.getOutputStream());
         if (type.getString() == "system") {
-            jsonWriter.write(obj);
+            jsonWriter.write(modelData);
 
             System.out.println("\nSending 'POST' request to URL : " + this.systemUrl);
-            System.out.println("Post parameters : " + obj);
+            System.out.println("Post parameters : " + modelData);
 
         } else {
-            jsonWriter.writeArray(modelData); // work in progress
+            jsonWriter.write(modelData); // work in progress
 
             System.out.println("\nSending 'POST' request to URL : " + this.changelogUrl);
             System.out.println("Post parameters : " + modelData);

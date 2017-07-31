@@ -23,6 +23,7 @@ import java.net.URL;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.json.JsonWriter;
 
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -102,9 +103,10 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
         final AssemblyContext assemblyContext = this.allocationModelProvider
                 .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
 
-        final JsonArray dataArray = this.serviceService.createService(assemblyContext, this.systemId);
-        dataArray.add(this.serviceinstanceService.createServiceInstance(assemblyContext, this.systemId, nodeId,
-                this.serviceService.getServiceId()));
+        final JsonObject serviceObject = this.serviceService.createService(assemblyContext, this.systemId);
+        final JsonObject serviceinstanceObject = this.serviceinstanceService.createServiceInstance(assemblyContext,
+                this.systemId, nodeId, this.serviceService.getServiceId());
+        final JsonArray dataArray = Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();
         return dataArray;
     }
 
@@ -113,14 +115,15 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
         final String serverName = deployment.getSerivce();
         final String nodeId = this.resourceContainerModelProvider
                 .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
-        
+
         final String asmContextName = this.entityName + "_" + serverName;
         final AssemblyContext assemblyContext = this.allocationModelProvider
                 .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
 
-        final JsonArray dataArray = this.serviceService.createService(assemblyContext, this.systemId);
-        dataArray.add(this.serviceinstanceService.createServiceInstance(assemblyContext, this.systemId, nodeId,
-                this.serviceService.getServiceId()));
+        final JsonObject serviceObject = this.serviceService.createService(assemblyContext, this.systemId);
+        final JsonObject serviceinstanceObject = this.serviceinstanceService.createServiceInstance(assemblyContext,
+                this.systemId, nodeId, this.serviceService.getServiceId());
+        final JsonArray dataArray = Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();
         return dataArray;
     }
 

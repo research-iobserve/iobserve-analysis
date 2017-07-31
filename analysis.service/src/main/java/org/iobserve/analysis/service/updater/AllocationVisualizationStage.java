@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonObject;
 import javax.json.JsonWriter;
 
 import org.iobserve.analysis.modelneo4j.ModelProvider;
@@ -77,9 +78,11 @@ public class AllocationVisualizationStage extends AbstractVisualizationStage<IAl
                 .readComponentByType(ResourceContainer.class);
 
         // each node has its own nodegroup
-        final JsonArray dataArray = this.nodegoupService.createNodegroup(this.systemId);
-        dataArray.add(
-                this.nodeService.createNode(resourceContainer, this.systemId, this.nodegoupService.getNodegroupId()));
+        final JsonObject nodegroupObject = this.nodegoupService.createNodegroup(this.systemId);
+        final JsonObject nodeObject = this.nodeService.createNode(resourceContainer, this.systemId,
+                this.nodegoupService.getNodegroupId());
+        final JsonArray dataArray = Json.createArrayBuilder().add(nodegroupObject).add(nodeObject).build();
+
         return dataArray;
     }
 

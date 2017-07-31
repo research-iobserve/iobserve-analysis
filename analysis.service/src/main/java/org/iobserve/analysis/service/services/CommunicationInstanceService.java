@@ -1,7 +1,6 @@
 package org.iobserve.analysis.service.services;
 
 import javax.json.Json;
-import javax.json.JsonArray;
 import javax.json.JsonObject;
 
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
@@ -17,7 +16,7 @@ public class CommunicationInstanceService {
     }
 
     // TODO
-    public JsonArray createCommunicationinstance(final AssemblyConnector assemblyConnector, final String systemId,
+    public JsonObject createCommunicationinstance(final AssemblyConnector assemblyConnector, final String systemId,
             final String communicationId) {
         this.communicationInstanceId = "ci" + assemblyConnector.getId();
 
@@ -29,12 +28,10 @@ public class CommunicationInstanceService {
                 .add("communicationId", communicationId).add("workload", "10").add("sourceId", this.sourceId)
                 .add("targetId", this.targetId).build();
 
-        final JsonObject communicationInstData = Json.createObjectBuilder().add("type", "changelog")
+        final JsonObject communicationInstObject = Json.createObjectBuilder().add("type", "changelog")
                 .add("operation", "CREATE").add("data", communicationInst).build();
 
-        final JsonArray dataArray = Json.createArrayBuilder().add(communicationInstData).build();
-
-        return dataArray;
+        return communicationInstObject;
     }
 
     // TODO
