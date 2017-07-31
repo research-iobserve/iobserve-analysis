@@ -57,8 +57,6 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
 
-    // private final OutputPort<AddAllocationContextEvent> allocationContextOutputPort =
-    // this.createOutputPort();
     private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
     private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
     private final OutputPort<IDeploymentRecord> deploymentFinishedOutputPort = this.createOutputPort();
