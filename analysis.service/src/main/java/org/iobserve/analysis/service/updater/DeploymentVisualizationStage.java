@@ -113,8 +113,14 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
     private JsonArray createData(final EJBDeployedEvent deployment) {
 
         final String serverName = deployment.getSerivce();
+        final String context = deployment.getContext();
         final String nodeId = this.resourceContainerModelProvider
                 .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
+
+        Opt.of(this.correspondenceModel.getCorrespondent(context)).ifPresent()
+                .apply(correspondent -> this.entityName = correspondent.getPcmEntityName())
+                .elseApply(() -> System.out.printf(
+                        "This should not happen, because the service was created and the models were updated before."));
 
         final String asmContextName = this.entityName + "_" + serverName;
         final AssemblyContext assemblyContext = this.allocationModelProvider

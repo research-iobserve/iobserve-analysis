@@ -128,7 +128,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      * @return deploymentFinishedOutputPort
      */
     public OutputPort<IDeploymentRecord> getDeploymentFinishedOutputPort() {
-        return this.deploymentOutputPort;
+        return this.deploymentFinishedOutputPort;
     }
 
     /**
