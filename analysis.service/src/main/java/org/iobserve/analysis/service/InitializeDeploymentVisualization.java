@@ -14,6 +14,7 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonWriter;
 
+import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.services.CommunicationInstanceService;
 import org.iobserve.analysis.service.services.CommunicationService;
@@ -156,8 +157,7 @@ public final class InitializeDeploymentVisualization {
 
                 // aim: find out which technology is used for communication
                 // howTo: (AllocationModel) get the resourceContainer(s) on which the
-                // source/targetAssemblyContext are deployed (Lars implemented a method for that,
-                // TODO:include), (resourceEnvModel) get the
+                // source/targetAssemblyContext are deployed, (resourceEnvModel) get the
                 // linkingResource which includes the resourceContainers in
                 // connectedResourceContainers, entityName=technology
                 final String assemContSourceId = ((AssemblyConnector) connector)
@@ -165,13 +165,25 @@ public final class InitializeDeploymentVisualization {
                 final String assemContTargetId = ((AssemblyConnector) connector)
                         .getRequiringAssemblyContext_AssemblyConnector().getId();
 
+                final List<EObject> allocationContextsWithSource = this.allocationModelGraphProvider
+                        .readOnlyReferencingComponentsById(AssemblyContext.class, assemContSourceId);
+                if (allocationContextsWithSource.get(0) instanceof AllocationContext) {
+                    final AllocationContext allocationContext = (AllocationContext) allocationContextsWithSource.get(0);
+                    resourceSourceId = allocationContext.getResourceContainer_AllocationContext().getId();
+                }
+
+                final List<EObject> allocationContextsWithTarget = this.allocationModelGraphProvider
+                        .readOnlyReferencingComponentsById(AssemblyContext.class, assemContTargetId);
+                if (allocationContextsWithSource.get(0) instanceof AllocationContext) {
+                    final AllocationContext allocationContext = (AllocationContext) allocationContextsWithSource.get(0);
+                    resourceTargetId = allocationContext.getResourceContainer_AllocationContext().getId();
+                }
+
                 for (int j = 0; j < allocationContexts.size(); j++) {
                     final AllocationContext allocationContext = allocationContexts.get(j);
                     final String actualAssemblyContextId = allocationContext.getAssemblyContext_AllocationContext()
                             .getId();
-                    if (actualAssemblyContextId.equals(assemContSourceId)) {
-                        resourceSourceId = allocationContext.getResourceContainer_AllocationContext().getId();
-                    }
+
                     if (actualAssemblyContextId.equals(assemContTargetId)) {
                         resourceTargetId = allocationContext.getResourceContainer_AllocationContext().getId();
                     }
