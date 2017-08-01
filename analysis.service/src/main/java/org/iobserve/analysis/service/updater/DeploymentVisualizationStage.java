@@ -37,6 +37,8 @@ import org.iobserve.common.record.ServletDeployedEvent;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+import teetime.framework.AbstractConsumerStage;
+
 // TODO the data type of the input element must be clarified
 
 /**
@@ -45,7 +47,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @author Reiner Jung
  *
  */
-public class DeploymentVisualizationStage extends AbstractVisualizationStage<IDeploymentRecord> {
+public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploymentRecord> {
 
     private final ServiceService serviceService = new ServiceService();
     private final ServiceinstanceService serviceinstanceService = new ServiceinstanceService();
@@ -77,7 +79,7 @@ public class DeploymentVisualizationStage extends AbstractVisualizationStage<IDe
     }
 
     @Override
-    protected void execute(final IDeploymentRecord deployment) throws IOException {
+    protected void execute(final IDeploymentRecord deployment) throws Exception {
         if (deployment instanceof ServletDeployedEvent) {
             this.sendPostRequest(this.createData((ServletDeployedEvent) deployment));
         } else if (deployment instanceof EJBDeployedEvent) {

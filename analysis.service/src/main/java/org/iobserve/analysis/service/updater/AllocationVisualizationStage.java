@@ -20,6 +20,8 @@ import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationRecord;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
+import teetime.framework.AbstractConsumerStage;
+
 /**
  * This stage is triggered by an analysis allocation update (resourceConatiner added) and updates
  * the deployment visualization by adding a node.
@@ -27,7 +29,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @author jweg
  *
  */
-public class AllocationVisualizationStage extends AbstractVisualizationStage<IAllocationRecord> {
+public class AllocationVisualizationStage extends AbstractConsumerStage<IAllocationRecord> {
 
     private final NodegroupService nodegoupService = new NodegroupService();
     private final NodeService nodeService = new NodeService();
