@@ -173,12 +173,12 @@ public final class AnalysisMain {
                         systemUrl, changelogUrl, allocationModelGraphProvider,
                         allocationResourceContainerModelGraphProvider, systemModelGraphProvider,
                         resourceEnvironmentModelGraphProvider);
-                // try {
-                // deploymentVisualization.initialize();
-                // } catch (final Exception e) {
-                // System.out.println("deploymentVisualization.initialize() went wrong!");
-                // e.printStackTrace();
-                // }
+                try {
+                    deploymentVisualization.initialize();
+                } catch (final Exception e) {
+                    System.out.println("deploymentVisualization.initialize() went wrong!");
+                    e.printStackTrace();
+                }
 
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
                         outputPort, systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
