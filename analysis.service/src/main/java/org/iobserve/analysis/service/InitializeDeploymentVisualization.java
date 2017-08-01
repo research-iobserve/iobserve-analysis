@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonWriter;
@@ -217,6 +218,8 @@ public final class InitializeDeploymentVisualization {
      */
     private void sendPostRequest(final JsonObject modelData) throws IOException {
         final HttpURLConnection connection;
+        // prepare data for changelog constraint of deployment visualization
+        final JsonArray dataArray = Json.createArrayBuilder().add(modelData).build();
 
         final JsonString type = (JsonString) modelData.get("type");
         if (type.getString() == "system") {
@@ -240,10 +243,10 @@ public final class InitializeDeploymentVisualization {
             System.out.println("Post parameters : " + modelData);
 
         } else {
-            jsonWriter.write(modelData); // work in progress
+            jsonWriter.writeArray(dataArray); // work in progress
 
             System.out.println("\nSending 'POST' request to URL : " + this.changelogUrl);
-            System.out.println("Post parameters : " + modelData);
+            System.out.println("Post parameters : " + dataArray);
         }
 
         jsonWriter.close();
