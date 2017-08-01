@@ -23,15 +23,16 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import teetime.framework.AbstractConsumerStage;
 
 /**
- * This stage is triggered by an analysis allocation update (resourceConatiner added) and updates
- * the deployment visualization by adding a node.
+ * This stage is triggered by an analysis allocation update (resource container added) and updates
+ * the deployment visualization by adding a node. Therefore it gets the information about the added
+ * resource container from the resource environment model.
  *
  * @author jweg
  *
  */
 public class AllocationVisualizationStage extends AbstractConsumerStage<IAllocationRecord> {
 
-    private final NodegroupService nodegoupService = new NodegroupService();
+    private final NodegroupService nodegroupService = new NodegroupService();
     private final NodeService nodeService = new NodeService();
 
     private static final String USER_AGENT = "iObserve/0.0.2";
@@ -41,9 +42,10 @@ public class AllocationVisualizationStage extends AbstractConsumerStage<IAllocat
     private final ModelProvider<ResourceContainer> resourceContainerModelProvider;
 
     /**
-     *
      * @param outputURL
      *            the output URL
+     * @param systemId
+     *            the system id
      * @param resourceEnvironmentModelProvider
      *            the resource environment model graph
      */
@@ -64,25 +66,28 @@ public class AllocationVisualizationStage extends AbstractConsumerStage<IAllocat
 
     }
 
+    /**
+     * This method is triggered for every container allocation event.
+     *
+     * @param allocation
+     *            the container allocation event
+     * @return JsonArray holding necessary information to create a nodegroup and a node in the
+     *         deployment visualization
+     * @throws MalformedURLException
+     */
     private JsonArray createData(final IAllocationRecord allocation) throws MalformedURLException {
         final URL url = new URL(allocation.toArray()[0].toString());
         final String hostname = url.getHost();
-
-        // final String path = url.getPath(); -> für die Serviceinstanz
 
         final List<ResourceContainer> resourceContainerHostname = this.resourceContainerModelProvider
                 .readOnlyComponentByName(ResourceContainer.class, hostname);
 
         final ResourceContainer resourceContainer = resourceContainerHostname.get(0);
-        final String resourceContainerId = resourceContainer.getId();
 
-        final List<String> resourceContainerIds = this.resourceContainerModelProvider
-                .readComponentByType(ResourceContainer.class);
-
-        // each node has its own nodegroup
-        final JsonObject nodegroupObject = this.nodegoupService.createNodegroup(this.systemId);
+        // Each node has its own nodegroup now. This can/should change in future.
+        final JsonObject nodegroupObject = this.nodegroupService.createNodegroup(this.systemId);
         final JsonObject nodeObject = this.nodeService.createNode(resourceContainer, this.systemId,
-                this.nodegoupService.getNodegroupId());
+                this.nodegroupService.getNodegroupId());
         final JsonArray dataArray = Json.createArrayBuilder().add(nodegroupObject).add(nodeObject).build();
 
         return dataArray;

@@ -39,12 +39,11 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
 
-// TODO the data type of the input element must be clarified
-
 /**
  * This stage is triggered by an analysis deployment update.
  *
  * @author Reiner Jung
+ * @author jweg
  *
  */
 public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploymentRecord> {

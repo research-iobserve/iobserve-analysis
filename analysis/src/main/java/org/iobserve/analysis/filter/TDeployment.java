@@ -227,16 +227,16 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
             assemblyContext = TDeployment.createAssemblyContextByName(this.systemModelProvider, asmContextName);
         }
 
-        // update the allocation model
+        // old: update the allocation model
         this.allocationModelProvider.loadModel();
         AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
                 assemblyContext);
         this.allocationModelProvider.save();
 
-        // workaround for updating the graph: clear graph and create new one based on
-        // updated allocation model
-        this.allocationModelGraphProvider.clearGraph();
-        this.allocationModelGraphProvider.createComponent(this.allocationModelProvider.getModel());
+        // new: updating the allocation graph
+        final Allocation allocationModel = this.allocationModelGraphProvider.readOnlyRootComponent(Allocation.class);
+        AllocationModelBuilder.addAllocationContextIfAbsent(allocationModel, resourceContainer, assemblyContext);
+        this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
 
         // update deployment visualization
         this.deploymentFinishedOutputPort.send(event);
