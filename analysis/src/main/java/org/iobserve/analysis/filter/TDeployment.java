@@ -25,6 +25,7 @@ import org.iobserve.analysis.model.SystemModelBuilder;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.ContainerAllocationEvent;
@@ -32,6 +33,7 @@ import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IAllocationRecord;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
@@ -52,6 +54,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     private final ICorrespondence correspondence;
     /** reference to allocation model provider. */
     private final AllocationModelProvider allocationModelProvider;
+    private final ModelProvider<Allocation> allocationModelGraphProvider;
     /** reference to system model provider. */
     private final SystemModelProvider systemModelProvider;
     /** reference to resource environment model provider. */
@@ -76,11 +79,12 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      */
     // TODO replace old ModelProvider with new GraphModelProvider
     public TDeployment(final ICorrespondence correspondence, final AllocationModelProvider allocationModelProvider,
-            final SystemModelProvider systemModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
         // get all model references
         this.correspondence = correspondence;
         this.allocationModelProvider = allocationModelProvider;
+        this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelProvider = systemModelProvider;
         this.resourceEnvModelProvider = resourceEnvironmentModelProvider;
     }
@@ -228,6 +232,11 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
                 assemblyContext);
         this.allocationModelProvider.save();
+
+        // workaround for updating the graph: clear graph and create new one based on
+        // updated allocation model
+        this.allocationModelGraphProvider.clearGraph();
+        this.allocationModelGraphProvider.createComponent(this.allocationModelProvider.getModel());
 
         // update deployment visualization
         this.deploymentFinishedOutputPort.send(event);

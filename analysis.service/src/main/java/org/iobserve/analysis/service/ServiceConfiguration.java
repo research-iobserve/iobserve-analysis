@@ -98,9 +98,9 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
         final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
                 systemId, resourceContainerModelGraphProvider);
 
-        this.connectPorts(this.deploymentSuccAllocation.getDeploymentFinishedOutputPort(),
+        this.connectPorts(this.deploymentAfterAllocation.getDeploymentFinishedOutputPort(),
                 deploymentVisualizationStage.getInputPort());
-        this.connectPorts(this.tAllocationSuccDeploy.getAllocationOutputPort(),
+        this.connectPorts(this.tAllocationAfterDeploy.getAllocationOutputPort(),
                 allocationVisualizationStage.getInputPort());
     }
 

@@ -37,8 +37,6 @@ import org.iobserve.common.record.ServletDeployedEvent;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-import teetime.framework.AbstractConsumerStage;
-
 // TODO the data type of the input element must be clarified
 
 /**
@@ -47,7 +45,7 @@ import teetime.framework.AbstractConsumerStage;
  * @author Reiner Jung
  *
  */
-public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploymentRecord> {
+public class DeploymentVisualizationStage extends AbstractVisualizationStage<IDeploymentRecord> {
 
     private final ServiceService serviceService = new ServiceService();
     private final ServiceinstanceService serviceinstanceService = new ServiceinstanceService();
