@@ -573,7 +573,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Id of the contained component
      * @return The containing component
      */
-    public EObject readContainingComponentById(final Class<T> clazz, final String id) {
+    public EObject readContainingComponentById(final Class clazz, final String id) {
         ModelProviderSynchronizer.getLock(this);
         return this.readOnlyContainingComponentById(clazz, id);
     }
@@ -588,7 +588,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Id of the contained component
      * @return The containing component
      */
-    public EObject readOnlyContainingComponentById(final Class<T> clazz, final String id) {
+    public EObject readOnlyContainingComponentById(final Class clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
         EObject component = null;
 
@@ -619,7 +619,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Id of the referenced component
      * @return The referencing components
      */
-    public List<EObject> readReferencingComponentsById(final Class<T> clazz, final String id) {
+    public List<EObject> readReferencingComponentsById(final Class clazz, final String id) {
         ModelProviderSynchronizer.getLock(this);
         return this.readOnlyReferencingComponentsById(clazz, id);
     }
@@ -634,7 +634,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Id of the referenced component
      * @return The referencing components
      */
-    public List<EObject> readOnlyReferencingComponentsById(final Class<T> clazz, final String id) {
+    public List<EObject> readOnlyReferencingComponentsById(final Class clazz, final String id) {
         final List<EObject> referencingComponents = new LinkedList<>();
         final Label label = Label.label(clazz.getSimpleName());
 
