@@ -197,6 +197,8 @@ public final class AnalysisMainNeo4j {
                         allocationModelGraph);
                 final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                         systemModelGraph);
+                final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(
+                        systemModelGraph);
                 /******************************************************************************/
 
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
@@ -204,7 +206,8 @@ public final class AnalysisMainNeo4j {
                         correspondenceModel, usageModelProvider, repositoryModelProvider,
                         resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider,
                         resourceContainerModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
-                        assemblyContextModelGraphProvider, systemModelProvider, systemModelGraphProvider);
+                        assemblyContextModelGraphProvider, systemModelProvider, systemModelGraphProvider,
+                        assCtxSystemModelGraphProvider);
 
                 System.out.println("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);

@@ -155,13 +155,14 @@ public class AnalysisDaemon implements Daemon {
                     allocationModelGraph);
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                     systemModelGraph);
+            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(systemModelGraph);
 
             final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname, outputPort,
                     this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
                     usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                     resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider, allocationModelProvider,
                     allocationModelGraphProvider, assemblyContextModelGraphProvider, systemModelProvider,
-                    systemModelGraphProvider);
+                    systemModelGraphProvider, assCtxSystemModelGraphProvider);
 
             this.thread = new AnalysisThread(this, configuration);
         } else {

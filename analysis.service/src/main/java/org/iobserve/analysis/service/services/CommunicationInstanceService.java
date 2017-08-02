@@ -16,7 +16,7 @@ public class CommunicationInstanceService {
     }
 
     // TODO
-    public JsonObject createCommunicationinstance(final AssemblyConnector assemblyConnector, final String systemId,
+    public JsonObject createCommunicationInstance(final AssemblyConnector assemblyConnector, final String systemId,
             final String communicationId) {
         this.communicationInstanceId = "ci" + assemblyConnector.getId();
 
@@ -35,8 +35,15 @@ public class CommunicationInstanceService {
     }
 
     // TODO
-    public void deleteCommunicationinstance() {
+    public JsonObject deleteCommunicationInstance(final AssemblyConnector assemblyConnector) {
+        this.communicationInstanceId = "ci" + assemblyConnector.getId();
 
+        final JsonObject communicationInst = Json.createObjectBuilder().add("type", "communicationInstance")
+                .add("id", this.communicationInstanceId).build();
+        final JsonObject communicationInstObject = Json.createObjectBuilder().add("type", "changelog")
+                .add("operation", "DELETE").add("data", communicationInst).build();
+
+        return communicationInstObject;
     }
 
     public String getCommunicationInstanceId() {

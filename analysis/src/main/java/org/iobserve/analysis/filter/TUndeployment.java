@@ -57,7 +57,8 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
 
-    private final OutputPort<RemoveAllocationContextEvent> outputPort = this.createOutputPort();
+    private final OutputPort<RemoveAllocationContextEvent> modelOutputPort = this.createOutputPort();
+    private final OutputPort<IUndeploymentRecord> visualizationOutputPort = this.createOutputPort();
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -86,15 +87,15 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      */
     @Override
     protected void execute(final IUndeploymentRecord event) {
-    	ExecutionTimeLogger.getInstance().startLogging(event);
-    	
+        ExecutionTimeLogger.getInstance().startLogging(event);
+
         if (event instanceof ServletUndeployedEvent) {
             this.process((ServletUndeployedEvent) event);
 
         } else if (event instanceof EJBUndeployedEvent) {
             this.process((EJBUndeployedEvent) event);
         }
-        
+
         ExecutionTimeLogger.getInstance().stopLogging(event);
     }
 
@@ -108,7 +109,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         final String service = event.getSerivce();
         final String context = event.getContext();
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
-                .apply(correspondence -> this.updateModel(service, correspondence))
+                .apply(correspondence -> this.updateModel(service, correspondence, event))
                 .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
     }
 
@@ -122,7 +123,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         final String service = event.getSerivce();
         final String context = event.getContext();
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
-                .apply(correspondent -> this.updateModel(service, correspondent))
+                .apply(correspondent -> this.updateModel(service, correspondent, event))
                 .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
     }
 
@@ -134,7 +135,8 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      * @param correspondent
      *            correspondent
      */
-    private void updateModel(final String serverName, final Correspondent correspondent) {
+    private void updateModel(final String serverName, final Correspondent correspondent,
+            final IUndeploymentRecord event) {
         // get the model entity name
         final String entityName = correspondent.getPcmEntityName();
 
@@ -147,7 +149,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
         // this can not happen since TAllocation should have created the resource container already.
         Opt.of(optResourceContainer).ifPresent()
-                .apply(resourceContainer -> this.updateModel(resourceContainer, asmContextName))
+                .apply(resourceContainer -> this.updateModel(resourceContainer, asmContextName, event))
                 .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n"));
     }
 
@@ -160,7 +162,8 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      * @param asmContextName
      *            entity name of assembly context
      */
-    private void updateModel(final ResourceContainer resourceContainer, final String asmContextName) {
+    private void updateModel(final ResourceContainer resourceContainer, final String asmContextName,
+            final IUndeploymentRecord event) {
         // update the allocation model
 
         // get assembly context by name or create it if necessary.
@@ -169,17 +172,22 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
         if (optAssemblyContext.isPresent()) {
             this.allocationModelProvider.loadModel();
-            this.outputPort.send(new RemoveAllocationContextEvent(resourceContainer));
+            this.modelOutputPort.send(new RemoveAllocationContextEvent(resourceContainer));
             AllocationModelBuilder.removeAllocationContext(this.allocationModelProvider.getModel(), resourceContainer,
                     optAssemblyContext.get());
             this.allocationModelProvider.save();
+            this.visualizationOutputPort.send(event);
         } else {
             System.out.printf("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n");
         }
     }
 
-    public OutputPort<RemoveAllocationContextEvent> getOutputPort() {
-        return this.outputPort;
+    public OutputPort<RemoveAllocationContextEvent> getModelOutputPort() {
+        return this.modelOutputPort;
+    }
+
+    public OutputPort<IUndeploymentRecord> getVisualizationOutputPort() {
+        return this.visualizationOutputPort;
     }
 
 }

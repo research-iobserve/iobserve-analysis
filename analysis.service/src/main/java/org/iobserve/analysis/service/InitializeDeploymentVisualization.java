@@ -10,8 +10,8 @@ import org.iobserve.analysis.service.services.CommunicationInstanceService;
 import org.iobserve.analysis.service.services.CommunicationService;
 import org.iobserve.analysis.service.services.NodeService;
 import org.iobserve.analysis.service.services.NodegroupService;
+import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
-import org.iobserve.analysis.service.services.ServiceinstanceService;
 import org.iobserve.analysis.service.services.SystemService;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -45,7 +45,7 @@ public final class InitializeDeploymentVisualization {
     private final NodegroupService nodegroupService = new NodegroupService();
     private final NodeService nodeService = new NodeService();
     private final ServiceService serviceService = new ServiceService();
-    private final ServiceinstanceService serviceinstanceService = new ServiceinstanceService();
+    private final ServiceInstanceService serviceinstanceService = new ServiceInstanceService();
     private final CommunicationService communicationService = new CommunicationService();
     private final CommunicationInstanceService communicationinstanceService = new CommunicationInstanceService();
 
@@ -92,7 +92,6 @@ public final class InitializeDeploymentVisualization {
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
 
         final List<AssemblyContext> assemblyContexts = systemModel.getAssemblyContexts__ComposedStructure();
-        final List<Connector> connectors = systemModel.getConnectors__ComposedStructure();
 
         final List<String> allocationIds = this.allocationModelGraphProvider.readComponentByType(Allocation.class);
         // an allocation model contains exactly one allocation, therefore .get(0)
@@ -140,9 +139,20 @@ public final class InitializeDeploymentVisualization {
                     this.changelogUrl);
         }
 
+        /**
+         * ID of resource container on which source (regarding communication) assembly context is
+         * deployed
+         */
         String resourceSourceId = null;
+        /**
+         * ID of resource container on which target (regarding communication) assembly context is
+         * deployed
+         */
         String resourceTargetId = null;
+        /** technology of communication */
         String technology = null;
+        final List<Connector> connectors = systemModel.getConnectors__ComposedStructure();
+
         for (int i = 0; i < connectors.size(); i++) {
             final Connector connector = connectors.get(i);
             // we are only interested in AssemblyConnectors
@@ -152,7 +162,7 @@ public final class InitializeDeploymentVisualization {
                 // howTo: (AllocationModel) get the resourceContainer(s) on which the
                 // source/targetAssemblyContext are deployed, (resourceEnvModel) get the
                 // linkingResource which includes the resourceContainers in
-                // connectedResourceContainers, entityName=technology
+                // connectedResourceContainers, entityName of linkingResource=technology
                 final String assemContSourceId = ((AssemblyConnector) connector)
                         .getProvidingAssemblyContext_AssemblyConnector().getId();
                 final String assemContTargetId = ((AssemblyConnector) connector)
@@ -167,44 +177,35 @@ public final class InitializeDeploymentVisualization {
 
                 final List<EObject> allocationContextsWithTarget = this.allocationModelGraphProvider
                         .readOnlyReferencingComponentsById(AssemblyContext.class, assemContTargetId);
-                if (allocationContextsWithSource.get(0) instanceof AllocationContext) {
-                    final AllocationContext allocationContext = (AllocationContext) allocationContextsWithSource.get(0);
+                if (allocationContextsWithTarget.get(0) instanceof AllocationContext) {
+                    final AllocationContext allocationContext = (AllocationContext) allocationContextsWithTarget.get(0);
                     resourceTargetId = allocationContext.getResourceContainer_AllocationContext().getId();
                 }
 
-                for (int j = 0; j < allocationContexts.size(); j++) {
-                    final AllocationContext allocationContext = allocationContexts.get(j);
-                    final String actualAssemblyContextId = allocationContext.getAssemblyContext_AllocationContext()
-                            .getId();
-
-                    if (actualAssemblyContextId.equals(assemContTargetId)) {
-                        resourceTargetId = allocationContext.getResourceContainer_AllocationContext().getId();
-                    }
-                    if ((resourceSourceId != null) && (resourceTargetId != null)) {
-                        for (int l = 0; l < linkingResources.size(); l++) {
-                            final LinkingResource linkingResource = linkingResources.get(l);
-                            if (linkingResource instanceof LinkingResourceImpl) {
-                                final List<ResourceContainer> connectedResourceConts = linkingResource
-                                        .getConnectedResourceContainers_LinkingResource();
-                                final List<String> connectedResourceContsIds = new ArrayList<>();
-                                for (int k = 0; k < connectedResourceConts.size(); k++) {
-                                    connectedResourceContsIds.add(connectedResourceConts.get(k).getId());
-                                }
-                                if (connectedResourceContsIds.contains(resourceSourceId)) {
-                                    if (connectedResourceContsIds.contains(resourceTargetId)) {
-                                        technology = linkingResource.getEntityName();
-                                    }
+                if ((resourceSourceId != null) && (resourceTargetId != null)) {
+                    for (int l = 0; l < linkingResources.size(); l++) {
+                        final LinkingResource linkingResource = linkingResources.get(l);
+                        if (linkingResource instanceof LinkingResourceImpl) {
+                            final List<ResourceContainer> connectedResourceConts = linkingResource
+                                    .getConnectedResourceContainers_LinkingResource();
+                            final List<String> connectedResourceContsIds = new ArrayList<>();
+                            for (int k = 0; k < connectedResourceConts.size(); k++) {
+                                connectedResourceContsIds.add(connectedResourceConts.get(k).getId());
+                            }
+                            if (connectedResourceContsIds.contains(resourceSourceId)) {
+                                if (connectedResourceContsIds.contains(resourceTargetId)) {
+                                    technology = linkingResource.getEntityName();
                                 }
                             }
                         }
                     }
-
                 }
+
                 SendHttpRequest.post(this.communicationService.createCommunication((AssemblyConnector) connector,
                         this.systemService.getSystemId(), technology), this.systemUrl, this.changelogUrl);
 
                 SendHttpRequest.post(
-                        this.communicationinstanceService.createCommunicationinstance((AssemblyConnector) connector,
+                        this.communicationinstanceService.createCommunicationInstance((AssemblyConnector) connector,
                                 this.systemService.getSystemId(), this.communicationService.getCommunicationId()),
                         this.systemUrl, this.changelogUrl);
 

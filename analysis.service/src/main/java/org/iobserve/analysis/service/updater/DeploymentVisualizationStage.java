@@ -24,7 +24,7 @@ import javax.json.JsonObject;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.services.ServiceService;
-import org.iobserve.analysis.service.services.ServiceinstanceService;
+import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
@@ -45,9 +45,7 @@ import util.SendHttpRequest;
 public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploymentRecord> {
 
     private final ServiceService serviceService = new ServiceService();
-    private final ServiceinstanceService serviceinstanceService = new ServiceinstanceService();
-
-    private static final String USER_AGENT = "iObserve/0.0.2";
+    private final ServiceInstanceService serviceinstanceService = new ServiceInstanceService();
 
     private final URL outputURL;
     private final String systemId;

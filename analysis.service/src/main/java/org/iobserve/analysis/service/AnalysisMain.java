@@ -161,6 +161,8 @@ public final class AnalysisMain {
                         allocationModelGraph);
                 final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                         systemModelGraph);
+                final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(
+                        systemModelGraph);
                 // get systemId
                 final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
                         .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
@@ -185,7 +187,8 @@ public final class AnalysisMain {
                         correspondenceModel, usageModelProvider, repositoryModelProvider,
                         resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider,
                         resourceContainerModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
-                        assemblyContextModelGraphProvider, systemModelProvider, systemModelGraphProvider);
+                        assemblyContextModelGraphProvider, systemModelProvider, systemModelGraphProvider,
+                        assCtxSystemModelGraphProvider);
 
                 System.out.println("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);

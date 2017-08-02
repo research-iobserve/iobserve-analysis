@@ -28,6 +28,7 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
+import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -83,8 +84,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
             final SystemModelProvider systemModelProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider)
-            throws MalformedURLException {
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider) throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider, allocationModelProvider,
                 allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider, varianceOfUserGroups,
@@ -97,11 +98,17 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
                 systemId, resourceContainerModelGraphProvider, assemblyContextModelGraphProvider, correspondenceModel);
         final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
                 systemId, resourceContainerModelGraphProvider);
+        final UndeploymentVisualizationStage undeploymentVisualizationStage = new UndeploymentVisualizationStage(url,
+                systemId, resourceContainerModelGraphProvider, assCtxSystemModelGraphProvider, systemModelGraphProvider,
+                correspondenceModel);
 
         this.connectPorts(this.deploymentAfterAllocation.getDeploymentFinishedOutputPort(),
                 deploymentVisualizationStage.getInputPort());
         this.connectPorts(this.tAllocationAfterDeploy.getAllocationOutputPort(),
                 allocationVisualizationStage.getInputPort());
+        this.connectPorts(this.undeployment.getVisualizationOutputPort(),
+                undeploymentVisualizationStage.getInputPort());
+
     }
 
 }
