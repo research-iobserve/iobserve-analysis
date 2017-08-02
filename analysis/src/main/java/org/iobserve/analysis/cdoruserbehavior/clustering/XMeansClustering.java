@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
+package org.iobserve.analysis.cdoruserbehavior.clustering;
 
 import java.util.Optional;
 import java.util.Random;
@@ -31,7 +31,7 @@ import weka.core.NormalizableDistance;
  * @author Christoph Dornieden
  *
  */
-public class XMeansClustering implements IClustering {
+public class XMeansClustering implements IVectorQuantizationClustering {
     private final int minClusters;
     private final int maxClusters;
     private final NormalizableDistance distanceMetric;

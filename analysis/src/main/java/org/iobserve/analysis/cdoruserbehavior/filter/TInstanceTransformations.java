@@ -25,7 +25,8 @@ import teetime.framework.OutputPort;
 import weka.core.Instances;
 
 /**
- * Transforms BehaviorModelTable into weka instances
+ * Transforms BehaviorModelTable into weka instances. Adds all behavior model elements to the
+ * instances and pass them to the output port on termination.
  *
  * @author Christoph Dornieden
  *

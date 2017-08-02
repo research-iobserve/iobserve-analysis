@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
+package org.iobserve.analysis.cdoruserbehavior.clustering;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.TClustering;
+import org.iobserve.analysis.cdoruserbehavior.filter.TVectorQuantizationClustering;
 import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 
 import weka.core.Instances;
 
 /**
- * interface for a clustering usable by {@link TClustering}
+ * interface for a clustering usable by {@link TVectorQuantizationClustering}
  *
  * @author Christoph Dornieden
  *
  */
-public interface IClustering {
+public interface IVectorQuantizationClustering extends IClustering {
     /**
      * get cluster centers of all clusters
      *
@@ -36,6 +36,7 @@ public interface IClustering {
      *            instances to be clustered
      * @return cluster centers as instances
      */
+    @Override
     public Optional<ClusteringResults> clusterInstances(Instances instances);
 
 }

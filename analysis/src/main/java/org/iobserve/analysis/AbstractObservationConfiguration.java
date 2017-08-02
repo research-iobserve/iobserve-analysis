@@ -15,13 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import org.iobserve.analysis.cdoruserbehavior.clustering.IVectorQuantizationClustering;
+import org.iobserve.analysis.cdoruserbehavior.clustering.XMeansClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelComparison;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.GetLastXSignatureStrategy;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.XMeansClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.CoCoMEEntryCallRulesFactory;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetStoreEntryCallRulesFactory;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetstoreStrategy;
@@ -130,7 +130,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         }
 
         // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-        final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
+        final IVectorQuantizationClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
                 new ManhattanDistance());
 
         final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();

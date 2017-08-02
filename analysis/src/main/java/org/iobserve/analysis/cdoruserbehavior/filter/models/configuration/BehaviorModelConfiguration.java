@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
+import org.iobserve.analysis.cdoruserbehavior.clustering.IVectorQuantizationClustering;
+import org.iobserve.analysis.cdoruserbehavior.clustering.XMeansClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.DefaultStrategy;
 
 import weka.core.ManhattanDistance;
@@ -37,7 +39,7 @@ public class BehaviorModelConfiguration {
     private ISignatureCreationStrategy signatureCreationStrategy;
 
     // clustering configuration
-    private IClustering clustering;
+    private IVectorQuantizationClustering clustering;
 
     private String visualizationUrl;
 
@@ -80,7 +82,7 @@ public class BehaviorModelConfiguration {
      *
      * @return the clustering
      */
-    public IClustering getClustering() {
+    public IVectorQuantizationClustering getClustering() {
         return this.clustering;
     }
 
@@ -176,7 +178,7 @@ public class BehaviorModelConfiguration {
      * @param clustering
      *            the clustering to set
      */
-    public void setClustering(final IClustering clustering) {
+    public void setClustering(final IVectorQuantizationClustering clustering) {
         this.clustering = clustering;
     }
 

@@ -17,7 +17,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
+import org.iobserve.analysis.cdoruserbehavior.clustering.IVectorQuantizationClustering;
 import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 
 import teetime.framework.AbstractConsumerStage;
@@ -31,9 +31,9 @@ import weka.core.Instances;
  * @author Christoph Dornieden
  */
 
-public class TClustering extends AbstractConsumerStage<Instances> {
+public class TVectorQuantizationClustering extends AbstractConsumerStage<Instances> {
     private final OutputPort<Instances> outputPort = this.createOutputPort();
-    private final IClustering clustering;
+    private final IVectorQuantizationClustering clustering;
 
     /**
      * constructor.
@@ -41,7 +41,7 @@ public class TClustering extends AbstractConsumerStage<Instances> {
      * @param clustering
      *            clustering used
      */
-    public TClustering(final IClustering clustering) {
+    public TVectorQuantizationClustering(final IVectorQuantizationClustering clustering) {
         this.clustering = clustering;
     }
 
