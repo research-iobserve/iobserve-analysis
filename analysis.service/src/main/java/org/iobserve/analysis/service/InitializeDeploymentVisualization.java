@@ -1,18 +1,8 @@
 package org.iobserve.analysis.service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.json.Json;
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.JsonString;
-import javax.json.JsonWriter;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
@@ -32,6 +22,8 @@ import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
+
+import util.SendHttpRequest;
 
 /**
  * Initializes the deployment visualization by mapping the initial palladio components to
@@ -56,8 +48,6 @@ public final class InitializeDeploymentVisualization {
     private final ServiceinstanceService serviceinstanceService = new ServiceinstanceService();
     private final CommunicationService communicationService = new CommunicationService();
     private final CommunicationInstanceService communicationinstanceService = new CommunicationInstanceService();
-
-    private static final String USER_AGENT = "iObserve/0.0.2";
 
     private final URL changelogUrl;
     private final URL systemUrl;
@@ -119,19 +109,21 @@ public final class InitializeDeploymentVisualization {
 
         // sending created components to visualization (in predefined order stated in changelog
         // constraints)
-        this.sendPostRequest(this.systemService.createSystem(systemModel));
+        SendHttpRequest.post(this.systemService.createSystem(systemModel), this.systemUrl, this.changelogUrl);
 
         for (int i = 0; i < resourceContainers.size(); i++) {
             final ResourceContainer resourceContainer = resourceContainers.get(i);
-            this.sendPostRequest(this.nodegroupService.createNodegroup(this.systemService.getSystemId()));
-            this.sendPostRequest(this.nodeService.createNode(resourceContainer, this.systemService.getSystemId(),
-                    this.nodegroupService.getNodegroupId()));
+            SendHttpRequest.post(this.nodegroupService.createNodegroup(this.systemService.getSystemId()),
+                    this.systemUrl, this.changelogUrl);
+            SendHttpRequest.post(this.nodeService.createNode(resourceContainer, this.systemService.getSystemId(),
+                    this.nodegroupService.getNodegroupId()), this.systemUrl, this.changelogUrl);
         }
         // architecture view in deployment visualization shows services and
         // communication
         for (int i = 0; i < assemblyContexts.size(); i++) {
             final AssemblyContext assemblyContext = assemblyContexts.get(i);
-            this.sendPostRequest(this.serviceService.createService(assemblyContext, this.systemService.getSystemId()));
+            SendHttpRequest.post(this.serviceService.createService(assemblyContext, this.systemService.getSystemId()),
+                    this.systemUrl, this.changelogUrl);
         }
 
         // deployment view in deployment visualization shows nodegroups, nodes, serviceinstances and
@@ -143,8 +135,9 @@ public final class InitializeDeploymentVisualization {
             final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
             final String assemblyContextId = allocationContext.getAssemblyContext_AllocationContext().getId();
 
-            this.sendPostRequest(this.serviceinstanceService.createServiceInstance(assemblyContext,
-                    this.systemService.getSystemId(), resourceContainerId, assemblyContextId));
+            SendHttpRequest.post(this.serviceinstanceService.createServiceInstance(assemblyContext,
+                    this.systemService.getSystemId(), resourceContainerId, assemblyContextId), this.systemUrl,
+                    this.changelogUrl);
         }
 
         String resourceSourceId = null;
@@ -207,75 +200,19 @@ public final class InitializeDeploymentVisualization {
                     }
 
                 }
-                this.sendPostRequest(this.communicationService.createCommunication((AssemblyConnector) connector,
-                        this.systemService.getSystemId(), technology));
+                SendHttpRequest.post(this.communicationService.createCommunication((AssemblyConnector) connector,
+                        this.systemService.getSystemId(), technology), this.systemUrl, this.changelogUrl);
 
-                this.sendPostRequest(
+                SendHttpRequest.post(
                         this.communicationinstanceService.createCommunicationinstance((AssemblyConnector) connector,
-                                this.systemService.getSystemId(), this.communicationService.getCommunicationId()));
+                                this.systemService.getSystemId(), this.communicationService.getCommunicationId()),
+                        this.systemUrl, this.changelogUrl);
 
             } else {
                 System.out.printf("no AssemblyConnector: %s\n", connector.getEntityName());
             }
 
         }
-
-    }
-
-    /**
-     * Send change log updates to the visualization.
-     *
-     * @param modelData
-     * @throws IOException
-     */
-    private void sendPostRequest(final JsonObject modelData) throws IOException {
-        final HttpURLConnection connection;
-        // prepare data for changelog constraint of deployment visualization
-        final JsonArray dataArray = Json.createArrayBuilder().add(modelData).build();
-
-        final JsonString type = (JsonString) modelData.get("type");
-        if (type.getString() == "system") {
-            connection = (HttpURLConnection) this.systemUrl.openConnection();
-        } else {
-            connection = (HttpURLConnection) this.changelogUrl.openConnection();
-        }
-
-        // add request header
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("content-type", "application/json; charset=utf-8");
-        connection.setRequestProperty("User-Agent", InitializeDeploymentVisualization.USER_AGENT);
-        connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-        // Send post request
-        connection.setDoOutput(true);
-        final JsonWriter jsonWriter = Json.createWriter(connection.getOutputStream());
-        if (type.getString() == "system") {
-            jsonWriter.write(modelData);
-
-            System.out.println("\nSending 'POST' request to URL : " + this.systemUrl);
-            System.out.println("Post parameters : " + modelData);
-
-        } else {
-            jsonWriter.writeArray(dataArray); // work in progress
-
-            System.out.println("\nSending 'POST' request to URL : " + this.changelogUrl);
-            System.out.println("Post parameters : " + dataArray);
-        }
-
-        jsonWriter.close();
-        final int responseCode = connection.getResponseCode();
-        System.out.println("Response Code : " + responseCode);
-
-        final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String inputLine;
-        final StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-
-        // print result
-        System.out.println(response.toString());
 
     }
 

@@ -37,10 +37,6 @@ public class SystemService {
 
     }
 
-    public String getSystemName() {
-        return this.systemName;
-    }
-
     public String getSystemId() {
         return this.systemId;
     }

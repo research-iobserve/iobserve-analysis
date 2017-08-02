@@ -15,16 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.service.updater;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
-import javax.json.JsonWriter;
 
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
@@ -38,6 +33,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
+import util.SendHttpRequest;
 
 /**
  * This stage is triggered by an analysis deployment update.
@@ -80,9 +76,9 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
     @Override
     protected void execute(final IDeploymentRecord deployment) throws Exception {
         if (deployment instanceof ServletDeployedEvent) {
-            this.sendPostRequest(this.createData((ServletDeployedEvent) deployment));
+            SendHttpRequest.post(this.createData((ServletDeployedEvent) deployment), this.outputURL);
         } else if (deployment instanceof EJBDeployedEvent) {
-            this.sendPostRequest(this.createData((EJBDeployedEvent) deployment));
+            SendHttpRequest.post(this.createData((EJBDeployedEvent) deployment), this.outputURL);
         }
 
     }
@@ -130,49 +126,5 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
                 this.systemId, nodeId, this.serviceService.getServiceId());
         final JsonArray dataArray = Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();
         return dataArray;
-    }
-
-    /**
-     * Send change log updates to the visualization.
-     *
-     * @param systemId
-     * @param message
-     * @throws IOException
-     */
-    private void sendPostRequest(final JsonArray message) throws IOException {
-
-        final HttpURLConnection connection = (HttpURLConnection) this.outputURL.openConnection();
-
-        // add request header
-        connection.setRequestMethod("POST");
-        connection.setRequestProperty("content-type", "application/json; charset=utf-8");
-        connection.setRequestProperty("User-Agent", DeploymentVisualizationStage.USER_AGENT);
-        connection.setRequestProperty("Accept-Language", "en-US,en;q=0.5");
-
-        // Send post request
-        connection.setDoOutput(true);
-
-        final JsonWriter jsonWriter = Json.createWriter(connection.getOutputStream());
-
-        jsonWriter.writeArray(message);
-        jsonWriter.close();
-
-        final int responseCode = connection.getResponseCode();
-        System.out.println("\nSending 'POST' request to URL : " + this.outputURL);
-        System.out.println("Post parameters : " + message);
-        System.out.println("Response Code : " + responseCode);
-
-        final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String inputLine;
-        final StringBuffer response = new StringBuffer();
-
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-
-        // print result
-        System.out.println(response.toString());
-
     }
 }
