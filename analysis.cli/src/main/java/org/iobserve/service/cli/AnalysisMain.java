@@ -33,6 +33,7 @@ import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.BooleanConverter;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
@@ -60,7 +61,7 @@ public final class AnalysisMain {
     private int thinkTime;
 
     @Parameter(names = { "-c",
-            "--closed-workload" }, required = false, description = "Closed workload.", converter = IntegerConverter.class)
+            "--closed-workload" }, required = false, description = "Closed workload.", converter = BooleanConverter.class)
     private boolean closedWorkload;
 
     @Parameter(names = { "-i",

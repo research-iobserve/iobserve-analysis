@@ -30,9 +30,6 @@ import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
-import org.iobserve.analysis.filter.TEntryCallSequenceWithPCM;
-import org.iobserve.analysis.filter.TEntryEventSequence;
-import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -110,8 +107,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         final TEntryCall tEntryCall = new TEntryCall();
 
-        final TEntryCallSequenceWithPCM tEntryCallSequenceWithPCM;
-        final TEntryEventSequence tEntryEventSequence;
+        // final TEntryCallSequenceWithPCM tEntryCallSequenceWithPCM;
+        // final TEntryEventSequence tEntryEventSequence;
 
         /** new extended clustering. */
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
@@ -130,8 +127,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         }
 
         // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-        final IVectorQuantizationClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
-                new ManhattanDistance());
+        final IVectorQuantizationClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups,
+                varianceOfUserGroups, new ManhattanDistance());
 
         final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
         behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
@@ -148,11 +145,13 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 varianceOfUserGroups, thinkTime, closedWorkload);
 
         /** plain clustering. It might be included in the setup above. */
-        tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);
-        tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider, repositoryModelProvider,
-                varianceOfUserGroups, thinkTime, closedWorkload);
-        final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
+        // tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);
+        // tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
+        // repositoryModelProvider,
+        // varianceOfUserGroups, thinkTime, closedWorkload);
+        // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
+        // systemModelProvider,
+        // resourceEnvironmentModelProvider);
 
         /** -- end plain clustering. */
 
@@ -169,6 +168,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 this.tAllocationFinished.getAllocationFinishedInputPort());
         this.connectPorts(this.tAllocationFinished.getDeploymentOutputPort(),
                 this.deploymentSuccAllocation.getInputPort());
+
+        this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
 
         this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
                 tBehaviorModelComparison.getInputPort());
