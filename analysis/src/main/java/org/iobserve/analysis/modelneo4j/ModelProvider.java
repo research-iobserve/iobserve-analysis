@@ -62,6 +62,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     private static final String ENTITY_NAME = "entityName";
     private static final String ID = "id";
     private static final String REF_NAME = "refName";
+    protected static final String REF_POS = "refPos";
     private static final String TYPE = "type";
 
     private static final String ACCESSIBLE = "accessible";
@@ -228,6 +229,15 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             node = this.graph.getGraphDatabaseService().createNode(label);
             objectsToCreatedNodes.put(component, node);
 
+            // if (component.eIsProxy()) {
+            // java.lang.System.out.println("proxy " + component);
+            // }
+            //
+            // if (!containmentsAndDatatypes.contains(component)) {
+            // java.lang.System.out.println("containment " + component);
+            //
+            // }
+
             // Create a URI to enable proxy resolving
             final URI uri = ((BasicEObjectImpl) component).eProxyURI();
             if (uri == null) {
@@ -254,12 +264,16 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     // 0..* refs are represented as a list and 1 refs are represented directly
                     if (refReprensation instanceof EList<?>) {
 
-                        for (final Object o : (EList<?>) component.eGet(ref)) {
+                        final EList<?> refs = (EList<?>) component.eGet(ref);
+                        for (int i = 0; i < refs.size(); i++) {
+                            final Object o = refs.get(i);
                             final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
                                     objectsToCreatedNodes);
                             final Relationship rel = node.createRelationshipTo(refNode,
                                     ModelProviderUtil.getRelationshipType(ref, o));
                             rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                            rel.setProperty(ModelProvider.REF_POS, i);
+
                         }
                     } else {
                         if (refReprensation != null) {
@@ -268,6 +282,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                             final Relationship rel = node.createRelationshipTo(refNode,
                                     ModelProviderUtil.getRelationshipType(ref, refReprensation));
                             rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                            rel.setProperty(ModelProvider.REF_POS, 0);
+
                         }
                     }
                 }
@@ -413,8 +429,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             component = ModelProviderUtil.instantiateEObject(label.name());
 
             // Set Uri
-            final URI uri = URI.createURI(node.getProperty(ModelProvider.EMF_URI).toString());
-            ((BasicEObjectImpl) component).eSetProxyURI(uri);
+            // final URI uri = URI.createURI(node.getProperty(ModelProvider.EMF_URI).toString());
+            // ((BasicEObjectImpl) component).eSetProxyURI(uri);
 
             // Load attribute values from the node
             final Iterator<Map.Entry<String, Object>> i = node.getAllProperties().entrySet().iterator();
@@ -437,7 +453,14 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             nodesToCreatedObjects.putIfAbsent(node, component);
 
             // Load related nodes representing referenced components
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
+            // TODO: die Liste der ausgehenden rels erst noch nach REF_INDEX sortieren!
+
+            // final LinkedList<Relationship> rels = new LinkedList<>();
+            // node.getRelationships(Direction.OUTGOING).forEach(rels::add);
+            // Collections.sort(rels, null);
+
+            for (final Relationship rel : ModelProviderUtil
+                    .sortRelsByPosition(node.getRelationships(Direction.OUTGOING))) {
                 final Node endNode = rel.getEndNode();
                 final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
                 final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
@@ -450,6 +473,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                         final EObject endComponent = this.readComponent(endNode, containmentsAndDatatypes,
                                 nodesToCreatedObjects);
                         ((EList<EObject>) refReprensation).add(endComponent);
+
                     } else {
                         refReprensation = this.readComponent(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
                         component.eSet(ref, refReprensation);
@@ -715,9 +739,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             }
 
             // Remove possibly removed properties
-            final Iterator<Entry<String, Object>> i = nodeProperties.entrySet().iterator();
-            while (i.hasNext()) {
-                node.removeProperty(i.next().getKey());
+            final Iterator<Entry<String, Object>> iter = nodeProperties.entrySet().iterator();
+            while (iter.hasNext()) {
+                node.removeProperty(iter.next().getKey());
             }
 
             // Create a URI to enable proxy resolving
@@ -742,7 +766,10 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     // 0..* refs are represented as a list and 1 refs are represented directly
                     if (refReprensation instanceof EList<?>) {
 
-                        for (final Object o : (EList<?>) component.eGet(ref)) {
+                        final EList<?> refs = (EList<?>) component.eGet(ref);
+                        for (int i = 0; i < refs.size(); i++) {
+                            final Object o = refs.get(i);
+
                             // Find node matching o
                             final Node endNode = ModelProviderUtil.findMatchingNode(((BasicEObjectImpl) o).eProxyURI(),
                                     outRels);
@@ -757,6 +784,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                                 final Relationship rel = node.createRelationshipTo(refNode,
                                         ModelProviderUtil.getRelationshipType(ref, o));
                                 rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                                rel.setProperty(ModelProvider.REF_POS, i);
                             }
                         }
                     } else {
@@ -776,6 +804,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                                 final Relationship rel = node.createRelationshipTo(refNode,
                                         ModelProviderUtil.getRelationshipType(ref, refReprensation));
                                 rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                                rel.setProperty(ModelProvider.REF_POS, 0);
                             }
                         }
                     }

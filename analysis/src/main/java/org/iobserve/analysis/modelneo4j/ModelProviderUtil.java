@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.emf.common.util.URI;
@@ -343,4 +345,23 @@ public class ModelProviderUtil {
         return null;
     }
 
+    /**
+     * Sorts an Iterable of relationships by their position properties.
+     *
+     * @param relationships
+     *            The relationships to be sorted
+     * @return The sorted relationships
+     */
+    public static Iterable<Relationship> sortRelsByPosition(final Iterable<Relationship> relationships) {
+        if (relationships == null) {
+            return Collections.emptyList();
+        }
+
+        final List<Relationship> sortedRels = new ArrayList<>();
+        relationships.forEach(sortedRels::add);
+
+        Collections.sort(sortedRels, new RelationshipComparator());
+
+        return sortedRels;
+    }
 }
