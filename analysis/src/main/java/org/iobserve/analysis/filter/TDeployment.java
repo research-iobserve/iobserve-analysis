@@ -107,7 +107,6 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         }
 
         ExecutionTimeLogger.getInstance().stopLogging(event);
-        // this.deploymentFinishedOutputPort.send(event);
     }
 
     /**
@@ -238,7 +237,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         AllocationModelBuilder.addAllocationContextIfAbsent(allocationModel, resourceContainer, assemblyContext);
         this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
 
-        // update deployment visualization
+        // signal deployment update
         this.deploymentFinishedOutputPort.send(event);
     }
 

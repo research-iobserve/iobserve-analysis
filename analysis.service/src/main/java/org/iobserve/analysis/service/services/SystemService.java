@@ -4,6 +4,8 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 /**
+ * This class prepares data such that the visualization element system is ready to be send to the
+ * deployment visualization.
  *
  * @author jweg
  *
@@ -14,13 +16,16 @@ public class SystemService {
     private String systemName;
     private String systemId;
 
-    /**
-     * constructor
-     */
     public SystemService() {
 
     }
 
+    /**
+     * Builds data for creating a system in the deployment visualization.
+     *
+     * @param systemModel
+     * @return
+     */
     public JsonObject createSystem(final org.palladiosimulator.pcm.system.System systemModel) {
         this.systemName = systemModel.getEntityName();
         this.systemId = systemModel.getId();
@@ -29,12 +34,6 @@ public class SystemService {
                 .add("name", this.systemName).build();
 
         return systemObject;
-    }
-
-    // TODO: check whether all nodeGroups belonging to the system are deleted, then send
-    // DELETE-request
-    protected void deleteSystem(final org.palladiosimulator.pcm.system.System systemModel) {
-
     }
 
     public String getSystemId() {

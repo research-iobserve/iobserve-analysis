@@ -11,6 +11,8 @@ import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 /**
+ * This class prepares data such that the visualization element serviceInstance is ready to be send
+ * to the deployment visualization.
  *
  * @author jweg
  *
@@ -26,6 +28,15 @@ public class ServiceInstanceService {
 
     }
 
+    /**
+     * Builds a changelog for creating a serviceInstance for the deployment visualization.
+     *
+     * @param assemblyContext
+     * @param systemId
+     * @param nodeId
+     * @param serviceId
+     * @return
+     */
     public JsonObject createServiceInstance(final AssemblyContext assemblyContext, final String systemId,
             final String nodeId, final String serviceId) {
         this.serviceInstanceName = assemblyContext.getEntityName();
@@ -42,6 +53,7 @@ public class ServiceInstanceService {
     }
 
     /**
+     * Builds a changelog for deleting a serviceInstance for the deployment visualization.
      *
      * @param assemblyContext
      * @param systemId

@@ -4,6 +4,8 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 /**
+ * This class prepares data such that the visualization element nodegroup is ready to be send to the
+ * deployment visualization.
  *
  * @author jweg
  *
@@ -12,17 +14,18 @@ public class NodegroupService {
 
     public String nodegroupId;
 
-    /**
-     * constructor
-     */
     public NodegroupService() {
 
     }
 
-    // return type JsonArray or JsonObject?
-    // what name?
+    /**
+     * Builds a changelog for creating a nodegroup for the deployment visualization.
+     * 
+     * @param systemId
+     * @return
+     */
     public JsonObject createNodegroup(final String systemId) {
-        // as there is no grouping element available, each node gets its own nodegroup with a
+        // as there is no grouping mechanism available yet, each node gets its own nodegroup with a
         // random id
         this.nodegroupId = "nodeGroup-" + Math.random();
 
@@ -32,11 +35,6 @@ public class NodegroupService {
                 .add("operation", "CREATE").add("data", nodeGroup).build();
 
         return nodeGroupObject;
-
-    }
-
-    // TODO
-    public void deleteNodegroup() {
 
     }
 

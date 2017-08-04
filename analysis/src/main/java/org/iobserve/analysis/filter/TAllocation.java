@@ -41,13 +41,16 @@ import teetime.framework.OutputPort;
  */
 public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> {
 
-    /** reference to {@link ResourceEnvironment} provider. */
-    private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModel;
+    /** reference to {@link ResourceEnvironment} old and new provider. */
+    private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     /** output ports */
     private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
     private final OutputPort<IAllocationRecord> allocationFinishedOutputPort = this.createOutputPort();
+
+    /** Statistics */
+    private int recordCount;
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -56,14 +59,14 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      * @param resourceEnvironmentModelProvider
      *            the resource environment model provider
      *
-     * @param resourceEnvironmentModel
+     * @param resourceEnvironmentModelGraphProvider
      *            the resource environment model
      */
     // TODO replace old ModelProvider with new GraphModelProvider (uses both now)
     public TAllocation(final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModel) {
-        this.resourceEnvModelProvider = resourceEnvironmentModelProvider;
-        this.resourceEnvironmentModel = resourceEnvironmentModel;
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
+        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
+        this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
 
     /**
@@ -74,7 +77,6 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
     }
 
     /**
-     *
      * @return allocationFinishedOutputPort
      */
     public OutputPort<IAllocationRecord> getAllocationFinishedOutputPort() {
@@ -90,6 +92,8 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      */
     @Override
     protected void execute(final IAllocationRecord event) throws MalformedURLException {
+        this.recordCount++;
+
         ExecutionTimeLogger.getInstance().startLogging(event);
 
         final URL url = new URL(event.toArray()[0].toString());
@@ -111,18 +115,23 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      *            allocation event
      */
     private void updateModel(final String serverName, final IAllocationRecord event) {
-        Opt.of(ResourceEnvironmentModelBuilder.getResourceContainerByName(this.resourceEnvModelProvider.getModel(),
-                serverName)).ifNotPresent().apply(() -> {
-                    TAllocation.this.resourceEnvModelProvider.loadModel();
-                    final ResourceEnvironment model = TAllocation.this.resourceEnvModelProvider.getModel();
+        Opt.of(ResourceEnvironmentModelBuilder
+                .getResourceContainerByName(this.resourceEnvironmentModelProvider.getModel(), serverName))
+                .ifNotPresent().apply(() -> {
+                    // old: updating the resource environment model
+                    TAllocation.this.resourceEnvironmentModelProvider.loadModel();
+                    final ResourceEnvironment model = TAllocation.this.resourceEnvironmentModelProvider.getModel();
                     ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
-                    TAllocation.this.resourceEnvModelProvider.save();
+                    TAllocation.this.resourceEnvironmentModelProvider.save();
 
-                    // workaround for updating the graph: clear graph and create new one based on
-                    // updated resource environment model
-                    this.resourceEnvironmentModel.clearGraph();
-                    this.resourceEnvironmentModel.createComponent(this.resourceEnvModelProvider.getModel());
+                    // new: updating the resource environment graph
+                    final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelGraphProvider
+                            .readOnlyRootComponent(ResourceEnvironment.class);
+                    ResourceEnvironmentModelBuilder.createResourceContainer(resourceEnvironmentModelGraph, serverName);
+                    this.resourceEnvironmentModelGraphProvider.updateComponent(ResourceEnvironment.class,
+                            resourceEnvironmentModelGraph);
 
+                    // signal allocation update
                     this.allocationOutputPort.send(event);
                 }).elseApply(serverNamePresent -> {
                     System.out.printf("ResourceContainer %s was available.\n", serverName);
@@ -134,6 +143,10 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
                         System.out.println(nodeGroupName);
                     }
                 });
+    }
+
+    public int getRecordCount() {
+        return this.recordCount;
     }
 
 }

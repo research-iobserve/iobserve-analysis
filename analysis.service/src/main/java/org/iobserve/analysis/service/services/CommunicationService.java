@@ -6,6 +6,8 @@ import javax.json.JsonObject;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 
 /**
+ * This class prepares data such that the visualization element communication is ready to be send to
+ * the deployment visualization.
  *
  * @author jweg
  *
@@ -21,6 +23,14 @@ public class CommunicationService {
 
     }
 
+    /**
+     * Builds a changelog for creating a communication for the deployment visualization.
+     *
+     * @param assemblyConnector
+     * @param systemId
+     * @param technology
+     * @return
+     */
     public JsonObject createCommunication(final AssemblyConnector assemblyConnector, final String systemId,
             final String technology) {
         // TODO source und target richtig herum?
@@ -37,11 +47,6 @@ public class CommunicationService {
                 .add("operation", "CREATE").add("data", communication).build();
 
         return communicationObject;
-    }
-
-    // TODO
-    public void deleteCommunication() {
-
     }
 
     public String getCommunicationId() {
