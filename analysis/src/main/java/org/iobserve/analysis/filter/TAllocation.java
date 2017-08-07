@@ -49,9 +49,6 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
     private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
     private final OutputPort<IAllocationRecord> allocationFinishedOutputPort = this.createOutputPort();
 
-    /** Statistics */
-    private int recordCount;
-
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
@@ -92,7 +89,6 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      */
     @Override
     protected void execute(final IAllocationRecord event) throws MalformedURLException {
-        this.recordCount++;
 
         ExecutionTimeLogger.getInstance().startLogging(event);
 
@@ -143,10 +139,6 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
                         System.out.println(nodeGroupName);
                     }
                 });
-    }
-
-    public int getRecordCount() {
-        return this.recordCount;
     }
 
 }
