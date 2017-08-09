@@ -226,11 +226,12 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
             assemblyContext = TDeployment.createAssemblyContextByName(this.systemModelProvider, asmContextName);
         }
 
-        // old: update the allocation model
-        this.allocationModelProvider.loadModel();
-        AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
-                assemblyContext);
-        this.allocationModelProvider.save();
+        // // old: update the allocation model
+        // this.allocationModelProvider.loadModel();
+        // AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(),
+        // resourceContainer,
+        // assemblyContext);
+        // this.allocationModelProvider.save();
 
         // new: updating the allocation graph
         final Allocation allocationModel = this.allocationModelGraphProvider.readOnlyRootComponent(Allocation.class);

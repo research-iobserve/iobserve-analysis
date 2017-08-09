@@ -14,10 +14,15 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import teetime.framework.test.StageTester;
 
@@ -27,19 +32,35 @@ import teetime.framework.test.StageTester;
  * @author jweg
  *
  */
+@RunWith(PowerMockRunner.class)
+// write all final classes here
+@PrepareForTest({ ResourceEnvironmentModelBuilder.class, ResourceEnvironmentModelProvider.class })
 public class TAllocationTest {
+
     /** mocks */
+    @Mock
     private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    @Mock
     private static ResourceEnvironmentModelProvider mockedResourceEnvironmentModelProvider;
+
     /** data for generating test container allocation event */
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
     private static final String URL = "http://" + TAllocationTest.SERVICE + '/' + TAllocationTest.CONTEXT;
+
     /** test event */
     private static ContainerAllocationEvent allocationEvent;
 
-    private static TAllocation tAllocation;
-    private final List<IAllocationRecord> inputEvents = new ArrayList<>();
+    /** test resource containers */
+    private static Optional<ResourceContainer> optTestNullResourceContainer;
+    private static ResourceContainer testResourceContainer;
+    private static Optional<ResourceContainer> optTestResourceContainer;
+
+    private static ResourceEnvironment testResourceEnvironment;
+
+    /***/
+    private TAllocation tAllocation;
+    private final static List<IAllocationRecord> inputEvents = new ArrayList<>();
 
     /**
      * Initialize test event and stage under test (TDeployment) and therefore mock necessary
@@ -47,6 +68,7 @@ public class TAllocationTest {
      */
     @BeforeClass
     public static void initializeTAllocationAndMock() {
+        /** test event */
         TAllocationTest.allocationEvent = new ContainerAllocationEvent(TAllocationTest.URL);
 
         /** mock for old model provider */
@@ -55,8 +77,18 @@ public class TAllocationTest {
         /** mock for new graph provider */
         TAllocationTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelProvider.class);
 
-        TAllocationTest.tAllocation = new TAllocation(TAllocationTest.mockedResourceEnvironmentModelProvider,
-                TAllocationTest.mockedResourceEnvironmentModelGraphProvider);
+        /** input allocation event */
+        TAllocationTest.inputEvents.add(TAllocationTest.allocationEvent);
+
+        /** optional test resource container without value */
+        TAllocationTest.optTestNullResourceContainer = Optional.ofNullable(null);
+        /** optional test resource container with value */
+        TAllocationTest.testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+        TAllocationTest.testResourceContainer.setEntityName("TestResourceContainer");
+        TAllocationTest.testResourceContainer.setId("_resourcecontainer_test_id");
+        TAllocationTest.optTestResourceContainer = Optional.of(TAllocationTest.testResourceContainer);
+        /** test resource environment */
+        TAllocationTest.testResourceEnvironment = ResourceenvironmentFactory.eINSTANCE.createResourceEnvironment();
 
     }
 
@@ -66,11 +98,34 @@ public class TAllocationTest {
      */
     @Before
     public void stubMocksNoResourceContainer() {
-        this.inputEvents.add(TAllocationTest.allocationEvent);
 
-        Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
-                TAllocationTest.mockedResourceEnvironmentModelProvider.getModel(), TAllocationTest.SERVICE))
-                .thenReturn(null);
+        this.tAllocation = new TAllocation(TAllocationTest.mockedResourceEnvironmentModelProvider,
+                TAllocationTest.mockedResourceEnvironmentModelGraphProvider);
+
+        /** mock for ResourceEnvironmentModelBuilder */
+        // use PowerMockito for calling static methods of this final class
+        PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
+
+        // // for old model provider
+        // Mockito.doNothing().when(tested).loadModel();
+        // Mockito.when(ResourceEnvironmentModelBuilder.createResourceContainer(
+        // TAllocationTest.mockedResourceEnvironmentModelProvider.getModel(),
+        // TAllocationTest.SERVICE))
+        // .thenReturn(TAllocationTest.testResourceContainer);
+        // Mockito.doNothing().doThrow(new RuntimeException()).when(tested).save();
+
+        // for new model graph provider
+        Mockito.when(TAllocationTest.mockedResourceEnvironmentModelGraphProvider
+                .readOnlyRootComponent(ResourceEnvironment.class)).thenReturn(TAllocationTest.testResourceEnvironment);
+
+        Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(TAllocationTest.testResourceEnvironment,
+                TAllocationTest.SERVICE)).thenReturn(TAllocationTest.optTestNullResourceContainer);
+
+        Mockito.when(ResourceEnvironmentModelBuilder.createResourceContainer(TAllocationTest.testResourceEnvironment,
+                TAllocationTest.SERVICE)).thenReturn(TAllocationTest.testResourceContainer);
+
+        Mockito.doNothing().when(TAllocationTest.mockedResourceEnvironmentModelGraphProvider)
+                .updateComponent(ResourceEnvironment.class, TAllocationTest.testResourceEnvironment);
     }
 
     /**
@@ -80,10 +135,39 @@ public class TAllocationTest {
     @Test
     public void checkAllocationFinished() {
         final List<IAllocationRecord> allocationEvents = new ArrayList<>();
-        StageTester.test(TAllocationTest.tAllocation).and().send(this.inputEvents)
-                .to(TAllocationTest.tAllocation.getInputPort()).and().receive(allocationEvents)
-                .from(TAllocationTest.tAllocation.getAllocationFinishedOutputPort()).start();
-        Assert.assertThat(allocationEvents, Is.is(TAllocationTest.allocationEvent));
+
+        StageTester.test(this.tAllocation).and().send(TAllocationTest.inputEvents).to(this.tAllocation.getInputPort())
+                .and().receive(allocationEvents).from(this.tAllocation.getAllocationFinishedOutputPort()).start();
+
+        Assert.assertThat(allocationEvents.get(0), Is.is(TAllocationTest.allocationEvent));
+    }
+
+    /**
+     * Define the test situation in which a container allocation event is defined as input and the
+     * specified resource container does not exist in the resource environment model.
+     */
+    @Before
+    public void stubMocksNoResourceContainerCopy() {
+
+        this.tAllocation = new TAllocation(TAllocationTest.mockedResourceEnvironmentModelProvider,
+                TAllocationTest.mockedResourceEnvironmentModelGraphProvider);
+
+        /** mock for ResourceEnvironmentModelBuilder */
+        // use PowerMockito for calling static methods of this final class
+        PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
+
+        // for new model graph provider
+        Mockito.when(TAllocationTest.mockedResourceEnvironmentModelGraphProvider
+                .readOnlyRootComponent(ResourceEnvironment.class)).thenReturn(TAllocationTest.testResourceEnvironment);
+
+        Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(TAllocationTest.testResourceEnvironment,
+                TAllocationTest.SERVICE)).thenReturn(TAllocationTest.optTestNullResourceContainer);
+
+        Mockito.when(ResourceEnvironmentModelBuilder.createResourceContainer(TAllocationTest.testResourceEnvironment,
+                TAllocationTest.SERVICE)).thenReturn(TAllocationTest.testResourceContainer);
+
+        Mockito.doNothing().when(TAllocationTest.mockedResourceEnvironmentModelGraphProvider)
+                .updateComponent(ResourceEnvironment.class, TAllocationTest.testResourceEnvironment);
     }
 
     /**
@@ -93,10 +177,11 @@ public class TAllocationTest {
     @Test
     public void checkAllocationUpdate() {
         final List<IAllocationRecord> allocationEvents = new ArrayList<>();
-        StageTester.test(TAllocationTest.tAllocation).and().send(this.inputEvents)
-                .to(TAllocationTest.tAllocation.getInputPort()).and().receive(allocationEvents)
-                .from(TAllocationTest.tAllocation.getAllocationOutputPort()).start();
-        Assert.assertThat(allocationEvents, Is.is(TAllocationTest.allocationEvent));
+
+        StageTester.test(this.tAllocation).and().send(TAllocationTest.inputEvents).to(this.tAllocation.getInputPort())
+                .and().receive(allocationEvents).from(this.tAllocation.getAllocationOutputPort()).start();
+
+        Assert.assertThat(allocationEvents.get(0), Is.is(TAllocationTest.allocationEvent));
     }
 
     /**
@@ -105,15 +190,30 @@ public class TAllocationTest {
      */
     @Before
     public void stubMocksResourceContainer() {
-        this.inputEvents.add(TAllocationTest.allocationEvent);
 
-        /** test resource container */
-        final ResourceContainer testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-        final Optional<ResourceContainer> optTestResourceContainer = Optional.of(testResourceContainer);
+        this.tAllocation = new TAllocation(TAllocationTest.mockedResourceEnvironmentModelProvider,
+                TAllocationTest.mockedResourceEnvironmentModelGraphProvider);
 
-        Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
-                TAllocationTest.mockedResourceEnvironmentModelProvider.getModel(), TAllocationTest.SERVICE))
-                .thenReturn(optTestResourceContainer);
+        // for new model graph provider
+        Mockito.when(TAllocationTest.mockedResourceEnvironmentModelGraphProvider
+                .readOnlyRootComponent(ResourceEnvironment.class)).thenReturn(TAllocationTest.testResourceEnvironment);
+
+        Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(TAllocationTest.testResourceEnvironment,
+                TAllocationTest.SERVICE)).thenReturn(TAllocationTest.optTestResourceContainer);
+    }
+
+    /**
+     * Check that no allocation event is forwarded, if the allocation model is not updated.
+     */
+    @Test
+    public void checkNodAllocationUpdate() {
+        final List<IAllocationRecord> allocationEvents = new ArrayList<>();
+
+        StageTester.test(this.tAllocation).and().send(TAllocationTest.inputEvents).to(this.tAllocation.getInputPort())
+                .and().receive(allocationEvents).from(this.tAllocation.getAllocationOutputPort()).start();
+
+        // problem: optResourceContainer in TAllocation is empty!
+        Assert.assertThat(allocationEvents.size(), Is.is(0));
     }
 
 }

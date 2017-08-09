@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hamcrest.core.Is;
+import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -26,6 +27,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationFactory;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.powermock.api.mockito.PowerMockito;
@@ -42,8 +46,8 @@ import teetime.framework.test.StageTester;
  */
 @RunWith(PowerMockRunner.class)
 // write all final classes here
-@PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelProvider.class, SystemModelProvider.class,
-        ResourceEnvironmentModelProvider.class })
+@PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelBuilder.class, AllocationModelProvider.class,
+        SystemModelProvider.class, ResourceEnvironmentModelProvider.class })
 public class TDeploymentTest {
 
     /** mocks */
@@ -71,9 +75,24 @@ public class TDeploymentTest {
     private static ContainerAllocationEvent allocationEvent;
 
     /***/
-    private static TDeployment tDeployment;
+    private TDeployment tDeployment;
     private static List<IDeploymentRecord> inputServletEvents = new ArrayList<>();
     private static List<IDeploymentRecord> inputEJBEvents = new ArrayList<>();
+
+    /** test correspondent */
+    private static Correspondent testCorrespondent;
+    private static Optional<Correspondent> optTestCorrespondent;
+
+    /** test resource containers */
+    private static Optional<ResourceContainer> optTestNullResourceContainer;
+    private static ResourceContainer testResourceContainer;
+    private static Optional<ResourceContainer> optTestResourceContainer;
+
+    /** test allocation */
+    private static Allocation testAllocation;
+
+    /** test assembly context */
+    private static AssemblyContext testAssemblyContext;
 
     /**
      * Initialize test events and stage under test (TDeployment) and therefore mock necessary
@@ -103,6 +122,26 @@ public class TDeploymentTest {
         TDeploymentTest.inputServletEvents.add(TDeploymentTest.servletDeploymentEvent);
         TDeploymentTest.inputEJBEvents.add(TDeploymentTest.ejbDeploymentEvent);
 
+        /** test correspondent */
+        // TODO sinnvolle Werte
+        TDeploymentTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity", "pcmEntityId",
+                "pcmOperationName", "pcmOperationId");
+        TDeploymentTest.optTestCorrespondent = Optional.of(TDeploymentTest.testCorrespondent);
+
+        /** optional test resource container without value */
+        TDeploymentTest.optTestNullResourceContainer = Optional.ofNullable(null);
+        /** optional test resource container with value */
+        TDeploymentTest.testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+        // TDeploymentTest.testResourceContainer.setEntityName("TestResourceContainer");
+        // TDeploymentTest.testResourceContainer.setId("_resourcecontainer_test_id");
+        TDeploymentTest.optTestResourceContainer = Optional.of(TDeploymentTest.testResourceContainer);
+
+        /** test allocation */
+        TDeploymentTest.testAllocation = AllocationFactory.eINSTANCE.createAllocation();
+
+        /** test assembly context */
+        TDeploymentTest.testAssemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+
     }
 
     /**
@@ -111,28 +150,20 @@ public class TDeploymentTest {
      */
     @Before
     public void stubMocksNoServletResourceContainer() {
-        TDeploymentTest.tDeployment = new TDeployment(TDeploymentTest.mockedCorrespondence,
+        this.tDeployment = new TDeployment(TDeploymentTest.mockedCorrespondence,
                 TDeploymentTest.mockedAllocationModelProvider, TDeploymentTest.mockedAllocationModelGraphProvider,
                 TDeploymentTest.mockedSystemModelProvider, TDeploymentTest.mockedResourceEnvironmentModelProvider);
 
-        /** test correspondent */
-        // TODO sinnvolle Werte
-        final Correspondent testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity", "pcmEntityId",
-                "pcmOperationName", "pcmOperationId");
-        final Optional<Correspondent> optTestCorrespondent = Optional.of(testCorrespondent);
-
         Mockito.when(TDeploymentTest.mockedCorrespondence.getCorrespondent(TDeploymentTest.CONTEXT))
-                .thenReturn(optTestCorrespondent);
-
-        /** optional test resource container without value */
-        final Optional<ResourceContainer> optTestResourceContainer = Optional.ofNullable(null);
+                .thenReturn(TDeploymentTest.optTestCorrespondent);
 
         /** mock for ResourceEnvironmentModelBuilder */
         // use PowerMockito for calling static methods of this final class
         PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
+
         Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
                 TDeploymentTest.mockedResourceEnvironmentModelProvider.getModel(), TDeploymentTest.SERVICE))
-                .thenReturn(optTestResourceContainer);
+                .thenReturn(TDeploymentTest.optTestNullResourceContainer);
     }
 
     /**
@@ -143,9 +174,9 @@ public class TDeploymentTest {
     public void checkServletAllocationNeeded() {
         final List<IAllocationRecord> allocationEvents = new ArrayList<>();
 
-        StageTester.test(TDeploymentTest.tDeployment).and().send(TDeploymentTest.inputServletEvents)
-                .to(TDeploymentTest.tDeployment.getInputPort()).and().receive(allocationEvents)
-                .from(TDeploymentTest.tDeployment.getAllocationOutputPort()).start();
+        StageTester.test(this.tDeployment).and().send(TDeploymentTest.inputServletEvents)
+                .to(this.tDeployment.getInputPort()).and().receive(allocationEvents)
+                .from(this.tDeployment.getAllocationOutputPort()).start();
 
         Assert.assertThat(allocationEvents.get(0), Is.is(TDeploymentTest.allocationEvent));
     }
@@ -159,27 +190,20 @@ public class TDeploymentTest {
     // @Test?
     @Before
     public void stubMocksNoServletResourceContainerCopy() {
-        TDeploymentTest.tDeployment = new TDeployment(TDeploymentTest.mockedCorrespondence,
+        this.tDeployment = new TDeployment(TDeploymentTest.mockedCorrespondence,
                 TDeploymentTest.mockedAllocationModelProvider, TDeploymentTest.mockedAllocationModelGraphProvider,
                 TDeploymentTest.mockedSystemModelProvider, TDeploymentTest.mockedResourceEnvironmentModelProvider);
 
-        /** test correspondent */
-        // TODO sinnvolle Werte
-        final Correspondent testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity", "pcmEntityId",
-                "pcmOperationName", "pcmOperationId");
-        final Optional<Correspondent> optTestCorrespondent = Optional.of(testCorrespondent);
-
         Mockito.when(TDeploymentTest.mockedCorrespondence.getCorrespondent(TDeploymentTest.CONTEXT))
-                .thenReturn(optTestCorrespondent);
+                .thenReturn(TDeploymentTest.optTestCorrespondent);
 
-        /** optional test resource container without value */
-        final Optional<ResourceContainer> optTestResourceContainer = Optional.ofNullable(null);
         /** mock for ResourceEnvironmentModelBuilder */
         // use PowerMockito for calling static methods of this final class
         PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
+
         Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
                 TDeploymentTest.mockedResourceEnvironmentModelProvider.getModel(), TDeploymentTest.SERVICE))
-                .thenReturn(optTestResourceContainer);
+                .thenReturn(TDeploymentTest.optTestNullResourceContainer);
     }
 
     /**
@@ -190,9 +214,9 @@ public class TDeploymentTest {
     public void checkServletDeploymentAfterAllocationNeeded() {
         final List<IDeploymentRecord> deploymentEvents = new ArrayList<>();
 
-        StageTester.test(TDeploymentTest.tDeployment).and().send(TDeploymentTest.inputServletEvents)
-                .to(TDeploymentTest.tDeployment.getInputPort()).and().receive(deploymentEvents)
-                .from(TDeploymentTest.tDeployment.getDeploymentOutputPort()).start();
+        StageTester.test(this.tDeployment).and().send(TDeploymentTest.inputServletEvents)
+                .to(this.tDeployment.getInputPort()).and().receive(deploymentEvents)
+                .from(this.tDeployment.getDeploymentOutputPort()).start();
 
         Assert.assertThat(deploymentEvents.get(0), Is.is(TDeploymentTest.servletDeploymentEvent));
 
@@ -204,42 +228,53 @@ public class TDeploymentTest {
      */
     @Before
     public void stubMocksResourceContainer() {
-        TDeploymentTest.tDeployment = new TDeployment(TDeploymentTest.mockedCorrespondence,
+        this.tDeployment = new TDeployment(TDeploymentTest.mockedCorrespondence,
                 TDeploymentTest.mockedAllocationModelProvider, TDeploymentTest.mockedAllocationModelGraphProvider,
                 TDeploymentTest.mockedSystemModelProvider, TDeploymentTest.mockedResourceEnvironmentModelProvider);
 
-        /** test correspondent */
-        // TODO sinnvolle Werte
-        final Correspondent testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity", "pcmEntityId",
-                "pcmOperationName", "pcmOperationId");
-        final Optional<Correspondent> optTestCorrespondent = Optional.of(testCorrespondent);
-
         Mockito.when(TDeploymentTest.mockedCorrespondence.getCorrespondent(TDeploymentTest.CONTEXT))
-                .thenReturn(optTestCorrespondent);
+                .thenReturn(TDeploymentTest.optTestCorrespondent);
 
-        /** optional test resource container with value */
-        final ResourceContainer testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-        testResourceContainer.setEntityName("TestResourceContainer");
-        testResourceContainer.setId("_resourcecontainer_test_id");
-        final Optional<ResourceContainer> optTestResourceContainer = Optional.of(testResourceContainer);
         /** mock for ResourceEnvironmentModelBuilder */
         // use PowerMockito for calling static methods of this final class
         PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
+        PowerMockito.mockStatic(AllocationModelBuilder.class);
+
         Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
                 TDeploymentTest.mockedResourceEnvironmentModelProvider.getModel(), TDeploymentTest.SERVICE))
-                .thenReturn(optTestResourceContainer);
+                .thenReturn(TDeploymentTest.optTestResourceContainer);
+
+        // new: updating the allocation graph
+        // final Allocation allocationModel =
+        // this.allocationModelGraphProvider.readOnlyRootComponent(Allocation.class);
+        // AllocationModelBuilder.addAllocationContextIfAbsent(allocationModel, resourceContainer,
+        // assemblyContext);
+        // this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
+        // Mockito.when(TDeployment.createAssemblyContextByName(TDeploymentTest.mockedSystemModelProvider,
+        // TDeploymentTest.SERVICE)).thenReturn(TDeploymentTest.testAssemblyContext);
+
+        Mockito.when(TDeploymentTest.mockedAllocationModelGraphProvider.readOnlyRootComponent(Allocation.class))
+                .thenReturn(TDeploymentTest.testAllocation);
+
+        // Mockito.doNothing().when(AllocationModelBuilder.class).addAllocationContextIfAbsent(
+        // TDeploymentTest.testAllocation, TDeploymentTest.testResourceContainer,
+        // TDeploymentTest.testAssemblyContext);
+
+        Mockito.doNothing().when(TDeploymentTest.mockedAllocationModelGraphProvider).updateComponent(Allocation.class,
+                TDeploymentTest.testAllocation);
     }
 
     /**
-     * Check whether a deployment event is triggered, if the needed resource container does exist.
+     * Check whether a deployment event is triggered, when the needed resource container does exist.
      */
+    // problem: optTestResourceContainer is empty in TDeployment
     @Test
     public void checkNoServletAllocationNeeded() {
         final List<IDeploymentRecord> deploymentEvents = new ArrayList<>();
 
-        StageTester.test(TDeploymentTest.tDeployment).and().send(TDeploymentTest.inputServletEvents)
-                .to(TDeploymentTest.tDeployment.getInputPort()).and().receive(deploymentEvents)
-                .from(TDeploymentTest.tDeployment.getDeploymentFinishedOutputPort()).start();
+        StageTester.test(this.tDeployment).and().send(TDeploymentTest.inputServletEvents)
+                .to(this.tDeployment.getInputPort()).and().receive(deploymentEvents)
+                .from(this.tDeployment.getDeploymentFinishedOutputPort()).start();
 
         Assert.assertThat(deploymentEvents.get(0), Is.is(TDeploymentTest.servletDeploymentEvent));
     }

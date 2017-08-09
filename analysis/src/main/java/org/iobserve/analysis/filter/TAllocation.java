@@ -18,6 +18,7 @@ package org.iobserve.analysis.filter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -26,6 +27,7 @@ import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.IAllocationRecord;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.AbstractConsumerStage;
@@ -111,34 +113,40 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      *            allocation event
      */
     private void updateModel(final String serverName, final IAllocationRecord event) {
-        Opt.of(ResourceEnvironmentModelBuilder
-                .getResourceContainerByName(this.resourceEnvironmentModelProvider.getModel(), serverName))
-                .ifNotPresent().apply(() -> {
-                    // old: updating the resource environment model
-                    TAllocation.this.resourceEnvironmentModelProvider.loadModel();
-                    final ResourceEnvironment model = TAllocation.this.resourceEnvironmentModelProvider.getModel();
-                    ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
-                    TAllocation.this.resourceEnvironmentModelProvider.save();
 
-                    // new: updating the resource environment graph
-                    final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelGraphProvider
-                            .readOnlyRootComponent(ResourceEnvironment.class);
-                    ResourceEnvironmentModelBuilder.createResourceContainer(resourceEnvironmentModelGraph, serverName);
-                    this.resourceEnvironmentModelGraphProvider.updateComponent(ResourceEnvironment.class,
-                            resourceEnvironmentModelGraph);
+        final Optional<ResourceContainer> optResourceContainer = ResourceEnvironmentModelBuilder
+                .getResourceContainerByName(
+                        this.resourceEnvironmentModelGraphProvider.readOnlyRootComponent(ResourceEnvironment.class),
+                        serverName);
 
-                    // signal allocation update
-                    this.allocationOutputPort.send(event);
-                }).elseApply(serverNamePresent -> {
-                    System.out.printf("ResourceContainer %s was available.\n", serverName);
-                    final List<ProcessingResourceSpecification> procResSpec = serverNamePresent
-                            .getActiveResourceSpecifications_ResourceContainer();
-                    for (int i = 0; i < procResSpec.size(); i++) {
-                        final String nodeGroupName = procResSpec.get(i)
-                                .getActiveResourceType_ActiveResourceSpecification().getEntityName();
-                        System.out.println(nodeGroupName);
-                    }
-                });
+        Opt.of(optResourceContainer).ifNotPresent().apply(() -> {
+            // // old: updating the resource environment model
+            // TAllocation.this.resourceEnvironmentModelProvider.loadModel();
+            // final ResourceEnvironment model =
+            // TAllocation.this.resourceEnvironmentModelProvider.getModel();
+            // ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
+            // TAllocation.this.resourceEnvironmentModelProvider.save();
+
+            // new: updating the resource environment graph
+            final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelGraphProvider
+                    .readOnlyRootComponent(ResourceEnvironment.class);
+            ResourceEnvironmentModelBuilder.createResourceContainer(resourceEnvironmentModelGraph, serverName);
+            this.resourceEnvironmentModelGraphProvider.updateComponent(ResourceEnvironment.class,
+                    resourceEnvironmentModelGraph);
+
+            // signal allocation update
+            this.allocationOutputPort.send(event);
+        }).elseApply(serverNamePresent -> {
+            System.out.printf("ResourceContainer %s was available.\n", serverName);
+            final List<ProcessingResourceSpecification> procResSpec = serverNamePresent
+                    .getActiveResourceSpecifications_ResourceContainer();
+            for (int i = 0; i < procResSpec.size(); i++) {
+                final String nodeGroupName = procResSpec.get(i).getActiveResourceType_ActiveResourceSpecification()
+                        .getEntityName();
+                System.out.println(nodeGroupName);
+            }
+        });
+
     }
 
 }
