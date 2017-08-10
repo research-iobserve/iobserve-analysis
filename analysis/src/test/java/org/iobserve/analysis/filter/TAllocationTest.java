@@ -206,7 +206,7 @@ public class TAllocationTest {
      * Check that no allocation event is forwarded, if the allocation model is not updated.
      */
     @Test
-    public void checkNodAllocationUpdate() {
+    public void checkNoAllocationUpdate() {
         final List<IAllocationRecord> allocationEvents = new ArrayList<>();
 
         StageTester.test(this.tAllocation).and().send(TAllocationTest.inputEvents).to(this.tAllocation.getInputPort())

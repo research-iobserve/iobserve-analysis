@@ -28,9 +28,11 @@ import util.SendHttpRequest;
  */
 public class AllocationVisualizationStage extends AbstractConsumerStage<IAllocationRecord> {
 
+    /** services for creating visualization elements */
     private final NodegroupService nodegroupService = new NodegroupService();
     private final NodeService nodeService = new NodeService();
 
+    /** constructor parameters */
     private final URL outputURL;
     private final String systemId;
     private final ModelProvider<ResourceContainer> resourceContainerModelProvider;
