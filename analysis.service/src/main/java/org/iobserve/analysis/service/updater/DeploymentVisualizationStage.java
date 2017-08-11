@@ -23,8 +23,8 @@ import javax.json.JsonObject;
 
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
+import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeploymentRecord;
@@ -33,6 +33,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
+import util.Changelog;
 import util.SendHttpRequest;
 
 /**
@@ -96,9 +97,11 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
         final AssemblyContext assemblyContext = this.allocationModelProvider
                 .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
 
-        final JsonObject serviceObject = this.serviceService.createService(assemblyContext, this.systemId);
-        final JsonObject serviceinstanceObject = this.serviceinstanceService.createServiceInstance(assemblyContext,
-                this.systemId, nodeId, this.serviceService.getServiceId());
+        final JsonObject serviceObject = Changelog
+                .create(this.serviceService.createService(assemblyContext, this.systemId));
+        final JsonObject serviceinstanceObject = Changelog.create(this.serviceinstanceService
+                .createServiceInstance(assemblyContext, this.systemId, nodeId, this.serviceService.getServiceId()));
+
         final JsonArray dataArray = Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();
         return dataArray;
     }
@@ -119,9 +122,11 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
         final AssemblyContext assemblyContext = this.allocationModelProvider
                 .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
 
-        final JsonObject serviceObject = this.serviceService.createService(assemblyContext, this.systemId);
-        final JsonObject serviceinstanceObject = this.serviceinstanceService.createServiceInstance(assemblyContext,
-                this.systemId, nodeId, this.serviceService.getServiceId());
+        final JsonObject serviceObject = Changelog
+                .create(this.serviceService.createService(assemblyContext, this.systemId));
+        final JsonObject serviceinstanceObject = Changelog.create(this.serviceinstanceService
+                .createServiceInstance(assemblyContext, this.systemId, nodeId, this.serviceService.getServiceId()));
+
         final JsonArray dataArray = Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();
         return dataArray;
     }

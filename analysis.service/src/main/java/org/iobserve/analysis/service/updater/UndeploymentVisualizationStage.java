@@ -32,6 +32,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
+import util.Changelog;
 import util.SendHttpRequest;
 
 /**
@@ -54,7 +55,7 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
     private String entityName;
 
     /**
-     * 
+     *
      * @param outputURL
      * @param systemId
      * @param resourceContainerModelGraphProvider
@@ -85,6 +86,11 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
 
     }
 
+    /**
+     *
+     * @param undeployment
+     * @return
+     */
     private JsonArray createData(final ServletUndeployedEvent undeployment) {
 
         final String serverName = undeployment.getSerivce();
@@ -102,12 +108,17 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
         // here: PostRequest: DELETE serviceInstance
         // final JsonObject serviceObject = this.serviceService.createService(assemblyContext,
         // this.systemId);
-        final JsonObject serviceInstanceObject = this.serviceinstanceService.deleteServiceInstance(assemblyContext,
-                this.systemId, nodeId, this.systemModelGraphProvider);
+        final JsonObject serviceInstanceObject = Changelog.delete(this.serviceinstanceService
+                .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));
         final JsonArray dataArray = Json.createArrayBuilder().add(serviceInstanceObject).build();
         return dataArray;
     }
 
+    /**
+     *
+     * @param undeployment
+     * @return
+     */
     private JsonArray createData(final EJBUndeployedEvent undeployment) {
 
         final String serverName = undeployment.getSerivce();
@@ -127,8 +138,8 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
         // here: PostRequest: DELETE serviceInstance
         // final JsonObject serviceObject = this.serviceService.createService(assemblyContext,
         // this.systemId);
-        final JsonObject serviceInstanceObject = this.serviceinstanceService.deleteServiceInstance(assemblyContext,
-                this.systemId, nodeId, this.systemModelGraphProvider);
+        final JsonObject serviceInstanceObject = Changelog.delete(this.serviceinstanceService
+                .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));
         final JsonArray dataArray = Json.createArrayBuilder().add(serviceInstanceObject).build();
         return dataArray;
     }

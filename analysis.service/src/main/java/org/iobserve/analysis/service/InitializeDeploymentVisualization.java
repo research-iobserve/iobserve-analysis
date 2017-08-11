@@ -23,6 +23,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
 
+import util.Changelog;
 import util.SendHttpRequest;
 
 /**
@@ -112,16 +113,20 @@ public final class InitializeDeploymentVisualization {
 
         for (int i = 0; i < resourceContainers.size(); i++) {
             final ResourceContainer resourceContainer = resourceContainers.get(i);
-            SendHttpRequest.post(this.nodegroupService.createNodegroup(this.systemService.getSystemId()),
+            SendHttpRequest.post(
+                    Changelog.create(this.nodegroupService.createNodegroup(this.systemService.getSystemId())),
                     this.systemUrl, this.changelogUrl);
-            SendHttpRequest.post(this.nodeService.createNode(resourceContainer, this.systemService.getSystemId(),
-                    this.nodegroupService.getNodegroupId()), this.systemUrl, this.changelogUrl);
+            SendHttpRequest.post(Changelog.create(this.nodeService.createNode(resourceContainer,
+                    this.systemService.getSystemId(), this.nodegroupService.getNodegroupId())), this.systemUrl,
+                    this.changelogUrl);
         }
         // architecture view in deployment visualization shows services and
         // communication
         for (int i = 0; i < assemblyContexts.size(); i++) {
             final AssemblyContext assemblyContext = assemblyContexts.get(i);
-            SendHttpRequest.post(this.serviceService.createService(assemblyContext, this.systemService.getSystemId()),
+            SendHttpRequest.post(
+                    Changelog.create(
+                            this.serviceService.createService(assemblyContext, this.systemService.getSystemId())),
                     this.systemUrl, this.changelogUrl);
         }
 
@@ -134,9 +139,10 @@ public final class InitializeDeploymentVisualization {
             final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
             final String assemblyContextId = allocationContext.getAssemblyContext_AllocationContext().getId();
 
-            SendHttpRequest.post(this.serviceinstanceService.createServiceInstance(assemblyContext,
-                    this.systemService.getSystemId(), resourceContainerId, assemblyContextId), this.systemUrl,
-                    this.changelogUrl);
+            SendHttpRequest.post(
+                    Changelog.create(this.serviceinstanceService.createServiceInstance(assemblyContext,
+                            this.systemService.getSystemId(), resourceContainerId, assemblyContextId)),
+                    this.systemUrl, this.changelogUrl);
         }
 
         /**
@@ -201,12 +207,15 @@ public final class InitializeDeploymentVisualization {
                     }
                 }
 
-                SendHttpRequest.post(this.communicationService.createCommunication((AssemblyConnector) connector,
-                        this.systemService.getSystemId(), technology), this.systemUrl, this.changelogUrl);
+                SendHttpRequest.post(
+                        Changelog.create(this.communicationService.createCommunication((AssemblyConnector) connector,
+                                this.systemService.getSystemId(), technology)),
+                        this.systemUrl, this.changelogUrl);
 
                 SendHttpRequest.post(
-                        this.communicationinstanceService.createCommunicationInstance((AssemblyConnector) connector,
-                                this.systemService.getSystemId(), this.communicationService.getCommunicationId()),
+                        Changelog.create(this.communicationinstanceService.createCommunicationInstance(
+                                (AssemblyConnector) connector, this.systemService.getSystemId(),
+                                this.communicationService.getCommunicationId())),
                         this.systemUrl, this.changelogUrl);
 
             } else {

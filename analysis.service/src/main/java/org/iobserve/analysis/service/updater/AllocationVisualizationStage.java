@@ -16,6 +16,7 @@ import org.iobserve.common.record.IAllocationRecord;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 import teetime.framework.AbstractConsumerStage;
+import util.Changelog;
 import util.SendHttpRequest;
 
 /**
@@ -81,9 +82,9 @@ public class AllocationVisualizationStage extends AbstractConsumerStage<IAllocat
         final ResourceContainer resourceContainer = resourceContainerHostname.get(0);
 
         // Each node has its own nodegroup now. This can/should change in future.
-        final JsonObject nodegroupObject = this.nodegroupService.createNodegroup(this.systemId);
-        final JsonObject nodeObject = this.nodeService.createNode(resourceContainer, this.systemId,
-                this.nodegroupService.getNodegroupId());
+        final JsonObject nodegroupObject = Changelog.create(this.nodegroupService.createNodegroup(this.systemId));
+        final JsonObject nodeObject = Changelog.create(
+                this.nodeService.createNode(resourceContainer, this.systemId, this.nodegroupService.getNodegroupId()));
         final JsonArray dataArray = Json.createArrayBuilder().add(nodegroupObject).add(nodeObject).build();
 
         return dataArray;
