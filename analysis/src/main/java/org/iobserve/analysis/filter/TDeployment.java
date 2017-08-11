@@ -219,11 +219,13 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         // get assembly context by name or create it if necessary.
         final AssemblyContext assemblyContext;
 
-        final Optional<AssemblyContext> optAssCtx = SystemModelBuilder.getAssemblyContextByName(
-                this.systemModelGraphProvider.readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class),
+        final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
+                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+
+        final Optional<AssemblyContext> optAssCtx = SystemModelBuilder.getAssemblyContextByName(systemModel,
                 asmContextName);
 
-        if (optAssCtx.isPresent()) {
+        if (optAssCtx != null) {
             assemblyContext = optAssCtx.get();
         } else {
             assemblyContext = TDeployment.createAssemblyContextByName(this.systemModelGraphProvider, asmContextName);

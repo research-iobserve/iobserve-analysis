@@ -172,14 +172,13 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      */
     private void updateModel(final ResourceContainer resourceContainer, final String asmContextName,
             final IUndeploymentRecord event) {
-        // update the allocation model
 
         // get assembly context by name or create it if necessary.
         final Optional<AssemblyContext> optAssemblyContext = SystemModelBuilder.getAssemblyContextByName(
                 this.systemModelGraphProvider.readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class),
                 asmContextName);
 
-        if (optAssemblyContext.isPresent()) {
+        if (optAssemblyContext != null) {
 
             // update the allocation graph
             final Allocation allocationModel = this.allocationModelGraphProvider
@@ -192,7 +191,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
             // signal allocation update
             this.visualizationOutputPort.send(event);
         } else {
-            System.out.printf("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n");
+            System.out.printf("AssemblyContext for " + resourceContainer.getEntityName() + " not found! \n");
         }
     }
 
