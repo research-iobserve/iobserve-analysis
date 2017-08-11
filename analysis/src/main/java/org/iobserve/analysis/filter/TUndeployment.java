@@ -17,22 +17,21 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.data.RemoveAllocationContextEvent;
 import org.iobserve.analysis.model.AllocationModelBuilder;
-import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelBuilder;
-import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeploymentRecord;
 import org.iobserve.common.record.ServletUndeployedEvent;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -51,13 +50,15 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     /** reference to correspondence interface. */
     private final ICorrespondence correspondence;
     /** reference to allocation model provider. */
-    private final AllocationModelProvider allocationModelProvider;
+    private final ModelProvider<Allocation> allocationModelGraphProvider;
     /** reference to system model provider. */
-    private final SystemModelProvider systemModelProvider;
+    private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
     /** reference to resource environment model provider. */
-    private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
-    private final OutputPort<RemoveAllocationContextEvent> modelOutputPort = this.createOutputPort();
+    // TODO Do we need this output port?
+    // private final OutputPort<RemoveAllocationContextEvent> modelOutputPort =
+    // this.createOutputPort();
     private final OutputPort<IUndeploymentRecord> visualizationOutputPort = this.createOutputPort();
 
     /**
@@ -66,20 +67,21 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      *
      * @param correspondence
      *            correspondence model
-     * @param allocationModelProvider
+     * @param allocationModelGraphProvider
      *            allocation model access
-     * @param systemModelProvider
+     * @param systemModelGraphProvider
      *            system model access
-     * @param resourceEnvironmentModelProvider
+     * @param resourceEnvironmentModelGraphProvider
      *            resource environment model access
      */
-    public TUndeployment(final ICorrespondence correspondence, final AllocationModelProvider allocationModelProvider,
-            final SystemModelProvider systemModelProvider,
-            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+    public TUndeployment(final ICorrespondence correspondence,
+            final ModelProvider<Allocation> allocationModelGraphProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.correspondence = correspondence;
-        this.allocationModelProvider = allocationModelProvider;
-        this.systemModelProvider = systemModelProvider;
-        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
+        this.allocationModelGraphProvider = allocationModelGraphProvider;
+        this.systemModelGraphProvider = systemModelGraphProvider;
+        this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
 
     /**
@@ -134,6 +136,8 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      *            name of the server
      * @param correspondent
      *            correspondent
+     * @param event
+     *            undeployment event
      */
     private void updateModel(final String serverName, final Correspondent correspondent,
             final IUndeploymentRecord event) {
@@ -145,12 +149,14 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
         // get the model parts by name
         final Optional<ResourceContainer> optResourceContainer = ResourceEnvironmentModelBuilder
-                .getResourceContainerByName(this.resourceEnvironmentModelProvider.getModel(), serverName);
+                .getResourceContainerByName(
+                        this.resourceEnvironmentModelGraphProvider.readOnlyRootComponent(ResourceEnvironment.class),
+                        serverName);
 
         // this can not happen since TAllocation should have created the resource container already.
         Opt.of(optResourceContainer).ifPresent()
                 .apply(resourceContainer -> this.updateModel(resourceContainer, asmContextName, event))
-                .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n"));
+                .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n", asmContextName));
     }
 
     /**
@@ -161,31 +167,43 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      *            instance of resource container
      * @param asmContextName
      *            entity name of assembly context
+     * @param event
+     *            undeployment event
      */
     private void updateModel(final ResourceContainer resourceContainer, final String asmContextName,
             final IUndeploymentRecord event) {
         // update the allocation model
 
         // get assembly context by name or create it if necessary.
-        final Optional<AssemblyContext> optAssemblyContext = SystemModelBuilder
-                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName);
+        final Optional<AssemblyContext> optAssemblyContext = SystemModelBuilder.getAssemblyContextByName(
+                this.systemModelGraphProvider.readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class),
+                asmContextName);
 
         if (optAssemblyContext.isPresent()) {
-            this.allocationModelProvider.loadModel();
-            this.modelOutputPort.send(new RemoveAllocationContextEvent(resourceContainer));
-            AllocationModelBuilder.removeAllocationContext(this.allocationModelProvider.getModel(), resourceContainer,
+
+            // update the allocation graph
+            final Allocation allocationModel = this.allocationModelGraphProvider
+                    .readOnlyRootComponent(Allocation.class);
+            AllocationModelBuilder.removeAllocationContext(allocationModel, resourceContainer,
                     optAssemblyContext.get());
-            this.allocationModelProvider.save();
+            this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
+
+            // this.modelOutputPort.send(new RemoveAllocationContextEvent(resourceContainer));
+            // signal allocation update
             this.visualizationOutputPort.send(event);
         } else {
             System.out.printf("AssemblyContext for " + resourceContainer.getEntityName() + "not found! \n");
         }
     }
 
-    public OutputPort<RemoveAllocationContextEvent> getModelOutputPort() {
-        return this.modelOutputPort;
-    }
+    // public OutputPort<RemoveAllocationContextEvent> getModelOutputPort() {
+    // return this.modelOutputPort;
+    // }
 
+    /**
+     *
+     * @returns output port that signals a graph update to the deployment visualization
+     */
     public OutputPort<IUndeploymentRecord> getVisualizationOutputPort() {
         return this.visualizationOutputPort;
     }

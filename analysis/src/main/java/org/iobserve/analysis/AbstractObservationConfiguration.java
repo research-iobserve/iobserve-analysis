@@ -98,8 +98,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.deploymentAfterAllocation = new TDeployment(correspondenceModel, allocationModelGraphProvider,
                 systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
         this.tAllocationAfterDeploy = new TAllocation(resourceEnvironmentModelGraphProvider);
-        this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
+        this.undeployment = new TUndeployment(correspondenceModel, allocationModelGraphProvider,
+                systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
 
         final TEntryCall tEntryCall = new TEntryCall();
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence(correspondenceModel);
