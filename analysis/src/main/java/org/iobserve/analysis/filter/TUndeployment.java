@@ -178,7 +178,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
                 this.systemModelGraphProvider.readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class),
                 asmContextName);
 
-        if (optAssemblyContext != null) {
+        if (optAssemblyContext.isPresent()) {
 
             // update the allocation graph
             final Allocation allocationModel = this.allocationModelGraphProvider

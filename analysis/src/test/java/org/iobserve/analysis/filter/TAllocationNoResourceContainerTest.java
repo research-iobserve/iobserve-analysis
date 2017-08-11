@@ -26,7 +26,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import teetime.framework.test.StageTester;
 
 /**
- * Tests for TAllocation filter, when the resource container does not exist yet.
+ * Tests for TAllocation filter, in case the resource container does not exist yet.
  *
  * @author jweg
  *

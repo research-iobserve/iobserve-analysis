@@ -225,7 +225,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         final Optional<AssemblyContext> optAssCtx = SystemModelBuilder.getAssemblyContextByName(systemModel,
                 asmContextName);
 
-        if (optAssCtx != null) {
+        if (optAssCtx.isPresent()) {
             assemblyContext = optAssCtx.get();
         } else {
             assemblyContext = TDeployment.createAssemblyContextByName(this.systemModelGraphProvider, asmContextName);
