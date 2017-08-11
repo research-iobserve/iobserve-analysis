@@ -4,8 +4,8 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 /**
- * This class prepares data such that the visualization element nodegroup is ready to be send to the
- * deployment visualization.
+ * This class prepares data such that the visualization element nodegroup is created. It has to be
+ * added to a changelog in order to be send to the deployment visualization.
  *
  * @author jweg
  *
@@ -19,8 +19,8 @@ public class NodegroupService {
     }
 
     /**
-     * Builds a changelog for creating a nodegroup for the deployment visualization.
-     * 
+     * Builds data for creating a nodegroup for the deployment visualization.
+     *
      * @param systemId
      * @return
      */
@@ -31,10 +31,8 @@ public class NodegroupService {
 
         final JsonObject nodeGroup = Json.createObjectBuilder().add("type", "nodeGroup").add("id", this.nodegroupId)
                 .add("systemId", systemId).add("name", "nodeGroupName").build();
-        final JsonObject nodeGroupObject = Json.createObjectBuilder().add("type", "changelog")
-                .add("operation", "CREATE").add("data", nodeGroup).build();
 
-        return nodeGroupObject;
+        return nodeGroup;
 
     }
 

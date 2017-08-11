@@ -10,9 +10,11 @@ import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
+import util.Changelog;
+
 /**
- * This class prepares data such that the visualization element serviceInstance is ready to be send
- * to the deployment visualization.
+ * This class prepares data such that the visualization element serviceInstance is created. It has
+ * to be added to a changelog in order to be send to the deployment visualization.
  *
  * @author jweg
  *
@@ -29,7 +31,7 @@ public class ServiceInstanceService {
     }
 
     /**
-     * Builds a changelog for creating a serviceInstance for the deployment visualization.
+     * Builds data for creating a serviceInstance for the deployment visualization.
      *
      * @param assemblyContext
      * @param systemId
@@ -46,14 +48,12 @@ public class ServiceInstanceService {
         final JsonObject serviceInstance = Json.createObjectBuilder().add("type", "serviceInstance")
                 .add("id", this.serviceInstanceId).add("systemId", systemId).add("name", this.serviceInstanceName)
                 .add("serviceId", serviceId).add("nodeId", nodeId).build();
-        final JsonObject serviceInstanceObject = Json.createObjectBuilder().add("type", "changelog")
-                .add("operation", "CREATE").add("data", serviceInstance).build();
 
-        return serviceInstanceObject;
+        return serviceInstance;
     }
 
     /**
-     * Builds a changelog for deleting a serviceInstance for the deployment visualization.
+     * Builds data for deleting a serviceInstance for the deployment visualization.
      *
      * @param assemblyContext
      * @param systemId
@@ -66,19 +66,16 @@ public class ServiceInstanceService {
     public JsonObject deleteServiceInstance(final AssemblyContext assemblyContext, final String systemId,
             final String nodeId,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
-        // nachgucken, ob this.serviceInstanceId in communicationinstance als sourceId oder targetId
-        // vorkommt; wenn ja, diese communicationinstance löschen
-
         this.serviceInstanceId = "si" + assemblyContext.getId();
         // check whether this serviceInstance is referenced by communicationInstances
         final List<EObject> maybeAssemblyConnectors = systemModelGraphProvider
                 .readOnlyReferencingComponentsById(AssemblyContext.class, assemblyContext.getId());
-
+        // if so, delete all communicationInstances
         if (!maybeAssemblyConnectors.isEmpty()) {
             for (int i = 0; i < maybeAssemblyConnectors.size(); i++) {
                 if (maybeAssemblyConnectors.get(i) instanceof AssemblyConnector) {
-                    this.communicationInstanceService
-                            .deleteCommunicationInstance((AssemblyConnector) maybeAssemblyConnectors.get(i));
+                    Changelog.delete(this.communicationInstanceService
+                            .deleteCommunicationInstance((AssemblyConnector) maybeAssemblyConnectors.get(i)));
                 }
             }
         }
@@ -86,10 +83,8 @@ public class ServiceInstanceService {
         final JsonObject serviceInstance = Json.createObjectBuilder().add("type", "serviceInstance")
                 .add("id", this.serviceInstanceId).add("systemId", systemId).add("serviceId", assemblyContext.getId())
                 .add("nodeId", nodeId).build();
-        final JsonObject removingServiceInstanceObject = Json.createObjectBuilder().add("type", "changelog")
-                .add("operation", "DELETE").add("data", serviceInstance).build();
 
-        return removingServiceInstanceObject;
+        return serviceInstance;
 
     }
 

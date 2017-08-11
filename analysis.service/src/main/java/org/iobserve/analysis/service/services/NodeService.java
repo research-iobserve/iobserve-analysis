@@ -6,8 +6,8 @@ import javax.json.JsonObject;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
- * This class prepares data such that the visualization element node is ready to be send to the
- * deployment visualization.
+ * This class prepares data such that the visualization element node is created. It has to be added
+ * to a changelog in order to be send to the deployment visualization.
  *
  * @author jweg
  *
@@ -15,13 +15,17 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 public class NodeService {
 
     private String nodeId;
+    private String hostname;
 
+    /**
+     * empty default constructor
+     */
     public NodeService() {
 
     }
 
     /**
-     * Builds a changelog for creating a node for the deployment visualization.
+     * Builds data for creating a node for the deployment visualization.
      *
      * @param resourceContainer
      * @param systemId
@@ -32,14 +36,12 @@ public class NodeService {
             final String nodegroupId) {
         this.nodeId = resourceContainer.getId();
         // TODO Ist das nicht auch nodeName?
-        final String hostname = resourceContainer.getEntityName();
+        this.hostname = resourceContainer.getEntityName();
 
         final JsonObject node = Json.createObjectBuilder().add("type", "node").add("id", this.nodeId)
-                .add("systemId", systemId).add("nodeGroupId", nodegroupId).add("hostname", hostname).build();
-        final JsonObject nodeObject = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
-                .add("data", node).build();
+                .add("systemId", systemId).add("nodeGroupId", nodegroupId).add("hostname", this.hostname).build();
 
-        return nodeObject;
+        return node;
     }
 
     public String getNodeId() {

@@ -6,14 +6,13 @@ import javax.json.JsonObject;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 
 /**
- * This class prepares data such that the visualization element communicationInstance is ready to be
- * send to the deployment visualization.
- * 
+ * This class prepares data such that the visualization element communicationInstance is created. It
+ * has to be added to a changelog in order to be send to the deployment visualization.
+ *
  * @author jweg
  *
  */
 
-// TODO Should this class declared final?
 public class CommunicationInstanceService {
 
     private String communicationInstanceId;
@@ -21,13 +20,16 @@ public class CommunicationInstanceService {
     private String targetId;
     private String workload;
 
+    /**
+     * default constructor
+     */
     public CommunicationInstanceService() {
 
     }
 
     /**
-     * Builds a changelog for creating a communicationInstance for the deployment visualization.
-     * 
+     * Builds a communicationInstance for the deployment visualization.
+     *
      * @param assemblyConnector
      * @param systemId
      * @param communicationId
@@ -50,10 +52,7 @@ public class CommunicationInstanceService {
                 .add("communicationId", communicationId).add("workload", this.workload).add("sourceId", this.sourceId)
                 .add("targetId", this.targetId).build();
 
-        final JsonObject communicationInstObject = Json.createObjectBuilder().add("type", "changelog")
-                .add("operation", "CREATE").add("data", communicationInst).build();
-
-        return communicationInstObject;
+        return communicationInst;
     }
 
     /**
@@ -67,10 +66,8 @@ public class CommunicationInstanceService {
 
         final JsonObject communicationInst = Json.createObjectBuilder().add("type", "communicationInstance")
                 .add("id", this.communicationInstanceId).build();
-        final JsonObject communicationInstObject = Json.createObjectBuilder().add("type", "changelog")
-                .add("operation", "DELETE").add("data", communicationInst).build();
 
-        return communicationInstObject;
+        return communicationInst;
     }
 
     public String getCommunicationInstanceId() {

@@ -6,9 +6,9 @@ import javax.json.JsonObject;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
 /**
- * This class prepares data such that the visualization element service is ready to be send to the
- * deployment visualization.
- *
+ * This class prepares data such that the visualization element service is created. It has to be
+ * added to a changelog in order to be send to the deployment visualization.
+ * 
  * @author jweg
  *
  */
@@ -22,7 +22,7 @@ public class ServiceService {
     }
 
     /**
-     * Builds a changelog for creating a service for the deployment visualization.
+     * Builds data for creating a service for the deployment visualization.
      *
      * @param assemblyContext
      * @param systemId
@@ -35,10 +35,8 @@ public class ServiceService {
 
         final JsonObject service = Json.createObjectBuilder().add("type", "service").add("id", this.serviceId)
                 .add("systemId", systemId).add("name", this.serviceName).build();
-        final JsonObject serviceObject = Json.createObjectBuilder().add("type", "changelog").add("operation", "CREATE")
-                .add("data", service).build();
 
-        return serviceObject;
+        return service;
     }
 
     public String getServiceId() {
