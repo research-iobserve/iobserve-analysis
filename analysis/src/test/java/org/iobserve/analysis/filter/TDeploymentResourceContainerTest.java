@@ -195,9 +195,11 @@ public class TDeploymentResourceContainerTest {
                 .thenReturn(TDeploymentResourceContainerTest.testSystem);
 
         /** get part of models */
-        // error: this throws nullPointer in TDeployment
-        Mockito.when(SystemModelBuilder.getAssemblyContextByName(TDeploymentResourceContainerTest.testSystem,
-                TDeploymentResourceContainerTest.SERVICE))
+        final String asmCtxName = TDeploymentResourceContainerTest.testCorrespondent.getPcmEntityName() + "_"
+                + TDeploymentResourceContainerTest.SERVICE;
+
+        Mockito.when(
+                SystemModelBuilder.getAssemblyContextByName(TDeploymentResourceContainerTest.testSystem, asmCtxName))
                 .thenReturn(TDeploymentResourceContainerTest.optTestAssemblyContext);
 
         Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(

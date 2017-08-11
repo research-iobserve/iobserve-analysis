@@ -199,9 +199,10 @@ public class TUndeploymentResourceContainerTest {
                 TUndeploymentResourceContainerTest.testResourceEnvironment, TUndeploymentResourceContainerTest.SERVICE))
                 .thenReturn(TUndeploymentResourceContainerTest.optTestResourceContainer);
 
-        // error: this throws nullPointer in TUndeployment
-        Mockito.when(SystemModelBuilder.getAssemblyContextByName(TUndeploymentResourceContainerTest.testSystem,
-                TUndeploymentResourceContainerTest.SERVICE))
+        final String asmCtxName = TUndeploymentResourceContainerTest.testCorrespondent.getPcmEntityName() + "_"
+                + TUndeploymentResourceContainerTest.SERVICE;
+        Mockito.when(
+                SystemModelBuilder.getAssemblyContextByName(TUndeploymentResourceContainerTest.testSystem, asmCtxName))
                 .thenReturn(TUndeploymentResourceContainerTest.optTestAssemblyContext);
 
         /** interaction with graphs */
