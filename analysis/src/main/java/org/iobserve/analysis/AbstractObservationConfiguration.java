@@ -93,10 +93,10 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelGraphProvider);
         final TAllocationFinished tAllocationFinished = new TAllocationFinished();
-        this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, allocationModelGraphProvider,
-                systemModelProvider, resourceEnvironmentModelProvider);
-        this.deploymentAfterAllocation = new TDeployment(correspondenceModel, allocationModelProvider,
-                allocationModelGraphProvider, systemModelProvider, resourceEnvironmentModelProvider);
+        this.deployment = new TDeployment(correspondenceModel, allocationModelGraphProvider, systemModelGraphProvider,
+                resourceEnvironmentModelGraphProvider);
+        this.deploymentAfterAllocation = new TDeployment(correspondenceModel, allocationModelGraphProvider,
+                systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
         this.tAllocationAfterDeploy = new TAllocation(resourceEnvironmentModelGraphProvider);
         this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);

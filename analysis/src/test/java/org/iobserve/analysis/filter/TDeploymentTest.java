@@ -31,6 +31,7 @@ import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -52,11 +53,9 @@ public class TDeploymentTest {
 
     /** mocks */
     @Mock
-    private static AllocationModelProvider mockedAllocationModelProvider;
+    private static ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
     @Mock
-    private static SystemModelProvider mockedSystemModelProvider;
-    @Mock
-    private static ResourceEnvironmentModelProvider mockedResourceEnvironmentModelProvider;
+    private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
     @Mock
     private static ModelProvider<Allocation> mockedAllocationModelGraphProvider;
     @Mock
@@ -107,12 +106,9 @@ public class TDeploymentTest {
                 TDeploymentTest.CONTEXT, TDeploymentTest.DEPLOYMENT_ID);
         TDeploymentTest.allocationEvent = new ContainerAllocationEvent(TDeploymentTest.URL);
 
-        /** mocks for old model provider */
-        TDeploymentTest.mockedAllocationModelProvider = Mockito.mock(AllocationModelProvider.class);
-        TDeploymentTest.mockedSystemModelProvider = Mockito.mock(SystemModelProvider.class);
-        TDeploymentTest.mockedResourceEnvironmentModelProvider = Mockito.mock(ResourceEnvironmentModelProvider.class);
-
-        /** mocks for new graph provider */
+        /** mocks for model graph provider */
+        TDeploymentTest.mockedSystemModelGraphProvider = Mockito.mock(ModelProvider.class);
+        TDeploymentTest.mockedResourceEnvironmentModelGraphProvider = Mockito.mock(ModelProvider.class);
         TDeploymentTest.mockedAllocationModelGraphProvider = Mockito.mock(ModelProvider.class);
 
         /** mock for correspondence model */
@@ -123,17 +119,16 @@ public class TDeploymentTest {
         TDeploymentTest.inputEJBEvents.add(TDeploymentTest.ejbDeploymentEvent);
 
         /** test correspondent */
-        // TODO sinnvolle Werte
-        TDeploymentTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity", "pcmEntityId",
-                "pcmOperationName", "pcmOperationId");
+        TDeploymentTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity", "testPcmEntityId",
+                "testPcmOperationName", "testPcmOperationId");
         TDeploymentTest.optTestCorrespondent = Optional.of(TDeploymentTest.testCorrespondent);
 
         /** optional test resource container without value */
         TDeploymentTest.optTestNullResourceContainer = Optional.ofNullable(null);
         /** optional test resource container with value */
         TDeploymentTest.testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-        // TDeploymentTest.testResourceContainer.setEntityName("TestResourceContainer");
-        // TDeploymentTest.testResourceContainer.setId("_resourcecontainer_test_id");
+        TDeploymentTest.testResourceContainer.setEntityName("TestResourceContainer");
+        TDeploymentTest.testResourceContainer.setId("_resourcecontainer_test_id");
         TDeploymentTest.optTestResourceContainer = Optional.of(TDeploymentTest.testResourceContainer);
 
         /** test allocation */
@@ -151,8 +146,8 @@ public class TDeploymentTest {
     @Before
     public void stubMocksNoServletResourceContainer() {
         this.tDeployment = new TDeployment(TDeploymentTest.mockedCorrespondence,
-                TDeploymentTest.mockedAllocationModelProvider, TDeploymentTest.mockedAllocationModelGraphProvider,
-                TDeploymentTest.mockedSystemModelProvider, TDeploymentTest.mockedResourceEnvironmentModelProvider);
+                TDeploymentTest.mockedAllocationModelGraphProvider, TDeploymentTest.mockedSystemModelGraphProvider,
+                TDeploymentTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(TDeploymentTest.mockedCorrespondence.getCorrespondent(TDeploymentTest.CONTEXT))
                 .thenReturn(TDeploymentTest.optTestCorrespondent);
@@ -161,8 +156,9 @@ public class TDeploymentTest {
         // use PowerMockito for calling static methods of this final class
         PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
 
-        Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
-                TDeploymentTest.mockedResourceEnvironmentModelProvider.getModel(), TDeploymentTest.SERVICE))
+        Mockito.when(ResourceEnvironmentModelBuilder
+                .getResourceContainerByName(TDeploymentTest.mockedResourceEnvironmentModelGraphProvider
+                        .readOnlyRootComponent(ResourceEnvironment.class), TDeploymentTest.SERVICE))
                 .thenReturn(TDeploymentTest.optTestNullResourceContainer);
     }
 
@@ -191,8 +187,8 @@ public class TDeploymentTest {
     @Before
     public void stubMocksNoServletResourceContainerCopy() {
         this.tDeployment = new TDeployment(TDeploymentTest.mockedCorrespondence,
-                TDeploymentTest.mockedAllocationModelProvider, TDeploymentTest.mockedAllocationModelGraphProvider,
-                TDeploymentTest.mockedSystemModelProvider, TDeploymentTest.mockedResourceEnvironmentModelProvider);
+                TDeploymentTest.mockedAllocationModelGraphProvider, TDeploymentTest.mockedSystemModelGraphProvider,
+                TDeploymentTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(TDeploymentTest.mockedCorrespondence.getCorrespondent(TDeploymentTest.CONTEXT))
                 .thenReturn(TDeploymentTest.optTestCorrespondent);
@@ -201,8 +197,9 @@ public class TDeploymentTest {
         // use PowerMockito for calling static methods of this final class
         PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
 
-        Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
-                TDeploymentTest.mockedResourceEnvironmentModelProvider.getModel(), TDeploymentTest.SERVICE))
+        Mockito.when(ResourceEnvironmentModelBuilder
+                .getResourceContainerByName(TDeploymentTest.mockedResourceEnvironmentModelGraphProvider
+                        .readOnlyRootComponent(ResourceEnvironment.class), TDeploymentTest.SERVICE))
                 .thenReturn(TDeploymentTest.optTestNullResourceContainer);
     }
 
@@ -229,8 +226,8 @@ public class TDeploymentTest {
     @Before
     public void stubMocksResourceContainer() {
         this.tDeployment = new TDeployment(TDeploymentTest.mockedCorrespondence,
-                TDeploymentTest.mockedAllocationModelProvider, TDeploymentTest.mockedAllocationModelGraphProvider,
-                TDeploymentTest.mockedSystemModelProvider, TDeploymentTest.mockedResourceEnvironmentModelProvider);
+                TDeploymentTest.mockedAllocationModelGraphProvider, TDeploymentTest.mockedSystemModelGraphProvider,
+                TDeploymentTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(TDeploymentTest.mockedCorrespondence.getCorrespondent(TDeploymentTest.CONTEXT))
                 .thenReturn(TDeploymentTest.optTestCorrespondent);
@@ -240,18 +237,10 @@ public class TDeploymentTest {
         PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
         PowerMockito.mockStatic(AllocationModelBuilder.class);
 
-        Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
-                TDeploymentTest.mockedResourceEnvironmentModelProvider.getModel(), TDeploymentTest.SERVICE))
+        Mockito.when(ResourceEnvironmentModelBuilder
+                .getResourceContainerByName(TDeploymentTest.mockedResourceEnvironmentModelGraphProvider
+                        .readOnlyRootComponent(ResourceEnvironment.class), TDeploymentTest.SERVICE))
                 .thenReturn(TDeploymentTest.optTestResourceContainer);
-
-        // new: updating the allocation graph
-        // final Allocation allocationModel =
-        // this.allocationModelGraphProvider.readOnlyRootComponent(Allocation.class);
-        // AllocationModelBuilder.addAllocationContextIfAbsent(allocationModel, resourceContainer,
-        // assemblyContext);
-        // this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
-        // Mockito.when(TDeployment.createAssemblyContextByName(TDeploymentTest.mockedSystemModelProvider,
-        // TDeploymentTest.SERVICE)).thenReturn(TDeploymentTest.testAssemblyContext);
 
         Mockito.when(TDeploymentTest.mockedAllocationModelGraphProvider.readOnlyRootComponent(Allocation.class))
                 .thenReturn(TDeploymentTest.testAllocation);
