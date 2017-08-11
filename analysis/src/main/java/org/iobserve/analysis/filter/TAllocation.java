@@ -53,9 +53,6 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
-     * @param resourceEnvironmentModelProvider
-     *            the resource environment model provider
-     *
      * @param resourceEnvironmentModelGraphProvider
      *            the resource environment model
      */
