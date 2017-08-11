@@ -91,15 +91,13 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
-        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider,
-                resourceEnvironmentModelGraphProvider);
+        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelGraphProvider);
         final TAllocationFinished tAllocationFinished = new TAllocationFinished();
         this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, allocationModelGraphProvider,
                 systemModelProvider, resourceEnvironmentModelProvider);
         this.deploymentAfterAllocation = new TDeployment(correspondenceModel, allocationModelProvider,
                 allocationModelGraphProvider, systemModelProvider, resourceEnvironmentModelProvider);
-        this.tAllocationAfterDeploy = new TAllocation(resourceEnvironmentModelProvider,
-                resourceEnvironmentModelGraphProvider);
+        this.tAllocationAfterDeploy = new TAllocation(resourceEnvironmentModelGraphProvider);
         this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
 

@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
@@ -43,8 +42,7 @@ import teetime.framework.OutputPort;
  */
 public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> {
 
-    /** reference to {@link ResourceEnvironment} old and new provider. */
-    private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+    /** reference to {@link ResourceEnvironment} provider. */
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     /** output ports */
@@ -61,10 +59,7 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      * @param resourceEnvironmentModelGraphProvider
      *            the resource environment model
      */
-    // TODO replace old ModelProvider with new GraphModelProvider (uses both now)
-    public TAllocation(final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
-        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
+    public TAllocation(final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
 
@@ -120,14 +115,7 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
                         serverName);
 
         Opt.of(optResourceContainer).ifNotPresent().apply(() -> {
-            // // old: updating the resource environment model
-            // TAllocation.this.resourceEnvironmentModelProvider.loadModel();
-            // final ResourceEnvironment model =
-            // TAllocation.this.resourceEnvironmentModelProvider.getModel();
-            // ResourceEnvironmentModelBuilder.createResourceContainer(model, serverName);
-            // TAllocation.this.resourceEnvironmentModelProvider.save();
-
-            // new: updating the resource environment graph
+            // new provider: update the resource environment graph
             final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelGraphProvider
                     .readOnlyRootComponent(ResourceEnvironment.class);
             ResourceEnvironmentModelBuilder.createResourceContainer(resourceEnvironmentModelGraph, serverName);

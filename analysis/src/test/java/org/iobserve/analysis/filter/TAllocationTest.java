@@ -60,7 +60,7 @@ public class TAllocationTest {
 
     /***/
     private TAllocation tAllocation;
-    private final static List<IAllocationRecord> inputEvents = new ArrayList<>();
+    private static List<IAllocationRecord> inputEvents = new ArrayList<>();
 
     /**
      * Initialize test event and stage under test (TDeployment) and therefore mock necessary
@@ -99,20 +99,11 @@ public class TAllocationTest {
     @Before
     public void stubMocksNoResourceContainer() {
 
-        this.tAllocation = new TAllocation(TAllocationTest.mockedResourceEnvironmentModelProvider,
-                TAllocationTest.mockedResourceEnvironmentModelGraphProvider);
+        this.tAllocation = new TAllocation(TAllocationTest.mockedResourceEnvironmentModelGraphProvider);
 
         /** mock for ResourceEnvironmentModelBuilder */
         // use PowerMockito for calling static methods of this final class
         PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
-
-        // // for old model provider
-        // Mockito.doNothing().when(tested).loadModel();
-        // Mockito.when(ResourceEnvironmentModelBuilder.createResourceContainer(
-        // TAllocationTest.mockedResourceEnvironmentModelProvider.getModel(),
-        // TAllocationTest.SERVICE))
-        // .thenReturn(TAllocationTest.testResourceContainer);
-        // Mockito.doNothing().doThrow(new RuntimeException()).when(tested).save();
 
         // for new model graph provider
         Mockito.when(TAllocationTest.mockedResourceEnvironmentModelGraphProvider
@@ -149,8 +140,7 @@ public class TAllocationTest {
     @Before
     public void stubMocksNoResourceContainerCopy() {
 
-        this.tAllocation = new TAllocation(TAllocationTest.mockedResourceEnvironmentModelProvider,
-                TAllocationTest.mockedResourceEnvironmentModelGraphProvider);
+        this.tAllocation = new TAllocation(TAllocationTest.mockedResourceEnvironmentModelGraphProvider);
 
         /** mock for ResourceEnvironmentModelBuilder */
         // use PowerMockito for calling static methods of this final class
@@ -191,8 +181,7 @@ public class TAllocationTest {
     @Before
     public void stubMocksResourceContainer() {
 
-        this.tAllocation = new TAllocation(TAllocationTest.mockedResourceEnvironmentModelProvider,
-                TAllocationTest.mockedResourceEnvironmentModelGraphProvider);
+        this.tAllocation = new TAllocation(TAllocationTest.mockedResourceEnvironmentModelGraphProvider);
 
         // for new model graph provider
         Mockito.when(TAllocationTest.mockedResourceEnvironmentModelGraphProvider
