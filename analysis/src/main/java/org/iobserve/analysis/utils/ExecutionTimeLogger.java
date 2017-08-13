@@ -59,6 +59,10 @@ public final class ExecutionTimeLogger {
 
         return ExecutionTimeLogger.instance;
     }
+    
+    public static void resetTimes() {
+        ExecutionTimeLogger.instance = null;
+    }
 
     private ExecutionTimeLogger() {
         this.tmpTimes = new HashMap<>();

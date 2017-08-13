@@ -104,37 +104,46 @@ public final class AnalysisMain {
             commander.usage();
             System.exit(1);
         } else {
+//            File warmupMonitoringDirectory = new File("D:\\Dokumente\\Uni\\HiWi\\iobserve\\iobserve\\iobserve-analysis\\analysis\\res\\warmup_dir\\kieker");
+//            File warmupPcmModelDirectory = new File("D:\\Dokumente\\Uni\\HiWi\\iobserve\\iobserve\\iobserve-analysis\\analysis\\res\\warmup_dir\\pcm");
+//            this.executeWithConfig("Warmup", warmupMonitoringDirectory, warmupPcmModelDirectory, 0, 0, false);
+//            ExecutionTimeLogger.resetTimes();
+            
+            
             this.checkDirectory(this.monitoringDataDirectory, "Kieker log", commander);
             this.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander);
-            /** process parameter. */
-
-            /** create and run application */
-            final Collection<File> monitoringDataDirectories = new ArrayList<>();
-            AnalysisMain.findDirectories(this.monitoringDataDirectory.listFiles(), monitoringDataDirectories);
-
-            final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
-                    this.pcmModelsDirectory);
-
-            final ICorrespondence correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
-            final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
-            final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
-            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProviderPlatform
-                    .getResourceEnvironmentModelProvider();
-            final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
-            final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
-
-            final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
-                    correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
-                    allocationModelProvider, systemModelProvider, this.varianceOfUserGroups, this.thinkTime,
+            this.executeWithConfig("Analysis", this.monitoringDataDirectory, this.pcmModelsDirectory, this.varianceOfUserGroups, this.thinkTime, 
                     this.closedWorkload);
-
-            System.out.println("Analysis configuration");
-            final Execution<Configuration> analysis = new Execution<>(configuration);
-            System.out.println("Analysis start");
-            analysis.executeBlocking();
-            System.out.println("Anaylsis complete");
             ExecutionTimeLogger.getInstance().exportAsCsv();
         }
+    }
+    
+    private void executeWithConfig(final String executionTag, final File monitoringDataDirectory, final File pcmModelDirectory, final int varianceOfUserGroups, 
+            final int thinkTime, final boolean closedWorkload) {
+        /** create and run application */
+        final Collection<File> monitoringDataDirectories = new ArrayList<>();
+        AnalysisMain.findDirectories(monitoringDataDirectory.listFiles(), monitoringDataDirectories);
+
+        final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(
+                pcmModelDirectory);
+
+        final ICorrespondence correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
+        final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
+        final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
+        final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProviderPlatform
+                .getResourceEnvironmentModelProvider();
+        final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
+        final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
+
+        final Configuration warmupConfiguration = new FileObservationConfiguration(monitoringDataDirectories,
+                correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
+                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+
+        System.out.println(executionTag + " configuration");
+        final Execution<Configuration> warmup = new Execution<>(warmupConfiguration);
+        System.out.println(executionTag + " start");
+        warmup.executeBlocking();
+        System.out.println(executionTag + " complete");
     }
 
     private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
