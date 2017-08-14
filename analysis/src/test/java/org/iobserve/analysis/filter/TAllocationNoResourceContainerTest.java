@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationRecord;
@@ -33,7 +32,7 @@ import teetime.framework.test.StageTester;
  */
 @RunWith(PowerMockRunner.class)
 // write all final classes here
-@PrepareForTest({ ResourceEnvironmentModelBuilder.class, ResourceEnvironmentModelProvider.class })
+@PrepareForTest({ ResourceEnvironmentModelBuilder.class })
 public class TAllocationNoResourceContainerTest {
 
     /** mocks */
