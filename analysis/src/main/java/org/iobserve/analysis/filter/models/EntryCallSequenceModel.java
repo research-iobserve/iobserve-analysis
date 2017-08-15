@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter.models;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.iobserve.analysis.userbehavior.data.WorkloadIntensity;
@@ -34,31 +36,40 @@ import org.iobserve.analysis.userbehavior.data.WorkloadIntensity;
 public final class EntryCallSequenceModel {
 
     /** list of user sessions. */
-    private final List<UserSession> userSessions;
+    private List<UserSession> userSessions;
     private WorkloadIntensity workloadIntensity;
     private double likelihoodOfUserGroup;
+    private HashMap<String, UserSession> sessionMap;
 
     /**
      * Create new model.
-     *
-     * @param sessions
-     *            sessions.
+     * 
+     *  @deprecated
      */
     public EntryCallSequenceModel(final List<UserSession> sessions) {
         this.userSessions = sessions;
+        this.sessionMap = new HashMap<>();
+        for(UserSession session : this.userSessions) {
+            sessionMap.put(session.getSessionId(), session);
+        }
     }
-
+    
     /**
-     * Constructor to set the user group´s likelihood and its related sessions.
-     *
-     * @param sessions
-     *            sessions
-     * @param likelihoodOfUserGroup
-     *            probability of user groups
+     * Create new model.
      */
-    public EntryCallSequenceModel(final List<UserSession> sessions, final double likelihoodOfUserGroup) {
-        this.userSessions = sessions;
-        this.likelihoodOfUserGroup = likelihoodOfUserGroup;
+    public EntryCallSequenceModel() {
+        this.userSessions = new LinkedList<>();
+        this.sessionMap = new HashMap<>();
+    }
+    
+    public void addOrUpdateSession(UserSession session) {
+        if(sessionMap.containsKey(session.getSessionId())) {
+            sessionMap.replace(session.getSessionId(), session);
+        } else {
+            sessionMap.put(session.getSessionId(), session);
+        }
+        
+        this.userSessions = new LinkedList<>(sessionMap.values());
     }
 
     /**

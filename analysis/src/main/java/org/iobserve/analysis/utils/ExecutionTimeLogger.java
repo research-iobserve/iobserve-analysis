@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IAllocationRecord;
@@ -78,25 +79,40 @@ public final class ExecutionTimeLogger {
         this.tmpTimes.put(record.hashCode(), System.nanoTime());
     }
     
-    public void startLogging(final EntryCallSequenceModel o) {
-        this.tmpTimes.put(o.hashCode(), System.nanoTime());
+    public void startLogging(final UserSession session) {
+        this.tmpTimes.put(session.hashCode(), System.currentTimeMillis());
     }
     
-    public void stopLogging(final EntryCallSequenceModel model) {
-        final Long startTime = this.tmpTimes.get(model.hashCode());
+    public void stopLogging(final UserSession session) {
+        final Long endTime = System.currentTimeMillis();
+        final Long startTime = this.tmpTimes.remove(session.hashCode());
         if (startTime != null) {
-            final Long endTime = System.nanoTime();
             final LoggingEntry entry = new LoggingEntry();
-            String userSessionsSize = Integer.toString(model.getUserSessions().size());
-            entry.setLoggingInfo("", userSessionsSize, endTime - startTime, startTime, endTime);
+            String userSessionSize = Integer.toString(session.size());
+            entry.setLoggingInfo("", userSessionSize, endTime - startTime, startTime, endTime);
+            this.entryEventSequenceTimes.add(entry);
+        }
+    }
+    
+    public void startLogging(final EntryCallSequenceModel session) {
+        this.tmpTimes.put(session.hashCode(), System.currentTimeMillis());
+    }
+    
+    public void stopLogging(final EntryCallSequenceModel session) {
+        final Long endTime = System.currentTimeMillis();
+        final Long startTime = this.tmpTimes.remove(session.hashCode());
+        if (startTime != null) {
+            final LoggingEntry entry = new LoggingEntry();
+            String userSessionSize = Integer.toString(session.getUserSessions().size());
+            entry.setLoggingInfo("", userSessionSize, endTime - startTime, startTime, endTime);
             this.entryEventSequenceTimes.add(entry);
         }
     }
 
     public void stopLogging(final IDeploymentRecord record) {
-        final Long startTime = this.tmpTimes.get(record.hashCode());
+        final Long endTime = System.nanoTime();
+        final Long startTime = this.tmpTimes.remove(record.hashCode());
         if (startTime != null) {
-            final Long endTime = System.nanoTime();
             final LoggingEntry entry = new LoggingEntry();
             if (record instanceof ServletDeployedEvent) {
                 final ServletDeployedEvent event = (ServletDeployedEvent) record;
@@ -111,9 +127,9 @@ public final class ExecutionTimeLogger {
     }
 
     public void stopLogging(final IUndeploymentRecord record) {
-        final Long startTime = this.tmpTimes.get(record.hashCode());
+        final Long endTime = System.nanoTime();
+        final Long startTime = this.tmpTimes.remove(record.hashCode());
         if (startTime != null) {
-            final Long endTime = System.nanoTime();
             final LoggingEntry entry = new LoggingEntry();
             if (record instanceof ServletUndeployedEvent) {
                 final ServletUndeployedEvent event = (ServletUndeployedEvent) record;
@@ -128,9 +144,9 @@ public final class ExecutionTimeLogger {
     }
 
     public void stopLogging(final IAllocationRecord record) {
-        final Long startTime = this.tmpTimes.get(record.hashCode());
+        final Long endTime = System.nanoTime();
+        final Long startTime = this.tmpTimes.remove(record.hashCode());
         if (startTime != null) {
-            final Long endTime = System.nanoTime();
             final LoggingEntry entry = new LoggingEntry();
             if (record instanceof ServletDeployedEvent) {
                 final ServletDeployedEvent event = (ServletDeployedEvent) record;
@@ -145,10 +161,9 @@ public final class ExecutionTimeLogger {
     }
 
     public void stopLogging(final AfterOperationEvent record) {
-        final Long startTime = this.tmpTimes.get(record.hashCode());
+        final Long endTime = System.nanoTime();
+        final Long startTime = this.tmpTimes.remove(record.hashCode());
         if (startTime != null) {
-            final Long endTime = System.nanoTime();
-
             final LoggingEntry entry = new LoggingEntry();
             entry.setLoggingInfo("", record.getOperationSignature(), endTime - startTime, startTime, endTime);
 
@@ -157,10 +172,9 @@ public final class ExecutionTimeLogger {
     }
 
     public void stopLogging(final EntryCallEvent record) {
-        final Long startTime = this.tmpTimes.get(record.hashCode());
+        final Long endTime = System.nanoTime();
+        final Long startTime = this.tmpTimes.remove(record.hashCode());
         if (startTime != null) {
-            final Long endTime = System.nanoTime();
-
             final LoggingEntry entry = new LoggingEntry();
             entry.setLoggingInfo(record.getSessionId(), record.getOperationSignature(), endTime - startTime, startTime,
                     endTime);
@@ -180,7 +194,7 @@ public final class ExecutionTimeLogger {
                 "TEntryCall");
         this.export(Arrays.asList("SessionId", "OperationSignature", "elapsed", "start", "end"),
                 this.entryCallSequenceTimes, "TEntryCallSequence");
-        this.export(Arrays.asList("", "UserSessionsCount", "elapsed", "start", "end"),
+        this.export(Arrays.asList("", "UserSessionSize", "elapsed", "start", "end"),
                 this.entryEventSequenceTimes, "TEntryEventSequence");
     }
 

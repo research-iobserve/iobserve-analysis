@@ -15,13 +15,10 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
@@ -48,9 +45,9 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
     /** map of sessions. */
     private final Map<String, UserSession> sessions = new HashMap<>();
     /** list of sessions with size bigger than TEntryCallSequence.USER_SESSION_THRESHOLD. */
-    private final Map<String, UserSession> approvedSessions = new HashMap<>();
+//    private final Map<String, UserSession> approvedSessions = new HashMap<>();
     /** output port. */
-    private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
+    private final OutputPort<UserSession> outputPort = this.createOutputPort();
 
     /**
      * Create this filter.
@@ -81,20 +78,20 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
             
             // collect all user sessions which have more elements as a defined threshold
             if(userSession.size() > TEntryCallSequence.USER_SESSION_THRESHOLD) {
-                approvedSessions.putIfAbsent(userSessionId, userSession);
+//                approvedSessions.putIfAbsent(userSessionId, userSession);
                 
                 // only if a session has changed and has more elements than the threshold
                 // the list of approved the usagemodel needs to be newly build
-                final List<UserSession> listToSend = new ArrayList<UserSession>(this.approvedSessions.values());
-//                final List<UserSession> listToSend = this.sessions.values().stream()
-//                        .filter(session -> session.size() > TEntryCallSequence.USER_SESSION_THRESHOLD)
-//                        .collect(Collectors.toList());
+//                final List<UserSession> listToSend = new ArrayList<UserSession>(this.approvedSessions.values());
+
 
                 ExecutionTimeLogger.getInstance().stopLogging(event);
+                
+                this.outputPort.send(userSession);
 
-                if (!listToSend.isEmpty()) {
-                    this.outputPort.send(new EntryCallSequenceModel(listToSend));
-                }
+//                if (!listToSend.isEmpty()) {
+//                    this.outputPort.send(new EntryCallSequenceModel(listToSend));
+//                }
             }
         }
     }
@@ -102,7 +99,7 @@ public final class TEntryCallSequence extends AbstractConsumerStage<EntryCallEve
     /**
      * @return output port
      */
-    public OutputPort<EntryCallSequenceModel> getOutputPort() {
+    public OutputPort<UserSession> getOutputPort() {
         return this.outputPort;
     }
 }

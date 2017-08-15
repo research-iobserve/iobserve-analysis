@@ -20,6 +20,7 @@ import java.io.IOException;
 import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -38,7 +39,7 @@ import org.iobserve.analysis.utils.ExecutionTimeLogger;
  *
  * @version 1.0
  */
-public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
+public final class TEntryEventSequence extends AbstractConsumerStage<UserSession> {
 
 	/** reference to the correspondence model. */
 	private final ICorrespondence correspondenceModel;
@@ -52,6 +53,8 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 	private final boolean closedWorkload;
 
 	private final RepositoryModelProvider repositoryModelProvider;
+	
+	private EntryCallSequenceModel entryCallSequenceModel;
 
 	/**
 	 * Create a entry event sequence filter.
@@ -79,11 +82,14 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 		this.varianceOfUserGroups = varianceOfUserGroups;
 		this.thinkTime = thinkTime;
 		this.closedWorkload = closedWorkload;
+		this.entryCallSequenceModel = new EntryCallSequenceModel();
 	}
 
 	@Override
-	protected void execute(final EntryCallSequenceModel entryCallSequenceModel) {
-	    ExecutionTimeLogger.getInstance().startLogging(entryCallSequenceModel);
+	protected void execute(final UserSession session) {
+	    ExecutionTimeLogger.getInstance().startLogging(session);
+	    
+	    this.entryCallSequenceModel.addOrUpdateSession(session);
 	    
 		// Resets the current usage model
 		this.usageModelProvider.loadModel();
@@ -105,6 +111,6 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 		// Sets the new usage model within iObserve
 		this.usageModelProvider.save();
 		
-		ExecutionTimeLogger.getInstance().stopLogging(entryCallSequenceModel);
+		ExecutionTimeLogger.getInstance().stopLogging(session);
 	}
 }
