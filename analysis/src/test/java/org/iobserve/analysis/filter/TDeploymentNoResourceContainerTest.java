@@ -5,11 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hamcrest.core.Is;
-import org.iobserve.analysis.model.AllocationModelBuilder;
-import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -36,16 +32,18 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import teetime.framework.test.StageTester;
 
 /**
- * Tests for TDeployment filter, in case the resource container does not exist, yet.
+ * Tests for {@link TDeployment} filter, in case the {@link ResourceContainer} does not exist, yet.
  *
  * @author jweg
  *
  */
 @RunWith(PowerMockRunner.class)
 // write all final classes here
-@PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelBuilder.class, AllocationModelProvider.class,
-        SystemModelProvider.class, ResourceEnvironmentModelProvider.class })
+@PrepareForTest({ ResourceEnvironmentModelBuilder.class })
 public class TDeploymentNoResourceContainerTest {
+
+    /** stage under test */
+    private TDeployment tDeployment;
 
     /** mocks */
     @Mock
@@ -70,8 +68,7 @@ public class TDeploymentNoResourceContainerTest {
     private static EJBDeployedEvent ejbDeploymentEvent;
     private static ContainerAllocationEvent allocationEvent;
 
-    /***/
-    private TDeployment tDeployment;
+    /** input events */
     private static List<IDeploymentRecord> inputServletEvents = new ArrayList<>();
     private static List<IDeploymentRecord> inputEJBEvents = new ArrayList<>();
 
@@ -79,15 +76,14 @@ public class TDeploymentNoResourceContainerTest {
     private static Correspondent testCorrespondent;
     private static Optional<Correspondent> optTestCorrespondent;
 
-    /** test resource containers */
+    /** test resource container */
     private static Optional<ResourceContainer> optTestNullResourceContainer;
 
     /**
-     * Initialize test events and stage under test (TDeployment) and therefore mock necessary
-     * classes.
+     * Initialize test events and mocks necessary classes.
      */
     @BeforeClass
-    public static void initializeTDeploymentAndMock() {
+    public static void setup() {
         /** test events */
         TDeploymentNoResourceContainerTest.servletDeploymentEvent = new ServletDeployedEvent(
                 TDeploymentNoResourceContainerTest.DEPLOY_TIME, TDeploymentNoResourceContainerTest.SERVICE,
@@ -124,8 +120,8 @@ public class TDeploymentNoResourceContainerTest {
     }
 
     /**
-     * Define the test situation in which the needed resource container does not exist in the given
-     * resource environment model.
+     * Define the test situation in which the needed {@link ResourceContainer} does not exist in the
+     * given {@link ResourceEnvironment} model.
      */
     @Before
     public void stubMocksNoServletResourceContainer() {
@@ -151,8 +147,9 @@ public class TDeploymentNoResourceContainerTest {
     }
 
     /**
-     * Check whether an allocation event is triggered, if the needed resource container does not
-     * exist yet. A servletDeploymentEvent is defined as input.
+     * Check whether an {@link ContainerAllocationEvent} is triggered, if the needed
+     * {@link ResourceContainer} does not exist yet. A {@link ServletDeployedEvent} is defined as
+     * input.
      */
     @Test
     public void checkServletAllocationNeeded() {
@@ -166,8 +163,9 @@ public class TDeploymentNoResourceContainerTest {
     }
 
     /**
-     * Check whether an deployment event is forwarded, if the needed resource container does not
-     * exist yet. A servletDeploymentEvent is defined as input.
+     * Check whether a {@link ServletDeployedEvent} is forwarded, if the needed
+     * {@link ResourceContainer} does not exist yet. A {@link ServletDeployedEvent} is defined as
+     * input.
      */
     @Test
     public void checkServletDeploymentAfterAllocationNeeded() {
@@ -182,8 +180,8 @@ public class TDeploymentNoResourceContainerTest {
     }
 
     /**
-     * Check whether an allocation event is triggered, if the needed resource container does not
-     * exist yet. A EJBDeploymentEvent is defined as input.
+     * Check whether an {@link ContainerAllocationEvent} is triggered, if the needed
+     * {@link ResourceContainer} does not exist yet. A {@link EJBDeployedEvent} is defined as input.
      */
     @Test
     public void checkEjbAllocationNeeded() {
@@ -197,8 +195,8 @@ public class TDeploymentNoResourceContainerTest {
     }
 
     /**
-     * Check whether an deployment event is forwarded, if the needed resource container does not
-     * exist yet. A EJBDeploymentEvent is defined as input.
+     * Check whether an {@link EJBDeployedEvent} is forwarded, if the needed
+     * {@link ResourceContainer} does not exist yet. A {@link EJBDeployedEvent} is defined as input.
      */
     @Test
     public void checkEjbDeploymentAfterAllocationNeeded() {

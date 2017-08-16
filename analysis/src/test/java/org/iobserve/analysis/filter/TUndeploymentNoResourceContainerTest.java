@@ -6,11 +6,8 @@ import java.util.Optional;
 
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.AllocationModelBuilder;
-import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelBuilder;
-import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -26,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
@@ -36,16 +34,18 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import teetime.framework.test.StageTester;
 
 /**
- * Tests for TUndeployment filter, in case the resource container does not.
+ * Tests for {@link TUndeployment} filter, in case the {@link ResourceContainer} does not exist.
  *
  * @author jweg
  *
  */
 @RunWith(PowerMockRunner.class)
 // write all final classes here
-@PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelBuilder.class, SystemModelBuilder.class,
-        AllocationModelProvider.class, SystemModelProvider.class, ResourceEnvironmentModelProvider.class })
+@PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelBuilder.class, SystemModelBuilder.class })
 public class TUndeploymentNoResourceContainerTest {
+
+    /** stage under test */
+    private TUndeployment tUndeployment;
 
     /** mocks */
     @Mock
@@ -67,8 +67,7 @@ public class TUndeploymentNoResourceContainerTest {
     private static ServletUndeployedEvent servletUndeploymentEvent;
     private static EJBUndeployedEvent ejbUndeploymentEvent;
 
-    /***/
-    private TUndeployment tUndeployment;
+    /** input events */
     private static List<IUndeploymentRecord> inputServletEvents = new ArrayList<>();
     private static List<IUndeploymentRecord> inputEJBEvents = new ArrayList<>();
 
@@ -83,11 +82,10 @@ public class TUndeploymentNoResourceContainerTest {
     private static Optional<ResourceContainer> optTestNullResourceContainer;
 
     /**
-     * Initialize test events and stage under test (TDeployment) and therefore mock necessary
-     * classes.
+     * Initialize test events and mock necessary classes.
      */
     @BeforeClass
-    public static void initializeTDeploymentAndMock() {
+    public static void setup() {
         /** test events */
         TUndeploymentNoResourceContainerTest.servletUndeploymentEvent = new ServletUndeployedEvent(
                 TUndeploymentNoResourceContainerTest.UNDEPLOY_TIME, TUndeploymentNoResourceContainerTest.SERVICE,
@@ -118,8 +116,9 @@ public class TUndeploymentNoResourceContainerTest {
     }
 
     /**
-     * Define the test situation in which the needed resource container and assembly context do not
-     * exist in the given resource environment model. No unemployment should take place.
+     * Define the test situation in which the needed {@link ResourceContainer} and
+     * {@link AssemblyContext} do not exist in the given {@link ResourceEnvironment} model. No
+     * unemployment should take place.
      */
     @Before
     public void stubMocksResourceContainer() {
@@ -162,8 +161,8 @@ public class TUndeploymentNoResourceContainerTest {
     }
 
     /**
-     * Check whether no event is triggered, when there is no needed resource container. A
-     * servletUndeploymentEvent is defined as input.
+     * Check whether no event is triggered, when the needed {@link ResourceContainer} does not
+     * exist. A {@link ServletUndeployedEvent} is defined as input.
      */
     @Test
     public void checkNoServletAllocationNeeded() {
@@ -177,8 +176,8 @@ public class TUndeploymentNoResourceContainerTest {
     }
 
     /**
-     * Check whether no event is triggered, when the needed resource container does not exist. An
-     * ejbUndeploymentEvent is defined as input.
+     * Check whether no event is triggered, when the needed {@link ResourceContainer} does not
+     * exist. An {@link EJBUndeployedEvent} is defined as input.
      */
     @Test
     public void checkNoEjbAllocationNeeded() {

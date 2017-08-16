@@ -25,7 +25,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import teetime.framework.test.StageTester;
 
 /**
- * Tests for TAllocation filter, in case the resource container does not exist yet.
+ * Tests for {@link TAllocation} filter, in case the {@link ResourceContainer} does not exist yet.
  *
  * @author jweg
  *
@@ -35,8 +35,17 @@ import teetime.framework.test.StageTester;
 @PrepareForTest({ ResourceEnvironmentModelBuilder.class })
 public class TAllocationNoResourceContainerTest {
 
+    /** stage under test */
+    private TAllocation tAllocation;
+
     /** mocks */
     private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+
+    /** test event */
+    private static ContainerAllocationEvent allocationEvent;
+
+    /** input events */
+    private static List<IAllocationRecord> inputEvents = new ArrayList<>();
 
     /** data for generating test container allocation event */
     private static final String SERVICE = "test-service";
@@ -44,25 +53,17 @@ public class TAllocationNoResourceContainerTest {
     private static final String URL = "http://" + TAllocationNoResourceContainerTest.SERVICE + '/'
             + TAllocationNoResourceContainerTest.CONTEXT;
 
-    /** test event */
-    private static ContainerAllocationEvent allocationEvent;
-
     /** test resource containers */
     private static Optional<ResourceContainer> optTestNullResourceContainer;
     private static ResourceContainer testResourceContainer;
 
     private static ResourceEnvironment testResourceEnvironment;
 
-    /***/
-    private TAllocation tAllocation;
-
-    private static List<IAllocationRecord> inputEvents = new ArrayList<>();
-
     /**
      * Initialize test data.
      */
     @BeforeClass
-    public static void initializeTAllocationAndMock() {
+    public static void setup() {
 
         /** test event */
         TAllocationNoResourceContainerTest.allocationEvent = new ContainerAllocationEvent(
@@ -86,8 +87,8 @@ public class TAllocationNoResourceContainerTest {
     }
 
     /**
-     * Define the test situation in which a container allocation event is defined as input and the
-     * specified resource container does not exist in the resource environment model.
+     * Define the test situation in which a {@link ContainerAllocationEvent} is defined as input and
+     * the specified {@link ResourceContainer} does not exist in the {@link ResourceEnvironment}.
      */
     @Before
     public void stubMocksNoResourceContainer() {
@@ -102,7 +103,6 @@ public class TAllocationNoResourceContainerTest {
         this.tAllocation = new TAllocation(
                 TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
 
-        // for new model graph provider
         Mockito.when(TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .readOnlyRootComponent(ResourceEnvironment.class))
                 .thenReturn(TAllocationNoResourceContainerTest.testResourceEnvironment);
@@ -120,8 +120,8 @@ public class TAllocationNoResourceContainerTest {
     }
 
     /**
-     * Check whether the allocation event is forwarded to the next stage after the allocation is
-     * finished.
+     * Check whether the {@link ContainerAllocationEvent} is forwarded to the next stage after the
+     * allocation is finished.
      */
     @Test
     public void checkAllocationFinished() {
@@ -136,8 +136,8 @@ public class TAllocationNoResourceContainerTest {
     }
 
     /**
-     * Check whether the allocation event is forwarded to the next stage after the allocation model
-     * is updated.
+     * Check whether the {@link ContainerAllocationEvent} is forwarded to the next stage after the
+     * {@link ResourceEnvironment} is updated.
      */
     @Test
     public void checkAllocationUpdate() {

@@ -6,11 +6,8 @@ import java.util.Optional;
 
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.AllocationModelBuilder;
-import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelBuilder;
-import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -40,16 +37,18 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import teetime.framework.test.StageTester;
 
 /**
- * Tests for TUndeployment filter, in case the resource container exists already.
+ * Tests for {@link TUndeployment} filter, in case the {@link ResourceContainer} exists already.
  *
  * @author jweg
  *
  */
 @RunWith(PowerMockRunner.class)
 // write all final classes here
-@PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelBuilder.class, SystemModelBuilder.class,
-        AllocationModelProvider.class, SystemModelProvider.class, ResourceEnvironmentModelProvider.class })
+@PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelBuilder.class, SystemModelBuilder.class })
 public class TUndeploymentResourceContainerTest {
+
+    /** stage under test */
+    private TUndeployment tUndeployment;
 
     /** mocks */
     @Mock
@@ -73,8 +72,7 @@ public class TUndeploymentResourceContainerTest {
     private static ServletUndeployedEvent servletUndeploymentEvent;
     private static EJBUndeployedEvent ejbUndeploymentEvent;
 
-    /***/
-    private TUndeployment tUndeployment;
+    /** input events */
     private static List<IUndeploymentRecord> inputServletEvents = new ArrayList<>();
     private static List<IUndeploymentRecord> inputEJBEvents = new ArrayList<>();
 
@@ -100,11 +98,10 @@ public class TUndeploymentResourceContainerTest {
     private static Optional<AssemblyContext> optTestAssemblyContext;
 
     /**
-     * Initialize test events and stage under test (TDeployment) and therefore mock necessary
-     * classes.
+     * Initialize test events and mock necessary classes.
      */
     @BeforeClass
-    public static void initializeTDeploymentAndMock() {
+    public static void setup() {
         /** test events */
         TUndeploymentResourceContainerTest.servletUndeploymentEvent = new ServletUndeployedEvent(
                 TUndeploymentResourceContainerTest.UNDEPLOY_TIME, TUndeploymentResourceContainerTest.SERVICE,
@@ -152,8 +149,8 @@ public class TUndeploymentResourceContainerTest {
     }
 
     /**
-     * Define the test situation in which the needed resource container and assembly context exist
-     * in the given resource environment model.
+     * Define the test situation in which the needed {@link ResourceContainer} and
+     * {@link AssemblyContext} exist in the given {@link ResourceEnvironment} model.
      */
     @Before
     public void stubMocksResourceContainer() {
@@ -216,8 +213,8 @@ public class TUndeploymentResourceContainerTest {
     }
 
     /**
-     * Check whether an undeployment event is triggered, when the needed resource container exists.
-     * A servletUndeploymentEvent is defined as input.
+     * Check whether a {@link ServletUndeployedEvent} is triggered, when the needed
+     * {@link ResourceContainer} exists. A {@link ServletUndeployedEvent} is defined as input.
      */
     @Test
     public void checkNoServletAllocationNeeded() {
@@ -232,8 +229,8 @@ public class TUndeploymentResourceContainerTest {
     }
 
     /**
-     * Check whether a undeployment event is triggered, when the needed resource container exists.
-     * An ejbUndeploymentEvent is defined as input.
+     * Check whether an {@link EJBUndeployedEvent} is triggered, when the needed
+     * {@link ResourceContainer} exists. An {@link EJBUndeployedEvent} is defined as input.
      */
     @Test
     public void checkNoEjbAllocationNeeded() {

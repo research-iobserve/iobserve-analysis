@@ -33,8 +33,8 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * This class processes allocation events. TAllocation creates a new resource container if and only
- * if there is no corresponding container already available.
+ * This class processes allocation events. TAllocation creates a new {@link ResourceContainer} if
+ * and only if there is no corresponding container already available.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
