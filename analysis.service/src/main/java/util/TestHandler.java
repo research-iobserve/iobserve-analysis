@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.json.JsonArray;
+import org.apache.commons.io.IOUtils;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -16,33 +15,27 @@ import com.sun.net.httpserver.HttpHandler;
  * @author jweg
  *
  */
-public final class TestHandler implements HttpHandler {
+public class TestHandler implements HttpHandler {
+
+    private String requestBody;
 
     @Override
     public void handle(final HttpExchange t) throws IOException {
-        System.out.println("@Before in handle(HttpExchange)");
+
         final InputStream is = t.getRequestBody();
-        System.out.printf("request body of HttpExchange as input stream: %s\n", is);
-        // clazz = JSON Wurzel Objekt
 
-        final ObjectMapper mapper = new ObjectMapper();
-        //
-        //// Einzel element: nodegroup- and node-changelog
-        final JsonArray object = mapper.readValue(is, JsonArray.class);
-        System.out.printf("JsonObject in AllocationVisualizationTestClass: %s\n", object.get(0));
-        //
-        //// Für listen
-        // final List<T> list = mapper.readValue(response.getContent(),
-        // mapper.getTypeFactory().constructCollectionType(List.class,
-        // clazz));
+        this.requestBody = IOUtils.toString(is, "UTF-8");
 
-        // read(is); // .. read the request body
-        final String response = "This is the response";
+        final String response = "Changelog received";
         t.sendResponseHeaders(200, response.length());
         final OutputStream os = t.getResponseBody();
         os.write(response.getBytes());
         os.close();
 
+    }
+
+    public String getRequestBody() {
+        return this.requestBody;
     }
 
 }
