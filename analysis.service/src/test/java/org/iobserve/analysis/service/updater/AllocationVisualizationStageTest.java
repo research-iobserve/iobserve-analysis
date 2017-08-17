@@ -63,7 +63,7 @@ public class AllocationVisualizationStageTest {
     private final List<ResourceContainer> testResourceContainerList = new ArrayList<>();
     private ResourceContainer testResourceContainer;
 
-    /** Handler for http requests */
+    /** handler for http requests */
     private TestHandler testHandler;
 
     /**
