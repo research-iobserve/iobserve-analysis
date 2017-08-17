@@ -29,7 +29,7 @@ public class NodeServiceTest {
     private JsonObject expectedNode;
 
     /**
-     * Prepares test data.
+     * Prepare test data.
      */
     @Before
     public void setup() {

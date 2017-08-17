@@ -6,8 +6,8 @@ import javax.json.JsonObject;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 
 /**
- * This class prepares data such that the visualization element communicationInstance is created. It
- * has to be added to a changelog in order to be send to the deployment visualization.
+ * This class prepares data such that the visualization element communicationInstance is created or
+ * deleted. It has to be added to a changelog in order to be send to the deployment visualization.
  *
  * @author jweg
  *
@@ -21,7 +21,7 @@ public class CommunicationInstanceService {
     private String workload;
 
     /**
-     * default constructor
+     * empty default constructor
      */
     public CommunicationInstanceService() {
 
@@ -56,7 +56,7 @@ public class CommunicationInstanceService {
     }
 
     /**
-     * Builds a changelog for deleting a communicationInstance for the deployment visualization.
+     * Builds a communicationInstance to be deleted in the deployment visualization.
      *
      * @param assemblyConnector
      * @return

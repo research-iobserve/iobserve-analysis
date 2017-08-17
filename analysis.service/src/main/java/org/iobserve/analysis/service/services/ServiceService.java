@@ -5,10 +5,12 @@ import javax.json.JsonObject;
 
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
+import util.Changelog;
+
 /**
  * This class prepares data such that the visualization element service is created. It has to be
- * added to a changelog in order to be send to the deployment visualization.
- * 
+ * added to a {@link Changelog} in order to be send to the deployment visualization.
+ *
  * @author jweg
  *
  */
