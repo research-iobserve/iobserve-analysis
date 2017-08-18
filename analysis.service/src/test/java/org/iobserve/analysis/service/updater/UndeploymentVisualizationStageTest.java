@@ -12,7 +12,9 @@ import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.common.record.EJBDeployedEvent;
+import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.iobserve.common.record.ServletUndeployedEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -30,17 +32,11 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import teetime.framework.test.StageTester;
 import util.TestHandler;
 
-/**
- * Tests for {@link DeploymentVisualizationStage}
- *
- * @author jweg
- *
- */
 @RunWith(MockitoJUnitRunner.class)
-public class DeploymentVisualizationStageTest {
+public class UndeploymentVisualizationStageTest {
 
     /** stage under test */
-    private DeploymentVisualizationStage deploymentVisualizationStage;
+    private UndeploymentVisualizationStage undeploymentVisualizationStage;
 
     /** test parameters for stage under test */
     private URL changelogURL;
@@ -52,23 +48,25 @@ public class DeploymentVisualizationStageTest {
     @Mock
     private ModelProvider<AssemblyContext> mockedAssemblyContextModelProvider;
     @Mock
+    private ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
+    @Mock
     private ICorrespondence mockedCorrespondenceModel;
 
     /** input events */
-    private final List<ServletDeployedEvent> inputServletEvents = new ArrayList<>();
-    private final List<EJBDeployedEvent> inputEJBEvents = new ArrayList<>();
+    private final List<ServletUndeployedEvent> inputServletEvents = new ArrayList<>();
+    private final List<EJBUndeployedEvent> inputEJBEvents = new ArrayList<>();
 
     /** test event */
-    private ServletDeployedEvent servletEvent;
-    private EJBDeployedEvent ejbEvent;
+    private ServletUndeployedEvent servletEvent;
+    private EJBUndeployedEvent ejbEvent;
 
     /** data for generating test events */
     private static final long DEPLOY_TIME = 1;
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
     private static final String DEPLOYMENT_ID = "service-01";
-    private static final String URL = "http://" + DeploymentVisualizationStageTest.SERVICE + '/'
-            + DeploymentVisualizationStageTest.CONTEXT;
+    private static final String URL = "http://" + UndeploymentVisualizationStageTest.SERVICE + '/'
+            + UndeploymentVisualizationStageTest.CONTEXT;
 
     /** test correspondent */
     private static Correspondent testCorrespondent;
@@ -94,27 +92,27 @@ public class DeploymentVisualizationStageTest {
         this.changelogURL = new URL("http://" + this.outputHostname + ":" + this.outputPort + "/v1/systems/"
                 + this.systemId + "/changelogs");
 
-        this.deploymentVisualizationStage = new DeploymentVisualizationStage(this.changelogURL, this.systemId,
+        this.undeploymentVisualizationStage = new UndeploymentVisualizationStage(this.changelogURL, this.systemId,
                 this.mockedResourceContainerModelProvider, this.mockedAssemblyContextModelProvider,
-                this.mockedCorrespondenceModel);
+                this.mockedSystemModelGraphProvider, this.mockedCorrespondenceModel);
 
         /** test events */
-        this.servletEvent = new ServletDeployedEvent(DeploymentVisualizationStageTest.DEPLOY_TIME,
-                DeploymentVisualizationStageTest.SERVICE, DeploymentVisualizationStageTest.CONTEXT,
-                DeploymentVisualizationStageTest.DEPLOYMENT_ID);
-        this.ejbEvent = new EJBDeployedEvent(DeploymentVisualizationStageTest.DEPLOY_TIME,
-                DeploymentVisualizationStageTest.SERVICE, DeploymentVisualizationStageTest.CONTEXT,
-                DeploymentVisualizationStageTest.DEPLOYMENT_ID);
+        this.servletEvent = new ServletUndeployedEvent(UndeploymentVisualizationStageTest.DEPLOY_TIME,
+                UndeploymentVisualizationStageTest.SERVICE, UndeploymentVisualizationStageTest.CONTEXT,
+                UndeploymentVisualizationStageTest.DEPLOYMENT_ID);
+        this.ejbEvent = new EJBUndeployedEvent(UndeploymentVisualizationStageTest.DEPLOY_TIME,
+                UndeploymentVisualizationStageTest.SERVICE, UndeploymentVisualizationStageTest.CONTEXT,
+                UndeploymentVisualizationStageTest.DEPLOYMENT_ID);
 
         /** input events */
         this.inputServletEvents.add(this.servletEvent);
         this.inputEJBEvents.add(this.ejbEvent);
 
         /** test correspondent */
-        DeploymentVisualizationStageTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity",
+        UndeploymentVisualizationStageTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity",
                 "testPcmEntityId", "testPcmOperationName", "testPcmOperationId");
-        DeploymentVisualizationStageTest.optTestCorrespondent = Optional
-                .of(DeploymentVisualizationStageTest.testCorrespondent);
+        UndeploymentVisualizationStageTest.optTestCorrespondent = Optional
+                .of(UndeploymentVisualizationStageTest.testCorrespondent);
 
         /** test resource container */
         this.testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
@@ -129,13 +127,13 @@ public class DeploymentVisualizationStageTest {
 
         // stubbing
         Mockito.when(this.mockedResourceContainerModelProvider.readOnlyComponentByName(ResourceContainer.class,
-                DeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
+                UndeploymentVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainers);
 
-        Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(DeploymentVisualizationStageTest.CONTEXT))
-                .thenReturn(DeploymentVisualizationStageTest.optTestCorrespondent);
+        Mockito.when(this.mockedCorrespondenceModel.getCorrespondent(UndeploymentVisualizationStageTest.CONTEXT))
+                .thenReturn(UndeploymentVisualizationStageTest.optTestCorrespondent);
 
-        final String asmContextName = DeploymentVisualizationStageTest.testCorrespondent.getPcmEntityName() + "_"
-                + DeploymentVisualizationStageTest.SERVICE;
+        final String asmContextName = UndeploymentVisualizationStageTest.testCorrespondent.getPcmEntityName() + "_"
+                + UndeploymentVisualizationStageTest.SERVICE;
         Mockito.when(
                 this.mockedAssemblyContextModelProvider.readOnlyComponentByName(AssemblyContext.class, asmContextName))
                 .thenReturn(this.testAssemblyContexts);
@@ -143,46 +141,41 @@ public class DeploymentVisualizationStageTest {
     }
 
     /**
-     * Check whether the changelog for creating the service is written before the changelog for
-     * creating the serviceInstance (constraint on deployment visualization). A
-     * {@link ServletDeployedEvent} is defined as input.
+     * Check the changelog for deleting a serviceInstance. A {@link ServletDeployedEvent} is defined
+     * as input.
+     *
+     * @throws IOException
      */
     @Test
-    public void checkServletChangelog() {
-        StageTester.test(this.deploymentVisualizationStage).and().send(this.inputServletEvents)
-                .to(this.deploymentVisualizationStage.getInputPort()).start();
+    public void testServlet() throws IOException {
+
+        StageTester.test(this.undeploymentVisualizationStage).and().send(this.inputServletEvents)
+                .to(this.undeploymentVisualizationStage.getInputPort()).start();
 
         final JSONArray changelogs = new JSONArray(TestHandler.getRequestBody());
-        final JSONObject expectedService = new JSONObject(changelogs.getJSONObject(0).get("data").toString());
-        final JSONObject expectedServiceInstance = new JSONObject(changelogs.getJSONObject(1).get("data").toString());
+        final JSONObject expectedServiceInstance = new JSONObject(changelogs.getJSONObject(0).get("data").toString());
 
-        Assert.assertThat(expectedService.get("type"), Is.is("service"));
-        Assert.assertThat(expectedServiceInstance.get("type"), Is.is("serviceInstance"));
-        Assert.assertEquals(expectedService.get("id"), expectedServiceInstance.get("serviceId"));
-
-        Assert.assertThat(expectedService.get("systemId"), Is.is(this.systemId));
-        Assert.assertThat(expectedServiceInstance.get("systemId"), Is.is(this.systemId));
+        Assert.assertThat(changelogs.getJSONObject(0).get("operation"), Is.is("DELETE"));
+        Assert.assertThat(expectedServiceInstance.getString("type"), Is.is("serviceInstance"));
     }
 
     /**
-     * Check whether the changelog for creating the service is written before the changelog for
-     * creating the serviceInstance (constraint on deployment visualization). A
-     * {@link EJBDeployedEvent} is defined as input.
+     * Check the changelog for deleting a serviceInstance. A {@link EJBDeployedEvent} is defined as
+     * input.
+     *
+     * @throws IOException
      */
     @Test
-    public void checkEJBChangelog() {
-        StageTester.test(this.deploymentVisualizationStage).and().send(this.inputEJBEvents)
-                .to(this.deploymentVisualizationStage.getInputPort()).start();
+    public void testEJB() throws IOException {
+
+        StageTester.test(this.undeploymentVisualizationStage).and().send(this.inputEJBEvents)
+                .to(this.undeploymentVisualizationStage.getInputPort()).start();
 
         final JSONArray changelogs = new JSONArray(TestHandler.getRequestBody());
-        final JSONObject expectedService = new JSONObject(changelogs.getJSONObject(0).get("data").toString());
-        final JSONObject expectedServiceInstance = new JSONObject(changelogs.getJSONObject(1).get("data").toString());
+        final JSONObject expectedServiceInstance = new JSONObject(changelogs.getJSONObject(0).get("data").toString());
 
-        Assert.assertThat(expectedService.get("type"), Is.is("service"));
-        Assert.assertThat(expectedServiceInstance.get("type"), Is.is("serviceInstance"));
-        Assert.assertEquals(expectedService.get("id"), expectedServiceInstance.get("serviceId"));
-
-        Assert.assertThat(expectedService.get("systemId"), Is.is(this.systemId));
-        Assert.assertThat(expectedServiceInstance.get("systemId"), Is.is(this.systemId));
+        Assert.assertThat(changelogs.getJSONObject(0).get("operation"), Is.is("DELETE"));
+        Assert.assertThat(expectedServiceInstance.getString("type"), Is.is("serviceInstance"));
     }
+
 }

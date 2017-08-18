@@ -1,6 +1,5 @@
 package org.iobserve.analysis.service.updater;
 
-import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +20,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
-import com.sun.net.httpserver.HttpServer;
-
 import teetime.framework.test.StageTester;
 import util.TestHandler;
 
@@ -42,7 +39,7 @@ public class AllocationVisualizationStageTest {
     /** test parameters for stage under test */
     @Mock
     private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
-    private static final String systemId = "testSystemId";
+    private static final String systemId = "test_systemId";
     private URL changelogURL;
     private final String outputPort = "9090";
     private static final String outputHostname = "localhost";
@@ -63,11 +60,8 @@ public class AllocationVisualizationStageTest {
     private final List<ResourceContainer> testResourceContainerList = new ArrayList<>();
     private ResourceContainer testResourceContainer;
 
-    /** handler for http requests */
-    private TestHandler testHandler;
-
     /**
-     * Initialize test data and setup test server.
+     * Initialize test data and stub necessary method calls.
      *
      * @throws Exception
      */
@@ -92,12 +86,6 @@ public class AllocationVisualizationStageTest {
         this.testResourceContainer.setId("test_nodeId");
         this.testResourceContainerList.add(this.testResourceContainer);
 
-        /** init test server */
-        this.testHandler = new TestHandler();
-        final HttpServer server = HttpServer.create(new InetSocketAddress(9090), 0);
-        server.createContext("/v1/systems/testSystemId/changelogs", this.testHandler);
-        server.start();
-
         // stubbing
         Mockito.when(this.mockedResourceContainerModelProvider.readOnlyComponentByName(ResourceContainer.class,
                 AllocationVisualizationStageTest.SERVICE)).thenReturn(this.testResourceContainerList);
@@ -114,7 +102,7 @@ public class AllocationVisualizationStageTest {
         StageTester.test(this.allocationVisualizationStage).and().send(this.inputEvents)
                 .to(this.allocationVisualizationStage.getInputPort()).start();
 
-        final JSONArray changelogs = new JSONArray(this.testHandler.getRequestBody());
+        final JSONArray changelogs = new JSONArray(TestHandler.getRequestBody());
         final JSONObject expectedNodegroup = new JSONObject(changelogs.getJSONObject(0).get("data").toString());
         final JSONObject expectedNode = new JSONObject(changelogs.getJSONObject(1).get("data").toString());
 
