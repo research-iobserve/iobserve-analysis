@@ -15,16 +15,16 @@ import com.sun.net.httpserver.HttpHandler;
  * @author jweg
  *
  */
-public class TestHandler implements HttpHandler {
+public final class TestHandler implements HttpHandler {
 
-    private String requestBody;
+    private static String requestBody;
 
     @Override
     public void handle(final HttpExchange t) throws IOException {
 
         final InputStream is = t.getRequestBody();
 
-        this.requestBody = IOUtils.toString(is, "UTF-8");
+        TestHandler.requestBody = IOUtils.toString(is, "UTF-8");
 
         final String response = "Changelog received";
         t.sendResponseHeaders(200, response.length());
@@ -34,8 +34,8 @@ public class TestHandler implements HttpHandler {
 
     }
 
-    public String getRequestBody() {
-        return this.requestBody;
+    public static String getRequestBody() {
+        return TestHandler.requestBody;
     }
 
 }
