@@ -39,8 +39,8 @@ public class CommunicationInstanceService {
             final String communicationId) {
         this.communicationInstanceId = "ci" + assemblyConnector.getId();
 
-        this.sourceId = "si" + assemblyConnector.getProvidingAssemblyContext_AssemblyConnector().getId();
-        this.targetId = "si" + assemblyConnector.getRequiringAssemblyContext_AssemblyConnector().getId();
+        this.sourceId = "si" + assemblyConnector.getRequiringAssemblyContext_AssemblyConnector().getId();
+        this.targetId = "si" + assemblyConnector.getProvidingAssemblyContext_AssemblyConnector().getId();
 
         // It is not possible yet to calculate the workload. We use a default value 1 here, so that
         // the communications between serviceInstances in the deployment visualization become

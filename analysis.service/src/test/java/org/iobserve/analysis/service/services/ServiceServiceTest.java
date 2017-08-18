@@ -1,5 +1,6 @@
 package org.iobserve.analysis.service.services;
 
+import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.junit.Assert;
@@ -10,7 +11,7 @@ import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 
 /**
  * Tests for {@link ServiceService}
- * 
+ *
  * @author jweg
  *
  */
@@ -39,6 +40,10 @@ public class ServiceServiceTest {
         this.testAssemblyContext.setEntityName("test_serviceName");
 
         this.systemId = "test_systemId";
+
+        /** expected result */
+        this.expectedService = Json.createObjectBuilder().add("type", "service").add("id", "_test_serviceId")
+                .add("systemId", "test_systemId").add("name", "test_serviceName").build();
     }
 
     /**

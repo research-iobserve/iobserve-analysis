@@ -17,6 +17,9 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.iobserve.analysis.data.RemoveAllocationContextEvent;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.SystemModelBuilder;
@@ -48,6 +51,8 @@ import teetime.framework.OutputPort;
  */
 public final class TUndeployment extends AbstractConsumerStage<IUndeploymentRecord> {
 
+    private static final Logger LOGGER = LogManager.getLogger(TUndeployment.class);
+
     /** reference to correspondence interface. */
     private final ICorrespondence correspondence;
     /** reference to allocation model provider. */
@@ -57,9 +62,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     /** reference to resource environment model provider. */
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
-    // TODO Do we need this output port?
-    // private final OutputPort<RemoveAllocationContextEvent> modelOutputPort =
-    // this.createOutputPort();
+    private final OutputPort<RemoveAllocationContextEvent> modelOutputPort = this.createOutputPort();
     private final OutputPort<IUndeploymentRecord> visualizationOutputPort = this.createOutputPort();
 
     /**
@@ -113,7 +116,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         final String context = event.getContext();
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
                 .apply(correspondence -> this.updateModel(service, correspondence, event))
-                .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
+                .elseApply(() -> TUndeployment.LOGGER.info("No correspondent found for %s \n, service"));
     }
 
     /**
@@ -127,7 +130,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         final String context = event.getContext();
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
                 .apply(correspondent -> this.updateModel(service, correspondent, event))
-                .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
+                .elseApply(() -> TUndeployment.LOGGER.info("No correspondent found for %s \n, service"));
     }
 
     /**
@@ -157,7 +160,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         // this can not happen since TAllocation should have created the resource container already.
         Opt.of(optResourceContainer).ifPresent()
                 .apply(resourceContainer -> this.updateModel(resourceContainer, asmContextName, event))
-                .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n", asmContextName));
+                .elseApply(() -> TUndeployment.LOGGER.info("AssemblyContext %s was not available?!\n, asmContextName"));
     }
 
     /**
@@ -188,21 +191,22 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
                     optAssemblyContext.get());
             this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
 
-            // this.modelOutputPort.send(new RemoveAllocationContextEvent(resourceContainer));
+            this.modelOutputPort.send(new RemoveAllocationContextEvent(resourceContainer));
             // signal allocation update
             this.visualizationOutputPort.send(event);
         } else {
-            System.out.printf("AssemblyContext for " + resourceContainer.getEntityName() + " not found! \n");
+            this.logger.info("AssemblyContext for " + resourceContainer.getEntityName() + " not found! \n");
         }
     }
 
-    // public OutputPort<RemoveAllocationContextEvent> getModelOutputPort() {
-    // return this.modelOutputPort;
-    // }
+    @Deprecated
+    public OutputPort<RemoveAllocationContextEvent> getModelOutputPort() {
+        return this.modelOutputPort;
+    }
 
     /**
      *
-     * @returns output port that signals a graph update to the deployment visualization
+     * @return output port that signals a model update to the deployment visualization
      */
     public OutputPort<IUndeploymentRecord> getVisualizationOutputPort() {
         return this.visualizationOutputPort;

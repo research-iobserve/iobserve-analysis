@@ -105,9 +105,7 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
         final String asmContextName = this.entityName + "_" + serverName;
         final AssemblyContext assemblyContext = this.assemblyContextModelGraphProvider
                 .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
-        // here: PostRequest: DELETE serviceInstance
-        // final JsonObject serviceObject = this.serviceService.createService(assemblyContext,
-        // this.systemId);
+
         final JsonObject serviceInstanceObject = Changelog.delete(this.serviceinstanceService
                 .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));
         final JsonArray dataArray = Json.createArrayBuilder().add(serviceInstanceObject).build();
@@ -135,7 +133,6 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
         final AssemblyContext assemblyContext = this.assemblyContextModelGraphProvider
                 .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
 
-        // here: PostRequest: DELETE serviceInstance
         // final JsonObject serviceObject = this.serviceService.createService(assemblyContext,
         // this.systemId);
         final JsonObject serviceInstanceObject = Changelog.delete(this.serviceinstanceService

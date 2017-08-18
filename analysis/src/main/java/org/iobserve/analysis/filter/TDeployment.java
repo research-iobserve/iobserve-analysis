@@ -17,6 +17,8 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.SystemModelBuilder;
@@ -48,6 +50,8 @@ import teetime.framework.OutputPort;
  * @author jweg
  */
 public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
+
+    private static final Logger LOGGER = LogManager.getLogger(TDeployment.class);
 
     /** reference to correspondent model. */
     private final ICorrespondence correspondence;
@@ -144,6 +148,8 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
                 .apply(correspondence -> this.updateModel(service, correspondence, url, event))
                 .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
+        // TODO besser?
+        // LOGGER.info("No correspondent found for service.");
     }
 
     /**
@@ -163,6 +169,8 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
                 .apply(correspondent -> this.updateModel(service, correspondent, url, event))
                 .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
+        // TODO besser?
+        // LOGGER.info("No correspondent found for service.");
     }
 
     /**

@@ -33,11 +33,10 @@ public class CommunicationService {
      */
     public JsonObject createCommunication(final AssemblyConnector assemblyConnector, final String systemId,
             final String technology) {
-        // TODO source und target richtig herum?
         this.communicationId = assemblyConnector.getId();
         this.technology = technology;
-        this.sourceId = assemblyConnector.getProvidingAssemblyContext_AssemblyConnector().getId();
-        this.targetId = assemblyConnector.getRequiringAssemblyContext_AssemblyConnector().getId();
+        this.sourceId = assemblyConnector.getRequiringAssemblyContext_AssemblyConnector().getId();
+        this.targetId = assemblyConnector.getProvidingAssemblyContext_AssemblyConnector().getId();
 
         final JsonObject communication = Json.createObjectBuilder().add("type", "communication")
                 .add("id", this.communicationId).add("systemId", systemId).add("technology", this.technology)
