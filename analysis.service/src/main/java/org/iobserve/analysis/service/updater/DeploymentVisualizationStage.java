@@ -21,6 +21,9 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
@@ -44,6 +47,8 @@ import util.SendHttpRequest;
  *
  */
 public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploymentRecord> {
+
+    private static final Logger LOGGER = LogManager.getLogger(TDeployment.class);
 
     private final ServiceService serviceService = new ServiceService();
     private final ServiceInstanceService serviceinstanceService = new ServiceInstanceService();
@@ -91,7 +96,7 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
 
         Opt.of(this.correspondenceModel.getCorrespondent(context)).ifPresent()
                 .apply(correspondent -> this.entityName = correspondent.getPcmEntityName())
-                .elseApply(() -> System.out.printf(
+                .elseApply(() -> DeploymentVisualizationStage.LOGGER.info(
                         "This should not happen, because the service was created and the models were updated before."));
         final String asmContextName = this.entityName + "_" + serverName;
         final AssemblyContext assemblyContext = this.allocationModelProvider
@@ -115,7 +120,7 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
 
         Opt.of(this.correspondenceModel.getCorrespondent(context)).ifPresent()
                 .apply(correspondent -> this.entityName = correspondent.getPcmEntityName())
-                .elseApply(() -> System.out.printf(
+                .elseApply(() -> DeploymentVisualizationStage.LOGGER.info(
                         "This should not happen, because the service was created and the models were updated before."));
 
         final String asmContextName = this.entityName + "_" + serverName;

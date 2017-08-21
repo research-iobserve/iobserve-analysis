@@ -116,7 +116,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         final String context = event.getContext();
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
                 .apply(correspondence -> this.updateModel(service, correspondence, event))
-                .elseApply(() -> TUndeployment.LOGGER.info("No correspondent found for %s \n, service"));
+                .elseApply(() -> TUndeployment.LOGGER.info("No correspondent found for " + service + "."));
     }
 
     /**
@@ -130,7 +130,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         final String context = event.getContext();
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
                 .apply(correspondent -> this.updateModel(service, correspondent, event))
-                .elseApply(() -> TUndeployment.LOGGER.info("No correspondent found for %s \n, service"));
+                .elseApply(() -> TUndeployment.LOGGER.info("No correspondent found for " + service + "."));
     }
 
     /**
@@ -159,8 +159,8 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
         // this can not happen since TAllocation should have created the resource container already.
         Opt.of(optResourceContainer).ifPresent()
-                .apply(resourceContainer -> this.updateModel(resourceContainer, asmContextName, event))
-                .elseApply(() -> TUndeployment.LOGGER.info("AssemblyContext %s was not available?!\n, asmContextName"));
+                .apply(resourceContainer -> this.updateModel(resourceContainer, asmContextName, event)).elseApply(
+                        () -> TUndeployment.LOGGER.info("AssemblyContext " + asmContextName + " was not available."));
     }
 
     /**

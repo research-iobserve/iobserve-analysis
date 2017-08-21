@@ -147,9 +147,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
                 .apply(correspondence -> this.updateModel(service, correspondence, url, event))
-                .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
-        // TODO besser?
-        // LOGGER.info("No correspondent found for service.");
+                .elseApply(() -> TDeployment.LOGGER.info("No correspondent found for " + service + "."));
     }
 
     /**
@@ -168,9 +166,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
                 .apply(correspondent -> this.updateModel(service, correspondent, url, event))
-                .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
-        // TODO besser?
-        // LOGGER.info("No correspondent found for service.");
+                .elseApply(() -> TDeployment.LOGGER.info("No correspondent found for " + service + "."));
     }
 
     /**
