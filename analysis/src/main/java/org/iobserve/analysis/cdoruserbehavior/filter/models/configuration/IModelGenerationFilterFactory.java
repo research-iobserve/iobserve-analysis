@@ -16,7 +16,7 @@
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
 /**
- * interface for factories creating {@link EntryCallFilterRules}
+ * Interface for factories creating {@link EntryCallFilterRules}.
  *
  * @author Christoph Dornieden
  *
