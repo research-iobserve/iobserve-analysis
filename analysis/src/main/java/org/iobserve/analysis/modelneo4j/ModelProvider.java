@@ -201,8 +201,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         Node node = null;
 
-        // java.lang.System.out.println("createNodes");
-
         // Check if node has already been created
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
@@ -228,15 +226,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             node = this.graph.getGraphDatabaseService().createNode(label);
             objectsToCreatedNodes.put(component, node);
-
-            // if (component.eIsProxy()) {
-            // java.lang.System.out.println("proxy " + component);
-            // }
-            //
-            // if (!containmentsAndDatatypes.contains(component)) {
-            // java.lang.System.out.println("containment " + component);
-            //
-            // }
 
             // Create a URI to enable proxy resolving
             final URI uri = ((BasicEObjectImpl) component).eProxyURI();
@@ -428,10 +417,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
             component = ModelProviderUtil.instantiateEObject(label.name());
 
-            // Set Uri
-            // final URI uri = URI.createURI(node.getProperty(ModelProvider.EMF_URI).toString());
-            // ((BasicEObjectImpl) component).eSetProxyURI(uri);
-
             // Load attribute values from the node
             final Iterator<Map.Entry<String, Object>> i = node.getAllProperties().entrySet().iterator();
             while (i.hasNext()) {
@@ -453,12 +438,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             nodesToCreatedObjects.putIfAbsent(node, component);
 
             // Load related nodes representing referenced components
-            // TODO: die Liste der ausgehenden rels erst noch nach REF_INDEX sortieren!
-
-            // final LinkedList<Relationship> rels = new LinkedList<>();
-            // node.getRelationships(Direction.OUTGOING).forEach(rels::add);
-            // Collections.sort(rels, null);
-
             for (final Relationship rel : ModelProviderUtil
                     .sortRelsByPosition(node.getRelationships(Direction.OUTGOING))) {
                 final Node endNode = rel.getEndNode();
@@ -771,8 +750,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                             final Object o = refs.get(i);
 
                             // Find node matching o
-                            final Node endNode = ModelProviderUtil.findMatchingNode(((BasicEObjectImpl) o).eProxyURI(),
-                                    outRels);
+                            final Node endNode = ModelProviderUtil
+                                    .findMatchingNode(ModelProviderUtil.getUriString((EObject) o), outRels);
 
                             if (endNode != null) {
                                 // Update already existing node
@@ -790,8 +769,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     } else {
                         if (refReprensation != null) {
                             // Find node matching refRepresentation
-                            final Node endNode = ModelProviderUtil
-                                    .findMatchingNode(((BasicEObjectImpl) refReprensation).eProxyURI(), outRels);
+                            final Node endNode = ModelProviderUtil.findMatchingNode(
+                                    ModelProviderUtil.getUriString((EObject) refReprensation), outRels);
 
                             if (endNode != null) {
                                 // Update already existing node

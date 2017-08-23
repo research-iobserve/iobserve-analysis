@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
@@ -93,14 +92,14 @@ public class ModelProviderUtil {
      *            The relationships to possibly matching nodes
      * @return The node representing the component or null if there is none
      */
-    public static Node findMatchingNode(final URI uri, final List<Relationship> rels) {
+    public static Node findMatchingNode(final String uri, final List<Relationship> rels) {
 
         if (uri != null) {
             for (final Relationship r : rels) {
                 final Node node = r.getEndNode();
                 final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
 
-                if (uri.toString().equals(nodeUri)) {
+                if (uri.equals(nodeUri)) {
                     rels.remove(r);
                     return node;
                 }
