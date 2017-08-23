@@ -68,7 +68,7 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
 
             boolean send = false;
             for (int i = 0; i < this.hostnames.length; i++) {
-                if (this.hostnames.equals(traceMetadata.getHostname())) {
+                if (this.hostnames[i].equals(traceMetadata.getHostname())) {
                     this.outputPorts.get(i).send(element);
                     send = true;
                 }
@@ -83,7 +83,7 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
 
             boolean send = false;
             for (int i = 0; i < this.hostnames.length; i++) {
-                if (this.hostnames.equals(metadata.getHostname())) {
+                if (this.hostnames[i].equals(metadata.getHostname())) {
                     this.outputPorts.get(i).send(element);
                     send = true;
                 }
