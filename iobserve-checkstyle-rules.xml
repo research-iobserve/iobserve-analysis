@@ -7,7 +7,7 @@
 <module name="Checker">
 
 	<!-- iobserve default is warning instead of error -->
-	<property name="severity" value="error" />
+	<property name="severity" value="warning" />
 
 	<!-- KIEKER Filter -->
 	<module name="SuppressWithNearbyCommentFilter">
