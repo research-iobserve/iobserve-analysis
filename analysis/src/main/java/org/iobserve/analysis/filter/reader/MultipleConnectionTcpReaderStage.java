@@ -31,8 +31,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.iobserve.analysis.data.ExtendedAfterOperationEvent;
-import org.iobserve.analysis.data.ExtendedBeforeOperationEvent;
+import org.iobserve.common.record.ExtendedAfterOperationEvent;
+import org.iobserve.common.record.ExtendedBeforeOperationEvent;
 
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
@@ -294,9 +294,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
                 return new ExtendedBeforeOperationEvent(event.getTimestamp(), metaData.getTraceId(),
                         event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
                         event.getInformations());
-            }
-
-            else if (record instanceof AfterOperationEvent) {
+            } else if (record instanceof AfterOperationEvent) {
                 final AfterOperationEvent event = (AfterOperationEvent) record;
                 return new AfterOperationEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
                         event.getOperationSignature(), event.getClassSignature());
