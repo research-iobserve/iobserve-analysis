@@ -13,6 +13,7 @@ import org.iobserve.analysis.service.services.NodegroupService;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.service.services.SystemService;
+import org.iobserve.analysis.service.services.UsergroupService;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
@@ -22,6 +23,11 @@ import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
+import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
+import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
+import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
+import org.palladiosimulator.pcm.usagemodel.Start;
+import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
 import util.Changelog;
 import util.SendHttpRequest;
@@ -40,6 +46,7 @@ public final class InitializeDeploymentVisualization {
     private final ModelProvider<ResourceContainer> allocationResourceContainerModelGraphProvider;
     private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final ModelProvider<UsageScenario> usageScenarioModelGraphProvider;
 
     /** services for visualization elements */
     private final SystemService systemService = new SystemService();
@@ -49,6 +56,7 @@ public final class InitializeDeploymentVisualization {
     private final ServiceInstanceService serviceinstanceService = new ServiceInstanceService();
     private final CommunicationService communicationService = new CommunicationService();
     private final CommunicationInstanceService communicationinstanceService = new CommunicationInstanceService();
+    private final UsergroupService usergroupService = new UsergroupService();
 
     private final URL changelogUrl;
     private final URL systemUrl;
@@ -70,13 +78,15 @@ public final class InitializeDeploymentVisualization {
             final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<ResourceContainer> allocationResourceContainerModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+            final ModelProvider<UsageScenario> usageScenarioModelGraphProvider) {
         this.systemUrl = systemUrl;
         this.changelogUrl = changelogUrl;
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.allocationResourceContainerModelGraphProvider = allocationResourceContainerModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
+        this.usageScenarioModelGraphProvider = usageScenarioModelGraphProvider;
     }
 
     /**
@@ -88,24 +98,30 @@ public final class InitializeDeploymentVisualization {
      * @throws Exception
      */
     protected void initialize() throws Exception {
-        // set up the models
+        // set up the system model and take parts from it
         final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
 
         final List<AssemblyContext> assemblyContexts = systemModel.getAssemblyContexts__ComposedStructure();
-
+        // set up the allocation model and take parts from it
         final List<String> allocationIds = this.allocationModelGraphProvider.readComponentByType(Allocation.class);
         // an allocation model contains exactly one allocation, therefore .get(0)
         final String allocationId = allocationIds.get(0);
         final Allocation allocation = this.allocationModelGraphProvider.readOnlyComponentById(Allocation.class,
                 allocationId);
         final List<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
+        // set up the resource environment model and take parts from it
         final ResourceEnvironment resourceEnvironmentModel = this.resourceEnvironmentModelGraphProvider
                 .readOnlyRootComponent(ResourceEnvironment.class);
         final List<LinkingResource> linkingResources = resourceEnvironmentModel
                 .getLinkingResources__ResourceEnvironment();
         final List<ResourceContainer> resourceContainers = resourceEnvironmentModel
                 .getResourceContainer_ResourceEnvironment();
+        // set up the resource environment model and take parts from it
+        final UsageScenario usageScenario = this.usageScenarioModelGraphProvider
+                .readOnlyRootComponent(UsageScenario.class);
+        final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
+        final List<AbstractUserAction> usageActions = scenarioBehaviour.getActions_ScenarioBehaviour();
 
         // sending created components to visualization (in predefined order stated in changelog
         // constraints)
@@ -223,7 +239,16 @@ public final class InitializeDeploymentVisualization {
             }
 
         }
+        // get services of usage scenario
+        AbstractUserAction actualUsageAction;
+        for (int i = 0; i < usageActions.size(); i++) {
+            actualUsageAction = usageActions.get(i);
+            if (actualUsageAction instanceof Start) {
+                if (actualUsageAction instanceof EntryLevelSystemCall) {
 
+                }
+            }
+        }
     }
 
 }

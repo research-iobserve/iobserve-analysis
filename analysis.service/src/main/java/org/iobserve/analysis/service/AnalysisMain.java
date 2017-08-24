@@ -34,6 +34,7 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -144,10 +145,12 @@ public final class AnalysisMain {
                 Graph allocationModelGraph = graphLoader
                         .initializeAllocationModelGraph(allocationModelProvider.getModel());
                 Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
+                Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
                 // load neo4j graphs
                 resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
                 allocationModelGraph = graphLoader.getAllocationModelGraph();
                 systemModelGraph = graphLoader.getSystemModelGraph();
+                usageModelGraph = graphLoader.getUsageModelGraph();
                 // new graphModelProvider
                 final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
                         resourceEnvironmentModelGraph);
@@ -163,6 +166,8 @@ public final class AnalysisMain {
                         systemModelGraph);
                 final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(
                         systemModelGraph);
+                final ModelProvider<UsageScenario> usageScenarioModelGraphProvider = new ModelProvider<>(
+                        usageModelGraph);
                 // get systemId
                 final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
                         .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
@@ -174,7 +179,7 @@ public final class AnalysisMain {
                 final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
                         systemUrl, changelogUrl, allocationModelGraphProvider,
                         allocationResourceContainerModelGraphProvider, systemModelGraphProvider,
-                        resourceEnvironmentModelGraphProvider);
+                        resourceEnvironmentModelGraphProvider, usageScenarioModelGraphProvider);
                 try {
                     deploymentVisualization.initialize();
                 } catch (final Exception e) {
