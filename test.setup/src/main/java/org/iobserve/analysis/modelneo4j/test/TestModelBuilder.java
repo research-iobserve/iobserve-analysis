@@ -34,7 +34,7 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
  */
 public class TestModelBuilder {
 
-    public Repository createReposiory() {
+    public static Repository createReposiory() {
         // Instantiate components, interfaces etc.
         final Repository repo = RepositoryFactory.eINSTANCE.createRepository();
 
