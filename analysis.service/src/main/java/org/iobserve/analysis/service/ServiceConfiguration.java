@@ -62,6 +62,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      *            provider for the allocation model
      * @param systemModelProvider
      *            provider for the system model
+     * @param visualizationServiceURL
+     *            url to the visualization service
      *
      * @throws MalformedURLException
      *             if any passed URL in the configuration is broken.
@@ -71,11 +73,11 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
             final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider)
-            throws MalformedURLException {
+            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+            String visualizationServiceURL) throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
-                thinkTime, closedWorkload);
+                thinkTime, closedWorkload, visualizationServiceURL);
 
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");

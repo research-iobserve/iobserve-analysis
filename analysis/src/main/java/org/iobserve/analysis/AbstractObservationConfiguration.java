@@ -86,12 +86,15 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            think time, configuration for entry event filter
      * @param closedWorkload
      *            kind of workload, configuration for entry event filter
+     * @param visualizationServiceURL
+     *            url to the visualization service
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
+            final String visualizationServiceURL) {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
@@ -135,7 +138,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
         behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
-        behaviorModelConfiguration.setVisualizationUrl("http://localhost:8080/ubm-backend/v1");
+        behaviorModelConfiguration.setVisualizationUrl(visualizationServiceURL);
         behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
         behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
         behaviorModelConfiguration.setSignatureCreationStrategy(signatureStrategy);

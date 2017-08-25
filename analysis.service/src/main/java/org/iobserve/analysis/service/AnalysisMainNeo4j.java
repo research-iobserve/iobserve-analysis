@@ -83,6 +83,10 @@ public final class AnalysisMainNeo4j {
             "--pcmneo4j" }, required = true, description = "Directory containing Neo4j database with PCM model data.", converter = FileConverter.class)
     private File pcmModelsNeo4jDirectory;
 
+    @Parameter(names = { "-u",
+            "--ubm-visualization" }, required = true, description = "User behavior model visualitation service URL.")
+    private String visualizationServiceURL;
+
     /**
      * Default constructor.
      */
@@ -139,7 +143,8 @@ public final class AnalysisMainNeo4j {
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
                         outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
                         correspondenceModel, usageModelProvider, repositoryModelProvider,
-                        resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider);
+                        resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider,
+                        this.visualizationServiceURL);
 
                 /** Neo4j database ************************************************************/
                 // Create a graph loader to receive the different neo4j graphs for each model

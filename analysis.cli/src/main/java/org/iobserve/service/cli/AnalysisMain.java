@@ -72,6 +72,10 @@ public final class AnalysisMain {
             "--pcm" }, required = true, description = "Directory containing PCM model data.", converter = FileConverter.class)
     private File pcmModelsDirectory;
 
+    @Parameter(names = { "-u",
+            "--ubm-visualization" }, required = true, description = "User behavior model visualitation service URL.")
+    private String visualizationServiceURL;
+
     /**
      * Default constructor.
      */
@@ -127,7 +131,7 @@ public final class AnalysisMain {
             final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
                     correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
                     allocationModelProvider, systemModelProvider, this.varianceOfUserGroups, this.thinkTime,
-                    this.closedWorkload);
+                    this.closedWorkload, this.visualizationServiceURL);
 
             System.out.println("Analysis configuration");
             final Execution<Configuration> analysis = new Execution<>(configuration);

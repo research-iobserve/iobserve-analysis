@@ -56,14 +56,18 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            think time, configuration for entry event filter
      * @param closedWorkload
      *            kind of workload, configuration for entry event filter
+     * @param visualizationServiceURL
+     *            url to the visualization service
      */
     public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
+            final String visualizationServiceURL) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
+                visualizationServiceURL);
 
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
                 MultiInputObservationConfiguration.CAPACITY);
