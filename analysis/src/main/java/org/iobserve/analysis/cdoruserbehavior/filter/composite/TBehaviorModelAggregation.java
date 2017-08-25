@@ -15,9 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
-import org.iobserve.analysis.cdoruserbehavior.clustering.ExpectationMaximizationClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelCreation;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelVisualization;
+import org.iobserve.analysis.cdoruserbehavior.filter.TVectorQuantizationClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 
 import kieker.common.logging.Log;
@@ -33,8 +33,8 @@ import weka.core.Instances;
 public class TBehaviorModelAggregation extends CompositeStage {
     /** logger. */
     private static final Log LOG = LogFactory.getLog(TBehaviorModelAggregation.class);
-    private final EMClusteringProcess tClustering;
-    // private final TVectorQuantizationClustering tClustering;
+    // private final EMClusteringProcess tClustering;
+    private final TVectorQuantizationClustering tClustering;
     private final TBehaviorModelCreation tBehaviorModelCreation;
     private final TBehaviorModelVisualization tIObserveUBM;
 
@@ -46,8 +46,8 @@ public class TBehaviorModelAggregation extends CompositeStage {
     public TBehaviorModelAggregation(final BehaviorModelConfiguration configuration) {
         this.configuration = configuration;
 
-        this.tClustering = new EMClusteringProcess(new ExpectationMaximizationClustering());
-        // this.tClustering = new TVectorQuantizationClustering(this.configuration.getClustering());
+        // this.tClustering = new EMClusteringProcess(new ExpectationMaximizationClustering());
+        this.tClustering = new TVectorQuantizationClustering(this.configuration.getClustering());
         this.tBehaviorModelCreation = new TBehaviorModelCreation(configuration.getNamePrefix());
         this.tIObserveUBM = new TBehaviorModelVisualization(configuration.getVisualizationUrl(),
                 configuration.getSignatureCreationStrategy());

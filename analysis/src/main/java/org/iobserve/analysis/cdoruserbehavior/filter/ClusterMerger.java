@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,7 +45,6 @@ public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<
     @Override
     protected void execute(final Map<Integer, List<Pair<Instance, Double>>> clustering) throws Exception {
         // simply pick the first instance of every cluster
-        final List<Instance> resultingInstances = new LinkedList<>();
         // lookup attributes to build a new instances Object
         Instance instance = clustering.entrySet().iterator().next().getValue().get(0).getElement1();
         final FastVector attributes = new FastVector();
@@ -62,10 +60,24 @@ public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<
                 result.add(instance);
             }
         }
+        this.printInstances(result);
         this.outputPort.send(result);
     }
 
     public OutputPort<Instances> getOutputPort() {
         return this.outputPort;
+    }
+
+    private void printInstances(final Instances instances) {
+        for (int i = 0; i < instances.numInstances(); i++) {
+            System.out.println("***************************");
+            System.out.println("Cluster " + i);
+            System.out.println("***************************");
+            final Instance instance = instances.instance(i);
+            for (int a = 0; a < instance.numAttributes(); a++) {
+                System.out.println(instances.attribute(a).name() + " : " + instance.value(a));
+
+            }
+        }
     }
 }
