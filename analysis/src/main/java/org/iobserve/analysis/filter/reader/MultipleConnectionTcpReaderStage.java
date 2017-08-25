@@ -200,8 +200,8 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
 
     private boolean registerRegistryEntry(final Connection connection, final int clazzId) {
         // identify string identifier and string length
-        if (connection.getBuffer().remaining() < (MultipleConnectionTcpReaderStage.INT_BYTES
-                + MultipleConnectionTcpReaderStage.INT_BYTES)) {
+        if (connection.getBuffer().remaining() < MultipleConnectionTcpReaderStage.INT_BYTES
+                + MultipleConnectionTcpReaderStage.INT_BYTES) {
             return false;
         } else {
             final int id = connection.getBuffer().getInt();

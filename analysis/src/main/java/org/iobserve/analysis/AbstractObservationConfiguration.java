@@ -53,15 +53,15 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      */
     protected final RecordSwitch recordSwitch;
 
-    protected final TAllocation tAllocationSuccDeploy;
+    protected TAllocation tAllocationSuccDeploy;
 
-    protected final TAllocationFinished tAllocationFinished;
+    protected TAllocationFinished tAllocationFinished;
 
-    protected final TDeployment deployment;
+    protected TDeployment deployment;
 
-    protected final TDeployment deploymentSuccAllocation;
+    protected TDeployment deploymentSuccAllocation;
 
-    protected final TUndeployment undeployment;
+    protected TUndeployment undeployment;
 
     private final boolean modeCdor = false;
 
@@ -96,14 +96,17 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.recordSwitch = new RecordSwitch();
 
         final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
-        this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
-        this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider);
-        this.tAllocationFinished = new TAllocationFinished();
-        this.deploymentSuccAllocation = new TDeployment(correspondenceModel, allocationModelProvider,
-                systemModelProvider, resourceEnvironmentModelProvider);
-        this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
+        // this.deployment = new TDeployment(correspondenceModel, allocationModelProvider,
+        // systemModelProvider,
+        // resourceEnvironmentModelProvider);
+        // this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider);
+        // this.tAllocationFinished = new TAllocationFinished();
+        // this.deploymentSuccAllocation = new TDeployment(correspondenceModel,
+        // allocationModelProvider,
+        // systemModelProvider, resourceEnvironmentModelProvider);
+        // this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider,
+        // systemModelProvider,
+        // resourceEnvironmentModelProvider);
 
         final TEntryCall tEntryCall = new TEntryCall();
 
@@ -156,18 +159,22 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         /** -- end plain clustering. */
 
         /** dispatch different monitoring data. */
-        this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), this.deployment.getInputPort());
-        this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), this.undeployment.getInputPort());
+        // this.connectPorts(this.recordSwitch.getDeploymentOutputPort(),
+        // this.deployment.getInputPort());
+        // this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(),
+        // this.undeployment.getInputPort());
         this.connectPorts(this.recordSwitch.getAllocationOutputPort(), tAllocation.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
         // this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
-        this.connectPorts(this.deployment.getDeploymentOutputPort(), this.tAllocationFinished.getDeploymentInputPort());
-        this.connectPorts(this.deployment.getAllocationOutputPort(), this.tAllocationSuccDeploy.getInputPort());
-        this.connectPorts(this.tAllocationSuccDeploy.getAllocationFinishedOutputPort(),
-                this.tAllocationFinished.getAllocationFinishedInputPort());
-        this.connectPorts(this.tAllocationFinished.getDeploymentOutputPort(),
-                this.deploymentSuccAllocation.getInputPort());
+        // this.connectPorts(this.deployment.getDeploymentOutputPort(),
+        // this.tAllocationFinished.getDeploymentInputPort());
+        // this.connectPorts(this.deployment.getAllocationOutputPort(),
+        // this.tAllocationSuccDeploy.getInputPort());
+        // this.connectPorts(this.tAllocationSuccDeploy.getAllocationFinishedOutputPort(),
+        // this.tAllocationFinished.getAllocationFinishedInputPort());
+        // this.connectPorts(this.tAllocationFinished.getDeploymentOutputPort(),
+        // this.deploymentSuccAllocation.getInputPort());
 
         this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
 

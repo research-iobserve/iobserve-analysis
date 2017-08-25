@@ -59,8 +59,6 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
     public TEntryCallSequence() {
     }
 
-    // TODO remove obsolte executeOld method after properly understanding difference with new
-    // version
     @Override
     protected void execute(final ExtendedEntryCallEvent event) {
         // add the event to the corresponding user session
@@ -84,7 +82,7 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
 
         // check for expired sessions and send them to the
         // TODO Is this the right place for that?
-        this.removeExpiredSessions();
+        // this.removeExpiredSessions();
 
     }
 
@@ -101,7 +99,7 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
             final UserSession session = this.sessions.get(sessionId);
             final long exitTime = session.getExitTime();
 
-            final boolean isExpired = (exitTime + TEntryCallSequence.USER_SESSION_EXPIRATIONTIME) < timeNow;
+            final boolean isExpired = exitTime + TEntryCallSequence.USER_SESSION_EXPIRATIONTIME < timeNow;
 
             if (isExpired) {
                 sessionsToSend.add(session);

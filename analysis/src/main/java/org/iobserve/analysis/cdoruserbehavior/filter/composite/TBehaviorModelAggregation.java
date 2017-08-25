@@ -15,8 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
+import org.iobserve.analysis.cdoruserbehavior.clustering.ExpectationMaximizationClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelCreation;
-import org.iobserve.analysis.cdoruserbehavior.filter.TVectorQuantizationClustering;
+import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelVisualization;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 
 import kieker.common.logging.Log;
@@ -32,29 +33,27 @@ import weka.core.Instances;
 public class TBehaviorModelAggregation extends CompositeStage {
     /** logger. */
     private static final Log LOG = LogFactory.getLog(TBehaviorModelAggregation.class);
+    private final EMClusteringProcess tClustering;
     // private final TVectorQuantizationClustering tClustering;
-    private final TVectorQuantizationClustering tClustering;
     private final TBehaviorModelCreation tBehaviorModelCreation;
-    // private final TBehaviorModelVisualization tIObserveUBM;
+    private final TBehaviorModelVisualization tIObserveUBM;
 
     private final BehaviorModelConfiguration configuration;
 
     /**
-     * constructor configuratition of the aggregation filters
+     * Constructor configuration of the aggregation filters.
      */
     public TBehaviorModelAggregation(final BehaviorModelConfiguration configuration) {
         this.configuration = configuration;
 
-        // this.tClustering = new EMClusteringProcess(new ExpectationMaximizationClustering());
-        this.tClustering = new TVectorQuantizationClustering(this.configuration.getClustering());
+        this.tClustering = new EMClusteringProcess(new ExpectationMaximizationClustering());
+        // this.tClustering = new TVectorQuantizationClustering(this.configuration.getClustering());
         this.tBehaviorModelCreation = new TBehaviorModelCreation(configuration.getNamePrefix());
-        // this.tIObserveUBM = new TBehaviorModelVisualization(configuration.getVisualizationUrl(),
-        // configuration.getSignatureCreationStrategy());
+        this.tIObserveUBM = new TBehaviorModelVisualization(configuration.getVisualizationUrl(),
+                configuration.getSignatureCreationStrategy());
 
         this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
-        // this.connectPorts(this.tBehaviorModelCreation.getOutputPort(),
-        // this.tIObserveUIServer.getInputPort());
-        // this.tIObserveUBM.getInputPort());
+        this.connectPorts(this.tBehaviorModelCreation.getOutputPort(), this.tIObserveUBM.getInputPort());
     }
 
     /**

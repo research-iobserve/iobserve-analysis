@@ -44,12 +44,10 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
     /** logger. */
     private static final Log LOG = LogFactory.getLog(TBehaviorModelPreprocessing.class);
 
-    private final BehaviorModelConfiguration configuration;
-
     private final Distributor<EntryCallSequenceModel> distributor;
     private final Merger<Object> merger;
     private final TEntryCallSequenceFilter tEntryCallSequenceFilter;
-    private final TBehaviorModelTableGeneration tBehaviorModelGeneration;
+    private final TBehaviorModelTableGeneration tBehaviorModelTableGeneration;
     private final TBehaviorModelPreperation tBehaviorModelPreperation;
 
     private final TInstanceTransformations tInstanceTransformations;
@@ -58,7 +56,6 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
      * constructor
      */
     public TBehaviorModelPreprocessing(final BehaviorModelConfiguration configuration) {
-        this.configuration = configuration;
 
         this.tEntryCallSequenceFilter = new TEntryCallSequenceFilter(configuration.getModelGenerationFilter());
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
@@ -66,18 +63,18 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
 
         this.merger = new Merger<>(new SkippingBusyWaitingRoundRobinStrategy());
 
-        this.tBehaviorModelGeneration = new TBehaviorModelTableGeneration(
-                this.configuration.getRepresentativeStrategy(), configuration.keepEmptyTransitions());
+        this.tBehaviorModelTableGeneration = new TBehaviorModelTableGeneration(configuration.getRepresentativeStrategy(),
+                configuration.keepEmptyTransitions());
 
         this.tBehaviorModelPreperation = new TBehaviorModelPreperation(configuration.keepEmptyTransitions());
 
         this.tInstanceTransformations = new TInstanceTransformations();
 
         this.connectPorts(this.tEntryCallSequenceFilter.getOutputPort(), this.distributor.getInputPort());
-        this.connectPorts(this.distributor.getNewOutputPort(), this.tBehaviorModelGeneration.getInputPort());
+        this.connectPorts(this.distributor.getNewOutputPort(), this.tBehaviorModelTableGeneration.getInputPort());
         this.connectPorts(this.distributor.getNewOutputPort(), this.merger.getNewInputPort());
 
-        this.connectPorts(this.tBehaviorModelGeneration.getOutputPort(), this.merger.getNewInputPort());
+        this.connectPorts(this.tBehaviorModelTableGeneration.getOutputPort(), this.merger.getNewInputPort());
 
         this.connectPorts(this.merger.getOutputPort(), this.tBehaviorModelPreperation.getInputPort());
         this.connectPorts(this.tBehaviorModelPreperation.getOutputPort(), this.tInstanceTransformations.getInputPort());
