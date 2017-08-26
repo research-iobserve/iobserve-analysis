@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.palladiosimulator.pcm.core.entity.Entity;
 import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.Interface;
+import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
@@ -38,94 +39,96 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
  * @author Lars Bluemke
  *
  */
-public class RepositoryModelProviderTest {
-
-    private final File neo4jDir = new File("/Users/LarsBlumke/Desktop/neo4jDb");
-    private final Graph graph = new Graph(this.neo4jDir);
-    private final File neo4jDir2 = new File("/Users/LarsBlumke/Desktop/neo4jDb2");
-    private final Graph graph2 = new Graph(this.neo4jDir2);
-    private final File neo4jDir3 = new File("/Users/LarsBlumke/Desktop/neo4jDb3");
-    private final Graph graph3 = new Graph(this.neo4jDir3);
+public class RepositoryModelProviderTest implements IModelProviderTest {
+    private static final File GRAPH_DIR = new File("/Users/LarsBlumke/Desktop/neo4jDb");
+    private static final Graph GRAPH = new Graph(RepositoryModelProviderTest.GRAPH_DIR);
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
-    private final Repository model = TestModelBuilder.createReposiory();
-    private final ModelProvider<Repository> modelProvider = new ModelProvider<>(this.graph);
-    private final ModelProvider<EObject> modelProvider2 = new ModelProvider<>(this.graph2);
-    private final ModelProvider<EObject> modelProvider3 = new ModelProvider<>(this.graph3);
+    private Repository model = TestModelBuilder.createReposiory();
 
+    @Override
     @Before
     public void clearGraph() {
-        this.modelProvider.clearGraph();
-        this.modelProvider2.clearGraph();
-        this.modelProvider3.clearGraph();
+        new ModelProvider<>(RepositoryModelProviderTest.GRAPH).clearGraph();
+    }
+
+    @Before
+    public void createModel() {
+        this.model = TestModelBuilder.createReposiory();
+    }
+
+    @Override
+    @Test
+    public void createThenReadById() {
+        final Repository readModel;
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+
+        modelProvider.createComponent(this.model);
+        readModel = modelProvider.readOnlyComponentById(Repository.class, this.model.getId());
+
+        Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
+    }
+
+    @Override
+    @Test
+    public void createThenReadByName() {
+        final List<Repository> readModels;
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+
+        modelProvider.createComponent(this.model);
+        readModels = modelProvider.readOnlyComponentByName(Repository.class, this.model.getEntityName());
+
+        for (final Repository readModel : readModels) {
+            Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
+        }
+    }
+
+    @Override
+    @Test
+    public void createThenReadByType() {
+        final List<String> readIds;
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+
+        modelProvider.createComponent(this.model);
+        readIds = modelProvider.readComponentByType(Repository.class);
+
+        for (final String readId : readIds) {
+            Assert.assertTrue(this.model.getId().equals(readId));
+        }
 
     }
 
-    // @Override
-    // @Test
-    // public void createThenReadById() {
-    // final Repository readModel;
-    //
-    // this.modelProvider.createComponent(this.model);
-    // readModel = this.modelProvider.readComponentById(Repository.class, this.model.getId());
-    //
-    // Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
-    // }
+    @Override
+    @Test
+    public void createThenReadRoot() {
+        final Repository readModel;
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
 
-    // @Test
-    // public void createThenReadByName() {
-    // final List<Repository> readModels;
-    //
-    // this.modelProvider.createComponent(this.model);
-    // readModels = this.modelProvider.readComponentByName(Repository.class,
-    // this.model.getEntityName());
-    //
-    // for (final Repository readModel : readModels) {
-    // Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
-    // }
-    // }
-    //
-    // @Test
-    // public void createThenReadByType() {
-    // final List<String> readIds;
-    //
-    // this.modelProvider.createComponent(this.model);
-    // readIds = this.modelProvider.readComponentByType(Repository.class);
-    //
-    // for (final String readId : readIds) {
-    // Assert.assertTrue(this.model.getId().equals(readId));
-    // }
-    //
-    // }
-    //
-    // @Test
-    // public void createThenReadRoot() {
-    // final Repository readModel;
-    //
-    // this.modelProvider.createComponent(this.model);
-    // readModel = this.modelProvider.readRootComponent(Repository.class);
-    //
-    // Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
-    // }
-    //
-    // @Test
-    // public void createThenReadContaining() {
-    // final Repository readModel;
-    // final OperationInterface inter = (OperationInterface)
-    // this.model.getInterfaces__Repository().get(0);
-    //
-    // this.modelProvider.createComponent(this.model);
-    // readModel = (Repository)
-    // this.modelProvider.readContainingComponentById(OperationInterface.class,
-    // inter.getId());
-    //
-    // Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
-    // }
-    //
+        modelProvider.createComponent(this.model);
+        readModel = modelProvider.readOnlyRootComponent(Repository.class);
+
+        Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
+    }
+
+    @Override
+    @Test
+    public void createThenReadContaining() {
+        final Repository readModel;
+        final OperationInterface inter = (OperationInterface) this.model.getInterfaces__Repository().get(0);
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+
+        modelProvider.createComponent(this.model);
+        readModel = (Repository) modelProvider.readOnlyContainingComponentById(OperationInterface.class, inter.getId());
+
+        Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
+    }
+
+    @Override
     @Test
     public void createThenReadReferencing() {
         final Map<String, EObject> expectedObjects = new HashMap<>();
         final List<EObject> readObjects;
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
 
         // Only components, interfaces and data types reference back the repository in our test
         // model
@@ -139,8 +142,8 @@ public class RepositoryModelProviderTest {
             expectedObjects.put(o.toString(), o);
         }
 
-        this.modelProvider.createComponent(this.model);
-        readObjects = this.modelProvider.readReferencingComponentsById(Repository.class, this.model.getId());
+        modelProvider.createComponent(this.model);
+        readObjects = modelProvider.readReferencingComponentsById(Repository.class, this.model.getId());
 
         Assert.assertTrue(expectedObjects.size() == readObjects.size());
 
@@ -155,12 +158,7 @@ public class RepositoryModelProviderTest {
             }
 
             if (!this.equalityHelper.equals(expectedObject, readObject)) {
-                System.out.println(expectedObject + "  " + readObject);
-                this.modelProvider2.clearGraph();
-                this.modelProvider3.clearGraph();
-                this.modelProvider2.createComponent(expectedObject);
-                this.modelProvider3.createComponent(readObject);
-                i = 1000;
+                System.out.println(expectedObject + " " + readObject);
             }
 
             // System.out.println("Testing " + expectedObject);
