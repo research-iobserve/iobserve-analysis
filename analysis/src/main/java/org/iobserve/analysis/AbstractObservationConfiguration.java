@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import org.iobserve.analysis.cdoruserbehavior.clustering.EAggregationType;
+import org.iobserve.analysis.cdoruserbehavior.clustering.EOutputMode;
 import org.iobserve.analysis.cdoruserbehavior.clustering.IVectorQuantizationClustering;
 import org.iobserve.analysis.cdoruserbehavior.clustering.XMeansClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelComparison;
@@ -88,13 +90,15 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            kind of workload, configuration for entry event filter
      * @param visualizationServiceURL
      *            url to the visualization service
+     * @param aggregationType aggregation type
+     * @param outputMode output mode
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
-            final String visualizationServiceURL) {
+            final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode) {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
@@ -143,6 +147,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
         behaviorModelConfiguration.setSignatureCreationStrategy(signatureStrategy);
         behaviorModelConfiguration.setClustering(behaviorModelClustering);
+        behaviorModelConfiguration.setAggregationType(aggregationType);
+        behaviorModelConfiguration.setOutputMode(outputMode);
 
         // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
 

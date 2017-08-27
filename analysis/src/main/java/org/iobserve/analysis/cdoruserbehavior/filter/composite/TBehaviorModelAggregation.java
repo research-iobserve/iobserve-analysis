@@ -15,10 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
+import org.iobserve.analysis.cdoruserbehavior.clustering.ExpectationMaximizationClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelCreation;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelVisualization;
 import org.iobserve.analysis.cdoruserbehavior.filter.TVectorQuantizationClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
+import org.iobserve.analysis.filter.writer.BehaviorModelWriter;
+import org.iobserve.analysis.filter.writer.AbstractModelOutputFilter;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
@@ -33,27 +36,47 @@ import weka.core.Instances;
 public class TBehaviorModelAggregation extends CompositeStage {
     /** logger. */
     private static final Log LOG = LogFactory.getLog(TBehaviorModelAggregation.class);
-    // private final EMClusteringProcess tClustering;
-    private final TVectorQuantizationClustering tClustering;
+    private TVectorQuantizationClustering tClustering;
     private final TBehaviorModelCreation tBehaviorModelCreation;
-    private final TBehaviorModelVisualization tIObserveUBM;
 
     private final BehaviorModelConfiguration configuration;
+	private EMClusteringProcess emClustering;
 
     /**
      * Constructor configuration of the aggregation filters.
      */
     public TBehaviorModelAggregation(final BehaviorModelConfiguration configuration) {
         this.configuration = configuration;
-
-        // this.tClustering = new EMClusteringProcess(new ExpectationMaximizationClustering());
-        this.tClustering = new TVectorQuantizationClustering(this.configuration.getClustering());
+        
         this.tBehaviorModelCreation = new TBehaviorModelCreation(configuration.getNamePrefix());
-        this.tIObserveUBM = new TBehaviorModelVisualization(configuration.getVisualizationUrl(),
+        
+        switch (configuration.getAggregationType()) {
+        case XMeansClustering : {
+        	this.tClustering = new TVectorQuantizationClustering(this.configuration.getClustering());
+        	this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
+        	break;
+        }
+        case EMClustering: {
+        	this.emClustering = new EMClusteringProcess(new ExpectationMaximizationClustering());
+        	this.connectPorts(this.emClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
+        	break;
+        }
+        default:
+        	LOG.error("Unknown clustering method " + configuration.getAggregationType());
+        }
+               
+        /** visualization integration. */
+        AbstractModelOutputFilter tIObserveUBM = null;
+        switch(configuration.getOutputMode()) {
+        case UBM_VISUALIZATION: tIObserveUBM = new TBehaviorModelVisualization(configuration.getVisualizationUrl(),
                 configuration.getSignatureCreationStrategy());
-
-        this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
-        this.connectPorts(this.tBehaviorModelCreation.getOutputPort(), this.tIObserveUBM.getInputPort());
+        case FILE_OUTPUT: tIObserveUBM = new BehaviorModelWriter(configuration.getVisualizationUrl(),
+                configuration.getSignatureCreationStrategy());
+        default:
+        	LOG.error("Unknown visualization method " + configuration.getOutputMode());
+        }
+   
+        this.connectPorts(this.tBehaviorModelCreation.getOutputPort(), tIObserveUBM.getInputPort());
     }
 
     /**
@@ -62,8 +85,12 @@ public class TBehaviorModelAggregation extends CompositeStage {
      * @return input port
      */
     public InputPort<Instances> getInputPort() {
-        return this.tClustering.getInputPort();
-
+    	if (tClustering != null)
+    		return this.tClustering.getInputPort();
+    	else if (emClustering != null)
+    		return this.emClustering.getInputPort();
+    	else
+    		return null;
     }
 
 }

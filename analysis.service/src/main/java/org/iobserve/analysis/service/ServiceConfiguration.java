@@ -19,6 +19,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.iobserve.analysis.MultiInputObservationConfiguration;
+import org.iobserve.analysis.cdoruserbehavior.clustering.EAggregationType;
+import org.iobserve.analysis.cdoruserbehavior.clustering.EOutputMode;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -77,7 +79,7 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             String visualizationServiceURL) throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
-                thinkTime, closedWorkload, visualizationServiceURL);
+                thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.XMeansClustering, EOutputMode.UBM_VISUALIZATION);
 
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");

@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 
+import org.iobserve.analysis.cdoruserbehavior.clustering.EAggregationType;
+import org.iobserve.analysis.cdoruserbehavior.clustering.EOutputMode;
 import org.iobserve.analysis.cdoruserbehavior.clustering.IVectorQuantizationClustering;
 import org.iobserve.analysis.cdoruserbehavior.clustering.XMeansClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.DefaultStrategy;
@@ -45,6 +47,10 @@ public class BehaviorModelConfiguration {
 
     // empty transitions?
     private boolean keepEmptyTransitions;
+
+	private EAggregationType aggregationType;
+
+	private EOutputMode outputMode;
 
     /**
      * default constructor
@@ -191,7 +197,7 @@ public class BehaviorModelConfiguration {
     public void setVisualizationUrl(final String visualizationUrl) {
         this.visualizationUrl = visualizationUrl;
     }
-
+    
     /**
      * setter
      *
@@ -201,5 +207,21 @@ public class BehaviorModelConfiguration {
     public void setKeepEmptyTransitions(final boolean keepEmptyTransitions) {
         this.keepEmptyTransitions = keepEmptyTransitions;
     }
+
+    public void setAggregationType(EAggregationType aggregationType) {
+    	this.aggregationType = aggregationType;
+    }
+    
+	public EAggregationType getAggregationType() {
+		return this.aggregationType;
+	}
+
+	public void setOutputMode(EOutputMode outputMode) {
+		this.outputMode = outputMode;
+	}
+	
+	public EOutputMode getOutputMode() {
+		return this.outputMode;
+	}
 
 }

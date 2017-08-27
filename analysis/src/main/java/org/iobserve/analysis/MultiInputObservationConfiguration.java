@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import org.iobserve.analysis.cdoruserbehavior.clustering.EAggregationType;
+import org.iobserve.analysis.cdoruserbehavior.clustering.EOutputMode;
 import org.iobserve.analysis.filter.reader.MultipleConnectionTcpReaderStage;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -58,16 +60,18 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            kind of workload, configuration for entry event filter
      * @param visualizationServiceURL
      *            url to the visualization service
+     * @param aggregationType aggregation type
+     * @param outputMode output mode
      */
     public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
-            final String visualizationServiceURL) {
+            final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL);
+                visualizationServiceURL, aggregationType, outputMode);
 
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
                 MultiInputObservationConfiguration.CAPACITY);

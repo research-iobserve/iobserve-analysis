@@ -18,6 +18,8 @@ package org.iobserve.analysis;
 import java.io.File;
 import java.util.Collection;
 
+import org.iobserve.analysis.cdoruserbehavior.clustering.EAggregationType;
+import org.iobserve.analysis.cdoruserbehavior.clustering.EOutputMode;
 import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -64,16 +66,18 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      *            kind of workload, configuration for entry event filter
      * @param visualizationServiceURL
      *            url to the visualization service
+     * @param aggregationType aggregation type
+     * @param outputMode output mode
      */
     public FileObservationConfiguration(final Collection<File> directories, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
-            final String visualizationServiceURL) {
+            final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL);
+                visualizationServiceURL, aggregationType, outputMode);
 
         this.files = new InitialElementProducer<>(directories);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
