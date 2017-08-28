@@ -22,8 +22,6 @@ import org.iobserve.analysis.cdoruserbehavior.filter.TInstanceTransformations;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
@@ -40,9 +38,6 @@ import weka.core.Instances;
  */
 
 public class TBehaviorModelPreprocessing extends CompositeStage {
-
-    /** logger. */
-    private static final Log LOG = LogFactory.getLog(TBehaviorModelPreprocessing.class);
 
     private final Distributor<EntryCallSequenceModel> distributor;
     private final Merger<Object> merger;
@@ -63,8 +58,8 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
 
         this.merger = new Merger<>(new SkippingBusyWaitingRoundRobinStrategy());
 
-        this.tBehaviorModelTableGeneration = new TBehaviorModelTableGeneration(configuration.getRepresentativeStrategy(),
-                configuration.keepEmptyTransitions());
+        this.tBehaviorModelTableGeneration = new TBehaviorModelTableGeneration(
+                configuration.getRepresentativeStrategy(), configuration.keepEmptyTransitions());
 
         this.tBehaviorModelPreperation = new TBehaviorModelPreperation(configuration.keepEmptyTransitions());
 

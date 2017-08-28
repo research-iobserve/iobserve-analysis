@@ -23,6 +23,13 @@ import weka.core.Instances;
  */
 public interface IClustering {
 
+    /**
+     * Cluster instances.
+     *
+     * @param instances
+     *            the instances to be clustered
+     * @return the clustered object
+     */
     public Object clusterInstances(Instances instances);
 
 }

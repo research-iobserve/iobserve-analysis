@@ -48,14 +48,14 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
     private final ObjectMapper objectMapper;
 
     /**
-     * enum
+     * enum.
      */
     private enum ChangelogType {
         CREATE, APPEND
     }
 
     /**
-     * constructor
+     * constructor.
      */
     public TIObserveUIServer() {
         this.objectMapper = new ObjectMapper();
@@ -87,7 +87,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
     }
 
     /**
-     * create changelog for entry call edge
+     * create changelog for entry call edge.
      *
      * @param edge
      *            edge
@@ -136,7 +136,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
     }
 
     /**
-     * create changelogs for entry call nodes
+     * create changelogs for entry call nodes.
      *
      * @param entryCallNode
      *            entryCallNode
@@ -184,7 +184,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
     }
 
     /**
-     * append information to node
+     * append information to node.
      *
      * @param changelogs
      *            changelogs
@@ -202,7 +202,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
         statusInfo.put("id", this.createID(serviceInstanceID, signature));
         statusInfo.put("parentType", "serviceInstance");
         statusInfo.put("parentId", serviceInstanceID);
-        statusInfo.put("timestamp", (new Date()).getTime());
+        statusInfo.put("timestamp", new Date().getTime());
         statusInfo.put("key", signature);
         statusInfo.put("value", info.getInformationCode());
 

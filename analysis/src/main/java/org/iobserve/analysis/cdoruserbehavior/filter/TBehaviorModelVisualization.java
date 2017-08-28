@@ -59,6 +59,9 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
 
     /**
      * constructor.
+     *
+     * @param baseUrl
+     * @param signatureStrategy
      */
     public TBehaviorModelVisualization(final String baseUrl, final ISignatureCreationStrategy signatureStrategy) {
         this.objectMapper = new ObjectMapper();
@@ -84,7 +87,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
     }
 
     /**
-     * create graph at visualisation backend.
+     * Create graph at visualization backend.
      *
      * @param name
      *            name
@@ -209,7 +212,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
     }
 
     /**
-     * create new edges at visualisation backend.
+     * create new edges at visualization backend.
      *
      * @param entryCallEdges
      *            entryCallEdges
@@ -238,7 +241,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
     }
 
     /**
-     * post elements to server
+     * post elements to server.
      *
      * @param elem
      *            element
@@ -279,7 +282,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
     }
 
     /**
-     * get graph url
+     * get graph url.
      *
      * @param modelId
      *            modelId
@@ -290,7 +293,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
     }
 
     /**
-     * get node url
+     * get node url.
      *
      * @param modelId
      *            modelId
@@ -301,7 +304,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
     }
 
     /**
-     * get edge url
+     * get edge url.
      *
      * @param modelId
      *            modelId

@@ -29,8 +29,12 @@ import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
  */
 
 public class EntryCallNode {
-    private final String signature;
-    private final Set<CallInformation> entryCallInformations;
+    private String signature;
+    private final Set<CallInformation> entryCallInformation;
+
+    public EntryCallNode() {
+        this.entryCallInformation = new HashSet<>();
+    }
 
     /**
      * constructor.
@@ -39,8 +43,21 @@ public class EntryCallNode {
      *            signature
      */
     public EntryCallNode(final String signature) {
+        this();
         this.signature = signature;
-        this.entryCallInformations = new HashSet<>();
+
+    }
+
+    public Set<CallInformation> getEntryCallInformation() {
+        return this.entryCallInformation;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature;
+    }
+
+    public String getSignature() {
+        return this.signature;
     }
 
     /**
@@ -60,12 +77,12 @@ public class EntryCallNode {
      *            callInformation
      */
     public void mergeInformation(final CallInformation callInformation) {
-        final Optional<CallInformation> match = this.entryCallInformations.stream().filter(
+        final Optional<CallInformation> match = this.entryCallInformation.stream().filter(
                 information -> information.getInformationSignature().equals(callInformation.getInformationSignature()))
                 .collect(new SingleOrNoneCollector<>());
 
         if (!match.isPresent()) {
-            this.entryCallInformations.add(callInformation);
+            this.entryCallInformation.add(callInformation);
         }
     }
 
@@ -89,14 +106,6 @@ public class EntryCallNode {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }
-
-    public String getSignature() {
-        return this.signature;
-    }
-
-    public Set<CallInformation> getEntryCallInformation() {
-        return this.entryCallInformations;
     }
 
     @Override

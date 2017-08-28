@@ -15,7 +15,13 @@
  ***************************************************************************/
 package org.iobserve.evaluation;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -32,18 +38,52 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
     /**
      * Configure and setup the Kieker writer.
      *
-     * @param dataLocation
-     *            data location
-     * @param hostname
-     *            selected hostname
+     * @param outputFile
      */
     public ComparisonOutputStage(File outputFile) {
         this.outputFile = outputFile;
     }
 
     @Override
-    protected void execute(final ComparisonResult result) {
+    protected void execute(final ComparisonResult result) throws IOException {
+        final FileWriter fw = new FileWriter(this.outputFile);
+        final BufferedWriter writer = new BufferedWriter(fw);
 
+        writer.write("= " + this.outputFile.getName() + " =");
+        writer.write("Nodes:\n\tmissing=" + result.getMissingNodes().size() + "\n\tadditional="
+                + result.getAdditionalNodes().size() + "\n");
+        for (final EntryCallNode node : result.getMissingNodes()) {
+            writer.write("\t - " + node.getSignature() + "\n");
+        }
+        for (final EntryCallNode node : result.getAdditionalNodes()) {
+            writer.write("\t + " + node.getSignature() + "\n");
+        }
+        for (final EntryCallNode node : result.getSimilarNodes()) {
+            writer.write("\t = " + node.getSignature() + "\n");
+        }
+        writer.write("Edges:\n\tmissing=" + result.getMissingEdgeCount() + "\n\tadditional="
+                + result.getAdditionalEdgeCount() + "\n");
+        writer.write("Node differences:\n");
+        for (final NodeDifference difference : result.getNodeDifferences()) {
+            writer.write("\tNode" + difference.getBaselineNode().getSignature() + "\n");
+            writer.write("\t\tMissing");
+            String separator = "=";
+            for (final CallInformation callInformation : difference.getMissingInformation()) {
+                writer.write(separator + callInformation);
+                separator = ", ";
+            }
+            writer.write("\n");
+            writer.write("\t\tAdditional");
+            separator = "=";
+            for (final CallInformation callInformation : difference.getMissingInformation()) {
+                writer.write(separator + callInformation);
+                separator = ", ";
+            }
+            writer.write("\n");
+        }
+
+        writer.close();
+        fw.close();
     }
 
 }

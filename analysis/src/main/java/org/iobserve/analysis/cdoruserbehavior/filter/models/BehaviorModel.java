@@ -40,8 +40,24 @@ public class BehaviorModel {
         this.entryCallEdges = new HashSet<>();
     }
 
+    public Set<EntryCallNode> getEntryCallNodes() {
+        return this.entryCallNodes;
+    }
+
+    public Set<EntryCallEdge> getEntryCallEdges() {
+        return this.entryCallEdges;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(final String name) {
+        this.name = name;
+    }
+
     /**
-     * add an edge to the model
+     * Add an edge to the model.
      *
      * @param edge
      */
@@ -87,42 +103,6 @@ public class BehaviorModel {
      */
     public EntryCallNode addNode(final EntryCallNode node) {
         return this.mergeNode(node);
-    }
-
-    /**
-     * getter
-     *
-     * @return entry call nodes
-     */
-    public Set<EntryCallNode> getEntryCallNodes() {
-        return this.entryCallNodes;
-    }
-
-    /**
-     * getter
-     *
-     * @return entry call edges
-     */
-    public Set<EntryCallEdge> getEntryCallEdges() {
-        return this.entryCallEdges;
-    }
-
-    /**
-     * getter
-     *
-     * @return name
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * setter
-     *
-     * @param name
-     */
-    public void setName(final String name) {
-        this.name = name;
     }
 
     /**

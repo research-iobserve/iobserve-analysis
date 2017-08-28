@@ -42,6 +42,12 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
 
     private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
 
+    /**
+     * Constructor for the behavior model creation filter.
+     *
+     * @param namePrefix
+     *            prefix for the behavior model
+     */
     public TBehaviorModelCreation(final String namePrefix) {
         this.namePrefix = namePrefix;
     }

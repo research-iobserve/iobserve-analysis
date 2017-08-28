@@ -15,10 +15,55 @@
  ***************************************************************************/
 package org.iobserve.evaluation;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
+
 /**
  * @author Reiner Jung
  *
  */
 public class ComparisonResult {
+
+    private final List<NodeDifference> nodeDifferences = new ArrayList<>();
+    private final List<EntryCallNode> missingNodes = new ArrayList<>();
+    private final List<EntryCallNode> additionalNodes = new ArrayList<>();
+    private final List<EntryCallNode> similarNodes = new ArrayList<>();
+
+    private int missingEdgeCount;
+    private int additionalEdgeCount;
+
+    public List<NodeDifference> getNodeDifferences() {
+        return this.nodeDifferences;
+    }
+
+    public int getMissingEdgeCount() {
+        return this.missingEdgeCount;
+    }
+
+    public void setMissingEdgeCount(int missingEdgeCount) {
+        this.missingEdgeCount = missingEdgeCount;
+    }
+
+    public int getAdditionalEdgeCount() {
+        return this.additionalEdgeCount;
+    }
+
+    public void setAdditionalEdgeCount(int additionalEdgeCount) {
+        this.additionalEdgeCount = additionalEdgeCount;
+    }
+
+    public List<EntryCallNode> getMissingNodes() {
+        return this.missingNodes;
+    }
+
+    public List<EntryCallNode> getAdditionalNodes() {
+        return this.additionalNodes;
+    }
+
+    public List<EntryCallNode> getSimilarNodes() {
+        return this.similarNodes;
+    }
 
 }

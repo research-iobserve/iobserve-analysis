@@ -15,7 +15,14 @@
  ***************************************************************************/
 package org.iobserve.evaluation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModel;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallEdge;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
@@ -51,8 +58,133 @@ public class ModelComparisonStage extends AbstractStage {
 
         if (this.baselineModel != null && this.testModel != null) {
             final ComparisonResult result = new ComparisonResult();
+            /** M2: Similarity Ratio */
+            /**
+             * Number of differences and similarities of two behavior graphs and the
+             * call-information on each node.
+             */
+            /** Missing nodes. */
+            for (final EntryCallNode baselineNode : this.baselineModel.getEntryCallNodes()) {
+                final EntryCallNode testModelNode = this.findMatchingModelNode(this.testModel.getEntryCallNodes(),
+                        baselineNode);
+                if (testModelNode == null) {
+                    result.getMissingNodes().add(baselineNode);
+                } else {
+                    result.getSimilarNodes().add(baselineNode);
+                    /** Compute mismatch in call information. */
+                    final List<CallInformation> missingInformation = this.computeAdditionalInformation(
+                            baselineNode.getEntryCallInformation(), testModelNode.getEntryCallInformation());
+                    final List<CallInformation> additionalInformation = this.computeAdditionalInformation(
+                            testModelNode.getEntryCallInformation(), baselineNode.getEntryCallInformation());
+                    result.getNodeDifferences().add(
+                            new NodeDifference(baselineNode, testModelNode, missingInformation, additionalInformation));
+                }
+            }
+
+            /** Additional nodes. */
+            for (final EntryCallNode testModelNode : this.testModel.getEntryCallNodes()) {
+                final EntryCallNode baselineNode = this.findMatchingModelNode(this.baselineModel.getEntryCallNodes(),
+                        testModelNode);
+                if (baselineNode == null) {
+                    result.getAdditionalNodes().add(testModelNode);
+                }
+            }
+
+            /** Missing edges. */
+            int missingEdgeCount = 0;
+            for (final EntryCallEdge baselineEdge : this.baselineModel.getEntryCallEdges()) {
+                final EntryCallEdge testModelEdge = this.findMatchingModelEdge(this.testModel.getEntryCallEdges(),
+                        baselineEdge);
+                if (testModelEdge == null) {
+                    missingEdgeCount += (int) baselineEdge.getCalls();
+                } else {
+                    missingEdgeCount += Math.abs((int) (baselineEdge.getCalls() - testModelEdge.getCalls()));
+                }
+            }
+            result.setMissingEdgeCount(missingEdgeCount);
+
+            /** Additional edges. */
+            int additionalEdgeCount = 0;
+            for (final EntryCallEdge testModelEdge : this.testModel.getEntryCallEdges()) {
+                final EntryCallEdge baselineEdge = this.findMatchingModelEdge(this.baselineModel.getEntryCallEdges(),
+                        testModelEdge);
+                if (baselineEdge == null) {
+                    additionalEdgeCount += (int) testModelEdge.getCalls();
+                } else {
+                    additionalEdgeCount += Math.abs((int) (baselineEdge.getCalls() - testModelEdge.getCalls()));
+                }
+            }
+            result.setAdditionalEdgeCount(additionalEdgeCount);
+
+            this.baselineModel = null;
+            this.testModel = null;
+
+            /** Add baseline and testModelNodes */
+
             this.resultPort.send(result);
         }
+    }
+
+    /**
+     * Find a matching edge to the source edge in a set of edges.
+     *
+     * @param entryCallEdges
+     *            set of edges
+     * @param sourceEdge
+     *            source edge
+     * @return returns the matching edge or null when no match was found
+     */
+    private EntryCallEdge findMatchingModelEdge(Set<EntryCallEdge> entryCallEdges, EntryCallEdge sourceEdge) {
+        for (final EntryCallEdge entryCallEdge : entryCallEdges) {
+            if (sourceEdge.getSource().getSignature().equals(entryCallEdge.getSource().getSignature())
+                    && sourceEdge.getTarget().getSignature().equals(entryCallEdge.getTarget().getSignature())) {
+                return entryCallEdge;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Find call information which exists in firstModelSet and not in lastModelSet
+     *
+     * @param firstCallInformationSet
+     * @param testModelCallInformationSet
+     * @return list of missing call information
+     */
+    private List<CallInformation> computeAdditionalInformation(Set<CallInformation> firstCallInformationSet,
+            Set<CallInformation> lastCallInformationSet) {
+        final List<CallInformation> result = new ArrayList<>();
+        for (final CallInformation firstCallInformation : firstCallInformationSet) {
+            boolean found = false;
+            for (final CallInformation lastCallInformation : lastCallInformationSet) {
+                if (lastCallInformation.getInformationSignature()
+                        .equals(firstCallInformation.getInformationSignature())) {
+                    found = true;
+                }
+            }
+            if (!found) {
+                result.add(firstCallInformation);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Find the matching entry call node from the test model for a given baseline node.
+     *
+     * @param entryCallNodes
+     *            all test model nodes
+     * @param baselineNode
+     *            the baseline node
+     * @return the matching test model node, or null on fail
+     */
+    private EntryCallNode findMatchingModelNode(Set<EntryCallNode> entryCallNodes, EntryCallNode baselineNode) {
+        for (final EntryCallNode testModelNode : entryCallNodes) {
+            if (testModelNode.getSignature().equals(baselineNode.getSignature())) {
+                return testModelNode;
+            }
+        }
+        return null;
     }
 
     public InputPort<BehaviorModel> getBaselineModelInputPort() {

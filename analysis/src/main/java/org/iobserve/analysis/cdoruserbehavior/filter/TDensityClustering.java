@@ -28,7 +28,7 @@ import weka.core.Instances;
 
 /**
  * Filter for different density based clustering algorithms. Intended to be used with a following
- * cluster merger stage
+ * cluster merger stage.
  *
  * @author Marc Adolf
  *
@@ -38,6 +38,11 @@ public class TDensityClustering extends AbstractConsumerStage<Instances> {
     private final OutputPort<Map<Integer, List<Pair<Instance, Double>>>> outputPort = this.createOutputPort();
     private final IDensitityClustering clustering;
 
+    /**
+     * Density clustering filter.
+     *
+     * @param clustering
+     */
     public TDensityClustering(final IDensitityClustering clustering) {
         this.clustering = clustering;
     }

@@ -68,6 +68,30 @@ public class EntryCallEdge {
         this.calls = calls;
     }
 
+    public EntryCallNode getSource() {
+        return this.source;
+    }
+
+    public void setSource(final EntryCallNode source) {
+        this.source = source;
+    }
+
+    public EntryCallNode getTarget() {
+        return this.target;
+    }
+
+    public void setTarget(final EntryCallNode target) {
+        this.target = target;
+    }
+
+    public double getCalls() {
+        return this.calls;
+    }
+
+    public void setCalls(final double calls) {
+        this.calls = calls < 0 ? 0 : calls;
+    }
+
     /**
      * increment calls.
      */
@@ -102,30 +126,6 @@ public class EntryCallEdge {
     @Override
     public int hashCode() {
         return super.hashCode();
-    }
-
-    public EntryCallNode getSource() {
-        return this.source;
-    }
-
-    public void setSource(final EntryCallNode source) {
-        this.source = source;
-    }
-
-    public EntryCallNode getTarget() {
-        return this.target;
-    }
-
-    public void setTarget(final EntryCallNode target) {
-        this.target = target;
-    }
-
-    public double getCalls() {
-        return this.calls;
-    }
-
-    public void setCalls(final double calls) {
-        this.calls = calls < 0 ? 0 : calls;
     }
 
     /**
