@@ -26,13 +26,16 @@ import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.core.entity.Entity;
 import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.repository.OperationInterface;
+import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
+import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
 /**
  *
@@ -55,6 +58,20 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Before
     public void createModel() {
         this.model = TestModelBuilder.createReposiory();
+    }
+
+    @Override
+    @Test
+    public void createThenClearGraph() {
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+
+        modelProvider.createComponent(this.model);
+
+        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+
+        modelProvider.clearGraph();
+
+        Assert.assertTrue(this.isGraphEmpty(modelProvider));
     }
 
     @Override
@@ -174,6 +191,85 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
 
         }
 
+    }
+
+    @Override
+    @Test
+    public void updateThenReadUpdated() {
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        final Repository updateModel = TestModelBuilder.createReposiory();
+        Interface payInterface = null;
+        RepositoryComponent paymentComponent = null;
+        Repository readModel;
+
+        modelProvider.createComponent(updateModel);
+
+        // Update the model by renaming and replacing payment the method
+        updateModel.setEntityName("MyVideoOnDemandService");
+
+        for (final Interface i : updateModel.getInterfaces__Repository()) {
+            if (i.getEntityName().equals("IPay")) {
+                payInterface = i;
+            }
+        }
+
+        for (final RepositoryComponent c : updateModel.getComponents__Repository()) {
+            if (c.getEntityName().equals("org.mybookstore.paymentComponent")) {
+                paymentComponent = c;
+            }
+        }
+
+        final OperationProvidedRole providedPayOperation = RepositoryFactory.eINSTANCE.createOperationProvidedRole();
+        providedPayOperation.setEntityName("payPalPayment");
+        providedPayOperation.setProvidedInterface__OperationProvidedRole((OperationInterface) payInterface);
+
+        paymentComponent.getProvidedRoles_InterfaceProvidingEntity().clear();
+        paymentComponent.getProvidedRoles_InterfaceProvidingEntity().add(providedPayOperation);
+
+        modelProvider.updateComponent(Repository.class, updateModel);
+
+        readModel = modelProvider.readOnlyRootComponent(Repository.class);
+
+        Assert.assertTrue(this.equalityHelper.equals(updateModel, readModel));
+    }
+
+    @Override
+    @Test
+    public void createThenDeleteComponent() {
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+
+        modelProvider.createComponent(this.model);
+
+        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+
+        modelProvider.deleteComponent(Repository.class, this.model.getId());
+
+        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+    }
+
+    @Override
+    @Test
+    public void createThenDeleteComponentAndDatatypes() {
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+
+        modelProvider.createComponent(this.model);
+
+        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+
+        modelProvider.deleteComponentAndDatatypes(Repository.class, this.model.getId());
+
+        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+    }
+
+    private boolean isGraphEmpty(final ModelProvider<Repository> modelProvider) {
+        boolean isEmpty;
+
+        try (Transaction tx = modelProvider.getGraph().getGraphDatabaseService().beginTx()) {
+            isEmpty = !modelProvider.getGraph().getGraphDatabaseService().getAllNodes().iterator().hasNext();
+            tx.success();
+        }
+
+        return isEmpty;
     }
 
 }

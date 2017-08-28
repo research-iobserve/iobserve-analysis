@@ -29,6 +29,9 @@ public interface IModelProviderTest {
     public void clearGraph();
 
     @Test
+    public void createThenClearGraph();
+
+    @Test
     public void createThenReadById();
 
     @Test
@@ -45,4 +48,14 @@ public interface IModelProviderTest {
 
     @Test
     public void createThenReadReferencing();
+
+    @Test
+    public void updateThenReadUpdated();
+
+    @Test
+    public void createThenDeleteComponent();
+
+    @Test
+    public void createThenDeleteComponentAndDatatypes();
+
 }
