@@ -19,17 +19,23 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
+import org.palladiosimulator.pcm.core.impl.PCMRandomVariableImpl;
+import org.palladiosimulator.pcm.repository.ProvidedRole;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
+import org.palladiosimulator.pcm.usagemodel.Branch;
+import org.palladiosimulator.pcm.usagemodel.BranchTransition;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
+import org.palladiosimulator.pcm.usagemodel.Loop;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
-import org.palladiosimulator.pcm.usagemodel.Start;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
-import util.Changelog;
 import util.SendHttpRequest;
 
 /**
@@ -46,7 +52,8 @@ public final class InitializeDeploymentVisualization {
     private final ModelProvider<ResourceContainer> allocationResourceContainerModelGraphProvider;
     private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
-    private final ModelProvider<UsageScenario> usageScenarioModelGraphProvider;
+    private final ModelProvider<UsageModel> usageScenarioModelGraphProvider;
+    private final ModelProvider<Repository> repositoryModelGraphProvider;
 
     /** services for visualization elements */
     private final SystemService systemService = new SystemService();
@@ -79,7 +86,8 @@ public final class InitializeDeploymentVisualization {
             final ModelProvider<ResourceContainer> allocationResourceContainerModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final ModelProvider<UsageScenario> usageScenarioModelGraphProvider) {
+            final ModelProvider<UsageModel> usageScenarioModelGraphProvider,
+            final ModelProvider<Repository> repositoryModelGraphProvider) {
         this.systemUrl = systemUrl;
         this.changelogUrl = changelogUrl;
         this.allocationModelGraphProvider = allocationModelGraphProvider;
@@ -87,6 +95,7 @@ public final class InitializeDeploymentVisualization {
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
         this.usageScenarioModelGraphProvider = usageScenarioModelGraphProvider;
+        this.repositoryModelGraphProvider = repositoryModelGraphProvider;
     }
 
     /**
@@ -117,33 +126,37 @@ public final class InitializeDeploymentVisualization {
                 .getLinkingResources__ResourceEnvironment();
         final List<ResourceContainer> resourceContainers = resourceEnvironmentModel
                 .getResourceContainer_ResourceEnvironment();
-        // set up the resource environment model and take parts from it
-        final UsageScenario usageScenario = this.usageScenarioModelGraphProvider
-                .readOnlyRootComponent(UsageScenario.class);
-        final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-        final List<AbstractUserAction> usageActions = scenarioBehaviour.getActions_ScenarioBehaviour();
+        // set up the usage model and take parts from it
+        final UsageModel usageModel = this.usageScenarioModelGraphProvider.readOnlyRootComponent(UsageModel.class);
+        final List<UsageScenario> usageScenarios = usageModel.getUsageScenario_UsageModel();
+
+        // set up the repsoitory model
+        final Repository repositoryModel = this.repositoryModelGraphProvider.readOnlyRootComponent(Repository.class);
 
         // sending created components to visualization (in predefined order stated in changelog
         // constraints)
-        SendHttpRequest.post(this.systemService.createSystem(systemModel), this.systemUrl, this.changelogUrl);
+        // SendHttpRequest.post(this.systemService.createSystem(systemModel), this.systemUrl,
+        // this.changelogUrl);
 
         for (int i = 0; i < resourceContainers.size(); i++) {
             final ResourceContainer resourceContainer = resourceContainers.get(i);
-            SendHttpRequest.post(
-                    Changelog.create(this.nodegroupService.createNodegroup(this.systemService.getSystemId())),
-                    this.systemUrl, this.changelogUrl);
-            SendHttpRequest.post(Changelog.create(this.nodeService.createNode(resourceContainer,
-                    this.systemService.getSystemId(), this.nodegroupService.getNodegroupId())), this.systemUrl,
-                    this.changelogUrl);
+            // SendHttpRequest.post(
+            // Changelog.create(this.nodegroupService.createNodegroup(this.systemService.getSystemId())),
+            // this.systemUrl, this.changelogUrl);
+            // SendHttpRequest.post(Changelog.create(this.nodeService.createNode(resourceContainer,
+            // this.systemService.getSystemId(), this.nodegroupService.getNodegroupId())),
+            // this.systemUrl,
+            // this.changelogUrl);
         }
         // architecture view in deployment visualization shows services and
         // communication
         for (int i = 0; i < assemblyContexts.size(); i++) {
             final AssemblyContext assemblyContext = assemblyContexts.get(i);
-            SendHttpRequest.post(
-                    Changelog.create(
-                            this.serviceService.createService(assemblyContext, this.systemService.getSystemId())),
-                    this.systemUrl, this.changelogUrl);
+            // SendHttpRequest.post(
+            // Changelog.create(
+            // this.serviceService.createService(assemblyContext,
+            // this.systemService.getSystemId())),
+            // this.systemUrl, this.changelogUrl);
         }
 
         // deployment view in deployment visualization shows nodegroups, nodes, serviceinstances and
@@ -155,10 +168,10 @@ public final class InitializeDeploymentVisualization {
             final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
             final String assemblyContextId = allocationContext.getAssemblyContext_AllocationContext().getId();
 
-            SendHttpRequest.post(
-                    Changelog.create(this.serviceinstanceService.createServiceInstance(assemblyContext,
-                            this.systemService.getSystemId(), resourceContainerId, assemblyContextId)),
-                    this.systemUrl, this.changelogUrl);
+            // SendHttpRequest.post(
+            // Changelog.create(this.serviceinstanceService.createServiceInstance(assemblyContext,
+            // this.systemService.getSystemId(), resourceContainerId, assemblyContextId)),
+            // this.systemUrl, this.changelogUrl);
         }
 
         /**
@@ -223,32 +236,106 @@ public final class InitializeDeploymentVisualization {
                     }
                 }
 
-                SendHttpRequest.post(
-                        Changelog.create(this.communicationService.createCommunication((AssemblyConnector) connector,
-                                this.systemService.getSystemId(), technology)),
-                        this.systemUrl, this.changelogUrl);
-
-                SendHttpRequest.post(
-                        Changelog.create(this.communicationinstanceService.createCommunicationInstance(
-                                (AssemblyConnector) connector, this.systemService.getSystemId(),
-                                this.communicationService.getCommunicationId())),
-                        this.systemUrl, this.changelogUrl);
+                // SendHttpRequest.post(
+                // Changelog.create(this.communicationService.createCommunication((AssemblyConnector)
+                // connector,
+                // this.systemService.getSystemId(), technology)),
+                // this.systemUrl, this.changelogUrl);
+                //
+                // SendHttpRequest.post(
+                // Changelog.create(this.communicationinstanceService.createCommunicationInstance(
+                // (AssemblyConnector) connector, this.systemService.getSystemId(),
+                // this.communicationService.getCommunicationId())),
+                // this.systemUrl, this.changelogUrl);
 
             } else {
                 System.out.printf("no AssemblyConnector: %s\n", connector.getEntityName());
             }
 
         }
-        // get services of usage scenario
-        AbstractUserAction actualUsageAction;
-        for (int i = 0; i < usageActions.size(); i++) {
-            actualUsageAction = usageActions.get(i);
-            if (actualUsageAction instanceof Start) {
+
+        // Collect all EntryLevelSystemCalls. This list will be passed to the
+        // userGroupService().
+        final List<EntryLevelSystemCall> userSteps = new ArrayList<>();
+        for (int h = 0; h < usageScenarios.size(); h++) {
+            final UsageScenario usageScenario = usageScenarios.get(h);
+
+            final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
+            final List<AbstractUserAction> usageActions = scenarioBehaviour.getActions_ScenarioBehaviour();
+
+            for (int i = 0; i < usageActions.size(); i++) {
+                final AbstractUserAction actualUsageAction = usageActions.get(i);
+
                 if (actualUsageAction instanceof EntryLevelSystemCall) {
+                    userSteps.add((EntryLevelSystemCall) actualUsageAction);
 
                 }
+                if (actualUsageAction instanceof Branch) {
+                    final List<BranchTransition> branches = ((Branch) actualUsageAction).getBranchTransitions_Branch();
+                    AbstractUserAction branchAction;
+                    List<AbstractUserAction> branchActions;
+
+                    for (int j = 0; j < branches.size(); j++) {
+                        final BranchTransition branchTransition = branches.get(j);
+                        branchActions = branchTransition.getBranchedBehaviour_BranchTransition()
+                                .getActions_ScenarioBehaviour();
+                        for (int k = 0; k < branchActions.size(); k++) {
+                            branchAction = branchActions.get(k);
+                            System.out.printf("branchAction:%s\n", branchAction);
+                            if (branchAction instanceof EntryLevelSystemCall) {
+                                userSteps.add((EntryLevelSystemCall) branchAction);
+                            }
+                        }
+                    }
+                }
+                if (actualUsageAction instanceof Loop) {
+                    final PCMRandomVariableImpl loopIteration = (PCMRandomVariableImpl) ((Loop) actualUsageAction)
+                            .getLoopIteration_Loop();
+                    final ScenarioBehaviour loopBehaviour = ((Loop) actualUsageAction).getBodyBehaviour_Loop();
+                    final List<AbstractUserAction> loopActions = loopBehaviour.getActions_ScenarioBehaviour();
+
+                    for (int l = 0; l < loopActions.size(); l++) {
+                        final AbstractUserAction loopAction = loopActions.get(l);
+                        System.out.printf("loopAction:%s\n", loopAction);
+                        if (loopAction instanceof EntryLevelSystemCall) {
+                            userSteps.add((EntryLevelSystemCall) loopAction);
+                        }
+                    }
+                }
+
             }
         }
+
+        final List<AssemblyContext> userInvokedServices = new ArrayList<>();
+        // map userSteps to assemblyContexts/services
+        for (int m = 0; m < userSteps.size(); m++) {
+            final EntryLevelSystemCall userStep = userSteps.get(m);
+            final String operationSignatureId = userStep.getOperationSignature__EntryLevelSystemCall().getId();
+
+            // get the components__Repository, that contains a providedRole with the Id
+            // operationSignatureId
+            final List<EObject> repositoryComponentsWithOperationSignature = this.repositoryModelGraphProvider
+                    .readOnlyReferencingComponentsById(ProvidedRole.class, operationSignatureId);
+            final RepositoryComponent repositoryComponent = (RepositoryComponent) repositoryComponentsWithOperationSignature
+                    .get(0);
+
+            // get the assemblyContext, that contains the repository id
+            final List<EObject> assemblyContextsWithComponent = this.repositoryModelGraphProvider
+                    .readOnlyReferencingComponentsById(RepositoryComponent.class, repositoryComponent.getId());
+            for (int n = 0; n < assemblyContextsWithComponent.size(); n++) {
+                final AssemblyContext assemblyContextWithComponent = (AssemblyContext) assemblyContextsWithComponent
+                        .get(n);
+                userInvokedServices.add(assemblyContextWithComponent);
+            }
+
+        }
+        if (userInvokedServices.size() > 0) {
+            SendHttpRequest.post(
+                    this.usergroupService.createUsergroup(this.systemService.getSystemId(), userInvokedServices),
+                    this.systemUrl, this.changelogUrl);
+
+        }
+
     }
 
 }

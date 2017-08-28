@@ -32,9 +32,10 @@ import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.usagemodel.UsageScenario;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -146,11 +147,14 @@ public final class AnalysisMain {
                         .initializeAllocationModelGraph(allocationModelProvider.getModel());
                 Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
                 Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
+                Graph repositoryModelGraph = graphLoader
+                        .initializeRepositoryModelGraph(repositoryModelProvider.getModel());
                 // load neo4j graphs
                 resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
                 allocationModelGraph = graphLoader.getAllocationModelGraph();
                 systemModelGraph = graphLoader.getSystemModelGraph();
                 usageModelGraph = graphLoader.getUsageModelGraph();
+                repositoryModelGraph = graphLoader.getRepositoryModelGraph();
                 // new graphModelProvider
                 final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
                         resourceEnvironmentModelGraph);
@@ -166,8 +170,9 @@ public final class AnalysisMain {
                         systemModelGraph);
                 final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(
                         systemModelGraph);
-                final ModelProvider<UsageScenario> usageScenarioModelGraphProvider = new ModelProvider<>(
-                        usageModelGraph);
+                final ModelProvider<UsageModel> usageScenarioModelGraphProvider = new ModelProvider<>(usageModelGraph);
+                final ModelProvider<Repository> repositoryModelGraphProvider = new ModelProvider<>(
+                        repositoryModelGraph);
                 // get systemId
                 final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
                         .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
@@ -179,7 +184,8 @@ public final class AnalysisMain {
                 final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
                         systemUrl, changelogUrl, allocationModelGraphProvider,
                         allocationResourceContainerModelGraphProvider, systemModelGraphProvider,
-                        resourceEnvironmentModelGraphProvider, usageScenarioModelGraphProvider);
+                        resourceEnvironmentModelGraphProvider, usageScenarioModelGraphProvider,
+                        repositoryModelGraphProvider);
                 try {
                     deploymentVisualization.initialize();
                 } catch (final Exception e) {
