@@ -40,7 +40,7 @@ public class TestModelBuilder {
 
         final BasicComponent queryInputComp = RepositoryFactory.eINSTANCE.createBasicComponent();
         final BasicComponent catalogSearchComp = RepositoryFactory.eINSTANCE.createBasicComponent();
-        final BasicComponent creditCardBillingComp = RepositoryFactory.eINSTANCE.createBasicComponent();
+        final BasicComponent paymentComp = RepositoryFactory.eINSTANCE.createBasicComponent();
         final CompositeComponent orderComp = RepositoryFactory.eINSTANCE.createCompositeComponent();
 
         final OperationProvidedRole providedSearchOperation = RepositoryFactory.eINSTANCE.createOperationProvidedRole();
@@ -60,7 +60,7 @@ public class TestModelBuilder {
         // Repository
         repo.setEntityName("MyBookstore");
         repo.getComponents__Repository().add(orderComp);
-        repo.getComponents__Repository().add(creditCardBillingComp);
+        repo.getComponents__Repository().add(paymentComp);
         repo.getComponents__Repository().add(catalogSearchComp);
         repo.getComponents__Repository().add(queryInputComp);
         repo.getDataTypes__Repository().add(intDataType);
@@ -76,9 +76,9 @@ public class TestModelBuilder {
         catalogSearchComp.getProvidedRoles_InterfaceProvidingEntity().add(providedSearchOperation);
         catalogSearchComp.setRepository__RepositoryComponent(repo);
 
-        creditCardBillingComp.setEntityName("org.mybookstore.paymentComponent");
-        creditCardBillingComp.getProvidedRoles_InterfaceProvidingEntity().add(providedPayOperation);
-        creditCardBillingComp.setRepository__RepositoryComponent(repo);
+        paymentComp.setEntityName("org.mybookstore.paymentComponent");
+        paymentComp.getProvidedRoles_InterfaceProvidingEntity().add(providedPayOperation);
+        paymentComp.setRepository__RepositoryComponent(repo);
 
         orderComp.setEntityName("org.mybookstore.orderComponent");
         orderComp.getRequiredRoles_InterfaceRequiringEntity().add(requiredPayOperation);
