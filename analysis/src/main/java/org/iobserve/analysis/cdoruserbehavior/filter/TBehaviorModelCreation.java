@@ -32,6 +32,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
+ * Create a behavior model from Weka instances.
  *
  * @author Christoph Dornieden
  *
@@ -71,7 +72,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
     }
 
     /**
-     * create a BehaviorModel from Instance
+     * create a BehaviorModel from Instance.
      *
      * @param instances
      *            instances containing the attribute names
@@ -113,7 +114,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
     }
 
     /**
-     * Does the attribute name represent an edge?
+     * Test whether the given attribute name represent an edge.
      *
      * @param name
      *            attribute name
@@ -124,7 +125,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
     }
 
     /**
-     * Does the attribute name represent a node?
+     * Test whether the attribute name represent a node.
      *
      * @param name
      *            attribute name
@@ -135,7 +136,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
     }
 
     /**
-     * does the pattern matches the start of the string
+     * Does the pattern matches the start of the string.
      *
      * @param pattern
      *            pattern
@@ -150,7 +151,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
     }
 
     /**
-     * creates an edge from an edge representing attribute string and value
+     * Creates an edge from an edge representing attribute string and value.
      *
      * @param name
      *            attribute name
@@ -181,7 +182,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
     }
 
     /**
-     * creates an node from a node representing attribute string and value
+     * Creates an node from a node representing attribute string and value.
      *
      * @param name
      *            attribute name
@@ -208,7 +209,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
     }
 
     /**
-     * splits the signature
+     * Splits the signature.
      *
      * @param indicator
      *            indicator

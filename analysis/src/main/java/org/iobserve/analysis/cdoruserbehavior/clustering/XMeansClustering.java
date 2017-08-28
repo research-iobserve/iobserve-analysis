@@ -26,7 +26,7 @@ import weka.core.Instances;
 import weka.core.NormalizableDistance;
 
 /**
- * xmeans clustering for TClustering
+ * xmeans clustering for TClustering.
  *
  * @author Christoph Dornieden
  *
@@ -37,7 +37,7 @@ public class XMeansClustering implements IVectorQuantizationClustering {
     private final NormalizableDistance distanceMetric;
 
     /**
-     * constructor
+     * constructor.
      *
      * @param expectedUserGroups
      *            number of expected user groups
@@ -48,8 +48,8 @@ public class XMeansClustering implements IVectorQuantizationClustering {
      */
     public XMeansClustering(final int expectedUserGroups, final int variance,
             final NormalizableDistance distanceMetric) {
-        this.minClusters = (expectedUserGroups - variance) < 2 ? 1 : expectedUserGroups - variance;
-        this.maxClusters = (expectedUserGroups + variance) < 2 ? 2 : expectedUserGroups + variance;
+        this.minClusters = expectedUserGroups - variance < 2 ? 1 : expectedUserGroups - variance;
+        this.maxClusters = expectedUserGroups + variance < 2 ? 2 : expectedUserGroups + variance;
         this.distanceMetric = distanceMetric;
     }
 
@@ -57,7 +57,7 @@ public class XMeansClustering implements IVectorQuantizationClustering {
     public Optional<ClusteringResults> clusterInstances(final Instances instances) {
         Optional<ClusteringResults> clusteringResults = Optional.empty();
 
-        // Cluster multiple times to reduce the impact of the initial k of the k-means
+        /** Cluster multiple times to reduce the impact of the initial k of the k-means. */
         for (int i = 0; i < 5; i++) {
 
             final Optional<ClusteringResults> tempClusteringResults = this.getClusteringResults(instances);
@@ -84,10 +84,10 @@ public class XMeansClustering implements IVectorQuantizationClustering {
         try {
             xMeansClusterer.buildClusterer(instances);
 
-            // **************************************************************
-            // Code used from org.iobserve.analysis.userbehavior.XMeansClustering
-            // to use org.iobserve.analysis.userbehavior.ClusteringResults
-            // **************************************************************
+            /**
+             * Code used from org.iobserve.analysis.userbehavior.XMeansClustering to use
+             * org.iobserve.analysis.userbehavior.ClusteringResults
+             */
             int[] clustersize = null;
             final int[] assignments = new int[instances.numInstances()];
             clustersize = new int[xMeansClusterer.getClusterCenters().numInstances()];
@@ -102,7 +102,6 @@ public class XMeansClustering implements IVectorQuantizationClustering {
 
             final ClusteringResults xMeansClusteringResults = new ClusteringResults("X-Means",
                     xMeansClusterer.getClusterCenters().numInstances(), assignments, clusteringMetrics);
-            // ****
 
             return Optional.of(xMeansClusteringResults);
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2016 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
+package org.iobserve.evaluation;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
+import java.io.File;
+
+import teetime.framework.AbstractConsumerStage;
 
 /**
- * interface for the creation strategy of a signature from a {@link EntryCallNode}.
+ * Sync all incoming records with a Kieker writer to a text file log.
  *
- * @author Christop Dornieden
+ * @author Reiner Jung
  *
  */
-public interface ISignatureCreationStrategy {
+public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResult> {
+
+    private final File outputFile;
 
     /**
-     * create a signature from an entry {@link EntryCallNode}.
+     * Configure and setup the Kieker writer.
      *
-     * @param event
-     *            event
-     * @return signature
+     * @param dataLocation
+     *            data location
+     * @param hostname
+     *            selected hostname
      */
-    public String getSignature(EntryCallNode node);
+    public ComparisonOutputStage(File outputFile) {
+        this.outputFile = outputFile;
+    }
+
+    @Override
+    protected void execute(final ComparisonResult result) {
+
+    }
 
 }

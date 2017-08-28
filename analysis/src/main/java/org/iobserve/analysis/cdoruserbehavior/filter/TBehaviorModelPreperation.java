@@ -76,7 +76,7 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
     }
 
     /**
-     * execute case object instanceof EntryCallSequenceModel.
+     * Execute case object instanceof EntryCallSequenceModel.
      *
      * @param entryCallSequenceModel
      *            entryCallSequenceModel
@@ -117,7 +117,7 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
     }
 
     /**
-     * execute case object instanceof BehaviorModelTable.
+     * Execute case object instanceof BehaviorModelTable.
      *
      * @param behaviorModelTable
      *            behaviorModelTable

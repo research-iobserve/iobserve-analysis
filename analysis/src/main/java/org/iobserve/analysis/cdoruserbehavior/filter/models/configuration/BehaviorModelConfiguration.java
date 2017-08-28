@@ -24,7 +24,7 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.exampl
 import weka.core.ManhattanDistance;
 
 /**
- * configuration for the behavior model filter
+ * Configuration for the behavior model filter.
  *
  * @author Christoph Dornieden
  *
@@ -48,12 +48,12 @@ public class BehaviorModelConfiguration {
     // empty transitions?
     private boolean keepEmptyTransitions;
 
-	private EAggregationType aggregationType;
+    private EAggregationType aggregationType;
 
-	private EOutputMode outputMode;
+    private EOutputMode outputMode;
 
     /**
-     * default constructor
+     * Default constructor.
      */
     public BehaviorModelConfiguration() {
         this.behaviorModelNamePrefix = "BehaviorModel";
@@ -65,141 +65,70 @@ public class BehaviorModelConfiguration {
         this.clustering = new XMeansClustering(1, 1, new ManhattanDistance());
     }
 
-    /**
-     * getter
-     *
-     * @return the modelGenerationFilter
-     */
     public EntryCallFilterRules getModelGenerationFilter() {
         return this.modelGenerationFilter;
     }
 
-    /**
-     * getter
-     *
-     * @return the representativeStrategy
-     */
     public IRepresentativeStrategy getRepresentativeStrategy() {
         return this.representativeStrategy;
     }
 
-    /**
-     * getter
-     *
-     * @return the clustering
-     */
     public IVectorQuantizationClustering getClustering() {
         return this.clustering;
     }
 
-    /**
-     * getter
-     *
-     * @return the signatureCreationStrategy
-     */
     public ISignatureCreationStrategy getSignatureCreationStrategy() {
         return this.signatureCreationStrategy;
     }
 
-    /**
-     * getter
-     *
-     * @return the nameprefix
-     */
     public String getNamePrefix() {
         return this.behaviorModelNamePrefix;
 
     }
 
-    /**
-     * getter
-     *
-     * @return the behaviorModelNamePrefix
-     */
     public String getBehaviorModelNamePrefix() {
         return this.behaviorModelNamePrefix;
     }
 
-    /**
-     * getter
-     *
-     * @return the uBMUrl
-     */
     public String getVisualizationUrl() {
         return this.visualizationUrl;
     }
 
     /**
-     * getter
+     * Configuration value indicating whether empty transaction should be kept.
      *
-     * @return the keepEmptyTransitions
+     * @return returns true when empty transaction should be kept
      */
     public boolean keepEmptyTransitions() {
         return this.keepEmptyTransitions;
     }
 
-    /**
-     * setter
-     *
-     * @param behaviorModelNamePrefix
-     *            the behaviorModelNamePrefix to set
-     */
     public void setBehaviorModelNamePrefix(final String behaviorModelNamePrefix) {
         this.behaviorModelNamePrefix = behaviorModelNamePrefix;
     }
 
-    /**
-     * setter
-     *
-     * @param modelGenerationFilter
-     *            the modelGenerationFilter to set
-     */
     public void setModelGenerationFilter(final EntryCallFilterRules modelGenerationFilter) {
         this.modelGenerationFilter = modelGenerationFilter;
     }
 
-    /**
-     * setter
-     *
-     * @param representativeStrategy
-     *            the representativeStrategy to set
-     */
     public void setRepresentativeStrategy(final IRepresentativeStrategy representativeStrategy) {
         this.representativeStrategy = representativeStrategy;
     }
 
-    /**
-     * setter
-     *
-     * @param signatureCreationStrategy
-     *            the signatureCreationStrategy to set
-     */
     public void setSignatureCreationStrategy(final ISignatureCreationStrategy signatureCreationStrategy) {
         this.signatureCreationStrategy = signatureCreationStrategy;
     }
 
-    /**
-     * setter
-     *
-     * @param clustering
-     *            the clustering to set
-     */
     public void setClustering(final IVectorQuantizationClustering clustering) {
         this.clustering = clustering;
     }
 
-    /**
-     * setter
-     *
-     * @param uBMUrl
-     *            the uBMUrl to set
-     */
     public void setVisualizationUrl(final String visualizationUrl) {
         this.visualizationUrl = visualizationUrl;
     }
-    
+
     /**
-     * setter
+     * Set whether empty transitions should be kept.
      *
      * @param keepEmptyTransitions
      *            the keepEmptyTransitions to set
@@ -208,20 +137,20 @@ public class BehaviorModelConfiguration {
         this.keepEmptyTransitions = keepEmptyTransitions;
     }
 
-    public void setAggregationType(EAggregationType aggregationType) {
-    	this.aggregationType = aggregationType;
+    public void setAggregationType(final EAggregationType aggregationType) {
+        this.aggregationType = aggregationType;
     }
-    
-	public EAggregationType getAggregationType() {
-		return this.aggregationType;
-	}
 
-	public void setOutputMode(EOutputMode outputMode) {
-		this.outputMode = outputMode;
-	}
-	
-	public EOutputMode getOutputMode() {
-		return this.outputMode;
-	}
+    public EAggregationType getAggregationType() {
+        return this.aggregationType;
+    }
+
+    public void setOutputMode(final EOutputMode outputMode) {
+        this.outputMode = outputMode;
+    }
+
+    public EOutputMode getOutputMode() {
+        return this.outputMode;
+    }
 
 }

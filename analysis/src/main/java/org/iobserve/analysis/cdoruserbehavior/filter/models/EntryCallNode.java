@@ -22,7 +22,7 @@ import java.util.Set;
 import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
 
 /**
- * Represents the an entry call
+ * Represents the an entry call.
  *
  * @author Christoph Dornieden
  *
@@ -33,7 +33,7 @@ public class EntryCallNode {
     private final Set<CallInformation> entryCallInformations;
 
     /**
-     * constructor
+     * constructor.
      *
      * @param signature
      *            signature
@@ -44,7 +44,7 @@ public class EntryCallNode {
     }
 
     /**
-     * adds call information with signatures not present in the entry call information set
+     * adds call information with signatures not present in the entry call information set.
      *
      * @param callInformations
      *            callInformations
@@ -54,7 +54,7 @@ public class EntryCallNode {
     }
 
     /**
-     * adds a call information with a signature not present in the entry call information set
+     * adds a call information with a signature not present in the entry call information set.
      *
      * @param callInformation
      *            callInformation
@@ -91,20 +91,10 @@ public class EntryCallNode {
         return super.hashCode();
     }
 
-    /**
-     * getter
-     *
-     * @return the signature
-     */
     public String getSignature() {
         return this.signature;
     }
 
-    /**
-     * getter
-     *
-     * @return the entryCallInformation
-     */
     public Set<CallInformation> getEntryCallInformation() {
         return this.entryCallInformations;
     }

@@ -18,7 +18,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
 import java.util.List;
 
 /**
- * strategy to find the representative of a list of callinformations
+ * strategy to find the representative of a list of call informations.
  *
  * @author Christoph Dornieden
  *
@@ -26,7 +26,7 @@ import java.util.List;
 public interface IRepresentativeStrategy {
 
     /**
-     * Find the representatives of all given callInformationCodes
+     * Find the representatives of all given callInformationCodes.
      *
      * @param signature
      *            signature of the aggregated call information

@@ -23,14 +23,14 @@ import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 import weka.core.Instances;
 
 /**
- * interface for a clustering usable by {@link TVectorQuantizationClustering}
+ * interface for a clustering usable by {@link TVectorQuantizationClustering}.
  *
  * @author Christoph Dornieden
  *
  */
 public interface IVectorQuantizationClustering extends IClustering {
     /**
-     * get cluster centers of all clusters
+     * get cluster centers of all clusters.
      *
      * @param instances
      *            instances to be clustered

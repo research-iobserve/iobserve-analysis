@@ -32,7 +32,7 @@ public class EntryCallFilterRules {
     private final boolean blackListMode;
 
     /**
-     * constructor
+     * constructor.
      *
      * @param blackListMode
      *            blackListMode
@@ -43,7 +43,7 @@ public class EntryCallFilterRules {
     }
 
     /**
-     * constructor
+     * constructor.
      *
      * @param filterList
      *            filterList
@@ -56,10 +56,10 @@ public class EntryCallFilterRules {
     }
 
     /**
-     * Checks wether a signature of an entryCallEvent is allowed or not
+     * Checks whether a signature of an entryCallEvent is allowed or not.
      *
-     * @param signature
-     *            signature
+     * @param entryCallEvent
+     *            an single entry call event
      * @return true if signature is allowed, false else
      */
     public boolean isAllowed(final EntryCallEvent entryCallEvent) {
@@ -67,7 +67,7 @@ public class EntryCallFilterRules {
     }
 
     /**
-     * Checks wether a signature is allowed or not
+     * Checks whether a signature is allowed or not.
      *
      * @param signature
      *            signature
@@ -85,7 +85,7 @@ public class EntryCallFilterRules {
     }
 
     /**
-     * add filter rule
+     * Add filter rule.
      *
      * @param regex
      *            regex matching signatures
@@ -96,20 +96,10 @@ public class EntryCallFilterRules {
         return this;
     }
 
-    /**
-     * getter
-     *
-     * @return the filterList
-     */
     public List<Pattern> getFilterList() {
         return this.filterList;
     }
 
-    /**
-     * getter
-     *
-     * @return the blackListMode
-     */
     public boolean isBlackListMode() {
         return this.blackListMode;
     }
