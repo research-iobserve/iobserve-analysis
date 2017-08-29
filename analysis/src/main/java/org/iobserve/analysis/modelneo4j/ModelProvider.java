@@ -105,23 +105,24 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            The model type (only {@link Allocation}, {@link Repository},
      *            {@link ResourceEnvironment}, {@link System} or {@link UsageModel} are allowed)
      */
-    public void cloneNewGraphVersion(final Class<T> clazz) {
+    public Graph cloneNewGraphVersion(final Class<T> clazz) {
         final File baseDirectory = this.graph.getGraphDirectory().getParentFile().getParentFile();
         final GraphLoader graphLoader = new GraphLoader(baseDirectory);
 
         if (clazz.equals(Allocation.class)) {
-            graphLoader.cloneNewAllocationModelGraphVersion();
+            return graphLoader.cloneNewAllocationModelGraphVersion();
         } else if (clazz.equals(Repository.class)) {
-            graphLoader.cloneNewRepositoryModelGraphVersion();
+            return graphLoader.cloneNewRepositoryModelGraphVersion();
         } else if (clazz.equals(ResourceEnvironment.class)) {
-            graphLoader.cloneNewResourceEnvironmentModelGraphVersion();
+            return graphLoader.cloneNewResourceEnvironmentModelGraphVersion();
         } else if (clazz.equals(System.class)) {
-            graphLoader.cloneNewSystemModelGraphVersion();
+            return graphLoader.cloneNewSystemModelGraphVersion();
         } else if (clazz.equals(UsageModel.class)) {
-            graphLoader.cloneNewUsageModelGraphVersion();
+            return graphLoader.cloneNewUsageModelGraphVersion();
         } else {
             this.logger.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
                     + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
+            return null;
         }
     }
 
@@ -644,10 +645,10 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.REFERENCES)) {
-                final Node endNode = inRel.getStartNode();
-                final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
+                final Node startNode = inRel.getStartNode();
+                final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
                         new HashSet<Node>());
-                final EObject component = this.readComponent(endNode, containmentsAndDatatypes,
+                final EObject component = this.readComponent(startNode, containmentsAndDatatypes,
                         new HashMap<Node, EObject>());
                 referencingComponents.add(component);
             }
