@@ -22,51 +22,119 @@ import org.neo4j.graphdb.Transaction;
 import org.palladiosimulator.pcm.repository.Repository;
 
 /**
- * An interface which provides methods to test the methods of the model provider interface.
+ * An interface which provides methods to test the methods of the {@link ModelProvider}.
  *
  * @author Lars Bluemke
  *
  */
 public interface IModelProviderTest {
+
+    /**
+     * Clears the graph db for the next test.
+     */
     @Before
     public void clearGraph();
 
+    /**
+     * Creates a new example model for the next test.
+     */
     @Before
     public void createModel();
 
+    /**
+     * Writes a model to the graph, clones the graph using
+     * {@link ModelProvider#cloneNewGraphVersion(Class)}, reads the model from the cloned graph and
+     * asserts that it is equal to the one written to the first graph.
+     */
     @Test
-    public void createThenCloneGraph();
+    public void createThenCloneThenReadGraph();
 
+    /**
+     * Writes a model to the graph, clears the graph using {@link ModelProvider#clearGraph()} and
+     * asserts that the graph is empty afterwards.
+     */
     @Test
     public void createThenClearGraph();
 
+    /**
+     * Writes a model to the graph, reads it from the graph using
+     * {@link ModelProvider#readOnlyComponentById(Class, String)} and asserts that it is equal to
+     * the one written to the graph.
+     */
     @Test
     public void createThenReadById();
 
+    /**
+     * Writes a model to the graph, reads it from the graph using
+     * {@link ModelProvider#readOnlyComponentByName(Class, String)} and asserts that it is equal to
+     * the one written to the graph.
+     */
     @Test
     public void createThenReadByName();
 
+    /**
+     * Writes a model to the graph, reads it from the graph using
+     * {@link ModelProvider#readComponentByType(Class)} and asserts that it is equal to the one
+     * written to the graph.
+     */
     @Test
     public void createThenReadByType();
 
+    /**
+     * Writes a model to the graph, reads it from the graph using
+     * {@link ModelProvider#readOnlyRootComponent(Class)} and asserts that it is equal to the one
+     * written to the graph.
+     */
     @Test
     public void createThenReadRoot();
 
+    /**
+     * Writes a model to the graph, reads the container of a certain model component from the graph
+     * using {@link ModelProvider#readOnlyContainingComponentById(Class, String)} and asserts that
+     * it is equal to the container from the original model.
+     */
     @Test
     public void createThenReadContaining();
 
+    /**
+     * Writes a model to the graph, reads the components referencing to a certain component using
+     * {@link ModelProvider#readOnlyReferencingComponentsById(Class, String)} and asserts that it is
+     * equal to the referencing components from the original model.
+     */
     @Test
     public void createThenReadReferencing();
 
+    /**
+     * Writes a model to the graph, modifies the original model, updates it in the graph using
+     * {@link ModelProvider#updateComponent(Class, org.eclipse.emf.ecore.EObject)}, reads the
+     * updated model from the graph and asserts that it is equal to the modified original model.
+     */
     @Test
     public void updateThenReadUpdated();
 
+    /**
+     * Writes a model to the graph, deletes it using
+     * {@link ModelProvider#deleteComponent(Class, String)} and asserts that the graph is empty
+     * afterwards.
+     */
     @Test
     public void createThenDeleteComponent();
 
+    /**
+     * Writes a model to the graph, deletes it using
+     * {@link ModelProvider#deleteComponentAndDatatypes(Class, String)} and asserts that the graph
+     * is empty afterwards.
+     */
     @Test
     public void createThenDeleteComponentAndDatatypes();
 
+    /**
+     * Checks whether the graph of a given {@link ModelProvider} is empty.
+     *
+     * @param modelProvider
+     *            A model provider, containing a graph
+     * @return True if the graph is empty, false otherwise
+     */
     public static boolean isGraphEmpty(final ModelProvider<Repository> modelProvider) {
         boolean isEmpty;
 
