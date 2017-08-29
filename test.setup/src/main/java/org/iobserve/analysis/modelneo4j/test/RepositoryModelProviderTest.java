@@ -21,6 +21,7 @@ import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.modelneo4j.Graph;
+import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -42,20 +43,18 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
  */
 public class RepositoryModelProviderTest implements IModelProviderTest {
     protected static final File GRAPH_DIR = new File("/Users/LarsBlumke/Desktop/testdb");
-    protected static final Graph GRAPH = new Graph(
-            new File(RepositoryModelProviderTest.GRAPH_DIR + "/repositorymodel/repositorymodel_v1"));
+    protected static final Graph GRAPH = new GraphLoader(RepositoryModelProviderTest.GRAPH_DIR)
+            .getRepositoryModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
     private Repository model = TestModelBuilder.createReposiory();
 
-    // @Override
     @Override
     @Before
     public void clearGraph() {
         new ModelProvider<>(RepositoryModelProviderTest.GRAPH).clearGraph();
     }
 
-    // @Override
     @Override
     @Before
     public void createModel() {
@@ -64,7 +63,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
 
     @Override
     @Test
-    public void createThenCloneGraph() {
+    public void createThenCloneThenReadGraph() {
         final ModelProvider<Repository> modelProvider1 = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
         final ModelProvider<Repository> modelProvider2;
         final Graph graph2;
