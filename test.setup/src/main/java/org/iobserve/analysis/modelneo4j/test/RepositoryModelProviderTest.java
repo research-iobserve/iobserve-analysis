@@ -17,9 +17,7 @@ package org.iobserve.analysis.modelneo4j.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.modelneo4j.Graph;
@@ -29,12 +27,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.io.fs.FileUtils;
-import org.palladiosimulator.pcm.core.entity.Entity;
-import org.palladiosimulator.pcm.repository.DataType;
+import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
-import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
@@ -52,12 +48,14 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
     private Repository model = TestModelBuilder.createReposiory();
 
+    // @Override
     @Override
     @Before
     public void clearGraph() {
         new ModelProvider<>(RepositoryModelProviderTest.GRAPH).clearGraph();
     }
 
+    // @Override
     @Override
     @Before
     public void createModel() {
@@ -166,53 +164,28 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadReferencing() {
-        final Map<String, EObject> expectedObjects = new HashMap<>();
-        final List<EObject> readObjects;
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        BasicComponent catalogSearchComp = null;
+        OperationProvidedRole providedSearchOperation = null;
+        List<EObject> readReferencingComponents;
 
-        // Only components, interfaces and data types reference back the repository in our test
-        // model
-        for (final RepositoryComponent o : this.model.getComponents__Repository()) {
-            expectedObjects.put(o.getId(), o);
-        }
-        for (final Interface o : this.model.getInterfaces__Repository()) {
-            expectedObjects.put(o.getId(), o);
-        }
-        for (final DataType o : this.model.getDataTypes__Repository()) {
-            expectedObjects.put(o.toString(), o);
+        for (final RepositoryComponent c : this.model.getComponents__Repository()) {
+            if (c.getEntityName().equals("org.mybookstore.orderComponent.catologSearchComponent")) {
+                catalogSearchComp = (BasicComponent) c;
+                providedSearchOperation = (OperationProvidedRole) catalogSearchComp
+                        .getProvidedRoles_InterfaceProvidingEntity().get(0);
+            }
         }
 
         modelProvider.createComponent(this.model);
-        readObjects = modelProvider.readReferencingComponentsById(Repository.class, this.model.getId());
 
-        Assert.assertTrue(expectedObjects.size() == readObjects.size());
+        readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(BasicComponent.class,
+                catalogSearchComp.getId());
 
-        for (int i = 0; i < readObjects.size(); i++) {
+        // Only the providedSearchOperation role is referencing the catalogSearch component
+        Assert.assertTrue(readReferencingComponents.size() == 1);
 
-            final EObject readObject = readObjects.get(i);
-            EObject expectedObject = null;
-            if (readObject instanceof Entity) {
-                expectedObject = expectedObjects.get(((Entity) readObject).getId());
-            } else if (readObject instanceof PrimitiveDataType) {
-                expectedObject = expectedObjects.get(readObject.toString());
-            }
-
-            if (!this.equalityHelper.equals(expectedObject, readObject)) {
-                System.out.println(expectedObject + " " + readObject);
-            }
-
-            // System.out.println("Testing " + expectedObject);
-            // if (expectedObject instanceof Entity) {
-            // System.out.println(expectedObject + " " + ((Entity) expectedObject).getEntityName() +
-            // "\t" + readObject
-            // + " " + ((Entity) readObject).getEntityName() + "\t"
-            // + this.equalityHelper.equals(expectedObject, readObject));
-            // } else {
-            // System.out.println(expectedObject + "\t" + readObject + "\t"
-            // + this.equalityHelper.equals(expectedObject, readObject));
-            // }
-
-        }
+        Assert.assertTrue(this.equalityHelper.equals(providedSearchOperation, readReferencingComponents.get(0)));
 
     }
 
