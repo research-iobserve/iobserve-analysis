@@ -3,6 +3,8 @@ package org.iobserve.analysis.service.services;
 import java.util.List;
 
 import javax.json.Json;
+import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -16,7 +18,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
  */
 public class UsergroupService {
 
-    private String usergroupId;
+    private final String usergroupId = "test_usergroup_id";
 
     /**
      * empty default constructor
@@ -32,10 +34,20 @@ public class UsergroupService {
      * @return
      */
     public JsonObject createUsergroup(final String systemId, final List<AssemblyContext> userInvokedServices) {
-        // TODO add list to Json Object
+        JsonObject invokedServiceObject;
+        final JsonArrayBuilder builder = Json.createArrayBuilder();
+
+        // build array of targetIds
+        for (int i = 0; i < userInvokedServices.size(); i++) {
+            final String serviceId = userInvokedServices.get(i).getId();
+            invokedServiceObject = Json.createObjectBuilder().add("targetId", serviceId).build();
+            builder.add(invokedServiceObject);
+        }
+        final JsonArray invokedServicesArray = builder.build();
+
         final JsonObject usergroup = Json.createObjectBuilder().add("type", "usergroup").add("id", this.usergroupId)
-                .add("systemId", systemId).build(); // add("services", new
-                                                    // JSONArray(userInvokedServices)).
+                .add("systemId", systemId).add("name", "test-usergroup").add("calledServices", invokedServicesArray)
+                .build();
 
         return usergroup;
     }

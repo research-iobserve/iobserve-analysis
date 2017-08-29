@@ -170,7 +170,7 @@ public final class AnalysisMain {
                         systemModelGraph);
                 final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(
                         systemModelGraph);
-                final ModelProvider<UsageModel> usageScenarioModelGraphProvider = new ModelProvider<>(usageModelGraph);
+                final ModelProvider<UsageModel> usageModelGraphProvider = new ModelProvider<>(usageModelGraph);
                 final ModelProvider<Repository> repositoryModelGraphProvider = new ModelProvider<>(
                         repositoryModelGraph);
                 // get systemId
@@ -184,7 +184,7 @@ public final class AnalysisMain {
                 final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
                         systemUrl, changelogUrl, allocationModelGraphProvider,
                         allocationResourceContainerModelGraphProvider, systemModelGraphProvider,
-                        resourceEnvironmentModelGraphProvider, usageScenarioModelGraphProvider,
+                        resourceEnvironmentModelGraphProvider, usageModelGraphProvider,
                         repositoryModelGraphProvider);
                 try {
                     deploymentVisualization.initialize();

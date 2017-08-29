@@ -19,10 +19,11 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
-import org.palladiosimulator.pcm.core.impl.PCMRandomVariableImpl;
-import org.palladiosimulator.pcm.repository.ProvidedRole;
+import org.palladiosimulator.pcm.core.composition.impl.ProvidedDelegationConnectorImpl;
+import org.palladiosimulator.pcm.repository.OperationInterface;
+import org.palladiosimulator.pcm.repository.OperationProvidedRole;
+import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -52,7 +53,7 @@ public final class InitializeDeploymentVisualization {
     private final ModelProvider<ResourceContainer> allocationResourceContainerModelGraphProvider;
     private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
-    private final ModelProvider<UsageModel> usageScenarioModelGraphProvider;
+    private final ModelProvider<UsageModel> usageModelGraphProvider;
     private final ModelProvider<Repository> repositoryModelGraphProvider;
 
     /** services for visualization elements */
@@ -86,7 +87,7 @@ public final class InitializeDeploymentVisualization {
             final ModelProvider<ResourceContainer> allocationResourceContainerModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final ModelProvider<UsageModel> usageScenarioModelGraphProvider,
+            final ModelProvider<UsageModel> usageModelGraphProvider,
             final ModelProvider<Repository> repositoryModelGraphProvider) {
         this.systemUrl = systemUrl;
         this.changelogUrl = changelogUrl;
@@ -94,7 +95,7 @@ public final class InitializeDeploymentVisualization {
         this.allocationResourceContainerModelGraphProvider = allocationResourceContainerModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
-        this.usageScenarioModelGraphProvider = usageScenarioModelGraphProvider;
+        this.usageModelGraphProvider = usageModelGraphProvider;
         this.repositoryModelGraphProvider = repositoryModelGraphProvider;
     }
 
@@ -127,11 +128,12 @@ public final class InitializeDeploymentVisualization {
         final List<ResourceContainer> resourceContainers = resourceEnvironmentModel
                 .getResourceContainer_ResourceEnvironment();
         // set up the usage model and take parts from it
-        final UsageModel usageModel = this.usageScenarioModelGraphProvider.readOnlyRootComponent(UsageModel.class);
+        final UsageModel usageModel = this.usageModelGraphProvider.readOnlyRootComponent(UsageModel.class);
         final List<UsageScenario> usageScenarios = usageModel.getUsageScenario_UsageModel();
 
         // set up the repsoitory model
-        final Repository repositoryModel = this.repositoryModelGraphProvider.readOnlyRootComponent(Repository.class);
+        // final Repository repositoryModel =
+        // this.repositoryModelGraphProvider.readOnlyRootComponent(Repository.class);
 
         // sending created components to visualization (in predefined order stated in changelog
         // constraints)
@@ -289,8 +291,6 @@ public final class InitializeDeploymentVisualization {
                     }
                 }
                 if (actualUsageAction instanceof Loop) {
-                    final PCMRandomVariableImpl loopIteration = (PCMRandomVariableImpl) ((Loop) actualUsageAction)
-                            .getLoopIteration_Loop();
                     final ScenarioBehaviour loopBehaviour = ((Loop) actualUsageAction).getBodyBehaviour_Loop();
                     final List<AbstractUserAction> loopActions = loopBehaviour.getActions_ScenarioBehaviour();
 
@@ -310,28 +310,48 @@ public final class InitializeDeploymentVisualization {
         // map userSteps to assemblyContexts/services
         for (int m = 0; m < userSteps.size(); m++) {
             final EntryLevelSystemCall userStep = userSteps.get(m);
-            final String operationSignatureId = userStep.getOperationSignature__EntryLevelSystemCall().getId();
 
-            // get the components__Repository, that contains a providedRole with the Id
-            // operationSignatureId
-            final List<EObject> repositoryComponentsWithOperationSignature = this.repositoryModelGraphProvider
-                    .readOnlyReferencingComponentsById(ProvidedRole.class, operationSignatureId);
-            final RepositoryComponent repositoryComponent = (RepositoryComponent) repositoryComponentsWithOperationSignature
+            // workaround for: final String providedRoleId =
+            // userStep.getProvidedRole_EntryLevelSystemCall().getId();
+            final String operationSignatureId = userStep.getOperationSignature__EntryLevelSystemCall().getId();
+            final OperationInterface repositoryInterfaceWithOperationSignature = (OperationInterface) this.repositoryModelGraphProvider
+                    .readOnlyContainingComponentById(OperationSignature.class, operationSignatureId);
+
+            final String providedRoleId = repositoryInterfaceWithOperationSignature.getId();
+
+            final List<EObject> operationsProvidedRole = this.systemModelGraphProvider
+                    .readOnlyReferencingComponentsById(OperationInterface.class, providedRoleId);
+            final OperationProvidedRole operationProvidedRole = (OperationProvidedRole) operationsProvidedRole.get(0);
+
+            final List<EObject> usergroupConnectors = this.systemModelGraphProvider
+                    .readOnlyReferencingComponentsById(OperationProvidedRole.class, operationProvidedRole.getId());
+            final ProvidedDelegationConnectorImpl usergroupConnector = (ProvidedDelegationConnectorImpl) usergroupConnectors
                     .get(0);
 
-            // get the assemblyContext, that contains the repository id
-            final List<EObject> assemblyContextsWithComponent = this.repositoryModelGraphProvider
-                    .readOnlyReferencingComponentsById(RepositoryComponent.class, repositoryComponent.getId());
-            for (int n = 0; n < assemblyContextsWithComponent.size(); n++) {
-                final AssemblyContext assemblyContextWithComponent = (AssemblyContext) assemblyContextsWithComponent
-                        .get(n);
-                userInvokedServices.add(assemblyContextWithComponent);
-            }
-
+            final AssemblyContext assemblyContext = usergroupConnector.getAssemblyContext_ProvidedDelegationConnector();
+            // // get the components__Repository, that contains a providedRole with the Id
+            // // operationSignatureId
+            // final OperationInterface repositoryInterfaceWithOperationSignature =
+            // (OperationInterface) this.repositoryModelGraphProvider
+            // .readOnlyContainingComponentById(OperationSignature.class, operationSignatureId);
+            // // final OperationInterface repositoryInterface = (OperationInterface)
+            // // repositoryInterfacesWithOperationSignature
+            // // .get(0);
+            //
+            // // get the assemblyContext, that contains the repository id
+            // final List<EObject> assemblyContextsWithComponent = this.repositoryModelGraphProvider
+            // .readOnlyReferencingComponentsById(OperationInterface.class,
+            // repositoryInterfaceWithOperationSignature.getId());
+            // for (int n = 0; n < assemblyContextsWithComponent.size(); n++) {
+            // final AssemblyContext assemblyContextWithComponent = (AssemblyContext)
+            // assemblyContextsWithComponent
+            // .get(n);
+            userInvokedServices.add(assemblyContext);
         }
+
         if (userInvokedServices.size() > 0) {
-            SendHttpRequest.post(
-                    this.usergroupService.createUsergroup(this.systemService.getSystemId(), userInvokedServices),
+            // this.systemService.getSystemId()
+            SendHttpRequest.post(this.usergroupService.createUsergroup("_3Sgb8FcmEd23wcZsd06DZg", userInvokedServices),
                     this.systemUrl, this.changelogUrl);
 
         }
