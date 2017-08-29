@@ -16,6 +16,7 @@
 package org.iobserve.analysis.modelneo4j.test;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,10 +24,11 @@ import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.neo4j.graphdb.Transaction;
+import org.neo4j.io.fs.FileUtils;
 import org.palladiosimulator.pcm.core.entity.Entity;
 import org.palladiosimulator.pcm.repository.DataType;
 import org.palladiosimulator.pcm.repository.Interface;
@@ -43,8 +45,9 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
  *
  */
 public class RepositoryModelProviderTest implements IModelProviderTest {
-    private static final File GRAPH_DIR = new File("/Users/LarsBlumke/Desktop/neo4jDb");
-    private static final Graph GRAPH = new Graph(RepositoryModelProviderTest.GRAPH_DIR);
+    protected static final File GRAPH_DIR = new File("/Users/LarsBlumke/Desktop/testdb");
+    protected static final Graph GRAPH = new Graph(
+            new File(RepositoryModelProviderTest.GRAPH_DIR + "/repositorymodel/repositorymodel_v1"));
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
     private Repository model = TestModelBuilder.createReposiory();
@@ -55,9 +58,29 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
         new ModelProvider<>(RepositoryModelProviderTest.GRAPH).clearGraph();
     }
 
+    @Override
     @Before
     public void createModel() {
         this.model = TestModelBuilder.createReposiory();
+    }
+
+    @Override
+    @Test
+    public void createThenCloneGraph() {
+        final ModelProvider<Repository> modelProvider1 = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        final ModelProvider<Repository> modelProvider2;
+        final Graph graph2;
+        final Repository readModel;
+
+        modelProvider1.createComponent(this.model);
+
+        graph2 = modelProvider1.cloneNewGraphVersion(Repository.class);
+        modelProvider2 = new ModelProvider<>(graph2);
+
+        readModel = modelProvider2.readOnlyRootComponent(Repository.class);
+        graph2.getGraphDatabaseService().shutdown();
+
+        Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
     }
 
     @Override
@@ -67,11 +90,11 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
 
         modelProvider.createComponent(this.model);
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
         modelProvider.clearGraph();
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
     @Override
@@ -240,11 +263,11 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
 
         modelProvider.createComponent(this.model);
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
         modelProvider.deleteComponent(Repository.class, this.model.getId());
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
     @Override
@@ -254,22 +277,17 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
 
         modelProvider.createComponent(this.model);
 
-        Assert.assertFalse(this.isGraphEmpty(modelProvider));
+        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
         modelProvider.deleteComponentAndDatatypes(Repository.class, this.model.getId());
 
-        Assert.assertTrue(this.isGraphEmpty(modelProvider));
+        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
-    private boolean isGraphEmpty(final ModelProvider<Repository> modelProvider) {
-        boolean isEmpty;
-
-        try (Transaction tx = modelProvider.getGraph().getGraphDatabaseService().beginTx()) {
-            isEmpty = !modelProvider.getGraph().getGraphDatabaseService().getAllNodes().iterator().hasNext();
-            tx.success();
-        }
-
-        return isEmpty;
+    @AfterClass
+    public static void cleanUp() throws IOException {
+        RepositoryModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
+        FileUtils.deleteRecursively(RepositoryModelProviderTest.GRAPH_DIR);
     }
 
 }

@@ -15,8 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j.test;
 
+import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.Transaction;
+import org.palladiosimulator.pcm.repository.Repository;
 
 /**
  * An interface which provides methods to test the methods of the model provider interface.
@@ -27,6 +30,12 @@ import org.junit.Test;
 public interface IModelProviderTest {
     @Before
     public void clearGraph();
+
+    @Before
+    public void createModel();
+
+    @Test
+    public void createThenCloneGraph();
 
     @Test
     public void createThenClearGraph();
@@ -57,5 +66,16 @@ public interface IModelProviderTest {
 
     @Test
     public void createThenDeleteComponentAndDatatypes();
+
+    public static boolean isGraphEmpty(final ModelProvider<Repository> modelProvider) {
+        boolean isEmpty;
+
+        try (Transaction tx = modelProvider.getGraph().getGraphDatabaseService().beginTx()) {
+            isEmpty = !modelProvider.getGraph().getGraphDatabaseService().getAllNodes().iterator().hasNext();
+            tx.success();
+        }
+
+        return isEmpty;
+    }
 
 }
