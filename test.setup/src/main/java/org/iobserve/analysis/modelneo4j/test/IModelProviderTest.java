@@ -47,7 +47,7 @@ public interface IModelProviderTest {
      * asserts that it is equal to the one written to the first graph.
      */
     @Test
-    public void createThenCloneThenReadGraph();
+    public void createThenCloneThenRead();
 
     /**
      * Writes a model to the graph, clears the graph using {@link ModelProvider#clearGraph()} and
@@ -110,7 +110,7 @@ public interface IModelProviderTest {
      * updated model from the graph and asserts that it is equal to the modified original model.
      */
     @Test
-    public void updateThenReadUpdated();
+    public void createThenUpdateThenReadUpdated();
 
     /**
      * Writes a model to the graph, deletes it using

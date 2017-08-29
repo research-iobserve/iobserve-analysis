@@ -63,7 +63,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
 
     @Override
     @Test
-    public void createThenCloneThenReadGraph() {
+    public void createThenCloneThenRead() {
         final ModelProvider<Repository> modelProvider1 = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
         final ModelProvider<Repository> modelProvider2;
         final Graph graph2;
@@ -190,7 +190,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
 
     @Override
     @Test
-    public void updateThenReadUpdated() {
+    public void createThenUpdateThenReadUpdated() {
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
         final Repository updateModel = TestModelBuilder.createReposiory();
         Interface payInterface = null;
