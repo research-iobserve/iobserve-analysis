@@ -47,7 +47,6 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
             .getRepositoryModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
-    private Repository model = TestModelBuilder.createReposiory();
 
     @Override
     @Before
@@ -56,20 +55,15 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     }
 
     @Override
-    @Before
-    public void createModel() {
-        this.model = TestModelBuilder.createReposiory();
-    }
-
-    @Override
     @Test
     public void createThenCloneThenRead() {
         final ModelProvider<Repository> modelProvider1 = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
         final ModelProvider<Repository> modelProvider2;
-        final Graph graph2;
+        final Repository writtenModel = new TestModelBuilder().getRepository();
         final Repository readModel;
+        final Graph graph2;
 
-        modelProvider1.createComponent(this.model);
+        modelProvider1.createComponent(writtenModel);
 
         graph2 = modelProvider1.cloneNewGraphVersion(Repository.class);
         modelProvider2 = new ModelProvider<>(graph2);
@@ -77,15 +71,16 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
         readModel = modelProvider2.readOnlyRootComponent(Repository.class);
         graph2.getGraphDatabaseService().shutdown();
 
-        Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
+        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }
 
     @Override
     @Test
     public void createThenClearGraph() {
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        final Repository writtenModel = new TestModelBuilder().getRepository();
 
-        modelProvider.createComponent(this.model);
+        modelProvider.createComponent(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
@@ -97,40 +92,43 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadById() {
-        final Repository readModel;
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        final Repository writtenModel = new TestModelBuilder().getRepository();
+        final Repository readModel;
 
-        modelProvider.createComponent(this.model);
-        readModel = modelProvider.readOnlyComponentById(Repository.class, this.model.getId());
+        modelProvider.createComponent(writtenModel);
+        readModel = modelProvider.readOnlyComponentById(Repository.class, writtenModel.getId());
 
-        Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
+        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }
 
     @Override
     @Test
     public void createThenReadByName() {
-        final List<Repository> readModels;
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        final Repository writtenModel = new TestModelBuilder().getRepository();
+        final List<Repository> readModels;
 
-        modelProvider.createComponent(this.model);
-        readModels = modelProvider.readOnlyComponentByName(Repository.class, this.model.getEntityName());
+        modelProvider.createComponent(writtenModel);
+        readModels = modelProvider.readOnlyComponentByName(Repository.class, writtenModel.getEntityName());
 
         for (final Repository readModel : readModels) {
-            Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
+            Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
         }
     }
 
     @Override
     @Test
     public void createThenReadByType() {
-        final List<String> readIds;
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        final Repository writtenModel = new TestModelBuilder().getRepository();
+        final List<String> readIds;
 
-        modelProvider.createComponent(this.model);
+        modelProvider.createComponent(writtenModel);
         readIds = modelProvider.readComponentByType(Repository.class);
 
         for (final String readId : readIds) {
-            Assert.assertTrue(this.model.getId().equals(readId));
+            Assert.assertTrue(writtenModel.getId().equals(readId));
         }
 
     }
@@ -138,37 +136,40 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadRoot() {
-        final Repository readModel;
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        final Repository writtenModel = new TestModelBuilder().getRepository();
+        final Repository readModel;
 
-        modelProvider.createComponent(this.model);
+        modelProvider.createComponent(writtenModel);
         readModel = modelProvider.readOnlyRootComponent(Repository.class);
 
-        Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
+        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }
 
     @Override
     @Test
     public void createThenReadContaining() {
-        final Repository readModel;
-        final OperationInterface inter = (OperationInterface) this.model.getInterfaces__Repository().get(0);
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        final Repository writtenModel = new TestModelBuilder().getRepository();
+        final Repository readModel;
+        final OperationInterface inter = (OperationInterface) writtenModel.getInterfaces__Repository().get(0);
 
-        modelProvider.createComponent(this.model);
+        modelProvider.createComponent(writtenModel);
         readModel = (Repository) modelProvider.readOnlyContainingComponentById(OperationInterface.class, inter.getId());
 
-        Assert.assertTrue(this.equalityHelper.equals(this.model, readModel));
+        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }
 
     @Override
     @Test
     public void createThenReadReferencing() {
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        final Repository writtenModel = new TestModelBuilder().getRepository();
         BasicComponent catalogSearchComp = null;
         OperationProvidedRole providedSearchOperation = null;
         List<EObject> readReferencingComponents;
 
-        for (final RepositoryComponent c : this.model.getComponents__Repository()) {
+        for (final RepositoryComponent c : writtenModel.getComponents__Repository()) {
             if (c.getEntityName().equals("org.mybookstore.orderComponent.catologSearchComponent")) {
                 catalogSearchComp = (BasicComponent) c;
                 providedSearchOperation = (OperationProvidedRole) catalogSearchComp
@@ -176,7 +177,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
             }
         }
 
-        modelProvider.createComponent(this.model);
+        modelProvider.createComponent(writtenModel);
 
         readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(BasicComponent.class,
                 catalogSearchComp.getId());
@@ -192,23 +193,23 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Test
     public void createThenUpdateThenReadUpdated() {
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
-        final Repository updateModel = TestModelBuilder.createReposiory();
+        final Repository writtenModel = new TestModelBuilder().getRepository();
         Interface payInterface = null;
         RepositoryComponent paymentComponent = null;
         Repository readModel;
 
-        modelProvider.createComponent(updateModel);
+        modelProvider.createComponent(writtenModel);
 
         // Update the model by renaming and replacing payment the method
-        updateModel.setEntityName("MyVideoOnDemandService");
+        writtenModel.setEntityName("MyVideoOnDemandService");
 
-        for (final Interface i : updateModel.getInterfaces__Repository()) {
+        for (final Interface i : writtenModel.getInterfaces__Repository()) {
             if (i.getEntityName().equals("IPay")) {
                 payInterface = i;
             }
         }
 
-        for (final RepositoryComponent c : updateModel.getComponents__Repository()) {
+        for (final RepositoryComponent c : writtenModel.getComponents__Repository()) {
             if (c.getEntityName().equals("org.mybookstore.paymentComponent")) {
                 paymentComponent = c;
             }
@@ -221,23 +222,24 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
         paymentComponent.getProvidedRoles_InterfaceProvidingEntity().clear();
         paymentComponent.getProvidedRoles_InterfaceProvidingEntity().add(providedPayOperation);
 
-        modelProvider.updateComponent(Repository.class, updateModel);
+        modelProvider.updateComponent(Repository.class, writtenModel);
 
         readModel = modelProvider.readOnlyRootComponent(Repository.class);
 
-        Assert.assertTrue(this.equalityHelper.equals(updateModel, readModel));
+        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }
 
     @Override
     @Test
     public void createThenDeleteComponent() {
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        final Repository writtenModel = new TestModelBuilder().getRepository();
 
-        modelProvider.createComponent(this.model);
+        modelProvider.createComponent(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
-        modelProvider.deleteComponent(Repository.class, this.model.getId());
+        modelProvider.deleteComponent(Repository.class, writtenModel.getId());
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
@@ -246,12 +248,13 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Test
     public void createThenDeleteComponentAndDatatypes() {
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
+        final Repository writtenModel = new TestModelBuilder().getRepository();
 
-        modelProvider.createComponent(this.model);
+        modelProvider.createComponent(writtenModel);
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
-        modelProvider.deleteComponentAndDatatypes(Repository.class, this.model.getId());
+        modelProvider.deleteComponentAndDatatypes(Repository.class, writtenModel.getId());
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }

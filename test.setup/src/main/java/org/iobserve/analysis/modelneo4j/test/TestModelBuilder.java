@@ -25,6 +25,8 @@ import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 import org.palladiosimulator.pcm.repository.PrimitiveTypeEnum;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
+import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemFactory;
 
 /**
  * Class to provide programmatically built test models.
@@ -34,91 +36,115 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
  */
 public class TestModelBuilder {
 
-    public static Repository createReposiory() {
-        // Instantiate components, interfaces etc.
-        final Repository repo = RepositoryFactory.eINSTANCE.createRepository();
+    // Repository components
+    private final Repository repo = RepositoryFactory.eINSTANCE.createRepository();
 
-        final BasicComponent queryInputComp = RepositoryFactory.eINSTANCE.createBasicComponent();
-        final BasicComponent catalogSearchComp = RepositoryFactory.eINSTANCE.createBasicComponent();
-        final BasicComponent paymentComp = RepositoryFactory.eINSTANCE.createBasicComponent();
-        final CompositeComponent orderComp = RepositoryFactory.eINSTANCE.createCompositeComponent();
+    private final BasicComponent queryInputComp = RepositoryFactory.eINSTANCE.createBasicComponent();
+    private final BasicComponent catalogSearchComp = RepositoryFactory.eINSTANCE.createBasicComponent();
+    private final BasicComponent paymentComp = RepositoryFactory.eINSTANCE.createBasicComponent();
+    private final CompositeComponent orderComp = RepositoryFactory.eINSTANCE.createCompositeComponent();
 
-        final OperationProvidedRole providedSearchOperation = RepositoryFactory.eINSTANCE.createOperationProvidedRole();
-        final OperationProvidedRole providedPayOperation = RepositoryFactory.eINSTANCE.createOperationProvidedRole();
+    private final OperationProvidedRole providedSearchOperation = RepositoryFactory.eINSTANCE
+            .createOperationProvidedRole();
+    private final OperationProvidedRole providedPayOperation = RepositoryFactory.eINSTANCE
+            .createOperationProvidedRole();
 
-        final OperationRequiredRole requiredSearchOperation = RepositoryFactory.eINSTANCE.createOperationRequiredRole();
-        final OperationRequiredRole requiredPayOperation = RepositoryFactory.eINSTANCE.createOperationRequiredRole();
+    private final OperationRequiredRole requiredSearchOperation = RepositoryFactory.eINSTANCE
+            .createOperationRequiredRole();
+    private final OperationRequiredRole requiredPayOperation = RepositoryFactory.eINSTANCE
+            .createOperationRequiredRole();
 
-        final OperationInterface searchInterface = RepositoryFactory.eINSTANCE.createOperationInterface();
-        final OperationInterface payInterface = RepositoryFactory.eINSTANCE.createOperationInterface();
+    private final OperationInterface searchInterface = RepositoryFactory.eINSTANCE.createOperationInterface();
+    private final OperationInterface payInterface = RepositoryFactory.eINSTANCE.createOperationInterface();
 
-        final OperationSignature getPriceSig = RepositoryFactory.eINSTANCE.createOperationSignature();
-        final OperationSignature withdrawSig = RepositoryFactory.eINSTANCE.createOperationSignature();
+    private final OperationSignature getPriceSig = RepositoryFactory.eINSTANCE.createOperationSignature();
+    private final OperationSignature withdrawSig = RepositoryFactory.eINSTANCE.createOperationSignature();
 
-        final PrimitiveDataType intDataType = RepositoryFactory.eINSTANCE.createPrimitiveDataType();
+    private final PrimitiveDataType intDataType = RepositoryFactory.eINSTANCE.createPrimitiveDataType();
 
+    public TestModelBuilder() {
+        this.createReposiory();
+        this.createSystem();
+    }
+
+    private void createReposiory() {
         // Repository
-        repo.setEntityName("MyBookstore");
-        repo.getComponents__Repository().add(orderComp);
-        repo.getComponents__Repository().add(paymentComp);
-        repo.getComponents__Repository().add(catalogSearchComp);
-        repo.getComponents__Repository().add(queryInputComp);
-        repo.getDataTypes__Repository().add(intDataType);
-        repo.getInterfaces__Repository().add(payInterface);
-        repo.getInterfaces__Repository().add(searchInterface);
+        this.repo.setEntityName("MyBookstore");
+        this.repo.getComponents__Repository().add(this.orderComp);
+        this.repo.getComponents__Repository().add(this.paymentComp);
+        this.repo.getComponents__Repository().add(this.catalogSearchComp);
+        this.repo.getComponents__Repository().add(this.queryInputComp);
+        this.repo.getDataTypes__Repository().add(this.intDataType);
+        this.repo.getInterfaces__Repository().add(this.payInterface);
+        this.repo.getInterfaces__Repository().add(this.searchInterface);
 
         // Components
-        queryInputComp.setEntityName("org.mybookstore.orderComponent.queryInputComponent");
-        queryInputComp.getRequiredRoles_InterfaceRequiringEntity().add(requiredSearchOperation);
-        queryInputComp.setRepository__RepositoryComponent(repo);
+        this.queryInputComp.setEntityName("org.mybookstore.orderComponent.queryInputComponent");
+        this.queryInputComp.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredSearchOperation);
+        this.queryInputComp.setRepository__RepositoryComponent(this.repo);
 
-        catalogSearchComp.setEntityName("org.mybookstore.orderComponent.catologSearchComponent");
-        catalogSearchComp.getProvidedRoles_InterfaceProvidingEntity().add(providedSearchOperation);
-        catalogSearchComp.setRepository__RepositoryComponent(repo);
+        this.catalogSearchComp.setEntityName("org.mybookstore.orderComponent.catologSearchComponent");
+        this.catalogSearchComp.getProvidedRoles_InterfaceProvidingEntity().add(this.providedSearchOperation);
+        this.catalogSearchComp.setRepository__RepositoryComponent(this.repo);
 
-        paymentComp.setEntityName("org.mybookstore.paymentComponent");
-        paymentComp.getProvidedRoles_InterfaceProvidingEntity().add(providedPayOperation);
-        paymentComp.setRepository__RepositoryComponent(repo);
+        this.paymentComp.setEntityName("org.mybookstore.paymentComponent");
+        this.paymentComp.getProvidedRoles_InterfaceProvidingEntity().add(this.providedPayOperation);
+        this.paymentComp.setRepository__RepositoryComponent(this.repo);
 
-        orderComp.setEntityName("org.mybookstore.orderComponent");
-        orderComp.getRequiredRoles_InterfaceRequiringEntity().add(requiredPayOperation);
-        orderComp.setRepository__RepositoryComponent(repo);
+        this.orderComp.setEntityName("org.mybookstore.orderComponent");
+        this.orderComp.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredPayOperation);
+        this.orderComp.setRepository__RepositoryComponent(this.repo);
 
         // Roles
-        providedPayOperation.setEntityName("creditCardPayment");
-        providedPayOperation.setProvidedInterface__OperationProvidedRole(payInterface);
+        this.providedPayOperation.setEntityName("creditCardPayment");
+        this.providedPayOperation.setProvidedInterface__OperationProvidedRole(this.payInterface);
 
-        providedSearchOperation.setEntityName("catalogSearch");
-        providedSearchOperation.setProvidedInterface__OperationProvidedRole(searchInterface);
+        this.providedSearchOperation.setEntityName("catalogSearch");
+        this.providedSearchOperation.setProvidedInterface__OperationProvidedRole(this.searchInterface);
 
-        requiredPayOperation.setEntityName("payment");
-        requiredPayOperation.setRequiredInterface__OperationRequiredRole(payInterface);
+        this.requiredPayOperation.setEntityName("payment");
+        this.requiredPayOperation.setRequiredInterface__OperationRequiredRole(this.payInterface);
 
-        requiredSearchOperation.setEntityName("search");
-        requiredSearchOperation.setRequiredInterface__OperationRequiredRole(searchInterface);
+        this.requiredSearchOperation.setEntityName("search");
+        this.requiredSearchOperation.setRequiredInterface__OperationRequiredRole(this.searchInterface);
 
         // Interfaces
-        searchInterface.setEntityName("ISearch");
-        searchInterface.getSignatures__OperationInterface().add(getPriceSig);
-        searchInterface.setRepository__Interface(repo);
+        this.searchInterface.setEntityName("ISearch");
+        this.searchInterface.getSignatures__OperationInterface().add(this.getPriceSig);
+        this.searchInterface.setRepository__Interface(this.repo);
 
-        payInterface.setEntityName("IPay");
-        payInterface.getSignatures__OperationInterface().add(withdrawSig);
-        payInterface.setRepository__Interface(repo);
+        this.payInterface.setEntityName("IPay");
+        this.payInterface.getSignatures__OperationInterface().add(this.withdrawSig);
+        this.payInterface.setRepository__Interface(this.repo);
 
         // Signatures
-        getPriceSig.setEntityName("getPrice");
-        getPriceSig.setReturnType__OperationSignature(intDataType);
-        getPriceSig.setInterface__OperationSignature(searchInterface);
+        this.getPriceSig.setEntityName("getPrice");
+        this.getPriceSig.setReturnType__OperationSignature(this.intDataType);
+        this.getPriceSig.setInterface__OperationSignature(this.searchInterface);
 
-        withdrawSig.setEntityName("withdraw");
-        withdrawSig.setReturnType__OperationSignature(intDataType);
-        withdrawSig.setInterface__OperationSignature(payInterface);
+        this.withdrawSig.setEntityName("withdraw");
+        this.withdrawSig.setReturnType__OperationSignature(this.intDataType);
+        this.withdrawSig.setInterface__OperationSignature(this.payInterface);
 
         // Data type
-        intDataType.setType(PrimitiveTypeEnum.INT);
-        intDataType.setRepository__DataType(repo);
+        this.intDataType.setType(PrimitiveTypeEnum.INT);
+        this.intDataType.setRepository__DataType(this.repo);
 
-        return repo;
+    }
+
+    public System createSystem() {
+        final System system = SystemFactory.eINSTANCE.createSystem();
+
+        // final AssemblyContext context;
+        // final context.ge
+        //
+        // system.getAssemblyContexts__ComposedStructure();
+        // system.ge
+
+        return system;
+    }
+
+    public Repository getRepository() {
+        return this.repo;
     }
 }

@@ -36,12 +36,6 @@ public interface IModelProviderTest {
     public void clearGraph();
 
     /**
-     * Creates a new example model for the next test.
-     */
-    @Before
-    public void createModel();
-
-    /**
      * Writes a model to the graph, clones the graph using
      * {@link ModelProvider#cloneNewGraphVersion(Class)}, reads the model from the cloned graph and
      * asserts that it is equal to the one written to the first graph.
