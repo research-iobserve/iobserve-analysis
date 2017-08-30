@@ -15,6 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j.test;
 
+import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.CompositeComponent;
 import org.palladiosimulator.pcm.repository.OperationInterface;
@@ -61,6 +64,16 @@ public class TestModelBuilder {
     private final OperationSignature withdrawSig = RepositoryFactory.eINSTANCE.createOperationSignature();
 
     private final PrimitiveDataType intDataType = RepositoryFactory.eINSTANCE.createPrimitiveDataType();
+
+    // System components
+    private final System system = SystemFactory.eINSTANCE.createSystem();
+
+    private final AssemblyContext businessOrderContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+    private final AssemblyContext privateOrderContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+    private final AssemblyContext paymentContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+
+    private final AssemblyConnector businessPayConnector = CompositionFactory.eINSTANCE.createAssemblyConnector();
+    private final AssemblyConnector privatePayConnector = CompositionFactory.eINSTANCE.createAssemblyConnector();
 
     public TestModelBuilder() {
         this.createReposiory();
@@ -133,15 +146,33 @@ public class TestModelBuilder {
     }
 
     public System createSystem() {
-        final System system = SystemFactory.eINSTANCE.createSystem();
+        // System
+        this.system.setEntityName("MyBookstore");
+        this.system.getAssemblyContexts__ComposedStructure().add(this.businessOrderContext);
+        this.system.getAssemblyContexts__ComposedStructure().add(this.privateOrderContext);
+        this.system.getAssemblyContexts__ComposedStructure().add(this.paymentContext);
+        this.system.getConnectors__ComposedStructure().add(this.businessPayConnector);
+        this.system.getConnectors__ComposedStructure().add(this.privatePayConnector);
+        this.system.getProvidedRoles_InterfaceProvidingEntity().add(this.providedPayOperation);
+        this.system.getProvidedRoles_InterfaceProvidingEntity().add(this.providedSearchOperation);
+        this.system.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredPayOperation);
+        this.system.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredSearchOperation);
 
-        // final AssemblyContext context;
-        // final context.ge
-        //
-        // system.getAssemblyContexts__ComposedStructure();
-        // system.ge
+        // Assembly contexts
+        this.businessOrderContext.setEntityName("busisnessOrderContext_" + this.orderComp.getEntityName());
+        this.privateOrderContext.setEntityName("privateOrderContext_" + this.orderComp.getEntityName());
+        this.paymentContext.setEntityName("paymentContext_" + this.paymentComp.getEntityName());
 
-        return system;
+        // Assembly connectors
+        this.businessPayConnector.setEntityName("businessPayment");
+        this.businessPayConnector.setProvidedRole_AssemblyConnector(this.providedPayOperation);
+        this.businessPayConnector.setRequiredRole_AssemblyConnector(this.requiredPayOperation);
+        this.businessPayConnector.setProvidingAssemblyContext_AssemblyConnector(this.paymentContext);
+        this.businessPayConnector.setRequiringAssemblyContext_AssemblyConnector(this.businessOrderContext);
+
+        this.privatePayConnector.setEntityName("privatePayment");
+
+        return this.system;
     }
 
     public Repository getRepository() {
