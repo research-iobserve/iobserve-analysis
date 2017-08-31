@@ -37,14 +37,14 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
 /**
+ * Test cases for the model provider using a repository model.
  *
  * @author Lars Bluemke
  *
  */
 public class RepositoryModelProviderTest implements IModelProviderTest {
-    protected static final File GRAPH_DIR = new File("/Users/LarsBlumke/Desktop/testdb");
-    protected static final Graph GRAPH = new GraphLoader(RepositoryModelProviderTest.GRAPH_DIR)
-            .getRepositoryModelGraph();
+    private static final File GRAPH_DIR = new File("/Users/LarsBlumke/Desktop/testdb");
+    private static final Graph GRAPH = new GraphLoader(RepositoryModelProviderTest.GRAPH_DIR).getRepositoryModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 

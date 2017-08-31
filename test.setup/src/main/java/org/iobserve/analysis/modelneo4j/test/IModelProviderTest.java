@@ -19,7 +19,6 @@ import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
-import org.palladiosimulator.pcm.repository.Repository;
 
 /**
  * An interface which provides methods to test the methods of the {@link ModelProvider}.
@@ -129,7 +128,7 @@ public interface IModelProviderTest {
      *            A model provider, containing a graph
      * @return True if the graph is empty, false otherwise
      */
-    public static boolean isGraphEmpty(final ModelProvider<Repository> modelProvider) {
+    public static boolean isGraphEmpty(final ModelProvider<?> modelProvider) {
         boolean isEmpty;
 
         try (Transaction tx = modelProvider.getGraph().getGraphDatabaseService().beginTx()) {
