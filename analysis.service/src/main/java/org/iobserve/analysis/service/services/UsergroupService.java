@@ -55,15 +55,15 @@ public class UsergroupService {
         // build array of targetIds
         for (int i = 0; i < userInvokedServices.size(); i++) {
             final String serviceId = userInvokedServices.get(i).getId();
-            invokedServiceObject = Json.createObjectBuilder().add("sourceId", this.usergroupId)
-                    .add("targetId", serviceId).build();
+            invokedServiceObject = Json.createObjectBuilder().add("usergroupId", this.usergroupId)
+                    .add("serviceId", serviceId).build();
             builder.add(invokedServiceObject);
         }
         final JsonArray invokedServicesArray = builder.build();
 
         final JsonObject usergroup = Json.createObjectBuilder().add("type", "userGroup").add("id", this.usergroupId)
-                .add("systemId", systemId).add("name", "test-usergroup" + Math.random())
-                .add("calledServices", invokedServicesArray).build();
+                .add("systemId", systemId)// .add("name", "test-usergroup" + Math.random())
+                .add("services", invokedServicesArray).build();
 
         return usergroup;
     }

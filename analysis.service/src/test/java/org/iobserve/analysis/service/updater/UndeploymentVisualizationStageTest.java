@@ -47,6 +47,12 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import teetime.framework.test.StageTester;
 import util.TestHandler;
 
+/**
+ * Tests for {@link UndeploymentVisualizationStage}
+ * 
+ * @author jweg
+ *
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class UndeploymentVisualizationStageTest {
 

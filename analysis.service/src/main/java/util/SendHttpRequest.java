@@ -27,6 +27,12 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonWriter;
 
+/**
+ * This helper class actually sends data to the deployment visualization.
+ * 
+ * @author jweg
+ *
+ */
 public final class SendHttpRequest {
 
     private static final String USER_AGENT = "iObserve/0.0.2";
