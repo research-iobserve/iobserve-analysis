@@ -31,7 +31,10 @@ import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.core.composition.Connector;
+import org.palladiosimulator.pcm.repository.OperationProvidedRole;
+import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.system.System;
 
 /**
@@ -169,7 +172,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
         List<EObject> readReferencingComponents;
 
         for (final AssemblyContext ac : writtenModel.getAssemblyContexts__ComposedStructure()) {
-            if (ac.getEntityName().equals("busisnessOrderContext_org.mybookstore.orderComponent")) {
+            if (ac.getEntityName().equals("businessOrderContext_org.mybookstore.orderComponent")) {
                 businessOrderContext = ac;
             }
         }
@@ -195,44 +198,59 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        // final ModelProvider<System> modelProvider = new
-        // ModelProvider<>(SystemModelProviderTest.GRAPH);
-        // final System writtenModel = new TestModelBuilder().getSystem();
-        // Interface payInterface = null;
-        // SystemComponent paymentComponent = null;
-        // System readModel;
-        //
-        // modelProvider.createComponent(writtenModel);
-        //
-        // // Update the model by renaming and replacing payment the method
-        // writtenModel.setEntityName("MyVideoOnDemandService");
-        //
-        // for (final Interface i : writtenModel.getInterfaces__System()) {
-        // if (i.getEntityName().equals("IPay")) {
-        // payInterface = i;
-        // }
-        // }
-        //
-        // for (final SystemComponent c : writtenModel.getComponents__System()) {
-        // if (c.getEntityName().equals("org.mybookstore.paymentComponent")) {
-        // paymentComponent = c;
-        // }
-        // }
-        //
-        // final OperationProvidedRole providedPayOperation =
-        // SystemFactory.eINSTANCE.createOperationProvidedRole();
-        // providedPayOperation.setEntityName("payPalPayment");
-        // providedPayOperation.setProvidedInterface__OperationProvidedRole((OperationInterface)
-        // payInterface);
-        //
-        // paymentComponent.getProvidedRoles_InterfaceProvidingEntity().clear();
-        // paymentComponent.getProvidedRoles_InterfaceProvidingEntity().add(providedPayOperation);
-        //
-        // modelProvider.updateComponent(System.class, writtenModel);
-        //
-        // readModel = modelProvider.readOnlyRootComponent(System.class);
-        //
-        // Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final System writtenModel = new TestModelBuilder().getSystem();
+        AssemblyContext businessOrderContext = null;
+        AssemblyContext paymentContext = null;
+        AssemblyConnector businessPayConnector = null;
+        OperationProvidedRole providedPayOperation = null;
+        OperationRequiredRole requiredPayOperation = null;
+
+        System readModel;
+
+        modelProvider.createComponent(writtenModel);
+
+        // Update the model by renaming and replacing one context
+        writtenModel.setEntityName("MyVideoOnDemandService");
+
+        for (final AssemblyContext ac : writtenModel.getAssemblyContexts__ComposedStructure()) {
+            if (ac.getEntityName().equals("businessOrderContext_org.mybookstore.orderComponent")) {
+                businessOrderContext = ac;
+            } else if (ac.getEntityName().equals("paymentContext_org.mybookstore.paymentComponent")) {
+                paymentContext = ac;
+            }
+        }
+        writtenModel.getAssemblyContexts__ComposedStructure().remove(businessOrderContext);
+
+        for (final Connector c : writtenModel.getConnectors__ComposedStructure()) {
+            if (c.getEntityName().equals("businessPayment")) {
+                businessPayConnector = (AssemblyConnector) c;
+                providedPayOperation = businessPayConnector.getProvidedRole_AssemblyConnector();
+                requiredPayOperation = businessPayConnector.getRequiredRole_AssemblyConnector();
+            }
+        }
+        writtenModel.getConnectors__ComposedStructure().remove(businessPayConnector);
+
+        // Replace the business context by a context for groups of people placing an order
+        final AssemblyContext sharedOrderContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+        final AssemblyConnector sharedPayConnector = CompositionFactory.eINSTANCE.createAssemblyConnector();
+
+        sharedOrderContext.setEntityName("sharedOrderContext_org.myvideoondemandservice.orderComponent");
+
+        sharedPayConnector.setEntityName("sharedPayment");
+        sharedPayConnector.setProvidedRole_AssemblyConnector(providedPayOperation);
+        sharedPayConnector.setRequiredRole_AssemblyConnector(requiredPayOperation);
+        sharedPayConnector.setProvidingAssemblyContext_AssemblyConnector(paymentContext);
+        sharedPayConnector.setRequiringAssemblyContext_AssemblyConnector(sharedOrderContext);
+
+        writtenModel.getAssemblyContexts__ComposedStructure().add(sharedOrderContext);
+        writtenModel.getConnectors__ComposedStructure().add(sharedPayConnector);
+
+        modelProvider.updateComponent(System.class, writtenModel);
+
+        readModel = modelProvider.readOnlyRootComponent(System.class);
+
+        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }
 
     @Override
