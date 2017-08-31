@@ -155,7 +155,7 @@ public class TestModelBuilder {
         this.system.getConnectors__ComposedStructure().add(this.privatePayConnector);
 
         // Assembly contexts
-        this.businessOrderContext.setEntityName("busisnessOrderContext_" + this.orderComp.getEntityName());
+        this.businessOrderContext.setEntityName("businessOrderContext_" + this.orderComp.getEntityName());
         this.privateOrderContext.setEntityName("privateOrderContext_" + this.orderComp.getEntityName());
         this.paymentContext.setEntityName("paymentContext_" + this.paymentComp.getEntityName());
 

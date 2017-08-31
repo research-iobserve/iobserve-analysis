@@ -200,7 +200,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
 
         modelProvider.createComponent(writtenModel);
 
-        // Update the model by renaming and replacing payment the method
+        // Update the model by renaming and replacing the payment method
         writtenModel.setEntityName("MyVideoOnDemandService");
 
         for (final Interface i : writtenModel.getInterfaces__Repository()) {
