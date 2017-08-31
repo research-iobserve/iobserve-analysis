@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package util;
 
 import java.io.BufferedReader;
@@ -63,8 +78,22 @@ public final class SendHttpRequest {
         }
 
         jsonWriter.close();
+
         final int responseCode = connection.getResponseCode();
         System.out.println("Response Code : " + responseCode);
+        // final InputStream errorStream = connection.getErrorStream();
+        // System.out.printf("errorStream:%s\n", errorStream.toString());
+
+        final BufferedReader err = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+        String errLine;
+        final StringBuffer error = new StringBuffer();
+
+        while ((errLine = err.readLine()) != null) {
+            error.append(errLine);
+        }
+        err.close();
+
+        System.out.println("error:" + error);
 
         final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;
@@ -76,6 +105,7 @@ public final class SendHttpRequest {
         in.close();
 
         // print result
+        System.out.println("response.toString():\n");
         System.out.println(response.toString());
 
     }

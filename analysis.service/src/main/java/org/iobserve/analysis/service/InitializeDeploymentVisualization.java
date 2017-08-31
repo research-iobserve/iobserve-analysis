@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.service;
 
 import java.net.URL;
@@ -20,9 +35,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.core.composition.impl.ProvidedDelegationConnectorImpl;
-import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.repository.OperationProvidedRole;
-import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -37,6 +50,7 @@ import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
+import util.Changelog;
 import util.SendHttpRequest;
 
 /**
@@ -311,20 +325,10 @@ public final class InitializeDeploymentVisualization {
         for (int m = 0; m < userSteps.size(); m++) {
             final EntryLevelSystemCall userStep = userSteps.get(m);
 
-            // workaround for: final String providedRoleId =
-            // userStep.getProvidedRole_EntryLevelSystemCall().getId();
-            final String operationSignatureId = userStep.getOperationSignature__EntryLevelSystemCall().getId();
-            final OperationInterface repositoryInterfaceWithOperationSignature = (OperationInterface) this.repositoryModelGraphProvider
-                    .readOnlyContainingComponentById(OperationSignature.class, operationSignatureId);
-
-            final String providedRoleId = repositoryInterfaceWithOperationSignature.getId();
-
-            final List<EObject> operationsProvidedRole = this.systemModelGraphProvider
-                    .readOnlyReferencingComponentsById(OperationInterface.class, providedRoleId);
-            final OperationProvidedRole operationProvidedRole = (OperationProvidedRole) operationsProvidedRole.get(0);
+            final String providedRoleId = userStep.getProvidedRole_EntryLevelSystemCall().getId();
 
             final List<EObject> usergroupConnectors = this.systemModelGraphProvider
-                    .readOnlyReferencingComponentsById(OperationProvidedRole.class, operationProvidedRole.getId());
+                    .readOnlyReferencingComponentsById(OperationProvidedRole.class, providedRoleId);
             final ProvidedDelegationConnectorImpl usergroupConnector = (ProvidedDelegationConnectorImpl) usergroupConnectors
                     .get(0);
 
@@ -350,8 +354,10 @@ public final class InitializeDeploymentVisualization {
         }
 
         if (userInvokedServices.size() > 0) {
-            // this.systemService.getSystemId()
-            SendHttpRequest.post(this.usergroupService.createUsergroup("_3Sgb8FcmEd23wcZsd06DZg", userInvokedServices),
+            // TODO: this.systemService.getSystemId()
+            SendHttpRequest.post(
+                    Changelog.create(
+                            this.usergroupService.createUsergroup("_3Sgb8FcmEd23wcZsd06DZg", userInvokedServices)),
                     this.systemUrl, this.changelogUrl);
 
         }

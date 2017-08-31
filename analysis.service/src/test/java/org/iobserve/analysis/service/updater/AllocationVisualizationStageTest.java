@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.service.updater;
 
 import java.net.URL;
@@ -39,10 +54,10 @@ public class AllocationVisualizationStageTest {
     /** test parameters for stage under test */
     @Mock
     private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
-    private static final String systemId = "test_systemId";
+    private static final String SYSTEM_ID = "test_systemId";
     private URL changelogURL;
     private final String outputPort = "9090";
-    private static final String outputHostname = "localhost";
+    private static final String OUTPUT_HOSTNAME = "localhost";
 
     /** input events */
     private final List<IAllocationRecord> inputEvents = new ArrayList<>();
@@ -68,11 +83,11 @@ public class AllocationVisualizationStageTest {
     @Before
     public void setupAndInitServer() throws Exception {
 
-        this.changelogURL = new URL("http://" + AllocationVisualizationStageTest.outputHostname + ":" + this.outputPort
-                + "/v1/systems/" + AllocationVisualizationStageTest.systemId + "/changelogs");
+        this.changelogURL = new URL("http://" + AllocationVisualizationStageTest.OUTPUT_HOSTNAME + ":" + this.outputPort
+                + "/v1/systems/" + AllocationVisualizationStageTest.SYSTEM_ID + "/changelogs");
 
         this.allocationVisualizationStage = new AllocationVisualizationStage(this.changelogURL,
-                AllocationVisualizationStageTest.systemId, this.mockedResourceContainerModelProvider);
+                AllocationVisualizationStageTest.SYSTEM_ID, this.mockedResourceContainerModelProvider);
 
         /** test event */
         this.allocationEvent = new ContainerAllocationEvent(AllocationVisualizationStageTest.URL);
@@ -110,8 +125,8 @@ public class AllocationVisualizationStageTest {
         Assert.assertThat(expectedNode.get("type"), Is.is("node"));
         Assert.assertEquals(expectedNodegroup.get("id"), expectedNode.get("nodeGroupId"));
 
-        Assert.assertThat(expectedNodegroup.get("systemId"), Is.is(AllocationVisualizationStageTest.systemId));
-        Assert.assertThat(expectedNode.get("systemId"), Is.is(AllocationVisualizationStageTest.systemId));
+        Assert.assertThat(expectedNodegroup.get("systemId"), Is.is(AllocationVisualizationStageTest.SYSTEM_ID));
+        Assert.assertThat(expectedNode.get("systemId"), Is.is(AllocationVisualizationStageTest.SYSTEM_ID));
 
     }
 

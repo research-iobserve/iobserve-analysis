@@ -49,10 +49,16 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            the repository model provider
      * @param resourceEnvironmentModelProvider
      *            the resource environment provider
+     * @param resourceEnvironmentModelGraphProvider
+     *            the resource environment graph provider
      * @param allocationModelProvider
      *            the allocation model provider
+     * @param allocationModelGraphProvider
+     *            the allocation model graph provider
      * @param systemModelProvider
      *            the system model provider
+     * @param systemModelGraphProvider
+     *            the system model graph provider
      * @param varianceOfUserGroups
      *            variance of user groups, configuration for entry event filter
      * @param thinkTime

@@ -45,7 +45,7 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
     /** reference to {@link ResourceEnvironment} provider. */
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
-    /** output ports */
+    /** output ports. */
     private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
     private final OutputPort<IAllocationRecord> allocationFinishedOutputPort = this.createOutputPort();
 
