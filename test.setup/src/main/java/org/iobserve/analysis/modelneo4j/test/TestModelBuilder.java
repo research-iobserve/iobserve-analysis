@@ -40,7 +40,7 @@ import org.palladiosimulator.pcm.system.SystemFactory;
 public class TestModelBuilder {
 
     // Repository components
-    private final Repository repo = RepositoryFactory.eINSTANCE.createRepository();
+    private final Repository repository = RepositoryFactory.eINSTANCE.createRepository();
 
     private final BasicComponent queryInputComp = RepositoryFactory.eINSTANCE.createBasicComponent();
     private final BasicComponent catalogSearchComp = RepositoryFactory.eINSTANCE.createBasicComponent();
@@ -82,31 +82,31 @@ public class TestModelBuilder {
 
     private void createReposiory() {
         // Repository
-        this.repo.setEntityName("MyBookstore");
-        this.repo.getComponents__Repository().add(this.orderComp);
-        this.repo.getComponents__Repository().add(this.paymentComp);
-        this.repo.getComponents__Repository().add(this.catalogSearchComp);
-        this.repo.getComponents__Repository().add(this.queryInputComp);
-        this.repo.getDataTypes__Repository().add(this.intDataType);
-        this.repo.getInterfaces__Repository().add(this.payInterface);
-        this.repo.getInterfaces__Repository().add(this.searchInterface);
+        this.repository.setEntityName("MyBookstore");
+        this.repository.getComponents__Repository().add(this.orderComp);
+        this.repository.getComponents__Repository().add(this.paymentComp);
+        this.repository.getComponents__Repository().add(this.catalogSearchComp);
+        this.repository.getComponents__Repository().add(this.queryInputComp);
+        this.repository.getDataTypes__Repository().add(this.intDataType);
+        this.repository.getInterfaces__Repository().add(this.payInterface);
+        this.repository.getInterfaces__Repository().add(this.searchInterface);
 
         // Components
         this.queryInputComp.setEntityName("org.mybookstore.orderComponent.queryInputComponent");
         this.queryInputComp.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredSearchOperation);
-        this.queryInputComp.setRepository__RepositoryComponent(this.repo);
+        this.queryInputComp.setRepository__RepositoryComponent(this.repository);
 
         this.catalogSearchComp.setEntityName("org.mybookstore.orderComponent.catologSearchComponent");
         this.catalogSearchComp.getProvidedRoles_InterfaceProvidingEntity().add(this.providedSearchOperation);
-        this.catalogSearchComp.setRepository__RepositoryComponent(this.repo);
+        this.catalogSearchComp.setRepository__RepositoryComponent(this.repository);
 
         this.paymentComp.setEntityName("org.mybookstore.paymentComponent");
         this.paymentComp.getProvidedRoles_InterfaceProvidingEntity().add(this.providedPayOperation);
-        this.paymentComp.setRepository__RepositoryComponent(this.repo);
+        this.paymentComp.setRepository__RepositoryComponent(this.repository);
 
         this.orderComp.setEntityName("org.mybookstore.orderComponent");
         this.orderComp.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredPayOperation);
-        this.orderComp.setRepository__RepositoryComponent(this.repo);
+        this.orderComp.setRepository__RepositoryComponent(this.repository);
 
         // Roles
         this.providedPayOperation.setEntityName("creditCardPayment");
@@ -124,11 +124,11 @@ public class TestModelBuilder {
         // Interfaces
         this.searchInterface.setEntityName("ISearch");
         this.searchInterface.getSignatures__OperationInterface().add(this.getPriceSig);
-        this.searchInterface.setRepository__Interface(this.repo);
+        this.searchInterface.setRepository__Interface(this.repository);
 
         this.payInterface.setEntityName("IPay");
         this.payInterface.getSignatures__OperationInterface().add(this.withdrawSig);
-        this.payInterface.setRepository__Interface(this.repo);
+        this.payInterface.setRepository__Interface(this.repository);
 
         // Signatures
         this.getPriceSig.setEntityName("getPrice");
@@ -141,22 +141,18 @@ public class TestModelBuilder {
 
         // Data type
         this.intDataType.setType(PrimitiveTypeEnum.INT);
-        this.intDataType.setRepository__DataType(this.repo);
+        this.intDataType.setRepository__DataType(this.repository);
 
     }
 
-    public System createSystem() {
+    public void createSystem() {
         // System
         this.system.setEntityName("MyBookstore");
         this.system.getAssemblyContexts__ComposedStructure().add(this.businessOrderContext);
-        this.system.getAssemblyContexts__ComposedStructure().add(this.privateOrderContext);
         this.system.getAssemblyContexts__ComposedStructure().add(this.paymentContext);
+        this.system.getAssemblyContexts__ComposedStructure().add(this.privateOrderContext);
         this.system.getConnectors__ComposedStructure().add(this.businessPayConnector);
         this.system.getConnectors__ComposedStructure().add(this.privatePayConnector);
-        this.system.getProvidedRoles_InterfaceProvidingEntity().add(this.providedPayOperation);
-        this.system.getProvidedRoles_InterfaceProvidingEntity().add(this.providedSearchOperation);
-        this.system.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredPayOperation);
-        this.system.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredSearchOperation);
 
         // Assembly contexts
         this.businessOrderContext.setEntityName("busisnessOrderContext_" + this.orderComp.getEntityName());
@@ -171,11 +167,18 @@ public class TestModelBuilder {
         this.businessPayConnector.setRequiringAssemblyContext_AssemblyConnector(this.businessOrderContext);
 
         this.privatePayConnector.setEntityName("privatePayment");
+        this.privatePayConnector.setProvidedRole_AssemblyConnector(this.providedPayOperation);
+        this.privatePayConnector.setRequiredRole_AssemblyConnector(this.requiredPayOperation);
+        this.privatePayConnector.setProvidingAssemblyContext_AssemblyConnector(this.paymentContext);
+        this.privatePayConnector.setRequiringAssemblyContext_AssemblyConnector(this.privateOrderContext);
 
-        return this.system;
     }
 
     public Repository getRepository() {
-        return this.repo;
+        return this.repository;
+    }
+
+    public System getSystem() {
+        return this.system;
     }
 }
