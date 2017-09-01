@@ -76,10 +76,11 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-            String visualizationServiceURL) throws MalformedURLException {
+            final String visualizationServiceURL) throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
-                thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.XMeansClustering, EOutputMode.UBM_VISUALIZATION);
+                thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
+                EOutputMode.UBM_VISUALIZATION);
 
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");

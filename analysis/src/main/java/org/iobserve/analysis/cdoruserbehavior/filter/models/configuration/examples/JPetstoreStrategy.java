@@ -20,7 +20,7 @@ import java.util.List;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
 
 /**
- * strategy to find the representative of a list of callinformations for jPetstore
+ * strategy to find the representative of a list of callinformations for jPetstore.
  *
  * @author Christoph Dornieden
  *

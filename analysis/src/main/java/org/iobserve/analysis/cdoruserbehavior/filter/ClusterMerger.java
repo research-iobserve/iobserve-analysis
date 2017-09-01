@@ -44,8 +44,10 @@ public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<
      */
     @Override
     protected void execute(final Map<Integer, List<Pair<Instance, Double>>> clustering) throws Exception {
-        // simply pick the first instance of every cluster
-        // lookup attributes to build a new instances Object
+        /**
+         * simply pick the first instance of every cluster lookup attributes to build a new
+         * instances Object
+         */
         Instance instance = clustering.entrySet().iterator().next().getValue().get(0).getElement1();
         final FastVector attributes = new FastVector();
         for (int j = 0; j < instance.numAttributes(); j++) {

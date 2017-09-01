@@ -20,6 +20,6 @@ package org.iobserve.analysis.cdoruserbehavior.clustering;
  * @author Reiner Jung
  */
 public enum EAggregationType {
-	EMClustering,
-	XMeansClustering
+	EM_CLUSTERING,
+	X_MEANS_CLUSTERING
 }

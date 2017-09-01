@@ -31,13 +31,12 @@ public class TBehaviorModel extends CompositeStage {
     private final InputPort<EntryCallSequenceModel> inputPort;
 
     /**
-     * constructor
+     * constructor.
      *
      * @param configuration
      *            configuration
      */
     public TBehaviorModel(final BehaviorModelConfiguration configuration) {
-        // TODO
         final TBehaviorModelPreprocessing tBehaviorModelProcessing = new TBehaviorModelPreprocessing(configuration);
         this.inputPort = tBehaviorModelProcessing.getInputPort();
 
@@ -47,11 +46,6 @@ public class TBehaviorModel extends CompositeStage {
 
     }
 
-    /**
-     * getter
-     *
-     * @return the inputPort
-     */
     public InputPort<EntryCallSequenceModel> getInputPort() {
         return this.inputPort;
     }

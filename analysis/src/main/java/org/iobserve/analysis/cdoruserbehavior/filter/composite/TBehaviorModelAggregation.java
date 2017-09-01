@@ -15,16 +15,16 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iobserve.analysis.cdoruserbehavior.clustering.ExpectationMaximizationClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelCreation;
 import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelVisualization;
 import org.iobserve.analysis.cdoruserbehavior.filter.TVectorQuantizationClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.filter.writer.BehaviorModelWriter;
 import org.iobserve.analysis.filter.writer.AbstractModelOutputFilter;
+import org.iobserve.analysis.filter.writer.BehaviorModelWriter;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import weka.core.Instances;
@@ -32,65 +32,71 @@ import weka.core.Instances;
 /**
  *
  * @author Christoph Dornieden
+ * @author Reiner Jung
  */
 public class TBehaviorModelAggregation extends CompositeStage {
-    /** logger. */
-    private static final Log LOG = LogFactory.getLog(TBehaviorModelAggregation.class);
+    private static final Logger LOGGER = LogManager.getLogger(TBehaviorModelAggregation.class);
     private TVectorQuantizationClustering tClustering;
     private final TBehaviorModelCreation tBehaviorModelCreation;
 
     private final BehaviorModelConfiguration configuration;
-	private EMClusteringProcess emClustering;
+    private EMClusteringProcess emClustering;
 
     /**
      * Constructor configuration of the aggregation filters.
+     *
+     * @param configuration
+     *            filter configuration
      */
     public TBehaviorModelAggregation(final BehaviorModelConfiguration configuration) {
         this.configuration = configuration;
-        
+
         this.tBehaviorModelCreation = new TBehaviorModelCreation(configuration.getNamePrefix());
-        
+
         switch (configuration.getAggregationType()) {
-        case XMeansClustering : {
-        	this.tClustering = new TVectorQuantizationClustering(this.configuration.getClustering());
-        	this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
-        	break;
+        case X_MEANS_CLUSTERING: {
+            this.tClustering = new TVectorQuantizationClustering(this.configuration.getClustering());
+            this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
+            break;
         }
-        case EMClustering: {
-        	this.emClustering = new EMClusteringProcess(new ExpectationMaximizationClustering());
-        	this.connectPorts(this.emClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
-        	break;
+        case EM_CLUSTERING: {
+            this.emClustering = new EMClusteringProcess(new ExpectationMaximizationClustering());
+            this.connectPorts(this.emClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
+            break;
         }
         default:
-        	LOG.error("Unknown clustering method " + configuration.getAggregationType());
+            TBehaviorModelAggregation.LOGGER.error("Unknown clustering method " + configuration.getAggregationType());
         }
-               
+
         /** visualization integration. */
         AbstractModelOutputFilter tIObserveUBM = null;
-        switch(configuration.getOutputMode()) {
-        case UBM_VISUALIZATION: tIObserveUBM = new TBehaviorModelVisualization(configuration.getVisualizationUrl(),
-                configuration.getSignatureCreationStrategy());
-        case FILE_OUTPUT: tIObserveUBM = new BehaviorModelWriter(configuration.getVisualizationUrl(),
-                configuration.getSignatureCreationStrategy());
+        switch (configuration.getOutputMode()) {
+        case UBM_VISUALIZATION:
+            tIObserveUBM = new TBehaviorModelVisualization(configuration.getVisualizationUrl(),
+                    configuration.getSignatureCreationStrategy());
+        case FILE_OUTPUT:
+            tIObserveUBM = new BehaviorModelWriter(configuration.getVisualizationUrl(),
+                    configuration.getSignatureCreationStrategy());
         default:
-        	LOG.error("Unknown visualization method " + configuration.getOutputMode());
+            TBehaviorModelAggregation.LOGGER.error("Unknown visualization method " + configuration.getOutputMode());
         }
-   
+
         this.connectPorts(this.tBehaviorModelCreation.getOutputPort(), tIObserveUBM.getInputPort());
     }
 
     /**
-     * getter
+     * Get input port.
      *
      * @return input port
      */
     public InputPort<Instances> getInputPort() {
-    	if (tClustering != null)
-    		return this.tClustering.getInputPort();
-    	else if (emClustering != null)
-    		return this.emClustering.getInputPort();
-    	else
-    		return null;
+        if (this.tClustering != null) {
+            return this.tClustering.getInputPort();
+        } else if (this.emClustering != null) {
+            return this.emClustering.getInputPort();
+        } else {
+            return null;
+        }
     }
 
 }

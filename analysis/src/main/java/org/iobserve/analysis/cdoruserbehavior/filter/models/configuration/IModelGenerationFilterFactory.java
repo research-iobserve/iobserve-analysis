@@ -23,7 +23,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
  */
 public interface IModelGenerationFilterFactory {
     /**
-     * create a {@link EntryCallFilterRules}
+     * create a {@link EntryCallFilterRules}.
      *
      * @return specific {@link EntryCallFilterRules}
      */

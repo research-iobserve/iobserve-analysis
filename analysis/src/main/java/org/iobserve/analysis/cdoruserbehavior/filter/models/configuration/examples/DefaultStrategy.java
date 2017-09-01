@@ -21,7 +21,7 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepre
 
 /**
  * strategy to find the representative of a list of call-informations returns the first
- * call-information of the list
+ * call-information of the list.
  *
  * @author Christoph Dornieden
  *

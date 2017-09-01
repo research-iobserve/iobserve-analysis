@@ -42,6 +42,7 @@ public class TDensityClustering extends AbstractConsumerStage<Instances> {
      * Density clustering filter.
      *
      * @param clustering
+     *            density clustering helper
      */
     public TDensityClustering(final IDensitityClustering clustering) {
         this.clustering = clustering;

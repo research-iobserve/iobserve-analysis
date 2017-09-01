@@ -16,7 +16,7 @@
 package org.iobserve.analysis.cdoruserbehavior.filter.models;
 
 /**
- * Represents a additional Information of a Call
+ * Represents a additional Information of a Call.
  *
  * @author Christoph Dornieden
  *
@@ -26,16 +26,15 @@ public class CallInformation {
     private String informationSignature;
     private double informationCode;
 
-    /*
-     *
-     * base constructor
+    /**
+     * base constructor.
      */
     public CallInformation() {
         // Empty
     }
 
     /**
-     * constructor
+     * constructor.
      *
      * @param informationSignature
      *            informationSignature
@@ -47,40 +46,18 @@ public class CallInformation {
         this.informationCode = informationCode;
     }
 
-    /**
-     * getter
-     *
-     * @return informationSignature
-     */
     public String getInformationSignature() {
         return this.informationSignature;
     }
 
-    /**
-     * setter
-     *
-     * @param signature
-     *            information signature
-     */
     public void setInformationSignature(final String signature) {
         this.informationSignature = signature;
     }
 
-    /**
-     * getter
-     *
-     * @return informationCode
-     */
     public double getInformationCode() {
         return this.informationCode;
     }
 
-    /**
-     * setter
-     *
-     * @param code
-     *            code
-     */
     public void setInformationCode(final double code) {
         this.informationCode = code;
 

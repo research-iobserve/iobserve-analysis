@@ -72,8 +72,10 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
                     this.modelTable.addTransition(lastCall, eventCall);
                     this.modelTable.addInformation(eventCall);
 
-                } else { // only called at first valid event (condition lastCall ==
-                         // null is not needed)
+                } else {
+                    /**
+                     * only called at first valid event (condition lastCall == null is not needed)
+                     */
                     this.modelTable.addInformation(eventCall);
 
                 }

@@ -19,7 +19,7 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryC
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IModelGenerationFilterFactory;
 
 /**
- * factory class for creating a filter for CoCoME data
+ * factory class for creating a filter for CoCoME data.
  *
  * @author Christoph Dornieden
  *

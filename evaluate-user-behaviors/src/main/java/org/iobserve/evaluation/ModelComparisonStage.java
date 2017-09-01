@@ -56,13 +56,13 @@ public class ModelComparisonStage extends AbstractStage {
             this.testModel = this.testModelInputPort.receive();
         }
 
-        if (this.baselineModel != null && this.testModel != null) {
+        if ((this.baselineModel != null) && (this.testModel != null)) {
             final ComparisonResult result = new ComparisonResult();
 
-            result.getBaselineNodes().addAll(this.baselineModel.getEntryCallNodes());
-            result.getBaselineEdges().addAll(this.baselineModel.getEntryCallEdges());
-            result.getTestModelNodes().addAll(this.testModel.getEntryCallNodes());
-            result.getTestModelEdges().addAll(this.testModel.getEntryCallEdges());
+            result.getBaselineNodes().addAll(this.baselineModel.getNodes());
+            result.getBaselineEdges().addAll(this.baselineModel.getEdges());
+            result.getTestModelNodes().addAll(this.testModel.getNodes());
+            result.getTestModelEdges().addAll(this.testModel.getEdges());
 
             /** M2: Similarity Ratio */
             /**
@@ -70,9 +70,8 @@ public class ModelComparisonStage extends AbstractStage {
              * call-information on each node.
              */
             /** Missing nodes. */
-            for (final EntryCallNode baselineNode : this.baselineModel.getEntryCallNodes()) {
-                final EntryCallNode testModelNode = this.findMatchingModelNode(this.testModel.getEntryCallNodes(),
-                        baselineNode);
+            for (final EntryCallNode baselineNode : this.baselineModel.getNodes()) {
+                final EntryCallNode testModelNode = this.findMatchingModelNode(this.testModel.getNodes(), baselineNode);
                 if (testModelNode == null) {
                     result.getMissingNodes().add(baselineNode);
                 } else {
@@ -88,8 +87,8 @@ public class ModelComparisonStage extends AbstractStage {
             }
 
             /** Additional nodes. */
-            for (final EntryCallNode testModelNode : this.testModel.getEntryCallNodes()) {
-                final EntryCallNode baselineNode = this.findMatchingModelNode(this.baselineModel.getEntryCallNodes(),
+            for (final EntryCallNode testModelNode : this.testModel.getNodes()) {
+                final EntryCallNode baselineNode = this.findMatchingModelNode(this.baselineModel.getNodes(),
                         testModelNode);
                 if (baselineNode == null) {
                     result.getAdditionalNodes().add(testModelNode);
@@ -98,9 +97,8 @@ public class ModelComparisonStage extends AbstractStage {
 
             /** Missing edges. */
             int missingEdgeCount = 0;
-            for (final EntryCallEdge baselineEdge : this.baselineModel.getEntryCallEdges()) {
-                final EntryCallEdge testModelEdge = this.findMatchingModelEdge(this.testModel.getEntryCallEdges(),
-                        baselineEdge);
+            for (final EntryCallEdge baselineEdge : this.baselineModel.getEdges()) {
+                final EntryCallEdge testModelEdge = this.findMatchingModelEdge(this.testModel.getEdges(), baselineEdge);
                 if (testModelEdge == null) {
                     missingEdgeCount += (int) baselineEdge.getCalls();
                 } else {
@@ -111,8 +109,8 @@ public class ModelComparisonStage extends AbstractStage {
 
             /** Additional edges. */
             int additionalEdgeCount = 0;
-            for (final EntryCallEdge testModelEdge : this.testModel.getEntryCallEdges()) {
-                final EntryCallEdge baselineEdge = this.findMatchingModelEdge(this.baselineModel.getEntryCallEdges(),
+            for (final EntryCallEdge testModelEdge : this.testModel.getEdges()) {
+                final EntryCallEdge baselineEdge = this.findMatchingModelEdge(this.baselineModel.getEdges(),
                         testModelEdge);
                 if (baselineEdge == null) {
                     additionalEdgeCount += (int) testModelEdge.getCalls();
@@ -140,7 +138,8 @@ public class ModelComparisonStage extends AbstractStage {
      *            source edge
      * @return returns the matching edge or null when no match was found
      */
-    private EntryCallEdge findMatchingModelEdge(Set<EntryCallEdge> entryCallEdges, EntryCallEdge sourceEdge) {
+    private EntryCallEdge findMatchingModelEdge(final Set<EntryCallEdge> entryCallEdges,
+            final EntryCallEdge sourceEdge) {
         for (final EntryCallEdge entryCallEdge : entryCallEdges) {
             if (sourceEdge.getSource().getSignature().equals(entryCallEdge.getSource().getSignature())
                     && sourceEdge.getTarget().getSignature().equals(entryCallEdge.getTarget().getSignature())) {
@@ -157,8 +156,8 @@ public class ModelComparisonStage extends AbstractStage {
      * @param testModelCallInformationSet
      * @return list of missing call information
      */
-    private List<CallInformation> computeAdditionalInformation(Set<CallInformation> firstCallInformationSet,
-            Set<CallInformation> lastCallInformationSet) {
+    private List<CallInformation> computeAdditionalInformation(final Set<CallInformation> firstCallInformationSet,
+            final Set<CallInformation> lastCallInformationSet) {
         final List<CallInformation> result = new ArrayList<>();
         for (final CallInformation firstCallInformation : firstCallInformationSet) {
             boolean found = false;
@@ -184,7 +183,8 @@ public class ModelComparisonStage extends AbstractStage {
      *            the baseline node
      * @return the matching test model node, or null on fail
      */
-    private EntryCallNode findMatchingModelNode(Set<EntryCallNode> entryCallNodes, EntryCallNode baselineNode) {
+    private EntryCallNode findMatchingModelNode(final Set<EntryCallNode> entryCallNodes,
+            final EntryCallNode baselineNode) {
         for (final EntryCallNode testModelNode : entryCallNodes) {
             if (testModelNode.getSignature().equals(baselineNode.getSignature())) {
                 return testModelNode;

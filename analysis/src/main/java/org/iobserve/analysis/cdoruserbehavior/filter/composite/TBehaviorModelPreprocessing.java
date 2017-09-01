@@ -48,7 +48,10 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
     private final TInstanceTransformations tInstanceTransformations;
 
     /**
-     * constructor
+     * constructor.
+     *
+     * @param configuration
+     *            model configuration
      */
     public TBehaviorModelPreprocessing(final BehaviorModelConfiguration configuration) {
 
@@ -77,7 +80,7 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
     }
 
     /**
-     * getter
+     * get matching input port.
      *
      * @return input port
      */
@@ -86,7 +89,7 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
     }
 
     /**
-     * getter
+     * get suitable output port.
      *
      * @return outputPort
      */

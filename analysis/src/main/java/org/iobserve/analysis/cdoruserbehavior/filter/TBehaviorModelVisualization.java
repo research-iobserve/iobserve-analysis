@@ -61,14 +61,16 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
      * constructor.
      *
      * @param baseUrl
+     *            visualization URL
      * @param signatureStrategy
+     *            strategy for signature creation
      */
     public TBehaviorModelVisualization(final String baseUrl, final ISignatureCreationStrategy signatureStrategy) {
         this.objectMapper = new ObjectMapper();
         this.nodeMap = new HashMap<>();
         this.applicationUrl = baseUrl + "/applications";
         this.signatureStrategy = signatureStrategy;
-        // TODO remove
+        /** cleanup the visualization service. Note: This might not be necessary. */
         this.resetVisualization();
 
     }
@@ -78,8 +80,8 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
         this.nodeMap.clear();
         final long modelId = this.createGraph(model.getName());
         if (modelId != -1L) {
-            this.createNodes(model.getEntryCallNodes(), modelId);
-            this.createEdges(model.getEntryCallEdges(), modelId);
+            this.createNodes(model.getNodes(), modelId);
+            this.createEdges(model.getEdges(), modelId);
         } else {
             TBehaviorModelVisualization.LOGGER.error("Failed to create behavior on server!");
         }
@@ -104,7 +106,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
         final JsonNode idJson = json.get("id");
         if (idJson != null) {
             return idJson.asLong();
-        } else { // server error
+        } else { /** server error. */
             return -1L;
         }
 
@@ -154,7 +156,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
             }
 
         } catch (final Exception e) {
-            // TODO Auto-generated catch block
+            TBehaviorModelVisualization.LOGGER.error("Fetching data from visualization service failed.", e);
             e.printStackTrace();
         }
         return Optional.empty();
@@ -177,8 +179,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
             con.getResponseCode();
 
         } catch (final Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            TBehaviorModelVisualization.LOGGER.error("HTTP DELETE failed.", e);
         }
 
     }
@@ -203,7 +204,8 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
             }
             json.put("extra", extras);
 
-            // TODO visualisations doesn't accept lists
+            // TODO visualizations doesn't accept lists.
+            // TODO is this a requirement request?
             nodes.add(json);
             final JsonNode node = this.postElement(json, this.getNodeUrl(modelId));
             this.nodeMap.put(entryCallNode.getSignature(), node);
@@ -236,8 +238,6 @@ public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
             this.postElement(json, this.getEdgeUrl(modelId));
             edges.add(json);
         }
-        // TODO remove
-        // this.postElements(edges, this.getNodeUrl(modelId));
     }
 
     /**

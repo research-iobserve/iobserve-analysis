@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.iobserve.analysis.cdoruserbehavior.util.SingleOrNoneCollector;
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
@@ -38,7 +40,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 
 /**
- * table representation of a behavior model
+ * table representation of a behavior model.
  *
  * @author Christoph Dornieden
  *
@@ -46,12 +48,14 @@ import weka.core.Instances;
 
 public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
+    private static final Logger LOGGER = LogManager.getLogger(BehaviorModelTable.class);
+
     private final Map<String, Pair<Integer, AggregatedCallInformation[]>> signatures;
     private final String[] inverseSignatures;
     private final Integer[][] transitions;
 
     /**
-     * constructor
+     * constructor.
      *
      * @param signatures
      *            signatures
@@ -70,7 +74,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     }
 
     /**
-     * constructor
+     * constructor.
      *
      * @param signatures
      *            signatures of CallEvents
@@ -159,11 +163,9 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             }
 
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            BehaviorModelTable.LOGGER.error("Error processing the call information serialized with JSON", e);
         } catch (final IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            BehaviorModelTable.LOGGER.error("Illegal argument exception", e);
         }
     }
 

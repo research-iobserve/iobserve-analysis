@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IRepresentativeStrategy;
 
 /**
- * aggregates CallInformation with the same signature
+ * aggregates CallInformation with the same signature.
  *
  * @author Christoph Dornieden
  *
@@ -36,7 +36,7 @@ public class AggregatedCallInformation {
     private final IRepresentativeStrategy strategy;
 
     /**
-     * constructor
+     * constructor.
      *
      * @param strategy
      *            strategy
@@ -51,7 +51,7 @@ public class AggregatedCallInformation {
     }
 
     /**
-     * constructor
+     * constructor.
      *
      * @param strategy
      *            strategy
@@ -69,7 +69,7 @@ public class AggregatedCallInformation {
 
     /**
      *
-     * Add callInformation with matching signature
+     * Add callInformation with matching signature.
      *
      * @param callInformation
      *            callInformation
@@ -88,7 +88,7 @@ public class AggregatedCallInformation {
     }
 
     /**
-     * Checks weather the given callInformation belongs to the aggregation
+     * Checks weather the given callInformation belongs to the aggregation.
      *
      * @param callInformation
      *            callInformation
@@ -98,20 +98,15 @@ public class AggregatedCallInformation {
         return this.getSignature().equals(callInformation.getInformationSignature());
     }
 
-    /**
-     * getter
-     *
-     * @return signature of the representative
-     */
     public String getSignature() {
         return this.signature;
     }
 
     /**
-     * setter
+     * Set call informations.
      *
      * @param callInformations
-     *            the callInformations to set
+     *            the call information
      */
     public void setCallInformations(final List<CallInformation> callInformations) {
 
@@ -120,26 +115,22 @@ public class AggregatedCallInformation {
         this.representativeCode = this.strategy.findRepresentativeCode(this.signature, this.callInformationCodes);
     }
 
-    /**
-     * get the representative code of the aggregated call information
-     *
-     * @return representative code
-     */
     public Double getRepresentativeCode() {
         return this.representativeCode;
     }
 
     /**
-     * getter
+     * Create call information for the present signature and representativeCode.
      *
      * @return the representative
      */
-    public CallInformation getRepresentative() {
+    public CallInformation createCallInformation() {
+        // TODO This method is a factory method and should be removed from this class
         return new CallInformation(this.signature, this.representativeCode);
     }
 
     /**
-     * delete all information of the aggregation
+     * delete all information of the aggregation.
      */
     public void clearInformations() {
         this.callInformationCodes = new ArrayList<>();
@@ -147,7 +138,7 @@ public class AggregatedCallInformation {
     }
 
     /**
-     * returns a cleared copy of this
+     * returns a cleared copy of this.
      *
      * @return cleared copy
      */
@@ -156,7 +147,7 @@ public class AggregatedCallInformation {
     }
 
     /**
-     * size of the aggregatedCallInformation
+     * size of the aggregatedCallInformation.
      *
      * @return number of callInformationCodes
      */

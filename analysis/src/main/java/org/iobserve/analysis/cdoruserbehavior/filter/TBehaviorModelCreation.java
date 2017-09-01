@@ -68,11 +68,6 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
 
     }
 
-    /**
-     * getter
-     *
-     * @return the outputPort
-     */
     public OutputPort<BehaviorModel> getOutputPort() {
         return this.outputPort;
     }
@@ -112,7 +107,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
             }
         }
 
-        if (behaviorModel.getEntryCallEdges().isEmpty() && behaviorModel.getEntryCallNodes().isEmpty()) {
+        if (behaviorModel.getEdges().isEmpty() && behaviorModel.getNodes().isEmpty()) {
             return Optional.empty();
         }
 

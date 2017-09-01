@@ -21,7 +21,7 @@ import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 
 /**
- * table representation of a behavior model
+ * table representation of a behavior model.
  *
  * @author Christoph Dornieden
  *
@@ -42,6 +42,7 @@ public abstract class AbstractBehaviorModelTable {
             .compile(AbstractBehaviorModelTable.INFORMATION_DIVIDER);
 
     /**
+     * factory function.
      *
      * @param event
      *            event
@@ -53,7 +54,7 @@ public abstract class AbstractBehaviorModelTable {
     }
 
     /**
-     * Checks if signature of Event is allowed
+     * Checks if signature of Event is allowed.
      *
      * @param event
      *            event
@@ -65,7 +66,7 @@ public abstract class AbstractBehaviorModelTable {
     }
 
     /**
-     * Checks if signature of Event is allowed
+     * Checks if signature of Event is allowed.
      *
      * @param event
      *            event
@@ -74,6 +75,7 @@ public abstract class AbstractBehaviorModelTable {
     public abstract boolean isAllowedSignature(final String signature);
 
     /**
+     * Add transition defined by "from" and "to".
      *
      * @param from
      *            where the transition comes
@@ -83,7 +85,7 @@ public abstract class AbstractBehaviorModelTable {
     public abstract void addTransition(final EntryCallEvent from, final EntryCallEvent to);
 
     /**
-     * adds call information to the behavior table for existing signatures *
+     * adds call information to the behavior table for existing signatures.
      *
      * @param event
      *            event that could contain information.
@@ -93,13 +95,12 @@ public abstract class AbstractBehaviorModelTable {
         if (event instanceof ExtendedEntryCallEvent) {
             this.addInformation((ExtendedEntryCallEvent) event);
         } else {
-            // TODO
             System.out.println();
         }
     }
 
     /**
-     * adds call information to the behavior table for existing signatures *
+     * adds call information to the behavior table for existing signatures.
      *
      * @param extendedEntryCallEvent
      *            event containing information.

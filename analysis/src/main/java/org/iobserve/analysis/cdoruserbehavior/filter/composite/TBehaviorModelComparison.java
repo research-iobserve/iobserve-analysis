@@ -28,7 +28,7 @@ import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
 import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 
 /**
- * Distribute EntryCallSequences to both BehaviorModel generations for evaluation purposes
+ * Distribute EntryCallSequences to both BehaviorModel generations for evaluation purposes.
  *
  *
  * @author Christoph Dornieden
@@ -39,7 +39,7 @@ public class TBehaviorModelComparison extends CompositeStage {
     private final Distributor<EntryCallSequenceModel> distributor;
 
     /**
-     * constructor
+     * constructor.
      *
      * @param configuration
      *            configuration
@@ -85,11 +85,6 @@ public class TBehaviorModelComparison extends CompositeStage {
 
     }
 
-    /**
-     * getter
-     *
-     * @return input port
-     */
     public InputPort<EntryCallSequenceModel> getInputPort() {
         return this.distributor.getInputPort();
     }

@@ -18,6 +18,8 @@ package org.iobserve.analysis.cdoruserbehavior.clustering;
 import java.util.Optional;
 import java.util.Random;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.iobserve.analysis.userbehavior.data.ClusteringMetrics;
 import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 
@@ -26,12 +28,14 @@ import weka.core.Instances;
 import weka.core.NormalizableDistance;
 
 /**
- * xmeans clustering for TClustering.
+ * X-means clustering for TClustering.
  *
  * @author Christoph Dornieden
  *
  */
 public class XMeansClustering implements IVectorQuantizationClustering {
+    private static final Logger LOGGER = LogManager.getLogger(XMeansClustering.class);
+
     private final int minClusters;
     private final int maxClusters;
     private final NormalizableDistance distanceMetric;
@@ -48,8 +52,8 @@ public class XMeansClustering implements IVectorQuantizationClustering {
      */
     public XMeansClustering(final int expectedUserGroups, final int variance,
             final NormalizableDistance distanceMetric) {
-        this.minClusters = expectedUserGroups - variance < 2 ? 1 : expectedUserGroups - variance;
-        this.maxClusters = expectedUserGroups + variance < 2 ? 2 : expectedUserGroups + variance;
+        this.minClusters = (expectedUserGroups - variance) < 2 ? 1 : expectedUserGroups - variance;
+        this.maxClusters = (expectedUserGroups + variance) < 2 ? 2 : expectedUserGroups + variance;
         this.distanceMetric = distanceMetric;
     }
 
@@ -106,8 +110,7 @@ public class XMeansClustering implements IVectorQuantizationClustering {
             return Optional.of(xMeansClusteringResults);
 
         } catch (final Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            XMeansClustering.LOGGER.error("Clustering failed.", e);
         }
 
         return Optional.empty();

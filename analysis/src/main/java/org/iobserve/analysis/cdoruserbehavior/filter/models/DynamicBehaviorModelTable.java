@@ -35,7 +35,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
- * table representation of a behavior model
+ * table representation of a behavior model.
  *
  * @author Christoph Dornieden
  *
@@ -43,25 +43,23 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
 
-    // a map for adding and updating transitions
+    /** a map for adding and updating transitions. */
     private final Map<String, Pair<Integer, ArrayList<AggregatedCallInformation>>> signatures;
 
-    // a list for getting transitions
+    /** a list for getting transitions. */
     private final ArrayList<String> inverseSignatures;
 
-    // transition matrix
+    /** transition matrix. */
     private final LinkedList<LinkedList<Integer>> transitions;
 
-    // Aggregation Strategy
+    /** Aggregation strategy. */
     private final IRepresentativeStrategy strategy;
 
     /**
-     * advanced constructor
+     * advanced constructor.
      *
      * @param strategy
      *            strategy
-     * @param modelGenerationFilter
-     *            modelGenerationFilter
      */
 
     public DynamicBehaviorModelTable(final IRepresentativeStrategy strategy) {
@@ -78,6 +76,7 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
      *            where the transition comes
      * @param to
      *            where the transition goes *
+     * @throws IllegalArgumentException
      */
     @Override
     public void addTransition(final EntryCallEvent from, final EntryCallEvent to) throws IllegalArgumentException {
@@ -88,7 +87,7 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
         final Integer fromIndex = this.getSignatureIndex(fromSignature);
         final Integer toIndex = this.getSignatureIndex(toSignature);
 
-        // If it is the first occurence of the transition, start with transition count of 0
+        /** If it is the first occurrence of the transition, start with transition count of 0. */
         final Integer transitionCount = this.transitions.get(fromIndex)
                 .get(toIndex) == AbstractBehaviorModelTable.EMPTY_TRANSITION ? 0
                         : this.transitions.get(fromIndex).get(toIndex);
@@ -153,7 +152,7 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
     }
 
     /**
-     * extends the signature matrix
+     * extends the signature matrix.
      *
      * @param signature
      *            to be added

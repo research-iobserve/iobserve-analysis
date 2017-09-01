@@ -33,13 +33,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import teetime.framework.AbstractConsumerStage;
 
 /**
- * Transform the behavior
+ * Transform the behavior.
  *
  * @author Christoph Dornieden
  *
  */
 
 public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
+    // TODO extract predefined string and convert them to settings
     private final String systemId = "behaviormodelsystem";
     private final String changelogUrl = "http://localhost:8080/v1/systems/" + this.systemId + "/changelogs";
     private final String resetUrl = "http://localhost:8080/v1/systems/createBehavior";
@@ -70,14 +71,14 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
         this.postChangelogs(changelogs);
         changelogs.clear();
 
-        behaviorModel.getEntryCallNodes().stream().forEach(
+        behaviorModel.getNodes().stream().forEach(
                 node -> this.toCreateNodeChangelog(node, changelogs, instanceChangelogs, nodeID, behaviorModel));
         this.postChangelogs(changelogs);
         this.postChangelogs(instanceChangelogs);
         instanceChangelogs.clear();
         changelogs.clear();
 
-        behaviorModel.getEntryCallEdges().stream()
+        behaviorModel.getEdges().stream()
                 .forEach(edge -> this.toCreateEdgeChangelog(edge, changelogs, instanceChangelogs, nodeID));
         this.postChangelogs(changelogs);
         this.postChangelogs(instanceChangelogs);
@@ -212,7 +213,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
     }
 
     /**
-     * creates needed basic system via changelogs
+     * creates needed basic system via change logs.
      *
      * @param list
      *            list
@@ -241,7 +242,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
     }
 
     /**
-     * creates changelog object node
+     * creates changelog object node.
      *
      * @param type
      *            type
@@ -268,7 +269,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
     }
 
     /**
-     * reset the system in the ui
+     * reset the system in the ui.
      */
     private void resetSystem() {
         try {
@@ -301,7 +302,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
     }
 
     /**
-     * post changelogs to server
+     * post changelogs to server.
      *
      * @param changelogs
      *            changelogs
@@ -335,7 +336,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
     }
 
     /**
-     * create id
+     * create id.
      *
      * @param nodeID
      *            nodeID

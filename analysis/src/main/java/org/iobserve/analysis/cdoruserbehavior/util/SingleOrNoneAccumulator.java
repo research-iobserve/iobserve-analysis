@@ -30,14 +30,14 @@ public class SingleOrNoneAccumulator<E> {
     private Optional<E> optional;
 
     /**
-     * constructor
+     * constructor.
      */
     public SingleOrNoneAccumulator() {
         this.optional = Optional.empty();
     }
 
     /**
-     * add an element to the accumulator
+     * add an element to the accumulator.
      *
      * @param e
      *            e
@@ -56,7 +56,7 @@ public class SingleOrNoneAccumulator<E> {
     }
 
     /**
-     * getter
+     * getter.
      *
      * @return optional stored in the accumulator
      */

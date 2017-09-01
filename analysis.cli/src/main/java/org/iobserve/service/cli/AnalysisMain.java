@@ -126,9 +126,9 @@ public final class AnalysisMain {
 
             EAggregationType aggregationType;
             if ("em".equals(aggregationTypeName)) {
-            	aggregationType = EAggregationType.EMClustering;
+            	aggregationType = EAggregationType.EM_CLUSTERING;
             } else if ("xmeans".equals(aggregationTypeName)) {
-            	aggregationType = EAggregationType.XMeansClustering;
+            	aggregationType = EAggregationType.X_MEANS_CLUSTERING;
             } else {
             	commander.usage();
             	return;

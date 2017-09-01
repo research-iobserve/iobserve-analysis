@@ -25,11 +25,11 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * Collector for one or none element streams. Throws a exeption if the stream has to many elements
+ * Collector for one or none element streams. Throws a exeption if the stream has to many elements.
  *
  * @author Christoph Dornieden
  *
- * @param <T> 
+ * @param <T>
  */
 public class SingleOrNoneCollector<T> implements Collector<T, SingleOrNoneAccumulator<T>, Optional<T>> {
 
@@ -40,9 +40,7 @@ public class SingleOrNoneCollector<T> implements Collector<T, SingleOrNoneAccumu
 
     @Override
     public Set<java.util.stream.Collector.Characteristics> characteristics() {
-        // TODO Auto-generated method stub
         return EnumSet.of(Characteristics.UNORDERED);
-
     }
 
     @Override

@@ -39,6 +39,12 @@ public class EMClusteringProcess extends CompositeStage {
 
     // TODO a Clustering Filter Interface may be useful
 
+    /**
+     * constructor for EM clustering process.
+     *
+     * @param clustering
+     *            clustering algorithm
+     */
     public EMClusteringProcess(final IDensitityClustering clustering) {
         final TDensityClustering clusteringFilter = new TDensityClustering(clustering);
         this.inputPort = clusteringFilter.getInputPort();

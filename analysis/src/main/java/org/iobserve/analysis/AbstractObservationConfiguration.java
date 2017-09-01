@@ -65,8 +65,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
     protected TUndeployment undeployment;
 
-    private final boolean modeCdor = false;
-
     /**
      * Create a configuration with a ASCII file reader.
      *
@@ -90,15 +88,18 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            kind of workload, configuration for entry event filter
      * @param visualizationServiceURL
      *            url to the visualization service
-     * @param aggregationType aggregation type
-     * @param outputMode output mode
+     * @param aggregationType
+     *            aggregation type
+     * @param outputMode
+     *            output mode
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
-            final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode) {
+            final String visualizationServiceURL, final EAggregationType aggregationType,
+            final EOutputMode outputMode) {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 

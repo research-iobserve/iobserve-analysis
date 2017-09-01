@@ -33,7 +33,7 @@ import weka.core.Instances;
  *
  */
 public class ExpectationMaximizationClustering implements IDensitityClustering {
-    private final Logger logger = LogManager.getLogger(this.getClass());
+    private static final Logger LOGGER = LogManager.getLogger(ExpectationMaximizationClustering.class);
 
     /*
      * (non-Javadoc)
@@ -45,12 +45,15 @@ public class ExpectationMaximizationClustering implements IDensitityClustering {
     @Override
     public Map<Integer, List<Pair<Instance, Double>>> clusterInstances(final Instances instances) {
         final EM emClustering = new EM();
-        this.logger.info("Computing the EM-Clustering with following options: " + emClustering.getOptions());
+        ExpectationMaximizationClustering.LOGGER
+                .info("Computing the EM-Clustering with following options: " + emClustering.getOptions());
         final Map<Integer, List<Pair<Instance, Double>>> resultMap = new HashMap<>();
         try {
             emClustering.buildClusterer(instances);
-            // iterate through all instances and bucket sort them with their probabilities to their
-            // assigned cluster
+            /**
+             * iterate through all instances and bucket sort them with their probabilities to their
+             * assigned cluster.
+             */
             for (int i = 0; i < instances.numInstances(); i++) {
                 final Instance currentInstance = instances.instance(i);
                 final int cluster = emClustering.clusterInstance(currentInstance);
@@ -62,7 +65,7 @@ public class ExpectationMaximizationClustering implements IDensitityClustering {
 
             }
         } catch (final Exception e) {
-            this.logger.error(e);
+            ExpectationMaximizationClustering.LOGGER.error(e);
         }
         return resultMap;
     }

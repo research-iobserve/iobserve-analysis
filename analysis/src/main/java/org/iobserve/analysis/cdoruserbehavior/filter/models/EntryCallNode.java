@@ -32,6 +32,9 @@ public class EntryCallNode {
     private String signature;
     private final Set<CallInformation> entryCallInformation;
 
+    /**
+     * constructor.
+     */
     public EntryCallNode() {
         this.entryCallInformation = new HashSet<>();
     }
@@ -52,7 +55,7 @@ public class EntryCallNode {
         return this.entryCallInformation;
     }
 
-    public void setSignature(String signature) {
+    public void setSignature(final String signature) {
         this.signature = signature;
     }
 

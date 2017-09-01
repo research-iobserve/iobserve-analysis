@@ -50,17 +50,12 @@ public class TUsageModelToBehaviorModel extends AbstractConsumerStage<UsageModel
     private final OutputPort<BehaviorModel> outputPort;
 
     /**
-     * constructor
+     * constructor.
      */
     public TUsageModelToBehaviorModel() {
         this.outputPort = this.createOutputPort();
     }
 
-    /**
-     * getter
-     *
-     * @return outputPort
-     */
     public OutputPort<BehaviorModel> getOutputPort() {
         return this.outputPort;
     }
@@ -75,7 +70,7 @@ public class TUsageModelToBehaviorModel extends AbstractConsumerStage<UsageModel
     }
 
     /**
-     * send user behavior to ui
+     * send user behavior to ui.
      *
      * @param behavior
      *            user behavior
@@ -186,7 +181,7 @@ public class TUsageModelToBehaviorModel extends AbstractConsumerStage<UsageModel
     }
 
     /**
-     * Find first {@link EntryLevelSystemCall} element of a {@link Loop} body
+     * Find first {@link EntryLevelSystemCall} element of a {@link Loop} body.
      *
      * @param loop
      *            loop
@@ -222,7 +217,7 @@ public class TUsageModelToBehaviorModel extends AbstractConsumerStage<UsageModel
     }
 
     /**
-     * creates an {@link EntryCallNode} from an {@link EntryLevelSystemCall}
+     * creates an {@link EntryCallNode} from an {@link EntryLevelSystemCall}.
      *
      * @param entryLevelSystemCall
      *            {@link EntryLevelSystemCall}

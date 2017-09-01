@@ -28,8 +28,8 @@ public interface ISignatureCreationStrategy {
     /**
      * create a signature from an entry {@link EntryCallNode}.
      *
-     * @param event
-     *            event
+     * @param node
+     *            node
      * @return signature
      */
     public String getSignature(EntryCallNode node);
