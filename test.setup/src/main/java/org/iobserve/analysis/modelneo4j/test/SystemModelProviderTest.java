@@ -17,6 +17,7 @@ package org.iobserve.analysis.modelneo4j.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
@@ -32,9 +33,6 @@ import org.neo4j.io.fs.FileUtils;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
-import org.palladiosimulator.pcm.core.composition.Connector;
-import org.palladiosimulator.pcm.repository.OperationProvidedRole;
-import org.palladiosimulator.pcm.repository.OperationRequiredRole;
 import org.palladiosimulator.pcm.system.System;
 
 /**
@@ -166,32 +164,24 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Test
     public void createThenReadReferencing() {
         final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
-        final System writtenModel = new TestModelBuilder().getSystem();
-        AssemblyContext businessOrderContext = null;
-        AssemblyConnector businessPayConnector = null;
+        final TestModelBuilder testModelBuilder = new TestModelBuilder();
+        final System writtenModel = testModelBuilder.getSystem();
+        final List<EObject> expectedReferencingComponents = new LinkedList<>();
         List<EObject> readReferencingComponents;
 
-        for (final AssemblyContext ac : writtenModel.getAssemblyContexts__ComposedStructure()) {
-            if (ac.getEntityName().equals("businessOrderContext_org.mybookstore.orderComponent")) {
-                businessOrderContext = ac;
-            }
-        }
-
-        for (final Connector c : writtenModel.getConnectors__ComposedStructure()) {
-            if (c.getEntityName().equals("businessPayment")) {
-                businessPayConnector = (AssemblyConnector) c;
-            }
-        }
+        expectedReferencingComponents.add(testModelBuilder.getBusinessQueryInputConnector());
+        expectedReferencingComponents.add(testModelBuilder.getBusinessPayConnector());
 
         modelProvider.createComponent(writtenModel);
 
         readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(AssemblyContext.class,
-                businessOrderContext.getId());
+                testModelBuilder.getBusinessOrderContext().getId());
 
-        // Only the businessPay connector is referencing the businessOrder context
-        Assert.assertTrue(readReferencingComponents.size() == 1);
+        // Only the businessQueryInputConnector and the businessPayConnector are referencing the
+        // businessOrderContext
+        Assert.assertTrue(readReferencingComponents.size() == 2);
 
-        Assert.assertTrue(this.equalityHelper.equals(businessPayConnector, readReferencingComponents.get(0)));
+        Assert.assertTrue(this.equalityHelper.equals(expectedReferencingComponents, readReferencingComponents));
 
     }
 
@@ -199,51 +189,41 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Test
     public void createThenUpdateThenReadUpdated() {
         final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
-        final System writtenModel = new TestModelBuilder().getSystem();
-        AssemblyContext businessOrderContext = null;
-        AssemblyContext paymentContext = null;
-        AssemblyConnector businessPayConnector = null;
-        OperationProvidedRole providedPayOperation = null;
-        OperationRequiredRole requiredPayOperation = null;
-
+        final TestModelBuilder testModelBuilder = new TestModelBuilder();
+        final System writtenModel = testModelBuilder.getSystem();
         System readModel;
 
         modelProvider.createComponent(writtenModel);
 
-        // Update the model by renaming and replacing one context
+        // Update the model by renaming and removing the business context
         writtenModel.setEntityName("MyVideoOnDemandService");
 
-        for (final AssemblyContext ac : writtenModel.getAssemblyContexts__ComposedStructure()) {
-            if (ac.getEntityName().equals("businessOrderContext_org.mybookstore.orderComponent")) {
-                businessOrderContext = ac;
-            } else if (ac.getEntityName().equals("paymentContext_org.mybookstore.paymentComponent")) {
-                paymentContext = ac;
-            }
-        }
-        writtenModel.getAssemblyContexts__ComposedStructure().remove(businessOrderContext);
-
-        for (final Connector c : writtenModel.getConnectors__ComposedStructure()) {
-            if (c.getEntityName().equals("businessPayment")) {
-                businessPayConnector = (AssemblyConnector) c;
-                providedPayOperation = businessPayConnector.getProvidedRole_AssemblyConnector();
-                requiredPayOperation = businessPayConnector.getRequiredRole_AssemblyConnector();
-            }
-        }
-        writtenModel.getConnectors__ComposedStructure().remove(businessPayConnector);
+        writtenModel.getAssemblyContexts__ComposedStructure().remove(testModelBuilder.getBusinessOrderContext());
+        writtenModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessQueryInputConnector());
+        writtenModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessPayConnector());
 
         // Replace the business context by a context for groups of people placing an order
         final AssemblyContext sharedOrderContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+        final AssemblyConnector sharedQueryInputConnector = CompositionFactory.eINSTANCE.createAssemblyConnector();
         final AssemblyConnector sharedPayConnector = CompositionFactory.eINSTANCE.createAssemblyConnector();
 
         sharedOrderContext.setEntityName("sharedOrderContext_org.myvideoondemandservice.orderComponent");
 
+        sharedQueryInputConnector.setEntityName("sharedQueryInput");
+        sharedQueryInputConnector.setProvidedRole_AssemblyConnector(testModelBuilder.getProvidedInputOperation());
+        sharedQueryInputConnector.setRequiredRole_AssemblyConnector(testModelBuilder.getRequiredInputOperation());
+        sharedQueryInputConnector.setProvidingAssemblyContext_AssemblyConnector(sharedOrderContext);
+        sharedQueryInputConnector
+                .setRequiringAssemblyContext_AssemblyConnector(testModelBuilder.getQueryInputContext());
+
         sharedPayConnector.setEntityName("sharedPayment");
-        sharedPayConnector.setProvidedRole_AssemblyConnector(providedPayOperation);
-        sharedPayConnector.setRequiredRole_AssemblyConnector(requiredPayOperation);
-        sharedPayConnector.setProvidingAssemblyContext_AssemblyConnector(paymentContext);
+        sharedPayConnector.setProvidedRole_AssemblyConnector(testModelBuilder.getProvidedPayOperation());
+        sharedPayConnector.setRequiredRole_AssemblyConnector(testModelBuilder.getRequiredPayOperation());
+        sharedPayConnector.setProvidingAssemblyContext_AssemblyConnector(testModelBuilder.getPaymentContext());
         sharedPayConnector.setRequiringAssemblyContext_AssemblyConnector(sharedOrderContext);
 
         writtenModel.getAssemblyContexts__ComposedStructure().add(sharedOrderContext);
+        writtenModel.getConnectors__ComposedStructure().add(sharedQueryInputConnector);
         writtenModel.getConnectors__ComposedStructure().add(sharedPayConnector);
 
         modelProvider.updateComponent(System.class, writtenModel);

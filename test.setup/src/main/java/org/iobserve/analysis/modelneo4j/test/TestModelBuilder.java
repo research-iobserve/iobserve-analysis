@@ -225,7 +225,7 @@ public class TestModelBuilder {
         this.privateQueryInputConnector.setEntityName("privateQueryInput");
         this.privateQueryInputConnector.setProvidedRole_AssemblyConnector(this.providedInputOperation);
         this.privateQueryInputConnector.setRequiredRole_AssemblyConnector(this.requiredInputOperation);
-        this.privateQueryInputConnector.setProvidingAssemblyContext_AssemblyConnector(this.businessOrderContext);
+        this.privateQueryInputConnector.setProvidingAssemblyContext_AssemblyConnector(this.privateOrderContext);
         this.privateQueryInputConnector.setRequiringAssemblyContext_AssemblyConnector(this.queryInputContext);
 
         this.businessPayConnector.setEntityName("businessPayment");
@@ -240,6 +240,142 @@ public class TestModelBuilder {
         this.privatePayConnector.setProvidingAssemblyContext_AssemblyConnector(this.paymentContext);
         this.privatePayConnector.setRequiringAssemblyContext_AssemblyConnector(this.privateOrderContext);
 
+    }
+
+    public BasicComponent getQueryInputComp() {
+        return this.queryInputComp;
+    }
+
+    public BasicComponent getQueryProcessingComp() {
+        return this.queryProcessingComp;
+    }
+
+    public BasicComponent getCatalogSearchComp() {
+        return this.catalogSearchComp;
+    }
+
+    public BasicComponent getPaymentComp() {
+        return this.paymentComp;
+    }
+
+    public CompositeComponent getOrderComp() {
+        return this.orderComp;
+    }
+
+    public OperationProvidedRole getProvidedInputOperation() {
+        return this.providedInputOperation;
+    }
+
+    public OperationProvidedRole getProvidedSearchOperation() {
+        return this.providedSearchOperation;
+    }
+
+    public OperationProvidedRole getProvidedPayOperation() {
+        return this.providedPayOperation;
+    }
+
+    public OperationRequiredRole getRequiredInputOperation() {
+        return this.requiredInputOperation;
+    }
+
+    public OperationRequiredRole getRequiredSearchOperation() {
+        return this.requiredSearchOperation;
+    }
+
+    public OperationRequiredRole getRequiredPayOperation() {
+        return this.requiredPayOperation;
+    }
+
+    public OperationInterface getQueryInputInterface() {
+        return this.queryInputInterface;
+    }
+
+    public OperationInterface getSearchInterface() {
+        return this.searchInterface;
+    }
+
+    public OperationInterface getPayInterface() {
+        return this.payInterface;
+    }
+
+    public OperationSignature getGetQuerySig() {
+        return this.getQuerySig;
+    }
+
+    public OperationSignature getGetPriceSig() {
+        return this.getPriceSig;
+    }
+
+    public OperationSignature getWithdrawSig() {
+        return this.withdrawSig;
+    }
+
+    public PrimitiveDataType getIntDataType() {
+        return this.intDataType;
+    }
+
+    public PrimitiveDataType getStringDataType() {
+        return this.stringDataType;
+    }
+
+    public AssemblyContext getQueryInputContext() {
+        return this.queryInputContext;
+    }
+
+    public AssemblyContext getBusinessOrderContext() {
+        return this.businessOrderContext;
+    }
+
+    public AssemblyContext getPrivateOrderContext() {
+        return this.privateOrderContext;
+    }
+
+    public AssemblyContext getPaymentContext() {
+        return this.paymentContext;
+    }
+
+    public AssemblyConnector getBusinessQueryInputConnector() {
+        return this.businessQueryInputConnector;
+    }
+
+    public AssemblyConnector getPrivateQueryInputConnector() {
+        return this.privateQueryInputConnector;
+    }
+
+    public AssemblyConnector getBusinessPayConnector() {
+        return this.businessPayConnector;
+    }
+
+    public AssemblyConnector getPrivatePayConnector() {
+        return this.privatePayConnector;
+    }
+
+    public ResourceEnvironment getResEnvironment() {
+        return this.resEnvironment;
+    }
+
+    public ResourceContainer getClientContainer1() {
+        return this.clientContainer1;
+    }
+
+    public ResourceContainer getClientContainer2() {
+        return this.clientContainer2;
+    }
+
+    public ResourceContainer getDatabaseServer() {
+        return this.databaseServer;
+    }
+
+    public ResourceContainer getPaymentServer() {
+        return this.paymentServer;
+    }
+
+    public Allocation getAllocation() {
+        return this.allocation;
+    }
+
+    public AllocationContext getClientAllocation1() {
+        return this.clientAllocation1;
     }
 
     private void createAllocation() {

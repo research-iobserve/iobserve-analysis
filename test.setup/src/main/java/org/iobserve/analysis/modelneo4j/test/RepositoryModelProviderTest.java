@@ -164,28 +164,20 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Test
     public void createThenReadReferencing() {
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
-        final Repository writtenModel = new TestModelBuilder().getRepository();
-        BasicComponent catalogSearchComp = null;
-        OperationProvidedRole providedSearchOperation = null;
+        final TestModelBuilder testModelBuilder = new TestModelBuilder();
+        final Repository writtenModel = testModelBuilder.getRepository();
         List<EObject> readReferencingComponents;
-
-        for (final RepositoryComponent c : writtenModel.getComponents__Repository()) {
-            if (c.getEntityName().equals("org.mybookstore.orderComponent.catologSearchComponent")) {
-                catalogSearchComp = (BasicComponent) c;
-                providedSearchOperation = (OperationProvidedRole) catalogSearchComp
-                        .getProvidedRoles_InterfaceProvidingEntity().get(0);
-            }
-        }
 
         modelProvider.createComponent(writtenModel);
 
         readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(BasicComponent.class,
-                catalogSearchComp.getId());
+                testModelBuilder.getCatalogSearchComp().getId());
 
         // Only the providedSearchOperation role is referencing the catalogSearch component
         Assert.assertTrue(readReferencingComponents.size() == 1);
 
-        Assert.assertTrue(this.equalityHelper.equals(providedSearchOperation, readReferencingComponents.get(0)));
+        Assert.assertTrue(this.equalityHelper.equals(testModelBuilder.getProvidedSearchOperation(),
+                readReferencingComponents.get(0)));
 
     }
 
@@ -193,27 +185,16 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Test
     public void createThenUpdateThenReadUpdated() {
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
-        final Repository writtenModel = new TestModelBuilder().getRepository();
-        Interface payInterface = null;
-        RepositoryComponent paymentComponent = null;
+        final TestModelBuilder testModelBuilder = new TestModelBuilder();
+        final Repository writtenModel = testModelBuilder.getRepository();
+        final Interface payInterface = testModelBuilder.getPayInterface();
+        final RepositoryComponent paymentComponent = testModelBuilder.getPaymentComp();
         Repository readModel;
 
         modelProvider.createComponent(writtenModel);
 
         // Update the model by renaming and replacing the payment method
         writtenModel.setEntityName("MyVideoOnDemandService");
-
-        for (final Interface i : writtenModel.getInterfaces__Repository()) {
-            if (i.getEntityName().equals("IPay")) {
-                payInterface = i;
-            }
-        }
-
-        for (final RepositoryComponent c : writtenModel.getComponents__Repository()) {
-            if (c.getEntityName().equals("org.mybookstore.paymentComponent")) {
-                paymentComponent = c;
-            }
-        }
 
         final OperationProvidedRole providedPayOperation = RepositoryFactory.eINSTANCE.createOperationProvidedRole();
         providedPayOperation.setEntityName("payPalPayment");
