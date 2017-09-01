@@ -29,6 +29,9 @@ public class NodegroupService {
 
     private String nodegroupId;
 
+    /**
+     * empty default constructor.
+     */
     public NodegroupService() {
 
     }
@@ -37,7 +40,8 @@ public class NodegroupService {
      * Builds data for creating a nodegroup for the deployment visualization.
      *
      * @param systemId
-     * @return
+     *            system id
+     * @return JsonObject for creating a nodegroup
      */
     public JsonObject createNodegroup(final String systemId) {
         // as there is no grouping mechanism available yet, each node gets its own nodegroup with a

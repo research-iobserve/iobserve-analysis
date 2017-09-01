@@ -60,13 +60,22 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
     private String entityName;
 
     /**
+     * Output visualization configuration.
      *
      * @param outputURL
+     *            the output URL
      * @param systemId
+     *            system id
      * @param resourceContainerModelGraphProvider
+     *            model provider for the part of the resource environment model about resource
+     *            container
      * @param assemblyContextModelGraphProvider
+     *            model provider for the part of the resource environment model about assembly
+     *            context
      * @param systemModelGraphProvider
+     *            provider for system model
      * @param correspondenceModel
+     *            correspondence model
      */
     public UndeploymentVisualizationStage(final URL outputURL, final String systemId,
             final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
@@ -92,9 +101,11 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
     }
 
     /**
+     ** Collects information for deleting a service instance element in the visualization.
      *
      * @param undeployment
-     * @return
+     *            servlet undeployed event
+     * @return array that contains a changelog for deleting a service instance
      */
     private JsonArray createData(final ServletUndeployedEvent undeployment) {
 
@@ -107,6 +118,7 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
                 .apply(correspondent -> this.entityName = correspondent.getPcmEntityName())
                 .elseApply(() -> UndeploymentVisualizationStage.LOGGER.info(
                         "This should not happen, because the service was created and the models were updated before."));
+
         final String asmContextName = this.entityName + "_" + serverName;
         final AssemblyContext assemblyContext = this.assemblyContextModelGraphProvider
                 .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
@@ -118,9 +130,11 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
     }
 
     /**
+     ** Collects information for deleting a service instance element in the visualization.
      *
      * @param undeployment
-     * @return
+     *            ejb undeployed event
+     * @return array that contains a changelog for deleting a service instance
      */
     private JsonArray createData(final EJBUndeployedEvent undeployment) {
 
@@ -138,8 +152,6 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
         final AssemblyContext assemblyContext = this.assemblyContextModelGraphProvider
                 .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
 
-        // final JsonObject serviceObject = this.serviceService.createService(assemblyContext,
-        // this.systemId);
         final JsonObject serviceInstanceObject = Changelog.delete(this.serviceinstanceService
                 .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));
         final JsonArray dataArray = Json.createArrayBuilder().add(serviceInstanceObject).build();

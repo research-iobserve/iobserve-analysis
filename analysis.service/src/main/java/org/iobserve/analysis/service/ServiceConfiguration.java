@@ -63,7 +63,7 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      *            provider for the usage model
      * @param repositoryModelProvider
      *            provider for the repository model
-     * @param resourceEvnironmentModelProvider
+     * @param resourceEnvironmentModelProvider
      *            provider for the resource model
      * @param allocationModelProvider
      *            provider for the allocation model

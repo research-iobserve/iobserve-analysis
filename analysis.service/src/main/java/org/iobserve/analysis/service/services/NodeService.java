@@ -33,7 +33,7 @@ public class NodeService {
     private String hostname;
 
     /**
-     * empty default constructor
+     * empty default constructor.
      */
     public NodeService() {
 
@@ -43,14 +43,16 @@ public class NodeService {
      * Builds data for creating a node for the deployment visualization.
      *
      * @param resourceContainer
+     *            resource container
      * @param systemId
+     *            system id
      * @param nodegroupId
-     * @return
+     *            node group id
+     * @return JsonObject for creating a node
      */
     public JsonObject createNode(final ResourceContainer resourceContainer, final String systemId,
             final String nodegroupId) {
         this.nodeId = resourceContainer.getId();
-        // TODO Ist das nicht auch nodeName?
         this.hostname = resourceContainer.getEntityName();
 
         final JsonObject node = Json.createObjectBuilder().add("type", "node").add("id", this.nodeId)

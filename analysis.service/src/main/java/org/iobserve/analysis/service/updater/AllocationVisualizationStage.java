@@ -44,22 +44,24 @@ import util.SendHttpRequest;
  */
 public class AllocationVisualizationStage extends AbstractConsumerStage<IAllocationRecord> {
 
-    /** services for creating visualization elements */
+    /** services for creating visualization elements. */
     private final NodegroupService nodegroupService = new NodegroupService();
     private final NodeService nodeService = new NodeService();
 
-    /** constructor parameters */
+    /** constructor parameters. */
     private final URL outputURL;
     private final String systemId;
     private final ModelProvider<ResourceContainer> resourceContainerModelProvider;
 
     /**
+     * constructor.
+     *
      * @param outputURL
      *            the output URL
      * @param systemId
      *            the system id
-     * @param resourceEnvironmentModelProvider
-     *            the resource environment model graph
+     * @param resourceContainerModelProvider
+     *            part of the resource environment model graph about resource container
      */
     public AllocationVisualizationStage(final URL outputURL, final String systemId,
             final ModelProvider<ResourceContainer> resourceContainerModelProvider) {

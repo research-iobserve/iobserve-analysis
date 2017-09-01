@@ -29,7 +29,7 @@ import javax.json.JsonWriter;
 
 /**
  * This helper class actually sends data to the deployment visualization.
- * 
+ *
  * @author jweg
  *
  */
@@ -45,8 +45,11 @@ public final class SendHttpRequest {
      * Send change log updates to the visualization.
      *
      * @param modelData
+     *            actual data that will be send
      * @param systemUrl
+     *            Url for sending a system element to the visualization
      * @param changelogUrl
+     *            Url for sending changelogs to the visualization
      * @throws IOException
      */
     public static void post(final JsonObject modelData, final URL systemUrl, final URL changelogUrl)
@@ -87,19 +90,19 @@ public final class SendHttpRequest {
 
         final int responseCode = connection.getResponseCode();
         System.out.println("Response Code : " + responseCode);
-        // final InputStream errorStream = connection.getErrorStream();
-        // System.out.printf("errorStream:%s\n", errorStream.toString());
 
-        final BufferedReader err = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
-        String errLine;
-        final StringBuffer error = new StringBuffer();
+        if (responseCode != 204) {
+            final BufferedReader err = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+            String errLine;
+            final StringBuffer error = new StringBuffer();
 
-        while ((errLine = err.readLine()) != null) {
-            error.append(errLine);
+            while ((errLine = err.readLine()) != null) {
+                error.append(errLine);
+            }
+            err.close();
+
+            System.out.println("error:" + error);
         }
-        err.close();
-
-        System.out.println("error:" + error);
 
         final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;
@@ -111,7 +114,6 @@ public final class SendHttpRequest {
         in.close();
 
         // print result
-        System.out.println("response.toString():\n");
         System.out.println(response.toString());
 
     }
@@ -120,7 +122,9 @@ public final class SendHttpRequest {
      * Send change log updates to the visualization.
      *
      * @param dataArray
+     *            actual data that will be send
      * @param changelogUrl
+     *            Url for sending changelogs to the visualization
      * @throws IOException
      */
     public static void post(final JsonArray dataArray, final URL changelogUrl) throws IOException {

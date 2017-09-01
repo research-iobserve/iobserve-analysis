@@ -31,6 +31,9 @@ public class SystemService {
     private String systemName;
     private String systemId;
 
+    /**
+     * empty default constructor.
+     */
     public SystemService() {
 
     }
@@ -39,7 +42,8 @@ public class SystemService {
      * Builds data for creating a system in the deployment visualization.
      *
      * @param systemModel
-     * @return
+     *            system model
+     * @return JsonObject for creating a system
      */
     public JsonObject createSystem(final org.palladiosimulator.pcm.system.System systemModel) {
         this.systemName = systemModel.getEntityName();

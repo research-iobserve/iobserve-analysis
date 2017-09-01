@@ -32,11 +32,11 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
  *
  */
 public class UsergroupService {
-
+    private ServiceService service;
     private final String usergroupId = "test_usergroup_id" + Math.random();
 
     /**
-     * empty default constructor
+     * empty default constructor.
      */
     public UsergroupService() {
 
@@ -49,20 +49,25 @@ public class UsergroupService {
      * @return
      */
     public JsonObject createUsergroup(final String systemId, final List<AssemblyContext> userInvokedServices) {
-        JsonObject invokedServiceObject;
+        final JsonObject invokedServiceObject;
         final JsonArrayBuilder builder = Json.createArrayBuilder();
+        this.service = new ServiceService();
 
         // build array of targetIds
         for (int i = 0; i < userInvokedServices.size(); i++) {
             final String serviceId = userInvokedServices.get(i).getId();
-            invokedServiceObject = Json.createObjectBuilder().add("usergroupId", this.usergroupId)
-                    .add("serviceId", serviceId).build();
-            builder.add(invokedServiceObject);
+            // invokedServiceObject = Json.createObjectBuilder().add("usergroupId",
+            // this.usergroupId)
+            // .add("serviceId", serviceId).build();
+            builder.add(serviceId);
+            // invokedServiceObject = this.service.createService(userInvokedServices.get(i),
+            // systemId);
+            // builder.add(invokedServiceObject);
         }
         final JsonArray invokedServicesArray = builder.build();
 
         final JsonObject usergroup = Json.createObjectBuilder().add("type", "userGroup").add("id", this.usergroupId)
-                .add("systemId", systemId)// .add("name", "test-usergroup" + Math.random())
+                .add("systemId", systemId).add("name", "test-usergroup" + Math.random())
                 .add("services", invokedServicesArray).build();
 
         return usergroup;

@@ -34,6 +34,9 @@ public class ServiceService {
     private String serviceId;
     private String serviceName;
 
+    /**
+     * empty default constructor.
+     */
     public ServiceService() {
 
     }
@@ -42,8 +45,10 @@ public class ServiceService {
      * Builds data for creating a service for the deployment visualization.
      *
      * @param assemblyContext
+     *            assembly context
      * @param systemId
-     * @return
+     *            system id
+     * @return JsonObject for creating a service
      */
     public JsonObject createService(final AssemblyContext assemblyContext, final String systemId) {
 

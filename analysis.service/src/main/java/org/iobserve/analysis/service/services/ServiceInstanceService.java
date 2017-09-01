@@ -41,6 +41,9 @@ public class ServiceInstanceService {
     private String serviceInstanceName;
     private String serviceInstanceId;
 
+    /**
+     * empty default constructor.
+     */
     public ServiceInstanceService() {
 
     }
@@ -49,17 +52,20 @@ public class ServiceInstanceService {
      * Builds data for creating a serviceInstance for the deployment visualization.
      *
      * @param assemblyContext
+     *            assembly context
      * @param systemId
+     *            system id
      * @param nodeId
+     *            resource container id
      * @param serviceId
-     * @return
+     *            assembly context id
+     * @return JsonObject for creating a service instance
      */
     public JsonObject createServiceInstance(final AssemblyContext assemblyContext, final String systemId,
             final String nodeId, final String serviceId) {
         this.serviceInstanceName = assemblyContext.getEntityName();
         this.serviceInstanceId = "si" + assemblyContext.getId();
 
-        // TODO serviceInstance-id
         final JsonObject serviceInstance = Json.createObjectBuilder().add("type", "serviceInstance")
                 .add("id", this.serviceInstanceId).add("systemId", systemId).add("name", this.serviceInstanceName)
                 .add("serviceId", serviceId).add("nodeId", nodeId).build();
@@ -71,11 +77,14 @@ public class ServiceInstanceService {
      * Builds data for deleting a serviceInstance for the deployment visualization.
      *
      * @param assemblyContext
+     *            assembly context
      * @param systemId
+     *            system id
      * @param nodeId
-     * @param serviceId
+     *            resource container id
      * @param systemModelGraphProvider
-     * @return
+     *            provider for the system model
+     * @return JsonObject for deleting a service instance
      */
 
     public JsonObject deleteServiceInstance(final AssemblyContext assemblyContext, final String systemId,

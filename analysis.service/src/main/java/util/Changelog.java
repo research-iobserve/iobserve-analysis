@@ -19,7 +19,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 /**
- * helper class for creating changelogs for deployment visualization
+ * helper class for creating changelogs for deployment visualization.
  *
  * @author jweg
  *
@@ -30,6 +30,13 @@ public final class Changelog {
 
     }
 
+    /**
+     * Builds a changelog for creating visualization elements.
+     *
+     * @param data
+     *            data that represents a visualization element
+     * @return JsonObject for a creating changelog
+     */
     public static JsonObject create(final JsonObject data) {
         final JsonObject createChangelog = Json.createObjectBuilder().add("type", "changelog")
                 .add("operation", "CREATE").add("data", data).build();
@@ -37,6 +44,13 @@ public final class Changelog {
 
     }
 
+    /**
+     * Builds a changelog for deleting visualization elements.
+     *
+     * @param data
+     *            data that represents a visualization element
+     * @return JsonObject for a creating changelog
+     */
     public static JsonObject delete(final JsonObject data) {
         final JsonObject deleteChangelog = Json.createObjectBuilder().add("type", "changelog")
                 .add("operation", "DELETE").add("data", data).build();

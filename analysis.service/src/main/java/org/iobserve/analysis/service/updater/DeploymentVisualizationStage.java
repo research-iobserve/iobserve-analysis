@@ -66,6 +66,15 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
      *
      * @param outputURL
      *            the output URL
+     * @param systemId
+     *            system id
+     * @param resourceContainerModelProvider
+     *            model provider for the part of the resource environment model about resource
+     *            container
+     * @param allocationModelProvider
+     *            model provider for the allocation model
+     * @param correspondenceModel
+     *            correspondence model
      */
     public DeploymentVisualizationStage(final URL outputURL, final String systemId,
             final ModelProvider<ResourceContainer> resourceContainerModelProvider,
@@ -87,6 +96,15 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
 
     }
 
+    /**
+     * Collects information for creating a service and a service instance element in the
+     * visualization. As the order of the changelogs matters, the elements are added to an array in
+     * the right order.
+     *
+     * @param deployment
+     *            servlet deployed event
+     * @return array that contains changelogs for creating a service and a service instance
+     */
     private JsonArray createData(final ServletDeployedEvent deployment) {
 
         final String serverName = deployment.getSerivce();
@@ -98,6 +116,7 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
                 .apply(correspondent -> this.entityName = correspondent.getPcmEntityName())
                 .elseApply(() -> DeploymentVisualizationStage.LOGGER.info(
                         "This should not happen, because the service was created and the models were updated before."));
+
         final String asmContextName = this.entityName + "_" + serverName;
         final AssemblyContext assemblyContext = this.allocationModelProvider
                 .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
@@ -111,6 +130,15 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
         return dataArray;
     }
 
+    /**
+     * Collects information for building a service and a service instance element for the
+     * visualization. As the order of the changelogs matters, the elements are added to an array in
+     * the right order.
+     *
+     * @param deployment
+     *            ejb deployed event
+     * @return array that contains changelogs for creating a service and a service instance
+     */
     private JsonArray createData(final EJBDeployedEvent deployment) {
 
         final String serverName = deployment.getSerivce();

@@ -34,6 +34,9 @@ public class CommunicationService {
     private String sourceId;
     private String targetId;
 
+    /**
+     * empty default constructor.
+     */
     public CommunicationService() {
 
     }
@@ -42,9 +45,12 @@ public class CommunicationService {
      * Builds a communication for the deployment visualization.
      *
      * @param assemblyConnector
+     *            a link between two assembly contexts (services)
      * @param systemId
+     *            system id
      * @param technology
-     * @return
+     *            name of linking resource
+     * @return JsonObject for creating a communication
      */
     public JsonObject createCommunication(final AssemblyConnector assemblyConnector, final String systemId,
             final String technology) {

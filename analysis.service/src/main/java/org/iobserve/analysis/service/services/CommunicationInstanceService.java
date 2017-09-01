@@ -36,7 +36,7 @@ public class CommunicationInstanceService {
     private String workload;
 
     /**
-     * empty default constructor
+     * empty default constructor.
      */
     public CommunicationInstanceService() {
 
@@ -46,9 +46,12 @@ public class CommunicationInstanceService {
      * Builds a communicationInstance for the deployment visualization.
      *
      * @param assemblyConnector
+     *            a link between two assembly contexts (services)
      * @param systemId
+     *            system id
      * @param communicationId
-     * @return
+     *            assembly connector id
+     * @return JsonObject for creating a communication instance
      */
     public JsonObject createCommunicationInstance(final AssemblyConnector assemblyConnector, final String systemId,
             final String communicationId) {
@@ -74,7 +77,8 @@ public class CommunicationInstanceService {
      * Builds a communicationInstance to be deleted in the deployment visualization.
      *
      * @param assemblyConnector
-     * @return
+     *            a link between two assembly contexts (services)
+     * @return JsonObject for deleting a communication instance
      */
     public JsonObject deleteCommunicationInstance(final AssemblyConnector assemblyConnector) {
         this.communicationInstanceId = "ci" + assemblyConnector.getId();
