@@ -31,9 +31,15 @@ import org.palladiosimulator.pcm.repository.PrimitiveDataType;
 import org.palladiosimulator.pcm.repository.PrimitiveTypeEnum;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
+import org.palladiosimulator.pcm.resourceenvironment.CommunicationLinkResourceSpecification;
+import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
+import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+import org.palladiosimulator.pcm.resourcetype.CommunicationLinkResourceType;
+import org.palladiosimulator.pcm.resourcetype.ProcessingResourceType;
+import org.palladiosimulator.pcm.resourcetype.ResourcetypeFactory;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemFactory;
 
@@ -48,11 +54,11 @@ public class TestModelBuilder {
     // Repository components
     private final Repository repository = RepositoryFactory.eINSTANCE.createRepository();
 
-    private final BasicComponent queryInputComp = RepositoryFactory.eINSTANCE.createBasicComponent();
-    private final BasicComponent queryProcessingComp = RepositoryFactory.eINSTANCE.createBasicComponent();
-    private final BasicComponent catalogSearchComp = RepositoryFactory.eINSTANCE.createBasicComponent();
-    private final BasicComponent paymentComp = RepositoryFactory.eINSTANCE.createBasicComponent();
-    private final CompositeComponent orderComp = RepositoryFactory.eINSTANCE.createCompositeComponent();
+    private final BasicComponent queryInputComponent = RepositoryFactory.eINSTANCE.createBasicComponent();
+    private final BasicComponent queryProcessingComponent = RepositoryFactory.eINSTANCE.createBasicComponent();
+    private final BasicComponent catalogSearchComponent = RepositoryFactory.eINSTANCE.createBasicComponent();
+    private final BasicComponent paymentComponent = RepositoryFactory.eINSTANCE.createBasicComponent();
+    private final CompositeComponent orderComponent = RepositoryFactory.eINSTANCE.createCompositeComponent();
 
     private final OperationProvidedRole providedInputOperation = RepositoryFactory.eINSTANCE
             .createOperationProvidedRole();
@@ -71,9 +77,9 @@ public class TestModelBuilder {
     private final OperationInterface searchInterface = RepositoryFactory.eINSTANCE.createOperationInterface();
     private final OperationInterface payInterface = RepositoryFactory.eINSTANCE.createOperationInterface();
 
-    private final OperationSignature getQuerySig = RepositoryFactory.eINSTANCE.createOperationSignature();
-    private final OperationSignature getPriceSig = RepositoryFactory.eINSTANCE.createOperationSignature();
-    private final OperationSignature withdrawSig = RepositoryFactory.eINSTANCE.createOperationSignature();
+    private final OperationSignature getQuerySignature = RepositoryFactory.eINSTANCE.createOperationSignature();
+    private final OperationSignature getPriceSignature = RepositoryFactory.eINSTANCE.createOperationSignature();
+    private final OperationSignature withdrawSignature = RepositoryFactory.eINSTANCE.createOperationSignature();
 
     private final PrimitiveDataType intDataType = RepositoryFactory.eINSTANCE.createPrimitiveDataType();
     private final PrimitiveDataType stringDataType = RepositoryFactory.eINSTANCE.createPrimitiveDataType();
@@ -93,55 +99,86 @@ public class TestModelBuilder {
     private final AssemblyConnector privatePayConnector = CompositionFactory.eINSTANCE.createAssemblyConnector();
 
     // Resource environment components
-    private final ResourceEnvironment resEnvironment = ResourceenvironmentFactory.eINSTANCE.createResourceEnvironment();
-    private final ResourceContainer clientContainer1 = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-    private final ResourceContainer clientContainer2 = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-    private final ResourceContainer databaseServer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+    private final ResourceEnvironment resourceEnvironment = ResourceenvironmentFactory.eINSTANCE
+            .createResourceEnvironment();
+    private final ResourceContainer client1 = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+    private final ResourceContainer client2 = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+    private final ResourceContainer orderServer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
     private final ResourceContainer paymentServer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+
+    private final ProcessingResourceSpecification client1Specification = ResourceenvironmentFactory.eINSTANCE
+            .createProcessingResourceSpecification();
+    private final ProcessingResourceSpecification client2Specification = ResourceenvironmentFactory.eINSTANCE
+            .createProcessingResourceSpecification();
+    private final ProcessingResourceSpecification orderServerSpecification = ResourceenvironmentFactory.eINSTANCE
+            .createProcessingResourceSpecification();
+    private final ProcessingResourceSpecification paymentServerSpecification = ResourceenvironmentFactory.eINSTANCE
+            .createProcessingResourceSpecification();
+
+    private final ProcessingResourceType client1Type = ResourcetypeFactory.eINSTANCE.createProcessingResourceType();
+    private final ProcessingResourceType client2Type = ResourcetypeFactory.eINSTANCE.createProcessingResourceType();
+    private final ProcessingResourceType orderServerType = ResourcetypeFactory.eINSTANCE.createProcessingResourceType();
+    private final ProcessingResourceType paymentServerType = ResourcetypeFactory.eINSTANCE
+            .createProcessingResourceType();
+
+    private final LinkingResource lan1 = ResourceenvironmentFactory.eINSTANCE.createLinkingResource();
+    private final CommunicationLinkResourceSpecification lan1Specification = ResourceenvironmentFactory.eINSTANCE
+            .createCommunicationLinkResourceSpecification();
+    private final CommunicationLinkResourceType lan1Type = ResourcetypeFactory.eINSTANCE
+            .createCommunicationLinkResourceType();
 
     // Allocation components
     private final Allocation allocation = AllocationFactory.eINSTANCE.createAllocation();
-    private final AllocationContext clientAllocation1 = AllocationFactory.eINSTANCE.createAllocationContext();
+    private final AllocationContext client1AllocationContext = AllocationFactory.eINSTANCE.createAllocationContext();
+    private final AllocationContext client2AllocationContext = AllocationFactory.eINSTANCE.createAllocationContext();
+    private final AllocationContext businessOrderServerAllocationContext = AllocationFactory.eINSTANCE
+            .createAllocationContext();
+    private final AllocationContext privateOrderServerAllocationContext = AllocationFactory.eINSTANCE
+            .createAllocationContext();
+    private final AllocationContext paymentServerAllocationContext = AllocationFactory.eINSTANCE
+            .createAllocationContext();
 
     public TestModelBuilder() {
         this.createReposiory();
         this.createSystem();
+        this.createResourceEnvironment();
+        this.createAllocation();
     }
 
     private void createReposiory() {
         // Repository
         this.repository.setEntityName("MyBookstore");
-        this.repository.getComponents__Repository().add(this.queryInputComp);
-        this.repository.getComponents__Repository().add(this.orderComp);
-        this.repository.getComponents__Repository().add(this.paymentComp);
-        this.repository.getComponents__Repository().add(this.catalogSearchComp);
-        this.repository.getComponents__Repository().add(this.queryProcessingComp);
+        this.repository.getComponents__Repository().add(this.queryInputComponent);
+        this.repository.getComponents__Repository().add(this.orderComponent);
+        this.repository.getComponents__Repository().add(this.paymentComponent);
+        this.repository.getComponents__Repository().add(this.catalogSearchComponent);
+        this.repository.getComponents__Repository().add(this.queryProcessingComponent);
         this.repository.getDataTypes__Repository().add(this.intDataType);
         this.repository.getInterfaces__Repository().add(this.queryInputInterface);
         this.repository.getInterfaces__Repository().add(this.payInterface);
         this.repository.getInterfaces__Repository().add(this.searchInterface);
 
         // Components
-        this.queryInputComp.setEntityName("org.mybookstore.queryInputComponent");
-        this.queryInputComp.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredInputOperation);
-        this.queryInputComp.setRepository__RepositoryComponent(this.repository);
+        this.queryInputComponent.setEntityName("org.mybookstore.queryInputComponent");
+        this.queryInputComponent.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredInputOperation);
+        this.queryInputComponent.setRepository__RepositoryComponent(this.repository);
 
-        this.queryProcessingComp.setEntityName("org.mybookstore.orderComponent.queryProcessingComponent");
-        this.queryProcessingComp.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredSearchOperation);
-        this.queryProcessingComp.setRepository__RepositoryComponent(this.repository);
+        this.queryProcessingComponent.setEntityName("org.mybookstore.orderComponent.queryProcessingComponent");
+        this.queryProcessingComponent.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredSearchOperation);
+        this.queryProcessingComponent.setRepository__RepositoryComponent(this.repository);
 
-        this.catalogSearchComp.setEntityName("org.mybookstore.orderComponent.catologSearchComponent");
-        this.catalogSearchComp.getProvidedRoles_InterfaceProvidingEntity().add(this.providedSearchOperation);
-        this.catalogSearchComp.setRepository__RepositoryComponent(this.repository);
+        this.catalogSearchComponent.setEntityName("org.mybookstore.orderComponent.catologSearchComponent");
+        this.catalogSearchComponent.getProvidedRoles_InterfaceProvidingEntity().add(this.providedSearchOperation);
+        this.catalogSearchComponent.setRepository__RepositoryComponent(this.repository);
 
-        this.paymentComp.setEntityName("org.mybookstore.paymentComponent");
-        this.paymentComp.getProvidedRoles_InterfaceProvidingEntity().add(this.providedPayOperation);
-        this.paymentComp.setRepository__RepositoryComponent(this.repository);
+        this.paymentComponent.setEntityName("org.mybookstore.paymentComponent");
+        this.paymentComponent.getProvidedRoles_InterfaceProvidingEntity().add(this.providedPayOperation);
+        this.paymentComponent.setRepository__RepositoryComponent(this.repository);
 
-        this.orderComp.setEntityName("org.mybookstore.orderComponent");
-        this.orderComp.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredPayOperation);
-        this.orderComp.getProvidedRoles_InterfaceProvidingEntity().add(this.providedInputOperation);
-        this.orderComp.setRepository__RepositoryComponent(this.repository);
+        this.orderComponent.setEntityName("org.mybookstore.orderComponent");
+        this.orderComponent.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredPayOperation);
+        this.orderComponent.getProvidedRoles_InterfaceProvidingEntity().add(this.providedInputOperation);
+        this.orderComponent.setRepository__RepositoryComponent(this.repository);
 
         // Roles
         this.providedInputOperation.setEntityName("queryStringInput");
@@ -164,29 +201,29 @@ public class TestModelBuilder {
 
         // Interfaces
         this.queryInputInterface.setEntityName("IQueryInput");
-        this.queryInputInterface.getSignatures__OperationInterface().add(this.getQuerySig);
+        this.queryInputInterface.getSignatures__OperationInterface().add(this.getQuerySignature);
         this.queryInputInterface.setRepository__Interface(this.repository);
 
         this.searchInterface.setEntityName("ISearch");
-        this.searchInterface.getSignatures__OperationInterface().add(this.getPriceSig);
+        this.searchInterface.getSignatures__OperationInterface().add(this.getPriceSignature);
         this.searchInterface.setRepository__Interface(this.repository);
 
         this.payInterface.setEntityName("IPay");
-        this.payInterface.getSignatures__OperationInterface().add(this.withdrawSig);
+        this.payInterface.getSignatures__OperationInterface().add(this.withdrawSignature);
         this.payInterface.setRepository__Interface(this.repository);
 
         // Signatures
-        this.getQuerySig.setEntityName("getQuery");
-        this.getQuerySig.setReturnType__OperationSignature(this.stringDataType);
-        this.getQuerySig.setInterface__OperationSignature(this.queryInputInterface);
+        this.getQuerySignature.setEntityName("getQuery");
+        this.getQuerySignature.setReturnType__OperationSignature(this.stringDataType);
+        this.getQuerySignature.setInterface__OperationSignature(this.queryInputInterface);
 
-        this.getPriceSig.setEntityName("getPrice");
-        this.getPriceSig.setReturnType__OperationSignature(this.intDataType);
-        this.getPriceSig.setInterface__OperationSignature(this.searchInterface);
+        this.getPriceSignature.setEntityName("getPrice");
+        this.getPriceSignature.setReturnType__OperationSignature(this.intDataType);
+        this.getPriceSignature.setInterface__OperationSignature(this.searchInterface);
 
-        this.withdrawSig.setEntityName("withdraw");
-        this.withdrawSig.setReturnType__OperationSignature(this.intDataType);
-        this.withdrawSig.setInterface__OperationSignature(this.payInterface);
+        this.withdrawSignature.setEntityName("withdraw");
+        this.withdrawSignature.setReturnType__OperationSignature(this.intDataType);
+        this.withdrawSignature.setInterface__OperationSignature(this.payInterface);
 
         // Data type
         this.intDataType.setType(PrimitiveTypeEnum.INT);
@@ -210,10 +247,10 @@ public class TestModelBuilder {
         this.system.getConnectors__ComposedStructure().add(this.privatePayConnector);
 
         // Assembly contexts
-        this.queryInputContext.setEntityName("queryInputContext_" + this.queryInputComp.getEntityName());
-        this.businessOrderContext.setEntityName("businessOrderContext_" + this.orderComp.getEntityName());
-        this.privateOrderContext.setEntityName("privateOrderContext_" + this.orderComp.getEntityName());
-        this.paymentContext.setEntityName("paymentContext_" + this.paymentComp.getEntityName());
+        this.queryInputContext.setEntityName("queryInputContext_" + this.queryInputComponent.getEntityName());
+        this.businessOrderContext.setEntityName("businessOrderContext_" + this.orderComponent.getEntityName());
+        this.privateOrderContext.setEntityName("privateOrderContext_" + this.orderComponent.getEntityName());
+        this.paymentContext.setEntityName("paymentContext_" + this.paymentComponent.getEntityName());
 
         // Assembly connectors
         this.businessQueryInputConnector.setEntityName("businessQueryInput");
@@ -242,24 +279,138 @@ public class TestModelBuilder {
 
     }
 
-    public BasicComponent getQueryInputComp() {
-        return this.queryInputComp;
+    private void createResourceEnvironment() {
+        // Resource environment
+        this.resourceEnvironment.setEntityName("defaultResourceEnvironment");
+        this.resourceEnvironment.getResourceContainer_ResourceEnvironment().add(this.client1);
+        this.resourceEnvironment.getResourceContainer_ResourceEnvironment().add(this.client2);
+        this.resourceEnvironment.getResourceContainer_ResourceEnvironment().add(this.orderServer);
+        this.resourceEnvironment.getResourceContainer_ResourceEnvironment().add(this.paymentServer);
+        this.resourceEnvironment.getLinkingResources__ResourceEnvironment().add(this.lan1);
+
+        // Resource container
+        this.client1.setEntityName("user0815's MacBook");
+        this.client1.setResourceEnvironment_ResourceContainer(this.resourceEnvironment);
+        this.client1.getActiveResourceSpecifications_ResourceContainer().add(this.client1Specification);
+
+        this.client2.setEntityName("user0816's ThinkPad");
+        this.client2.setResourceEnvironment_ResourceContainer(this.resourceEnvironment);
+        this.client2.getActiveResourceSpecifications_ResourceContainer().add(this.client2Specification);
+
+        this.orderServer.setEntityName("orderServer");
+        this.orderServer.setResourceEnvironment_ResourceContainer(this.resourceEnvironment);
+        this.orderServer.getActiveResourceSpecifications_ResourceContainer().add(this.orderServerSpecification);
+
+        this.paymentServer.setEntityName("paymentServer");
+        this.paymentServer.setResourceEnvironment_ResourceContainer(this.resourceEnvironment);
+        this.paymentServer.getActiveResourceSpecifications_ResourceContainer().add(this.paymentServerSpecification);
+
+        // Resource container specifications
+        this.client1Specification.setActiveResourceType_ActiveResourceSpecification(this.client1Type);
+        this.client1Specification.setMTTF(42);
+        this.client1Specification.setMTTR(42);
+
+        this.client2Specification.setActiveResourceType_ActiveResourceSpecification(this.client2Type);
+        this.client2Specification.setMTTF(42);
+        this.client2Specification.setMTTR(42);
+
+        this.orderServerSpecification.setActiveResourceType_ActiveResourceSpecification(this.orderServerType);
+        this.orderServerSpecification.setMTTF(42);
+        this.orderServerSpecification.setMTTR(42);
+
+        this.paymentServerSpecification.setActiveResourceType_ActiveResourceSpecification(this.paymentServerType);
+        this.paymentServerSpecification.setMTTF(42);
+        this.paymentServerSpecification.setMTTR(42);
+
+        // Resource container types
+        this.client1Type.setEntityName("MacBook");
+        this.client2Type.setEntityName("ThinkPad");
+        this.orderServerType.setEntityName("Cisco Business Server");
+        this.paymentServerType.setEntityName("Lenovo Security Server");
+
+        // Linking resource
+        this.lan1.setEntityName("lan-1");
+        this.lan1.setResourceEnvironment_LinkingResource(this.resourceEnvironment);
+        this.lan1.setCommunicationLinkResourceSpecifications_LinkingResource(this.lan1Specification);
+        this.lan1.getConnectedResourceContainers_LinkingResource().add(this.orderServer);
+        this.lan1.getConnectedResourceContainers_LinkingResource().add(this.paymentServer);
+
+        // Linking resource specification
+        this.lan1Specification.setCommunicationLinkResourceType_CommunicationLinkResourceSpecification(this.lan1Type);
+        this.lan1Specification.setFailureProbability(0.01);
+
+        // Linking resource type
+        this.lan1Type.setEntityName("Cat.7 LAN");
+
     }
 
-    public BasicComponent getQueryProcessingComp() {
-        return this.queryProcessingComp;
+    private void createAllocation() {
+        // Allocation
+        this.allocation.setEntityName("defaultAllocation");
+        this.allocation.setSystem_Allocation(this.system);
+        this.allocation.setTargetResourceEnvironment_Allocation(this.resourceEnvironment);
+        this.allocation.getAllocationContexts_Allocation().add(this.client1AllocationContext);
+        this.allocation.getAllocationContexts_Allocation().add(this.client2AllocationContext);
+        this.allocation.getAllocationContexts_Allocation().add(this.businessOrderServerAllocationContext);
+        this.allocation.getAllocationContexts_Allocation().add(this.privateOrderServerAllocationContext);
+        this.allocation.getAllocationContexts_Allocation().add(this.paymentServerAllocationContext);
+
+        // Allocation contexts
+        this.client1AllocationContext.setAssemblyContext_AllocationContext(this.queryInputContext);
+        this.client1AllocationContext.setResourceContainer_AllocationContext(this.client1);
+        this.client1AllocationContext.setAllocation_AllocationContext(this.allocation);
+
+        this.client2AllocationContext.setAssemblyContext_AllocationContext(this.queryInputContext);
+        this.client2AllocationContext.setResourceContainer_AllocationContext(this.client2);
+        this.client2AllocationContext.setAllocation_AllocationContext(this.allocation);
+
+        this.businessOrderServerAllocationContext.setAssemblyContext_AllocationContext(this.businessOrderContext);
+        this.businessOrderServerAllocationContext.setResourceContainer_AllocationContext(this.orderServer);
+        this.businessOrderServerAllocationContext.setAllocation_AllocationContext(this.allocation);
+
+        this.privateOrderServerAllocationContext.setAssemblyContext_AllocationContext(this.privateOrderContext);
+        this.privateOrderServerAllocationContext.setResourceContainer_AllocationContext(this.orderServer);
+        this.privateOrderServerAllocationContext.setAllocation_AllocationContext(this.allocation);
+
+        this.paymentServerAllocationContext.setAssemblyContext_AllocationContext(this.paymentContext);
+        this.paymentServerAllocationContext.setResourceContainer_AllocationContext(this.paymentServer);
+        this.paymentServerAllocationContext.setAllocation_AllocationContext(this.allocation);
     }
 
-    public BasicComponent getCatalogSearchComp() {
-        return this.catalogSearchComp;
+    public Repository getRepository() {
+        return this.repository;
     }
 
-    public BasicComponent getPaymentComp() {
-        return this.paymentComp;
+    public System getSystem() {
+        return this.system;
     }
 
-    public CompositeComponent getOrderComp() {
-        return this.orderComp;
+    public ResourceEnvironment getResourceEnvironment() {
+        return this.resourceEnvironment;
+    }
+
+    public Allocation getAllocation() {
+        return this.allocation;
+    }
+
+    public BasicComponent getQueryInputComponent() {
+        return this.queryInputComponent;
+    }
+
+    public BasicComponent getQueryProcessingComponent() {
+        return this.queryProcessingComponent;
+    }
+
+    public BasicComponent getCatalogSearchComponent() {
+        return this.catalogSearchComponent;
+    }
+
+    public BasicComponent getPaymentComponent() {
+        return this.paymentComponent;
+    }
+
+    public CompositeComponent getOrderComponent() {
+        return this.orderComponent;
     }
 
     public OperationProvidedRole getProvidedInputOperation() {
@@ -298,16 +449,16 @@ public class TestModelBuilder {
         return this.payInterface;
     }
 
-    public OperationSignature getGetQuerySig() {
-        return this.getQuerySig;
+    public OperationSignature getGetQuerySignature() {
+        return this.getQuerySignature;
     }
 
-    public OperationSignature getGetPriceSig() {
-        return this.getPriceSig;
+    public OperationSignature getGetPriceSignature() {
+        return this.getPriceSignature;
     }
 
-    public OperationSignature getWithdrawSig() {
-        return this.withdrawSig;
+    public OperationSignature getWithdrawSignature() {
+        return this.withdrawSignature;
     }
 
     public PrimitiveDataType getIntDataType() {
@@ -350,43 +501,84 @@ public class TestModelBuilder {
         return this.privatePayConnector;
     }
 
-    public ResourceEnvironment getResEnvironment() {
-        return this.resEnvironment;
+    public ResourceContainer getClient1() {
+        return this.client1;
     }
 
-    public ResourceContainer getClientContainer1() {
-        return this.clientContainer1;
+    public ResourceContainer getClient2() {
+        return this.client2;
     }
 
-    public ResourceContainer getClientContainer2() {
-        return this.clientContainer2;
-    }
-
-    public ResourceContainer getDatabaseServer() {
-        return this.databaseServer;
+    public ResourceContainer getOrderServer() {
+        return this.orderServer;
     }
 
     public ResourceContainer getPaymentServer() {
         return this.paymentServer;
     }
 
-    public Allocation getAllocation() {
-        return this.allocation;
+    public ProcessingResourceSpecification getClient1Specification() {
+        return this.client1Specification;
     }
 
-    public AllocationContext getClientAllocation1() {
-        return this.clientAllocation1;
+    public ProcessingResourceSpecification getClient2Specification() {
+        return this.client2Specification;
     }
 
-    private void createAllocation() {
-        // clientAllocation1.
+    public ProcessingResourceSpecification getOrderServerSpecification() {
+        return this.orderServerSpecification;
     }
 
-    public Repository getRepository() {
-        return this.repository;
+    public ProcessingResourceSpecification getPaymentServerSpecification() {
+        return this.paymentServerSpecification;
     }
 
-    public System getSystem() {
-        return this.system;
+    public ProcessingResourceType getClient1Type() {
+        return this.client1Type;
     }
+
+    public ProcessingResourceType getClient2Type() {
+        return this.client2Type;
+    }
+
+    public ProcessingResourceType getOrderServerType() {
+        return this.orderServerType;
+    }
+
+    public ProcessingResourceType getPaymentServerType() {
+        return this.paymentServerType;
+    }
+
+    public LinkingResource getLan1() {
+        return this.lan1;
+    }
+
+    public CommunicationLinkResourceSpecification getLan1Specification() {
+        return this.lan1Specification;
+    }
+
+    public CommunicationLinkResourceType getLan1Type() {
+        return this.lan1Type;
+    }
+
+    public AllocationContext getClient1AllocationContext() {
+        return this.client1AllocationContext;
+    }
+
+    public AllocationContext getClient2AllocationContext() {
+        return this.client2AllocationContext;
+    }
+
+    public AllocationContext getBusinessOrderServerAllocationContext() {
+        return this.businessOrderServerAllocationContext;
+    }
+
+    public AllocationContext getPrivateOrderServerAllocationContext() {
+        return this.privateOrderServerAllocationContext;
+    }
+
+    public AllocationContext getPaymentServerAllocationContext() {
+        return this.paymentServerAllocationContext;
+    }
+
 }

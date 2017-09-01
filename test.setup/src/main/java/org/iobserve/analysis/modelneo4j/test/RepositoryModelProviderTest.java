@@ -171,7 +171,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
         modelProvider.createComponent(writtenModel);
 
         readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(BasicComponent.class,
-                testModelBuilder.getCatalogSearchComp().getId());
+                testModelBuilder.getCatalogSearchComponent().getId());
 
         // Only the providedSearchOperation role is referencing the catalogSearch component
         Assert.assertTrue(readReferencingComponents.size() == 1);
@@ -188,7 +188,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final Repository writtenModel = testModelBuilder.getRepository();
         final Interface payInterface = testModelBuilder.getPayInterface();
-        final RepositoryComponent paymentComponent = testModelBuilder.getPaymentComp();
+        final RepositoryComponent paymentComponent = testModelBuilder.getPaymentComponent();
         Repository readModel;
 
         modelProvider.createComponent(writtenModel);
