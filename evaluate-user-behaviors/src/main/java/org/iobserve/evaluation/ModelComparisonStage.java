@@ -58,6 +58,12 @@ public class ModelComparisonStage extends AbstractStage {
 
         if (this.baselineModel != null && this.testModel != null) {
             final ComparisonResult result = new ComparisonResult();
+
+            result.getBaselineNodes().addAll(this.baselineModel.getEntryCallNodes());
+            result.getBaselineEdges().addAll(this.baselineModel.getEntryCallEdges());
+            result.getTestModelNodes().addAll(this.testModel.getEntryCallNodes());
+            result.getTestModelEdges().addAll(this.testModel.getEntryCallEdges());
+
             /** M2: Similarity Ratio */
             /**
              * Number of differences and similarities of two behavior graphs and the

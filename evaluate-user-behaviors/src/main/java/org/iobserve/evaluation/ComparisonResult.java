@@ -18,6 +18,7 @@ package org.iobserve.evaluation;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallEdge;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 
 /**
@@ -30,6 +31,11 @@ public class ComparisonResult {
     private final List<EntryCallNode> missingNodes = new ArrayList<>();
     private final List<EntryCallNode> additionalNodes = new ArrayList<>();
     private final List<EntryCallNode> similarNodes = new ArrayList<>();
+    private final List<EntryCallNode> baselineNodes = new ArrayList<>();
+    private final List<EntryCallNode> testModelNodes = new ArrayList<>();
+
+    private final List<EntryCallEdge> baselineEdges = new ArrayList<>();
+    private final List<EntryCallEdge> testModelEdges = new ArrayList<>();
 
     private int missingEdgeCount;
     private int additionalEdgeCount;
@@ -64,6 +70,22 @@ public class ComparisonResult {
 
     public List<EntryCallNode> getSimilarNodes() {
         return this.similarNodes;
+    }
+
+    public List<EntryCallNode> getBaselineNodes() {
+        return this.baselineNodes;
+    }
+
+    public List<EntryCallEdge> getBaselineEdges() {
+        return this.baselineEdges;
+    }
+
+    public List<EntryCallNode> getTestModelNodes() {
+        return this.testModelNodes;
+    }
+
+    public List<EntryCallEdge> getTestModelEdges() {
+        return this.testModelEdges;
     }
 
 }
