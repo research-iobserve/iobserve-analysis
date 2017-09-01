@@ -13,39 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.evaluation;
+package org.iobserve.analysis.clustering.filter.models.configuration.examples;
 
-import java.io.File;
-
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import teetime.framework.AbstractProducerStage;
+import org.iobserve.analysis.clustering.filter.models.configuration.EntryCallFilterRules;
+import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
 
 /**
- * Read a JSON serialized behavior model.
+ * Factory for creating a filter for JPetStore call events.
  *
- * @author Reiner Jung
+ * @author Christoph Dornieden
  *
  */
-public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel> {
-
-    private final File inputFile;
-
-    public BehaviorModelJSONReader(File inputFile) {
-        this.inputFile = inputFile;
-    }
+public class JPetStoreEntryCallRulesFactory implements IModelGenerationFilterFactory {
 
     @Override
-    protected void execute() throws Exception {
-        final ObjectMapper mapper = new ObjectMapper();
+    public EntryCallFilterRules createFilter() {
+        EntryCallFilterRules modelGenerationFilter;
+        modelGenerationFilter = new EntryCallFilterRules(true);
+        modelGenerationFilter.addFilterRule("(\\w*\\.)*images.*");
+        modelGenerationFilter.addFilterRule("(\\w*\\.)*css.*");
 
-        final BehaviorModel model = mapper.readValue(this.inputFile, BehaviorModel.class);
-
-        this.outputPort.send(model);
-
-        this.terminateStage();
+        return modelGenerationFilter;
     }
 
 }

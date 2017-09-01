@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import org.iobserve.analysis.cdoruserbehavior.clustering.EAggregationType;
-import org.iobserve.analysis.cdoruserbehavior.clustering.EOutputMode;
+import org.iobserve.analysis.clustering.EAggregationType;
+import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.filter.reader.MultipleConnectionTcpReaderStage;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;

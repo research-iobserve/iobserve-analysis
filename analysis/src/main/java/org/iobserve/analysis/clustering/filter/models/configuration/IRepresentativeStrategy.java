@@ -13,39 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.evaluation;
+package org.iobserve.analysis.clustering.filter.models.configuration;
 
-import java.io.File;
-
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import teetime.framework.AbstractProducerStage;
+import java.util.List;
 
 /**
- * Read a JSON serialized behavior model.
+ * strategy to find the representative of a list of call informations.
  *
- * @author Reiner Jung
+ * @author Christoph Dornieden
  *
  */
-public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel> {
+public interface IRepresentativeStrategy {
 
-    private final File inputFile;
-
-    public BehaviorModelJSONReader(File inputFile) {
-        this.inputFile = inputFile;
-    }
-
-    @Override
-    protected void execute() throws Exception {
-        final ObjectMapper mapper = new ObjectMapper();
-
-        final BehaviorModel model = mapper.readValue(this.inputFile, BehaviorModel.class);
-
-        this.outputPort.send(model);
-
-        this.terminateStage();
-    }
+    /**
+     * Find the representatives of all given callInformationCodes.
+     *
+     * @param signature
+     *            signature of the aggregated call information
+     * @param callInformationCodes
+     *            code list of the aggregated information
+     * @return most representative code
+     */
+    public Double findRepresentativeCode(final String signature, List<Double> callInformationCodes);
 
 }

@@ -17,8 +17,8 @@ package org.iobserve.evaluation;
 
 import java.util.List;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
+import org.iobserve.analysis.clustering.filter.models.CallInformation;
+import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 
 /**
  * @author Reiner Jung

@@ -22,8 +22,8 @@ import java.util.Collection;
 
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.cdoruserbehavior.clustering.EAggregationType;
-import org.iobserve.analysis.cdoruserbehavior.clustering.EOutputMode;
+import org.iobserve.analysis.clustering.EAggregationType;
+import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;

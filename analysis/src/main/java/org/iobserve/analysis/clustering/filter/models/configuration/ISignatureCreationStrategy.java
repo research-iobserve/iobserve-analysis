@@ -13,39 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.evaluation;
+package org.iobserve.analysis.clustering.filter.models.configuration;
 
-import java.io.File;
-
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import teetime.framework.AbstractProducerStage;
+import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 
 /**
- * Read a JSON serialized behavior model.
+ * interface for the creation strategy of a signature from a {@link EntryCallNode}.
  *
- * @author Reiner Jung
+ * @author Christop Dornieden
  *
  */
-public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel> {
+public interface ISignatureCreationStrategy {
 
-    private final File inputFile;
-
-    public BehaviorModelJSONReader(File inputFile) {
-        this.inputFile = inputFile;
-    }
-
-    @Override
-    protected void execute() throws Exception {
-        final ObjectMapper mapper = new ObjectMapper();
-
-        final BehaviorModel model = mapper.readValue(this.inputFile, BehaviorModel.class);
-
-        this.outputPort.send(model);
-
-        this.terminateStage();
-    }
+    /**
+     * create a signature from an entry {@link EntryCallNode}.
+     *
+     * @param node
+     *            node
+     * @return signature
+     */
+    public String getSignature(EntryCallNode node);
 
 }

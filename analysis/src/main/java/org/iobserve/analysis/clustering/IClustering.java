@@ -13,39 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.evaluation;
+package org.iobserve.analysis.clustering;
 
-import java.io.File;
-
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import teetime.framework.AbstractProducerStage;
+import weka.core.Instances;
 
 /**
- * Read a JSON serialized behavior model.
- *
- * @author Reiner Jung
+ * @author Marc Adolf
  *
  */
-public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel> {
+public interface IClustering {
 
-    private final File inputFile;
-
-    public BehaviorModelJSONReader(File inputFile) {
-        this.inputFile = inputFile;
-    }
-
-    @Override
-    protected void execute() throws Exception {
-        final ObjectMapper mapper = new ObjectMapper();
-
-        final BehaviorModel model = mapper.readValue(this.inputFile, BehaviorModel.class);
-
-        this.outputPort.send(model);
-
-        this.terminateStage();
-    }
+    /**
+     * Cluster instances.
+     *
+     * @param instances
+     *            the instances to be clustered
+     * @return the clustered object
+     */
+    public Object clusterInstances(Instances instances);
 
 }

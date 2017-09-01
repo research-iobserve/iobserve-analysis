@@ -15,18 +15,18 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import org.iobserve.analysis.cdoruserbehavior.clustering.EAggregationType;
-import org.iobserve.analysis.cdoruserbehavior.clustering.EOutputMode;
-import org.iobserve.analysis.cdoruserbehavior.clustering.IVectorQuantizationClustering;
-import org.iobserve.analysis.cdoruserbehavior.clustering.XMeansClustering;
-import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelComparison;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryCallFilterRules;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.GetLastXSignatureStrategy;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.CoCoMEEntryCallRulesFactory;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetStoreEntryCallRulesFactory;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetstoreStrategy;
+import org.iobserve.analysis.clustering.EAggregationType;
+import org.iobserve.analysis.clustering.EOutputMode;
+import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
+import org.iobserve.analysis.clustering.XMeansClustering;
+import org.iobserve.analysis.clustering.filter.composite.TBehaviorModelComparison;
+import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
+import org.iobserve.analysis.clustering.filter.models.configuration.EntryCallFilterRules;
+import org.iobserve.analysis.clustering.filter.models.configuration.GetLastXSignatureStrategy;
+import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.clustering.filter.models.configuration.examples.CoCoMEEntryCallRulesFactory;
+import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetStoreEntryCallRulesFactory;
+import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetstoreStrategy;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;

@@ -24,9 +24,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallEdge;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
+import org.iobserve.analysis.clustering.filter.models.CallInformation;
+import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
+import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 
 import teetime.framework.AbstractConsumerStage;
 

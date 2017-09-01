@@ -13,39 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.evaluation;
-
-import java.io.File;
-
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import teetime.framework.AbstractProducerStage;
+package org.iobserve.analysis.clustering.filter.models.configuration;
 
 /**
- * Read a JSON serialized behavior model.
+ * Interface for factories creating {@link EntryCallFilterRules}.
  *
- * @author Reiner Jung
+ * @author Christoph Dornieden
  *
  */
-public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel> {
-
-    private final File inputFile;
-
-    public BehaviorModelJSONReader(File inputFile) {
-        this.inputFile = inputFile;
-    }
-
-    @Override
-    protected void execute() throws Exception {
-        final ObjectMapper mapper = new ObjectMapper();
-
-        final BehaviorModel model = mapper.readValue(this.inputFile, BehaviorModel.class);
-
-        this.outputPort.send(model);
-
-        this.terminateStage();
-    }
-
+public interface IModelGenerationFilterFactory {
+    /**
+     * create a {@link EntryCallFilterRules}.
+     *
+     * @return specific {@link EntryCallFilterRules}
+     */
+    public EntryCallFilterRules createFilter();
 }

@@ -13,39 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.evaluation;
+package org.iobserve.analysis.clustering;
 
-import java.io.File;
+import java.util.List;
+import java.util.Map;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
+import org.eclipse.net4j.util.collection.Pair;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import teetime.framework.AbstractProducerStage;
+import weka.core.Instance;
+import weka.core.Instances;
 
 /**
- * Read a JSON serialized behavior model.
- *
- * @author Reiner Jung
+ * @author Marc Adolf
  *
  */
-public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel> {
+public interface IDensitityClustering extends IClustering {
 
-    private final File inputFile;
-
-    public BehaviorModelJSONReader(File inputFile) {
-        this.inputFile = inputFile;
-    }
-
+    /**
+     * Computes the clusters and the probabilities of the instances to belong to them. Returns a Map
+     * with the clusters, the belonging instances and their probability.
+     *
+     * @param instances
+     *            The instances to be clustered.
+     * @return A Map with the clusters as key and lists of instances and their probability belonging
+     *         to each cluster. Every instance is only assigned to one cluster.
+     */
     @Override
-    protected void execute() throws Exception {
-        final ObjectMapper mapper = new ObjectMapper();
-
-        final BehaviorModel model = mapper.readValue(this.inputFile, BehaviorModel.class);
-
-        this.outputPort.send(model);
-
-        this.terminateStage();
-    }
+    public Map<Integer, List<Pair<Instance, Double>>> clusterInstances(Instances instances);
 
 }

@@ -19,8 +19,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.iobserve.analysis.MultiInputObservationConfiguration;
-import org.iobserve.analysis.cdoruserbehavior.clustering.EAggregationType;
-import org.iobserve.analysis.cdoruserbehavior.clustering.EOutputMode;
+import org.iobserve.analysis.clustering.EAggregationType;
+import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;

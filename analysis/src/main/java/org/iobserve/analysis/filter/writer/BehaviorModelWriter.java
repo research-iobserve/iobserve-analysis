@@ -6,9 +6,9 @@ import java.io.IOException;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelVisualization;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModel;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.clustering.filter.TBehaviorModelVisualization;
+import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
+import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCreationStrategy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
