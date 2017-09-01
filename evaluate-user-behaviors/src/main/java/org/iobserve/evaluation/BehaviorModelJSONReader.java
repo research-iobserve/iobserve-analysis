@@ -13,29 +13,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
+package org.iobserve.evaluation;
 
-import java.util.Optional;
+import java.io.File;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.TClustering;
-import org.iobserve.analysis.userbehavior.data.ClusteringResults;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.BehaviorModel;
 
-import weka.core.Instances;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import teetime.framework.AbstractProducerStage;
 
 /**
- * interface for a clustering usable by {@link TClustering}
+ * Read a JSON serialized behavior model.
  *
- * @author Christoph Dornieden
+ * @author Reiner Jung
  *
  */
-public interface IClustering {
-    /**
-     * get cluster centers of all clusters
-     *
-     * @param instances
-     *            instances to be clustered
-     * @return cluster centers as instances
-     */
-    public Optional<ClusteringResults> clusterInstances(Instances instances);
+public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel> {
+
+    private final File inputFile;
+
+    public BehaviorModelJSONReader(File inputFile) {
+        this.inputFile = inputFile;
+    }
+
+    @Override
+    protected void execute() throws Exception {
+        final ObjectMapper mapper = new ObjectMapper();
+
+        final BehaviorModel model = mapper.readValue(this.inputFile, BehaviorModel.class);
+
+        this.outputPort.send(model);
+
+        this.terminateStage();
+    }
 
 }

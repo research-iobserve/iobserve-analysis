@@ -31,6 +31,9 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.iobserve.common.record.ExtendedAfterOperationEvent;
+import org.iobserve.common.record.ExtendedBeforeOperationEvent;
+
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
@@ -281,6 +284,16 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
                 final ConstructionEvent event = (ConstructionEvent) record;
                 return new ConstructionEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
                         event.getClassSignature(), event.getObjectId());
+            } else if (record instanceof ExtendedAfterOperationEvent) {
+                final ExtendedAfterOperationEvent event = (ExtendedAfterOperationEvent) record;
+                return new ExtendedAfterOperationEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
+                        event.getInformations());
+            } else if (record instanceof ExtendedBeforeOperationEvent) {
+                final ExtendedBeforeOperationEvent event = (ExtendedBeforeOperationEvent) record;
+                return new ExtendedBeforeOperationEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
+                        event.getInformations());
             } else if (record instanceof AfterOperationEvent) {
                 final AfterOperationEvent event = (AfterOperationEvent) record;
                 return new AfterOperationEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),

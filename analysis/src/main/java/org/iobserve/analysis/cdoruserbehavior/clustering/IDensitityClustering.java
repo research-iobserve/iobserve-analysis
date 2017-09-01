@@ -13,25 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
+package org.iobserve.analysis.cdoruserbehavior.clustering;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.net4j.util.collection.Pair;
+
+import weka.core.Instance;
+import weka.core.Instances;
 
 /**
- * interface for the creation strategy of a signature from a {@link EntryCallNode}.
- *
- * @author Christop Dornieden
+ * @author Marc Adolf
  *
  */
-public interface ISignatureCreationStrategy {
+public interface IDensitityClustering extends IClustering {
 
     /**
-     * create a signature from an entry {@link EntryCallNode}.
+     * Computes the clusters and the probabilities of the instances to belong to them. Returns a Map
+     * with the clusters, the belonging instances and their probability.
      *
-     * @param event
-     *            event
-     * @return signature
+     * @param instances
+     *            The instances to be clustered.
+     * @return A Map with the clusters as key and lists of instances and their probability belonging
+     *         to each cluster. Every instance is only assigned to one cluster.
      */
-    public String getSignature(EntryCallNode node);
+    @Override
+    public Map<Integer, List<Pair<Instance, Double>>> clusterInstances(Instances instances);
 
 }

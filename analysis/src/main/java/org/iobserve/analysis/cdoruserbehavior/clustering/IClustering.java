@@ -13,25 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
+package org.iobserve.analysis.cdoruserbehavior.clustering;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
+import weka.core.Instances;
 
 /**
- * interface for the creation strategy of a signature from a {@link EntryCallNode}.
- *
- * @author Christop Dornieden
+ * @author Marc Adolf
  *
  */
-public interface ISignatureCreationStrategy {
+public interface IClustering {
 
     /**
-     * create a signature from an entry {@link EntryCallNode}.
+     * Cluster instances.
      *
-     * @param event
-     *            event
-     * @return signature
+     * @param instances
+     *            the instances to be clustered
+     * @return the clustered object
      */
-    public String getSignature(EntryCallNode node);
+    public Object clusterInstances(Instances instances);
 
 }

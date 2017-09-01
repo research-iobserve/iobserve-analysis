@@ -13,25 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration;
-
-import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
+package org.iobserve.analysis.cdoruserbehavior.clustering;
 
 /**
- * interface for the creation strategy of a signature from a {@link EntryCallNode}.
- *
- * @author Christop Dornieden
- *
+ * 
+ * @author Reiner Jung
  */
-public interface ISignatureCreationStrategy {
-
-    /**
-     * create a signature from an entry {@link EntryCallNode}.
-     *
-     * @param event
-     *            event
-     * @return signature
-     */
-    public String getSignature(EntryCallNode node);
-
+public enum EAggregationType {
+	EMClustering,
+	XMeansClustering
 }

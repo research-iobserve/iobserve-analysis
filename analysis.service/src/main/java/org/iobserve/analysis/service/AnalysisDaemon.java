@@ -74,6 +74,10 @@ public class AnalysisDaemon implements Daemon {
             "--pcm" }, required = true, description = "Directory containing PCM model data.", converter = FileConverter.class)
     private File pcmModelsDirectory;
 
+    @Parameter(names = { "-u",
+            "--ubm-visualization" }, required = true, description = "User behavior model visualitation service URL.")
+    private String visualizationServiceURL;
+
     private AnalysisThread thread;
     private boolean running = false;
 
@@ -123,7 +127,7 @@ public class AnalysisDaemon implements Daemon {
             final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname, outputPort,
                     this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
                     usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
-                    allocationModelProvider, systemModelProvider);
+                    allocationModelProvider, systemModelProvider, this.visualizationServiceURL);
 
             this.thread = new AnalysisThread(this, configuration);
         } else {

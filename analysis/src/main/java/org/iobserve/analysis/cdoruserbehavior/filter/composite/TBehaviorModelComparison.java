@@ -15,10 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.composite;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.TBehaviorModelVisualization;
-import org.iobserve.analysis.cdoruserbehavior.filter.TUsageModelToBehaviorModel;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.filter.TEntryEventSequence;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
@@ -74,15 +71,17 @@ public class TBehaviorModelComparison extends CompositeStage {
         this.connectPorts(this.distributor.getNewOutputPort(), tBehaviorModel.getInputPort());
 
         // iobserve user behavior
-        final TEntryEventSequence tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
-                repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
-
-        final TUsageModelToBehaviorModel tUsageModel = new TUsageModelToBehaviorModel();
-        final TBehaviorModelVisualization tIObserveUBM = new TBehaviorModelVisualization(configuration.getVisualizationUrl(),
-                configuration.getSignatureCreationStrategy());
-        this.connectPorts(this.distributor.getNewOutputPort(), tEntryEventSequence.getInputPort());
-        this.connectPorts(tEntryEventSequence.getOutputPort(), tUsageModel.getInputPort());
-        this.connectPorts(tUsageModel.getOutputPort(), tIObserveUBM.getInputPort());
+        // final TEntryEventSequence tEntryEventSequence = new
+        // TEntryEventSequence(correspondenceModel, usageModelProvider,
+        // repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+        //
+        // final TUsageModelToBehaviorModel tUsageModel = new TUsageModelToBehaviorModel();
+        // final TBehaviorModelVisualization tIObserveUBM = new TBehaviorModelVisualization(
+        // configuration.getVisualizationUrl(), configuration.getSignatureCreationStrategy());
+        // this.connectPorts(this.distributor.getNewOutputPort(),
+        // tEntryEventSequence.getInputPort());
+        // this.connectPorts(tEntryEventSequence.getOutputPort(), tUsageModel.getInputPort());
+        // this.connectPorts(tUsageModel.getOutputPort(), tIObserveUBM.getInputPort());
 
     }
 

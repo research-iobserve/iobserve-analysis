@@ -22,8 +22,6 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryC
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -35,8 +33,6 @@ import teetime.framework.OutputPort;
  */
 
 public final class TEntryCallSequenceFilter extends AbstractConsumerStage<EntryCallSequenceModel> {
-    /** logger. */
-    private static final Log LOG = LogFactory.getLog(TEntryCallSequenceFilter.class);
     private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
     private final EntryCallFilterRules filter;
 

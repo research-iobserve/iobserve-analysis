@@ -40,7 +40,7 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * Transforms an entryCallSequenceModel to an UBM UI compatible JSON and sends it to the UBM UI
+ * Transforms an entryCallSequenceModel to an UBM UI compatible JSON and sends it to the UBM UI.
  *
  * @author Christoph Dornieden
  *
@@ -48,13 +48,11 @@ import teetime.framework.OutputPort;
 public class TUsageModelToBehaviorModel extends AbstractConsumerStage<UsageModel> {
 
     private final OutputPort<BehaviorModel> outputPort;
-    private final Map<AbstractUserAction, String> nodeMap;
 
     /**
      * constructor
      */
     public TUsageModelToBehaviorModel() {
-        this.nodeMap = new HashMap<>();
         this.outputPort = this.createOutputPort();
     }
 

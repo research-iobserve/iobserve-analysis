@@ -16,7 +16,7 @@
 package org.iobserve.analysis.cdoruserbehavior.filter.models;
 
 /**
- * Represents the transition between an entry call
+ * Represents the transition between an entry call.
  *
  * @author Christoph Dornieden
  *
@@ -30,7 +30,7 @@ public class EntryCallEdge {
     private double calls;
 
     /**
-     * constructor
+     * constructor.
      */
     public EntryCallEdge() {
         this.source = null;
@@ -39,7 +39,7 @@ public class EntryCallEdge {
     }
 
     /**
-     * constructor
+     * constructor.
      *
      * @param source
      *            source node
@@ -53,7 +53,7 @@ public class EntryCallEdge {
     }
 
     /**
-     * constructor
+     * constructor.
      *
      * @param source
      *            source node
@@ -68,15 +68,39 @@ public class EntryCallEdge {
         this.calls = calls;
     }
 
+    public EntryCallNode getSource() {
+        return this.source;
+    }
+
+    public void setSource(final EntryCallNode source) {
+        this.source = source;
+    }
+
+    public EntryCallNode getTarget() {
+        return this.target;
+    }
+
+    public void setTarget(final EntryCallNode target) {
+        this.target = target;
+    }
+
+    public double getCalls() {
+        return this.calls;
+    }
+
+    public void setCalls(final double calls) {
+        this.calls = calls < 0 ? 0 : calls;
+    }
+
     /**
-     * increment calls
+     * increment calls.
      */
     public void incrementCalls() {
         this.calls = this.calls < 0 ? 0 : this.calls + 1;
     }
 
     /**
-     * decrement calls
+     * decrement calls.
      */
     public void decrementCalls() {
         this.calls = this.calls < 1 ? 0 : this.calls - 1;
@@ -92,7 +116,7 @@ public class EntryCallEdge {
         if (obj instanceof EntryCallEdge) {
 
             final EntryCallEdge edge = (EntryCallEdge) obj;
-            return (this.getSource().equals(edge.getSource())) && (this.getTarget().equals(edge.getTarget()));
+            return this.getSource().equals(edge.getSource()) && this.getTarget().equals(edge.getTarget());
 
         } else {
             return super.equals(obj);
@@ -105,64 +129,7 @@ public class EntryCallEdge {
     }
 
     /**
-     * getter
-     *
-     * @return source node
-     */
-    public EntryCallNode getSource() {
-        return this.source;
-    }
-
-    /**
-     * setter
-     *
-     * @param source
-     *            target node
-     */
-    public void setSource(final EntryCallNode source) {
-        this.source = source;
-    }
-
-    /**
-     * getter
-     *
-     * @return target node
-     */
-    public EntryCallNode getTarget() {
-        return this.target;
-    }
-
-    /**
-     * setter
-     *
-     * @param target
-     *            target node
-     */
-    public void setTarget(final EntryCallNode target) {
-        this.target = target;
-    }
-
-    /**
-     * getter
-     *
-     * @return calls
-     */
-    public double getCalls() {
-        return this.calls;
-    }
-
-    /**
-     * setter
-     *
-     * @param calls
-     *            calls
-     */
-    public void setCalls(final double calls) {
-        this.calls = calls < 0 ? 0 : calls;
-    }
-
-    /**
-     * add calls to the edge
+     * add calls to the edge.
      *
      * @param calls
      *            calls

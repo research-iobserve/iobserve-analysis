@@ -74,6 +74,9 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     @Override
     protected void execute(final IMonitoringRecord element) {
         this.recordCount++;
+        if (this.recordCount % 1000 == 0) {
+            System.out.println("Records processed " + this.recordCount);
+        }
         if (element instanceof IDeploymentRecord) {
             this.deploymentOutputPort.send((IDeploymentRecord) element);
         } else if (element instanceof ISessionEvent) {
@@ -107,7 +110,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             } else {
                 hits++;
                 this.unknownRecords.put(className, hits);
-                if ((hits % 1000) == 0) {
+                if (hits % 1000 == 0) {
                     RecordSwitch.LOGGER.error("Event occurances " + hits + " of unknown eventtype " + className);
                 }
             }

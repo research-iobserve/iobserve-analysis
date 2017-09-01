@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryCallFilterRules;
+import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IModelGenerationFilterFactory;
 
 /**
- * factory for creating a filter for JPetStore call events
+ * Factory for creating a filter for JPetStore call events.
  *
  * @author Christoph Dornieden
  *

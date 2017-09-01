@@ -76,7 +76,7 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
     }
 
     /**
-     * execute case object instanceof EntryCallSequenceModel.
+     * Execute case object instanceof EntryCallSequenceModel.
      *
      * @param entryCallSequenceModel
      *            entryCallSequenceModel
@@ -98,7 +98,7 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
 
                     final boolean isAllowed = modelTable.isAllowedSignature(eventCall);
 
-                    if ((lastCall != null) && isAllowed) {
+                    if (lastCall != null && isAllowed) {
                         modelTable.addTransition(lastCall, eventCall);
                         modelTable.addInformation(eventCall);
 
@@ -117,7 +117,7 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
     }
 
     /**
-     * execute case object instanceof BehaviorModelTable.
+     * Execute case object instanceof BehaviorModelTable.
      *
      * @param behaviorModelTable
      *            behaviorModelTable

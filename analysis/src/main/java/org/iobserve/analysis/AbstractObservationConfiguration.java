@@ -15,13 +15,15 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import org.iobserve.analysis.cdoruserbehavior.clustering.EAggregationType;
+import org.iobserve.analysis.cdoruserbehavior.clustering.EOutputMode;
+import org.iobserve.analysis.cdoruserbehavior.clustering.IVectorQuantizationClustering;
+import org.iobserve.analysis.cdoruserbehavior.clustering.XMeansClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.composite.TBehaviorModelComparison;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.GetLastXSignatureStrategy;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.XMeansClustering;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.CoCoMEEntryCallRulesFactory;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetStoreEntryCallRulesFactory;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.examples.JPetstoreStrategy;
@@ -30,9 +32,6 @@ import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
-import org.iobserve.analysis.filter.TEntryCallSequenceWithPCM;
-import org.iobserve.analysis.filter.TEntryEventSequence;
-import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -56,15 +55,15 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      */
     protected final RecordSwitch recordSwitch;
 
-    protected final TAllocation tAllocationSuccDeploy;
+    protected TAllocation tAllocationSuccDeploy;
 
-    protected final TAllocationFinished tAllocationFinished;
+    protected TAllocationFinished tAllocationFinished;
 
-    protected final TDeployment deployment;
+    protected TDeployment deployment;
 
-    protected final TDeployment deploymentSuccAllocation;
+    protected TDeployment deploymentSuccAllocation;
 
-    protected final TUndeployment undeployment;
+    protected TUndeployment undeployment;
 
     private final boolean modeCdor = false;
 
@@ -89,29 +88,37 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            think time, configuration for entry event filter
      * @param closedWorkload
      *            kind of workload, configuration for entry event filter
+     * @param visualizationServiceURL
+     *            url to the visualization service
+     * @param aggregationType aggregation type
+     * @param outputMode output mode
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
+            final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode) {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
         final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
-        this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
-        this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider);
-        this.tAllocationFinished = new TAllocationFinished();
-        this.deploymentSuccAllocation = new TDeployment(correspondenceModel, allocationModelProvider,
-                systemModelProvider, resourceEnvironmentModelProvider);
-        this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
+        // this.deployment = new TDeployment(correspondenceModel, allocationModelProvider,
+        // systemModelProvider,
+        // resourceEnvironmentModelProvider);
+        // this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider);
+        // this.tAllocationFinished = new TAllocationFinished();
+        // this.deploymentSuccAllocation = new TDeployment(correspondenceModel,
+        // allocationModelProvider,
+        // systemModelProvider, resourceEnvironmentModelProvider);
+        // this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider,
+        // systemModelProvider,
+        // resourceEnvironmentModelProvider);
 
         final TEntryCall tEntryCall = new TEntryCall();
 
-        final TEntryCallSequenceWithPCM tEntryCallSequenceWithPCM;
-        final TEntryEventSequence tEntryEventSequence;
+        // final TEntryCallSequenceWithPCM tEntryCallSequenceWithPCM;
+        // final TEntryEventSequence tEntryEventSequence;
 
         /** new extended clustering. */
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
@@ -130,16 +137,18 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         }
 
         // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-        final IClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups, varianceOfUserGroups,
-                new ManhattanDistance());
+        final IVectorQuantizationClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups,
+                varianceOfUserGroups, new ManhattanDistance());
 
         final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
         behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
-        behaviorModelConfiguration.setVisualizationUrl("http://localhost:8080/ubm-backend/v1");
+        behaviorModelConfiguration.setVisualizationUrl(visualizationServiceURL);
         behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
         behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
         behaviorModelConfiguration.setSignatureCreationStrategy(signatureStrategy);
         behaviorModelConfiguration.setClustering(behaviorModelClustering);
+        behaviorModelConfiguration.setAggregationType(aggregationType);
+        behaviorModelConfiguration.setOutputMode(outputMode);
 
         // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
 
@@ -148,27 +157,35 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 varianceOfUserGroups, thinkTime, closedWorkload);
 
         /** plain clustering. It might be included in the setup above. */
-        tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);
-        tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider, repositoryModelProvider,
-                varianceOfUserGroups, thinkTime, closedWorkload);
-        final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
+        // tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);
+        // tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
+        // repositoryModelProvider,
+        // varianceOfUserGroups, thinkTime, closedWorkload);
+        // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
+        // systemModelProvider,
+        // resourceEnvironmentModelProvider);
 
         /** -- end plain clustering. */
 
         /** dispatch different monitoring data. */
-        this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), this.deployment.getInputPort());
-        this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), this.undeployment.getInputPort());
+        // this.connectPorts(this.recordSwitch.getDeploymentOutputPort(),
+        // this.deployment.getInputPort());
+        // this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(),
+        // this.undeployment.getInputPort());
         this.connectPorts(this.recordSwitch.getAllocationOutputPort(), tAllocation.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
         // this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
-        this.connectPorts(this.deployment.getDeploymentOutputPort(), this.tAllocationFinished.getDeploymentInputPort());
-        this.connectPorts(this.deployment.getAllocationOutputPort(), this.tAllocationSuccDeploy.getInputPort());
-        this.connectPorts(this.tAllocationSuccDeploy.getAllocationFinishedOutputPort(),
-                this.tAllocationFinished.getAllocationFinishedInputPort());
-        this.connectPorts(this.tAllocationFinished.getDeploymentOutputPort(),
-                this.deploymentSuccAllocation.getInputPort());
+        // this.connectPorts(this.deployment.getDeploymentOutputPort(),
+        // this.tAllocationFinished.getDeploymentInputPort());
+        // this.connectPorts(this.deployment.getAllocationOutputPort(),
+        // this.tAllocationSuccDeploy.getInputPort());
+        // this.connectPorts(this.tAllocationSuccDeploy.getAllocationFinishedOutputPort(),
+        // this.tAllocationFinished.getAllocationFinishedInputPort());
+        // this.connectPorts(this.tAllocationFinished.getDeploymentOutputPort(),
+        // this.deploymentSuccAllocation.getInputPort());
+
+        this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
 
         this.connectPorts(tEntryCallSequence.getOutputPortToBehaviorModelPreperation(),
                 tBehaviorModelComparison.getInputPort());

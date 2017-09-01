@@ -35,13 +35,12 @@ import org.iobserve.analysis.cdoruserbehavior.filter.models.CallInformation;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallEdge;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.filter.writer.AbstractModelOutputFilter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import teetime.framework.AbstractConsumerStage;
 
 /**
  * Transform the behavior.
@@ -49,7 +48,7 @@ import teetime.framework.AbstractConsumerStage;
  * @author Christoph Dornieden
  *
  */
-public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorModel> {
+public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
     private static final Logger LOGGER = LogManager.getLogger(TBehaviorModelVisualization.class);
     private final ISignatureCreationStrategy signatureStrategy;
     private final String applicationUrl;
@@ -59,7 +58,10 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     private final ObjectMapper objectMapper;
 
     /**
-     * consturctor.
+     * constructor.
+     *
+     * @param baseUrl
+     * @param signatureStrategy
      */
     public TBehaviorModelVisualization(final String baseUrl, final ISignatureCreationStrategy signatureStrategy) {
         this.objectMapper = new ObjectMapper();
@@ -85,7 +87,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     }
 
     /**
-     * create graph at visualisation backend.
+     * Create graph at visualization backend.
      *
      * @param name
      *            name
@@ -210,7 +212,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     }
 
     /**
-     * create new edges at visualisation backend.
+     * create new edges at visualization backend.
      *
      * @param entryCallEdges
      *            entryCallEdges
@@ -239,7 +241,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     }
 
     /**
-     * post elements to server
+     * post elements to server.
      *
      * @param elem
      *            element
@@ -280,7 +282,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     }
 
     /**
-     * get graph url
+     * get graph url.
      *
      * @param modelId
      *            modelId
@@ -291,7 +293,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     }
 
     /**
-     * get node url
+     * get node url.
      *
      * @param modelId
      *            modelId
@@ -302,7 +304,7 @@ public class TBehaviorModelVisualization extends AbstractConsumerStage<BehaviorM
     }
 
     /**
-     * get edge url
+     * get edge url.
      *
      * @param modelId
      *            modelId

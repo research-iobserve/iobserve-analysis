@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 import org.iobserve.analysis.cdoruserbehavior.filter.models.EntryCallNode;
 
 /**
- * strategy using the last x parts of the operation
+ * strategy using the last x parts of the operation.
  *
  * @author Christoph Dornieden
  *
@@ -32,7 +32,7 @@ public class GetLastXSignatureStrategy implements ISignatureCreationStrategy {
     private final Pattern bracketPattern;
 
     /**
-     * constructor
+     * constructor.
      *
      * @param x
      *            number of operation parts
@@ -42,7 +42,7 @@ public class GetLastXSignatureStrategy implements ISignatureCreationStrategy {
     }
 
     /**
-     * constructor
+     * constructor.
      *
      * @param x
      *            number of operation parts
@@ -67,7 +67,7 @@ public class GetLastXSignatureStrategy implements ISignatureCreationStrategy {
             return operationSignature;
         } else {
             String partialOperation = operationSignatureSplit[operationParts - 1];
-            for (int i = operationParts - this.x; i < (operationParts - 1); i++) {
+            for (int i = operationParts - this.x; i < operationParts - 1; i++) {
                 partialOperation = operationSignatureSplit[i] + "." + partialOperation;
             }
             return partialOperation;

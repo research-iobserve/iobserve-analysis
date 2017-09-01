@@ -22,6 +22,8 @@ import java.util.Collection;
 
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.analysis.cdoruserbehavior.clustering.EAggregationType;
+import org.iobserve.analysis.cdoruserbehavior.clustering.EOutputMode;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -33,6 +35,7 @@ import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.BooleanConverter;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
@@ -60,7 +63,7 @@ public final class AnalysisMain {
     private int thinkTime;
 
     @Parameter(names = { "-c",
-            "--closed-workload" }, required = false, description = "Closed workload.", converter = IntegerConverter.class)
+            "--closed-workload" }, required = false, description = "Closed workload.", converter = BooleanConverter.class)
     private boolean closedWorkload;
 
     @Parameter(names = { "-i",
@@ -71,6 +74,19 @@ public final class AnalysisMain {
             "--pcm" }, required = true, description = "Directory containing PCM model data.", converter = FileConverter.class)
     private File pcmModelsDirectory;
 
+    @Parameter(names = { "-u",
+            "--ubm-visualization" }, required = false, description = "User behavior model visualitation service URL.")
+    private String visualizationServiceURL;
+
+    @Parameter(names = { "-o",
+    		"--ubm-output" }, required = false, description = "File output of user behavior.")
+    private String outputPathPrefix;
+    
+    @Parameter(names = { "-m",
+	"--aggregation-type" }, required = true, description = "Aggregation type.")
+    private String aggregationTypeName;
+    
+    
     /**
      * Default constructor.
      */
@@ -108,6 +124,25 @@ public final class AnalysisMain {
             this.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander);
             /** process parameter. */
 
+            EAggregationType aggregationType;
+            if ("em".equals(aggregationTypeName)) {
+            	aggregationType = EAggregationType.EMClustering;
+            } else if ("xmeans".equals(aggregationTypeName)) {
+            	aggregationType = EAggregationType.XMeansClustering;
+            } else {
+            	commander.usage();
+            	return;
+            }
+            
+            /** this is an ugly hack. For now lets keep it. */
+            EOutputMode outputMode;
+            if (outputPathPrefix != null) {
+            	visualizationServiceURL = outputPathPrefix;
+            	outputMode = EOutputMode.FILE_OUTPUT;
+            } else {
+            	outputMode = EOutputMode.UBM_VISUALIZATION;
+            }
+            
             /** create and run application */
             final Collection<File> monitoringDataDirectories = new ArrayList<>();
             AnalysisMain.findDirectories(this.monitoringDataDirectory.listFiles(), monitoringDataDirectories);
@@ -126,7 +161,7 @@ public final class AnalysisMain {
             final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
                     correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
                     allocationModelProvider, systemModelProvider, this.varianceOfUserGroups, this.thinkTime,
-                    this.closedWorkload);
+                    this.closedWorkload, this.visualizationServiceURL, aggregationType, outputMode);
 
             System.out.println("Analysis configuration");
             final Execution<Configuration> analysis = new Execution<>(configuration);

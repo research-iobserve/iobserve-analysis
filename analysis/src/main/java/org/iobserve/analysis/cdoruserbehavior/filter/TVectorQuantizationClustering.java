@@ -17,7 +17,7 @@ package org.iobserve.analysis.cdoruserbehavior.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.cdoruserbehavior.filter.models.configuration.IClustering;
+import org.iobserve.analysis.cdoruserbehavior.clustering.IVectorQuantizationClustering;
 import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 
 import teetime.framework.AbstractConsumerStage;
@@ -31,17 +31,18 @@ import weka.core.Instances;
  * @author Christoph Dornieden
  */
 
-public class TClustering extends AbstractConsumerStage<Instances> {
-    private final OutputPort<Instances> outputPort = this.createOutputPort();
-    private final IClustering clustering;
+public class TVectorQuantizationClustering extends AbstractConsumerStage<Instances> {
+    private final IVectorQuantizationClustering clustering;
 
+	private final OutputPort<Instances> outputPort = this.createOutputPort();
+	
     /**
      * constructor.
      *
      * @param clustering
      *            clustering used
      */
-    public TClustering(final IClustering clustering) {
+    public TVectorQuantizationClustering(final IVectorQuantizationClustering clustering) {
         this.clustering = clustering;
     }
 
@@ -49,7 +50,7 @@ public class TClustering extends AbstractConsumerStage<Instances> {
     protected void execute(final Instances instances) {
         final Optional<ClusteringResults> clusteringResults = this.clustering.clusterInstances(instances);
         clusteringResults.ifPresent(this::printInstances);
-        clusteringResults.ifPresent(results -> this.outputPort.send(results.getClusteringMetrics().getCentroids()));
+        clusteringResults.ifPresent(results -> this.getOutputPort().send(results.getClusteringMetrics().getCentroids()));
 
     }
 
@@ -67,8 +68,8 @@ public class TClustering extends AbstractConsumerStage<Instances> {
             }
         }
     }
-
-    /**
+    
+	/**
      * getter.
      *
      * @return output port
