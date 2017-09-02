@@ -87,10 +87,10 @@ public class TestModelBuilder {
     // System components
     private final System system = SystemFactory.eINSTANCE.createSystem();
 
-    private final AssemblyContext queryInputContext = CompositionFactory.eINSTANCE.createAssemblyContext();
-    private final AssemblyContext businessOrderContext = CompositionFactory.eINSTANCE.createAssemblyContext();
-    private final AssemblyContext privateOrderContext = CompositionFactory.eINSTANCE.createAssemblyContext();
-    private final AssemblyContext paymentContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+    private final AssemblyContext queryInputAssemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+    private final AssemblyContext businessOrderAssemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+    private final AssemblyContext privateOrderAssemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+    private final AssemblyContext paymentAssemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
 
     private final AssemblyConnector businessQueryInputConnector = CompositionFactory.eINSTANCE
             .createAssemblyConnector();
@@ -237,45 +237,46 @@ public class TestModelBuilder {
     private void createSystem() {
         // System
         this.system.setEntityName("MyBookstore");
-        this.system.getAssemblyContexts__ComposedStructure().add(this.queryInputContext);
-        this.system.getAssemblyContexts__ComposedStructure().add(this.businessOrderContext);
-        this.system.getAssemblyContexts__ComposedStructure().add(this.paymentContext);
-        this.system.getAssemblyContexts__ComposedStructure().add(this.privateOrderContext);
+        this.system.getAssemblyContexts__ComposedStructure().add(this.queryInputAssemblyContext);
+        this.system.getAssemblyContexts__ComposedStructure().add(this.businessOrderAssemblyContext);
+        this.system.getAssemblyContexts__ComposedStructure().add(this.paymentAssemblyContext);
+        this.system.getAssemblyContexts__ComposedStructure().add(this.privateOrderAssemblyContext);
         this.system.getConnectors__ComposedStructure().add(this.businessQueryInputConnector);
         this.system.getConnectors__ComposedStructure().add(this.privateQueryInputConnector);
         this.system.getConnectors__ComposedStructure().add(this.businessPayConnector);
         this.system.getConnectors__ComposedStructure().add(this.privatePayConnector);
 
         // Assembly contexts
-        this.queryInputContext.setEntityName("queryInputContext_" + this.queryInputComponent.getEntityName());
-        this.businessOrderContext.setEntityName("businessOrderContext_" + this.orderComponent.getEntityName());
-        this.privateOrderContext.setEntityName("privateOrderContext_" + this.orderComponent.getEntityName());
-        this.paymentContext.setEntityName("paymentContext_" + this.paymentComponent.getEntityName());
+        this.queryInputAssemblyContext.setEntityName("queryInputContext_" + this.queryInputComponent.getEntityName());
+        this.businessOrderAssemblyContext.setEntityName("businessOrderContext_" + this.orderComponent.getEntityName());
+        this.privateOrderAssemblyContext.setEntityName("privateOrderContext_" + this.orderComponent.getEntityName());
+        this.paymentAssemblyContext.setEntityName("paymentContext_" + this.paymentComponent.getEntityName());
 
         // Assembly connectors
         this.businessQueryInputConnector.setEntityName("businessQueryInput");
         this.businessQueryInputConnector.setProvidedRole_AssemblyConnector(this.providedInputOperation);
         this.businessQueryInputConnector.setRequiredRole_AssemblyConnector(this.requiredInputOperation);
-        this.businessQueryInputConnector.setProvidingAssemblyContext_AssemblyConnector(this.businessOrderContext);
-        this.businessQueryInputConnector.setRequiringAssemblyContext_AssemblyConnector(this.queryInputContext);
+        this.businessQueryInputConnector
+                .setProvidingAssemblyContext_AssemblyConnector(this.businessOrderAssemblyContext);
+        this.businessQueryInputConnector.setRequiringAssemblyContext_AssemblyConnector(this.queryInputAssemblyContext);
 
         this.privateQueryInputConnector.setEntityName("privateQueryInput");
         this.privateQueryInputConnector.setProvidedRole_AssemblyConnector(this.providedInputOperation);
         this.privateQueryInputConnector.setRequiredRole_AssemblyConnector(this.requiredInputOperation);
-        this.privateQueryInputConnector.setProvidingAssemblyContext_AssemblyConnector(this.privateOrderContext);
-        this.privateQueryInputConnector.setRequiringAssemblyContext_AssemblyConnector(this.queryInputContext);
+        this.privateQueryInputConnector.setProvidingAssemblyContext_AssemblyConnector(this.privateOrderAssemblyContext);
+        this.privateQueryInputConnector.setRequiringAssemblyContext_AssemblyConnector(this.queryInputAssemblyContext);
 
         this.businessPayConnector.setEntityName("businessPayment");
         this.businessPayConnector.setProvidedRole_AssemblyConnector(this.providedPayOperation);
         this.businessPayConnector.setRequiredRole_AssemblyConnector(this.requiredPayOperation);
-        this.businessPayConnector.setProvidingAssemblyContext_AssemblyConnector(this.paymentContext);
-        this.businessPayConnector.setRequiringAssemblyContext_AssemblyConnector(this.businessOrderContext);
+        this.businessPayConnector.setProvidingAssemblyContext_AssemblyConnector(this.paymentAssemblyContext);
+        this.businessPayConnector.setRequiringAssemblyContext_AssemblyConnector(this.businessOrderAssemblyContext);
 
         this.privatePayConnector.setEntityName("privatePayment");
         this.privatePayConnector.setProvidedRole_AssemblyConnector(this.providedPayOperation);
         this.privatePayConnector.setRequiredRole_AssemblyConnector(this.requiredPayOperation);
-        this.privatePayConnector.setProvidingAssemblyContext_AssemblyConnector(this.paymentContext);
-        this.privatePayConnector.setRequiringAssemblyContext_AssemblyConnector(this.privateOrderContext);
+        this.privatePayConnector.setProvidingAssemblyContext_AssemblyConnector(this.paymentAssemblyContext);
+        this.privatePayConnector.setRequiringAssemblyContext_AssemblyConnector(this.privateOrderAssemblyContext);
 
     }
 
@@ -338,6 +339,8 @@ public class TestModelBuilder {
         // Linking resource specification
         this.lan1Specification.setCommunicationLinkResourceType_CommunicationLinkResourceSpecification(this.lan1Type);
         // this.lan1Specification.setFailureProbability(0.01);
+        // Warum werden scheinbar die Attribute von ProcessingResource/LinkingResourceSpecifications
+        // nicht gelesen???
 
         // Linking resource type
         this.lan1Type.setEntityName("Cat.7 LAN");
@@ -356,23 +359,31 @@ public class TestModelBuilder {
         this.allocation.getAllocationContexts_Allocation().add(this.paymentServerAllocationContext);
 
         // Allocation contexts
-        this.client1AllocationContext.setAssemblyContext_AllocationContext(this.queryInputContext);
+        this.client1AllocationContext.setEntityName("Allocation1_" + this.queryInputAssemblyContext.getEntityName());
+        this.client1AllocationContext.setAssemblyContext_AllocationContext(this.queryInputAssemblyContext);
         this.client1AllocationContext.setResourceContainer_AllocationContext(this.client1);
         this.client1AllocationContext.setAllocation_AllocationContext(this.allocation);
 
-        this.client2AllocationContext.setAssemblyContext_AllocationContext(this.queryInputContext);
+        this.client2AllocationContext.setEntityName("Allocation2_" + this.queryInputAssemblyContext.getEntityName());
+        this.client2AllocationContext.setAssemblyContext_AllocationContext(this.queryInputAssemblyContext);
         this.client2AllocationContext.setResourceContainer_AllocationContext(this.client2);
         this.client2AllocationContext.setAllocation_AllocationContext(this.allocation);
 
-        this.businessOrderServerAllocationContext.setAssemblyContext_AllocationContext(this.businessOrderContext);
+        this.businessOrderServerAllocationContext
+                .setEntityName("Allocation1_" + this.businessOrderAssemblyContext.getEntityName());
+        this.businessOrderServerAllocationContext
+                .setAssemblyContext_AllocationContext(this.businessOrderAssemblyContext);
         this.businessOrderServerAllocationContext.setResourceContainer_AllocationContext(this.orderServer);
         this.businessOrderServerAllocationContext.setAllocation_AllocationContext(this.allocation);
 
-        this.privateOrderServerAllocationContext.setAssemblyContext_AllocationContext(this.privateOrderContext);
+        this.privateOrderServerAllocationContext
+                .setEntityName("Allocation2_" + this.privateOrderAssemblyContext.getEntityName());
+        this.privateOrderServerAllocationContext.setAssemblyContext_AllocationContext(this.privateOrderAssemblyContext);
         this.privateOrderServerAllocationContext.setResourceContainer_AllocationContext(this.orderServer);
         this.privateOrderServerAllocationContext.setAllocation_AllocationContext(this.allocation);
 
-        this.paymentServerAllocationContext.setAssemblyContext_AllocationContext(this.paymentContext);
+        this.paymentServerAllocationContext.setEntityName("Allocation_" + this.paymentAssemblyContext.getEntityName());
+        this.paymentServerAllocationContext.setAssemblyContext_AllocationContext(this.paymentAssemblyContext);
         this.paymentServerAllocationContext.setResourceContainer_AllocationContext(this.paymentServer);
         this.paymentServerAllocationContext.setAllocation_AllocationContext(this.allocation);
     }
@@ -469,20 +480,20 @@ public class TestModelBuilder {
         return this.stringDataType;
     }
 
-    public AssemblyContext getQueryInputContext() {
-        return this.queryInputContext;
+    public AssemblyContext getQueryInputAssemblyContext() {
+        return this.queryInputAssemblyContext;
     }
 
-    public AssemblyContext getBusinessOrderContext() {
-        return this.businessOrderContext;
+    public AssemblyContext getBusinessOrderAssemblyContext() {
+        return this.businessOrderAssemblyContext;
     }
 
-    public AssemblyContext getPrivateOrderContext() {
-        return this.privateOrderContext;
+    public AssemblyContext getPrivateOrderAssemblyContext() {
+        return this.privateOrderAssemblyContext;
     }
 
-    public AssemblyContext getPaymentContext() {
-        return this.paymentContext;
+    public AssemblyContext getPaymentAssemblyContext() {
+        return this.paymentAssemblyContext;
     }
 
     public AssemblyConnector getBusinessQueryInputConnector() {

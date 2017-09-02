@@ -175,7 +175,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
         modelProvider.createComponent(writtenModel);
 
         readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(AssemblyContext.class,
-                testModelBuilder.getBusinessOrderContext().getId());
+                testModelBuilder.getBusinessOrderAssemblyContext().getId());
 
         // Only the businessQueryInputConnector and the businessPayConnector are referencing the
         // businessOrderContext
@@ -198,7 +198,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
         // Update the model by renaming and removing the business context
         writtenModel.setEntityName("MyVideoOnDemandService");
 
-        writtenModel.getAssemblyContexts__ComposedStructure().remove(testModelBuilder.getBusinessOrderContext());
+        writtenModel.getAssemblyContexts__ComposedStructure().remove(testModelBuilder.getBusinessOrderAssemblyContext());
         writtenModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessQueryInputConnector());
         writtenModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessPayConnector());
 
@@ -214,12 +214,12 @@ public class SystemModelProviderTest implements IModelProviderTest {
         sharedQueryInputConnector.setRequiredRole_AssemblyConnector(testModelBuilder.getRequiredInputOperation());
         sharedQueryInputConnector.setProvidingAssemblyContext_AssemblyConnector(sharedOrderContext);
         sharedQueryInputConnector
-                .setRequiringAssemblyContext_AssemblyConnector(testModelBuilder.getQueryInputContext());
+                .setRequiringAssemblyContext_AssemblyConnector(testModelBuilder.getQueryInputAssemblyContext());
 
         sharedPayConnector.setEntityName("sharedPayment");
         sharedPayConnector.setProvidedRole_AssemblyConnector(testModelBuilder.getProvidedPayOperation());
         sharedPayConnector.setRequiredRole_AssemblyConnector(testModelBuilder.getRequiredPayOperation());
-        sharedPayConnector.setProvidingAssemblyContext_AssemblyConnector(testModelBuilder.getPaymentContext());
+        sharedPayConnector.setProvidingAssemblyContext_AssemblyConnector(testModelBuilder.getPaymentAssemblyContext());
         sharedPayConnector.setRequiringAssemblyContext_AssemblyConnector(sharedOrderContext);
 
         writtenModel.getAssemblyContexts__ComposedStructure().add(sharedOrderContext);
