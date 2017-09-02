@@ -151,11 +151,13 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     public void createThenReadContaining() {
         final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.GRAPH);
         final Repository writtenModel = new TestModelBuilder().getRepository();
+        final OperationInterface writtenInterface = (OperationInterface) writtenModel.getInterfaces__Repository()
+                .get(0);
         final Repository readModel;
-        final OperationInterface inter = (OperationInterface) writtenModel.getInterfaces__Repository().get(0);
 
         modelProvider.createComponent(writtenModel);
-        readModel = (Repository) modelProvider.readOnlyContainingComponentById(OperationInterface.class, inter.getId());
+        readModel = (Repository) modelProvider.readOnlyContainingComponentById(OperationInterface.class,
+                writtenInterface.getId());
 
         Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }

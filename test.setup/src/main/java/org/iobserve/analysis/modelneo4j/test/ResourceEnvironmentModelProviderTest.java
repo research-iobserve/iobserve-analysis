@@ -19,15 +19,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
+import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
+import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+import org.palladiosimulator.pcm.resourcetype.CommunicationLinkResourceType;
+import org.palladiosimulator.pcm.resourcetype.ProcessingResourceType;
+import org.palladiosimulator.pcm.resourcetype.ResourcetypeFactory;
 
 /**
  * Test cases for the model provider using a resource environment model.
@@ -177,108 +185,212 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Override
     @Test
     public void createThenReadContaining() {
-        // final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-        // ResourceEnvironmentModelProviderTest.GRAPH);
-        // final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
-        // final ResourceEnvironment readModel;
-        // final OperationInterface inter = (OperationInterface)
-        // writtenModel.getInterfaces__ResourceEnvironment().get(0);
-        //
-        // modelProvider.createComponent(writtenModel);
-        // readModel = (ResourceEnvironment)
-        // modelProvider.readOnlyContainingComponentById(OperationInterface.class,
-        // inter.getId());
-        //
-        // Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
+        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
+                ResourceEnvironmentModelProviderTest.GRAPH);
+        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
+        final ResourceContainer writtenContainer = writtenModel.getResourceContainer_ResourceEnvironment().get(0);
+        final ResourceEnvironment readModel;
+
+        modelProvider.createComponent(writtenModel);
+        readModel = (ResourceEnvironment) modelProvider.readOnlyContainingComponentById(ResourceContainer.class,
+                writtenContainer.getId());
+
+        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }
 
     @Override
     @Test
     public void createThenReadReferencing() {
-        // final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-        // ResourceEnvironmentModelProviderTest.GRAPH);
-        // final TestModelBuilder testModelBuilder = new TestModelBuilder();
-        // final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
-        // List<EObject> readReferencingComponents;
-        //
-        // modelProvider.createComponent(writtenModel);
-        //
-        // readReferencingComponents =
-        // modelProvider.readOnlyReferencingComponentsById(BasicComponent.class,
-        // testModelBuilder.getCatalogSearchComponent().getId());
-        //
-        // // Only the providedSearchOperation role is referencing the catalogSearch component
-        // Assert.assertTrue(readReferencingComponents.size() == 1);
-        //
-        // Assert.assertTrue(this.equalityHelper.equals(testModelBuilder.getProvidedSearchOperation(),
-        // readReferencingComponents.get(0)));
+        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
+                ResourceEnvironmentModelProviderTest.GRAPH);
+        final TestModelBuilder testModelBuilder = new TestModelBuilder();
+        final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
+        List<EObject> readReferencingComponents;
+
+        modelProvider.createComponent(writtenModel);
+
+        readReferencingComponents = modelProvider.readOnlyReferencingComponentsById(CommunicationLinkResourceType.class,
+                testModelBuilder.getLan1Type().getId());
+
+        // Only the lan1 CommunicationLinkResourceSpecification is referencing the lan1
+        // CommunicationLinkResourceType
+        Assert.assertTrue(readReferencingComponents.size() == 1);
+
+        Assert.assertTrue(
+                this.equalityHelper.equals(testModelBuilder.getLan1Specification(), readReferencingComponents.get(0)));
 
     }
 
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        // final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-        // ResourceEnvironmentModelProviderTest.GRAPH);
-        // final TestModelBuilder testModelBuilder = new TestModelBuilder();
-        // final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
-        // final Interface payInterface = testModelBuilder.getPayInterface();
-        // final ResourceEnvironmentComponent paymentComponent =
-        // testModelBuilder.getPaymentComponent();
-        // ResourceEnvironment readModel;
-        //
-        // modelProvider.createComponent(writtenModel);
-        //
-        // // Update the model by renaming and replacing the payment method
-        // writtenModel.setEntityName("MyVideoOnDemandService");
-        //
-        // final OperationProvidedRole providedPayOperation = ResourceEnvironmentFactory.eINSTANCE
-        // .createOperationProvidedRole();
-        // providedPayOperation.setEntityName("payPalPayment");
-        // providedPayOperation.setProvidedInterface__OperationProvidedRole((OperationInterface)
-        // payInterface);
-        //
-        // paymentComponent.getProvidedRoles_InterfaceProvidingEntity().clear();
-        // paymentComponent.getProvidedRoles_InterfaceProvidingEntity().add(providedPayOperation);
-        //
-        // modelProvider.updateComponent(ResourceEnvironment.class, writtenModel);
-        //
-        // readModel = modelProvider.readOnlyRootComponent(ResourceEnvironment.class);
-        //
-        // Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
+        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
+                ResourceEnvironmentModelProviderTest.GRAPH);
+        final TestModelBuilder testModelBuilder = new TestModelBuilder();
+        final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
+        final ResourceContainer orderServer = testModelBuilder.getOrderServer();
+        final LinkingResource writtenLan1 = testModelBuilder.getLan1();
+        ResourceEnvironment readModel;
+
+        modelProvider.createComponent(writtenModel);
+
+        // Update the model by replacing the orderServer by two separated servers
+        writtenModel.getResourceContainer_ResourceEnvironment().remove(orderServer);
+        writtenLan1.getConnectedResourceContainers_LinkingResource().remove(orderServer);
+
+        final ResourceContainer businessOrderServer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+        final ProcessingResourceSpecification businessOrderServerSpecification = ResourceenvironmentFactory.eINSTANCE
+                .createProcessingResourceSpecification();
+        final ProcessingResourceType businessOrderServerType = ResourcetypeFactory.eINSTANCE
+                .createProcessingResourceType();
+
+        businessOrderServer.setEntityName("businessOrderServer");
+        businessOrderServer.setResourceEnvironment_ResourceContainer(writtenModel);
+        businessOrderServer.getActiveResourceSpecifications_ResourceContainer().add(businessOrderServerSpecification);
+        businessOrderServerSpecification.setActiveResourceType_ActiveResourceSpecification(businessOrderServerType);
+        businessOrderServerType.setEntityName("Cisco Business Server PRO");
+
+        final ResourceContainer privateOrderServer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+        final ProcessingResourceSpecification privateOrderServerSpecification = ResourceenvironmentFactory.eINSTANCE
+                .createProcessingResourceSpecification();
+        final ProcessingResourceType privateOrderServerType = ResourcetypeFactory.eINSTANCE
+                .createProcessingResourceType();
+
+        privateOrderServer.setEntityName("privateOrderServer");
+        privateOrderServer.setResourceEnvironment_ResourceContainer(writtenModel);
+        privateOrderServer.getActiveResourceSpecifications_ResourceContainer().add(privateOrderServerSpecification);
+        privateOrderServerSpecification.setActiveResourceType_ActiveResourceSpecification(privateOrderServerType);
+        privateOrderServerType.setEntityName("Lenovo High Load Server PRO");
+
+        writtenModel.getResourceContainer_ResourceEnvironment().add(businessOrderServer);
+        writtenModel.getResourceContainer_ResourceEnvironment().add(privateOrderServer);
+        writtenLan1.getConnectedResourceContainers_LinkingResource().add(businessOrderServer);
+        writtenLan1.getConnectedResourceContainers_LinkingResource().add(privateOrderServer);
+
+        modelProvider.updateComponent(ResourceEnvironment.class, writtenModel);
+
+        readModel = modelProvider.readOnlyRootComponent(ResourceEnvironment.class);
+
+        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }
+
+    // public static void main(final String[] args) {
+    // System.out.println("start");
+    // final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
+    // ResourceEnvironmentModelProviderTest.GRAPH);
+    // final TestModelBuilder testModelBuilder = new TestModelBuilder();
+    // final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
+    // final ResourceContainer orderServer = testModelBuilder.getOrderServer();
+    // final LinkingResource writtenLan1 = testModelBuilder.getLan1();
+    // ResourceEnvironment readModel;
+    //
+    // modelProvider.createComponent(writtenModel);
+    //
+    // // Update the model by replacing the orderServer by two separated servers
+    // writtenModel.getResourceContainer_ResourceEnvironment().remove(orderServer);
+    // writtenLan1.getConnectedResourceContainers_LinkingResource().remove(orderServer);
+    //
+    // final ResourceContainer businessOrderServer =
+    // ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+    // final ProcessingResourceSpecification businessOrderServerSpecification =
+    // ResourceenvironmentFactory.eINSTANCE
+    // .createProcessingResourceSpecification();
+    // final ProcessingResourceType businessOrderServerType = ResourcetypeFactory.eINSTANCE
+    // .createProcessingResourceType();
+    //
+    // businessOrderServer.setEntityName("businessOrderServer");
+    // businessOrderServer.setResourceEnvironment_ResourceContainer(writtenModel);
+    // businessOrderServer.getActiveResourceSpecifications_ResourceContainer().add(businessOrderServerSpecification);
+    // businessOrderServerSpecification.setActiveResourceType_ActiveResourceSpecification(businessOrderServerType);
+    // businessOrderServerType.setEntityName("Cisco Business Server PRO");
+    //
+    // final ResourceContainer privateOrderServer =
+    // ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+    // final ProcessingResourceSpecification privateOrderServerSpecification =
+    // ResourceenvironmentFactory.eINSTANCE
+    // .createProcessingResourceSpecification();
+    // final ProcessingResourceType privateOrderServerType = ResourcetypeFactory.eINSTANCE
+    // .createProcessingResourceType();
+    //
+    // privateOrderServer.setEntityName("privateOrderServer");
+    // privateOrderServer.setResourceEnvironment_ResourceContainer(writtenModel);
+    // privateOrderServer.getActiveResourceSpecifications_ResourceContainer().add(privateOrderServerSpecification);
+    // privateOrderServerSpecification.setActiveResourceType_ActiveResourceSpecification(privateOrderServerType);
+    // privateOrderServerType.setEntityName("Lenovo High Load Server PRO");
+    //
+    // writtenModel.getResourceContainer_ResourceEnvironment().add(businessOrderServer);
+    // writtenModel.getResourceContainer_ResourceEnvironment().add(privateOrderServer);
+    // writtenLan1.getConnectedResourceContainers_LinkingResource().add(businessOrderServer);
+    // writtenLan1.getConnectedResourceContainers_LinkingResource().add(privateOrderServer);
+    //
+    // modelProvider.updateComponent(ResourceEnvironment.class, writtenModel);
+    //
+    // readModel = modelProvider.readOnlyRootComponent(ResourceEnvironment.class);
+    //
+    // Assert.assertFalse(new Neo4jEqualityHelper().equals(writtenModel, readModel));
+    // System.out.println("stop");
+    // }
 
     @Override
     @Test
     public void createThenDeleteComponent() {
-        // final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-        // ResourceEnvironmentModelProviderTest.GRAPH);
-        // final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
-        //
-        // modelProvider.createComponent(writtenModel);
-        //
-        // Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
-        //
-        // modelProvider.deleteComponent(ResourceEnvironment.class, writtenModel.getId());
-        //
-        // Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
+        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
+                ResourceEnvironmentModelProviderTest.GRAPH);
+        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
+
+        modelProvider.createComponent(writtenModel);
+
+        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
+
+        for (final LinkingResource lr : writtenModel.getLinkingResources__ResourceEnvironment()) {
+            new ModelProvider<LinkingResource>(ResourceEnvironmentModelProviderTest.GRAPH)
+                    .deleteComponent(LinkingResource.class, lr.getId());
+        }
+
+        for (final ResourceContainer rc : writtenModel.getResourceContainer_ResourceEnvironment()) {
+            new ModelProvider<ResourceContainer>(ResourceEnvironmentModelProviderTest.GRAPH)
+                    .deleteComponent(ResourceContainer.class, rc.getId());
+        }
+
+        // Manually delete the root node as it has no id
+        try (Transaction tx = ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
+            ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService()
+                    .execute("MATCH (n:ResourceEnvironment) DELETE (n)");
+
+        }
+
+        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
     @Override
     @Test
     public void createThenDeleteComponentAndDatatypes() {
-        // final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-        // ResourceEnvironmentModelProviderTest.GRAPH);
-        // final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
-        //
-        // modelProvider.createComponent(writtenModel);
-        //
-        // Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
-        //
-        // modelProvider.deleteComponentAndDatatypes(ResourceEnvironment.class,
-        // writtenModel.getId());
-        //
-        // Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
+        final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
+                ResourceEnvironmentModelProviderTest.GRAPH);
+        final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
+
+        modelProvider.createComponent(writtenModel);
+
+        Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
+
+        for (final LinkingResource lr : writtenModel.getLinkingResources__ResourceEnvironment()) {
+            new ModelProvider<LinkingResource>(ResourceEnvironmentModelProviderTest.GRAPH)
+                    .deleteComponent(LinkingResource.class, lr.getId());
+        }
+
+        for (final ResourceContainer rc : writtenModel.getResourceContainer_ResourceEnvironment()) {
+            new ModelProvider<ResourceContainer>(ResourceEnvironmentModelProviderTest.GRAPH)
+                    .deleteComponent(ResourceContainer.class, rc.getId());
+        }
+
+        // Manually delete the root node as it has no id
+        try (Transaction tx = ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
+            ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService()
+                    .execute("MATCH (n:ResourceEnvironment) DELETE (n)");
+
+        }
+
+        Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
     // @AfterClass
