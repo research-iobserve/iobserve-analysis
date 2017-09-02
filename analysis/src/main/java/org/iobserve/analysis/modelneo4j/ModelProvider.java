@@ -680,8 +680,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
             }
-        } else if ((component instanceof Allocation) || (component instanceof ResourceEnvironment)
-                || (component instanceof UsageModel)) {
+        } else if ((component instanceof ResourceEnvironment) || (component instanceof UsageModel)) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                         .findNodes(Label.label(clazz.getSimpleName()));
