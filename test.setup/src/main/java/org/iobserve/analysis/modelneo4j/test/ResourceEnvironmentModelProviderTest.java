@@ -126,20 +126,6 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
 
         Assert.assertTrue(readModels.size() == 1);
 
-        // final LinkingResource writtenLink =
-        // writtenModel.getLinkingResources__ResourceEnvironment().get(0);
-        // final LinkingResource readLink =
-        // readModels.get(0).getLinkingResources__ResourceEnvironment().get(0);
-        // for (int i = 0; i < writtenLink.getConnectedResourceContainers_LinkingResource().size();
-        // i++) {
-        // System.out.println(
-        // i + " " +
-        // writtenLink.getConnectedResourceContainers_LinkingResource().get(i).getEntityName());
-        // System.out.println(
-        // i + " " +
-        // readLink.getConnectedResourceContainers_LinkingResource().get(i).getEntityName());
-        // }
-
         for (final ResourceEnvironment readModel : readModels) {
             Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
         }
