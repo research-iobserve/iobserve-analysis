@@ -34,8 +34,6 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
-import org.palladiosimulator.pcm.core.composition.impl.ProvidedDelegationConnectorImpl;
-import org.palladiosimulator.pcm.repository.OperationProvidedRole;
 import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -213,35 +211,39 @@ public final class InitializeDeploymentVisualization {
         }
 
         /** usergroup */
+        // not working yet
 
         // map elements in entryLevelSystemCalls to assemblyContexts
 
-        final List<AssemblyContext> userInvokedServices = new ArrayList<>();
-        List<EntryLevelSystemCall> entryLevelSystemCalls = new ArrayList<>();
+        // final List<AssemblyContext> userInvokedServices = new ArrayList<>();
+        // List<EntryLevelSystemCall> entryLevelSystemCalls = new ArrayList<>();
+        //
+        // entryLevelSystemCalls = this.collectEntryLevelSystemCalls(usageScenarios);
+        //
+        // for (int m = 0; m < entryLevelSystemCalls.size(); m++) {
+        // final EntryLevelSystemCall userStep = entryLevelSystemCalls.get(m);
+        //
+        // final String providedRoleId = userStep.getProvidedRole_EntryLevelSystemCall().getId();
+        //
+        // final List<EObject> usergroupConnectors = this.systemModelGraphProvider
+        // .readOnlyReferencingComponentsById(OperationProvidedRole.class, providedRoleId);
+        // final ProvidedDelegationConnectorImpl usergroupConnector =
+        // (ProvidedDelegationConnectorImpl) usergroupConnectors
+        // .get(0);
+        //
+        // final AssemblyContext assemblyContext =
+        // usergroupConnector.getAssemblyContext_ProvidedDelegationConnector();
+        //
+        // userInvokedServices.add(assemblyContext);
+        // }
 
-        entryLevelSystemCalls = this.collectEntryLevelSystemCalls(usageScenarios);
-
-        for (int m = 0; m < entryLevelSystemCalls.size(); m++) {
-            final EntryLevelSystemCall userStep = entryLevelSystemCalls.get(m);
-
-            final String providedRoleId = userStep.getProvidedRole_EntryLevelSystemCall().getId();
-
-            final List<EObject> usergroupConnectors = this.systemModelGraphProvider
-                    .readOnlyReferencingComponentsById(OperationProvidedRole.class, providedRoleId);
-            final ProvidedDelegationConnectorImpl usergroupConnector = (ProvidedDelegationConnectorImpl) usergroupConnectors
-                    .get(0);
-
-            final AssemblyContext assemblyContext = usergroupConnector.getAssemblyContext_ProvidedDelegationConnector();
-
-            userInvokedServices.add(assemblyContext);
-        }
-
-        if (userInvokedServices.size() > 0) {
-            SendHttpRequest.post(Changelog.create(
-                    this.usergroupService.createUsergroup(this.systemService.getSystemId(), userInvokedServices)),
-                    this.systemUrl, this.changelogUrl);
-
-        }
+        // if (userInvokedServices.size() > 0) {
+        // SendHttpRequest.post(Changelog.create(
+        // this.usergroupService.createUsergroup(this.systemService.getSystemId(),
+        // userInvokedServices)),
+        // this.systemUrl, this.changelogUrl);
+        //
+        // }
 
     }
 
