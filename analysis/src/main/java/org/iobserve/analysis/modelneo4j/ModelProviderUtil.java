@@ -25,6 +25,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
@@ -97,11 +98,15 @@ public class ModelProviderUtil {
         if (uri != null) {
             for (final Relationship r : rels) {
                 final Node node = r.getEndNode();
-                final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
+                try {
+                    final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
 
-                if (uri.equals(nodeUri)) {
-                    rels.remove(r);
-                    return node;
+                    if (uri.equals(nodeUri)) {
+                        rels.remove(r);
+                        return node;
+                    }
+                } catch (final NotFoundException e) {
+                    // node as already been deleted
                 }
             }
         }

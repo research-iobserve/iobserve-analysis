@@ -791,9 +791,13 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
                 // Delete nodes that are not referenced anymore
                 for (final Relationship r : outRels) {
-                    final Node endNode = r.getEndNode();
-                    r.delete();
-                    this.deleteComponent(endNode);
+                    try {
+                        final Node endNode = r.getEndNode();
+                        r.delete();
+                        this.deleteComponent(endNode);
+                    } catch (final NotFoundException e) {
+                        // relation has already been deleted
+                    }
                 }
             }
         }

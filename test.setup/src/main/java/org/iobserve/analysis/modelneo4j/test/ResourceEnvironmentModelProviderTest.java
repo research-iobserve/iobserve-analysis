@@ -23,6 +23,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -163,9 +164,16 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         Assert.assertTrue(readIds.size() == writtenContainers.size());
 
         for (int i = 0; i < readIds.size(); i++) {
-            Assert.assertTrue(writtenContainers.get(i).getId().equals(readIds.get(i)));
-        }
+            boolean foundEqualElem = false;
 
+            for (int j = 0; j < readIds.size(); j++) {
+                if (writtenContainers.get(i).getId().equals(readIds.get(j))) {
+                    foundEqualElem = true;
+                }
+            }
+
+            Assert.assertTrue(foundEqualElem);
+        }
     }
 
     @Override
@@ -274,63 +282,6 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }
 
-    // public static void main(final String[] args) {
-    // System.out.println("start");
-    // final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-    // ResourceEnvironmentModelProviderTest.GRAPH);
-    // final TestModelBuilder testModelBuilder = new TestModelBuilder();
-    // final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
-    // final ResourceContainer orderServer = testModelBuilder.getOrderServer();
-    // final LinkingResource writtenLan1 = testModelBuilder.getLan1();
-    // ResourceEnvironment readModel;
-    //
-    // modelProvider.createComponent(writtenModel);
-    //
-    // // Update the model by replacing the orderServer by two separated servers
-    // writtenModel.getResourceContainer_ResourceEnvironment().remove(orderServer);
-    // writtenLan1.getConnectedResourceContainers_LinkingResource().remove(orderServer);
-    //
-    // final ResourceContainer businessOrderServer =
-    // ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-    // final ProcessingResourceSpecification businessOrderServerSpecification =
-    // ResourceenvironmentFactory.eINSTANCE
-    // .createProcessingResourceSpecification();
-    // final ProcessingResourceType businessOrderServerType = ResourcetypeFactory.eINSTANCE
-    // .createProcessingResourceType();
-    //
-    // businessOrderServer.setEntityName("businessOrderServer");
-    // businessOrderServer.setResourceEnvironment_ResourceContainer(writtenModel);
-    // businessOrderServer.getActiveResourceSpecifications_ResourceContainer().add(businessOrderServerSpecification);
-    // businessOrderServerSpecification.setActiveResourceType_ActiveResourceSpecification(businessOrderServerType);
-    // businessOrderServerType.setEntityName("Cisco Business Server PRO");
-    //
-    // final ResourceContainer privateOrderServer =
-    // ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-    // final ProcessingResourceSpecification privateOrderServerSpecification =
-    // ResourceenvironmentFactory.eINSTANCE
-    // .createProcessingResourceSpecification();
-    // final ProcessingResourceType privateOrderServerType = ResourcetypeFactory.eINSTANCE
-    // .createProcessingResourceType();
-    //
-    // privateOrderServer.setEntityName("privateOrderServer");
-    // privateOrderServer.setResourceEnvironment_ResourceContainer(writtenModel);
-    // privateOrderServer.getActiveResourceSpecifications_ResourceContainer().add(privateOrderServerSpecification);
-    // privateOrderServerSpecification.setActiveResourceType_ActiveResourceSpecification(privateOrderServerType);
-    // privateOrderServerType.setEntityName("Lenovo High Load Server PRO");
-    //
-    // writtenModel.getResourceContainer_ResourceEnvironment().add(businessOrderServer);
-    // writtenModel.getResourceContainer_ResourceEnvironment().add(privateOrderServer);
-    // writtenLan1.getConnectedResourceContainers_LinkingResource().add(businessOrderServer);
-    // writtenLan1.getConnectedResourceContainers_LinkingResource().add(privateOrderServer);
-    //
-    // modelProvider.updateComponent(ResourceEnvironment.class, writtenModel);
-    //
-    // readModel = modelProvider.readOnlyRootComponent(ResourceEnvironment.class);
-    //
-    // Assert.assertFalse(new Neo4jEqualityHelper().equals(writtenModel, readModel));
-    // System.out.println("stop");
-    // }
-
     @Override
     @Test
     public void createThenDeleteComponent() {
@@ -355,8 +306,8 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         // Manually delete the root node as it has no id
         try (Transaction tx = ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
             ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService()
-                    .execute("MATCH (n:ResourceEnvironment) DELETE (n)");
-
+                    .execute("MATCH (n:ResourceEnvironment) DELETE n");
+            tx.success();
         }
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
@@ -386,14 +337,14 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         // Manually delete the root node as it has no id
         try (Transaction tx = ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
             ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService()
-                    .execute("MATCH (n:ResourceEnvironment) DELETE (n)");
-
+                    .execute("MATCH (n:ResourceEnvironment) DELETE n");
+            tx.success();
         }
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
-    // @AfterClass
+    @AfterClass
     public static void cleanUp() throws IOException {
         ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(ResourceEnvironmentModelProviderTest.GRAPH_DIR);
