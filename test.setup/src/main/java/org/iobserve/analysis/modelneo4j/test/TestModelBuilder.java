@@ -18,6 +18,8 @@ package org.iobserve.analysis.modelneo4j.test;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
+import org.palladiosimulator.pcm.core.CoreFactory;
+import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
@@ -42,6 +44,14 @@ import org.palladiosimulator.pcm.resourcetype.ProcessingResourceType;
 import org.palladiosimulator.pcm.resourcetype.ResourcetypeFactory;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemFactory;
+import org.palladiosimulator.pcm.usagemodel.ClosedWorkload;
+import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
+import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
+import org.palladiosimulator.pcm.usagemodel.Start;
+import org.palladiosimulator.pcm.usagemodel.Stop;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.palladiosimulator.pcm.usagemodel.UsageScenario;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 
 /**
  * Class to provide programmatically built test models.
@@ -138,11 +148,26 @@ public class TestModelBuilder {
     private final AllocationContext paymentServerAllocationContext = AllocationFactory.eINSTANCE
             .createAllocationContext();
 
+    // Usage model components
+    private final UsageModel usageModel = UsagemodelFactory.eINSTANCE.createUsageModel();
+    private final UsageScenario usageScenarioGroup0 = UsagemodelFactory.eINSTANCE.createUsageScenario();
+
+    private final ScenarioBehaviour scenarioBehavior = UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
+    private final Start startScenario = UsagemodelFactory.eINSTANCE.createStart();
+    private final EntryLevelSystemCall getQueryCall = UsagemodelFactory.eINSTANCE.createEntryLevelSystemCall();
+    private final EntryLevelSystemCall getPriceCall = UsagemodelFactory.eINSTANCE.createEntryLevelSystemCall();
+    private final EntryLevelSystemCall withdrawCall = UsagemodelFactory.eINSTANCE.createEntryLevelSystemCall();
+    private final Stop stopScenario = UsagemodelFactory.eINSTANCE.createStop();
+
+    private final ClosedWorkload closedWorkload = UsagemodelFactory.eINSTANCE.createClosedWorkload();
+    private final PCMRandomVariable thinkTime = CoreFactory.eINSTANCE.createPCMRandomVariable();
+
     public TestModelBuilder() {
         this.createReposiory();
         this.createSystem();
         this.createResourceEnvironment();
         this.createAllocation();
+        this.createUsageModel();
     }
 
     private void createReposiory() {
@@ -386,6 +411,64 @@ public class TestModelBuilder {
         this.paymentServerAllocationContext.setAllocation_AllocationContext(this.allocation);
     }
 
+    private void createUsageModel() {
+        // Usage model
+        this.usageModel.getUsageScenario_UsageModel().add(this.usageScenarioGroup0);
+
+        // Usage scenario
+        this.usageScenarioGroup0.setEntityName("Usage scenario of user group 0");
+        this.usageScenarioGroup0.setScenarioBehaviour_UsageScenario(this.scenarioBehavior);
+        this.usageScenarioGroup0.setWorkload_UsageScenario(this.closedWorkload);
+
+        // Scenario behavior
+        this.scenarioBehavior.setEntityName("Buy a book");
+        this.scenarioBehavior.setUsageScenario_SenarioBehaviour(this.usageScenarioGroup0);
+        this.scenarioBehavior.getActions_ScenarioBehaviour().add(this.startScenario);
+        this.scenarioBehavior.getActions_ScenarioBehaviour().add(this.getQueryCall);
+        this.scenarioBehavior.getActions_ScenarioBehaviour().add(this.getPriceCall);
+        this.scenarioBehavior.getActions_ScenarioBehaviour().add(this.withdrawCall);
+        this.scenarioBehavior.getActions_ScenarioBehaviour().add(this.stopScenario);
+
+        // Start, stop and entry level system calls
+        this.startScenario.setEntityName("Start");
+        this.startScenario.setScenarioBehaviour_AbstractUserAction(this.scenarioBehavior);
+        this.startScenario.setSuccessor(this.getQueryCall);
+
+        this.getQueryCall.setEntityName("getQueryCall");
+        this.getQueryCall.setScenarioBehaviour_AbstractUserAction(this.scenarioBehavior);
+        this.getQueryCall.setOperationSignature__EntryLevelSystemCall(this.getQuerySignature);
+        this.getQueryCall.setProvidedRole_EntryLevelSystemCall(this.providedInputOperation);
+        this.getQueryCall.setPredecessor(this.startScenario);
+        this.getQueryCall.setSuccessor(this.getPriceCall);
+
+        this.getPriceCall.setEntityName("getPriceCall");
+        this.getPriceCall.setScenarioBehaviour_AbstractUserAction(this.scenarioBehavior);
+        this.getPriceCall.setOperationSignature__EntryLevelSystemCall(this.getPriceSignature);
+        this.getPriceCall.setProvidedRole_EntryLevelSystemCall(this.providedSearchOperation);
+        this.getPriceCall.setPredecessor(this.getQueryCall);
+        this.getPriceCall.setSuccessor(this.withdrawCall);
+
+        this.withdrawCall.setEntityName("withdrawCall");
+        this.withdrawCall.setScenarioBehaviour_AbstractUserAction(this.scenarioBehavior);
+        this.withdrawCall.setOperationSignature__EntryLevelSystemCall(this.withdrawSignature);
+        this.withdrawCall.setProvidedRole_EntryLevelSystemCall(this.providedPayOperation);
+        this.withdrawCall.setPredecessor(this.getPriceCall);
+        this.withdrawCall.setSuccessor(this.stopScenario);
+
+        this.stopScenario.setEntityName("stopScenario");
+        this.stopScenario.setScenarioBehaviour_AbstractUserAction(this.scenarioBehavior);
+        this.stopScenario.setPredecessor(this.withdrawCall);
+
+        // Closed workload
+        this.closedWorkload.setPopulation(2);
+        this.closedWorkload.setThinkTime_ClosedWorkload(this.thinkTime);
+        this.closedWorkload.setUsageScenario_Workload(this.usageScenarioGroup0);
+
+        // Think time
+        this.thinkTime.setSpecification("5.0");
+
+    }
+
     public Repository getRepository() {
         return this.repository;
     }
@@ -400,6 +483,10 @@ public class TestModelBuilder {
 
     public Allocation getAllocation() {
         return this.allocation;
+    }
+
+    public UsageModel getUsageModel() {
+        return this.usageModel;
     }
 
     public BasicComponent getQueryInputComponent() {
@@ -588,6 +675,42 @@ public class TestModelBuilder {
 
     public AllocationContext getPaymentServerAllocationContext() {
         return this.paymentServerAllocationContext;
+    }
+
+    public UsageScenario getUsageScenarioGroup0() {
+        return this.usageScenarioGroup0;
+    }
+
+    public ScenarioBehaviour getScenarioBehavior() {
+        return this.scenarioBehavior;
+    }
+
+    public Start getStartScenario() {
+        return this.startScenario;
+    }
+
+    public EntryLevelSystemCall getGetQueryCall() {
+        return this.getQueryCall;
+    }
+
+    public EntryLevelSystemCall getGetPriceCall() {
+        return this.getPriceCall;
+    }
+
+    public EntryLevelSystemCall getWithdrawCall() {
+        return this.withdrawCall;
+    }
+
+    public Stop getStopScenario() {
+        return this.stopScenario;
+    }
+
+    public ClosedWorkload getClosedWorkload() {
+        return this.closedWorkload;
+    }
+
+    public PCMRandomVariable getThinkTime() {
+        return this.thinkTime;
     }
 
 }
