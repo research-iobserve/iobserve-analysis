@@ -308,20 +308,20 @@ public class TestModelBuilder {
 
         // Resource container specifications
         this.client1Specification.setActiveResourceType_ActiveResourceSpecification(this.client1Type);
-        // this.client1Specification.setMTTF(42);
-        // this.client1Specification.setMTTR(42);
+        this.client1Specification.setMTTF(42);
+        this.client1Specification.setMTTR(42);
 
         this.client2Specification.setActiveResourceType_ActiveResourceSpecification(this.client2Type);
-        // this.client2Specification.setMTTF(42);
-        // this.client2Specification.setMTTR(42);
+        this.client2Specification.setMTTF(42);
+        this.client2Specification.setMTTR(42);
 
         this.orderServerSpecification.setActiveResourceType_ActiveResourceSpecification(this.orderServerType);
-        // this.orderServerSpecification.setMTTF(42);
-        // this.orderServerSpecification.setMTTR(42);
+        this.orderServerSpecification.setMTTF(42);
+        this.orderServerSpecification.setMTTR(42);
 
         this.paymentServerSpecification.setActiveResourceType_ActiveResourceSpecification(this.paymentServerType);
-        // this.paymentServerSpecification.setMTTF(42);
-        // this.paymentServerSpecification.setMTTR(42);
+        this.paymentServerSpecification.setMTTF(42);
+        this.paymentServerSpecification.setMTTR(42);
 
         // Resource container types
         this.client1Type.setEntityName("MacBook");
@@ -338,9 +338,7 @@ public class TestModelBuilder {
 
         // Linking resource specification
         this.lan1Specification.setCommunicationLinkResourceType_CommunicationLinkResourceSpecification(this.lan1Type);
-        // this.lan1Specification.setFailureProbability(0.01);
-        // Warum werden scheinbar die Attribute von ProcessingResource/LinkingResourceSpecifications
-        // nicht gelesen???
+        this.lan1Specification.setFailureProbability(0.01);
 
         // Linking resource type
         this.lan1Type.setEntityName("Cat.7 LAN");
