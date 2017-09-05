@@ -43,7 +43,7 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
  *
  */
 public class RepositoryModelProviderTest implements IModelProviderTest {
-    private static final File GRAPH_DIR = new File("/Users/LarsBlumke/Desktop/testdb");
+    private static final File GRAPH_DIR = new File("./testdb");
     private static final Graph GRAPH = new GraphLoader(RepositoryModelProviderTest.GRAPH_DIR).getRepositoryModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
@@ -243,6 +243,11 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     }
 
     @AfterClass
+    /**
+     * Remove database directory.
+     * 
+     * @throws IOException
+     */
     public static void cleanUp() throws IOException {
         RepositoryModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(RepositoryModelProviderTest.GRAPH_DIR);

@@ -42,7 +42,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
  *
  */
 public class AllocationModelProviderTest implements IModelProviderTest {
-    private static final File GRAPH_DIR = new File("/Users/LarsBlumke/Desktop/testdb");
+    private static final File GRAPH_DIR = new File("./testdb");
     private static final Graph GRAPH = new GraphLoader(AllocationModelProviderTest.GRAPH_DIR).getAllocationModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
@@ -254,6 +254,11 @@ public class AllocationModelProviderTest implements IModelProviderTest {
     }
 
     @AfterClass
+    /**
+     * Remove database directory.
+     * 
+     * @throws IOException
+     */
     public static void cleanUp() throws IOException {
         AllocationModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(AllocationModelProviderTest.GRAPH_DIR);
