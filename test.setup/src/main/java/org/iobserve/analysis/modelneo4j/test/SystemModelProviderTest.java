@@ -43,7 +43,7 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class SystemModelProviderTest implements IModelProviderTest {
 
-    private static final File GRAPH_DIR = new File("/Users/LarsBlumke/Desktop/testdb");
+    private static final File GRAPH_DIR = new File("./testdb");
     private static final Graph GRAPH = new GraphLoader(SystemModelProviderTest.GRAPH_DIR).getSystemModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
@@ -198,7 +198,8 @@ public class SystemModelProviderTest implements IModelProviderTest {
         // Update the model by renaming and removing the business context
         writtenModel.setEntityName("MyVideoOnDemandService");
 
-        writtenModel.getAssemblyContexts__ComposedStructure().remove(testModelBuilder.getBusinessOrderAssemblyContext());
+        writtenModel.getAssemblyContexts__ComposedStructure()
+                .remove(testModelBuilder.getBusinessOrderAssemblyContext());
         writtenModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessQueryInputConnector());
         writtenModel.getConnectors__ComposedStructure().remove(testModelBuilder.getBusinessPayConnector());
 
@@ -282,6 +283,11 @@ public class SystemModelProviderTest implements IModelProviderTest {
     }
 
     @AfterClass
+    /**
+     * Remove database directory.
+     * 
+     * @throws IOException
+     */
     public static void cleanUp() throws IOException {
         SystemModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(SystemModelProviderTest.GRAPH_DIR);

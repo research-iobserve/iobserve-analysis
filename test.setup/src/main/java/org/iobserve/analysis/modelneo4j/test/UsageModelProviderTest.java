@@ -33,7 +33,6 @@ import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.Loop;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
-import org.palladiosimulator.pcm.usagemodel.Start;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
@@ -45,7 +44,7 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
  *
  */
 public class UsageModelProviderTest implements IModelProviderTest {
-    private static final File GRAPH_DIR = new File("/Users/LarsBlumke/Desktop/testdb");
+    private static final File GRAPH_DIR = new File("./testdb");
     private static final Graph GRAPH = new GraphLoader(UsageModelProviderTest.GRAPH_DIR).getUsageModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
@@ -206,10 +205,8 @@ public class UsageModelProviderTest implements IModelProviderTest {
         final UsageModel readModel;
         final UsageScenario writtenUsageScenarioGroup0 = testModelBuilder.getUsageScenarioGroup0();
         final ScenarioBehaviour writtenBuyBookScenarioBehaviour = testModelBuilder.getBuyBookScenarioBehaviour();
-        final Start writtenStartScenario = testModelBuilder.getStartScenario();
         final EntryLevelSystemCall writtenGetQueryCall = testModelBuilder.getGetQueryCall();
         final EntryLevelSystemCall writtenGetPriceCall = testModelBuilder.getGetPriceCall();
-        final EntryLevelSystemCall writtenWithdrawCall = testModelBuilder.getWithdrawCall();
 
         modelProvider.createComponent(writtenModel);
 
@@ -278,6 +275,11 @@ public class UsageModelProviderTest implements IModelProviderTest {
     }
 
     @AfterClass
+    /**
+     * Remove database directory.
+     * 
+     * @throws IOException
+     */
     public static void cleanUp() throws IOException {
         UsageModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(UsageModelProviderTest.GRAPH_DIR);

@@ -45,7 +45,7 @@ import org.palladiosimulator.pcm.resourcetype.ResourcetypeFactory;
  *
  */
 public class ResourceEnvironmentModelProviderTest implements IModelProviderTest {
-    private static final File GRAPH_DIR = new File("/Users/LarsBlumke/Desktop/testdb");
+    private static final File GRAPH_DIR = new File("./testdb");
     private static final Graph GRAPH = new GraphLoader(ResourceEnvironmentModelProviderTest.GRAPH_DIR)
             .getResourceEnvironmentModelGraph();
 
@@ -331,6 +331,11 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     }
 
     @AfterClass
+    /**
+     * Remove database directory.
+     * 
+     * @throws IOException
+     */
     public static void cleanUp() throws IOException {
         ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(ResourceEnvironmentModelProviderTest.GRAPH_DIR);
