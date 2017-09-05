@@ -95,8 +95,9 @@ public interface IModelProvider<T extends EObject> {
     /**
      * Deletes a specified component from the provider's model serialization. This method only
      * deletes a component and its containments but not the referenced data types which can result
-     * in unreferenced data type nodes in the graph. If data types shall not remain in the graph,
-     * use {@link #deleteComponentAndDatatypes(Class, String)} instead.
+     * in unreferenced data type nodes in the graph when they were not contained by the deleted
+     * component. If data types shall not remain in the graph, use
+     * {@link #deleteComponentAndDatatypes(Class, String)} instead.
      *
      * @param clazz
      *            Data type of component to be deleted
@@ -108,7 +109,7 @@ public interface IModelProvider<T extends EObject> {
     /**
      * Deletes a specified component from the provider's model serialization. This method also
      * deletes data types which are referenced by the deleted component and not referenced by any
-     * other component. If data types shall remain in the graph, use
+     * other component. If data types shall possibly remain in the graph, use
      * {@link #deleteComponent(Class, String)} or instead.
      *
      * @param clazz

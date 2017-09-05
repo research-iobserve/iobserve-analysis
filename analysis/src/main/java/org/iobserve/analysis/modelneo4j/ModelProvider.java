@@ -62,6 +62,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     private static final String ENTITY_NAME = "entityName";
     private static final String ID = "id";
     private static final String REF_NAME = "refName";
+    protected static final String REF_POS = "refPos";
     private static final String TYPE = "type";
 
     private static final String ACCESSIBLE = "accessible";
@@ -104,23 +105,24 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            The model type (only {@link Allocation}, {@link Repository},
      *            {@link ResourceEnvironment}, {@link System} or {@link UsageModel} are allowed)
      */
-    public void cloneNewGraphVersion(final Class<T> clazz) {
+    public Graph cloneNewGraphVersion(final Class<T> clazz) {
         final File baseDirectory = this.graph.getGraphDirectory().getParentFile().getParentFile();
         final GraphLoader graphLoader = new GraphLoader(baseDirectory);
 
         if (clazz.equals(Allocation.class)) {
-            graphLoader.cloneNewAllocationModelGraphVersion();
+            return graphLoader.cloneNewAllocationModelGraphVersion();
         } else if (clazz.equals(Repository.class)) {
-            graphLoader.cloneNewRepositoryModelGraphVersion();
+            return graphLoader.cloneNewRepositoryModelGraphVersion();
         } else if (clazz.equals(ResourceEnvironment.class)) {
-            graphLoader.cloneNewResourceEnvironmentModelGraphVersion();
+            return graphLoader.cloneNewResourceEnvironmentModelGraphVersion();
         } else if (clazz.equals(System.class)) {
-            graphLoader.cloneNewSystemModelGraphVersion();
+            return graphLoader.cloneNewSystemModelGraphVersion();
         } else if (clazz.equals(UsageModel.class)) {
-            graphLoader.cloneNewUsageModelGraphVersion();
+            return graphLoader.cloneNewUsageModelGraphVersion();
         } else {
             this.logger.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
                     + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
+            return null;
         }
     }
 
@@ -200,8 +202,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         Node node = null;
 
-        // java.lang.System.out.println("createNodes");
-
         // Check if node has already been created
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
@@ -209,8 +209,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         } else if (component instanceof PrimitiveDataType) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
                     ((PrimitiveDataType) component).getType().name());
-        } else if ((component instanceof UsageModel) || (component instanceof ResourceEnvironment)
-                || (component instanceof Allocation)) {
+        } else if ((component instanceof UsageModel) || (component instanceof ResourceEnvironment)) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                     .findNodes(Label.label(component.eClass().getName()));
             if (nodes.hasNext()) {
@@ -254,12 +253,16 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     // 0..* refs are represented as a list and 1 refs are represented directly
                     if (refReprensation instanceof EList<?>) {
 
-                        for (final Object o : (EList<?>) component.eGet(ref)) {
+                        final EList<?> refs = (EList<?>) component.eGet(ref);
+                        for (int i = 0; i < refs.size(); i++) {
+                            final Object o = refs.get(i);
                             final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
                                     objectsToCreatedNodes);
                             final Relationship rel = node.createRelationshipTo(refNode,
                                     ModelProviderUtil.getRelationshipType(ref, o));
                             rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                            rel.setProperty(ModelProvider.REF_POS, i);
+
                         }
                     } else {
                         if (refReprensation != null) {
@@ -268,6 +271,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                             final Relationship rel = node.createRelationshipTo(refNode,
                                     ModelProviderUtil.getRelationshipType(ref, refReprensation));
                             rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                            rel.setProperty(ModelProvider.REF_POS, 0);
+
                         }
                     }
                 }
@@ -412,10 +417,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
             component = ModelProviderUtil.instantiateEObject(label.name());
 
-            // Set Uri
-            final URI uri = URI.createURI(node.getProperty(ModelProvider.EMF_URI).toString());
-            ((BasicEObjectImpl) component).eSetProxyURI(uri);
-
             // Load attribute values from the node
             final Iterator<Map.Entry<String, Object>> i = node.getAllProperties().entrySet().iterator();
             while (i.hasNext()) {
@@ -437,7 +438,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             nodesToCreatedObjects.putIfAbsent(node, component);
 
             // Load related nodes representing referenced components
-            for (final Relationship rel : node.getRelationships(Direction.OUTGOING)) {
+            for (final Relationship rel : ModelProviderUtil
+                    .sortRelsByPosition(node.getRelationships(Direction.OUTGOING))) {
                 final Node endNode = rel.getEndNode();
                 final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
                 final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
@@ -450,6 +452,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                         final EObject endComponent = this.readComponent(endNode, containmentsAndDatatypes,
                                 nodesToCreatedObjects);
                         ((EList<EObject>) refReprensation).add(endComponent);
+
                     } else {
                         refReprensation = this.readComponent(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
                         component.eSet(ref, refReprensation);
@@ -641,10 +644,10 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.REFERENCES)) {
-                final Node endNode = inRel.getStartNode();
-                final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
+                final Node startNode = inRel.getStartNode();
+                final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
                         new HashSet<Node>());
-                final EObject component = this.readComponent(endNode, containmentsAndDatatypes,
+                final EObject component = this.readComponent(startNode, containmentsAndDatatypes,
                         new HashMap<Node, EObject>());
                 referencingComponents.add(component);
             }
@@ -676,8 +679,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
             }
-        } else if ((component instanceof Allocation) || (component instanceof ResourceEnvironment)
-                || (component instanceof UsageModel)) {
+        } else if ((component instanceof ResourceEnvironment) || (component instanceof UsageModel)) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                         .findNodes(Label.label(clazz.getSimpleName()));
@@ -715,9 +717,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             }
 
             // Remove possibly removed properties
-            final Iterator<Entry<String, Object>> i = nodeProperties.entrySet().iterator();
-            while (i.hasNext()) {
-                node.removeProperty(i.next().getKey());
+            final Iterator<Entry<String, Object>> iter = nodeProperties.entrySet().iterator();
+            while (iter.hasNext()) {
+                node.removeProperty(iter.next().getKey());
             }
 
             // Create a URI to enable proxy resolving
@@ -742,50 +744,57 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     // 0..* refs are represented as a list and 1 refs are represented directly
                     if (refReprensation instanceof EList<?>) {
 
-                        for (final Object o : (EList<?>) component.eGet(ref)) {
-                            // Find node matching o
-                            final Node endNode = ModelProviderUtil.findMatchingNode(((BasicEObjectImpl) o).eProxyURI(),
-                                    outRels);
+                        final EList<?> refs = (EList<?>) component.eGet(ref);
+                        for (int i = 0; i < refs.size(); i++) {
+                            final Object o = refs.get(i);
 
-                            if (endNode != null) {
-                                // Update already existing node
-                                this.updateNodes((EObject) o, endNode, containmentsAndDatatypes, updatedComponents);
-                            } else {
+                            // Find node matching o
+                            Node endNode = ModelProviderUtil
+                                    .findMatchingNode(ModelProviderUtil.getUriString((EObject) o), outRels);
+
+                            if (endNode == null) {
                                 // Create a non existing node
-                                final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
-                                        new HashMap<>());
-                                final Relationship rel = node.createRelationshipTo(refNode,
+                                endNode = this.createNodes((EObject) o, containmentsAndDatatypes, new HashMap<>());
+                                final Relationship rel = node.createRelationshipTo(endNode,
                                         ModelProviderUtil.getRelationshipType(ref, o));
                                 rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                                rel.setProperty(ModelProvider.REF_POS, i);
+
                             }
+
+                            this.updateNodes((EObject) o, endNode, containmentsAndDatatypes, updatedComponents);
                         }
                     } else {
                         if (refReprensation != null) {
                             // Find node matching refRepresentation
-                            final Node endNode = ModelProviderUtil
-                                    .findMatchingNode(((BasicEObjectImpl) refReprensation).eProxyURI(), outRels);
+                            Node endNode = ModelProviderUtil.findMatchingNode(
+                                    ModelProviderUtil.getUriString((EObject) refReprensation), outRels);
 
-                            if (endNode != null) {
-                                // Update already existing node
-                                this.updateNodes((EObject) refReprensation, endNode, containmentsAndDatatypes,
-                                        updatedComponents);
-                            } else {
+                            if (endNode == null) {
                                 // Create a non existing node
-                                final Node refNode = this.createNodes((EObject) refReprensation,
-                                        containmentsAndDatatypes, new HashMap<>());
-                                final Relationship rel = node.createRelationshipTo(refNode,
+                                endNode = this.createNodes((EObject) refReprensation, containmentsAndDatatypes,
+                                        new HashMap<>());
+                                final Relationship rel = node.createRelationshipTo(endNode,
                                         ModelProviderUtil.getRelationshipType(ref, refReprensation));
                                 rel.setProperty(ModelProvider.REF_NAME, ref.getName());
+                                rel.setProperty(ModelProvider.REF_POS, 0);
                             }
+
+                            this.updateNodes((EObject) refReprensation, endNode, containmentsAndDatatypes,
+                                    updatedComponents);
                         }
                     }
                 }
 
                 // Delete nodes that are not referenced anymore
                 for (final Relationship r : outRels) {
-                    final Node endNode = r.getEndNode();
-                    r.delete();
-                    this.deleteComponent(endNode);
+                    try {
+                        final Node endNode = r.getEndNode();
+                        r.delete();
+                        this.deleteComponentAndDatatypes(endNode);
+                    } catch (final NotFoundException e) {
+                        // relation has already been deleted
+                    }
                 }
             }
         }
@@ -916,7 +925,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         boolean reallyDelete = reallyDeletePred;
 
         // Check if there are incoming IS_TYPE relations from outside
-        for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
+        for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.CONTAINS,
+                PcmRelationshipType.IS_TYPE)) {
             if (!rel.hasProperty(ModelProvider.ACCESSIBLE)) {
                 reallyDelete = false;
             }
