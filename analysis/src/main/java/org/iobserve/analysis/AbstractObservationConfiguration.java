@@ -17,6 +17,7 @@ package org.iobserve.analysis;
 
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
+import org.iobserve.analysis.filter.TAllocationFinished;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
@@ -29,6 +30,9 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.Configuration;
 
@@ -42,15 +46,14 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      * record switch filter. Is required to be global so we can cheat and get measurements from the
      * filter.
      */
+
     protected final RecordSwitch recordSwitch;
-
-    protected final TAllocation tAllocationSuccDeploy;
-
-    protected final TAllocationFinished tAllocationFinished;
 
     protected final TDeployment deployment;
 
-    protected final TDeployment deploymentSuccAllocation;
+    protected final TDeployment deploymentAfterAllocation;
+
+    protected final TAllocation tAllocationAfterDeploy;
 
     protected final TUndeployment undeployment;
 
@@ -65,10 +68,16 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            the repository model provider
      * @param resourceEnvironmentModelProvider
      *            the resource environment provider
+     * @param resourceEnvironmentModelGraphProvider
+     *            the resource environment graph provider
      * @param allocationModelProvider
      *            the allocation model provider
+     * @param allocationModelGraphProvider
+     *            the allocation model graph provider
      * @param systemModelProvider
-     *            the system model provider
+     *            the system model provide
+     * @param systemModelGraphProvider
+     *            the system model graph provider
      * @param varianceOfUserGroups
      *            variance of user groups, configuration for entry event filter
      * @param thinkTime
@@ -79,20 +88,24 @@ public abstract class AbstractObservationConfiguration extends Configuration {
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+            final AllocationModelProvider allocationModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
-        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
-        this.deployment = new TDeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
-        this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider);
-        this.tAllocationFinished = new TAllocationFinished();
-        this.deploymentSuccAllocation = new TDeployment(correspondenceModel, allocationModelProvider,
-                systemModelProvider, resourceEnvironmentModelProvider);
-        this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider, systemModelProvider,
-                resourceEnvironmentModelProvider);
+        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelGraphProvider);
+        final TAllocationFinished tAllocationFinished = new TAllocationFinished();
+        this.deployment = new TDeployment(correspondenceModel, allocationModelGraphProvider, systemModelGraphProvider,
+                resourceEnvironmentModelGraphProvider);
+        this.deploymentAfterAllocation = new TDeployment(correspondenceModel, allocationModelGraphProvider,
+                systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
+        this.tAllocationAfterDeploy = new TAllocation(resourceEnvironmentModelGraphProvider);
+        this.undeployment = new TUndeployment(correspondenceModel, allocationModelGraphProvider,
+                systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
 
         final TEntryCall tEntryCall = new TEntryCall();
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence(correspondenceModel);
@@ -108,12 +121,11 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
         this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
-        this.connectPorts(this.deployment.getDeploymentOutputPort(), this.tAllocationFinished.getDeploymentInputPort());
-        this.connectPorts(this.deployment.getAllocationOutputPort(), this.tAllocationSuccDeploy.getInputPort());
-        this.connectPorts(this.tAllocationSuccDeploy.getAllocationFinishedOutputPort(),
-                this.tAllocationFinished.getAllocationFinishedInputPort());
-        this.connectPorts(this.tAllocationFinished.getDeploymentOutputPort(),
-                this.deploymentSuccAllocation.getInputPort());
+        this.connectPorts(this.deployment.getDeploymentOutputPort(), tAllocationFinished.getDeploymentInputPort());
+        this.connectPorts(this.deployment.getAllocationOutputPort(), this.tAllocationAfterDeploy.getInputPort());
+        this.connectPorts(this.tAllocationAfterDeploy.getAllocationFinishedOutputPort(),
+                tAllocationFinished.getAllocationFinishedInputPort());
+        this.connectPorts(tAllocationFinished.getDeploymentOutputPort(), this.deploymentAfterAllocation.getInputPort());
         this.connectPorts(tEntryCall.getOutputPort(), tEntryCallSequence.getInputPort());
         this.connectPorts(tEntryCallSequence.getOutputPort(), tEntryEventSequence.getInputPort());
 

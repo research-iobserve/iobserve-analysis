@@ -25,7 +25,14 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.service.updater.VisualizationDeploymentStage;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
+import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
+import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  * @author Reiner Jung
@@ -56,7 +63,7 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      *            provider for the usage model
      * @param repositoryModelProvider
      *            provider for the repository model
-     * @param resourceEvnironmentModelProvider
+     * @param resourceEnvironmentModelProvider
      *            provider for the resource model
      * @param allocationModelProvider
      *            provider for the allocation model
@@ -70,19 +77,38 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final String systemId, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
             final RepositoryModelProvider repositoryModelProvider,
-            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider)
-            throws MalformedURLException {
+            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+            final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
+            final AllocationModelProvider allocationModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider,
+            final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
+            final SystemModelProvider systemModelProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider) throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
-                resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
+                resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider, allocationModelProvider,
+                allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload);
 
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
-        final VisualizationDeploymentStage visualizationDeploymentStage = new VisualizationDeploymentStage(url);
 
-        this.connectPorts(this.deploymentSuccAllocation.getDeploymentFinishedOutputPort(),
-                visualizationDeploymentStage.getInputPort());
+        final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(url,
+                systemId, resourceContainerModelGraphProvider, assemblyContextModelGraphProvider, correspondenceModel);
+        final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
+                systemId, resourceContainerModelGraphProvider);
+        final UndeploymentVisualizationStage undeploymentVisualizationStage = new UndeploymentVisualizationStage(url,
+                systemId, resourceContainerModelGraphProvider, assCtxSystemModelGraphProvider, systemModelGraphProvider,
+                correspondenceModel);
+
+        this.connectPorts(this.deploymentAfterAllocation.getDeploymentFinishedOutputPort(),
+                deploymentVisualizationStage.getInputPort());
+        this.connectPorts(this.tAllocationAfterDeploy.getAllocationOutputPort(),
+                allocationVisualizationStage.getInputPort());
+        this.connectPorts(this.undeployment.getVisualizationOutputPort(),
+                undeploymentVisualizationStage.getInputPort());
+
     }
 
 }

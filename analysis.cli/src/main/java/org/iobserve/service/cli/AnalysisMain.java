@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -35,9 +34,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
-
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
 
 /**
  * Main class for starting the iObserve application.
@@ -123,16 +119,19 @@ public final class AnalysisMain {
             final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
             final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
 
-            final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
-                    correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
-                    allocationModelProvider, systemModelProvider, this.varianceOfUserGroups, this.thinkTime,
-                    this.closedWorkload);
+            // final Configuration configuration = new
+            // FileObservationConfiguration(monitoringDataDirectories,
+            // correspondenceModel, usageModelProvider, repositoryModelProvider,
+            // resourceEvnironmentModelProvider,
+            // allocationModelProvider, systemModelProvider, this.varianceOfUserGroups,
+            // this.thinkTime,
+            // this.closedWorkload);
 
-            System.out.println("Analysis configuration");
-            final Execution<Configuration> analysis = new Execution<>(configuration);
-            System.out.println("Analysis start");
-            analysis.executeBlocking();
-            System.out.println("Anaylsis complete");
+            // System.out.println("Analysis configuration");
+            // final Execution<Configuration> analysis = new Execution<>(configuration);
+            // System.out.println("Analysis start");
+            // analysis.executeBlocking();
+            // System.out.println("Anaylsis complete");
             ExecutionTimeLogger.getInstance().exportAsCsv();
         }
     }

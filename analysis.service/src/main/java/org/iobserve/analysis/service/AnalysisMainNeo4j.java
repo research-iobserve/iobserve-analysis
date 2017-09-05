@@ -29,7 +29,10 @@ import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.OperationInterface;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import com.beust.jcommander.JCommander;
@@ -132,15 +135,10 @@ public final class AnalysisMainNeo4j {
                 final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
                 final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
                 final RepositoryModelProvider repositoryModelProvider = modelProvider.getRepositoryModelProvider();
-                final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider
+                final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider = modelProvider
                         .getResourceEnvironmentModelProvider();
                 final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
                 final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
-
-                final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
-                        outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
-                        correspondenceModel, usageModelProvider, repositoryModelProvider,
-                        resourceEvnironmentModelProvider, allocationModelProvider, systemModelProvider);
 
                 /** Neo4j database ************************************************************/
                 // Create a graph loader to receive the different neo4j graphs for each model
@@ -157,7 +155,7 @@ public final class AnalysisMainNeo4j {
                         .initializeRepositoryModelGraph(repositoryModelProvider.getModel());
                 System.out.println("Initialized repository model graph");
                 Graph resourceEnvironmentModelGraph = graphLoader
-                        .initializeResourceEnvironmentModelGraph(resourceEvnironmentModelProvider.getModel());
+                        .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
                 System.out.println("Initialized resource environment model graph");
                 Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
                 System.out.println("Initialized system model graph");
@@ -187,7 +185,29 @@ public final class AnalysisMainNeo4j {
                 // Or you can clone the current graph to a new version
                 new ModelProvider<ResourceEnvironment>(resourceEnvironmentModelGraph)
                         .cloneNewGraphVersion(ResourceEnvironment.class);
+
+                // new graphModelProvider
+                final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
+                        resourceEnvironmentModelGraph);
+                final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
+                        resourceEnvironmentModelGraph);
+                final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(
+                        allocationModelGraph);
+                final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider = new ModelProvider<>(
+                        allocationModelGraph);
+                final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
+                        systemModelGraph);
+                final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(
+                        systemModelGraph);
                 /******************************************************************************/
+
+                final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
+                        outputPort, this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
+                        correspondenceModel, usageModelProvider, repositoryModelProvider,
+                        resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider,
+                        resourceContainerModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
+                        assemblyContextModelGraphProvider, systemModelProvider, systemModelGraphProvider,
+                        assCtxSystemModelGraphProvider);
 
                 System.out.println("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);
