@@ -209,8 +209,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         } else if (component instanceof PrimitiveDataType) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
                     ((PrimitiveDataType) component).getType().name());
-        } else if ((component instanceof UsageModel) || (component instanceof ResourceEnvironment)
-                || (component instanceof Allocation)) {
+        } else if ((component instanceof UsageModel) || (component instanceof ResourceEnvironment)) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                     .findNodes(Label.label(component.eClass().getName()));
             if (nodes.hasNext()) {
@@ -750,41 +749,39 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                             final Object o = refs.get(i);
 
                             // Find node matching o
-                            final Node endNode = ModelProviderUtil
+                            Node endNode = ModelProviderUtil
                                     .findMatchingNode(ModelProviderUtil.getUriString((EObject) o), outRels);
 
-                            if (endNode != null) {
-                                // Update already existing node
-                                this.updateNodes((EObject) o, endNode, containmentsAndDatatypes, updatedComponents);
-                            } else {
+                            if (endNode == null) {
                                 // Create a non existing node
-                                final Node refNode = this.createNodes((EObject) o, containmentsAndDatatypes,
-                                        new HashMap<>());
-                                final Relationship rel = node.createRelationshipTo(refNode,
+                                endNode = this.createNodes((EObject) o, containmentsAndDatatypes, new HashMap<>());
+                                final Relationship rel = node.createRelationshipTo(endNode,
                                         ModelProviderUtil.getRelationshipType(ref, o));
                                 rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                                 rel.setProperty(ModelProvider.REF_POS, i);
+
                             }
+
+                            this.updateNodes((EObject) o, endNode, containmentsAndDatatypes, updatedComponents);
                         }
                     } else {
                         if (refReprensation != null) {
                             // Find node matching refRepresentation
-                            final Node endNode = ModelProviderUtil.findMatchingNode(
+                            Node endNode = ModelProviderUtil.findMatchingNode(
                                     ModelProviderUtil.getUriString((EObject) refReprensation), outRels);
 
-                            if (endNode != null) {
-                                // Update already existing node
-                                this.updateNodes((EObject) refReprensation, endNode, containmentsAndDatatypes,
-                                        updatedComponents);
-                            } else {
+                            if (endNode == null) {
                                 // Create a non existing node
-                                final Node refNode = this.createNodes((EObject) refReprensation,
-                                        containmentsAndDatatypes, new HashMap<>());
-                                final Relationship rel = node.createRelationshipTo(refNode,
+                                endNode = this.createNodes((EObject) refReprensation, containmentsAndDatatypes,
+                                        new HashMap<>());
+                                final Relationship rel = node.createRelationshipTo(endNode,
                                         ModelProviderUtil.getRelationshipType(ref, refReprensation));
                                 rel.setProperty(ModelProvider.REF_NAME, ref.getName());
                                 rel.setProperty(ModelProvider.REF_POS, 0);
                             }
+
+                            this.updateNodes((EObject) refReprensation, endNode, containmentsAndDatatypes,
+                                    updatedComponents);
                         }
                     }
                 }
@@ -794,7 +791,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     try {
                         final Node endNode = r.getEndNode();
                         r.delete();
-                        this.deleteComponent(endNode);
+                        this.deleteComponentAndDatatypes(endNode);
                     } catch (final NotFoundException e) {
                         // relation has already been deleted
                     }
@@ -928,7 +925,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         boolean reallyDelete = reallyDeletePred;
 
         // Check if there are incoming IS_TYPE relations from outside
-        for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.IS_TYPE)) {
+        for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.CONTAINS,
+                PcmRelationshipType.IS_TYPE)) {
             if (!rel.hasProperty(ModelProvider.ACCESSIBLE)) {
                 reallyDelete = false;
             }

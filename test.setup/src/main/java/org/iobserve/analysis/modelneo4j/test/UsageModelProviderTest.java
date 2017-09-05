@@ -23,6 +23,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -224,18 +225,12 @@ public class UsageModelProviderTest implements IModelProviderTest {
         writtenBuyBookScenarioBehaviour.getActions_ScenarioBehaviour().remove(writtenGetQueryCall);
         writtenBuyBookScenarioBehaviour.getActions_ScenarioBehaviour().remove(writtenGetPriceCall);
         writtenBuyBookScenarioBehaviour.getActions_ScenarioBehaviour().add(shoppingLoop);
-        writtenStartScenario.setSuccessor(shoppingLoop);
-        writtenGetQueryCall.setPredecessor(shoppingLoop);
         writtenGetQueryCall.setScenarioBehaviour_AbstractUserAction(chooseBookBehaviour);
-        writtenGetPriceCall.setSuccessor(shoppingLoop);
         writtenGetPriceCall.setScenarioBehaviour_AbstractUserAction(chooseBookBehaviour);
-        writtenWithdrawCall.setPredecessor(shoppingLoop);
 
         shoppingLoop.setEntityName("Shopping loop");
         shoppingLoop.setScenarioBehaviour_AbstractUserAction(writtenBuyBookScenarioBehaviour);
         shoppingLoop.setBodyBehaviour_Loop(chooseBookBehaviour);
-        shoppingLoop.setPredecessor(writtenStartScenario);
-        shoppingLoop.setSuccessor(writtenWithdrawCall);
         shoppingLoop.setLoopIteration_Loop(loopIteration);
 
         loopIteration.setLoop_LoopIteration(shoppingLoop);
@@ -243,7 +238,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
 
         modelProvider.updateComponent(UsageModel.class, writtenModel);
 
-        readModel = modelProvider.readRootComponent(UsageModel.class);
+        readModel = modelProvider.readOnlyRootComponent(UsageModel.class);
 
         Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }
@@ -282,7 +277,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
-    // @AfterClass
+    @AfterClass
     public static void cleanUp() throws IOException {
         UsageModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(UsageModelProviderTest.GRAPH_DIR);
