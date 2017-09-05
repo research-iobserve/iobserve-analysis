@@ -152,7 +152,7 @@ public class TestModelBuilder {
     private final UsageModel usageModel = UsagemodelFactory.eINSTANCE.createUsageModel();
     private final UsageScenario usageScenarioGroup0 = UsagemodelFactory.eINSTANCE.createUsageScenario();
 
-    private final ScenarioBehaviour scenarioBehavior = UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
+    private final ScenarioBehaviour buyBookScenarioBehaviour = UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
     private final Start startScenario = UsagemodelFactory.eINSTANCE.createStart();
     private final EntryLevelSystemCall getQueryCall = UsagemodelFactory.eINSTANCE.createEntryLevelSystemCall();
     private final EntryLevelSystemCall getPriceCall = UsagemodelFactory.eINSTANCE.createEntryLevelSystemCall();
@@ -417,46 +417,46 @@ public class TestModelBuilder {
 
         // Usage scenario
         this.usageScenarioGroup0.setEntityName("Usage scenario of user group 0");
-        this.usageScenarioGroup0.setScenarioBehaviour_UsageScenario(this.scenarioBehavior);
+        this.usageScenarioGroup0.setScenarioBehaviour_UsageScenario(this.buyBookScenarioBehaviour);
         this.usageScenarioGroup0.setWorkload_UsageScenario(this.closedWorkload);
 
         // Scenario behavior
-        this.scenarioBehavior.setEntityName("Buy a book");
-        this.scenarioBehavior.setUsageScenario_SenarioBehaviour(this.usageScenarioGroup0);
-        this.scenarioBehavior.getActions_ScenarioBehaviour().add(this.startScenario);
-        this.scenarioBehavior.getActions_ScenarioBehaviour().add(this.getQueryCall);
-        this.scenarioBehavior.getActions_ScenarioBehaviour().add(this.getPriceCall);
-        this.scenarioBehavior.getActions_ScenarioBehaviour().add(this.withdrawCall);
-        this.scenarioBehavior.getActions_ScenarioBehaviour().add(this.stopScenario);
+        this.buyBookScenarioBehaviour.setEntityName("Buy a book");
+        this.buyBookScenarioBehaviour.setUsageScenario_SenarioBehaviour(this.usageScenarioGroup0);
+        this.buyBookScenarioBehaviour.getActions_ScenarioBehaviour().add(this.startScenario);
+        this.buyBookScenarioBehaviour.getActions_ScenarioBehaviour().add(this.getQueryCall);
+        this.buyBookScenarioBehaviour.getActions_ScenarioBehaviour().add(this.getPriceCall);
+        this.buyBookScenarioBehaviour.getActions_ScenarioBehaviour().add(this.withdrawCall);
+        this.buyBookScenarioBehaviour.getActions_ScenarioBehaviour().add(this.stopScenario);
 
         // Start, stop and entry level system calls
         this.startScenario.setEntityName("Start");
-        this.startScenario.setScenarioBehaviour_AbstractUserAction(this.scenarioBehavior);
+        this.startScenario.setScenarioBehaviour_AbstractUserAction(this.buyBookScenarioBehaviour);
         this.startScenario.setSuccessor(this.getQueryCall);
 
         this.getQueryCall.setEntityName("getQueryCall");
-        this.getQueryCall.setScenarioBehaviour_AbstractUserAction(this.scenarioBehavior);
+        this.getQueryCall.setScenarioBehaviour_AbstractUserAction(this.buyBookScenarioBehaviour);
         this.getQueryCall.setOperationSignature__EntryLevelSystemCall(this.getQuerySignature);
         this.getQueryCall.setProvidedRole_EntryLevelSystemCall(this.providedInputOperation);
         this.getQueryCall.setPredecessor(this.startScenario);
         this.getQueryCall.setSuccessor(this.getPriceCall);
 
         this.getPriceCall.setEntityName("getPriceCall");
-        this.getPriceCall.setScenarioBehaviour_AbstractUserAction(this.scenarioBehavior);
+        this.getPriceCall.setScenarioBehaviour_AbstractUserAction(this.buyBookScenarioBehaviour);
         this.getPriceCall.setOperationSignature__EntryLevelSystemCall(this.getPriceSignature);
         this.getPriceCall.setProvidedRole_EntryLevelSystemCall(this.providedSearchOperation);
         this.getPriceCall.setPredecessor(this.getQueryCall);
         this.getPriceCall.setSuccessor(this.withdrawCall);
 
         this.withdrawCall.setEntityName("withdrawCall");
-        this.withdrawCall.setScenarioBehaviour_AbstractUserAction(this.scenarioBehavior);
+        this.withdrawCall.setScenarioBehaviour_AbstractUserAction(this.buyBookScenarioBehaviour);
         this.withdrawCall.setOperationSignature__EntryLevelSystemCall(this.withdrawSignature);
         this.withdrawCall.setProvidedRole_EntryLevelSystemCall(this.providedPayOperation);
         this.withdrawCall.setPredecessor(this.getPriceCall);
         this.withdrawCall.setSuccessor(this.stopScenario);
 
         this.stopScenario.setEntityName("stopScenario");
-        this.stopScenario.setScenarioBehaviour_AbstractUserAction(this.scenarioBehavior);
+        this.stopScenario.setScenarioBehaviour_AbstractUserAction(this.buyBookScenarioBehaviour);
         this.stopScenario.setPredecessor(this.withdrawCall);
 
         // Closed workload
@@ -681,8 +681,8 @@ public class TestModelBuilder {
         return this.usageScenarioGroup0;
     }
 
-    public ScenarioBehaviour getScenarioBehavior() {
-        return this.scenarioBehavior;
+    public ScenarioBehaviour getBuyBookScenarioBehaviour() {
+        return this.buyBookScenarioBehaviour;
     }
 
     public Start getStartScenario() {

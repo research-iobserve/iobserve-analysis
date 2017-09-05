@@ -23,13 +23,19 @@ import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.io.fs.FileUtils;
+import org.palladiosimulator.pcm.core.CoreFactory;
+import org.palladiosimulator.pcm.core.PCMRandomVariable;
+import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
+import org.palladiosimulator.pcm.usagemodel.Loop;
+import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
+import org.palladiosimulator.pcm.usagemodel.Start;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
+import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 
 /**
  * Test cases for the model provider using an usage model.
@@ -184,7 +190,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
 
         // Only the scenario behavior and the closed workload reference the usage scenario
         for (final EObject readReferencingComponent : readReferencingComponents) {
-            Assert.assertTrue(this.equalityHelper.equals(testModelBuilder.getScenarioBehavior(),
+            Assert.assertTrue(this.equalityHelper.equals(testModelBuilder.getBuyBookScenarioBehaviour(),
                     readReferencingComponent)
                     || this.equalityHelper.equals(testModelBuilder.getClosedWorkload(), readReferencingComponent));
         }
@@ -193,7 +199,53 @@ public class UsageModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.GRAPH);
+        final TestModelBuilder testModelBuilder = new TestModelBuilder();
+        final UsageModel writtenModel = testModelBuilder.getUsageModel();
+        final UsageModel readModel;
+        final UsageScenario writtenUsageScenarioGroup0 = testModelBuilder.getUsageScenarioGroup0();
+        final ScenarioBehaviour writtenBuyBookScenarioBehaviour = testModelBuilder.getBuyBookScenarioBehaviour();
+        final Start writtenStartScenario = testModelBuilder.getStartScenario();
+        final EntryLevelSystemCall writtenGetQueryCall = testModelBuilder.getGetQueryCall();
+        final EntryLevelSystemCall writtenGetPriceCall = testModelBuilder.getGetPriceCall();
+        final EntryLevelSystemCall writtenWithdrawCall = testModelBuilder.getWithdrawCall();
 
+        modelProvider.createComponent(writtenModel);
+
+        // Update the model by adding a loop for choosing several books
+        final Loop shoppingLoop = UsagemodelFactory.eINSTANCE.createLoop();
+        final PCMRandomVariable loopIteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
+        final ScenarioBehaviour chooseBookBehaviour = UsagemodelFactory.eINSTANCE.createScenarioBehaviour();
+        chooseBookBehaviour.setEntityName("Choose a book");
+        chooseBookBehaviour.getActions_ScenarioBehaviour().add(writtenGetQueryCall);
+        chooseBookBehaviour.getActions_ScenarioBehaviour().add(writtenGetPriceCall);
+
+        writtenUsageScenarioGroup0.setEntityName("Updated " + writtenUsageScenarioGroup0.getEntityName());
+        writtenBuyBookScenarioBehaviour.getActions_ScenarioBehaviour().remove(writtenGetQueryCall);
+        writtenBuyBookScenarioBehaviour.getActions_ScenarioBehaviour().remove(writtenGetPriceCall);
+        writtenBuyBookScenarioBehaviour.getActions_ScenarioBehaviour().add(shoppingLoop);
+        writtenStartScenario.setSuccessor(shoppingLoop);
+        writtenGetQueryCall.setPredecessor(shoppingLoop);
+        writtenGetQueryCall.setScenarioBehaviour_AbstractUserAction(chooseBookBehaviour);
+        writtenGetPriceCall.setSuccessor(shoppingLoop);
+        writtenGetPriceCall.setScenarioBehaviour_AbstractUserAction(chooseBookBehaviour);
+        writtenWithdrawCall.setPredecessor(shoppingLoop);
+
+        shoppingLoop.setEntityName("Shopping loop");
+        shoppingLoop.setScenarioBehaviour_AbstractUserAction(writtenBuyBookScenarioBehaviour);
+        shoppingLoop.setBodyBehaviour_Loop(chooseBookBehaviour);
+        shoppingLoop.setPredecessor(writtenStartScenario);
+        shoppingLoop.setSuccessor(writtenWithdrawCall);
+        shoppingLoop.setLoopIteration_Loop(loopIteration);
+
+        loopIteration.setLoop_LoopIteration(shoppingLoop);
+        loopIteration.setSpecification("2");
+
+        modelProvider.updateComponent(UsageModel.class, writtenModel);
+
+        readModel = modelProvider.readRootComponent(UsageModel.class);
+
+        Assert.assertTrue(this.equalityHelper.equals(writtenModel, readModel));
     }
 
     @Override
@@ -230,7 +282,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
-    @AfterClass
+    // @AfterClass
     public static void cleanUp() throws IOException {
         UsageModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(UsageModelProviderTest.GRAPH_DIR);
