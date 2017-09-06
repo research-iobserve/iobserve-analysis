@@ -313,7 +313,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                     new HashSet<Node>());
-            component = this.readComponent(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
+            component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             tx.success();
         }
 
@@ -357,8 +357,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 final Node node = nodesIter.next();
                 final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                         new HashSet<Node>());
-                final EObject component = this.readComponent(node, containmentsAndDatatypes,
-                        new HashMap<Node, EObject>());
+                final EObject component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 nodes.add((T) component);
 
             }
@@ -408,7 +407,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @return The root
      */
     @SuppressWarnings("unchecked")
-    private EObject readComponent(final Node node, final HashSet<Node> containmentsAndDatatypes,
+    private EObject readNodes(final Node node, final HashSet<Node> containmentsAndDatatypes,
             final HashMap<Node, EObject> nodesToCreatedObjects) {
         EObject component;
 
@@ -449,12 +448,12 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 if (containmentsAndDatatypes.contains(endNode)) {
 
                     if (refReprensation instanceof EList<?>) {
-                        final EObject endComponent = this.readComponent(endNode, containmentsAndDatatypes,
+                        final EObject endComponent = this.readNodes(endNode, containmentsAndDatatypes,
                                 nodesToCreatedObjects);
                         ((EList<EObject>) refReprensation).add(endComponent);
 
                     } else {
-                        refReprensation = this.readComponent(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
+                        refReprensation = this.readNodes(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
                         component.eSet(ref, refReprensation);
                     }
 
@@ -554,7 +553,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     final Node node = nodes.next();
                     final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                             new HashSet<Node>());
-                    component = this.readComponent(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
+                    component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 }
             } else {
                 this.logger.warn("Passed type of readRootComponent(final Class<T> clazz)"
@@ -604,7 +603,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 final Node endNode = inRels.next().getStartNode();
                 final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
                         new HashSet<Node>());
-                component = this.readComponent(endNode, containmentsAndDatatypes, new HashMap<Node, EObject>());
+                component = this.readNodes(endNode, containmentsAndDatatypes, new HashMap<Node, EObject>());
             }
 
             tx.success();
@@ -647,7 +646,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 final Node startNode = inRel.getStartNode();
                 final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
                         new HashSet<Node>());
-                final EObject component = this.readComponent(startNode, containmentsAndDatatypes,
+                final EObject component = this.readNodes(startNode, containmentsAndDatatypes,
                         new HashMap<Node, EObject>());
                 referencingComponents.add(component);
             }
@@ -791,7 +790,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     try {
                         final Node endNode = r.getEndNode();
                         r.delete();
-                        this.deleteComponentAndDatatypes(endNode);
+                        this.deleteComponentAndDatatypeNodes(endNode);
                     } catch (final NotFoundException e) {
                         // relation has already been deleted
                     }
@@ -818,7 +817,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             if (node != null) {
-                this.deleteComponent(node);
+                this.deleteComponentNodes(node);
             }
             tx.success();
         }
@@ -834,10 +833,10 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @param node
      *            The node to start with
      */
-    private void deleteComponent(final Node node) {
+    private void deleteComponentNodes(final Node node) {
 
         for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS)) {
-            this.deleteComponent(rel.getEndNode());
+            this.deleteComponentNodes(rel.getEndNode());
         }
 
         for (final Relationship rel : node.getRelationships()) {
@@ -863,7 +862,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
-            this.deleteComponentAndDatatypes(node);
+            this.deleteComponentAndDatatypeNodes(node);
             tx.success();
         }
 
@@ -878,7 +877,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @param node
      *            The node to start with
      */
-    private void deleteComponentAndDatatypes(final Node node) {
+    private void deleteComponentAndDatatypeNodes(final Node node) {
         this.markAccessibleNodes(node);
         this.markDeletableNodes(node, true);
         this.deleteMarkedNodes(node);
