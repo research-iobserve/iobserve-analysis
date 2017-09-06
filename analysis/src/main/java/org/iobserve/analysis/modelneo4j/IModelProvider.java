@@ -110,13 +110,16 @@ public interface IModelProvider<T extends EObject> {
      * Deletes a specified component from the provider's model serialization. This method also
      * deletes data types which are referenced by the deleted component and not referenced by any
      * other component. If data types shall possibly remain in the graph, use
-     * {@link #deleteComponent(Class, String)} or instead.
+     * {@link #deleteComponent(Class, String)} instead.
      *
      * @param clazz
      *            Data type of component to be deleted
      * @param id
      *            Id of component to be deleted
+     * @param forceDelete
+     *            Force method to delete the specified component even if it is referenced as a data
+     *            type or as a contained object
      */
-    void deleteComponentAndDatatypes(Class<T> clazz, String id);
+    void deleteComponentAndDatatypes(Class<T> clazz, String id, boolean forceDelete);
 
 }
