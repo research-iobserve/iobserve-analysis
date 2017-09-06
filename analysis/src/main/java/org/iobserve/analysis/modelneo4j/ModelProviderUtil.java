@@ -15,15 +15,17 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.neo4j.graphdb.Label;
 import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.NotFoundException;
 import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
@@ -91,16 +93,20 @@ public class ModelProviderUtil {
      *            The relationships to possibly matching nodes
      * @return The node representing the component or null if there is none
      */
-    public static Node findMatchingNode(final URI uri, final List<Relationship> rels) {
+    public static Node findMatchingNode(final String uri, final List<Relationship> rels) {
 
         if (uri != null) {
             for (final Relationship r : rels) {
                 final Node node = r.getEndNode();
-                final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
+                try {
+                    final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
 
-                if (uri.toString().equals(nodeUri)) {
-                    rels.remove(r);
-                    return node;
+                    if (uri.equals(nodeUri)) {
+                        rels.remove(r);
+                        return node;
+                    }
+                } catch (final NotFoundException e) {
+                    // node as already been deleted
                 }
             }
         }
@@ -223,6 +229,22 @@ public class ModelProviderUtil {
 
         if (clazz == String.class) {
             return value;
+        } else if (clazz == boolean.class) {
+            return Boolean.parseBoolean(value);
+        } else if (clazz == char.class) {
+            return value.charAt(0);
+        } else if (clazz == byte.class) {
+            return Byte.parseByte(value);
+        } else if (clazz == short.class) {
+            return Short.parseShort(value);
+        } else if (clazz == int.class) {
+            return Integer.parseInt(value);
+        } else if (clazz == long.class) {
+            return Long.parseLong(value);
+        } else if (clazz == float.class) {
+            return Float.parseFloat(value);
+        } else if (clazz == double.class) {
+            return Double.parseDouble(value);
         } else if (clazz == ParameterModifier.class) {
             if (value.equals(ParameterModifier.NONE.toString())) {
                 return ParameterModifier.NONE;
@@ -343,4 +365,23 @@ public class ModelProviderUtil {
         return null;
     }
 
+    /**
+     * Sorts an Iterable of relationships by their position properties.
+     *
+     * @param relationships
+     *            The relationships to be sorted
+     * @return The sorted relationships
+     */
+    public static Iterable<Relationship> sortRelsByPosition(final Iterable<Relationship> relationships) {
+        if (relationships == null) {
+            return Collections.emptyList();
+        }
+
+        final List<Relationship> sortedRels = new ArrayList<>();
+        relationships.forEach(sortedRels::add);
+
+        Collections.sort(sortedRels, new RelationshipComparator());
+
+        return sortedRels;
+    }
 }
