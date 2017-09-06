@@ -162,6 +162,9 @@ public class TestModelBuilder {
     private final ClosedWorkload closedWorkload = UsagemodelFactory.eINSTANCE.createClosedWorkload();
     private final PCMRandomVariable thinkTime = CoreFactory.eINSTANCE.createPCMRandomVariable();
 
+    /**
+     * Creates a new TestModelBuilder and initializes the test models.
+     */
     public TestModelBuilder() {
         this.createReposiory();
         this.createSystem();

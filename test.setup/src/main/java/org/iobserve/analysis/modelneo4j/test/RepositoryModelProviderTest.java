@@ -242,12 +242,13 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
-    @AfterClass
     /**
      * Remove database directory.
-     * 
+     *
      * @throws IOException
+     *             When an error occurs while deleting
      */
+    @AfterClass
     public static void cleanUp() throws IOException {
         RepositoryModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(RepositoryModelProviderTest.GRAPH_DIR);

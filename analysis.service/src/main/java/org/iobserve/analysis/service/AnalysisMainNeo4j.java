@@ -45,11 +45,13 @@ import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
 /**
- * Main class for starting the iObserve application.
+ * Main class for starting the iObserve application. This class is mainly meant as an example of the
+ * set up of the neo4j model providers.
  *
  * @author Reiner Jung
  * @author Robert Heinrich
  * @author Alessandro Giusa
+ * @author Lars Bluemke
  */
 public final class AnalysisMainNeo4j {
 
@@ -159,6 +161,7 @@ public final class AnalysisMainNeo4j {
                 System.out.println("Initialized resource environment model graph");
                 Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
                 System.out.println("Initialized system model graph");
+                @SuppressWarnings("unused")
                 Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
                 System.out.println("Initialized usage model graph");
 

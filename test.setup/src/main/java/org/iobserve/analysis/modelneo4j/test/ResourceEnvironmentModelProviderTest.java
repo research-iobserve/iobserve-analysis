@@ -330,12 +330,13 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
-    @AfterClass
     /**
      * Remove database directory.
-     * 
+     *
      * @throws IOException
+     *             When an error occurs while deleting
      */
+    @AfterClass
     public static void cleanUp() throws IOException {
         ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(ResourceEnvironmentModelProviderTest.GRAPH_DIR);
