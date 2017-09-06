@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.modelneo4j.test;
+package org.iobserve.analysis.modelneo4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,9 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.modelneo4j.Graph;
-import org.iobserve.analysis.modelneo4j.GraphLoader;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
