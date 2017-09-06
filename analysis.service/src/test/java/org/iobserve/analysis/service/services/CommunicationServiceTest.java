@@ -62,8 +62,8 @@ public class CommunicationServiceTest {
 
         this.testAssemblyConnector = CompositionFactory.eINSTANCE.createAssemblyConnector();
         this.testAssemblyConnector.setId("_test_id");
-        this.testAssemblyConnector.setProvidingAssemblyContext_AssemblyConnector(this.testSourceAssemblyContext);
-        this.testAssemblyConnector.setRequiringAssemblyContext_AssemblyConnector(this.testTargetAssemblyContext);
+        this.testAssemblyConnector.setProvidingAssemblyContext_AssemblyConnector(this.testTargetAssemblyContext);
+        this.testAssemblyConnector.setRequiringAssemblyContext_AssemblyConnector(this.testSourceAssemblyContext);
 
         this.systemId = "test_systemId";
         this.technology = "test_technology";
