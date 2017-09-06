@@ -289,10 +289,11 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
                     .deleteComponent(ResourceContainer.class, rc.getId());
         }
 
-        // Manually delete the root node as it has no id
+        // Manually delete the root node (as it has no id) and the resource type nodes (as they are
+        // no containments anywhere)
         try (Transaction tx = ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
-            ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService()
-                    .execute("MATCH (n:ResourceEnvironment) DELETE n");
+            ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().execute(
+                    "MATCH (m:ResourceEnvironment), (n:ProcessingResourceType), (o:CommunicationLinkResourceType) DELETE n, m, o");
             tx.success();
         }
 
@@ -312,19 +313,12 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
 
         for (final LinkingResource lr : writtenModel.getLinkingResources__ResourceEnvironment()) {
             new ModelProvider<LinkingResource>(ResourceEnvironmentModelProviderTest.GRAPH)
-                    .deleteComponent(LinkingResource.class, lr.getId());
+                    .deleteComponentAndDatatypes(LinkingResource.class, lr.getId(), true);
         }
 
         for (final ResourceContainer rc : writtenModel.getResourceContainer_ResourceEnvironment()) {
             new ModelProvider<ResourceContainer>(ResourceEnvironmentModelProviderTest.GRAPH)
-                    .deleteComponent(ResourceContainer.class, rc.getId());
-        }
-
-        // Manually delete the root node as it has no id
-        try (Transaction tx = ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
-            ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService()
-                    .execute("MATCH (n:ResourceEnvironment) DELETE n");
-            tx.success();
+                    .deleteComponentAndDatatypes(ResourceContainer.class, rc.getId(), true);
         }
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));

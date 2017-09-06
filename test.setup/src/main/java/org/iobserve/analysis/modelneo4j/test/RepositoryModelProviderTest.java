@@ -237,7 +237,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
-        modelProvider.deleteComponentAndDatatypes(Repository.class, writtenModel.getId());
+        modelProvider.deleteComponentAndDatatypes(Repository.class, writtenModel.getId(), true);
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }

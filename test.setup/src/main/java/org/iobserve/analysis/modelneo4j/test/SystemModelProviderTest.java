@@ -249,9 +249,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
         // Manually delete the proxy nodes from the repository model
         try (Transaction tx = SystemModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
             SystemModelProviderTest.GRAPH.getGraphDatabaseService()
-                    .execute("MATCH (n:OperationProvidedRole) DELETE (n)");
-            SystemModelProviderTest.GRAPH.getGraphDatabaseService()
-                    .execute("MATCH (n:OperationRequiredRole) DELETE (n)");
+                    .execute("MATCH (n:OperationProvidedRole), (m:OperationRequiredRole) DELETE n, m");
             tx.success();
         }
 
@@ -268,16 +266,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
-        modelProvider.deleteComponentAndDatatypes(System.class, writtenModel.getId());
-
-        // Manually delete the proxy nodes from the repository model
-        try (Transaction tx = SystemModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
-            SystemModelProviderTest.GRAPH.getGraphDatabaseService()
-                    .execute("MATCH (n:OperationProvidedRole) DELETE (n)");
-            SystemModelProviderTest.GRAPH.getGraphDatabaseService()
-                    .execute("MATCH (n:OperationRequiredRole) DELETE (n)");
-            tx.success();
-        }
+        modelProvider.deleteComponentAndDatatypes(System.class, writtenModel.getId(), true);
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }

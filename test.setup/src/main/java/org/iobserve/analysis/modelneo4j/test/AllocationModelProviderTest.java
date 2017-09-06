@@ -27,6 +27,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -235,6 +236,13 @@ public class AllocationModelProviderTest implements IModelProviderTest {
 
         modelProvider.deleteComponent(Allocation.class, writtenModel.getId());
 
+        // Manually delete proxy nodes (as they are no containments in this graph)
+        try (Transaction tx = AllocationModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
+            AllocationModelProviderTest.GRAPH.getGraphDatabaseService().execute(
+                    "MATCH (m:ResourceEnvironment), (n:System), (o:AssemblyContext), (p:ResourceContainer) DELETE n, m, o, p");
+            tx.success();
+        }
+
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
@@ -248,7 +256,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
-        modelProvider.deleteComponentAndDatatypes(Allocation.class, writtenModel.getId());
+        modelProvider.deleteComponentAndDatatypes(Allocation.class, writtenModel.getId(), true);
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
