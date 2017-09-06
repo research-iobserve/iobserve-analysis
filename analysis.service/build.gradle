@@ -15,6 +15,7 @@ dependencies {
 	compile "com.beust:jcommander:1.60"
 	compile 'javax.json:javax.json-api:1.0'
 	compile 'org.glassfish:javax.json:1.0.4'
+	compile group: 'commons-io', name: 'commons-io', version: '2.5'
 	
 	// https://mvnrepository.com/artifact/com.sun.net.httpserver/http
 testCompile group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
