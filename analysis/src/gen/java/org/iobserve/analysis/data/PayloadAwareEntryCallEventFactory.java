@@ -15,29 +15,30 @@
  ***************************************************************************/
 package org.iobserve.analysis.data;
 
-import java.nio.ByteBuffer;
 
 import kieker.common.record.factory.IRecordFactory;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
- * @author Christoph Dornieden
+ * @author Reiner Jung
  * 
- * @since 1.0
+ * @since 0.0.2
  */
-public final class ExtendedBeforeOperationEventFactory implements IRecordFactory<ExtendedBeforeOperationEvent> {
+public final class PayloadAwareEntryCallEventFactory implements IRecordFactory<PayloadAwareEntryCallEvent> {
+	
 	
 	@Override
-	public ExtendedBeforeOperationEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new ExtendedBeforeOperationEvent(buffer, stringRegistry);
+	public PayloadAwareEntryCallEvent create(final IValueDeserializer deserializer) {
+		return new PayloadAwareEntryCallEvent(deserializer);
 	}
 	
 	@Override
-	public ExtendedBeforeOperationEvent create(final Object[] values) {
-		return new ExtendedBeforeOperationEvent(values);
+	@Deprecated
+	public PayloadAwareEntryCallEvent create(final Object[] values) {
+		return new PayloadAwareEntryCallEvent(values);
 	}
 	
 	public int getRecordSizeInBytes() {
-		return ExtendedBeforeOperationEvent.SIZE;
+		return PayloadAwareEntryCallEvent.SIZE;
 	}
 }

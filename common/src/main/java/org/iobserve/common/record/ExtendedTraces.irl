@@ -17,13 +17,26 @@
 package org.iobserve.common.record
 
 
-@author 'Reiner Jung' @since "1.1"
+@author 'Reiner Jung' @since "0.0.2"
 template IUserInformation {
 	string informations
 }
 
-@author 'Christoph Dornieden' @since "1.1"
+@author 'Christoph Dornieden' @since "0.0.2"
 entity ExtendedAfterOperationEvent extends AfterOperationEvent : IUserInformation 
 
-@author 'Christoph Dornieden' @since "1.1"
+@author 'Christoph Dornieden' @since "0.0.2"
 entity ExtendedBeforeOperationEvent extends BeforeOperationEvent : IUserInformation
+
+@author 'Reiner Jung' @since "0.0.2"
+template IPayloadCharacterization {
+	string[] parameters
+	string[] values
+	int requestType
+}
+
+@author 'Reiner Jung' @since "0.0.2"
+entity EntryLevelBeforeOperationEvent extends BeforeOperationEvent : IPayloadCharacterization
+
+@author 'Reiner Jung' @since "0.0.2"
+entity EntryLevelBeforeOperationObjectEvent extends BeforeOperationObjectEvent : IPayloadCharacterization

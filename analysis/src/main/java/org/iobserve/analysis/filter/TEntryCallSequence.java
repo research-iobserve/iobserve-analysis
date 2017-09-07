@@ -44,7 +44,7 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
 
     /** threshold for user session elements until their are send to the next filter. */
     private static final int USER_SESSION_THRESHOLD = 0;
-    /** time until a session expires */
+    /** time until a session expires. */
     private static final long USER_SESSION_EXPIRATIONTIME = 360000000000L;
     /** map of sessions. */
     private final Map<String, UserSession> sessions = new HashMap<>();
@@ -61,8 +61,10 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
 
     @Override
     protected void execute(final ExtendedEntryCallEvent event) {
-        // add the event to the corresponding user session
-        // in case the user session is not yet available, create one
+        /**
+         * add the event to the corresponding user session in case the user session is not yet
+         * available, create one.
+         */
         final String userSessionId = UserSession.parseUserSessionId(event);
         UserSession userSession = this.sessions.get(userSessionId);
         if (userSession == null) {
@@ -71,8 +73,10 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
         }
         userSession.add(event, true);
 
-        // collect all user sessions which have more elements as a defined threshold and send them
-        // to the next filter
+        /**
+         * collect all user sessions which have more elements as a defined threshold and send them
+         * to the next filter.
+         */
         final List<UserSession> listToSend = this.sessions.values().stream()
                 .filter(session -> session.size() > TEntryCallSequence.USER_SESSION_THRESHOLD)
                 .collect(Collectors.toList());
@@ -80,15 +84,14 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
             this.tEntryEventSequenceOutputPort.send(new EntryCallSequenceModel(listToSend));
         }
 
-        // check for expired sessions and send them to the
+        // TODO check for expired sessions and send them to the next filter
         // TODO Is this the right place for that?
         // this.removeExpiredSessions();
-
     }
 
     /**
      * removes all expired sessions from the filter and sends them to
-     * tBehaviorModelPreperationOutputPort
+     * tBehaviorModelPreperationOutputPort.
      */
     private void removeExpiredSessions() {
         final long timeNow = System.currentTimeMillis() * 1000000;
@@ -99,7 +102,7 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
             final UserSession session = this.sessions.get(sessionId);
             final long exitTime = session.getExitTime();
 
-            final boolean isExpired = exitTime + TEntryCallSequence.USER_SESSION_EXPIRATIONTIME < timeNow;
+            final boolean isExpired = (exitTime + TEntryCallSequence.USER_SESSION_EXPIRATIONTIME) < timeNow;
 
             if (isExpired) {
                 sessionsToSend.add(session);

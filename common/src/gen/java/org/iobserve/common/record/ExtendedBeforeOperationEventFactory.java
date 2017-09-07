@@ -15,24 +15,25 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import java.nio.ByteBuffer;
 
 import kieker.common.record.factory.IRecordFactory;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Christoph Dornieden
  * 
- * @since 1.1
+ * @since 0.0.2
  */
 public final class ExtendedBeforeOperationEventFactory implements IRecordFactory<ExtendedBeforeOperationEvent> {
 	
+	
 	@Override
-	public ExtendedBeforeOperationEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new ExtendedBeforeOperationEvent(buffer, stringRegistry);
+	public ExtendedBeforeOperationEvent create(final IValueDeserializer deserializer) {
+		return new ExtendedBeforeOperationEvent(deserializer);
 	}
 	
 	@Override
+	@Deprecated
 	public ExtendedBeforeOperationEvent create(final Object[] values) {
 		return new ExtendedBeforeOperationEvent(values);
 	}

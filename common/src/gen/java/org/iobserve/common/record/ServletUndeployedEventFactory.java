@@ -15,24 +15,25 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import java.nio.ByteBuffer;
 
 import kieker.common.record.factory.IRecordFactory;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Generic Kieker
  * 
- * @since 1.10
+ * @since 1.13
  */
 public final class ServletUndeployedEventFactory implements IRecordFactory<ServletUndeployedEvent> {
 	
+	
 	@Override
-	public ServletUndeployedEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new ServletUndeployedEvent(buffer, stringRegistry);
+	public ServletUndeployedEvent create(final IValueDeserializer deserializer) {
+		return new ServletUndeployedEvent(deserializer);
 	}
 	
 	@Override
+	@Deprecated
 	public ServletUndeployedEvent create(final Object[] values) {
 		return new ServletUndeployedEvent(values);
 	}

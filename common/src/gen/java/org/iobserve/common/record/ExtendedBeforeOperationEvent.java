@@ -16,18 +16,19 @@
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
 
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
+import kieker.common.record.io.IValueDeserializer;
+import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IUserInformation;
 
 /**
  * @author Christoph Dornieden
+ * API compatibility: Kieker 1.13.0
  * 
- * @since 1.1
+ * @since 0.0.2
  */
 public class ExtendedBeforeOperationEvent extends BeforeOperationEvent implements IUserInformation {
 	private static final long serialVersionUID = 6122298903309699183L;
@@ -94,7 +95,10 @@ public class ExtendedBeforeOperationEvent extends BeforeOperationEvent implement
 	 * 
 	 * @param values
 	 *            The values for the record.
+	 *
+	 * @deprecated since 1.13. Use {@link #ExtendedBeforeOperationEvent(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	public ExtendedBeforeOperationEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
 		this.informations = (String) values[5];
@@ -107,32 +111,32 @@ public class ExtendedBeforeOperationEvent extends BeforeOperationEvent implement
 	 *            The values for the record.
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
+	 *
+	 * @deprecated since 1.13. Use {@link #ExtendedBeforeOperationEvent(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	protected ExtendedBeforeOperationEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
 		this.informations = (String) values[5];
 	}
 
+	
 	/**
-	 * This constructor converts the given buffer into a record.
-	 * 
-	 * @param buffer
-	 *            The bytes for the record
-	 * @param stringRegistry
-	 *            The string registry for deserialization
-	 * 
-	 * @throws BufferUnderflowException
-	 *             if buffer not sufficient
+	 * @param deserializer
+	 *            The deserializer to use
 	 */
-	public ExtendedBeforeOperationEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
-		super(buffer, stringRegistry);
-		this.informations = stringRegistry.get(buffer.getInt());
+	public ExtendedBeforeOperationEvent(final IValueDeserializer deserializer) {
+		super(deserializer);
+		this.informations = deserializer.getString();
 	}
 	
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
 	 */
 	@Override
+	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTimestamp(),
@@ -156,13 +160,14 @@ public class ExtendedBeforeOperationEvent extends BeforeOperationEvent implement
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
-		buffer.putLong(this.getTimestamp());
-		buffer.putLong(this.getTraceId());
-		buffer.putInt(this.getOrderIndex());
-		buffer.putInt(stringRegistry.get(this.getOperationSignature()));
-		buffer.putInt(stringRegistry.get(this.getClassSignature()));
-		buffer.putInt(stringRegistry.get(this.getInformations()));
+	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
+		//super.serialize(serializer);
+		serializer.putLong(this.getTimestamp());
+		serializer.putLong(this.getTraceId());
+		serializer.putInt(this.getOrderIndex());
+		serializer.putString(this.getOperationSignature());
+		serializer.putString(this.getClassSignature());
+		serializer.putString(this.getInformations());
 	}
 	/**
 	 * {@inheritDoc}
@@ -196,17 +201,6 @@ public class ExtendedBeforeOperationEvent extends BeforeOperationEvent implement
 	@Override
 	@Deprecated
 	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
-	 */
-	@Override
-	@Deprecated
-	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
 	

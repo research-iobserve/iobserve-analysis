@@ -16,18 +16,19 @@
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
 
 import kieker.common.record.flow.AbstractEvent;
+import kieker.common.record.io.IValueDeserializer;
+import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.GeoLocation;
 
 /**
  * @author Generic Kieker
+ * API compatibility: Kieker 1.13.0
  * 
- * @since 1.10
+ * @since 1.13
  */
 public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	private static final long serialVersionUID = -9109740651531232541L;
@@ -90,7 +91,10 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 * 
 	 * @param values
 	 *            The values for the record.
+	 *
+	 * @deprecated since 1.13. Use {@link #ServerGeoLocation(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	public ServerGeoLocation(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
 		this.countryCode = (Short) values[1];
@@ -105,7 +109,10 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 *            The values for the record.
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
+	 *
+	 * @deprecated since 1.13. Use {@link #ServerGeoLocation(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	protected ServerGeoLocation(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
 		this.countryCode = (Short) values[1];
@@ -113,28 +120,25 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		this.address = (String) values[3];
 	}
 
+	
 	/**
-	 * This constructor converts the given buffer into a record.
-	 * 
-	 * @param buffer
-	 *            The bytes for the record
-	 * @param stringRegistry
-	 *            The string registry for deserialization
-	 * 
-	 * @throws BufferUnderflowException
-	 *             if buffer not sufficient
+	 * @param deserializer
+	 *            The deserializer to use
 	 */
-	public ServerGeoLocation(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
-		super(buffer, stringRegistry);
-		this.countryCode = buffer.getShort();
-		this.hostname = stringRegistry.get(buffer.getInt());
-		this.address = stringRegistry.get(buffer.getInt());
+	public ServerGeoLocation(final IValueDeserializer deserializer) {
+		super(deserializer);
+		this.countryCode = deserializer.getShort();
+		this.hostname = deserializer.getString();
+		this.address = deserializer.getString();
 	}
 	
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
 	 */
 	@Override
+	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTimestamp(),
@@ -155,11 +159,12 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
-		buffer.putLong(this.getTimestamp());
-		buffer.putShort(this.getCountryCode());
-		buffer.putInt(stringRegistry.get(this.getHostname()));
-		buffer.putInt(stringRegistry.get(this.getAddress()));
+	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
+		//super.serialize(serializer);
+		serializer.putLong(this.getTimestamp());
+		serializer.putShort(this.getCountryCode());
+		serializer.putString(this.getHostname());
+		serializer.putString(this.getAddress());
 	}
 	/**
 	 * {@inheritDoc}
@@ -193,17 +198,6 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	@Override
 	@Deprecated
 	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
-	 */
-	@Override
-	@Deprecated
-	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
 	

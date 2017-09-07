@@ -25,7 +25,7 @@ template IDeallocationRecord
  * Event records for PaaS allocation deallocation.
  */
 abstract entity ContainerEvent {
-	string url 
+	string url
 }
 
 entity ContainerAllocationEvent extends ContainerEvent : IAllocationRecord

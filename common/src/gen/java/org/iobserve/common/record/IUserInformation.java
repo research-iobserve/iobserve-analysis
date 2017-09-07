@@ -20,7 +20,7 @@ import kieker.common.record.IMonitoringRecord;
 /**
  * @author Reiner Jung
  * 
- * @since 1.1
+ * @since 0.0.2
  */
 public interface IUserInformation extends IMonitoringRecord {
 	public String getInformations() ;

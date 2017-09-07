@@ -22,16 +22,16 @@ import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
-import org.iobserve.common.record.IUserInformation;
+import org.iobserve.common.record.IPayloadCharacterization;
 
 /**
- * @author Christoph Dornieden
+ * @author Reiner Jung
  * API compatibility: Kieker 1.13.0
  * 
- * @since 0.0.2-cdor
+ * @since 0.0.2
  */
-public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInformation {
-	private static final long serialVersionUID = -2306741230906112991L;
+public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPayloadCharacterization {
+	private static final long serialVersionUID = 5364265571284290753L;
 
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // EntryCallEvent.entryTime
@@ -40,7 +40,9 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 			 + TYPE_SIZE_STRING // EntryCallEvent.classSignature
 			 + TYPE_SIZE_STRING // EntryCallEvent.sessionId
 			 + TYPE_SIZE_STRING // EntryCallEvent.hostname
-			 + TYPE_SIZE_STRING // IUserInformation.informations
+			 + TYPE_SIZE_STRING // IPayloadCharacterization.parameters
+			 + TYPE_SIZE_STRING // IPayloadCharacterization.values
+			 + TYPE_SIZE_INT // IPayloadCharacterization.requestType
 	;
 	
 	public static final Class<?>[] TYPES = {
@@ -50,12 +52,12 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 		String.class, // EntryCallEvent.classSignature
 		String.class, // EntryCallEvent.sessionId
 		String.class, // EntryCallEvent.hostname
-		String.class, // IUserInformation.informations
+		String[].class, // IPayloadCharacterization.parameters
+		String[].class, // IPayloadCharacterization.values
+		int.class, // IPayloadCharacterization.requestType
 	};
 	
 	
-	/** default constants. */
-	public static final String INFORMATIONS = "";
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -65,11 +67,15 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 		"classSignature",
 		"sessionId",
 		"hostname",
-		"informations",
+		"parameters",
+		"values",
+		"requestType",
 	};
 	
 	/** property declarations. */
-	private String informations;
+	private String[] parameters;
+	private String[] values;
+	private int requestType;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -86,12 +92,18 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 	 *            sessionId
 	 * @param hostname
 	 *            hostname
-	 * @param informations
-	 *            informations
+	 * @param parameters
+	 *            parameters
+	 * @param values
+	 *            values
+	 * @param requestType
+	 *            requestType
 	 */
-	public ExtendedEntryCallEvent(final long entryTime, final long exitTime, final String operationSignature, final String classSignature, final String sessionId, final String hostname, final String informations) {
+	public PayloadAwareEntryCallEvent(final long entryTime, final long exitTime, final String operationSignature, final String classSignature, final String sessionId, final String hostname, final String[] parameters, final String[] values, final int requestType) {
 		super(entryTime, exitTime, operationSignature, classSignature, sessionId, hostname);
-		this.informations = informations == null?"":informations;
+		this.parameters = parameters;
+		this.values = values;
+		this.requestType = requestType;
 	}
 
 	/**
@@ -101,12 +113,14 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ExtendedEntryCallEvent(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #PayloadAwareEntryCallEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	public ExtendedEntryCallEvent(final Object[] values) { // NOPMD (direct store of values)
+	public PayloadAwareEntryCallEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
-		this.informations = (String) values[6];
+		this.parameters = (String[]) values[6];
+		this.values = (String[]) values[7];
+		this.requestType = (Integer) values[8];
 	}
 
 	/**
@@ -117,12 +131,14 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ExtendedEntryCallEvent(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #PayloadAwareEntryCallEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	protected ExtendedEntryCallEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
+	protected PayloadAwareEntryCallEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
-		this.informations = (String) values[6];
+		this.parameters = (String[]) values[6];
+		this.values = (String[]) values[7];
+		this.requestType = (Integer) values[8];
 	}
 
 	
@@ -130,9 +146,21 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 	 * @param deserializer
 	 *            The deserializer to use
 	 */
-	public ExtendedEntryCallEvent(final IValueDeserializer deserializer) {
+	public PayloadAwareEntryCallEvent(final IValueDeserializer deserializer) {
 		super(deserializer);
-		this.informations = deserializer.getString();
+		// load array sizes
+		int _parameters_size0 = deserializer.getInt();
+		this.parameters = new String[_parameters_size0];
+		for (int i0=0;i0<_parameters_size0;i0++)
+			this.parameters[i0] = deserializer.getString();
+		
+		// load array sizes
+		int _values_size0 = deserializer.getInt();
+		this.values = new String[_values_size0];
+		for (int i0=0;i0<_values_size0;i0++)
+			this.values[i0] = deserializer.getString();
+		
+		this.requestType = deserializer.getInt();
 	}
 	
 	/**
@@ -150,7 +178,9 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 			this.getClassSignature(),
 			this.getSessionId(),
 			this.getHostname(),
-			this.getInformations()
+			this.getParameters(),
+			this.getValues(),
+			this.getRequestType()
 		};
 	}
 	/**
@@ -162,7 +192,15 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 		stringRegistry.get(this.getClassSignature());
 		stringRegistry.get(this.getSessionId());
 		stringRegistry.get(this.getHostname());
-		stringRegistry.get(this.getInformations());
+		// get array length
+		int _parameters_size0 = this.getParameters().length;
+		for (int i0=0;i0<_parameters_size0;i0++)
+			stringRegistry.get(this.getParameters()[i0]);
+		
+		// get array length
+		int _values_size0 = this.getValues().length;
+		for (int i0=0;i0<_values_size0;i0++)
+			stringRegistry.get(this.getValues()[i0]);
 	}
 	/**
 	 * {@inheritDoc}
@@ -176,7 +214,19 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 		serializer.putString(this.getClassSignature());
 		serializer.putString(this.getSessionId());
 		serializer.putString(this.getHostname());
-		serializer.putString(this.getInformations());
+		// store array sizes
+		int _parameters_size0 = this.getParameters().length;
+		serializer.putInt(_parameters_size0);
+		for (int i0=0;i0<_parameters_size0;i0++)
+			serializer.putString(this.getParameters()[i0]);
+		
+		// store array sizes
+		int _values_size0 = this.getValues().length;
+		serializer.putInt(_values_size0);
+		for (int i0=0;i0<_values_size0;i0++)
+			serializer.putString(this.getValues()[i0]);
+		
+		serializer.putInt(this.getRequestType());
 	}
 	/**
 	 * {@inheritDoc}
@@ -222,7 +272,7 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 		if (obj == this) return true;
 		if (obj.getClass() != this.getClass()) return false;
 		
-		final ExtendedEntryCallEvent castedRecord = (ExtendedEntryCallEvent) obj;
+		final PayloadAwareEntryCallEvent castedRecord = (PayloadAwareEntryCallEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (this.getEntryTime() != castedRecord.getEntryTime()) return false;
 		if (this.getExitTime() != castedRecord.getExitTime()) return false;
@@ -230,15 +280,45 @@ public class ExtendedEntryCallEvent extends EntryCallEvent implements IUserInfor
 		if (!this.getClassSignature().equals(castedRecord.getClassSignature())) return false;
 		if (!this.getSessionId().equals(castedRecord.getSessionId())) return false;
 		if (!this.getHostname().equals(castedRecord.getHostname())) return false;
-		if (!this.getInformations().equals(castedRecord.getInformations())) return false;
+		// get array length
+		int _parameters_size0 = this.getParameters().length;
+		if (_parameters_size0 != castedRecord.getParameters().length)
+			return false;
+		for (int i0=0;i0<_parameters_size0;i0++)
+			if (!this.getParameters()[i0].equals(castedRecord.getParameters()[i0])) return false;
+		
+		// get array length
+		int _values_size0 = this.getValues().length;
+		if (_values_size0 != castedRecord.getValues().length)
+			return false;
+		for (int i0=0;i0<_values_size0;i0++)
+			if (!this.getValues()[i0].equals(castedRecord.getValues()[i0])) return false;
+		
+		if (this.getRequestType() != castedRecord.getRequestType()) return false;
 		return true;
 	}
 	
-	public final String getInformations() {
-		return this.informations;
+	public final String[] getParameters() {
+		return this.parameters;
 	}
 	
-	public final void setInformations(String informations) {
-		this.informations = informations;
+	public final void setParameters(String[] parameters) {
+		this.parameters = parameters;
+	}
+	
+	public final String[] getValues() {
+		return this.values;
+	}
+	
+	public final void setValues(String[] values) {
+		this.values = values;
+	}
+	
+	public final int getRequestType() {
+		return this.requestType;
+	}
+	
+	public final void setRequestType(int requestType) {
+		this.requestType = requestType;
 	}
 }

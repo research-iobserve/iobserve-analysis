@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.filter.models;
+package org.iobserve.monitoring.probe.models;
 
 /**
- * Represents a additional Information of a Call
+ * Represents a additional information of a call.
  *
  * @author Christoph Dornieden
  *

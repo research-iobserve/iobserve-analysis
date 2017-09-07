@@ -19,9 +19,10 @@ package org.iobserve.analysis.data
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent
 import kieker.common.record.flow.trace.operation.AfterOperationEvent
 import org.iobserve.common.record.IUserInformation 
+import org.iobserve.common.record.IPayloadCharacterization
 
 
-@author "Reiner Jung" @since "1.0"
+@author "Reiner Jung" @since "0.0.2"
 entity EntryCallEvent {
 	long entryTime
 	long exitTime
@@ -32,5 +33,8 @@ entity EntryCallEvent {
 }
 
 
-@author "Christoph Dornieden" @since "1.1"
+@author "Christoph Dornieden" @since "0.0.2-cdor"
 entity ExtendedEntryCallEvent extends EntryCallEvent : IUserInformation
+
+@author "Reiner Jung" @since "0.0.2"
+entity PayloadAwareEntryCallEvent extends EntryCallEvent : IPayloadCharacterization

@@ -15,24 +15,25 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import java.nio.ByteBuffer;
 
 import kieker.common.record.factory.IRecordFactory;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Generic Kieker
  * 
- * @since 1.10
+ * @since 1.13
  */
 public final class SessionEndEventFactory implements IRecordFactory<SessionEndEvent> {
 	
+	
 	@Override
-	public SessionEndEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new SessionEndEvent(buffer, stringRegistry);
+	public SessionEndEvent create(final IValueDeserializer deserializer) {
+		return new SessionEndEvent(deserializer);
 	}
 	
 	@Override
+	@Deprecated
 	public SessionEndEvent create(final Object[] values) {
 		return new SessionEndEvent(values);
 	}

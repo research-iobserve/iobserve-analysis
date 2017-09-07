@@ -17,21 +17,21 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
-import kieker.common.record.flow.trace.operation.AfterOperationEvent;
+import kieker.common.record.flow.trace.operation.object.BeforeOperationObjectEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
-import org.iobserve.common.record.IUserInformation;
+import org.iobserve.common.record.IPayloadCharacterization;
 
 /**
- * @author Christoph Dornieden
+ * @author Reiner Jung
  * API compatibility: Kieker 1.13.0
  * 
  * @since 0.0.2
  */
-public class ExtendedAfterOperationEvent extends AfterOperationEvent implements IUserInformation {
-	private static final long serialVersionUID = -6074724758089708739L;
+public class EntryLevelBeforeOperationObjectEvent extends BeforeOperationObjectEvent implements IPayloadCharacterization {
+	private static final long serialVersionUID = -4017422430129179625L;
 
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
@@ -39,7 +39,10 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 			 + TYPE_SIZE_INT // ITraceRecord.orderIndex
 			 + TYPE_SIZE_STRING // IOperationSignature.operationSignature
 			 + TYPE_SIZE_STRING // IClassSignature.classSignature
-			 + TYPE_SIZE_STRING // IUserInformation.informations
+			 + TYPE_SIZE_INT // IObjectRecord.objectId
+			 + TYPE_SIZE_STRING // IPayloadCharacterization.parameters
+			 + TYPE_SIZE_STRING // IPayloadCharacterization.values
+			 + TYPE_SIZE_INT // IPayloadCharacterization.requestType
 	;
 	
 	public static final Class<?>[] TYPES = {
@@ -48,12 +51,13 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 		int.class, // ITraceRecord.orderIndex
 		String.class, // IOperationSignature.operationSignature
 		String.class, // IClassSignature.classSignature
-		String.class, // IUserInformation.informations
+		int.class, // IObjectRecord.objectId
+		String[].class, // IPayloadCharacterization.parameters
+		String[].class, // IPayloadCharacterization.values
+		int.class, // IPayloadCharacterization.requestType
 	};
 	
 	
-	/** default constants. */
-	public static final String INFORMATIONS = "";
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -62,11 +66,16 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 		"orderIndex",
 		"operationSignature",
 		"classSignature",
-		"informations",
+		"objectId",
+		"parameters",
+		"values",
+		"requestType",
 	};
 	
 	/** property declarations. */
-	private String informations;
+	private String[] parameters;
+	private String[] values;
+	private int requestType;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -81,12 +90,20 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 	 *            operationSignature
 	 * @param classSignature
 	 *            classSignature
-	 * @param informations
-	 *            informations
+	 * @param objectId
+	 *            objectId
+	 * @param parameters
+	 *            parameters
+	 * @param values
+	 *            values
+	 * @param requestType
+	 *            requestType
 	 */
-	public ExtendedAfterOperationEvent(final long timestamp, final long traceId, final int orderIndex, final String operationSignature, final String classSignature, final String informations) {
-		super(timestamp, traceId, orderIndex, operationSignature, classSignature);
-		this.informations = informations == null?"":informations;
+	public EntryLevelBeforeOperationObjectEvent(final long timestamp, final long traceId, final int orderIndex, final String operationSignature, final String classSignature, final int objectId, final String[] parameters, final String[] values, final int requestType) {
+		super(timestamp, traceId, orderIndex, operationSignature, classSignature, objectId);
+		this.parameters = parameters;
+		this.values = values;
+		this.requestType = requestType;
 	}
 
 	/**
@@ -96,12 +113,14 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ExtendedAfterOperationEvent(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #EntryLevelBeforeOperationObjectEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	public ExtendedAfterOperationEvent(final Object[] values) { // NOPMD (direct store of values)
+	public EntryLevelBeforeOperationObjectEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
-		this.informations = (String) values[5];
+		this.parameters = (String[]) values[6];
+		this.values = (String[]) values[7];
+		this.requestType = (Integer) values[8];
 	}
 
 	/**
@@ -112,12 +131,14 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ExtendedAfterOperationEvent(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #EntryLevelBeforeOperationObjectEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	protected ExtendedAfterOperationEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
+	protected EntryLevelBeforeOperationObjectEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
-		this.informations = (String) values[5];
+		this.parameters = (String[]) values[6];
+		this.values = (String[]) values[7];
+		this.requestType = (Integer) values[8];
 	}
 
 	
@@ -125,9 +146,21 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 	 * @param deserializer
 	 *            The deserializer to use
 	 */
-	public ExtendedAfterOperationEvent(final IValueDeserializer deserializer) {
+	public EntryLevelBeforeOperationObjectEvent(final IValueDeserializer deserializer) {
 		super(deserializer);
-		this.informations = deserializer.getString();
+		// load array sizes
+		int _parameters_size0 = deserializer.getInt();
+		this.parameters = new String[_parameters_size0];
+		for (int i0=0;i0<_parameters_size0;i0++)
+			this.parameters[i0] = deserializer.getString();
+		
+		// load array sizes
+		int _values_size0 = deserializer.getInt();
+		this.values = new String[_values_size0];
+		for (int i0=0;i0<_values_size0;i0++)
+			this.values[i0] = deserializer.getString();
+		
+		this.requestType = deserializer.getInt();
 	}
 	
 	/**
@@ -144,7 +177,10 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 			this.getOrderIndex(),
 			this.getOperationSignature(),
 			this.getClassSignature(),
-			this.getInformations()
+			this.getObjectId(),
+			this.getParameters(),
+			this.getValues(),
+			this.getRequestType()
 		};
 	}
 	/**
@@ -154,7 +190,15 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
 		stringRegistry.get(this.getOperationSignature());
 		stringRegistry.get(this.getClassSignature());
-		stringRegistry.get(this.getInformations());
+		// get array length
+		int _parameters_size0 = this.getParameters().length;
+		for (int i0=0;i0<_parameters_size0;i0++)
+			stringRegistry.get(this.getParameters()[i0]);
+		
+		// get array length
+		int _values_size0 = this.getValues().length;
+		for (int i0=0;i0<_values_size0;i0++)
+			stringRegistry.get(this.getValues()[i0]);
 	}
 	/**
 	 * {@inheritDoc}
@@ -167,7 +211,20 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 		serializer.putInt(this.getOrderIndex());
 		serializer.putString(this.getOperationSignature());
 		serializer.putString(this.getClassSignature());
-		serializer.putString(this.getInformations());
+		serializer.putInt(this.getObjectId());
+		// store array sizes
+		int _parameters_size0 = this.getParameters().length;
+		serializer.putInt(_parameters_size0);
+		for (int i0=0;i0<_parameters_size0;i0++)
+			serializer.putString(this.getParameters()[i0]);
+		
+		// store array sizes
+		int _values_size0 = this.getValues().length;
+		serializer.putInt(_values_size0);
+		for (int i0=0;i0<_values_size0;i0++)
+			serializer.putString(this.getValues()[i0]);
+		
+		serializer.putInt(this.getRequestType());
 	}
 	/**
 	 * {@inheritDoc}
@@ -213,22 +270,53 @@ public class ExtendedAfterOperationEvent extends AfterOperationEvent implements 
 		if (obj == this) return true;
 		if (obj.getClass() != this.getClass()) return false;
 		
-		final ExtendedAfterOperationEvent castedRecord = (ExtendedAfterOperationEvent) obj;
+		final EntryLevelBeforeOperationObjectEvent castedRecord = (EntryLevelBeforeOperationObjectEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
 		if (this.getTraceId() != castedRecord.getTraceId()) return false;
 		if (this.getOrderIndex() != castedRecord.getOrderIndex()) return false;
 		if (!this.getOperationSignature().equals(castedRecord.getOperationSignature())) return false;
 		if (!this.getClassSignature().equals(castedRecord.getClassSignature())) return false;
-		if (!this.getInformations().equals(castedRecord.getInformations())) return false;
+		if (this.getObjectId() != castedRecord.getObjectId()) return false;
+		// get array length
+		int _parameters_size0 = this.getParameters().length;
+		if (_parameters_size0 != castedRecord.getParameters().length)
+			return false;
+		for (int i0=0;i0<_parameters_size0;i0++)
+			if (!this.getParameters()[i0].equals(castedRecord.getParameters()[i0])) return false;
+		
+		// get array length
+		int _values_size0 = this.getValues().length;
+		if (_values_size0 != castedRecord.getValues().length)
+			return false;
+		for (int i0=0;i0<_values_size0;i0++)
+			if (!this.getValues()[i0].equals(castedRecord.getValues()[i0])) return false;
+		
+		if (this.getRequestType() != castedRecord.getRequestType()) return false;
 		return true;
 	}
 	
-	public final String getInformations() {
-		return this.informations;
+	public final String[] getParameters() {
+		return this.parameters;
 	}
 	
-	public final void setInformations(String informations) {
-		this.informations = informations;
+	public final void setParameters(String[] parameters) {
+		this.parameters = parameters;
+	}
+	
+	public final String[] getValues() {
+		return this.values;
+	}
+	
+	public final void setValues(String[] values) {
+		this.values = values;
+	}
+	
+	public final int getRequestType() {
+		return this.requestType;
+	}
+	
+	public final void setRequestType(int requestType) {
+		this.requestType = requestType;
 	}
 }

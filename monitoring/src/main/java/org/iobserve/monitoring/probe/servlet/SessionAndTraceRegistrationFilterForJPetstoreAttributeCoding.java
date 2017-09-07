@@ -29,8 +29,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.iobserve.analysis.filter.models.CallInformation;
 import org.iobserve.common.record.ExtendedAfterOperationEvent;
+import org.iobserve.monitoring.probe.models.CallInformation;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project
+ * Copyright 2017 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import kieker.test.common.junit.AbstractGeneratedKiekerTest;
  * 
  * @author Christoph Dornieden
  * 
- * @since 1.1
+ * @since 0.0.2
  */
 public class TestGeneratedExtendedBeforeOperationEvent extends AbstractGeneratedKiekerTest {
 

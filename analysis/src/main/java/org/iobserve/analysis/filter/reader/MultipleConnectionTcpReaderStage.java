@@ -31,6 +31,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
 import org.iobserve.common.record.ExtendedAfterOperationEvent;
 import org.iobserve.common.record.ExtendedBeforeOperationEvent;
 
@@ -235,8 +236,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
                 return false;
             } else {
                 try {
-                    final IMonitoringRecord record = recordFactory.create(connection.getBuffer(),
-                            connection.getStringRegistryWrapper());
+                    final IMonitoringRecord record = recordFactory.create(connection.getValueDeserializer());
                     record.setLoggingTimestamp(loggingTimestamp);
 
                     final IMonitoringRecord rewrittenRecord = this.recordRewrite(connection, record);
@@ -277,13 +277,17 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
             return newMetadata;
         } else if (record instanceof ITraceRecord) {
             final TraceMetadata metaData = this.metadatamap.get(this.getIP(connection.getChannel().getRemoteAddress()))
-                    .get(((ITraceRecord) record).getTraceId());
-
+                    .get(((ITraceRecord) record).getTraceId());       
             /** this mess could be avoided with setters in Kieker records. */
             if (record instanceof ConstructionEvent) {
                 final ConstructionEvent event = (ConstructionEvent) record;
                 return new ConstructionEvent(event.getTimestamp(), metaData.getTraceId(), event.getOrderIndex(),
                         event.getClassSignature(), event.getObjectId());
+            } else if (record instanceof EntryLevelBeforeOperationEvent) {
+                final EntryLevelBeforeOperationEvent event = (EntryLevelBeforeOperationEvent) record;
+                return new EntryLevelBeforeOperationEvent(event.getTimestamp(), metaData.getTraceId(),
+                        event.getOrderIndex(), event.getOperationSignature(), event.getClassSignature(),
+                        event.getParameters(), event.getValues(), event.getRequestType());
             } else if (record instanceof ExtendedAfterOperationEvent) {
                 final ExtendedAfterOperationEvent event = (ExtendedAfterOperationEvent) record;
                 return new ExtendedAfterOperationEvent(event.getTimestamp(), metaData.getTraceId(),

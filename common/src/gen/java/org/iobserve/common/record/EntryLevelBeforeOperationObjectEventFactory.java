@@ -13,31 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.data;
+package org.iobserve.common.record;
 
-import java.nio.ByteBuffer;
 
 import kieker.common.record.factory.IRecordFactory;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
- * @author Christoph Dornieden
+ * @author Reiner Jung
  * 
- * @since 1.0
+ * @since 0.0.2
  */
-public final class ExtendedAfterOperationEventFactory implements IRecordFactory<ExtendedAfterOperationEvent> {
+public final class EntryLevelBeforeOperationObjectEventFactory implements IRecordFactory<EntryLevelBeforeOperationObjectEvent> {
+	
 	
 	@Override
-	public ExtendedAfterOperationEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new ExtendedAfterOperationEvent(buffer, stringRegistry);
+	public EntryLevelBeforeOperationObjectEvent create(final IValueDeserializer deserializer) {
+		return new EntryLevelBeforeOperationObjectEvent(deserializer);
 	}
 	
 	@Override
-	public ExtendedAfterOperationEvent create(final Object[] values) {
-		return new ExtendedAfterOperationEvent(values);
+	@Deprecated
+	public EntryLevelBeforeOperationObjectEvent create(final Object[] values) {
+		return new EntryLevelBeforeOperationObjectEvent(values);
 	}
 	
 	public int getRecordSizeInBytes() {
-		return ExtendedAfterOperationEvent.SIZE;
+		return EntryLevelBeforeOperationObjectEvent.SIZE;
 	}
 }

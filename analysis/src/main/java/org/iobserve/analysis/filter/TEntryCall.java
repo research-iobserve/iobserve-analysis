@@ -19,8 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.iobserve.analysis.data.ExtendedAfterOperationEvent;
-import org.iobserve.analysis.data.ExtendedBeforeOperationEvent;
+import org.iobserve.common.record.ExtendedAfterOperationEvent;
+import org.iobserve.common.record.ExtendedBeforeOperationEvent;
 import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
@@ -151,9 +151,11 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                             System.out.println(afterOperationEvent.getOperationSignature());
 
                         }
+                        
+                        String operationSignature = beforeOperationEvent.getOperationSignature().replaceAll("jpetstore\\.actions\\.", "");
 
                         this.outputPort.send(new ExtendedEntryCallEvent(beforeOperationEvent.getTimestamp(),
-                                afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
+                                afterOperationEvent.getTimestamp(), operationSignature,
                                 beforeOperationEvent.getClassSignature(), metaData.getSessionId(),
                                 metaData.getHostname(), callInformations));
 

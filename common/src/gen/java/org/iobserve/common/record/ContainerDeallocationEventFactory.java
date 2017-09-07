@@ -15,24 +15,25 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import java.nio.ByteBuffer;
 
 import kieker.common.record.factory.IRecordFactory;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Generic Kieker
  * 
- * @since 1.10
+ * @since 1.13
  */
 public final class ContainerDeallocationEventFactory implements IRecordFactory<ContainerDeallocationEvent> {
 	
+	
 	@Override
-	public ContainerDeallocationEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new ContainerDeallocationEvent(buffer, stringRegistry);
+	public ContainerDeallocationEvent create(final IValueDeserializer deserializer) {
+		return new ContainerDeallocationEvent(deserializer);
 	}
 	
 	@Override
+	@Deprecated
 	public ContainerDeallocationEvent create(final Object[] values) {
 		return new ContainerDeallocationEvent(values);
 	}

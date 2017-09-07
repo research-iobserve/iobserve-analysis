@@ -16,18 +16,19 @@
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
 
 import kieker.common.record.flow.AbstractEvent;
+import kieker.common.record.io.IValueDeserializer;
+import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.ISessionEvent;
 
 /**
  * @author Generic Kieker
+ * API compatibility: Kieker 1.13.0
  * 
- * @since 1.10
+ * @since 1.13
  */
 public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	private static final long serialVersionUID = -2981998362744145083L;
@@ -74,7 +75,10 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	 * 
 	 * @param values
 	 *            The values for the record.
+	 *
+	 * @deprecated since 1.13. Use {@link #SessionEndEvent(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	public SessionEndEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
 		this.sessionId = (String) values[1];
@@ -87,32 +91,32 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	 *            The values for the record.
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
+	 *
+	 * @deprecated since 1.13. Use {@link #SessionEndEvent(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	protected SessionEndEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
 		this.sessionId = (String) values[1];
 	}
 
+	
 	/**
-	 * This constructor converts the given buffer into a record.
-	 * 
-	 * @param buffer
-	 *            The bytes for the record
-	 * @param stringRegistry
-	 *            The string registry for deserialization
-	 * 
-	 * @throws BufferUnderflowException
-	 *             if buffer not sufficient
+	 * @param deserializer
+	 *            The deserializer to use
 	 */
-	public SessionEndEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
-		super(buffer, stringRegistry);
-		this.sessionId = stringRegistry.get(buffer.getInt());
+	public SessionEndEvent(final IValueDeserializer deserializer) {
+		super(deserializer);
+		this.sessionId = deserializer.getString();
 	}
 	
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
 	 */
 	@Override
+	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTimestamp(),
@@ -130,9 +134,10 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
-		buffer.putLong(this.getTimestamp());
-		buffer.putInt(stringRegistry.get(this.getSessionId()));
+	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
+		//super.serialize(serializer);
+		serializer.putLong(this.getTimestamp());
+		serializer.putString(this.getSessionId());
 	}
 	/**
 	 * {@inheritDoc}
@@ -166,17 +171,6 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	@Override
 	@Deprecated
 	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
-	 */
-	@Override
-	@Deprecated
-	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
 	

@@ -16,7 +16,7 @@
 package org.iobserve.analysis.clustering.filter.models;
 
 /**
- * Represents a additional Information of a Call.
+ * Represents a additional information of a call.
  *
  * @author Christoph Dornieden
  *

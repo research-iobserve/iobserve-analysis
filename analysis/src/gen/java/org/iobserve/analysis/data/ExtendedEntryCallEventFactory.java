@@ -15,24 +15,25 @@
  ***************************************************************************/
 package org.iobserve.analysis.data;
 
-import java.nio.ByteBuffer;
 
 import kieker.common.record.factory.IRecordFactory;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Christoph Dornieden
  * 
- * @since 1.1
+ * @since 0.0.2-cdor
  */
 public final class ExtendedEntryCallEventFactory implements IRecordFactory<ExtendedEntryCallEvent> {
 	
+	
 	@Override
-	public ExtendedEntryCallEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new ExtendedEntryCallEvent(buffer, stringRegistry);
+	public ExtendedEntryCallEvent create(final IValueDeserializer deserializer) {
+		return new ExtendedEntryCallEvent(deserializer);
 	}
 	
 	@Override
+	@Deprecated
 	public ExtendedEntryCallEvent create(final Object[] values) {
 		return new ExtendedEntryCallEvent(values);
 	}
