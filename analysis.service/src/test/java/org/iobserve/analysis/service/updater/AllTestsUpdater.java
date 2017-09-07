@@ -45,14 +45,9 @@ public class AllTestsUpdater {
     public static void setUpClass() throws IOException {
         /** test server */
         AllTestsUpdater.testHandler = new TestHandler();
-        AllTestsUpdater.server = HttpServer.create(new InetSocketAddress(9090), 0);
+        AllTestsUpdater.server = HttpServer.create(new InetSocketAddress(9090), 10);
         AllTestsUpdater.server.createContext("/v1/systems/test_systemId/changelogs", AllTestsUpdater.testHandler);
         AllTestsUpdater.server.start();
 
     }
-
-    // @AfterClass
-    // public static void cleanUp() {
-    // AllTestsUpdater.server.removeContext("/v1/systems/test_systemId/changelogs");
-    // }
 }

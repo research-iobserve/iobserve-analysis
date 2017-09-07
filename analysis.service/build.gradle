@@ -1,4 +1,5 @@
 apply plugin: 'application'
+apply plugin: 'java'
 
 mainClassName = 'org.iobserve.analysis.service.AnalysisMain'
 
@@ -28,6 +29,15 @@ testCompile group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
             	'org.powermock:powermock-module-junit4:1.6.1',
            		'org.powermock:powermock-api-mockito:1.6.1'
 }
+
+test {
+
+  // explicitly include or exclude tests
+  include 'org/iobserve/analysis/service/updater/AllTestsUpdater.java'
+  exclude 'org/iobserve/analysis/service/updater/AllocationVisualizationStageTest.java'
+  exclude 'org/iobserve/analysis/service/updater/DeploymentVisualizationStageTest.java'
+  exclude 'org/iobserve/analysis/service/updater/UndeploymentVisualizationStageTest.java'
+  }
 
 install {
     repositories.mavenInstaller {
