@@ -39,16 +39,20 @@ import util.TestHandler;
 public class AllTestsUpdater {
     /** handler for http requests */
     private static TestHandler testHandler;
+    private static HttpServer server;
 
     @BeforeClass
     public static void setUpClass() throws IOException {
-        System.out.println("Master setup");
-
         /** test server */
         AllTestsUpdater.testHandler = new TestHandler();
-        final HttpServer server = HttpServer.create(new InetSocketAddress(9090), 0);
-        server.createContext("/v1/systems/test_systemId/changelogs", AllTestsUpdater.testHandler);
-        server.start();
+        AllTestsUpdater.server = HttpServer.create(new InetSocketAddress(9090), 0);
+        AllTestsUpdater.server.createContext("/v1/systems/test_systemId/changelogs", AllTestsUpdater.testHandler);
+        AllTestsUpdater.server.start();
 
     }
+
+    // @AfterClass
+    // public static void cleanUp() {
+    // AllTestsUpdater.server.removeContext("/v1/systems/test_systemId/changelogs");
+    // }
 }

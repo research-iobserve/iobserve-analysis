@@ -111,9 +111,11 @@ public class AllocationVisualizationStageTest {
      * Check whether the changelog for creating the nodegroup is written before the changelog for
      * creating the node (constraint on deployment visualization) and that the node is assigned to
      * the nodegroup.
+     *
      */
     @Test
     public void test() {
+
         StageTester.test(this.allocationVisualizationStage).and().send(this.inputEvents)
                 .to(this.allocationVisualizationStage.getInputPort()).start();
 
