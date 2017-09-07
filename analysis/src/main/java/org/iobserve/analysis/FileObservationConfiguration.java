@@ -58,6 +58,8 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      *            the resource environment provider
      * @param resourceEnvironmentModelGraphProvider
      *            the resource environment graph provider
+     * @param resourceEnvironmentModelGraph
+     *            the resource environment model graph
      * @param allocationModelProvider
      *            the allocation model provider
      * @param allocationModelGraphProvider
