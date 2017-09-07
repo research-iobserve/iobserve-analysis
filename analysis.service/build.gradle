@@ -31,12 +31,12 @@ testCompile group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
 }
 
 test {
-
-  // explicitly include or exclude tests
-  include 'org/iobserve/analysis/service/updater/AllTestsUpdater.java'
-  exclude 'org/iobserve/analysis/service/updater/AllocationVisualizationStageTest.java'
-  exclude 'org/iobserve/analysis/service/updater/DeploymentVisualizationStageTest.java'
-  exclude 'org/iobserve/analysis/service/updater/UndeploymentVisualizationStageTest.java'
+  println 'Starting unit tests.'
+  scanForTestClasses= false
+  include '**/service/suites/*'
+  exclude '**/service/services/*'
+  exclude '**/service/updater/*'
+  
   }
 
 install {

@@ -13,8 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.service.services;
+package org.iobserve.analysis.service.suites;
 
+import org.iobserve.analysis.service.services.CommunicationInstanceServiceTest;
+import org.iobserve.analysis.service.services.CommunicationServiceTest;
+import org.iobserve.analysis.service.services.NodeServiceTest;
+import org.iobserve.analysis.service.services.ServiceInstanceServiceTest;
+import org.iobserve.analysis.service.services.ServiceServiceTest;
+import org.iobserve.analysis.service.services.SystemServiceTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
