@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.modelneo4j.test;
+package org.iobserve.analysis.modelneo4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.modelneo4j.Graph;
-import org.iobserve.analysis.modelneo4j.GraphLoader;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -235,6 +233,13 @@ public class AllocationModelProviderTest implements IModelProviderTest {
 
         modelProvider.deleteComponent(Allocation.class, writtenModel.getId());
 
+        // Manually delete proxy nodes (as they are no containments in this graph)
+        try (Transaction tx = AllocationModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
+            AllocationModelProviderTest.GRAPH.getGraphDatabaseService().execute(
+                    "MATCH (m:ResourceEnvironment), (n:System), (o:AssemblyContext), (p:ResourceContainer) DELETE n, m, o, p");
+            tx.success();
+        }
+
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
@@ -248,17 +253,18 @@ public class AllocationModelProviderTest implements IModelProviderTest {
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
-        modelProvider.deleteComponentAndDatatypes(Allocation.class, writtenModel.getId());
+        modelProvider.deleteComponentAndDatatypes(Allocation.class, writtenModel.getId(), true);
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
-    @AfterClass
     /**
      * Remove database directory.
-     * 
+     *
      * @throws IOException
+     *             When an error occurs while deleting
      */
+    @AfterClass
     public static void cleanUp() throws IOException {
         AllocationModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(AllocationModelProviderTest.GRAPH_DIR);

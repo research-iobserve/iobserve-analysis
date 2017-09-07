@@ -13,20 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.modelneo4j.test;
+package org.iobserve.analysis.modelneo4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.modelneo4j.Graph;
-import org.iobserve.analysis.modelneo4j.GraphLoader;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
@@ -254,6 +252,14 @@ public class UsageModelProviderTest implements IModelProviderTest {
         new ModelProvider<UsageScenario>(UsageModelProviderTest.GRAPH).deleteComponent(UsageScenario.class,
                 writtenScenario.getId());
 
+        // Manually delete the root node (as it has no id), the double literal node (as it is not
+        // contained anywhere) and the proxy nodes (as they are no containments in this graph)
+        try (Transaction tx = UsageModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
+            UsageModelProviderTest.GRAPH.getGraphDatabaseService().execute(
+                    "MATCH (m:UsageModel), (n:DoubleLiteral), (o:OperationSignature), (p:OperationProvidedRole) DELETE n, m, o, p");
+            tx.success();
+        }
+
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
@@ -269,17 +275,18 @@ public class UsageModelProviderTest implements IModelProviderTest {
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
         new ModelProvider<UsageScenario>(UsageModelProviderTest.GRAPH).deleteComponentAndDatatypes(UsageScenario.class,
-                writtenScenario.getId());
+                writtenScenario.getId(), true);
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
-    @AfterClass
     /**
      * Remove database directory.
-     * 
+     *
      * @throws IOException
+     *             When an error occurs while deleting
      */
+    @AfterClass
     public static void cleanUp() throws IOException {
         UsageModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(UsageModelProviderTest.GRAPH_DIR);

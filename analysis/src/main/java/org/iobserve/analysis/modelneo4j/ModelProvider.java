@@ -104,6 +104,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @param clazz
      *            The model type (only {@link Allocation}, {@link Repository},
      *            {@link ResourceEnvironment}, {@link System} or {@link UsageModel} are allowed)
+     *
+     * @return The cloned graph
      */
     public Graph cloneNewGraphVersion(final Class<T> clazz) {
         final File baseDirectory = this.graph.getGraphDirectory().getParentFile().getParentFile();
@@ -313,7 +315,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                     new HashSet<Node>());
-            component = this.readComponent(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
+            component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             tx.success();
         }
 
@@ -357,8 +359,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 final Node node = nodesIter.next();
                 final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                         new HashSet<Node>());
-                final EObject component = this.readComponent(node, containmentsAndDatatypes,
-                        new HashMap<Node, EObject>());
+                final EObject component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 nodes.add((T) component);
 
             }
@@ -408,7 +409,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @return The root
      */
     @SuppressWarnings("unchecked")
-    private EObject readComponent(final Node node, final HashSet<Node> containmentsAndDatatypes,
+    private EObject readNodes(final Node node, final HashSet<Node> containmentsAndDatatypes,
             final HashMap<Node, EObject> nodesToCreatedObjects) {
         EObject component;
 
@@ -449,12 +450,12 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 if (containmentsAndDatatypes.contains(endNode)) {
 
                     if (refReprensation instanceof EList<?>) {
-                        final EObject endComponent = this.readComponent(endNode, containmentsAndDatatypes,
+                        final EObject endComponent = this.readNodes(endNode, containmentsAndDatatypes,
                                 nodesToCreatedObjects);
                         ((EList<EObject>) refReprensation).add(endComponent);
 
                     } else {
-                        refReprensation = this.readComponent(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
+                        refReprensation = this.readNodes(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
                         component.eSet(ref, refReprensation);
                     }
 
@@ -554,7 +555,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     final Node node = nodes.next();
                     final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                             new HashSet<Node>());
-                    component = this.readComponent(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
+                    component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 }
             } else {
                 this.logger.warn("Passed type of readRootComponent(final Class<T> clazz)"
@@ -604,7 +605,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 final Node endNode = inRels.next().getStartNode();
                 final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
                         new HashSet<Node>());
-                component = this.readComponent(endNode, containmentsAndDatatypes, new HashMap<Node, EObject>());
+                component = this.readNodes(endNode, containmentsAndDatatypes, new HashMap<Node, EObject>());
             }
 
             tx.success();
@@ -647,7 +648,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 final Node startNode = inRel.getStartNode();
                 final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
                         new HashSet<Node>());
-                final EObject component = this.readComponent(startNode, containmentsAndDatatypes,
+                final EObject component = this.readNodes(startNode, containmentsAndDatatypes,
                         new HashMap<Node, EObject>());
                 referencingComponents.add(component);
             }
@@ -791,7 +792,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     try {
                         final Node endNode = r.getEndNode();
                         r.delete();
-                        this.deleteComponentAndDatatypes(endNode);
+                        this.deleteComponentAndDatatypeNodes(endNode, false);
                     } catch (final NotFoundException e) {
                         // relation has already been deleted
                     }
@@ -818,7 +819,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             if (node != null) {
-                this.deleteComponent(node);
+                this.deleteComponentNodes(node);
             }
             tx.success();
         }
@@ -834,10 +835,10 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @param node
      *            The node to start with
      */
-    private void deleteComponent(final Node node) {
+    private void deleteComponentNodes(final Node node) {
 
         for (final Relationship rel : node.getRelationships(Direction.OUTGOING, PcmRelationshipType.CONTAINS)) {
-            this.deleteComponent(rel.getEndNode());
+            this.deleteComponentNodes(rel.getEndNode());
         }
 
         for (final Relationship rel : node.getRelationships()) {
@@ -850,12 +851,11 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     /*
      * (non-Javadoc)
      *
-     * @see
-     * org.iobserve.analysis.modelneo4j.IModelProvider#deleteComponentAndDatatypes(java.lang.Class,
-     * java.lang.String)
+     * @see org.iobserve.analysis.modelneo4j.IModelProvider#deleteComponentAndDatatypes(Class,
+     * String, boolean)
      */
     @Override
-    public void deleteComponentAndDatatypes(final Class<T> clazz, final String id) {
+    public void deleteComponentAndDatatypes(final Class<T> clazz, final String id, final boolean forceDelete) {
         ModelProviderSynchronizer.getLock(this);
 
         final Label label = Label.label(clazz.getSimpleName());
@@ -863,7 +863,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
-            this.deleteComponentAndDatatypes(node);
+            this.deleteComponentAndDatatypeNodes(node, forceDelete);
             tx.success();
         }
 
@@ -877,11 +877,15 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *
      * @param node
      *            The node to start with
+     * @param forceDelete
+     *            Force method to delete the specified node even if it is referenced with an is_type
+     *            or contains edge
      */
-    private void deleteComponentAndDatatypes(final Node node) {
+    private void deleteComponentAndDatatypeNodes(final Node node, final boolean forceDelete) {
         this.markAccessibleNodes(node);
-        this.markDeletableNodes(node, true);
+        this.markDeletableNodes(node, true, forceDelete);
         this.deleteMarkedNodes(node);
+        this.deleteNonReferencedNodes();
     }
 
     /**
@@ -921,13 +925,13 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @param reallyDeletePred
      *            Flag if predecessor may be deleted
      */
-    private void markDeletableNodes(final Node node, final boolean reallyDeletePred) {
+    private void markDeletableNodes(final Node node, final boolean reallyDeletePred, final boolean forceDelete) {
         boolean reallyDelete = reallyDeletePred;
 
         // Check if there are incoming IS_TYPE relations from outside
         for (final Relationship rel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.CONTAINS,
                 PcmRelationshipType.IS_TYPE)) {
-            if (!rel.hasProperty(ModelProvider.ACCESSIBLE)) {
+            if (!rel.hasProperty(ModelProvider.ACCESSIBLE) && !forceDelete) {
                 reallyDelete = false;
             }
         }
@@ -942,7 +946,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 PcmRelationshipType.IS_TYPE)) {
             if (!rel.hasProperty(ModelProvider.VISITED)) {
                 rel.setProperty(ModelProvider.VISITED, true);
-                this.markDeletableNodes(rel.getEndNode(), reallyDelete);
+                this.markDeletableNodes(rel.getEndNode(), reallyDelete, false);
             }
         }
 
@@ -997,6 +1001,21 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         }
 
         return;
+    }
+
+    /**
+     * Helper method for deleting: This method acts as a kind of garbage collector and deletes nodes
+     * from the graph which are not connected to any other node.
+     */
+    private void deleteNonReferencedNodes() {
+        final ResourceIterator<Node> nodesIter = this.graph.getGraphDatabaseService().getAllNodes().iterator();
+        while (nodesIter.hasNext()) {
+            final Node node = nodesIter.next();
+
+            if (!node.getRelationships().iterator().hasNext()) {
+                node.delete();
+            }
+        }
     }
 
     /**

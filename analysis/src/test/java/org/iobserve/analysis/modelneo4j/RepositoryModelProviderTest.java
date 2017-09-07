@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.modelneo4j.test;
+package org.iobserve.analysis.modelneo4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.modelneo4j.Graph;
-import org.iobserve.analysis.modelneo4j.GraphLoader;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -237,17 +234,18 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
-        modelProvider.deleteComponentAndDatatypes(Repository.class, writtenModel.getId());
+        modelProvider.deleteComponentAndDatatypes(Repository.class, writtenModel.getId(), true);
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
-    @AfterClass
     /**
      * Remove database directory.
-     * 
+     *
      * @throws IOException
+     *             When an error occurs while deleting
      */
+    @AfterClass
     public static void cleanUp() throws IOException {
         RepositoryModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(RepositoryModelProviderTest.GRAPH_DIR);

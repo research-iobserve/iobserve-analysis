@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.modelneo4j.test;
+package org.iobserve.analysis.modelneo4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.modelneo4j.Graph;
-import org.iobserve.analysis.modelneo4j.GraphLoader;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -289,10 +286,11 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
                     .deleteComponent(ResourceContainer.class, rc.getId());
         }
 
-        // Manually delete the root node as it has no id
+        // Manually delete the root node (as it has no id) and the resource type nodes (as they are
+        // no containments anywhere)
         try (Transaction tx = ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
-            ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService()
-                    .execute("MATCH (n:ResourceEnvironment) DELETE n");
+            ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().execute(
+                    "MATCH (m:ResourceEnvironment), (n:ProcessingResourceType), (o:CommunicationLinkResourceType) DELETE n, m, o");
             tx.success();
         }
 
@@ -312,30 +310,24 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
 
         for (final LinkingResource lr : writtenModel.getLinkingResources__ResourceEnvironment()) {
             new ModelProvider<LinkingResource>(ResourceEnvironmentModelProviderTest.GRAPH)
-                    .deleteComponent(LinkingResource.class, lr.getId());
+                    .deleteComponentAndDatatypes(LinkingResource.class, lr.getId(), true);
         }
 
         for (final ResourceContainer rc : writtenModel.getResourceContainer_ResourceEnvironment()) {
             new ModelProvider<ResourceContainer>(ResourceEnvironmentModelProviderTest.GRAPH)
-                    .deleteComponent(ResourceContainer.class, rc.getId());
-        }
-
-        // Manually delete the root node as it has no id
-        try (Transaction tx = ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
-            ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService()
-                    .execute("MATCH (n:ResourceEnvironment) DELETE n");
-            tx.success();
+                    .deleteComponentAndDatatypes(ResourceContainer.class, rc.getId(), true);
         }
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
-    @AfterClass
     /**
      * Remove database directory.
-     * 
+     *
      * @throws IOException
+     *             When an error occurs while deleting
      */
+    @AfterClass
     public static void cleanUp() throws IOException {
         ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(ResourceEnvironmentModelProviderTest.GRAPH_DIR);
