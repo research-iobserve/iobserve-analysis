@@ -15,16 +15,15 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
 
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 
 /**
  * @author Generic Kieker
+ * API compatibility: Kieker 1.13.0
  * 
  * @since 1.13
  */
@@ -58,25 +57,22 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	 *            The values for the record.
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
+	 *
+	 * @deprecated since 1.13. Use {@link #ContainerEvent(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	protected ContainerEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		AbstractMonitoringRecord.checkArray(values, valueTypes);
 		this.url = (String) values[0];
 	}
 
+	
 	/**
-	 * This constructor converts the given buffer into a record.
-	 * 
-	 * @param buffer
-	 *            The bytes for the record
-	 * @param stringRegistry
-	 *            The string registry for deserialization
-	 * 
-	 * @throws BufferUnderflowException
-	 *             if buffer not sufficient
+	 * @param deserializer
+	 *            The deserializer to use
 	 */
-	public ContainerEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
-		this.url = stringRegistry.get(buffer.getInt());
+	public ContainerEvent(final IValueDeserializer deserializer) {
+		this.url = deserializer.getString();
 	}
 	
 
@@ -88,17 +84,6 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	@Override
 	@Deprecated
 	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
-	 */
-	@Override
-	@Deprecated
-	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
 	
