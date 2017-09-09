@@ -28,7 +28,7 @@ import org.iobserve.common.record.IUndeploymentRecord;
  * @author Generic Kieker
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.10
+ * @since 1.13
  */
 public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploymentRecord {
 	private static final long serialVersionUID = 918721494471850423L;

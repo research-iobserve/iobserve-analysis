@@ -28,7 +28,7 @@ import org.iobserve.common.record.ISessionEvent;
  * @author Generic Kieker
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.10
+ * @since 1.13
  */
 public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	private static final long serialVersionUID = 8782471108840749134L;

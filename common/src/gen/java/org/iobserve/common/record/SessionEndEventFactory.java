@@ -22,7 +22,7 @@ import kieker.common.record.io.IValueDeserializer;
 /**
  * @author Generic Kieker
  * 
- * @since 1.10
+ * @since 1.13
  */
 public final class SessionEndEventFactory implements IRecordFactory<SessionEndEvent> {
 	

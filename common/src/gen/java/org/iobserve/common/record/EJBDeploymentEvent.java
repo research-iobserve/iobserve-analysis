@@ -24,7 +24,7 @@ import kieker.common.record.io.IValueDeserializer;
  * @author Generic Kieker
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.10
+ * @since 1.13
  */
 public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	private static final long serialVersionUID = 5051017441001857971L;
