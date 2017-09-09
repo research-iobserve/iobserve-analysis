@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project
+ * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,7 +24,7 @@ import kieker.common.record.io.IValueDeserializer;
  * @author Generic Kieker
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.13
+ * @since 1.10
  */
 public abstract class ServletDeploymentEvent extends AbstractEvent  {
 	private static final long serialVersionUID = 8783132850967133880L;
@@ -38,9 +38,9 @@ public abstract class ServletDeploymentEvent extends AbstractEvent  {
 	
 		
 	/** property declarations. */
-	private String serivce;
-	private String context;
-	private String deploymentId;
+	private final String serivce;
+	private final String context;
+	private final String deploymentId;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -126,23 +126,14 @@ public abstract class ServletDeploymentEvent extends AbstractEvent  {
 		return this.serivce;
 	}
 	
-	public final void setSerivce(String serivce) {
-		this.serivce = serivce;
-	}
 	
 	public final String getContext() {
 		return this.context;
 	}
 	
-	public final void setContext(String context) {
-		this.context = context;
-	}
 	
 	public final String getDeploymentId() {
 		return this.deploymentId;
 	}
 	
-	public final void setDeploymentId(String deploymentId) {
-		this.deploymentId = deploymentId;
-	}
 }

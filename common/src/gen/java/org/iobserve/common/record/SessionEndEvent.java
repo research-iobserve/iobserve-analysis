@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project
+ * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ import org.iobserve.common.record.ISessionEvent;
  * @author Generic Kieker
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.13
+ * @since 1.10
  */
 public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	private static final long serialVersionUID = -2981998362744145083L;
@@ -54,7 +54,7 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	};
 	
 	/** property declarations. */
-	private String sessionId;
+	private final String sessionId;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -194,7 +194,4 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 		return this.sessionId;
 	}
 	
-	public final void setSessionId(String sessionId) {
-		this.sessionId = sessionId;
-	}
 }

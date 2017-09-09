@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project
+ * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -73,9 +73,9 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 	};
 	
 	/** property declarations. */
-	private String[] parameters;
-	private String[] values;
-	private int requestType;
+	private final String[] parameters;
+	private final String[] values;
+	private final int requestType;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -302,23 +302,14 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
 		return this.parameters;
 	}
 	
-	public final void setParameters(String[] parameters) {
-		this.parameters = parameters;
-	}
 	
 	public final String[] getValues() {
 		return this.values;
 	}
 	
-	public final void setValues(String[] values) {
-		this.values = values;
-	}
 	
 	public final int getRequestType() {
 		return this.requestType;
 	}
 	
-	public final void setRequestType(int requestType) {
-		this.requestType = requestType;
-	}
 }
