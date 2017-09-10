@@ -85,6 +85,10 @@ public class AnalysisDaemon implements Daemon {
             "--pcmneo4j" }, required = true, description = "Directory containing Neo4j database with PCM model data.", converter = FileConverter.class)
     private File pcmModelsNeo4jDirectory;
 
+    @Parameter(names = { "-u",
+            "--ubm-visualization" }, required = true, description = "User behavior model visualitation service URL.")
+    private String visualizationServiceURL;
+
     private AnalysisThread thread;
     private boolean running = false;
 
@@ -162,7 +166,7 @@ public class AnalysisDaemon implements Daemon {
                     usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                     resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider, allocationModelProvider,
                     allocationModelGraphProvider, assemblyContextModelGraphProvider, systemModelProvider,
-                    systemModelGraphProvider, assCtxSystemModelGraphProvider);
+                    systemModelGraphProvider, assCtxSystemModelGraphProvider, this.visualizationServiceURL);
 
             this.thread = new AnalysisThread(this, configuration);
         } else {

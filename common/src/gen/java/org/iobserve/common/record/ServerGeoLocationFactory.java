@@ -15,10 +15,9 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import java.nio.ByteBuffer;
 
 import kieker.common.record.factory.IRecordFactory;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Generic Kieker
@@ -27,12 +26,14 @@ import kieker.common.util.registry.IRegistry;
  */
 public final class ServerGeoLocationFactory implements IRecordFactory<ServerGeoLocation> {
 	
+	
 	@Override
-	public ServerGeoLocation create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new ServerGeoLocation(buffer, stringRegistry);
+	public ServerGeoLocation create(final IValueDeserializer deserializer) {
+		return new ServerGeoLocation(deserializer);
 	}
 	
 	@Override
+	@Deprecated
 	public ServerGeoLocation create(final Object[] values) {
 		return new ServerGeoLocation(values);
 	}

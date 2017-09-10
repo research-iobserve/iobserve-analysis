@@ -16,11 +16,11 @@
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
 
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.io.IValueDeserializer;
+import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.ITraceHelper;
@@ -28,6 +28,7 @@ import kieker.common.record.flow.IFlowRecord;
 
 /**
  * @author Reiner Jung
+ * API compatibility: Kieker 1.13.0
  * 
  * @since 1.0
  */
@@ -62,10 +63,10 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	};
 	
 	/** property declarations. */
-	private long traceId;
-	private String host;
-	private int port;
-	private String requestURI;
+	private final long traceId;
+	private final String host;
+	private final int port;
+	private final String requestURI;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -92,7 +93,10 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	 * 
 	 * @param values
 	 *            The values for the record.
+	 *
+	 * @deprecated since 1.13. Use {@link #ServletTraceHelper(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	public ServletTraceHelper(final Object[] values) { // NOPMD (direct store of values)
 		AbstractMonitoringRecord.checkArray(values, TYPES);
 		this.traceId = (Long) values[0];
@@ -108,7 +112,10 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	 *            The values for the record.
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
+	 *
+	 * @deprecated since 1.13. Use {@link #ServletTraceHelper(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	protected ServletTraceHelper(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		AbstractMonitoringRecord.checkArray(values, valueTypes);
 		this.traceId = (Long) values[0];
@@ -117,28 +124,25 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		this.requestURI = (String) values[3];
 	}
 
+	
 	/**
-	 * This constructor converts the given buffer into a record.
-	 * 
-	 * @param buffer
-	 *            The bytes for the record
-	 * @param stringRegistry
-	 *            The string registry for deserialization
-	 * 
-	 * @throws BufferUnderflowException
-	 *             if buffer not sufficient
+	 * @param deserializer
+	 *            The deserializer to use
 	 */
-	public ServletTraceHelper(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
-		this.traceId = buffer.getLong();
-		this.host = stringRegistry.get(buffer.getInt());
-		this.port = buffer.getInt();
-		this.requestURI = stringRegistry.get(buffer.getInt());
+	public ServletTraceHelper(final IValueDeserializer deserializer) {
+		this.traceId = deserializer.getLong();
+		this.host = deserializer.getString();
+		this.port = deserializer.getInt();
+		this.requestURI = deserializer.getString();
 	}
 	
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
 	 */
 	@Override
+	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTraceId(),
@@ -159,11 +163,12 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
-		buffer.putLong(this.getTraceId());
-		buffer.putInt(stringRegistry.get(this.getHost()));
-		buffer.putInt(this.getPort());
-		buffer.putInt(stringRegistry.get(this.getRequestURI()));
+	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
+		//super.serialize(serializer);
+		serializer.putLong(this.getTraceId());
+		serializer.putString(this.getHost());
+		serializer.putInt(this.getPort());
+		serializer.putString(this.getRequestURI());
 	}
 	/**
 	 * {@inheritDoc}
@@ -202,17 +207,6 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
-	 */
-	@Override
-	@Deprecated
-	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean equals(final Object obj) {
@@ -233,31 +227,19 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		return this.traceId;
 	}
 	
-	public final void setTraceId(long traceId) {
-		this.traceId = traceId;
-	}
 	
 	public final String getHost() {
 		return this.host;
 	}
 	
-	public final void setHost(String host) {
-		this.host = host;
-	}
 	
 	public final int getPort() {
 		return this.port;
 	}
 	
-	public final void setPort(int port) {
-		this.port = port;
-	}
 	
 	public final String getRequestURI() {
 		return this.requestURI;
 	}
 	
-	public final void setRequestURI(String requestURI) {
-		this.requestURI = requestURI;
-	}
 }

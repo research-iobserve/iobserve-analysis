@@ -1,2 +1,2 @@
+include "analysis", "common", "monitoring", "analysis.service", "analysis.cli", "collector", "splitter", "test.setup", "rac.creator", "replayer", "evaluate-user-behaviors"
 
-include "analysis", "common", "monitoring", "analysis.service", "analysis.cli", "collector", "splitter", "test.setup", "rac.creator", "replayer"

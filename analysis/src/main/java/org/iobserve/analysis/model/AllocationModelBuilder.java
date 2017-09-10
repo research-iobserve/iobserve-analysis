@@ -102,10 +102,26 @@ public final class AllocationModelBuilder {
                 .findFirst().ifPresent(ctx -> model.getAllocationContexts_Allocation().remove(ctx));
     }
 
+    /**
+     * add an allocation context.
+     *
+     * @param model
+     *            allocation model
+     * @param type
+     *            type to be added
+     */
     public static void addAllocationContext(final Allocation model, final Class<?> type) {
         // TODO add an allocation
     }
 
+    /**
+     * remove an allocation context.
+     *
+     * @param model
+     *            allocation model
+     * @param type
+     *            type to be removed
+     */
     public static void removeAllocationContext(final Allocation model, final Class<?> type) {
         // TODO remove allocation context
     }

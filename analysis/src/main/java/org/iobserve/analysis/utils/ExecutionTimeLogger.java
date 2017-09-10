@@ -50,6 +50,10 @@ public final class ExecutionTimeLogger {
     private final List<LoggingEntry> entryCallTimes;
     private final List<LoggingEntry> entryCallSequenceTimes;
 
+    /**
+     * Factory method to get the execution logger singleton.
+     * @return the ExecutionLogger
+     */
     public static ExecutionTimeLogger getInstance() {
         if (ExecutionTimeLogger.instance == null) {
             ExecutionTimeLogger.instance = new ExecutionTimeLogger();
@@ -67,10 +71,20 @@ public final class ExecutionTimeLogger {
         this.entryCallSequenceTimes = new ArrayList<>();
     }
 
+    /**
+     * Start logging.
+     * 
+     * @param record input record
+     */
     public void startLogging(final IMonitoringRecord record) {
         this.tmpTimes.put(record.hashCode(), System.nanoTime());
     }
 
+    /**
+     * Stop logging.
+     * 
+     * @param record input record
+     */
     public void stopLogging(final IDeploymentRecord record) {
         final Long startTime = this.tmpTimes.get(record.hashCode());
         if (startTime != null) {
@@ -88,6 +102,11 @@ public final class ExecutionTimeLogger {
         }
     }
 
+    /**
+     * Stop logging.
+     * 
+     * @param record input record
+     */
     public void stopLogging(final IUndeploymentRecord record) {
         final Long startTime = this.tmpTimes.get(record.hashCode());
         if (startTime != null) {
@@ -105,6 +124,11 @@ public final class ExecutionTimeLogger {
         }
     }
 
+    /**
+     * Stop logging.
+     * 
+     * @param record input record
+     */
     public void stopLogging(final IAllocationRecord record) {
         final Long startTime = this.tmpTimes.get(record.hashCode());
         if (startTime != null) {
@@ -122,6 +146,11 @@ public final class ExecutionTimeLogger {
         }
     }
 
+    /**
+     * Stop logging.
+     * 
+     * @param record input record
+     */
     public void stopLogging(final AfterOperationEvent record) {
         final Long startTime = this.tmpTimes.get(record.hashCode());
         if (startTime != null) {
@@ -134,6 +163,11 @@ public final class ExecutionTimeLogger {
         }
     }
 
+    /**
+     * Stop logging.
+     * 
+     * @param record input record
+     */
     public void stopLogging(final EntryCallEvent record) {
         final Long startTime = this.tmpTimes.get(record.hashCode());
         if (startTime != null) {
@@ -147,6 +181,9 @@ public final class ExecutionTimeLogger {
         }
     }
 
+    /**
+     * Exports results as CSV.
+     */
     public void exportAsCsv() {
         this.export(Arrays.asList("Service", "Context", "elapsed", "start", "end"), this.allocationTimes,
                 "TAllocation");
@@ -159,6 +196,7 @@ public final class ExecutionTimeLogger {
         this.export(Arrays.asList("SessionId", "OperationSignature", "elapsed", "start", "end"),
                 this.entryCallSequenceTimes, "TEntryCallSequence");
     }
+
 
     private void export(final List<String> headlines, final List<LoggingEntry> list, final String mapName) {
         final CsvExporter exporter = new CsvExporter(mapName + "Logging.csv");

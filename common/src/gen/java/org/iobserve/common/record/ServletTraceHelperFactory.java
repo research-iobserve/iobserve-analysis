@@ -15,10 +15,9 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import java.nio.ByteBuffer;
 
 import kieker.common.record.factory.IRecordFactory;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Reiner Jung
@@ -27,12 +26,14 @@ import kieker.common.util.registry.IRegistry;
  */
 public final class ServletTraceHelperFactory implements IRecordFactory<ServletTraceHelper> {
 	
+	
 	@Override
-	public ServletTraceHelper create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new ServletTraceHelper(buffer, stringRegistry);
+	public ServletTraceHelper create(final IValueDeserializer deserializer) {
+		return new ServletTraceHelper(deserializer);
 	}
 	
 	@Override
+	@Deprecated
 	public ServletTraceHelper create(final Object[] values) {
 		return new ServletTraceHelper(values);
 	}

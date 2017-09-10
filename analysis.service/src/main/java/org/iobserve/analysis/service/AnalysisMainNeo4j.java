@@ -89,6 +89,10 @@ public final class AnalysisMainNeo4j {
             "--pcmneo4j" }, required = true, description = "Directory containing Neo4j database with PCM model data.", converter = FileConverter.class)
     private File pcmModelsNeo4jDirectory;
 
+    @Parameter(names = { "-u",
+            "--ubm-visualization" }, required = true, description = "User behavior model visualitation service URL.")
+    private String visualizationServiceURL;
+
     /**
      * Default constructor.
      */
@@ -210,7 +214,7 @@ public final class AnalysisMainNeo4j {
                         resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider,
                         resourceContainerModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
                         assemblyContextModelGraphProvider, systemModelProvider, systemModelGraphProvider,
-                        assCtxSystemModelGraphProvider);
+                        assCtxSystemModelGraphProvider, this.visualizationServiceURL);
 
                 System.out.println("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);

@@ -47,10 +47,10 @@ subprojects {
         appName = "org.iobserve"
     }
     sourceCompatibility = 1.8
-
+    
     repositories {
-        mavenCentral()
         mavenLocal()
+        mavenCentral()
         jcenter()
         maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven {url "https://oss.sonatype.org/content/repositories/releases/" }

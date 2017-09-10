@@ -30,11 +30,21 @@ public class CsvExporter {
     private final String filePath;
     private final StringBuilder fileContent;
 
+    /**
+     * Create new CSV exporter.
+     * 
+     * @param filePath path for output file
+     */
     public CsvExporter(final String filePath) {
         this.filePath = /* "output\\logging\\" + */filePath;
         this.fileContent = new StringBuilder();
     }
 
+    /**
+     * Set header.
+     * 
+     * @param headline the header.
+     */
     public void setHeadline(final String headline) {
         this.fileContent.append(headline);
         this.fileContent.append(';');
@@ -42,6 +52,11 @@ public class CsvExporter {
         this.fileContent.append('\n');
     }
 
+    /**
+     * Add a row to the CSV file.
+     * 
+     * @param elements elements for the row
+     */
     public void addRow(final List<? extends Object> elements) {
         this.fileContent.append(';');
         for (final Object object : elements) {
@@ -52,6 +67,9 @@ public class CsvExporter {
         this.fileContent.append('\n');
     }
 
+    /**
+     * Export CSV data.
+     */
     public void export() {
         try {
             final PrintWriter pw = new PrintWriter(this.filePath, "UTF-8");

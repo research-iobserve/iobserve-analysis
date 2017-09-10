@@ -25,6 +25,8 @@ some parts are still located in other SVN repositories.
   `git clone git@github.com:research-iobserve/iobserve-repository.git`
 - You need Kieker example data, a RAC and a corresponding palladio model
 
+'Note: This is outdated, we switched to gradle'
+
 ## Setup Build Environment
 
 In the `iobserve-analysis` directory, create a file `gradle.properties`.
@@ -60,12 +62,12 @@ usage: iobserve-analysis
  -p,--pcm <arg>                       directory containing all PCM models
  -t,--think-time <arg>                Variance of user groups for the
                                       clustering
- -V,--variance-of-user-groups <arg>   Variance of user groups for the
+ -v,--variance-of-user-groups <arg>   Variance of user groups for the
                                       clustering
- -w,--closed-workload                 Closed workload
+ -c,--closed-workload                 Closed workload
 
 For a minimal analysis, type:
-`analysis.cli-0.0.2-SNAPSHOT/bin/analysis.cli -i example-kieker-data -p palladio-directory -t 1 -V 2 -w`
+`analysis.cli-0.0.2-SNAPSHOT/bin/analysis.cli -i example-kieker-data -p palladio-directory -t 1 -v 2 -c`
 
 
 

@@ -15,15 +15,14 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
 
 import kieker.common.record.flow.AbstractEvent;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 
 /**
  * @author Generic Kieker
+ * API compatibility: Kieker 1.13.0
  * 
  * @since 1.13
  */
@@ -39,9 +38,9 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	
 		
 	/** property declarations. */
-	private String serivce;
-	private String context;
-	private String deploymentId;
+	private final String serivce;
+	private final String context;
+	private final String deploymentId;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -70,7 +69,10 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	 *            The values for the record.
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
+	 *
+	 * @deprecated since 1.13. Use {@link #EJBDeploymentEvent(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	protected EJBDeploymentEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
 		this.serivce = (String) values[1];
@@ -78,22 +80,16 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 		this.deploymentId = (String) values[3];
 	}
 
+	
 	/**
-	 * This constructor converts the given buffer into a record.
-	 * 
-	 * @param buffer
-	 *            The bytes for the record
-	 * @param stringRegistry
-	 *            The string registry for deserialization
-	 * 
-	 * @throws BufferUnderflowException
-	 *             if buffer not sufficient
+	 * @param deserializer
+	 *            The deserializer to use
 	 */
-	public EJBDeploymentEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
-		super(buffer, stringRegistry);
-		this.serivce = stringRegistry.get(buffer.getInt());
-		this.context = stringRegistry.get(buffer.getInt());
-		this.deploymentId = stringRegistry.get(buffer.getInt());
+	public EJBDeploymentEvent(final IValueDeserializer deserializer) {
+		super(deserializer);
+		this.serivce = deserializer.getString();
+		this.context = deserializer.getString();
+		this.deploymentId = deserializer.getString();
 	}
 	
 
@@ -105,17 +101,6 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	@Override
 	@Deprecated
 	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
-	 */
-	@Override
-	@Deprecated
-	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -141,23 +126,14 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 		return this.serivce;
 	}
 	
-	public final void setSerivce(String serivce) {
-		this.serivce = serivce;
-	}
 	
 	public final String getContext() {
 		return this.context;
 	}
 	
-	public final void setContext(String context) {
-		this.context = context;
-	}
 	
 	public final String getDeploymentId() {
 		return this.deploymentId;
 	}
 	
-	public final void setDeploymentId(String deploymentId) {
-		this.deploymentId = deploymentId;
-	}
 }

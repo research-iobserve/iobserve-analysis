@@ -18,6 +18,8 @@ package org.iobserve.analysis;
 import java.io.File;
 import java.util.Collection;
 
+import org.iobserve.analysis.clustering.EAggregationType;
+import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -26,7 +28,6 @@ import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.neo4j.graphdb.GraphDatabaseService;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -58,8 +59,6 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      *            the resource environment provider
      * @param resourceEnvironmentModelGraphProvider
      *            the resource environment graph provider
-     * @param resourceEnvironmentModelGraph
-     *            the resource environment model graph
      * @param allocationModelProvider
      *            the allocation model provider
      * @param allocationModelGraphProvider
@@ -72,21 +71,25 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      *            variance of user groups, configuration for entry event filter
      * @param thinkTime
      *            think time, configuration for entry event filter
-     * @param closedWorkload
+     * @param closedWorkloadnull
      *            kind of workload, configuration for entry event filter
+     * @param visualizationServiceURL
+     *            url to the visualization service
+     * @param aggregationType aggregation type
+     * @param outputMode output mode
      */
     public FileObservationConfiguration(final Collection<File> directories, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final GraphDatabaseService resourceEnvironmentModelGraph,
             final AllocationModelProvider allocationModelProvider,
             final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
+            final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
-                systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+                systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload, visualizationServiceURL, aggregationType, outputMode);
 
         this.files = new InitialElementProducer<>(directories);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
