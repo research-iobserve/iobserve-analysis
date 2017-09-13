@@ -260,87 +260,65 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
 
 			@Override
 			public Servlet getServlet(String name) throws ServletException {
-				
 				return null;
 			}
 
 			@Override
 			public Enumeration<Servlet> getServlets() {
-				
 				return null;
 			}
 
 			@Override
 			public Enumeration<String> getServletNames() {
-				
 				return null;
 			}
 
 			@Override
-			public void log(String msg) {
-				
-				
-			}
+			public void log(String msg) {}
 
 			@Override
-			public void log(Exception exception, String msg) {
-				
-				
-			}
+			public void log(Exception exception, String msg) {}
 
 			@Override
-			public void log(String message, Throwable throwable) {
-				
-				
-			}
+			public void log(String message, Throwable throwable) {}
 
 			@Override
 			public String getRealPath(String path) {
-				
 				return null;
 			}
 
 			@Override
 			public String getServerInfo() {
-				
 				return null;
 			}
 
 			@Override
 			public String getInitParameter(String name) {
-				
 				return null;
 			}
 
 			@Override
 			public Enumeration<String> getInitParameterNames() {
-				
 				return null;
 			}
 
 			@Override
 			public boolean setInitParameter(String name, String value) {
-				
 				return false;
 			}
 
 			@Override
 			public Object getAttribute(String name) {
-				
 				return null;
 			}
 
 			@Override
 			public Enumeration<String> getAttributeNames() {
-				
 				return null;
 			}
 
 			@Override
-			public void setAttribute(String name, Object object) {
-				
-				
-			}
+			public void setAttribute(String name, Object object) {}
 
 			@Override
 			public void removeAttribute(String name) {
@@ -350,134 +328,104 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
 
 			@Override
 			public String getServletContextName() {
-				
 				return null;
 			}
 
 			@Override
 			public Dynamic addServlet(String servletName, String className) {
-				
 				return null;
 			}
 
 			@Override
 			public Dynamic addServlet(String servletName, Servlet servlet) {
-				
 				return null;
 			}
 
 			@Override
 			public Dynamic addServlet(String servletName, Class<? extends Servlet> servletClass) {
-				
 				return null;
 			}
 
 			@Override
 			public <T extends Servlet> T createServlet(Class<T> clazz) throws ServletException {
-				
 				return null;
 			}
 
 			@Override
 			public ServletRegistration getServletRegistration(String servletName) {
-				
 				return null;
 			}
 
 			@Override
 			public Map<String, ? extends ServletRegistration> getServletRegistrations() {
-				
 				return null;
 			}
 
 			@Override
 			public javax.servlet.FilterRegistration.Dynamic addFilter(String filterName, String className) {
-				
 				return null;
 			}
 
 			@Override
 			public javax.servlet.FilterRegistration.Dynamic addFilter(String filterName, Filter filter) {
-				
 				return null;
 			}
 
 			@Override
 			public javax.servlet.FilterRegistration.Dynamic addFilter(String filterName,
 					Class<? extends Filter> filterClass) {
-				
 				return null;
 			}
 
 			@Override
 			public <T extends Filter> T createFilter(Class<T> clazz) throws ServletException {
-				
 				return null;
 			}
 
 			@Override
 			public FilterRegistration getFilterRegistration(String filterName) {
-				
 				return null;
 			}
 
 			@Override
 			public Map<String, ? extends FilterRegistration> getFilterRegistrations() {
-				
 				return null;
 			}
 
 			@Override
 			public SessionCookieConfig getSessionCookieConfig() {
-				
 				return null;
 			}
 
 			@Override
-			public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes) {
-				
-				
-			}
+			public void setSessionTrackingModes(Set<SessionTrackingMode> sessionTrackingModes) {}
 
 			@Override
 			public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
-				
 				return null;
 			}
 
 			@Override
 			public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
-				
 				return null;
 			}
 
 			@Override
-			public void addListener(String className) {
-				
-				
-			}
+			public void addListener(String className) {}
 
 			@Override
-			public <T extends EventListener> void addListener(T t) {
-				
-				
-			}
+			public <T extends EventListener> void addListener(T t) {}
 
 			@Override
-			public void addListener(Class<? extends EventListener> listenerClass) {
-				
-				
-			}
+			public void addListener(Class<? extends EventListener> listenerClass) {}
 
 			@Override
 			public <T extends EventListener> T createListener(Class<T> clazz) throws ServletException {
-				
 				return null;
 			}
 
 			@Override
 			public JspConfigDescriptor getJspConfigDescriptor() {
-				
 				return null;
 			}
 
@@ -916,19 +864,14 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
 
 		@Override
 		public boolean authenticate(HttpServletResponse response) throws IOException, ServletException {
-			
 			return false;
 		}
 
 		@Override
-		public void login(String username, String password) throws ServletException {
-			
-		}
+		public void login(String username, String password) throws ServletException {}
 
 		@Override
-		public void logout() throws ServletException {
-			
-		}
+		public void logout() throws ServletException {}
 
 		@Override
 		public Collection<Part> getParts() throws IOException, ServletException {
