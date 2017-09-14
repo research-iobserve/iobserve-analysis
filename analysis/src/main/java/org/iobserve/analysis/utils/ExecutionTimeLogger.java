@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.filter.models.UserSession;
+import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IAllocationRecord;
@@ -52,6 +52,7 @@ public final class ExecutionTimeLogger {
     private final List<LoggingEntry> entryCallTimes;
     private final List<LoggingEntry> entryCallSequenceTimes;
     private final List<LoggingEntry> entryEventSequenceTimes;
+    private final List<LoggingEntry> userBehaviorTransformationTimes;
 
     public static ExecutionTimeLogger getInstance() {
         if (ExecutionTimeLogger.instance == null) {
@@ -73,38 +74,46 @@ public final class ExecutionTimeLogger {
         this.entryCallTimes = new ArrayList<>();
         this.entryCallSequenceTimes = new ArrayList<>();
         this.entryEventSequenceTimes = new ArrayList<>();
+        this.userBehaviorTransformationTimes = new ArrayList<>();
     }
 
     public void startLogging(final IMonitoringRecord record) {
         this.tmpTimes.put(record.hashCode(), System.nanoTime());
     }
     
-    public void startLogging(final UserSession session) {
-        this.tmpTimes.put(session.hashCode(), System.currentTimeMillis());
-    }
-    
-    public void stopLogging(final UserSession session) {
-        final Long endTime = System.currentTimeMillis();
-        final Long startTime = this.tmpTimes.remove(session.hashCode());
-        if (startTime != null) {
-            final LoggingEntry entry = new LoggingEntry();
-            String userSessionSize = Integer.toString(session.size());
-            entry.setLoggingInfo("", userSessionSize, endTime - startTime, startTime, endTime);
-            this.entryEventSequenceTimes.add(entry);
-        }
-    }
-    
     public void startLogging(final EntryCallSequenceModel session) {
         this.tmpTimes.put(session.hashCode(), System.currentTimeMillis());
     }
     
+    public void startLogging(final UserBehaviorTransformation transformation) {
+        this.tmpTimes.put(transformation.hashCode(), System.currentTimeMillis());
+    }
+    
+    public void stopLogging(final UserBehaviorTransformation transformation) {
+        final Long endTime = System.currentTimeMillis();
+        final Long startTime = this.tmpTimes.remove(transformation.hashCode());
+        if (startTime != null) {
+            final LoggingEntry entry = new LoggingEntry();
+            
+            transformation.getResponseTimeOfUserGroupExtraction();
+            transformation.getResponseTimeOfBranchExtraction();
+            transformation.getResponseTimeOfLoopExtraction();
+            transformation.getResponseTimeOfPcmModelling();
+            
+            entry.setLoggingInfo(transformation.getResponseTimeOfUserGroupExtraction(), 
+                    transformation.getResponseTimeOfBranchExtraction(), 
+                    transformation.getResponseTimeOfLoopExtraction(), 
+                    transformation.getResponseTimeOfPcmModelling(), endTime - startTime);
+            this.userBehaviorTransformationTimes.add(entry);
+        }
+    }
+
     public void stopLogging(final EntryCallSequenceModel session) {
         final Long endTime = System.currentTimeMillis();
         final Long startTime = this.tmpTimes.remove(session.hashCode());
         if (startTime != null) {
             final LoggingEntry entry = new LoggingEntry();
-            String userSessionSize = Integer.toString(session.getUserSessions().size());
-            entry.setLoggingInfo("", userSessionSize, endTime - startTime, startTime, endTime);
+            entry.setLoggingInfo(0, session.getUserSessions().size(), endTime - startTime, startTime, endTime);
             this.entryEventSequenceTimes.add(entry);
         }
     }
@@ -196,6 +205,8 @@ public final class ExecutionTimeLogger {
                 this.entryCallSequenceTimes, "TEntryCallSequence");
         this.export(Arrays.asList("", "UserSessionSize", "elapsed", "start", "end"),
                 this.entryEventSequenceTimes, "TEntryEventSequence");
+        this.export(Arrays.asList("UserGroupExtraction", "BranchDetection", "LoopDetection", "PcmModelBuild", "Elapsed"),
+                this.userBehaviorTransformationTimes, "UserBehaviorTransformation");
     }
 
     private void export(final List<String> headlines, final List<LoggingEntry> list, final String mapName) {
@@ -225,6 +236,14 @@ public final class ExecutionTimeLogger {
             this.elapsedTime = elapsedTime;
             this.startTime = startTime;
             this.endTime = endTime;
+        }
+        
+        public void setLoggingInfo(final long info1, final long info2, final long info3, final long info4, final long info5) {
+            this.sessionId = Long.toString(info1);
+            this.entityId = Long.toString(info2);
+            this.elapsedTime = info3;
+            this.startTime = info4;
+            this.endTime = info5;
         }
 
         public List<Object> asList() {

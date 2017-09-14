@@ -177,22 +177,21 @@ public class ClusteringPrePostProcessing {
         final List<EntryCallSequenceModel> entryCallSequenceModels = new ArrayList<>(numberOfClusters);
         final double countOfAbsoluteUserSessions = callSequenceModel.getUserSessions().size();
         for (int k = 0; k < numberOfClusters; k++) {
-            EntryCallSequenceModel model = new EntryCallSequenceModel();
+            List<UserSession> sessions = new ArrayList<>();
             int instanceNumber = 0;
             double countOfAssigendUserSessions = 0;
             for (final int clusterNum : assignments) {
                 if (clusterNum == k) {
-                    model.addOrUpdateSession(callSequenceModel.getUserSessions().get(instanceNumber));
+                    sessions.add(callSequenceModel.getUserSessions().get(instanceNumber));
                     countOfAssigendUserSessions++;
                 }
                 instanceNumber++;
             }
-            if (model.getUserSessions().size() == 0) {
+            if (sessions.size() == 0) {
                 continue;
             }
             final double relativeFrequencyOfUserGroup = countOfAssigendUserSessions / countOfAbsoluteUserSessions;
-            model.setLikelihoodOfUserGroup(relativeFrequencyOfUserGroup);
-            entryCallSequenceModels.add(model);
+            entryCallSequenceModels.add(new EntryCallSequenceModel(sessions, relativeFrequencyOfUserGroup));
         }
         return entryCallSequenceModels;
     }

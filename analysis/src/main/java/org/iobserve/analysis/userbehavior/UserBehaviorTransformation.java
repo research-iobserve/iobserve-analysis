@@ -22,6 +22,7 @@ import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
@@ -100,6 +101,7 @@ public class UserBehaviorTransformation {
      */
     public void modelUserBehavior() throws IOException {
 
+        ExecutionTimeLogger.getInstance().startLogging(this);
         if (this.inputEntryCallSequenceModel.getUserSessions().size() < 1) {
             return;
         }
@@ -170,6 +172,7 @@ public class UserBehaviorTransformation {
 
         timeAfterOverall = System.currentTimeMillis();
         this.overallResponseTime = (timeAfterOverall - timeBeforeOverall);
+        ExecutionTimeLogger.getInstance().stopLogging(this);
     }
 
     /**

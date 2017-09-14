@@ -20,7 +20,6 @@ import java.io.IOException;
 import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -39,7 +38,7 @@ import org.iobserve.analysis.utils.ExecutionTimeLogger;
  *
  * @version 1.0
  */
-public final class TEntryEventSequence extends AbstractConsumerStage<UserSession> {
+public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
 
 	/** reference to the correspondence model. */
 	private final ICorrespondence correspondenceModel;
@@ -53,8 +52,6 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
 	private final boolean closedWorkload;
 
 	private final RepositoryModelProvider repositoryModelProvider;
-	
-	private EntryCallSequenceModel entryCallSequenceModel;
 
 	/**
 	 * Create a entry event sequence filter.
@@ -82,21 +79,18 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
 		this.varianceOfUserGroups = varianceOfUserGroups;
 		this.thinkTime = thinkTime;
 		this.closedWorkload = closedWorkload;
-		this.entryCallSequenceModel = new EntryCallSequenceModel();
 	}
 
 	@Override
-	protected void execute(final UserSession session) {
-	    ExecutionTimeLogger.getInstance().startLogging(session);
-	    
-	    this.entryCallSequenceModel.addOrUpdateSession(session);
+	protected void execute(final EntryCallSequenceModel model) {
+	    ExecutionTimeLogger.getInstance().startLogging(model);
 	    
 		// Resets the current usage model
 		this.usageModelProvider.loadModel();
 		int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
 		
 		// Executes the user behavior modeling procedure
-		final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(entryCallSequenceModel,
+		final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(model,
 				numberOfUserGroups, this.varianceOfUserGroups, this.closedWorkload, this.thinkTime,
 				this.repositoryModelProvider, this.correspondenceModel);
 		try {
@@ -111,6 +105,6 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
 		// Sets the new usage model within iObserve
 		this.usageModelProvider.save();
 		
-		ExecutionTimeLogger.getInstance().stopLogging(session);
+		ExecutionTimeLogger.getInstance().stopLogging(model);
 	}
 }

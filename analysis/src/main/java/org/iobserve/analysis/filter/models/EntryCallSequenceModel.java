@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter.models;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.iobserve.analysis.userbehavior.data.WorkloadIntensity;
@@ -36,40 +34,25 @@ import org.iobserve.analysis.userbehavior.data.WorkloadIntensity;
 public final class EntryCallSequenceModel {
 
     /** list of user sessions. */
-    private List<UserSession> userSessions;
+    private final List<UserSession> userSessions;
     private WorkloadIntensity workloadIntensity;
     private double likelihoodOfUserGroup;
-    private HashMap<String, UserSession> sessionMap;
 
     /**
      * Create new model.
      * 
-     *  @deprecated
      */
     public EntryCallSequenceModel(final List<UserSession> sessions) {
         this.userSessions = sessions;
-        this.sessionMap = new HashMap<>();
-        for(UserSession session : this.userSessions) {
-            sessionMap.put(session.getSessionId(), session);
-        }
     }
     
     /**
      * Create new model.
+     * 
      */
-    public EntryCallSequenceModel() {
-        this.userSessions = new LinkedList<>();
-        this.sessionMap = new HashMap<>();
-    }
-    
-    public void addOrUpdateSession(UserSession session) {
-        if(sessionMap.containsKey(session.getSessionId())) {
-            sessionMap.replace(session.getSessionId(), session);
-        } else {
-            sessionMap.put(session.getSessionId(), session);
-        }
-        
-        this.userSessions = new LinkedList<>(sessionMap.values());
+    public EntryCallSequenceModel(final List<UserSession> sessions, final double likelihoodOfUserGroup) {
+        this.userSessions = sessions;
+        this.likelihoodOfUserGroup = likelihoodOfUserGroup;
     }
 
     /**
