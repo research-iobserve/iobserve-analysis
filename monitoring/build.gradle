@@ -14,7 +14,7 @@ dependencies {
 	compile 'javax.interceptor:javax.interceptor-api:1.2'
 	compile 'javax.servlet:javax.servlet-api:3.1.0'
 	
-    testCompile 'junit:junit:4.12'
+    compile 'junit:junit:4.12'
 	
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'

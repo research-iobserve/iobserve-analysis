@@ -29,7 +29,7 @@ import teetime.stage.basic.distributor.Distributor;
 import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
 import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import teetime.stage.basic.merger.Merger;
-import teetime.stage.basic.merger.strategy.SkippingBusyWaitingRoundRobinStrategy;
+import teetime.stage.basic.merger.strategy.BusyWaitingRoundRobinStrategy;
 import weka.core.Instances;
 
 /**
@@ -59,7 +59,7 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         this.distributor = new Distributor<>(strategy);
 
-        this.merger = new Merger<>(new SkippingBusyWaitingRoundRobinStrategy());
+        this.merger = new Merger<>(new BusyWaitingRoundRobinStrategy());
 
         this.tBehaviorModelTableGeneration = new TBehaviorModelTableGeneration(
                 configuration.getRepresentativeStrategy(), configuration.keepEmptyTransitions());

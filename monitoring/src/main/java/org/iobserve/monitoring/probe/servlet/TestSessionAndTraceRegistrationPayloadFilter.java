@@ -52,6 +52,11 @@ import javax.servlet.http.Part;
 import org.junit.Before;
 import org.junit.Test;
 
+import kieker.common.configuration.Configuration;
+import kieker.monitoring.core.configuration.ConfigurationFactory;
+import kieker.monitoring.core.controller.MonitoringController;
+import kieker.monitoring.writer.filesystem.AsciiFileWriter;
+
 /**
  * @author Reiner Jung
  *
@@ -59,11 +64,14 @@ import org.junit.Test;
 @SuppressWarnings("deprecation")
 public class TestSessionAndTraceRegistrationPayloadFilter {
 
+	private static final String WRITER_NAME = AsciiFileWriter.class.getCanonicalName();
+	
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
+		
 	}
 
 	/**
