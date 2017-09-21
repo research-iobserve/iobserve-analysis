@@ -82,6 +82,9 @@ public class TAllocationFinished extends AbstractStage {
 
     /**
      * Forwards the deployment event after the allocation is finished.
+     * 
+     * @throws Exception
+     *             exception
      */
     @Override
     protected void execute() throws Exception {

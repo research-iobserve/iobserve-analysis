@@ -161,9 +161,12 @@ public class DeploymentVisualizationStageTest {
      * Check whether the changelog for creating the service is written before the changelog for
      * creating the serviceInstance (constraint on deployment visualization). A
      * {@link ServletDeployedEvent} is defined as input.
+     *
+     * @throws IOException
      */
     @Test
-    public void checkServletChangelog() {
+    public void checkServletChangelog() throws IOException {
+
         StageTester.test(this.deploymentVisualizationStage).and().send(this.inputServletEvents)
                 .to(this.deploymentVisualizationStage.getInputPort()).start();
 

@@ -90,6 +90,9 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
     /**
      * This method is triggered for every undeployment event.
+     *
+     * @param event
+     *            undeployment event
      */
     @Override
     protected void execute(final IUndeploymentRecord event) {
@@ -199,6 +202,11 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         }
     }
 
+    /**
+     *
+     * @deprecated This port is not used anymore.
+     * @return model output port
+     */
     @Deprecated
     public OutputPort<RemoveAllocationContextEvent> getModelOutputPort() {
         return this.modelOutputPort;

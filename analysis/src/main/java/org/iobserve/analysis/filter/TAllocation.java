@@ -80,6 +80,7 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      * @param event
      *            one allocation event to be processed
      * @throws MalformedURLException
+     *             malformed url exception
      */
     @Override
     protected void execute(final IAllocationRecord event) throws MalformedURLException {
