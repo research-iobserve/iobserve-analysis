@@ -433,7 +433,7 @@ public class TestModelBuilder {
         this.buyBookScenarioBehaviour.getActions_ScenarioBehaviour().add(this.stopScenario);
 
         // Start, stop and entry level system calls
-        this.startScenario.setEntityName("Start");
+        this.startScenario.setEntityName("startScenario");
         this.startScenario.setScenarioBehaviour_AbstractUserAction(this.buyBookScenarioBehaviour);
         this.startScenario.setSuccessor(this.getQueryCall);
 
