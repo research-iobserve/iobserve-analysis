@@ -41,16 +41,17 @@ public class GraphLoader {
     private static final String SYSTEM_GRAPH_DIR = "systemmodel";
     private static final String USAGE_GRAPH_DIR = "usagemodel";
 
-    private final File neo4jPcmModelDirectory;
+    private final File baseDirectory;
 
     /**
      * Creates a graph loader for for Neo4j databases in the specified directory.
      *
-     * @param neo4jPcmModelDirectory
-     *            The directory
+     * @param baseDirectory
+     *            The base directory. Subfolders for the different model types are created in this
+     *            directory. The different model versions are stored in each of these subfolders.
      */
-    public GraphLoader(final File neo4jPcmModelDirectory) {
-        this.neo4jPcmModelDirectory = neo4jPcmModelDirectory;
+    public GraphLoader(final File baseDirectory) {
+        this.baseDirectory = baseDirectory;
     }
 
     /**
@@ -62,7 +63,7 @@ public class GraphLoader {
      * @return The the model graph
      */
     private Graph cloneNewModelGraphVersion(final String graphTypeDirName) {
-        final File graphTypeDir = new File(this.neo4jPcmModelDirectory, graphTypeDirName);
+        final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
         final int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
         final File newGraphDir = new File(graphTypeDir,
                 graphTypeDirName + GraphLoader.VERSION_PREFIX + (maxVersionNumber + 1));
@@ -139,7 +140,7 @@ public class GraphLoader {
      * @return The model graph
      */
     private Graph getModelGraphVersion(final String graphTypeDirName) {
-        final File graphTypeDir = new File(this.neo4jPcmModelDirectory, graphTypeDirName);
+        final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
         int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
 
         if (maxVersionNumber == 0) {
