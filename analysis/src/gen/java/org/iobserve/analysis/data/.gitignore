@@ -1,2 +1,6 @@
 /EntryCallEvent.java
 /EntryCallEventFactory.java
+/ExtendedEntryCallEvent.java
+/ExtendedEntryCallEventFactory.java
+/PayloadAwareEntryCallEvent.java
+/PayloadAwareEntryCallEventFactory.java

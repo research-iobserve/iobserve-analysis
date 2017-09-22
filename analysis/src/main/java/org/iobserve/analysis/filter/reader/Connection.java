@@ -18,6 +18,8 @@ package org.iobserve.analysis.filter.reader;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+import kieker.common.record.io.DefaultValueDeserializer;
+import kieker.common.record.io.IValueDeserializer;
 import kieker.common.util.registry.IRegistry;
 
 import teetime.stage.io.network.util.GetValueAdapter;
@@ -39,6 +41,8 @@ public class Connection {
     private final IRegistry<String> stringRegistryWrapper;
     /** Byte buffer for reading the channel. */
     private final ByteBuffer buffer;
+    /** Deserializer setup. */
+    private final IValueDeserializer deserializer;
 
     /**
      * Create a connection for the given channel and utilizing the specified buffer size.
@@ -52,6 +56,8 @@ public class Connection {
         this.channel = channel;
         this.stringRegistryWrapper = new GetValueAdapter<>(this.registry);
         this.buffer = ByteBuffer.allocateDirect(bufferSize);
+        this.deserializer = DefaultValueDeserializer.create(this.buffer,
+                this.stringRegistryWrapper);
     }
 
     public ReaderRegistry<String> getRegistry() {
@@ -62,12 +68,12 @@ public class Connection {
         return this.channel;
     }
 
-    public IRegistry<String> getStringRegistryWrapper() {
-        return this.stringRegistryWrapper;
-    }
-
     public ByteBuffer getBuffer() {
         return this.buffer;
+    }
+    
+    public IValueDeserializer getValueDeserializer() {
+    	return this.deserializer;
     }
 
 }

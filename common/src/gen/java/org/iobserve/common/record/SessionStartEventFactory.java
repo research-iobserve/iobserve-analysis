@@ -24,21 +24,21 @@ import kieker.common.record.io.IValueDeserializer;
  * 
  * @since 1.13
  */
-public final class ContainerAllocationEventFactory implements IRecordFactory<ContainerAllocationEvent> {
+public final class SessionStartEventFactory implements IRecordFactory<SessionStartEvent> {
 	
 	
 	@Override
-	public ContainerAllocationEvent create(final IValueDeserializer deserializer) {
-		return new ContainerAllocationEvent(deserializer);
+	public SessionStartEvent create(final IValueDeserializer deserializer) {
+		return new SessionStartEvent(deserializer);
 	}
 	
 	@Override
 	@Deprecated
-	public ContainerAllocationEvent create(final Object[] values) {
-		return new ContainerAllocationEvent(values);
+	public SessionStartEvent create(final Object[] values) {
+		return new SessionStartEvent(values);
 	}
 	
 	public int getRecordSizeInBytes() {
-		return ContainerAllocationEvent.SIZE;
+		return SessionStartEvent.SIZE;
 	}
 }

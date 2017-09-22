@@ -20,25 +20,25 @@ import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
 /**
- * @author Generic Kieker
+ * @author Christoph Dornieden
  * 
- * @since 1.13
+ * @since 0.0.2
  */
-public final class ContainerAllocationEventFactory implements IRecordFactory<ContainerAllocationEvent> {
+public final class ExtendedAfterOperationEventFactory implements IRecordFactory<ExtendedAfterOperationEvent> {
 	
 	
 	@Override
-	public ContainerAllocationEvent create(final IValueDeserializer deserializer) {
-		return new ContainerAllocationEvent(deserializer);
+	public ExtendedAfterOperationEvent create(final IValueDeserializer deserializer) {
+		return new ExtendedAfterOperationEvent(deserializer);
 	}
 	
 	@Override
 	@Deprecated
-	public ContainerAllocationEvent create(final Object[] values) {
-		return new ContainerAllocationEvent(values);
+	public ExtendedAfterOperationEvent create(final Object[] values) {
+		return new ExtendedAfterOperationEvent(values);
 	}
 	
 	public int getRecordSizeInBytes() {
-		return ContainerAllocationEvent.SIZE;
+		return ExtendedAfterOperationEvent.SIZE;
 	}
 }

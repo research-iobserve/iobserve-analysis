@@ -16,16 +16,17 @@
 package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
 
 import org.iobserve.common.record.ServletDeploymentEvent;
+import kieker.common.record.io.IValueDeserializer;
+import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IDeploymentRecord;
 
 /**
  * @author Generic Kieker
+ * API compatibility: Kieker 1.13.0
  * 
  * @since 1.13
  */
@@ -79,7 +80,10 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 	 * 
 	 * @param values
 	 *            The values for the record.
+	 *
+	 * @deprecated since 1.13. Use {@link #ServletDeployedEvent(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	public ServletDeployedEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
 	}
@@ -91,30 +95,30 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 	 *            The values for the record.
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
+	 *
+	 * @deprecated since 1.13. Use {@link #ServletDeployedEvent(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	protected ServletDeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
 	}
 
+	
 	/**
-	 * This constructor converts the given buffer into a record.
-	 * 
-	 * @param buffer
-	 *            The bytes for the record
-	 * @param stringRegistry
-	 *            The string registry for deserialization
-	 * 
-	 * @throws BufferUnderflowException
-	 *             if buffer not sufficient
+	 * @param deserializer
+	 *            The deserializer to use
 	 */
-	public ServletDeployedEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
-		super(buffer, stringRegistry);
+	public ServletDeployedEvent(final IValueDeserializer deserializer) {
+		super(deserializer);
 	}
 	
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
 	 */
 	@Override
+	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTimestamp(),
@@ -136,11 +140,12 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
-		buffer.putLong(this.getTimestamp());
-		buffer.putInt(stringRegistry.get(this.getSerivce()));
-		buffer.putInt(stringRegistry.get(this.getContext()));
-		buffer.putInt(stringRegistry.get(this.getDeploymentId()));
+	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
+		//super.serialize(serializer);
+		serializer.putLong(this.getTimestamp());
+		serializer.putString(this.getSerivce());
+		serializer.putString(this.getContext());
+		serializer.putString(this.getDeploymentId());
 	}
 	/**
 	 * {@inheritDoc}
@@ -174,17 +179,6 @@ public class ServletDeployedEvent extends ServletDeploymentEvent implements IDep
 	@Override
 	@Deprecated
 	public void initFromArray(final Object[] values) {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
-	 */
-	@Override
-	@Deprecated
-	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
 		throw new UnsupportedOperationException();
 	}
 	

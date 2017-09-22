@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project
+ * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,18 +16,19 @@
 package org.iobserve.analysis.data;
 
 import java.nio.BufferOverflowException;
-import java.nio.BufferUnderflowException;
-import java.nio.ByteBuffer;
 
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.io.IValueDeserializer;
+import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
 
 /**
  * @author Reiner Jung
+ * API compatibility: Kieker 1.13.0
  * 
- * @since 1.0
+ * @since 0.0.2
  */
 public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {
 	private static final long serialVersionUID = -9019303768669463280L;
@@ -68,12 +69,12 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	};
 	
 	/** property declarations. */
-	private long entryTime;
-	private long exitTime;
-	private String operationSignature;
-	private String classSignature;
-	private String sessionId;
-	private String hostname;
+	private final long entryTime;
+	private final long exitTime;
+	private final String operationSignature;
+	private final String classSignature;
+	private final String sessionId;
+	private final String hostname;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -106,7 +107,10 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	 * 
 	 * @param values
 	 *            The values for the record.
+	 *
+	 * @deprecated since 1.13. Use {@link #EntryCallEvent(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	public EntryCallEvent(final Object[] values) { // NOPMD (direct store of values)
 		AbstractMonitoringRecord.checkArray(values, TYPES);
 		this.entryTime = (Long) values[0];
@@ -124,7 +128,10 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	 *            The values for the record.
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
+	 *
+	 * @deprecated since 1.13. Use {@link #EntryCallEvent(IValueDeserializer)} instead.
 	 */
+	@Deprecated
 	protected EntryCallEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		AbstractMonitoringRecord.checkArray(values, valueTypes);
 		this.entryTime = (Long) values[0];
@@ -135,30 +142,27 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 		this.hostname = (String) values[5];
 	}
 
+	
 	/**
-	 * This constructor converts the given buffer into a record.
-	 * 
-	 * @param buffer
-	 *            The bytes for the record
-	 * @param stringRegistry
-	 *            The string registry for deserialization
-	 * 
-	 * @throws BufferUnderflowException
-	 *             if buffer not sufficient
+	 * @param deserializer
+	 *            The deserializer to use
 	 */
-	public EntryCallEvent(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
-		this.entryTime = buffer.getLong();
-		this.exitTime = buffer.getLong();
-		this.operationSignature = stringRegistry.get(buffer.getInt());
-		this.classSignature = stringRegistry.get(buffer.getInt());
-		this.sessionId = stringRegistry.get(buffer.getInt());
-		this.hostname = stringRegistry.get(buffer.getInt());
+	public EntryCallEvent(final IValueDeserializer deserializer) {
+		this.entryTime = deserializer.getLong();
+		this.exitTime = deserializer.getLong();
+		this.operationSignature = deserializer.getString();
+		this.classSignature = deserializer.getString();
+		this.sessionId = deserializer.getString();
+		this.hostname = deserializer.getString();
 	}
 	
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
 	 */
 	@Override
+	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
 			this.getEntryTime(),
@@ -183,13 +187,14 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
-		buffer.putLong(this.getEntryTime());
-		buffer.putLong(this.getExitTime());
-		buffer.putInt(stringRegistry.get(this.getOperationSignature()));
-		buffer.putInt(stringRegistry.get(this.getClassSignature()));
-		buffer.putInt(stringRegistry.get(this.getSessionId()));
-		buffer.putInt(stringRegistry.get(this.getHostname()));
+	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
+		//super.serialize(serializer);
+		serializer.putLong(this.getEntryTime());
+		serializer.putLong(this.getExitTime());
+		serializer.putString(this.getOperationSignature());
+		serializer.putString(this.getClassSignature());
+		serializer.putString(this.getSessionId());
+		serializer.putString(this.getHostname());
 	}
 	/**
 	 * {@inheritDoc}
@@ -228,17 +233,6 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	
 	/**
 	 * {@inheritDoc}
-	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.BinaryFactory} mechanism. Hence, this method is not implemented.
-	 */
-	@Override
-	@Deprecated
-	public void initFromBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferUnderflowException {
-		throw new UnsupportedOperationException();
-	}
-	
-	/**
-	 * {@inheritDoc}
 	 */
 	@Override
 	public boolean equals(final Object obj) {
@@ -261,47 +255,29 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 		return this.entryTime;
 	}
 	
-	public final void setEntryTime(long entryTime) {
-		this.entryTime = entryTime;
-	}
 	
 	public final long getExitTime() {
 		return this.exitTime;
 	}
 	
-	public final void setExitTime(long exitTime) {
-		this.exitTime = exitTime;
-	}
 	
 	public final String getOperationSignature() {
 		return this.operationSignature;
 	}
 	
-	public final void setOperationSignature(String operationSignature) {
-		this.operationSignature = operationSignature;
-	}
 	
 	public final String getClassSignature() {
 		return this.classSignature;
 	}
 	
-	public final void setClassSignature(String classSignature) {
-		this.classSignature = classSignature;
-	}
 	
 	public final String getSessionId() {
 		return this.sessionId;
 	}
 	
-	public final void setSessionId(String sessionId) {
-		this.sessionId = sessionId;
-	}
 	
 	public final String getHostname() {
 		return this.hostname;
 	}
 	
-	public final void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
 }

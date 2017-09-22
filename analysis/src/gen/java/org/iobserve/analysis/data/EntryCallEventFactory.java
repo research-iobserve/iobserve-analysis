@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project
+ * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,24 +15,25 @@
  ***************************************************************************/
 package org.iobserve.analysis.data;
 
-import java.nio.ByteBuffer;
 
 import kieker.common.record.factory.IRecordFactory;
-import kieker.common.util.registry.IRegistry;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Reiner Jung
  * 
- * @since 1.0
+ * @since 0.0.2
  */
 public final class EntryCallEventFactory implements IRecordFactory<EntryCallEvent> {
 	
+	
 	@Override
-	public EntryCallEvent create(final ByteBuffer buffer, final IRegistry<String> stringRegistry) {
-		return new EntryCallEvent(buffer, stringRegistry);
+	public EntryCallEvent create(final IValueDeserializer deserializer) {
+		return new EntryCallEvent(deserializer);
 	}
 	
 	@Override
+	@Deprecated
 	public EntryCallEvent create(final Object[] values) {
 		return new EntryCallEvent(values);
 	}

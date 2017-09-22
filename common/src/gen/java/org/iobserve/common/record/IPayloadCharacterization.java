@@ -15,30 +15,18 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-
-import kieker.common.record.factory.IRecordFactory;
-import kieker.common.record.io.IValueDeserializer;
+import kieker.common.record.IMonitoringRecord;
 
 /**
- * @author Generic Kieker
+ * @author Reiner Jung
  * 
- * @since 1.13
+ * @since 0.0.2
  */
-public final class ContainerAllocationEventFactory implements IRecordFactory<ContainerAllocationEvent> {
+public interface IPayloadCharacterization extends IMonitoringRecord {
+	public String[] getParameters() ;
 	
+	public String[] getValues() ;
 	
-	@Override
-	public ContainerAllocationEvent create(final IValueDeserializer deserializer) {
-		return new ContainerAllocationEvent(deserializer);
-	}
+	public int getRequestType() ;
 	
-	@Override
-	@Deprecated
-	public ContainerAllocationEvent create(final Object[] values) {
-		return new ContainerAllocationEvent(values);
-	}
-	
-	public int getRecordSizeInBytes() {
-		return ContainerAllocationEvent.SIZE;
-	}
 }

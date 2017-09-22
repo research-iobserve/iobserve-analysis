@@ -17,12 +17,12 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
-import org.iobserve.common.record.ContainerEvent;
+import kieker.common.record.flow.AbstractEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
-import org.iobserve.common.record.IDeallocationRecord;
+import org.iobserve.common.record.ISessionEvent;
 
 /**
  * @author Generic Kieker
@@ -30,33 +30,43 @@ import org.iobserve.common.record.IDeallocationRecord;
  * 
  * @since 1.13
  */
-public class ContainerDeallocationEvent extends ContainerEvent implements IDeallocationRecord {
-	private static final long serialVersionUID = 4775916963006881196L;
+public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
+	private static final long serialVersionUID = 8782471108840749134L;
 
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_STRING // ContainerEvent.url
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+			 + TYPE_SIZE_STRING // ISessionEvent.sessionId
 	;
 	
 	public static final Class<?>[] TYPES = {
-		String.class, // ContainerEvent.url
+		long.class, // IEventRecord.timestamp
+		String.class, // ISessionEvent.sessionId
 	};
 	
 	
+	/** default constants. */
+	public static final String SESSION_ID = "";
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
-		"url",
+		"timestamp",
+		"sessionId",
 	};
 	
+	/** property declarations. */
+	private final String sessionId;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
-	 * @param url
-	 *            url
+	 * @param timestamp
+	 *            timestamp
+	 * @param sessionId
+	 *            sessionId
 	 */
-	public ContainerDeallocationEvent(final String url) {
-		super(url);
+	public SessionStartEvent(final long timestamp, final String sessionId) {
+		super(timestamp);
+		this.sessionId = sessionId == null?"":sessionId;
 	}
 
 	/**
@@ -66,11 +76,12 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ContainerDeallocationEvent(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #SessionStartEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	public ContainerDeallocationEvent(final Object[] values) { // NOPMD (direct store of values)
+	public SessionStartEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
+		this.sessionId = (String) values[1];
 	}
 
 	/**
@@ -81,11 +92,12 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ContainerDeallocationEvent(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #SessionStartEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	protected ContainerDeallocationEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
+	protected SessionStartEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
+		this.sessionId = (String) values[1];
 	}
 
 	
@@ -93,8 +105,9 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	 * @param deserializer
 	 *            The deserializer to use
 	 */
-	public ContainerDeallocationEvent(final IValueDeserializer deserializer) {
+	public SessionStartEvent(final IValueDeserializer deserializer) {
 		super(deserializer);
+		this.sessionId = deserializer.getString();
 	}
 	
 	/**
@@ -106,7 +119,8 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
-			this.getUrl()
+			this.getTimestamp(),
+			this.getSessionId()
 		};
 	}
 	/**
@@ -114,7 +128,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	 */
 	@Override
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getUrl());
+		stringRegistry.get(this.getSessionId());
 	}
 	/**
 	 * {@inheritDoc}
@@ -122,7 +136,8 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
 		//super.serialize(serializer);
-		serializer.putString(this.getUrl());
+		serializer.putLong(this.getTimestamp());
+		serializer.putString(this.getSessionId());
 	}
 	/**
 	 * {@inheritDoc}
@@ -168,10 +183,15 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 		if (obj == this) return true;
 		if (obj.getClass() != this.getClass()) return false;
 		
-		final ContainerDeallocationEvent castedRecord = (ContainerDeallocationEvent) obj;
+		final SessionStartEvent castedRecord = (SessionStartEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (!this.getUrl().equals(castedRecord.getUrl())) return false;
+		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
+		if (!this.getSessionId().equals(castedRecord.getSessionId())) return false;
 		return true;
+	}
+	
+	public final String getSessionId() {
+		return this.sessionId;
 	}
 	
 }

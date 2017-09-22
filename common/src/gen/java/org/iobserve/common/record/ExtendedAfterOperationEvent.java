@@ -17,61 +17,76 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
-import org.iobserve.common.record.EJBDeploymentEvent;
+import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
-import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IUserInformation;
 
 /**
- * @author Generic Kieker
+ * @author Christoph Dornieden
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.13
+ * @since 0.0.2
  */
-public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentRecord {
-	private static final long serialVersionUID = -2608702278942937636L;
+public class ExtendedAfterOperationEvent extends AfterOperationEvent implements IUserInformation {
+	private static final long serialVersionUID = -6074724758089708739L;
 
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
-			 + TYPE_SIZE_STRING // EJBDeploymentEvent.serivce
-			 + TYPE_SIZE_STRING // EJBDeploymentEvent.context
-			 + TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
+			 + TYPE_SIZE_LONG // ITraceRecord.traceId
+			 + TYPE_SIZE_INT // ITraceRecord.orderIndex
+			 + TYPE_SIZE_STRING // IOperationSignature.operationSignature
+			 + TYPE_SIZE_STRING // IClassSignature.classSignature
+			 + TYPE_SIZE_STRING // IUserInformation.informations
 	;
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEventRecord.timestamp
-		String.class, // EJBDeploymentEvent.serivce
-		String.class, // EJBDeploymentEvent.context
-		String.class, // EJBDeploymentEvent.deploymentId
+		long.class, // ITraceRecord.traceId
+		int.class, // ITraceRecord.orderIndex
+		String.class, // IOperationSignature.operationSignature
+		String.class, // IClassSignature.classSignature
+		String.class, // IUserInformation.informations
 	};
 	
 	
+	/** default constants. */
+	public static final String INFORMATIONS = "";
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
 		"timestamp",
-		"serivce",
-		"context",
-		"deploymentId",
+		"traceId",
+		"orderIndex",
+		"operationSignature",
+		"classSignature",
+		"informations",
 	};
 	
+	/** property declarations. */
+	private final String informations;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
 	 * @param timestamp
 	 *            timestamp
-	 * @param serivce
-	 *            serivce
-	 * @param context
-	 *            context
-	 * @param deploymentId
-	 *            deploymentId
+	 * @param traceId
+	 *            traceId
+	 * @param orderIndex
+	 *            orderIndex
+	 * @param operationSignature
+	 *            operationSignature
+	 * @param classSignature
+	 *            classSignature
+	 * @param informations
+	 *            informations
 	 */
-	public EJBDeployedEvent(final long timestamp, final String serivce, final String context, final String deploymentId) {
-		super(timestamp, serivce, context, deploymentId);
+	public ExtendedAfterOperationEvent(final long timestamp, final long traceId, final int orderIndex, final String operationSignature, final String classSignature, final String informations) {
+		super(timestamp, traceId, orderIndex, operationSignature, classSignature);
+		this.informations = informations == null?"":informations;
 	}
 
 	/**
@@ -81,11 +96,12 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #EJBDeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #ExtendedAfterOperationEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	public EJBDeployedEvent(final Object[] values) { // NOPMD (direct store of values)
+	public ExtendedAfterOperationEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
+		this.informations = (String) values[5];
 	}
 
 	/**
@@ -96,11 +112,12 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #EJBDeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #ExtendedAfterOperationEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	protected EJBDeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
+	protected ExtendedAfterOperationEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
+		this.informations = (String) values[5];
 	}
 
 	
@@ -108,8 +125,9 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	 * @param deserializer
 	 *            The deserializer to use
 	 */
-	public EJBDeployedEvent(final IValueDeserializer deserializer) {
+	public ExtendedAfterOperationEvent(final IValueDeserializer deserializer) {
 		super(deserializer);
+		this.informations = deserializer.getString();
 	}
 	
 	/**
@@ -122,9 +140,11 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTimestamp(),
-			this.getSerivce(),
-			this.getContext(),
-			this.getDeploymentId()
+			this.getTraceId(),
+			this.getOrderIndex(),
+			this.getOperationSignature(),
+			this.getClassSignature(),
+			this.getInformations()
 		};
 	}
 	/**
@@ -132,9 +152,9 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	 */
 	@Override
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getSerivce());
-		stringRegistry.get(this.getContext());
-		stringRegistry.get(this.getDeploymentId());
+		stringRegistry.get(this.getOperationSignature());
+		stringRegistry.get(this.getClassSignature());
+		stringRegistry.get(this.getInformations());
 	}
 	/**
 	 * {@inheritDoc}
@@ -143,9 +163,11 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
 		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
-		serializer.putString(this.getSerivce());
-		serializer.putString(this.getContext());
-		serializer.putString(this.getDeploymentId());
+		serializer.putLong(this.getTraceId());
+		serializer.putInt(this.getOrderIndex());
+		serializer.putString(this.getOperationSignature());
+		serializer.putString(this.getClassSignature());
+		serializer.putString(this.getInformations());
 	}
 	/**
 	 * {@inheritDoc}
@@ -191,13 +213,19 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
 		if (obj == this) return true;
 		if (obj.getClass() != this.getClass()) return false;
 		
-		final EJBDeployedEvent castedRecord = (EJBDeployedEvent) obj;
+		final ExtendedAfterOperationEvent castedRecord = (ExtendedAfterOperationEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (!this.getSerivce().equals(castedRecord.getSerivce())) return false;
-		if (!this.getContext().equals(castedRecord.getContext())) return false;
-		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
+		if (this.getTraceId() != castedRecord.getTraceId()) return false;
+		if (this.getOrderIndex() != castedRecord.getOrderIndex()) return false;
+		if (!this.getOperationSignature().equals(castedRecord.getOperationSignature())) return false;
+		if (!this.getClassSignature().equals(castedRecord.getClassSignature())) return false;
+		if (!this.getInformations().equals(castedRecord.getInformations())) return false;
 		return true;
+	}
+	
+	public final String getInformations() {
+		return this.informations;
 	}
 	
 }
