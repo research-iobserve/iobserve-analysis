@@ -13,20 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.filter;
+package org.iobserve.analysis.systems.jpetstore;
 
-import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.filter.ITraceSignatureCleanupRewriter;
 
 /**
- * Interface for EntryCallEvent acceptance matcher. Not every EntryCallEvent might represent and
- * relevant trace. For example, returning images or CSS is usually not part of the user behavior
- * which is relevant to us. Therefore, such matcher can be passed to the TraceAcceptanceFilter to
- * which then only forwards accepted calls.
+ * Performs cleanup operations on class and operation signatures for the JPetStore application.
  *
  * @author Reiner Jung
  *
  */
-public interface ITraceAcceptanceMatcher {
+public class JPetStoreTraceSignatureCleanupRewriter implements ITraceSignatureCleanupRewriter {
 
-    boolean match(EntryCallEvent call);
+    @Override
+    public String rewriteClassSignature(final String classSignature) {
+        return classSignature;
+    }
+
+    @Override
+    public String rewriteOperationSignature(final String operationSignature) {
+        return operationSignature;
+    }
+
 }

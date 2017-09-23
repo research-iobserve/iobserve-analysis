@@ -29,8 +29,6 @@ import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPe
 import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetstoreStrategy;
 import org.iobserve.analysis.filter.CollectUserSessionsFilter;
 import org.iobserve.analysis.filter.IEntryCallTraceMatcher;
-import org.iobserve.analysis.filter.JPetStoreTraceAcceptanceMatcher;
-import org.iobserve.analysis.filter.JPetStoreTraceOperationCleanupRewriter;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TDeployment;
@@ -39,12 +37,16 @@ import org.iobserve.analysis.filter.TEntryCallSequence;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.filter.TimeTriggerFilter;
 import org.iobserve.analysis.filter.TraceAcceptanceFilter;
+import org.iobserve.analysis.filter.TraceOperationCleanupFilter;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
+import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceAcceptanceMatcher;
+import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceSignatureCleanupRewriter;
 
 import teetime.framework.Configuration;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
@@ -147,7 +149,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         
         final TraceAcceptanceFilter traceAcceptanceFilter = new TraceAcceptanceFilter(new JPetStoreTraceAcceptanceMatcher());
      
-        final TraceOperationCleanupFilter traceOperationCleanupFilter = new TraceOperationCleanupFilter(new JPetStoreTraceOperationCleanupRewriter());
+        final TraceOperationCleanupFilter traceOperationCleanupFilter = new TraceOperationCleanupFilter(new JPetStoreTraceSignatureCleanupRewriter());
         
         final EntryCallFilterRules modelGenerationFilter;
         final ISignatureCreationStrategy signatureStrategy;

@@ -19,11 +19,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.UUID;
 
 import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.CallInformation;
 import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
 import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 
@@ -182,34 +180,6 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
         // entryCallNode.getEntryCallInformation().stream()
         // .forEach(info -> this.appendInformation(changelogs, serviceInstanceID, info));
 
-    }
-
-    /**
-     * append information to node.
-     *
-     * @param changelogs
-     *            changelogs
-     * @param serviceInstanceID
-     *            serviceInstanceID
-     * @param info
-     *            info
-     */
-    private void appendInformation(final ArrayList<ObjectNode> changelogs, final String serviceInstanceID,
-            final CallInformation info) {
-        final String signature = info.getInformationSignature();
-        final ObjectNode statusInfo = this.objectMapper.createObjectNode();
-
-        statusInfo.put("type", "statusInfo");
-        statusInfo.put("id", this.createID(serviceInstanceID, signature));
-        statusInfo.put("parentType", "serviceInstance");
-        statusInfo.put("parentId", serviceInstanceID);
-        statusInfo.put("timestamp", new Date().getTime());
-        statusInfo.put("key", signature);
-        statusInfo.put("value", info.getInformationCode());
-
-        final ObjectNode infoChangelog = this.getChangelog(ChangelogType.APPEND);
-        infoChangelog.put("data", statusInfo);
-        changelogs.add(infoChangelog);
     }
 
     /**

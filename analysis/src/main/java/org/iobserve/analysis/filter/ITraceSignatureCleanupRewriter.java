@@ -1,6 +1,6 @@
 package org.iobserve.analysis.filter;
 
-public interface ITraceOperationCleanupRewriter {
+public interface ITraceSignatureCleanupRewriter {
 
 	String rewriteClassSignature(String classSignature);
 

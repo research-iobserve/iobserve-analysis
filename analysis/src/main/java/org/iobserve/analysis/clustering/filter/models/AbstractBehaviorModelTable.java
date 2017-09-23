@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.data.PayloadAwareEntryCallEvent;
+import org.iobserve.analysis.systems.jpetstore.JPetStoreParameterValueDoubleMapper;
 
 /**
  * table representation of a behavior model.

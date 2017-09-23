@@ -13,20 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.filter;
+package org.iobserve.analysis.systems.jpetstore;
 
 import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.analysis.filter.ITraceAcceptanceMatcher;
 
 /**
- * Interface for EntryCallEvent acceptance matcher. Not every EntryCallEvent might represent and
- * relevant trace. For example, returning images or CSS is usually not part of the user behavior
- * which is relevant to us. Therefore, such matcher can be passed to the TraceAcceptanceFilter to
- * which then only forwards accepted calls.
+ * Matches if a given call is valid in context of the user behavior analysis for the JPetStore.
  *
  * @author Reiner Jung
  *
  */
-public interface ITraceAcceptanceMatcher {
+public class JPetStoreTraceAcceptanceMatcher implements ITraceAcceptanceMatcher {
 
-    boolean match(EntryCallEvent call);
+    @Override
+    public boolean match(final EntryCallEvent call) {
+        return (this.matchClassSignature(call.getClassSignature())
+                && this.matchOperationSignature(call.getOperationSignature()));
+    }
+
+    private boolean matchOperationSignature(final String operationSignature) {
+        return true;
+    }
+
+    private boolean matchClassSignature(final String classSignature) {
+        return true;
+    }
+
 }

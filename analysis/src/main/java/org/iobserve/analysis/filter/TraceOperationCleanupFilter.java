@@ -1,7 +1,6 @@
-package org.iobserve.analysis;
+package org.iobserve.analysis.filter;
 
 import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.filter.ITraceOperationCleanupRewriter;
 import org.iobserve.analysis.filter.models.UserSession;
 
 import teetime.framework.AbstractConsumerStage;
@@ -9,10 +8,10 @@ import teetime.framework.OutputPort;
 
 public class TraceOperationCleanupFilter extends AbstractConsumerStage<UserSession> {
 
-	private final ITraceOperationCleanupRewriter rewriter;
+	private final ITraceSignatureCleanupRewriter rewriter;
 	private final OutputPort<UserSession> outputPort = this.createOutputPort();
 	
-	public TraceOperationCleanupFilter(ITraceOperationCleanupRewriter rewriter) {
+	public TraceOperationCleanupFilter(ITraceSignatureCleanupRewriter rewriter) {
 		this.rewriter = rewriter;
 	}
 
