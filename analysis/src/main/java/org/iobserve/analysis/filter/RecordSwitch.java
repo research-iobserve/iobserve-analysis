@@ -73,7 +73,9 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 
     @Override
     protected void execute(final IMonitoringRecord element) {
+    	// TODO move this to info
         this.recordCount++;
+        // TODO move thos to debug
         if (this.recordCount % 1000 == 0) {
             System.out.println("Records processed " + this.recordCount);
         }
@@ -100,7 +102,6 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
                     + "\nnumber of records " + metadata.getNumberOfRecords() + "\nsize              "
                     + metadata.getSize() + "\ntime offset       " + metadata.getTimeOffset() + "\nunit              "
                     + metadata.getTimeUnit() + "\nversion           " + metadata.getVersion());
-
         } else {
             final String className = element.getClass().getCanonicalName();
             Integer hits = this.unknownRecords.get(className);

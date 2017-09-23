@@ -26,15 +26,11 @@ import org.iobserve.common.record.IPayloadCharacterization
 entity EntryCallEvent {
 	long entryTime
 	long exitTime
-	string operationSignature
-	string classSignature
+	changeable string operationSignature
+	changeable string classSignature
 	string sessionId
 	string hostname
 }
-
-
-@author "Christoph Dornieden" @since "0.0.2-cdor"
-entity ExtendedEntryCallEvent extends EntryCallEvent : IUserInformation
 
 @author "Reiner Jung" @since "0.0.2"
 entity PayloadAwareEntryCallEvent extends EntryCallEvent : IPayloadCharacterization

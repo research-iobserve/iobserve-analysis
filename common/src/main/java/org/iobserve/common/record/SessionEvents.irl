@@ -16,6 +16,7 @@
 package org.iobserve.common.record
 
 template ISessionEvent {
+	string hostname
 	string sessionId
 }
 

@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
+ * Copyright 2017 iObserve Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -71,8 +71,8 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	/** property declarations. */
 	private final long entryTime;
 	private final long exitTime;
-	private final String operationSignature;
-	private final String classSignature;
+	private String operationSignature;
+	private String classSignature;
 	private final String sessionId;
 	private final String hostname;
 	
@@ -265,11 +265,17 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 		return this.operationSignature;
 	}
 	
+	public final void setOperationSignature(String operationSignature) {
+		this.operationSignature = operationSignature;
+	}
 	
 	public final String getClassSignature() {
 		return this.classSignature;
 	}
 	
+	public final void setClassSignature(String classSignature) {
+		this.classSignature = classSignature;
+	}
 	
 	public final String getSessionId() {
 		return this.sessionId;

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.iobserve.analysis.data.ExtendedEntryCallEvent;
+import org.iobserve.analysis.data.PayloadAwareEntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -38,7 +38,7 @@ import teetime.framework.OutputPort;
  *
  * @version 1.0
  */
-public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<ExtendedEntryCallEvent> {
+public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<PayloadAwareEntryCallEvent> {
 
     /** reference to the correspondence model. */
     private final ICorrespondence correspondenceModel;
@@ -61,13 +61,13 @@ public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<Exten
     }
 
     @Override
-    protected void execute(final ExtendedEntryCallEvent event) {
+    protected void execute(final PayloadAwareEntryCallEvent event) {
         /** check if operationEvent is from an known object */
         if (this.correspondenceModel.containsCorrespondent(event.getClassSignature(), event.getOperationSignature())) {
 
             // add the event to the corresponding user session
             // in case the user session is not yet available, create one
-            final String userSessionId = UserSession.parseUserSessionId(event);
+            final String userSessionId = UserSession.createUserSessionId(event);
             UserSession userSession = this.sessions.get(userSessionId);
             if (userSession == null) {
                 userSession = new UserSession(event.getHostname(), event.getSessionId());

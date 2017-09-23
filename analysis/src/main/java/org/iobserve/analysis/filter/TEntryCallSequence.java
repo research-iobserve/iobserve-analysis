@@ -15,19 +15,19 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.iobserve.analysis.data.ExtendedEntryCallEvent;
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.data.PayloadAwareEntryCallEvent;
 import org.iobserve.analysis.filter.models.UserSession;
+import org.iobserve.common.record.ISessionEvent;
+import org.iobserve.common.record.SessionEndEvent;
+import org.iobserve.common.record.SessionStartEvent;
 
-import teetime.framework.AbstractConsumerStage;
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
 /**
@@ -40,18 +40,18 @@ import teetime.framework.OutputPort;
  *
  * @version 1.0
  */
-public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntryCallEvent> {
+public final class TEntryCallSequence extends AbstractStage {
 
-    /** threshold for user session elements until their are send to the next filter. */
-    private static final int USER_SESSION_THRESHOLD = 0;
     /** time until a session expires. */
     private static final long USER_SESSION_EXPIRATIONTIME = 360000000000L;
     /** map of sessions. */
     private final Map<String, UserSession> sessions = new HashMap<>();
     /** output ports. */
-    private final OutputPort<EntryCallSequenceModel> tEntryEventSequenceOutputPort = this.createOutputPort();
-    private final OutputPort<EntryCallSequenceModel> tBehaviorModelPreperationOutputPort = this.createOutputPort();
+    private final OutputPort<UserSession> userSessionOutputPort = this.createOutputPort();
 
+    private final InputPort<PayloadAwareEntryCallEvent> entryCallInputPort = this.createInputPort();
+    private final InputPort<ISessionEvent> sessionEventInputPort = this.createInputPort();
+    
     /**
      * Create this filter.
      *
@@ -60,33 +60,40 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
     }
 
     @Override
-    protected void execute(final ExtendedEntryCallEvent event) {
-        /**
-         * add the event to the corresponding user session in case the user session is not yet
-         * available, create one.
-         */
-        final String userSessionId = UserSession.parseUserSessionId(event);
-        UserSession userSession = this.sessions.get(userSessionId);
-        if (userSession == null) {
-            userSession = new UserSession(event.getHostname(), event.getSessionId());
-            this.sessions.put(userSessionId, userSession);
-        }
-        userSession.add(event, true);
+    protected void execute() {
+    	final ISessionEvent sessionEvent = sessionEventInputPort.receive();
+    	if (sessionEvent != null) {
+    		if (sessionEvent instanceof SessionStartEvent) {
+    			this.sessions.put(UserSession.createUserSessionId(sessionEvent),
+    					new UserSession(sessionEvent.getHostname(), sessionEvent.getSessionId()));
+    		}
+    		if (sessionEvent instanceof SessionEndEvent) {
+    			UserSession session = this.sessions.get(UserSession.createUserSessionId(sessionEvent));
+    			if (session != null) {
+    				this.userSessionOutputPort.send(session);
+    				this.sessions.remove(sessionEvent.getSessionId());
+    			}
+    		}
+    	}
+    	
+    	final PayloadAwareEntryCallEvent event = entryCallInputPort.receive();
+    	
+    	if (event != null) {
+	        /**
+	         * add the event to the corresponding user session in case the user session is not yet
+	         * available, create one.
+	         */
+	        final String userSessionId = UserSession.createUserSessionId(event);
+	        UserSession userSession = this.sessions.get(userSessionId);
+	        if (userSession == null) {
+	            userSession = new UserSession(event.getHostname(), event.getSessionId());
+	            this.sessions.put(userSessionId, userSession);
+	            // TODO this should trigger a warning.
+	        }
+	        userSession.add(event, true);
+    	}
 
-        /**
-         * collect all user sessions which have more elements as a defined threshold and send them
-         * to the next filter.
-         */
-        final List<UserSession> listToSend = this.sessions.values().stream()
-                .filter(session -> session.size() > TEntryCallSequence.USER_SESSION_THRESHOLD)
-                .collect(Collectors.toList());
-        if (!listToSend.isEmpty()) {
-            this.tEntryEventSequenceOutputPort.send(new EntryCallSequenceModel(listToSend));
-        }
-
-        // TODO check for expired sessions and send them to the next filter
-        // TODO Is this the right place for that?
-        // this.removeExpiredSessions();
+        this.removeExpiredSessions();
     }
 
     /**
@@ -95,7 +102,6 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
      */
     private void removeExpiredSessions() {
         final long timeNow = System.currentTimeMillis() * 1000000;
-        final List<UserSession> sessionsToSend = new ArrayList<>();
         final Set<String> sessionsToRemove = new HashSet<>();
 
         for (final String sessionId : this.sessions.keySet()) {
@@ -105,37 +111,35 @@ public final class TEntryCallSequence extends AbstractConsumerStage<ExtendedEntr
             final boolean isExpired = (exitTime + TEntryCallSequence.USER_SESSION_EXPIRATIONTIME) < timeNow;
 
             if (isExpired) {
-                sessionsToSend.add(session);
+            	this.userSessionOutputPort.send(session);
                 sessionsToRemove.add(sessionId);
             }
         }
-        this.tBehaviorModelPreperationOutputPort.send(new EntryCallSequenceModel(sessionsToSend));
-        sessionsToRemove.forEach(sessionId -> this.sessions.remove(sessionId));
+        for (final String sessionId : sessionsToRemove) {
+        	this.sessions.remove(sessionId);
+        }
     }
 
     @Override
     public void onTerminating() throws Exception {
-        final List<UserSession> listToSend = this.sessions.values().stream()
-                .filter(session -> session.size() > TEntryCallSequence.USER_SESSION_THRESHOLD)
-                .collect(Collectors.toList());
-        if (!listToSend.isEmpty()) {
-            this.tBehaviorModelPreperationOutputPort.send(new EntryCallSequenceModel(listToSend));
-        }
+        for (UserSession session : this.sessions.values()) this.userSessionOutputPort.send(session);
         super.onTerminating();
     }
 
     /**
      * @return output port
      */
-    public OutputPort<EntryCallSequenceModel> getOutputPort() {
-        return this.tEntryEventSequenceOutputPort;
+    public OutputPort<UserSession> getUserSessionOutputPort() {
+        return this.userSessionOutputPort;
     }
 
-    /**
-     * @return output port to behavior model preperation
-     */
-    public OutputPort<EntryCallSequenceModel> getOutputPortToBehaviorModelPreperation() {
-        return this.tBehaviorModelPreperationOutputPort;
-    }
+	public InputPort<PayloadAwareEntryCallEvent> getEntryCallInputPort() {
+		return entryCallInputPort;
+	}
 
+	public InputPort<ISessionEvent> getSessionEventInputPort() {
+		return sessionEventInputPort;
+	}
+
+    
 }

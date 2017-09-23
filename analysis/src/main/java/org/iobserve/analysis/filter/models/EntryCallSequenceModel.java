@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter.models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.iobserve.analysis.userbehavior.data.WorkloadIntensity;
@@ -45,7 +46,7 @@ public final class EntryCallSequenceModel {
      *            sessions.
      */
     public EntryCallSequenceModel(final List<UserSession> sessions) {
-        this.userSessions = sessions;
+        this.userSessions = new ArrayList<UserSession>(sessions);
     }
 
     /**

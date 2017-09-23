@@ -46,10 +46,11 @@ public class SessionCollectorListener implements HttpSessionListener {
     public void sessionCreated(final HttpSessionEvent event) {
         if (this.monitoringCtrl.isMonitoringEnabled()) {
             final String session = event.getSession().getId();
+            final String hostname = event.getSession().getServletContext().getVirtualServerName();
             final long time = this.timeSource.getTime();
 
             // if (this.monitoringCtrl.isProbeActivated(signature)) {
-            this.monitoringCtrl.newMonitoringRecord(new SessionStartEvent(time, session));
+            this.monitoringCtrl.newMonitoringRecord(new SessionStartEvent(time, hostname, session));
             // }
         }
     }
@@ -58,10 +59,11 @@ public class SessionCollectorListener implements HttpSessionListener {
     public void sessionDestroyed(final HttpSessionEvent event) {
         if (this.monitoringCtrl.isMonitoringEnabled()) {
             final String session = event.getSession().getId();
+            final String hostname = event.getSession().getServletContext().getVirtualServerName();
             final long time = this.timeSource.getTime();
 
             // if (this.monitoringCtrl.isProbeActivated(signature)) {
-            this.monitoringCtrl.newMonitoringRecord(new SessionEndEvent(time, session));
+            this.monitoringCtrl.newMonitoringRecord(new SessionEndEvent(time, hostname, session));
             // }
         }
     }

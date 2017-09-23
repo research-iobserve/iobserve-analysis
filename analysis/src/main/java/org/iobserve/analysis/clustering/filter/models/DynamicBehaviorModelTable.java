@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.models;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -28,10 +27,9 @@ import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.clustering.SingleOrNoneCollector;
 import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
 import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.data.ExtendedEntryCallEvent;
+import org.iobserve.analysis.data.PayloadAwareEntryCallEvent;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
@@ -108,15 +106,15 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
     }
 
     @Override
-    public void addInformation(final ExtendedEntryCallEvent event) {
-        final ObjectMapper objectMapper = new ObjectMapper();
+    public void addInformation(final PayloadAwareEntryCallEvent event) {
         final String eventSignature = this.getSignatureFromEvent(event);
-        final ArrayList<CallInformation> newCallInformations;
+        final List<CallInformation> newCallInformations = new ArrayList<>();
 
         try {
-            newCallInformations = objectMapper.readValue(event.getInformations(),
-                    new TypeReference<ArrayList<CallInformation>>() {
-                    });
+        	for (int i=0;i < event.getParameters().length; i++) {
+            	newCallInformations.add(new CallInformation(event.getParameters()[i], this.parameterValueDoubleMapper.mapValue(event.getParameters()[i], event.getValues()[i])));
+            }
+        	
             // adding if no transition added yet
             if (!this.signatures.containsKey(eventSignature)) {
                 this.addSignature(eventSignature);
@@ -141,9 +139,6 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
                 }
             }
 
-        } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         } catch (final IllegalArgumentException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

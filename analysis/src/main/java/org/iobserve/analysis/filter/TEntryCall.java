@@ -19,33 +19,37 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.iobserve.analysis.data.PayloadAwareEntryCallEvent;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
+import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
 import org.iobserve.common.record.ExtendedAfterOperationEvent;
 import org.iobserve.common.record.ExtendedBeforeOperationEvent;
-import org.iobserve.analysis.data.ExtendedEntryCallEvent;
-import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import kieker.common.record.flow.IFlowRecord;
+import kieker.common.record.flow.trace.AbstractTraceEvent;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 // TODO this filter must be reworked to support plain and extended records.
 
 /**
- * It could be interesting to combine DeploymentEventTransformation and
- * UndeploymentEventTransformation. However, that would require two input ports. And I have not used
- * the API for multiple input ports.
- *
- * @author Reiner Jung
+ * This entry call synthesizer stage processes incoming traces to identify entry calls.
+ * This is done based on a regular expression matching one or more nodes of a trace,
+ * which is necessary, as the entry might not be identifiable solely based on the entering
+ * class, e.g., servlet class. This is especially true for CoCoME.
+ * 
+ * @author Reiner Jung -- initial contribution, reconstruction based on traces.
  * @author Christoph Dornieden
  * @author Nicolas Boltz
  * @version 1.0
  */
-public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
+public class TEntryCall extends AbstractConsumerStage<EventBasedTrace> {
     /** logger. */
     private static final Log LOG = LogFactory.getLog(RecordSwitch.class);
 
@@ -53,8 +57,12 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     private final Map<Long, TraceMetadata> traceMetaDatas = new HashMap<>();
     /** map of before operation events. */
     private final Map<Long, BeforeOperationEvent> beforeOperationEvents = new HashMap<>();
+    
+    /** Entry call trace matcher class. */
+    IEntryCallTraceMatcher matcher;
+    
     /** output port. */
-    private final OutputPort<ExtendedEntryCallEvent> outputPort = this.createOutputPort();
+    private final OutputPort<PayloadAwareEntryCallEvent> outputPort = this.createOutputPort();
     private final Pattern openBracket = Pattern.compile("\\[");
     private final Pattern closedBracket = Pattern.compile("\\]");
     private final Pattern emptyBrackets = Pattern.compile("\\[\\]");
@@ -62,8 +70,8 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     /**
      * Does not need additional information.
      */
-    public TEntryCall() {
-        // do nothing
+    public TEntryCall(IEntryCallTraceMatcher matcher) {
+    	this.matcher = matcher;
     }
 
     /**
@@ -73,12 +81,42 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
      *            all IFlowRecord like TraceMetadata, BeforeOperationEvent and AfterOperationEvent
      */
     @Override
-    protected void execute(final IFlowRecord event) {
+    protected void execute(final EventBasedTrace event) {
+    	for (AbstractTraceEvent traceEvent : event.getTraceEvents()) {
+    		if (traceEvent instanceof BeforeOperationEvent) {
+    			BeforeOperationEvent beforeEvent = (BeforeOperationEvent)traceEvent;
+    			
+    			if (this.matcher.stateMatch(event, beforeEvent)) {
+					this.outputPort.send(createEntryCall(event.getTraceMetaData()));
+					return;
+    			}
+    		}
+    	}
+    }
+    
+    private PayloadAwareEntryCallEvent createEntryCall(TraceMetadata traceMetaData) {
+		
+		BeforeOperationEvent beforeOperationEvent = this.matcher.getBeforeOperationEvent();
+		AfterOperationEvent afterOperationEvent = this.matcher.getAfterOperationEvent();
+		
+		if (beforeOperationEvent instanceof EntryLevelBeforeOperationEvent) {
+			EntryLevelBeforeOperationEvent entryLevelBeforeEvent = (EntryLevelBeforeOperationEvent) beforeOperationEvent;
+			return new PayloadAwareEntryCallEvent(beforeOperationEvent.getTimestamp(),
+			        afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
+			        beforeOperationEvent.getClassSignature(), traceMetaData.getSessionId(),
+			        traceMetaData.getHostname(),
+			        entryLevelBeforeEvent.getParameters(), entryLevelBeforeEvent.getValues(), entryLevelBeforeEvent.getRequestType());
+		} else {
+			return new PayloadAwareEntryCallEvent(beforeOperationEvent.getTimestamp(),
+			        afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
+			        beforeOperationEvent.getClassSignature(), traceMetaData.getSessionId(),
+			        traceMetaData.getHostname(), new String[0], new String[0], 0);
+		}
+	}
+
+	private void ex(final IFlowRecord event) {
         if (event instanceof TraceMetadata) {
             final TraceMetadata metaData = (TraceMetadata) event;
-            if (metaData.getTraceId() == 13707L) {
-                System.out.println(metaData.getHostname());
-            }
             /** only recognize traces which no parent trace (i.e. would be internal traces) */
             // TODO how to detect proper original traces?
             if (metaData.getParentOrderId() < 0) {
@@ -88,13 +126,10 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
         } else if (event instanceof BeforeOperationEvent) {
             final BeforeOperationEvent operationEvent = (BeforeOperationEvent) event;
             final TraceMetadata metaData = this.traceMetaDatas.get(operationEvent.getTraceId());
-            if (operationEvent.getOperationSignature().matches(".*startSale.*")) {
-                System.out.println(operationEvent.getOperationSignature());
-
-            }
+            
             if (metaData != null) {
-                /** actually this is a valid trace */
-                /** Check whether the record is an entry call */
+                /** actually this is a valid trace. */
+                /** Check whether the record is an entry call. */
                 if (operationEvent.getOrderIndex() == 0) {
                     this.beforeOperationEvents.put(metaData.getTraceId(), operationEvent);
                 }
@@ -154,10 +189,10 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                         
                         String operationSignature = beforeOperationEvent.getOperationSignature().replaceAll("jpetstore\\.actions\\.", "");
 
-                        this.outputPort.send(new ExtendedEntryCallEvent(beforeOperationEvent.getTimestamp(),
-                                afterOperationEvent.getTimestamp(), operationSignature,
-                                beforeOperationEvent.getClassSignature(), metaData.getSessionId(),
-                                metaData.getHostname(), callInformations));
+                        //this.outputPort.send(new ExtendedEntryCallEvent(beforeOperationEvent.getTimestamp(),
+                        //        afterOperationEvent.getTimestamp(), operationSignature,
+                        //        beforeOperationEvent.getClassSignature(), metaData.getSessionId(),
+                        //        metaData.getHostname(), callInformations));
 
                     }
                 }
@@ -171,7 +206,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     /**
      * @return output port
      */
-    public OutputPort<ExtendedEntryCallEvent> getOutputPort() {
+    public OutputPort<PayloadAwareEntryCallEvent> getOutputPort() {
         return this.outputPort;
     }
 

@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.common.record.ISessionEvent;
 
 /**
  * Represents a user session.
@@ -159,9 +160,20 @@ public final class UserSession {
      *            event
      * @return unique id
      */
-    public static String parseUserSessionId(final EntryCallEvent event) {
-        final String id = event.getHostname() + "," + event.getSessionId();
-        return id;
+    public static String createUserSessionId(final EntryCallEvent event) {
+        return event.getHostname() + "," + event.getSessionId();
+    }
+    
+    /**
+     * Parse the id which would be constructed by the {@link UserSession} class if it contained that
+     * event.
+     *
+     * @param event
+     *            event
+     * @return unique id
+     */
+    public static String createUserSessionId(final ISessionEvent event) {
+        return event.getHostname() + "," + event.getSessionId();
     }
 
     /**

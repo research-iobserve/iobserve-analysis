@@ -31,29 +31,34 @@ import org.iobserve.common.record.ISessionEvent;
  * @since 1.13
  */
 public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
-	private static final long serialVersionUID = 8782471108840749134L;
+	private static final long serialVersionUID = 3453809390268343438L;
 
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+			 + TYPE_SIZE_STRING // ISessionEvent.hostname
 			 + TYPE_SIZE_STRING // ISessionEvent.sessionId
 	;
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEventRecord.timestamp
+		String.class, // ISessionEvent.hostname
 		String.class, // ISessionEvent.sessionId
 	};
 	
 	
 	/** default constants. */
+	public static final String HOSTNAME = "";
 	public static final String SESSION_ID = "";
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
 		"timestamp",
+		"hostname",
 		"sessionId",
 	};
 	
 	/** property declarations. */
+	private final String hostname;
 	private final String sessionId;
 	
 	/**
@@ -61,11 +66,14 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	 * 
 	 * @param timestamp
 	 *            timestamp
+	 * @param hostname
+	 *            hostname
 	 * @param sessionId
 	 *            sessionId
 	 */
-	public SessionStartEvent(final long timestamp, final String sessionId) {
+	public SessionStartEvent(final long timestamp, final String hostname, final String sessionId) {
 		super(timestamp);
+		this.hostname = hostname == null?"":hostname;
 		this.sessionId = sessionId == null?"":sessionId;
 	}
 
@@ -81,7 +89,8 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	@Deprecated
 	public SessionStartEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
-		this.sessionId = (String) values[1];
+		this.hostname = (String) values[1];
+		this.sessionId = (String) values[2];
 	}
 
 	/**
@@ -97,7 +106,8 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	@Deprecated
 	protected SessionStartEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
-		this.sessionId = (String) values[1];
+		this.hostname = (String) values[1];
+		this.sessionId = (String) values[2];
 	}
 
 	
@@ -107,6 +117,7 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	 */
 	public SessionStartEvent(final IValueDeserializer deserializer) {
 		super(deserializer);
+		this.hostname = deserializer.getString();
 		this.sessionId = deserializer.getString();
 	}
 	
@@ -120,6 +131,7 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTimestamp(),
+			this.getHostname(),
 			this.getSessionId()
 		};
 	}
@@ -128,6 +140,7 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	 */
 	@Override
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
+		stringRegistry.get(this.getHostname());
 		stringRegistry.get(this.getSessionId());
 	}
 	/**
@@ -137,6 +150,7 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
 		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
+		serializer.putString(this.getHostname());
 		serializer.putString(this.getSessionId());
 	}
 	/**
@@ -186,9 +200,15 @@ public class SessionStartEvent extends AbstractEvent implements ISessionEvent {
 		final SessionStartEvent castedRecord = (SessionStartEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
+		if (!this.getHostname().equals(castedRecord.getHostname())) return false;
 		if (!this.getSessionId().equals(castedRecord.getSessionId())) return false;
 		return true;
 	}
+	
+	public final String getHostname() {
+		return this.hostname;
+	}
+	
 	
 	public final String getSessionId() {
 		return this.sessionId;

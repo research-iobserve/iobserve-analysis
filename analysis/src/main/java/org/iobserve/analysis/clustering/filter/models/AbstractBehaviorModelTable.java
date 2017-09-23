@@ -18,7 +18,7 @@ package org.iobserve.analysis.clustering.filter.models;
 import java.util.regex.Pattern;
 
 import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.data.ExtendedEntryCallEvent;
+import org.iobserve.analysis.data.PayloadAwareEntryCallEvent;
 
 /**
  * table representation of a behavior model.
@@ -41,6 +41,8 @@ public abstract class AbstractBehaviorModelTable {
     public static final Pattern INFORMATION_DIVIDER_PATTERN = Pattern
             .compile(AbstractBehaviorModelTable.INFORMATION_DIVIDER);
 
+    protected IParameterValueDoubleMapper parameterValueDoubleMapper = new JPetStoreParameterValueDoubleMapper();
+    
     /**
      * factory function.
      *
@@ -92,8 +94,8 @@ public abstract class AbstractBehaviorModelTable {
      */
     public void addInformation(final EntryCallEvent event) {
 
-        if (event instanceof ExtendedEntryCallEvent) {
-            this.addInformation((ExtendedEntryCallEvent) event);
+        if (event instanceof PayloadAwareEntryCallEvent) {
+            this.addInformation((PayloadAwareEntryCallEvent) event);
         } else {
             System.out.println();
         }
@@ -105,6 +107,6 @@ public abstract class AbstractBehaviorModelTable {
      * @param extendedEntryCallEvent
      *            event containing information.
      */
-    public abstract void addInformation(final ExtendedEntryCallEvent extendedEntryCallEvent);
+    public abstract void addInformation(final PayloadAwareEntryCallEvent extendedEntryCallEvent);
 
 }
