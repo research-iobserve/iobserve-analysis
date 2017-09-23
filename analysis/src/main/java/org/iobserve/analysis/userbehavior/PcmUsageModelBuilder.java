@@ -184,8 +184,10 @@ public class PcmUsageModelBuilder {
         org.palladiosimulator.pcm.usagemodel.Branch lastBranch = UsagemodelFactory.eINSTANCE.createBranch();
         boolean isLastElementABranch = false;
 
-        // Loops over all elements of the sequence and creates a corresponding scenario behavior by
-        // connecting the elements via successor and predecessor connections
+        /**
+         * Loops over all elements of the sequence and creates a corresponding scenario behavior by
+         * connecting the elements via successor and predecessor connections.
+         */
         for (final ISequenceElement branchElement : sequence) {
 
             // Element is a entryLevelSystemCall

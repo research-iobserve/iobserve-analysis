@@ -51,7 +51,7 @@ public final class TEntryCallSequence extends AbstractStage {
 
     private final InputPort<PayloadAwareEntryCallEvent> entryCallInputPort = this.createInputPort();
     private final InputPort<ISessionEvent> sessionEventInputPort = this.createInputPort();
-    
+
     /**
      * Create this filter.
      *
@@ -61,37 +61,37 @@ public final class TEntryCallSequence extends AbstractStage {
 
     @Override
     protected void execute() {
-    	final ISessionEvent sessionEvent = sessionEventInputPort.receive();
-    	if (sessionEvent != null) {
-    		if (sessionEvent instanceof SessionStartEvent) {
-    			this.sessions.put(UserSession.createUserSessionId(sessionEvent),
-    					new UserSession(sessionEvent.getHostname(), sessionEvent.getSessionId()));
-    		}
-    		if (sessionEvent instanceof SessionEndEvent) {
-    			UserSession session = this.sessions.get(UserSession.createUserSessionId(sessionEvent));
-    			if (session != null) {
-    				this.userSessionOutputPort.send(session);
-    				this.sessions.remove(sessionEvent.getSessionId());
-    			}
-    		}
-    	}
-    	
-    	final PayloadAwareEntryCallEvent event = entryCallInputPort.receive();
-    	
-    	if (event != null) {
-	        /**
-	         * add the event to the corresponding user session in case the user session is not yet
-	         * available, create one.
-	         */
-	        final String userSessionId = UserSession.createUserSessionId(event);
-	        UserSession userSession = this.sessions.get(userSessionId);
-	        if (userSession == null) {
-	            userSession = new UserSession(event.getHostname(), event.getSessionId());
-	            this.sessions.put(userSessionId, userSession);
-	            // TODO this should trigger a warning.
-	        }
-	        userSession.add(event, true);
-    	}
+        final ISessionEvent sessionEvent = this.sessionEventInputPort.receive();
+        if (sessionEvent != null) {
+            if (sessionEvent instanceof SessionStartEvent) {
+                this.sessions.put(UserSession.createUserSessionId(sessionEvent),
+                        new UserSession(sessionEvent.getHostname(), sessionEvent.getSessionId()));
+            }
+            if (sessionEvent instanceof SessionEndEvent) {
+                final UserSession session = this.sessions.get(UserSession.createUserSessionId(sessionEvent));
+                if (session != null) {
+                    this.userSessionOutputPort.send(session);
+                    this.sessions.remove(sessionEvent.getSessionId());
+                }
+            }
+        }
+
+        final PayloadAwareEntryCallEvent event = this.entryCallInputPort.receive();
+
+        if (event != null) {
+            /**
+             * add the event to the corresponding user session in case the user session is not yet
+             * available, create one.
+             */
+            final String userSessionId = UserSession.createUserSessionId(event);
+            UserSession userSession = this.sessions.get(userSessionId);
+            if (userSession == null) {
+                userSession = new UserSession(event.getHostname(), event.getSessionId());
+                this.sessions.put(userSessionId, userSession);
+                // TODO this should trigger a warning.
+            }
+            userSession.add(event, true);
+        }
 
         this.removeExpiredSessions();
     }
@@ -111,18 +111,20 @@ public final class TEntryCallSequence extends AbstractStage {
             final boolean isExpired = (exitTime + TEntryCallSequence.USER_SESSION_EXPIRATIONTIME) < timeNow;
 
             if (isExpired) {
-            	this.userSessionOutputPort.send(session);
+                this.userSessionOutputPort.send(session);
                 sessionsToRemove.add(sessionId);
             }
         }
         for (final String sessionId : sessionsToRemove) {
-        	this.sessions.remove(sessionId);
+            this.sessions.remove(sessionId);
         }
     }
 
     @Override
     public void onTerminating() throws Exception {
-        for (UserSession session : this.sessions.values()) this.userSessionOutputPort.send(session);
+        for (final UserSession session : this.sessions.values()) {
+            this.userSessionOutputPort.send(session);
+        }
         super.onTerminating();
     }
 
@@ -133,13 +135,12 @@ public final class TEntryCallSequence extends AbstractStage {
         return this.userSessionOutputPort;
     }
 
-	public InputPort<PayloadAwareEntryCallEvent> getEntryCallInputPort() {
-		return entryCallInputPort;
-	}
+    public InputPort<PayloadAwareEntryCallEvent> getEntryCallInputPort() {
+        return this.entryCallInputPort;
+    }
 
-	public InputPort<ISessionEvent> getSessionEventInputPort() {
-		return sessionEventInputPort;
-	}
+    public InputPort<ISessionEvent> getSessionEventInputPort() {
+        return this.sessionEventInputPort;
+    }
 
-    
 }

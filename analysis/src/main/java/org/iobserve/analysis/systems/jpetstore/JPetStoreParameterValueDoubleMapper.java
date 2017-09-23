@@ -31,6 +31,9 @@ public class JPetStoreParameterValueDoubleMapper implements IParameterValueDoubl
 
     private final Map<String, Map<String, Double>> valueMap = new HashMap<String, Map<String, Double>>();
 
+    /**
+     * Constructor of the value double mapper.
+     */
     public JPetStoreParameterValueDoubleMapper() {
         this.valueMap.put("categoryId", this.createCategoryId());
         this.valueMap.put("productId", this.createProductId());

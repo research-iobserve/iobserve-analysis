@@ -29,9 +29,15 @@ import teetime.framework.OutputPort;
  */
 public class TraceAcceptanceFilter extends AbstractConsumerStage<UserSession> {
 
-    final OutputPort<UserSession> outputPort = this.createOutputPort();
+    private final OutputPort<UserSession> outputPort = this.createOutputPort();
     private final ITraceAcceptanceMatcher matcher;
 
+    /**
+     * Create an acceptance filter with an external matcher.
+     *
+     * @param matcher
+     *            a acceptance matcher
+     */
     public TraceAcceptanceFilter(final ITraceAcceptanceMatcher matcher) {
         this.matcher = matcher;
     }

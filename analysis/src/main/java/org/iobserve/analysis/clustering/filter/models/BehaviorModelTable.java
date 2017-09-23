@@ -140,8 +140,9 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         final List<CallInformation> newCallInformations = new ArrayList<>();
 
         try {
-            for (int i=0;i < event.getParameters().length; i++) {
-            	newCallInformations.add(new CallInformation(event.getParameters()[i], this.parameterValueDoubleMapper.mapValue(event.getParameters()[i], event.getValues()[i])));
+            for (int i = 0; i < event.getParameters().length; i++) {
+                newCallInformations.add(new CallInformation(event.getParameters()[i],
+                        this.parameterValueDoubleMapper.mapValue(event.getParameters()[i], event.getValues()[i])));
             }
 
             final List<AggregatedCallInformation> aggCallInformations = Arrays
@@ -163,7 +164,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     }
 
     /**
-     * creates a cleared copy
+     * creates a cleared copy.
      *
      * @param keepEmptyTransitions
      *            defines whether or not the empty transitions should be kept
@@ -197,7 +198,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     }
 
     /**
-     * create an Instances object for clustering
+     * create an Instances object for clustering.
      *
      * @return instance
      */
@@ -234,7 +235,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
     }
 
     /**
-     * returns an instance vector
+     * returns an instance vector.
      *
      * @return instance
      */

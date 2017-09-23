@@ -28,5 +28,12 @@ import org.iobserve.analysis.data.EntryCallEvent;
  */
 public interface ITraceAcceptanceMatcher {
 
-    boolean match(EntryCallEvent call);
+    /**
+     * Match whether the call is correct of interest for the application.
+     *
+     * @param call
+     *            one entry call event
+     * @return true on success
+     */
+    boolean match(final EntryCallEvent call);
 }

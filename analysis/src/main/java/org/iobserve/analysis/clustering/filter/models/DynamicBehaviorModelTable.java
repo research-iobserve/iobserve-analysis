@@ -111,10 +111,11 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
         final List<CallInformation> newCallInformations = new ArrayList<>();
 
         try {
-        	for (int i=0;i < event.getParameters().length; i++) {
-            	newCallInformations.add(new CallInformation(event.getParameters()[i], this.parameterValueDoubleMapper.mapValue(event.getParameters()[i], event.getValues()[i])));
+            for (int i = 0; i < event.getParameters().length; i++) {
+                newCallInformations.add(new CallInformation(event.getParameters()[i],
+                        this.parameterValueDoubleMapper.mapValue(event.getParameters()[i], event.getValues()[i])));
             }
-        	
+
             // adding if no transition added yet
             if (!this.signatures.containsKey(eventSignature)) {
                 this.addSignature(eventSignature);
@@ -237,7 +238,8 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
             for (int j = 0; j < fixedTransitions.length; j++) {
                 fixedTransitions[i][j] = keepEmptyTransitions
                         && (this.transitions.get(i).get(j) == AbstractBehaviorModelTable.EMPTY_TRANSITION)
-                                ? AbstractBehaviorModelTable.EMPTY_TRANSITION : 0;
+                                ? AbstractBehaviorModelTable.EMPTY_TRANSITION
+                                : 0;
             }
         }
 

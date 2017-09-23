@@ -52,6 +52,7 @@ public final class ExecutionTimeLogger {
 
     /**
      * Factory method to get the execution logger singleton.
+     * 
      * @return the ExecutionLogger
      */
     public static ExecutionTimeLogger getInstance() {
@@ -73,8 +74,9 @@ public final class ExecutionTimeLogger {
 
     /**
      * Start logging.
-     * 
-     * @param record input record
+     *
+     * @param record
+     *            input record
      */
     public void startLogging(final IMonitoringRecord record) {
         this.tmpTimes.put(record.hashCode(), System.nanoTime());
@@ -82,8 +84,9 @@ public final class ExecutionTimeLogger {
 
     /**
      * Stop logging.
-     * 
-     * @param record input record
+     *
+     * @param record
+     *            input record
      */
     public void stopLogging(final IDeploymentRecord record) {
         final Long startTime = this.tmpTimes.get(record.hashCode());
@@ -104,8 +107,9 @@ public final class ExecutionTimeLogger {
 
     /**
      * Stop logging.
-     * 
-     * @param record input record
+     *
+     * @param record
+     *            input record
      */
     public void stopLogging(final IUndeploymentRecord record) {
         final Long startTime = this.tmpTimes.get(record.hashCode());
@@ -126,8 +130,9 @@ public final class ExecutionTimeLogger {
 
     /**
      * Stop logging.
-     * 
-     * @param record input record
+     *
+     * @param record
+     *            input record
      */
     public void stopLogging(final IAllocationRecord record) {
         final Long startTime = this.tmpTimes.get(record.hashCode());
@@ -148,8 +153,9 @@ public final class ExecutionTimeLogger {
 
     /**
      * Stop logging.
-     * 
-     * @param record input record
+     *
+     * @param record
+     *            input record
      */
     public void stopLogging(final AfterOperationEvent record) {
         final Long startTime = this.tmpTimes.get(record.hashCode());
@@ -165,8 +171,9 @@ public final class ExecutionTimeLogger {
 
     /**
      * Stop logging.
-     * 
-     * @param record input record
+     *
+     * @param record
+     *            input record
      */
     public void stopLogging(final EntryCallEvent record) {
         final Long startTime = this.tmpTimes.get(record.hashCode());
@@ -197,7 +204,6 @@ public final class ExecutionTimeLogger {
                 this.entryCallSequenceTimes, "TEntryCallSequence");
     }
 
-
     private void export(final List<String> headlines, final List<LoggingEntry> list, final String mapName) {
         final CsvExporter exporter = new CsvExporter(mapName + "Logging.csv");
         exporter.setHeadline(mapName);
@@ -210,6 +216,12 @@ public final class ExecutionTimeLogger {
         exporter.export();
     }
 
+    /**
+     * Logging entry.
+     * 
+     * @author unknown
+     *
+     */
     private class LoggingEntry {
 
         private String sessionId;

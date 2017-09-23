@@ -50,6 +50,9 @@ public class TestRecordSwitch {
     private final List<IMonitoringRecord> inputRecords = new ArrayList<>();
     private final List<IDeploymentRecord> deploymentResults = new ArrayList<>();
 
+    /**
+     * Initialize the record switch test setup.
+     */
     @Before
     public void initializeRecordSwitch() {
         this.recordSwitch = new RecordSwitch();

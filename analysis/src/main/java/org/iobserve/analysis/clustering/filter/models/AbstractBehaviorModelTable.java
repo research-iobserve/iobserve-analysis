@@ -43,7 +43,7 @@ public abstract class AbstractBehaviorModelTable {
             .compile(AbstractBehaviorModelTable.INFORMATION_DIVIDER);
 
     protected IParameterValueDoubleMapper parameterValueDoubleMapper = new JPetStoreParameterValueDoubleMapper();
-    
+
     /**
      * factory function.
      *
@@ -71,8 +71,8 @@ public abstract class AbstractBehaviorModelTable {
     /**
      * Checks if signature of Event is allowed.
      *
-     * @param event
-     *            event
+     * @param signature
+     *            event signature
      * @return true if signature is allowed, false else
      */
     public abstract boolean isAllowedSignature(final String signature);

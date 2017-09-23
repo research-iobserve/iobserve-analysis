@@ -98,7 +98,7 @@ public class ClusteringMetrics {
     }
 
     /**
-     * Get cluster centroids
+     * Get cluster centroids.
      *
      * @return cluster centroids
      */
