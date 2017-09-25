@@ -107,6 +107,7 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
 		try {
 			filter.init(filterConfig);
 			filter.doFilter(createRequest(), createResponse(), createChain());
+			assertEquals("Test value", filter, filter);
 		} catch (ServletException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
