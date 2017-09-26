@@ -73,11 +73,10 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
      * @param from
      *            where the transition comes
      * @param to
-     *            where the transition goes *
-     * @throws IllegalArgumentException
+     *            where the transition goes
      */
     @Override
-    public void addTransition(final EntryCallEvent from, final EntryCallEvent to) throws IllegalArgumentException {
+    public void addTransition(final EntryCallEvent from, final EntryCallEvent to) {
 
         final String fromSignature = this.getSignatureFromEvent(from);
         final String toSignature = this.getSignatureFromEvent(to);

@@ -20,6 +20,5 @@ package org.iobserve.analysis.clustering;
  * @author Reiner Jung
  */
 public enum EOutputMode {
-	UBM_VISUALIZATION,
-	FILE_OUTPUT
+    UBM_VISUALIZATION, FILE_OUTPUT
 }

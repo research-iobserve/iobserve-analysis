@@ -23,10 +23,10 @@ import kieker.common.record.IMonitoringRecord;
  * @since 0.0.2
  */
 public interface IPayloadCharacterization extends IMonitoringRecord {
-	public String[] getParameters() ;
-	
-	public String[] getValues() ;
-	
-	public int getRequestType() ;
-	
+    public String[] getParameters();
+
+    public String[] getValues();
+
+    public int getRequestType();
+
 }

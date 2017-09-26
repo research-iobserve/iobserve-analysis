@@ -116,7 +116,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.recordSwitch = new RecordSwitch();
 
         final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
-		// this.deployment = new TDeployment(correspondenceModel, allocationModelProvider,
+        // this.deployment = new TDeployment(correspondenceModel, allocationModelProvider,
         // systemModelProvider,
         // resourceEnvironmentModelProvider);
         // this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider);
@@ -128,14 +128,15 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // systemModelProvider,
         // resourceEnvironmentModelProvider);
 
-		/** Trace reconstruction. */
-        ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<Long, EventBasedTrace>(EventBasedTraceFactory.INSTANCE);
-        
+        /** Trace reconstruction. */
+        ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<Long, EventBasedTrace>(
+                EventBasedTraceFactory.INSTANCE);
+
         final TraceReconstructionFilter traceReconstructionFilter = new TraceReconstructionFilter(traceBuffer);
-        
+
         IEntryCallTraceMatcher matcher = new JPetStoreCallTraceMatcher();
-        
-		final TEntryCall tEntryCall = new TEntryCall(matcher);
+
+        final TEntryCall tEntryCall = new TEntryCall(matcher);
 
         // final TEntryCallSequenceWithPCM tEntryCallSequenceWithPCM;
         // final TEntryEventSequence tEntryEventSequence;
@@ -146,11 +147,13 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // one hour interval or at least 10 user sessions
         final CollectUserSessionsFilter collectUserSessions = new CollectUserSessionsFilter(1000 * 60 * 60, 10);
         final TimeTriggerFilter timeTriggerFilter = new TimeTriggerFilter(1000);
-        
-        final TraceAcceptanceFilter traceAcceptanceFilter = new TraceAcceptanceFilter(new JPetStoreTraceAcceptanceMatcher());
-     
-        final TraceOperationCleanupFilter traceOperationCleanupFilter = new TraceOperationCleanupFilter(new JPetStoreTraceSignatureCleanupRewriter());
-        
+
+        final TraceAcceptanceFilter traceAcceptanceFilter = new TraceAcceptanceFilter(
+                new JPetStoreTraceAcceptanceMatcher());
+
+        final TraceOperationCleanupFilter traceOperationCleanupFilter = new TraceOperationCleanupFilter(
+                new JPetStoreTraceSignatureCleanupRewriter());
+
         final EntryCallFilterRules modelGenerationFilter;
         final ISignatureCreationStrategy signatureStrategy;
         final int expectedUserGroups;
@@ -163,7 +166,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             signatureStrategy = new GetLastXSignatureStrategy(1);
             expectedUserGroups = 4;
         }
-        
+
         // usageModelProvider.getModel().getUsageScenario_UsageModel().size();
         final IVectorQuantizationClustering behaviorModelClustering = new XMeansClustering(expectedUserGroups,
                 varianceOfUserGroups, new ManhattanDistance());
@@ -177,7 +180,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         behaviorModelConfiguration.setClustering(behaviorModelClustering);
         behaviorModelConfiguration.setAggregationType(aggregationType);
         behaviorModelConfiguration.setOutputMode(outputMode);
-       
+
         // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
 
         final TBehaviorModelComparison tBehaviorModelComparison = new TBehaviorModelComparison(
@@ -216,14 +219,11 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         this.connectPorts(tEntryCall.getOutputPort(), entryCallSequence.getEntryCallInputPort());
         this.connectPorts(this.recordSwitch.getSessionEventPort(), entryCallSequence.getSessionEventInputPort());
-        
+
         this.connectPorts(timeTriggerFilter.getOutputPort(), collectUserSessions.getTimeTriggerInputPort());
-        this.connectPorts(entryCallSequence.getUserSessionOutputPort(),
-        		traceAcceptanceFilter.getInputPort());
-        this.connectPorts(traceAcceptanceFilter.getOutputPort(),
-        		traceOperationCleanupFilter.getInputPort());
-        this.connectPorts(traceOperationCleanupFilter.getOutputPort(),
-        		collectUserSessions.getUserSessionInputPort());
+        this.connectPorts(entryCallSequence.getUserSessionOutputPort(), traceAcceptanceFilter.getInputPort());
+        this.connectPorts(traceAcceptanceFilter.getOutputPort(), traceOperationCleanupFilter.getInputPort());
+        this.connectPorts(traceOperationCleanupFilter.getOutputPort(), collectUserSessions.getUserSessionInputPort());
         this.connectPorts(collectUserSessions.getOutputPort(), tBehaviorModelComparison.getInputPort());
     }
 

@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -25,20 +24,19 @@ import kieker.common.record.io.IValueDeserializer;
  * @since 1.13
  */
 public final class SessionEndEventFactory implements IRecordFactory<SessionEndEvent> {
-	
-	
-	@Override
-	public SessionEndEvent create(final IValueDeserializer deserializer) {
-		return new SessionEndEvent(deserializer);
-	}
-	
-	@Override
-	@Deprecated
-	public SessionEndEvent create(final Object[] values) {
-		return new SessionEndEvent(values);
-	}
-	
-	public int getRecordSizeInBytes() {
-		return SessionEndEvent.SIZE;
-	}
+
+    @Override
+    public SessionEndEvent create(final IValueDeserializer deserializer) {
+        return new SessionEndEvent(deserializer);
+    }
+
+    @Override
+    @Deprecated
+    public SessionEndEvent create(final Object[] values) {
+        return new SessionEndEvent(values);
+    }
+
+    public int getRecordSizeInBytes() {
+        return SessionEndEvent.SIZE;
+    }
 }

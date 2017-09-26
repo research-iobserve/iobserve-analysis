@@ -40,14 +40,15 @@ public class DataSendStage extends AbstractConsumerStage<IMonitoringRecord> {
     /**
      * Configure and setup the Kieker writer.
      *
-     * @param hostname host where the data is send to
-     * @param port port where the data is send to
+     * @param hostname
+     *            host where the data is send to
+     * @param port
+     *            port where the data is send to
      */
     public DataSendStage(final String hostname, final int port) {
         final Configuration configuration = ConfigurationFactory.createDefaultConfiguration();
         configuration.setProperty(ConfigurationFactory.CONTROLLER_NAME, "iObserve-Experiments");
         configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, DataSendStage.WRITER_NAME);
-
 
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_FLUSH, "true");
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, "25000");

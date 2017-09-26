@@ -29,9 +29,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.iobserve.common.record.ExtendedAfterOperationEvent;
-import org.iobserve.monitoring.probe.models.CallInformation;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kieker.common.record.flow.trace.TraceMetadata;
@@ -43,6 +40,9 @@ import kieker.monitoring.core.registry.SessionRegistry;
 import kieker.monitoring.core.registry.TraceRegistry;
 import kieker.monitoring.probe.IMonitoringProbe;
 import kieker.monitoring.timer.ITimeSource;
+
+import org.iobserve.common.record.ExtendedAfterOperationEvent;
+import org.iobserve.monitoring.probe.models.CallInformation;
 
 /**
  * For each incoming request via {@link #doFilter(ServletRequest, ServletResponse, FilterChain)},
@@ -90,17 +90,17 @@ public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implem
     /** Kieker trace registry. */
     private static final TraceRegistry TRACEREGISTRY = TraceRegistry.INSTANCE;
 
-    /** Code Map **/
+    /** Code Map. **/
     private static Map<String, Integer> codes;
 
-    /** Category Codes **/
+    /** Category Codes. **/
     private static final int CATEGORY_FISH = 1000;
     private static final int CATEGORY_DOGS = 2000;
     private static final int CATEGORY_REPTILES = 3000;
     private static final int CATEGORY_CATS = 4000;
     private static final int CATEGORY_BIRDS = 5000;
 
-    /** Product Codes **/
+    /** Product Codes. **/
     private static final int PRODUCT_FI_SW_01 = 1000;
     private static final int ITEM_EST_1 = 1000;
     private static final int ITEM_EST_2 = 1001;
@@ -150,7 +150,7 @@ public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implem
     private static final int PRODUCT_AV_SB_02 = 5050;
     private static final int ITEM_EST_19 = 5050;
 
-    /** boolean codes **/
+    /** boolean codes. **/
     private static final int BOOL_TRUE = 5000;
     private static final int BOOL_FALSE = 0;
 
@@ -358,7 +358,7 @@ public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implem
             }
 
             if ("GET".equals(method)) {
-                if ((queryParameters != null) && (queryParameters.length == 2)) {
+                if (queryParameters != null && queryParameters.length == 2) {
 
                     operationSignature = trimmedPath.replaceAll("jpetstore\\.actions\\.", "") + "."
                             + queryParameters[0].replace("=", "") + "()"; // "("
@@ -464,7 +464,7 @@ public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implem
     protected String registerSessionInformation(final ServletRequest request) {
         String sessionId = TraceMetadata.NO_SESSION_ID;
 
-        if ((request == null) || !(request instanceof HttpServletRequest)) {
+        if (request == null || !(request instanceof HttpServletRequest)) {
             return sessionId;
         }
 

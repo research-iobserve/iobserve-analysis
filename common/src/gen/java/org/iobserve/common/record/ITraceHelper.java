@@ -23,10 +23,10 @@ import kieker.common.record.IMonitoringRecord;
  * @since 1.0
  */
 public interface ITraceHelper extends IMonitoringRecord {
-	public long getTraceId() ;
-	
-	public String getHost() ;
-	
-	public int getPort() ;
-	
+    public long getTraceId();
+
+    public String getHost();
+
+    public int getPort();
+
 }

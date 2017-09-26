@@ -29,8 +29,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
-
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.AfterOperationFailedEvent;
@@ -40,6 +38,8 @@ import kieker.monitoring.core.registry.SessionRegistry;
 import kieker.monitoring.core.registry.TraceRegistry;
 import kieker.monitoring.probe.IMonitoringProbe;
 import kieker.monitoring.timer.ITimeSource;
+
+import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
 
 /**
  * For each incoming request via {@link #doFilter(ServletRequest, ServletResponse, FilterChain)},
@@ -79,14 +79,12 @@ public class SessionAndTraceRegistrationPayloadFilter implements Filter, IMonito
     protected static final SessionRegistry SESSION_REGISTRY = SessionRegistry.INSTANCE;
 
     /** Kieker time source. */
-    protected static final ITimeSource TIMESOURCE = SessionAndTraceRegistrationPayloadFilter.CTRLINST
-            .getTimeSource();
+    protected static final ITimeSource TIMESOURCE = SessionAndTraceRegistrationPayloadFilter.CTRLINST.getTimeSource();
     /** Host name of the host the code is running on. */
-    protected static final String VM_NAME = SessionAndTraceRegistrationPayloadFilter.CTRLINST
-            .getHostname();
+    protected static final String VM_NAME = SessionAndTraceRegistrationPayloadFilter.CTRLINST.getHostname();
     /** Kieker trace registry. */
     private static final TraceRegistry TRACEREGISTRY = TraceRegistry.INSTANCE;
-	
+
     // private static final Log LOG =
     // LogFactory.getLog(SessionAndTraceRegistrationFilterForJPetstore.class);
 
@@ -129,34 +127,34 @@ public class SessionAndTraceRegistrationPayloadFilter implements Filter, IMonito
             final String method;
             final String path;
             final String sessionId;
-            
+
             if (request instanceof HttpServletRequest) {
                 final HttpServletRequest httpRequest = (HttpServletRequest) request;
                 method = httpRequest.getMethod();
                 final String requestPath = httpRequest.getRequestURI().replace('/', '.').substring(1);
 
-                // TODO is this a generic thing? */
-                /** remove sessionId from request Path. */
+                // TODO is this a generic thing?
+                /** remove sessionId from request path. */
                 path = requestPath.contains(";") ? requestPath.substring(0, requestPath.indexOf(";")) : requestPath;
 
                 sessionId = httpRequest.getSession().getId();
-                
-                final String trimmedPath = path.replaceAll("\\.[A-Za-z0-9]*$", "");
-                
-                final List<String> parameters = new ArrayList<>();
-        		final List<String> parameterValues = new ArrayList<>();
-        		
-        		Enumeration<String> names = httpRequest.getParameterNames();
-            	while (names.hasMoreElements()) {
-            		String name = names.nextElement();
-            		String[] values = httpRequest.getParameterValues(name);
-            		for (String value : values) {
-            			parameters.add(name);
-            			parameterValues.add(value);
-            		}
-            	}
 
-                String componentSignature = request.getServletContext().getContextPath();
+                final String operationSignature = path.replaceAll("\\.[A-Za-z0-9]*$", "");
+
+                final List<String> parameters = new ArrayList<>();
+                final List<String> parameterValues = new ArrayList<>();
+
+                final Enumeration<String> names = httpRequest.getParameterNames();
+                while (names.hasMoreElements()) {
+                    final String name = names.nextElement();
+                    final String[] values = httpRequest.getParameterValues(name);
+                    for (final String value : values) {
+                        parameters.add(name);
+                        parameterValues.add(value);
+                    }
+                }
+
+                final String componentSignature = request.getServletContext().getContextPath();
 
                 TraceMetadata trace = SessionAndTraceRegistrationPayloadFilter.TRACEREGISTRY.getTrace();
                 final boolean newTrace = trace == null;
@@ -166,82 +164,65 @@ public class SessionAndTraceRegistrationPayloadFilter implements Filter, IMonito
                     trace = SessionAndTraceRegistrationPayloadFilter.TRACEREGISTRY.registerTrace();
                     SessionAndTraceRegistrationPayloadFilter.CTRLINST.newMonitoringRecord(trace);
                 }
-                
+
                 final long traceId = trace.getTraceId();
 
                 if ("GET".equals(method)) {
-                	String operationSignature = this.normalize(trimmedPath + "()");
-                	
-               	 	logMonitoringAndHandleFilterChain(chain, httpRequest, response, traceId, trace.getNextOrderId(), 
-               	 			operationSignature, componentSignature,
-                    		parameters.toArray(new String[parameters.size()]),
-                    		parameterValues.toArray(new String[parameterValues.size()]), 1, newTrace);		
+
+                    this.logMonitoringAndHandleFilterChain(chain, httpRequest, response, traceId,
+                            trace.getNextOrderId(), operationSignature, componentSignature,
+                            parameters.toArray(new String[parameters.size()]),
+                            parameterValues.toArray(new String[parameterValues.size()]), 1, newTrace);
                 } else if ("POST".equals(method)) {
-                	String operationSignature = this.normalize(trimmedPath); 
-                    
-                    logMonitoringAndHandleFilterChain(chain, httpRequest, response, traceId, trace.getNextOrderId(),
-                    		operationSignature, componentSignature,
-                    		parameters.toArray(new String[parameters.size()]),
-                    		parameterValues.toArray(new String[parameterValues.size()]), 1, newTrace);
+                    this.logMonitoringAndHandleFilterChain(chain, httpRequest, response, traceId,
+                            trace.getNextOrderId(), operationSignature, componentSignature,
+                            parameters.toArray(new String[parameters.size()]),
+                            parameterValues.toArray(new String[parameterValues.size()]), 1, newTrace);
                 } else {
                     chain.doFilter(request, response);
                     return;
                 }
             } else {
-            	/** not a http request. */
-            	chain.doFilter(request, response);
+                /** not a http request. */
+                chain.doFilter(request, response);
             }
         } else {
             chain.doFilter(request, response);
         }
     }
 
-    public String normalize(String operationSignature) {
-		return operationSignature.replaceAll("\\.action\\(", "(").replaceAll("action\\.", "");
-	}
-	
-	private void logMonitoringAndHandleFilterChain(final FilterChain chain, 
-			final ServletRequest request, final ServletResponse response, final long traceId, final int orderIndex,
-			String operationSignature, String componentSignature, String[] parameters, String[] parameterValues, int type, boolean newTrace) throws ServletException {
-		try {                		
-			SessionAndTraceRegistrationPayloadFilter.CTRLINST
-                    .newMonitoringRecord(new EntryLevelBeforeOperationEvent(
-                            SessionAndTraceRegistrationPayloadFilter.TIMESOURCE.getTime(),
-                            traceId, orderIndex, operationSignature, componentSignature,
-                            parameters, 
-                            parameterValues, type));
+    private void logMonitoringAndHandleFilterChain(final FilterChain chain, final ServletRequest request,
+            final ServletResponse response, final long traceId, final int orderIndex, final String operationSignature,
+            final String componentSignature, final String[] parameters, final String[] parameterValues, final int type,
+            final boolean newTrace) throws ServletException {
+        try {
+            SessionAndTraceRegistrationPayloadFilter.CTRLINST.newMonitoringRecord(new EntryLevelBeforeOperationEvent(
+                    SessionAndTraceRegistrationPayloadFilter.TIMESOURCE.getTime(), traceId, orderIndex,
+                    operationSignature, componentSignature, parameters, parameterValues, type));
 
             chain.doFilter(request, response);
 
-            SessionAndTraceRegistrationPayloadFilter.CTRLINST
-                    .newMonitoringRecord(
-                            new AfterOperationEvent(
-                                    SessionAndTraceRegistrationPayloadFilter.TIMESOURCE
-                                            .getTime(),
-                                    traceId, orderIndex, operationSignature, componentSignature));
+            SessionAndTraceRegistrationPayloadFilter.CTRLINST.newMonitoringRecord(
+                    new AfterOperationEvent(SessionAndTraceRegistrationPayloadFilter.TIMESOURCE.getTime(), traceId,
+                            orderIndex, operationSignature, componentSignature));
 
         } catch (final Throwable th) { // NOPMD NOCS (catch throw is ok here)
-            SessionAndTraceRegistrationPayloadFilter.CTRLINST
-                    .newMonitoringRecord(
-                            new AfterOperationFailedEvent(
-                                    SessionAndTraceRegistrationPayloadFilter.TIMESOURCE
-                                            .getTime(),
-                                    traceId, orderIndex, operationSignature, componentSignature,
-                                    th.toString()));
+            SessionAndTraceRegistrationPayloadFilter.CTRLINST.newMonitoringRecord(
+                    new AfterOperationFailedEvent(SessionAndTraceRegistrationPayloadFilter.TIMESOURCE.getTime(),
+                            traceId, orderIndex, operationSignature, componentSignature, th.toString()));
             throw new ServletException(th);
         } finally {
             // is this correct?
-            SessionAndTraceRegistrationPayloadFilter.SESSION_REGISTRY
-                    .unsetThreadLocalSessionId();
+            SessionAndTraceRegistrationPayloadFilter.SESSION_REGISTRY.unsetThreadLocalSessionId();
             // Reset the thread-local trace information
             if (newTrace) { // close the trace
                 SessionAndTraceRegistrationPayloadFilter.TRACEREGISTRY.unregisterTrace();
             }
 
         }
-	}
+    }
 
-	@Override
+    @Override
     public void destroy() {
         // by default, we do nothing here. Extending classes may override this method
     }
@@ -262,15 +243,14 @@ public class SessionAndTraceRegistrationPayloadFilter implements Filter, IMonito
     protected String registerSessionInformation(final ServletRequest request) {
         String sessionId = TraceMetadata.NO_SESSION_ID;
 
-        if ((request == null) || !(request instanceof HttpServletRequest)) {
+        if (request == null || !(request instanceof HttpServletRequest)) {
             return sessionId;
         }
 
         final HttpSession session = ((HttpServletRequest) request).getSession(false);
         if (session != null) {
             sessionId = session.getId();
-            SessionAndTraceRegistrationPayloadFilter.SESSION_REGISTRY
-                    .storeThreadLocalSessionId(sessionId);
+            SessionAndTraceRegistrationPayloadFilter.SESSION_REGISTRY.storeThreadLocalSessionId(sessionId);
         }
 
         return sessionId;

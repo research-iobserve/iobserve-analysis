@@ -163,7 +163,7 @@ public final class UserSession {
     public static String createUserSessionId(final EntryCallEvent event) {
         return event.getHostname() + "," + event.getSessionId();
     }
-    
+
     /**
      * Parse the id which would be constructed by the {@link UserSession} class if it contained that
      * event.

@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -25,20 +24,19 @@ import kieker.common.record.io.IValueDeserializer;
  * @since 1.0
  */
 public final class ServletTraceHelperFactory implements IRecordFactory<ServletTraceHelper> {
-	
-	
-	@Override
-	public ServletTraceHelper create(final IValueDeserializer deserializer) {
-		return new ServletTraceHelper(deserializer);
-	}
-	
-	@Override
-	@Deprecated
-	public ServletTraceHelper create(final Object[] values) {
-		return new ServletTraceHelper(values);
-	}
-	
-	public int getRecordSizeInBytes() {
-		return ServletTraceHelper.SIZE;
-	}
+
+    @Override
+    public ServletTraceHelper create(final IValueDeserializer deserializer) {
+        return new ServletTraceHelper(deserializer);
+    }
+
+    @Override
+    @Deprecated
+    public ServletTraceHelper create(final Object[] values) {
+        return new ServletTraceHelper(values);
+    }
+
+    public int getRecordSizeInBytes() {
+        return ServletTraceHelper.SIZE;
+    }
 }

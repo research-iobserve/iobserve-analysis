@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -25,20 +24,19 @@ import kieker.common.record.io.IValueDeserializer;
  * @since 1.13
  */
 public final class ContainerDeallocationEventFactory implements IRecordFactory<ContainerDeallocationEvent> {
-	
-	
-	@Override
-	public ContainerDeallocationEvent create(final IValueDeserializer deserializer) {
-		return new ContainerDeallocationEvent(deserializer);
-	}
-	
-	@Override
-	@Deprecated
-	public ContainerDeallocationEvent create(final Object[] values) {
-		return new ContainerDeallocationEvent(values);
-	}
-	
-	public int getRecordSizeInBytes() {
-		return ContainerDeallocationEvent.SIZE;
-	}
+
+    @Override
+    public ContainerDeallocationEvent create(final IValueDeserializer deserializer) {
+        return new ContainerDeallocationEvent(deserializer);
+    }
+
+    @Override
+    @Deprecated
+    public ContainerDeallocationEvent create(final Object[] values) {
+        return new ContainerDeallocationEvent(values);
+    }
+
+    public int getRecordSizeInBytes() {
+        return ContainerDeallocationEvent.SIZE;
+    }
 }

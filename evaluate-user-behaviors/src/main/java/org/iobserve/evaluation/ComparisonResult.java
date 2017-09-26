@@ -48,7 +48,7 @@ public class ComparisonResult {
         return this.missingEdgeCount;
     }
 
-    public void setMissingEdgeCount(int missingEdgeCount) {
+    public void setMissingEdgeCount(final int missingEdgeCount) {
         this.missingEdgeCount = missingEdgeCount;
     }
 
@@ -56,7 +56,7 @@ public class ComparisonResult {
         return this.additionalEdgeCount;
     }
 
-    public void setAdditionalEdgeCount(int additionalEdgeCount) {
+    public void setAdditionalEdgeCount(final int additionalEdgeCount) {
         this.additionalEdgeCount = additionalEdgeCount;
     }
 

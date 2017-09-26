@@ -60,15 +60,18 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            kind of workload, configuration for entry event filter
      * @param visualizationServiceURL
      *            url to the visualization service
-     * @param aggregationType aggregation type
-     * @param outputMode output mode
+     * @param aggregationType
+     *            aggregation type
+     * @param outputMode
+     *            output mode
      */
     public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
-            final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode) {
+            final String visualizationServiceURL, final EAggregationType aggregationType,
+            final EOutputMode outputMode) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
                 visualizationServiceURL, aggregationType, outputMode);

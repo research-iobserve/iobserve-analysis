@@ -34,15 +34,15 @@ import teetime.framework.Execution;
 public final class ReplayerMain {
 
     @Parameter(names = { "-i",
-    "--input" }, required = true, description = "Input data directory.", converter = FileConverter.class)
+            "--input" }, required = true, description = "Input data directory.", converter = FileConverter.class)
     private File dataLocation;
 
     @Parameter(names = { "-p",
-    "--port" }, required = true, description = "Output port.", converter = IntegerConverter.class)
+            "--port" }, required = true, description = "Output port.", converter = IntegerConverter.class)
     private Integer outputPort;
 
     @Parameter(names = { "-h",
-    "--host" }, required = true, description = "Name or IP address of the host where the data is send to.")
+            "--host" }, required = true, description = "Name or IP address of the host where the data is send to.")
     private String hostname;
 
     /**
@@ -77,8 +77,8 @@ public final class ReplayerMain {
         this.checkDirectory(this.dataLocation, "Output Kieker directory", commander);
 
         System.out.println("Receiver");
-        final ReplayerConfiguration configuration = new ReplayerConfiguration(
-                this.dataLocation, this.hostname, this.outputPort);
+        final ReplayerConfiguration configuration = new ReplayerConfiguration(this.dataLocation, this.hostname,
+                this.outputPort);
 
         if (configuration.isOutputConnected()) {
 

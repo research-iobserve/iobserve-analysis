@@ -21,13 +21,13 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
 import org.iobserve.analysis.protocom.PcmEntity;
 import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
 import org.xml.sax.SAXException;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * TODO This is a filter containing the core functionality. It can be divided into smaller filters.
@@ -89,7 +89,7 @@ public class DoAllFilter extends AbstractConsumerStage<ClassAndMethod> {
      *            one class and method object passed to this filter.
      */
     @Override
-    protected void execute(final ClassAndMethod element) throws Exception {
+    protected void execute(final ClassAndMethod element) {
         final PcmEntityCorrespondent correspondent = this.getOrCreateCorrespondent(element.getClassSignature(),
                 this.correspondentMapping);
         /** only add method if it does not exist in the correspondent. */

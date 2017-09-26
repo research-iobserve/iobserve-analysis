@@ -226,10 +226,10 @@ public final class UsageModelBuilder {
      *            operation id of the EntryLevelSystemCall
      * @return null, if the creation failed, the instance if not.
      */
-    public static EntryLevelSystemCall createEntryLevelSystemCall(
-    		final RepositoryModelProvider repositoryModelProvider, final String operationID) {
-    	
-    	final OperationSignature opSig = repositoryModelProvider.getOperationSignature(operationID);
+    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryModelProvider repositoryModelProvider,
+            final String operationID) {
+
+        final OperationSignature opSig = repositoryModelProvider.getOperationSignature(operationID);
         final EntryLevelSystemCall eSysCall;
 
         if (opSig != null) {
@@ -242,8 +242,8 @@ public final class UsageModelBuilder {
             eSysCall.setProvidedRole_EntryLevelSystemCall(providedRole);
         } else {
             eSysCall = null;
-            System.err.printf("%s caused Nullpointer since OperationSignature=% is null?!",
-            		operationID, String.valueOf(opSig));
+            System.err.printf("%s caused Nullpointer since OperationSignature=% is null?!", operationID,
+                    String.valueOf(opSig));
         }
         return eSysCall;
     }
@@ -257,10 +257,9 @@ public final class UsageModelBuilder {
      *            correspondent containing operation signature
      * @return null, if the creation failed, the instance if not.
      */
-    public static EntryLevelSystemCall createEntryLevelSystemCall(
-    		final RepositoryModelProvider repositoryModelProvider, final Correspondent correspondent) {
-        return UsageModelBuilder.createEntryLevelSystemCall(repositoryModelProvider,
-                correspondent.getPcmOperationId());
+    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryModelProvider repositoryModelProvider,
+            final Correspondent correspondent) {
+        return UsageModelBuilder.createEntryLevelSystemCall(repositoryModelProvider, correspondent.getPcmOperationId());
     }
 
     /**

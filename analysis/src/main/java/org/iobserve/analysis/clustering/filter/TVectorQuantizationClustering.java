@@ -34,8 +34,8 @@ import weka.core.Instances;
 public class TVectorQuantizationClustering extends AbstractConsumerStage<Instances> {
     private final IVectorQuantizationClustering clustering;
 
-	private final OutputPort<Instances> outputPort = this.createOutputPort();
-	
+    private final OutputPort<Instances> outputPort = this.createOutputPort();
+
     /**
      * constructor.
      *
@@ -50,7 +50,8 @@ public class TVectorQuantizationClustering extends AbstractConsumerStage<Instanc
     protected void execute(final Instances instances) {
         final Optional<ClusteringResults> clusteringResults = this.clustering.clusterInstances(instances);
         clusteringResults.ifPresent(this::printInstances);
-        clusteringResults.ifPresent(results -> this.getOutputPort().send(results.getClusteringMetrics().getCentroids()));
+        clusteringResults
+                .ifPresent(results -> this.getOutputPort().send(results.getClusteringMetrics().getCentroids()));
 
     }
 
@@ -68,8 +69,8 @@ public class TVectorQuantizationClustering extends AbstractConsumerStage<Instanc
             }
         }
     }
-    
-	/**
+
+    /**
      * getter.
      *
      * @return output port

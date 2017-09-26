@@ -23,6 +23,6 @@ import kieker.common.record.IMonitoringRecord;
  * @since 0.0.2
  */
 public interface IUserInformation extends IMonitoringRecord {
-	public String getInformations() ;
-	
+    public String getInformations();
+
 }

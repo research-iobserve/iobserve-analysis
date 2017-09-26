@@ -19,26 +19,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
 import org.iobserve.analysis.clustering.filter.models.CallInformation;
 import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
 import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
-
 /**
- * @author reiner
+ * Compare two behavior models and compute their differences.
+ *
+ * @author Reiner Jung
  *
  */
 public class ModelComparisonStage extends AbstractStage {
 
-    private final InputPort<BehaviorModel> baselineModelInputPort = this.createInputPort();
+    private final InputPort<BehaviorModel> referenceModelInputPort = this.createInputPort();
     private final InputPort<BehaviorModel> testModelInputPort = this.createInputPort();
     private final OutputPort<ComparisonResult> resultPort = this.createOutputPort();
 
-    private BehaviorModel baselineModel;
+    private BehaviorModel referenceModel;
 
     private BehaviorModel testModel;
 
@@ -49,18 +51,18 @@ public class ModelComparisonStage extends AbstractStage {
      */
     @Override
     protected void execute() throws Exception {
-        if (this.baselineModel == null) {
-            this.baselineModel = this.baselineModelInputPort.receive();
+        if (this.referenceModel == null) {
+            this.referenceModel = this.referenceModelInputPort.receive();
         }
         if (this.testModel == null) {
             this.testModel = this.testModelInputPort.receive();
         }
 
-        if ((this.baselineModel != null) && (this.testModel != null)) {
+        if (this.referenceModel != null && this.testModel != null) {
             final ComparisonResult result = new ComparisonResult();
 
-            result.getBaselineNodes().addAll(this.baselineModel.getNodes());
-            result.getBaselineEdges().addAll(this.baselineModel.getEdges());
+            result.getBaselineNodes().addAll(this.referenceModel.getNodes());
+            result.getBaselineEdges().addAll(this.referenceModel.getEdges());
             result.getTestModelNodes().addAll(this.testModel.getNodes());
             result.getTestModelEdges().addAll(this.testModel.getEdges());
 
@@ -70,7 +72,7 @@ public class ModelComparisonStage extends AbstractStage {
              * call-information on each node.
              */
             /** Missing nodes. */
-            for (final EntryCallNode baselineNode : this.baselineModel.getNodes()) {
+            for (final EntryCallNode baselineNode : this.referenceModel.getNodes()) {
                 final EntryCallNode testModelNode = this.findMatchingModelNode(this.testModel.getNodes(), baselineNode);
                 if (testModelNode == null) {
                     result.getMissingNodes().add(baselineNode);
@@ -88,7 +90,7 @@ public class ModelComparisonStage extends AbstractStage {
 
             /** Additional nodes. */
             for (final EntryCallNode testModelNode : this.testModel.getNodes()) {
-                final EntryCallNode baselineNode = this.findMatchingModelNode(this.baselineModel.getNodes(),
+                final EntryCallNode baselineNode = this.findMatchingModelNode(this.referenceModel.getNodes(),
                         testModelNode);
                 if (baselineNode == null) {
                     result.getAdditionalNodes().add(testModelNode);
@@ -97,7 +99,7 @@ public class ModelComparisonStage extends AbstractStage {
 
             /** Missing edges. */
             int missingEdgeCount = 0;
-            for (final EntryCallEdge baselineEdge : this.baselineModel.getEdges()) {
+            for (final EntryCallEdge baselineEdge : this.referenceModel.getEdges()) {
                 final EntryCallEdge testModelEdge = this.findMatchingModelEdge(this.testModel.getEdges(), baselineEdge);
                 if (testModelEdge == null) {
                     missingEdgeCount += (int) baselineEdge.getCalls();
@@ -110,7 +112,7 @@ public class ModelComparisonStage extends AbstractStage {
             /** Additional edges. */
             int additionalEdgeCount = 0;
             for (final EntryCallEdge testModelEdge : this.testModel.getEdges()) {
-                final EntryCallEdge baselineEdge = this.findMatchingModelEdge(this.baselineModel.getEdges(),
+                final EntryCallEdge baselineEdge = this.findMatchingModelEdge(this.referenceModel.getEdges(),
                         testModelEdge);
                 if (baselineEdge == null) {
                     additionalEdgeCount += (int) testModelEdge.getCalls();
@@ -120,7 +122,7 @@ public class ModelComparisonStage extends AbstractStage {
             }
             result.setAdditionalEdgeCount(additionalEdgeCount);
 
-            this.baselineModel = null;
+            this.referenceModel = null;
             this.testModel = null;
 
             /** Add baseline and testModelNodes */
@@ -150,7 +152,7 @@ public class ModelComparisonStage extends AbstractStage {
     }
 
     /**
-     * Find call information which exists in firstModelSet and not in lastModelSet
+     * Find call information which exists in firstModelSet and not in lastModelSet.
      *
      * @param firstCallInformationSet
      * @param testModelCallInformationSet
@@ -193,8 +195,8 @@ public class ModelComparisonStage extends AbstractStage {
         return null;
     }
 
-    public InputPort<BehaviorModel> getBaselineModelInputPort() {
-        return this.baselineModelInputPort;
+    public InputPort<BehaviorModel> getReferenceModelInputPort() {
+        return this.referenceModelInputPort;
     }
 
     public InputPort<BehaviorModel> getTestModelInputPort() {

@@ -28,9 +28,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.iobserve.common.record.ExtendedAfterOperationEvent;
-import org.iobserve.monitoring.probe.models.CallInformation;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kieker.common.logging.Log;
@@ -44,6 +41,9 @@ import kieker.monitoring.core.registry.SessionRegistry;
 import kieker.monitoring.core.registry.TraceRegistry;
 import kieker.monitoring.probe.IMonitoringProbe;
 import kieker.monitoring.timer.ITimeSource;
+
+import org.iobserve.common.record.ExtendedAfterOperationEvent;
+import org.iobserve.monitoring.probe.models.CallInformation;
 
 /**
  * For each incoming request via {@link #doFilter(ServletRequest, ServletResponse, FilterChain)},
@@ -181,13 +181,13 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
 
             if ("GET".equals(method)) {
 
-                if ((queryParameters != null)) {
+                if (queryParameters != null) {
                     // pattern ="jpetstore\\.actions\\."
                     operationSignature = trimmedPath + "."
                             + this.equalsPattern.matcher(queryParameters[0]).replaceAll("") + "()";
 
                     // is operation called with parameters
-                    if ((queryParameters.length > 1)) {
+                    if (queryParameters.length > 1) {
                         // then add the parameters as call informations
                         for (int i = 1; i < queryParameters.length; i++) {
                             final String[] queryParameterSplit = this.equalsPattern.split(queryParameters[i]);
@@ -313,7 +313,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
     protected String registerSessionInformation(final ServletRequest request) {
         String sessionId = TraceMetadata.NO_SESSION_ID;
 
-        if ((request == null) || !(request instanceof HttpServletRequest)) {
+        if (request == null || !(request instanceof HttpServletRequest)) {
             return sessionId;
         }
 

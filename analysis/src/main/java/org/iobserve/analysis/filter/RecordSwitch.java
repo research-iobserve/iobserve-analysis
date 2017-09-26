@@ -73,7 +73,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 
     @Override
     protected void execute(final IMonitoringRecord element) {
-    	// TODO move this to info
+        // TODO move this to info
         this.recordCount++;
         // TODO move thos to debug
         if (this.recordCount % 1000 == 0) {

@@ -27,14 +27,14 @@ public class CallInformation {
     private long informationCode;
 
     /**
-     * base constructor
+     * base constructor.
      */
     public CallInformation() {
         // nothing
     }
 
     /**
-     * constructor
+     * constructor.
      *
      * @param informationSignature
      *            informationSignature
@@ -47,40 +47,18 @@ public class CallInformation {
         this.informationCode = informationCode;
     }
 
-    /**
-     * getter
-     *
-     * @return informationSignature
-     */
     public String getInformationSignature() {
         return this.informationSignature;
     }
 
-    /**
-     * setter
-     *
-     * @param informationSignature
-     *            informationSignature
-     */
     public void setInformationSignature(final String informationSignature) {
         this.informationSignature = informationSignature;
     }
 
-    /**
-     * getter
-     *
-     * @return informationCode
-     */
     public long getInformationCode() {
         return this.informationCode;
     }
 
-    /**
-     * setter
-     *
-     * @param informationCode
-     *            informationCode
-     */
     public void setInformationCode(final long informationCode) {
         this.informationCode = informationCode;
     }

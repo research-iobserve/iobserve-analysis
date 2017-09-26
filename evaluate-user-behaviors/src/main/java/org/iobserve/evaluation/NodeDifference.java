@@ -26,32 +26,44 @@ import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
  */
 public class NodeDifference {
 
-    private EntryCallNode baselineNode;
+    private EntryCallNode referenceNode;
     private EntryCallNode testModelNode;
     private List<CallInformation> missingInformation;
     private List<CallInformation> additionalInformation;
 
-    public NodeDifference(EntryCallNode baselineNode, EntryCallNode testModelNode,
-            List<CallInformation> missingInformation, List<CallInformation> additionalInformation) {
-        this.baselineNode = baselineNode;
+    /**
+     * Difference of one node in the graph.
+     *
+     * @param referenceNode
+     *            reference node
+     * @param testModelNode
+     *            node of the compared model
+     * @param missingInformation
+     *            missing information
+     * @param additionalInformation
+     *            additional information
+     */
+    public NodeDifference(final EntryCallNode referenceNode, final EntryCallNode testModelNode,
+            final List<CallInformation> missingInformation, final List<CallInformation> additionalInformation) {
+        this.referenceNode = referenceNode;
         this.testModelNode = testModelNode;
         this.missingInformation = missingInformation;
         this.additionalInformation = additionalInformation;
     }
 
-    public EntryCallNode getBaselineNode() {
-        return this.baselineNode;
+    public EntryCallNode getReferenceNode() {
+        return this.referenceNode;
     }
 
-    public void setBaselineNode(EntryCallNode baselineNode) {
-        this.baselineNode = baselineNode;
+    public void setReferenceNode(final EntryCallNode referenceNode) {
+        this.referenceNode = referenceNode;
     }
 
     public EntryCallNode getTestModelNode() {
         return this.testModelNode;
     }
 
-    public void setTestModelNode(EntryCallNode testModelNode) {
+    public void setTestModelNode(final EntryCallNode testModelNode) {
         this.testModelNode = testModelNode;
     }
 
@@ -59,7 +71,7 @@ public class NodeDifference {
         return this.missingInformation;
     }
 
-    public void setMissingInformation(List<CallInformation> missingInformation) {
+    public void setMissingInformation(final List<CallInformation> missingInformation) {
         this.missingInformation = missingInformation;
     }
 
@@ -67,7 +79,7 @@ public class NodeDifference {
         return this.additionalInformation;
     }
 
-    public void setAdditionalInformation(List<CallInformation> additionalInformation) {
+    public void setAdditionalInformation(final List<CallInformation> additionalInformation) {
         this.additionalInformation = additionalInformation;
     }
 

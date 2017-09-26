@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -25,20 +24,19 @@ import kieker.common.record.io.IValueDeserializer;
  * @since 0.0.2
  */
 public final class EntryLevelBeforeOperationEventFactory implements IRecordFactory<EntryLevelBeforeOperationEvent> {
-	
-	
-	@Override
-	public EntryLevelBeforeOperationEvent create(final IValueDeserializer deserializer) {
-		return new EntryLevelBeforeOperationEvent(deserializer);
-	}
-	
-	@Override
-	@Deprecated
-	public EntryLevelBeforeOperationEvent create(final Object[] values) {
-		return new EntryLevelBeforeOperationEvent(values);
-	}
-	
-	public int getRecordSizeInBytes() {
-		return EntryLevelBeforeOperationEvent.SIZE;
-	}
+
+    @Override
+    public EntryLevelBeforeOperationEvent create(final IValueDeserializer deserializer) {
+        return new EntryLevelBeforeOperationEvent(deserializer);
+    }
+
+    @Override
+    @Deprecated
+    public EntryLevelBeforeOperationEvent create(final Object[] values) {
+        return new EntryLevelBeforeOperationEvent(values);
+    }
+
+    public int getRecordSizeInBytes() {
+        return EntryLevelBeforeOperationEvent.SIZE;
+    }
 }

@@ -38,9 +38,12 @@ public class ReplayerConfiguration extends Configuration {
     /**
      * Construct the replayer configuration.
      *
-     * @param dataLocation directory containing Kieker data.
-     * @param hostname name of the host where the data is send to
-     * @param outputPort port on the host the data is send to
+     * @param dataLocation
+     *            directory containing Kieker data.
+     * @param hostname
+     *            name of the host where the data is send to
+     * @param outputPort
+     *            port on the host the data is send to
      */
     public ReplayerConfiguration(final File dataLocation, final String hostname, final int outputPort) {
 
@@ -50,7 +53,7 @@ public class ReplayerConfiguration extends Configuration {
         final InitialElementProducer<File> files = new InitialElementProducer<>(directories);
         final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
 
-        this.consumer  = new DataSendStage(hostname, outputPort);
+        this.consumer = new DataSendStage(hostname, outputPort);
 
         this.connectPorts(files.getOutputPort(), reader.getInputPort());
         this.connectPorts(reader.getOutputPort(), this.consumer.getInputPort());

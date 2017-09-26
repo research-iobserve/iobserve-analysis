@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -25,20 +24,19 @@ import kieker.common.record.io.IValueDeserializer;
  * @since 1.13
  */
 public final class ServletUndeployedEventFactory implements IRecordFactory<ServletUndeployedEvent> {
-	
-	
-	@Override
-	public ServletUndeployedEvent create(final IValueDeserializer deserializer) {
-		return new ServletUndeployedEvent(deserializer);
-	}
-	
-	@Override
-	@Deprecated
-	public ServletUndeployedEvent create(final Object[] values) {
-		return new ServletUndeployedEvent(values);
-	}
-	
-	public int getRecordSizeInBytes() {
-		return ServletUndeployedEvent.SIZE;
-	}
+
+    @Override
+    public ServletUndeployedEvent create(final IValueDeserializer deserializer) {
+        return new ServletUndeployedEvent(deserializer);
+    }
+
+    @Override
+    @Deprecated
+    public ServletUndeployedEvent create(final Object[] values) {
+        return new ServletUndeployedEvent(values);
+    }
+
+    public int getRecordSizeInBytes() {
+        return ServletUndeployedEvent.SIZE;
+    }
 }

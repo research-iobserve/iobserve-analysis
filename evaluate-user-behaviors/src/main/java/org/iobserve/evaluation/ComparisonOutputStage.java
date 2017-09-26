@@ -24,11 +24,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import teetime.framework.AbstractConsumerStage;
+
 import org.iobserve.analysis.clustering.filter.models.CallInformation;
 import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
 import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
-
-import teetime.framework.AbstractConsumerStage;
 
 /**
  * Sync all incoming records with a Kieker writer to a text file log.
@@ -41,11 +41,12 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
     private final File outputFile;
 
     /**
-     * Configure and setup the Kieker writer.
+     * Configure and setup a file writer for the output of the result comparison.
      *
      * @param outputFile
+     *            file descriptor for the output file
      */
-    public ComparisonOutputStage(File outputFile) {
+    public ComparisonOutputStage(final File outputFile) {
         this.outputFile = outputFile;
     }
 
@@ -100,7 +101,7 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
                 + result.getAdditionalEdgeCount() + "\n");
         writer.write("Node differences:\n");
         for (final NodeDifference difference : result.getNodeDifferences()) {
-            writer.write("\tNode" + difference.getBaselineNode().getSignature() + "\n");
+            writer.write("\tNode" + difference.getReferenceNode().getSignature() + "\n");
             writer.write("\t\tMissing");
             String separator = "=";
             for (final CallInformation callInformation : difference.getMissingInformation()) {
@@ -121,8 +122,8 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         fw.close();
     }
 
-    private List<EntryCallEdge> createAllEdgesList(List<EntryCallEdge> baselineEdges,
-            List<EntryCallEdge> testModelEdges) {
+    private List<EntryCallEdge> createAllEdgesList(final List<EntryCallEdge> baselineEdges,
+            final List<EntryCallEdge> testModelEdges) {
         final List<EntryCallEdge> result = new ArrayList<>();
         for (final EntryCallEdge edge : baselineEdges) {
             final EntryCallEdge duplicateEdge = new EntryCallEdge();
@@ -143,15 +144,11 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         return result;
     }
 
-    private boolean edgeExists(List<EntryCallEdge> edges, EntryCallEdge findEdge) {
-        if (this.findEdge(edges, findEdge) != null) {
-            return true;
-        } else {
-            return false;
-        }
+    private boolean edgeExists(final List<EntryCallEdge> edges, final EntryCallEdge findEdge) {
+        return this.findEdge(edges, findEdge) != null;
     }
 
-    private EntryCallEdge findEdge(List<EntryCallEdge> edges, EntryCallEdge findEdge) {
+    private EntryCallEdge findEdge(final List<EntryCallEdge> edges, final EntryCallEdge findEdge) {
         for (final EntryCallEdge edge : edges) {
             if (findEdge.getSource().getSignature().equals(edge.getSource().getSignature())
                     && findEdge.getTarget().getSignature().equals(edge.getTarget().getSignature())) {
@@ -169,8 +166,8 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
      * @param testModelNodes
      * @return
      */
-    private List<EntryCallNode> createAllNodesList(List<EntryCallNode> baselineNodes,
-            List<EntryCallNode> testModelNodes) {
+    private List<EntryCallNode> createAllNodesList(final List<EntryCallNode> baselineNodes,
+            final List<EntryCallNode> testModelNodes) {
         final List<EntryCallNode> result = new ArrayList<>();
         result.addAll(baselineNodes);
         for (final EntryCallNode node : testModelNodes) {
@@ -181,15 +178,11 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         return result;
     }
 
-    private boolean nodeExists(List<EntryCallNode> nodes, EntryCallNode findNode) {
-        if (this.findNode(nodes, findNode) != null) {
-            return true;
-        } else {
-            return false;
-        }
+    private boolean nodeExists(final List<EntryCallNode> nodes, final EntryCallNode findNode) {
+        return this.findNode(nodes, findNode) != null;
     }
 
-    private EntryCallNode findNode(List<EntryCallNode> nodes, EntryCallNode findNode) {
+    private EntryCallNode findNode(final List<EntryCallNode> nodes, final EntryCallNode findNode) {
         for (final EntryCallNode node : nodes) {
             if (findNode.getSignature().equals(node.getSignature())) {
                 return node;
@@ -199,8 +192,8 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         return null;
     }
 
-    private void generateNodeCallInformation(BufferedWriter writer, String prefix, List<EntryCallNode> allNodes,
-            List<EntryCallNode> selectedNodes) throws IOException {
+    private void generateNodeCallInformation(final BufferedWriter writer, final String prefix,
+            final List<EntryCallNode> allNodes, final List<EntryCallNode> selectedNodes) throws IOException {
         for (final EntryCallNode referenceNode : allNodes) {
             final EntryCallNode printNode = this.findNode(selectedNodes, referenceNode);
             if (printNode != null) {
@@ -215,8 +208,8 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         }
     }
 
-    private Set<CallInformation> generateAllEntryCallInformationList(Set<CallInformation> entryCallInformation,
-            Set<CallInformation> supplementalCallInfo) {
+    private Set<CallInformation> generateAllEntryCallInformationList(final Set<CallInformation> entryCallInformation,
+            final Set<CallInformation> supplementalCallInfo) {
         final Set<CallInformation> allEntryCallInformation = new HashSet<>();
         allEntryCallInformation.addAll(entryCallInformation);
         for (final CallInformation information : supplementalCallInfo) {
@@ -235,8 +228,8 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         return allEntryCallInformation;
     }
 
-    private void generateCallInformation(BufferedWriter writer, String prefix,
-            Set<CallInformation> allEntryCallInformation, Set<CallInformation> entryCallInformation)
+    private void generateCallInformation(final BufferedWriter writer, final String prefix,
+            final Set<CallInformation> allEntryCallInformation, final Set<CallInformation> entryCallInformation)
             throws IOException {
 
         for (final CallInformation information : allEntryCallInformation) {
@@ -249,7 +242,7 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         }
     }
 
-    private boolean isContainedIn(Set<CallInformation> entryCallInformation, CallInformation information) {
+    private boolean isContainedIn(final Set<CallInformation> entryCallInformation, final CallInformation information) {
         for (final CallInformation referenceInfo : entryCallInformation) {
             if (referenceInfo.getInformationSignature().equals(information.getInformationSignature())
                     && referenceInfo.getInformationCode() == information.getInformationCode()) {
@@ -259,8 +252,8 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         return false;
     }
 
-    private void generateEdges(BufferedWriter writer, String prefix, List<EntryCallEdge> allEdges,
-            List<EntryCallEdge> selectedEdges) throws IOException {
+    private void generateEdges(final BufferedWriter writer, final String prefix, final List<EntryCallEdge> allEdges,
+            final List<EntryCallEdge> selectedEdges) throws IOException {
         for (final EntryCallEdge referenceEdge : allEdges) {
             final EntryCallEdge printEdge = this.findEdge(selectedEdges, referenceEdge);
             if (printEdge != null) {

@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -25,20 +24,19 @@ import kieker.common.record.io.IValueDeserializer;
  * @since 1.13
  */
 public final class ServerGeoLocationFactory implements IRecordFactory<ServerGeoLocation> {
-	
-	
-	@Override
-	public ServerGeoLocation create(final IValueDeserializer deserializer) {
-		return new ServerGeoLocation(deserializer);
-	}
-	
-	@Override
-	@Deprecated
-	public ServerGeoLocation create(final Object[] values) {
-		return new ServerGeoLocation(values);
-	}
-	
-	public int getRecordSizeInBytes() {
-		return ServerGeoLocation.SIZE;
-	}
+
+    @Override
+    public ServerGeoLocation create(final IValueDeserializer deserializer) {
+        return new ServerGeoLocation(deserializer);
+    }
+
+    @Override
+    @Deprecated
+    public ServerGeoLocation create(final Object[] values) {
+        return new ServerGeoLocation(values);
+    }
+
+    public int getRecordSizeInBytes() {
+        return ServerGeoLocation.SIZE;
+    }
 }

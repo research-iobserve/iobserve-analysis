@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.data;
 
-
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -25,20 +24,19 @@ import kieker.common.record.io.IValueDeserializer;
  * @since 0.0.2
  */
 public final class PayloadAwareEntryCallEventFactory implements IRecordFactory<PayloadAwareEntryCallEvent> {
-	
-	
-	@Override
-	public PayloadAwareEntryCallEvent create(final IValueDeserializer deserializer) {
-		return new PayloadAwareEntryCallEvent(deserializer);
-	}
-	
-	@Override
-	@Deprecated
-	public PayloadAwareEntryCallEvent create(final Object[] values) {
-		return new PayloadAwareEntryCallEvent(values);
-	}
-	
-	public int getRecordSizeInBytes() {
-		return PayloadAwareEntryCallEvent.SIZE;
-	}
+
+    @Override
+    public PayloadAwareEntryCallEvent create(final IValueDeserializer deserializer) {
+        return new PayloadAwareEntryCallEvent(deserializer);
+    }
+
+    @Override
+    @Deprecated
+    public PayloadAwareEntryCallEvent create(final Object[] values) {
+        return new PayloadAwareEntryCallEvent(values);
+    }
+
+    public int getRecordSizeInBytes() {
+        return PayloadAwareEntryCallEvent.SIZE;
+    }
 }

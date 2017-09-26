@@ -20,6 +20,5 @@ package org.iobserve.analysis.clustering;
  * @author Reiner Jung
  */
 public enum EAggregationType {
-	EM_CLUSTERING,
-	X_MEANS_CLUSTERING
+    EM_CLUSTERING, X_MEANS_CLUSTERING
 }

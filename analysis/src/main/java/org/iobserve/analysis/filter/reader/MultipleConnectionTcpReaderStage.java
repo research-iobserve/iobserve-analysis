@@ -277,7 +277,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
             return newMetadata;
         } else if (record instanceof ITraceRecord) {
             final TraceMetadata metaData = this.metadatamap.get(this.getIP(connection.getChannel().getRemoteAddress()))
-                    .get(((ITraceRecord) record).getTraceId());       
+                    .get(((ITraceRecord) record).getTraceId());
             /** this mess could be avoided with setters in Kieker records. */
             if (record instanceof ConstructionEvent) {
                 final ConstructionEvent event = (ConstructionEvent) record;

@@ -56,8 +56,7 @@ public class Connection {
         this.channel = channel;
         this.stringRegistryWrapper = new GetValueAdapter<>(this.registry);
         this.buffer = ByteBuffer.allocateDirect(bufferSize);
-        this.deserializer = DefaultValueDeserializer.create(this.buffer,
-                this.stringRegistryWrapper);
+        this.deserializer = DefaultValueDeserializer.create(this.buffer, this.stringRegistryWrapper);
     }
 
     public ReaderRegistry<String> getRegistry() {
@@ -71,9 +70,9 @@ public class Connection {
     public ByteBuffer getBuffer() {
         return this.buffer;
     }
-    
+
     public IValueDeserializer getValueDeserializer() {
-    	return this.deserializer;
+        return this.deserializer;
     }
 
 }

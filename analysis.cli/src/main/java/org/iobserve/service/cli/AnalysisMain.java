@@ -78,15 +78,12 @@ public final class AnalysisMain {
             "--ubm-visualization" }, required = false, description = "User behavior model visualitation service URL.")
     private String visualizationServiceURL;
 
-    @Parameter(names = { "-o",
-    		"--ubm-output" }, required = false, description = "File output of user behavior.")
+    @Parameter(names = { "-o", "--ubm-output" }, required = false, description = "File output of user behavior.")
     private String outputPathPrefix;
-    
-    @Parameter(names = { "-m",
-	"--aggregation-type" }, required = true, description = "Aggregation type.")
+
+    @Parameter(names = { "-m", "--aggregation-type" }, required = true, description = "Aggregation type.")
     private String aggregationTypeName;
-    
-    
+
     /**
      * Default constructor.
      */
@@ -126,23 +123,23 @@ public final class AnalysisMain {
 
             EAggregationType aggregationType;
             if ("em".equals(aggregationTypeName)) {
-            	aggregationType = EAggregationType.EM_CLUSTERING;
+                aggregationType = EAggregationType.EM_CLUSTERING;
             } else if ("xmeans".equals(aggregationTypeName)) {
-            	aggregationType = EAggregationType.X_MEANS_CLUSTERING;
+                aggregationType = EAggregationType.X_MEANS_CLUSTERING;
             } else {
-            	commander.usage();
-            	return;
+                commander.usage();
+                return;
             }
-            
+
             /** this is an ugly hack. For now lets keep it. */
             EOutputMode outputMode;
             if (outputPathPrefix != null) {
-            	visualizationServiceURL = outputPathPrefix;
-            	outputMode = EOutputMode.FILE_OUTPUT;
+                visualizationServiceURL = outputPathPrefix;
+                outputMode = EOutputMode.FILE_OUTPUT;
             } else {
-            	outputMode = EOutputMode.UBM_VISUALIZATION;
+                outputMode = EOutputMode.UBM_VISUALIZATION;
             }
-            
+
             /** create and run application */
             final Collection<File> monitoringDataDirectories = new ArrayList<>();
             AnalysisMain.findDirectories(this.monitoringDataDirectory.listFiles(), monitoringDataDirectories);

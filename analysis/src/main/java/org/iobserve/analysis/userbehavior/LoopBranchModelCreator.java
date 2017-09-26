@@ -164,9 +164,7 @@ public class LoopBranchModelCreator {
                     for (final LoopElement loopElement : loopElements) {
                         this.detectLoopsWithinBranchSequence(loopElement.getLoopSequence());
                     }
-                    
-                    
-                    
+
                     // Inserts the loops into the branch
                     this.insertLoopsIntoBranch(loopElements, branchSequence);
                 }

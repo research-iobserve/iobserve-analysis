@@ -51,15 +51,16 @@ public final class StringUtils {
     public static Supplier<String> trimAndRemoveSpaces(final String str) {
         return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("");
     }
-    
+
     /**
      * Lower case trim.
      * 
-     * @param str input string
+     * @param str
+     *            input string
      * @return lower case string
      */
     public static Supplier<String> modifyForOperationSigMatching(final String str) {
-    	return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("").toLowerCase();
+        return () -> StringUtils.PATTERN_SPACE.matcher(str.trim()).replaceAll("").toLowerCase();
     }
 
 }

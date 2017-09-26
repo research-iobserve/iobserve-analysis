@@ -33,7 +33,13 @@ public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel
 
     private final File inputFile;
 
-    public BehaviorModelJSONReader(File inputFile) {
+    /**
+     * Create a JSON reader stage.
+     * 
+     * @param inputFile
+     *            JSON file source
+     */
+    public BehaviorModelJSONReader(final File inputFile) {
         this.inputFile = inputFile;
     }
 

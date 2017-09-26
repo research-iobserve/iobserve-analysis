@@ -15,6 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.composite;
 
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iobserve.analysis.clustering.ExpectationMaximizationClustering;
@@ -25,8 +28,6 @@ import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorMode
 import org.iobserve.analysis.filter.writer.AbstractModelOutputFilter;
 import org.iobserve.analysis.filter.writer.BehaviorModelWriter;
 
-import teetime.framework.CompositeStage;
-import teetime.framework.InputPort;
 import weka.core.Instances;
 
 /**
@@ -54,18 +55,17 @@ public class TBehaviorModelAggregation extends CompositeStage {
         this.tBehaviorModelCreation = new TBehaviorModelCreation(configuration.getNamePrefix());
 
         switch (configuration.getAggregationType()) {
-        case X_MEANS_CLUSTERING: {
+        case X_MEANS_CLUSTERING:
             this.tClustering = new TVectorQuantizationClustering(this.configuration.getClustering());
             this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
             break;
-        }
-        case EM_CLUSTERING: {
+        case EM_CLUSTERING:
             this.emClustering = new EMClusteringProcess(new ExpectationMaximizationClustering());
             this.connectPorts(this.emClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
             break;
-        }
         default:
             TBehaviorModelAggregation.LOGGER.error("Unknown clustering method " + configuration.getAggregationType());
+            break;
         }
 
         /** visualization integration. */
