@@ -109,7 +109,7 @@ public class DoAllFilter extends AbstractConsumerStage<ClassAndMethod> {
      */
     private PcmEntityCorrespondent getOrCreateCorrespondent(final String classSignature,
             final Map<String, PcmEntityCorrespondent> correspondentMapping) {
-        /** TODO this filters whether a certain class signature already exists. */
+        /** TODO this filters test whether a certain class signature already exists. */
         if (!correspondentMapping.containsKey(classSignature)) {
             final PcmEntityCorrespondent correspondent = new PcmEntityCorrespondent();
             correspondent.setFilePath("No Path");
@@ -134,7 +134,6 @@ public class DoAllFilter extends AbstractConsumerStage<ClassAndMethod> {
      * @param correspondent
      *            container for the method
      */
-    // contain a method with the same name.
     private void addMethodUnique(final PcmEntityCorrespondent correspondent, final PcmCorrespondentMethod method) {
         for (final PcmCorrespondentMethod corrMethod : correspondent.getMethods()) {
             if (corrMethod.getName().contentEquals(method.getName())) {
@@ -163,16 +162,12 @@ public class DoAllFilter extends AbstractConsumerStage<ClassAndMethod> {
         }
 
         if (this.repositoryMapping.containsKey(key)) {
-            /** TODO port for mapped entity. */
-            /**
-             * TODO remaining code should go to a mapper stage. However, it also modifies the data
-             * model.
-             */
+            // TODO remaining code should go to a mapper stage. However, it also modifies the data
+            // model.
             final PcmEntity entity = this.repositoryMapping.get(key);
             entity.getCorrespondents().add(correspondentValue);
             this.mappedOutputPort.send(key);
         } else {
-            /** TODO port unmapped. */
             this.unmappedOutputPort.send(key);
         }
 

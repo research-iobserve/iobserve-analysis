@@ -18,20 +18,20 @@ package org.iobserve.analysis.filter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.flow.IFlowRecord;
+import kieker.common.record.flow.trace.TraceMetadata;
+import kieker.common.record.misc.KiekerMetadataRecord;
+
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.common.record.IAllocationRecord;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeploymentRecord;
-import org.iobserve.common.record.ServletTraceHelper;
-
-import kieker.common.record.IMonitoringRecord;
-import kieker.common.record.flow.IFlowRecord;
-import kieker.common.record.flow.trace.TraceMetadata;
-import kieker.common.record.misc.KiekerMetadataRecord;
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * The record switch filter is used to scan the event stream and send events based on their type to
@@ -73,11 +73,9 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 
     @Override
     protected void execute(final IMonitoringRecord element) {
-        // TODO move this to info
         this.recordCount++;
-        // TODO move thos to debug
         if (this.recordCount % 1000 == 0) {
-            System.out.println("Records processed " + this.recordCount);
+            RecordSwitch.LOGGER.debug("Records processed " + this.recordCount);
         }
         if (element instanceof IDeploymentRecord) {
             this.deploymentOutputPort.send((IDeploymentRecord) element);
@@ -87,8 +85,6 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             this.undeploymentOutputPort.send((IUndeploymentRecord) element);
         } else if (element instanceof IAllocationRecord) {
             this.allocationOutputPort.send((IAllocationRecord) element);
-        } else if (element instanceof ServletTraceHelper) { // NOCS
-            // TODO this is later used to improve trace information
         } else if (element instanceof IFlowRecord) {
             this.flowOutputPort.send((IFlowRecord) element);
             if (element instanceof TraceMetadata) {
@@ -116,6 +112,12 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
                 }
             }
         }
+    }
+
+    @Override
+    public void onTerminating() throws Exception {
+        RecordSwitch.LOGGER.info("Records processed in total " + this.recordCount);
+        super.onTerminating();
     }
 
     /**
