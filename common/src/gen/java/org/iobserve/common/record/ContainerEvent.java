@@ -37,7 +37,7 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	
 		
 	/** property declarations. */
-	private String url;
+	private final String url;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -106,7 +106,4 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 		return this.url;
 	}
 	
-	public final void setUrl(String url) {
-		this.url = url;
-	}
 }

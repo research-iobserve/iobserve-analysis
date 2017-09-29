@@ -17,8 +17,11 @@ package org.iobserve.analysis.filter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
-import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.common.record.ExtendedAfterOperationEvent;
+import org.iobserve.common.record.ExtendedBeforeOperationEvent;
+import org.iobserve.analysis.data.ExtendedEntryCallEvent;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 
 import kieker.common.logging.Log;
@@ -30,12 +33,15 @@ import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+// TODO this filter must be reworked to support plain and extended records.
+
 /**
  * It could be interesting to combine DeploymentEventTransformation and
  * UndeploymentEventTransformation. However, that would require two input ports. And I have not used
  * the API for multiple input ports.
  *
  * @author Reiner Jung
+ * @author Christoph Dornieden
  * @author Nicolas Boltz
  * @version 1.0
  */
@@ -48,7 +54,10 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     /** map of before operation events. */
     private final Map<Long, BeforeOperationEvent> beforeOperationEvents = new HashMap<>();
     /** output port. */
-    private final OutputPort<EntryCallEvent> outputPort = this.createOutputPort();
+    private final OutputPort<ExtendedEntryCallEvent> outputPort = this.createOutputPort();
+    private final Pattern openBracket = Pattern.compile("\\[");
+    private final Pattern closedBracket = Pattern.compile("\\]");
+    private final Pattern emptyBrackets = Pattern.compile("\\[\\]");
 
     /**
      * Does not need additional information.
@@ -67,13 +76,22 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     protected void execute(final IFlowRecord event) {
         if (event instanceof TraceMetadata) {
             final TraceMetadata metaData = (TraceMetadata) event;
+            if (metaData.getTraceId() == 13707L) {
+                System.out.println(metaData.getHostname());
+            }
             /** only recognize traces which no parent trace (i.e. would be internal traces) */
-            if (metaData.getParentTraceId() < 0) {
+            // TODO how to detect proper original traces?
+            if (metaData.getParentOrderId() < 0) {
+                // TODO this might be the better alternative if (metaData.getParentTraceId() < 0) {
                 this.traceMetaDatas.put(metaData.getTraceId(), metaData);
             }
         } else if (event instanceof BeforeOperationEvent) {
             final BeforeOperationEvent operationEvent = (BeforeOperationEvent) event;
             final TraceMetadata metaData = this.traceMetaDatas.get(operationEvent.getTraceId());
+            if (operationEvent.getOperationSignature().matches(".*startSale.*")) {
+                System.out.println(operationEvent.getOperationSignature());
+
+            }
             if (metaData != null) {
                 /** actually this is a valid trace */
                 /** Check whether the record is an entry call */
@@ -87,6 +105,11 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
             ExecutionTimeLogger.getInstance().startLogging(afterOperationEvent);
 
             final TraceMetadata metaData = this.traceMetaDatas.get(afterOperationEvent.getTraceId());
+            if (afterOperationEvent.getOperationSignature().matches(".*startSale.*")) {
+                System.out.println(afterOperationEvent.getOperationSignature());
+
+            }
+
             if (metaData != null) {
                 /** actually this is a valid trace */
                 final BeforeOperationEvent beforeOperationEvent = this.beforeOperationEvents.get(metaData.getTraceId());
@@ -95,6 +118,26 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                     if (beforeOperationEvent.getClassSignature().equals(afterOperationEvent.getClassSignature())
                             && beforeOperationEvent.getOperationSignature()
                                     .equals(afterOperationEvent.getOperationSignature())) {
+
+                        /** check for extended events **/
+                        String callInformations = "[]";
+
+                        if (beforeOperationEvent instanceof ExtendedBeforeOperationEvent) {
+                            final ExtendedBeforeOperationEvent extendedBeforeOperationEvent = (ExtendedBeforeOperationEvent) beforeOperationEvent;
+                            callInformations = extendedBeforeOperationEvent.getInformations();
+
+                        }
+
+                        if (afterOperationEvent instanceof ExtendedAfterOperationEvent) {
+                            final ExtendedAfterOperationEvent extendedAfterOperationEvent = (ExtendedAfterOperationEvent) afterOperationEvent;
+                            final String newInformations = extendedAfterOperationEvent.getInformations();
+
+                            callInformations = this.emptyBrackets.matcher(callInformations).matches() ? newInformations
+                                    : this.closedBracket.matcher(callInformations).replaceAll(",")
+                                            + this.openBracket.matcher(newInformations).replaceAll("");
+
+                        }
+
                         /**
                          * if afterOperationEvent has a beforeOperationEvent counterpart remove
                          * beforeOperationEvent so a second afterOperationEvent with the same
@@ -102,15 +145,24 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
                          */
                         this.beforeOperationEvents.remove(metaData.getTraceId(), beforeOperationEvent);
 
-                        ExecutionTimeLogger.getInstance().stopLogging(afterOperationEvent);
+                        // TODO this is only a hack for debugging purposes and could probably be
+                        // removed
+                        if (afterOperationEvent.getOperationSignature().matches(".*startSale.*")) {
+                            System.out.println(afterOperationEvent.getOperationSignature());
 
-                        this.outputPort.send(new EntryCallEvent(beforeOperationEvent.getTimestamp(),
-                                afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
+                        }
+                        
+                        String operationSignature = beforeOperationEvent.getOperationSignature().replaceAll("jpetstore\\.actions\\.", "");
+
+                        this.outputPort.send(new ExtendedEntryCallEvent(beforeOperationEvent.getTimestamp(),
+                                afterOperationEvent.getTimestamp(), operationSignature,
                                 beforeOperationEvent.getClassSignature(), metaData.getSessionId(),
-                                metaData.getHostname()));
+                                metaData.getHostname(), callInformations));
+
                     }
                 }
             }
+
         } else {
             TEntryCall.LOG.warn("Unsuppored flow event type " + event.getClass().getCanonicalName());
         }
@@ -119,7 +171,7 @@ public class TEntryCall extends AbstractConsumerStage<IFlowRecord> {
     /**
      * @return output port
      */
-    public OutputPort<EntryCallEvent> getOutputPort() {
+    public OutputPort<ExtendedEntryCallEvent> getOutputPort() {
         return this.outputPort;
     }
 

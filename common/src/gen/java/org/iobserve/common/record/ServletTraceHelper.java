@@ -63,10 +63,10 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	};
 	
 	/** property declarations. */
-	private long traceId;
-	private String host;
-	private int port;
-	private String requestURI;
+	private final long traceId;
+	private final String host;
+	private final int port;
+	private final String requestURI;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -227,31 +227,19 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		return this.traceId;
 	}
 	
-	public final void setTraceId(long traceId) {
-		this.traceId = traceId;
-	}
 	
 	public final String getHost() {
 		return this.host;
 	}
 	
-	public final void setHost(String host) {
-		this.host = host;
-	}
 	
 	public final int getPort() {
 		return this.port;
 	}
 	
-	public final void setPort(int port) {
-		this.port = port;
-	}
 	
 	public final String getRequestURI() {
 		return this.requestURI;
 	}
 	
-	public final void setRequestURI(String requestURI) {
-		this.requestURI = requestURI;
-	}
 }

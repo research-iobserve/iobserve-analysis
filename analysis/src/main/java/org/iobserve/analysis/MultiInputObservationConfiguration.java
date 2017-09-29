@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import org.iobserve.analysis.clustering.EAggregationType;
+import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.filter.reader.MultipleConnectionTcpReaderStage;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -65,6 +67,10 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            think time, configuration for entry event filter
      * @param closedWorkload
      *            kind of workload, configuration for entry event filter
+     * @param visualizationServiceURL
+     *            url to the visualization service
+     * @param aggregationType aggregation type
+     * @param outputMode output mode
      */
     public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
@@ -73,10 +79,12 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
             final AllocationModelProvider allocationModelProvider,
             final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
+            final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
-                systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+                systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload,
+                visualizationServiceURL, aggregationType, outputMode);
 
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
                 MultiInputObservationConfiguration.CAPACITY);

@@ -1,0 +1,32 @@
+/***************************************************************************
+ * Copyright 2014 Kieker Project (http://kiekermonitoring.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
+package org.iobserve.common.record
+
+template GeoLocation {
+	short countryCode = 049 // country code ISO				
+		
+}
+
+/** 
+ * Certain DNS configuration return different IP addresses
+ * for the same host name. Therefore, the hostname may only 
+ * describe the logical unit while the IP specifies a concrete
+ * server. 	 
+ */	 
+entity ServerGeoLocation extends AbstractEvent : GeoLocation {
+	string hostname
+	string address
+}

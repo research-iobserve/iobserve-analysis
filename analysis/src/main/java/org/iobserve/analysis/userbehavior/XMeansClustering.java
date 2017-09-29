@@ -92,7 +92,6 @@ public class XMeansClustering extends AbstractClustering {
                 assignments[s] = xmeans.clusterInstance(instances.instance(s));
                 clustersize[xmeans.clusterInstance(instances.instance(s))]++;
             }
-
             final ClusteringMetrics clusteringMetrics = new ClusteringMetrics(xmeans.getClusterCenters(), instances,
                     assignments);
             clusteringMetrics.calculateSimilarityMetrics();

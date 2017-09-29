@@ -19,6 +19,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.iobserve.analysis.MultiInputObservationConfiguration;
+import org.iobserve.analysis.clustering.EAggregationType;
+import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -69,6 +71,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      *            provider for the allocation model
      * @param systemModelProvider
      *            provider for the system model
+     * @param visualizationServiceURL
+     *            url to the visualization service
      *
      * @throws MalformedURLException
      *             if any passed URL in the configuration is broken.
@@ -85,11 +89,12 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
             final SystemModelProvider systemModelProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider) throws MalformedURLException {
+            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider, final String visualizationServiceURL) throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider, allocationModelProvider,
                 allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider, varianceOfUserGroups,
-                thinkTime, closedWorkload);
+                thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
+                EOutputMode.UBM_VISUALIZATION);
 
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");

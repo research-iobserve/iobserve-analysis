@@ -13,21 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.service.services;
-
-import org.junit.runner.RunWith;
-import org.junit.runners.Suite;
-import org.junit.runners.Suite.SuiteClasses;
+package org.iobserve.analysis.clustering;
 
 /**
- * Test suite that runs all tests for classes in org.iobserve.analysis.service.services.
- *
- * @author jweg
- *
+ * 
+ * @author Reiner Jung
  */
-@RunWith(Suite.class)
-@SuiteClasses({ CommunicationInstanceServiceTest.class, CommunicationServiceTest.class, NodeServiceTest.class,
-        ServiceInstanceServiceTest.class, ServiceServiceTest.class, SystemServiceTest.class })
-public class AllTestsServices {
-
+public enum EOutputMode {
+	UBM_VISUALIZATION,
+	FILE_OUTPUT
 }

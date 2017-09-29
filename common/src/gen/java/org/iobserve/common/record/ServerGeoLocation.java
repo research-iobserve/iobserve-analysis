@@ -62,9 +62,9 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	};
 	
 	/** property declarations. */
-	private short countryCode;
-	private String hostname;
-	private String address;
+	private final short countryCode;
+	private final String hostname;
+	private final String address;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -223,23 +223,14 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		return this.countryCode;
 	}
 	
-	public final void setCountryCode(short countryCode) {
-		this.countryCode = countryCode;
-	}
 	
 	public final String getHostname() {
 		return this.hostname;
 	}
 	
-	public final void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
 	
 	public final String getAddress() {
 		return this.address;
 	}
 	
-	public final void setAddress(String address) {
-		this.address = address;
-	}
 }

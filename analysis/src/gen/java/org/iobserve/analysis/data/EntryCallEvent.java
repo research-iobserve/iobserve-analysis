@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project
+ * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,7 @@ import kieker.common.util.registry.IRegistry;
  * @author Reiner Jung
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.0
+ * @since 0.0.2
  */
 public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {
 	private static final long serialVersionUID = -9019303768669463280L;
@@ -69,12 +69,12 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 	};
 	
 	/** property declarations. */
-	private long entryTime;
-	private long exitTime;
-	private String operationSignature;
-	private String classSignature;
-	private String sessionId;
-	private String hostname;
+	private final long entryTime;
+	private final long exitTime;
+	private final String operationSignature;
+	private final String classSignature;
+	private final String sessionId;
+	private final String hostname;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -255,47 +255,29 @@ public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitor
 		return this.entryTime;
 	}
 	
-	public final void setEntryTime(long entryTime) {
-		this.entryTime = entryTime;
-	}
 	
 	public final long getExitTime() {
 		return this.exitTime;
 	}
 	
-	public final void setExitTime(long exitTime) {
-		this.exitTime = exitTime;
-	}
 	
 	public final String getOperationSignature() {
 		return this.operationSignature;
 	}
 	
-	public final void setOperationSignature(String operationSignature) {
-		this.operationSignature = operationSignature;
-	}
 	
 	public final String getClassSignature() {
 		return this.classSignature;
 	}
 	
-	public final void setClassSignature(String classSignature) {
-		this.classSignature = classSignature;
-	}
 	
 	public final String getSessionId() {
 		return this.sessionId;
 	}
 	
-	public final void setSessionId(String sessionId) {
-		this.sessionId = sessionId;
-	}
 	
 	public final String getHostname() {
 		return this.hostname;
 	}
 	
-	public final void setHostname(String hostname) {
-		this.hostname = hostname;
-	}
 }

@@ -38,9 +38,9 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 	
 		
 	/** property declarations. */
-	private String serivce;
-	private String context;
-	private String deploymentId;
+	private final String serivce;
+	private final String context;
+	private final String deploymentId;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -126,23 +126,14 @@ public abstract class EJBDeploymentEvent extends AbstractEvent  {
 		return this.serivce;
 	}
 	
-	public final void setSerivce(String serivce) {
-		this.serivce = serivce;
-	}
 	
 	public final String getContext() {
 		return this.context;
 	}
 	
-	public final void setContext(String context) {
-		this.context = context;
-	}
 	
 	public final String getDeploymentId() {
 		return this.deploymentId;
 	}
 	
-	public final void setDeploymentId(String deploymentId) {
-		this.deploymentId = deploymentId;
-	}
 }

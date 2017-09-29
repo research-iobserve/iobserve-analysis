@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.service.updater;
+package org.iobserve.analysis.service.suites;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
+import org.iobserve.analysis.service.updater.AllocationVisualizationStageTest;
+import org.iobserve.analysis.service.updater.DeploymentVisualizationStageTest;
+import org.iobserve.analysis.service.updater.UndeploymentVisualizationStageTest;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;

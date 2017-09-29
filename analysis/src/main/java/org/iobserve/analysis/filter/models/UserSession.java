@@ -28,6 +28,7 @@ import org.iobserve.analysis.data.EntryCallEvent;
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
+ * @author Christoph Dornieden
  *
  * @version 1.0
  *
@@ -197,6 +198,10 @@ public final class UserSession {
 
     public String getSessionId() {
         return this.sessionId;
+    }
+
+    public String getHost() {
+        return this.host;
     }
 
 }

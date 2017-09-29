@@ -23,7 +23,9 @@ import weka.core.Instances;
  * Calculates the quality of a clustering to value a clustering. Therefore, the sum of squared
  * errors is used
  *
- * @author David Peter, Robert Heinrich
+ * @author David Peter
+ * @author Robert Heinrich
+ * @author Christoph Dornieden
  */
 public class ClusteringMetrics {
 
@@ -93,6 +95,15 @@ public class ClusteringMetrics {
 
     public double getSumOfSquaredErrors() {
         return this.sumOfSquaredErrors;
+    }
+
+    /**
+     * Get cluster centroids
+     *
+     * @return cluster centroids
+     */
+    public Instances getCentroids() {
+        return this.centroids;
     }
 
 }
