@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
@@ -42,7 +44,6 @@ import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
-import teetime.framework.test.StageTester;
 import util.TestHandler;
 
 /**
@@ -59,9 +60,16 @@ public class DeploymentVisualizationStageTest {
 
     /** test parameters for stage under test */
     private URL changelogURL;
-    private final String outputPort = "9090";
-    private final String outputHostname = "localhost";
-    private final String systemId = "test_systemId";
+    private static final String OUTPUT_PORT = "9090";
+    private static final String OUTPUT_HOSTNAME = "localhost";
+    private static final String SYSTEM_ID = "test_systemId";
+
+    /** data for generating test events */
+    private static final long DEPLOY_TIME = 1;
+    private static final String SERVICE = "test-service";
+    private static final String CONTEXT = "/path/test";
+    private static final String DEPLOYMENT_ID = "service-01";
+
     @Mock
     private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
     @Mock
@@ -76,14 +84,6 @@ public class DeploymentVisualizationStageTest {
     /** test event */
     private ServletDeployedEvent servletEvent;
     private EJBDeployedEvent ejbEvent;
-
-    /** data for generating test events */
-    private static final long DEPLOY_TIME = 1;
-    private static final String SERVICE = "test-service";
-    private static final String CONTEXT = "/path/test";
-    private static final String DEPLOYMENT_ID = "service-01";
-    private static final String URL = "http://" + DeploymentVisualizationStageTest.SERVICE + '/'
-            + DeploymentVisualizationStageTest.CONTEXT;
 
     /** test correspondent */
     private static Correspondent testCorrespondent;
@@ -106,12 +106,13 @@ public class DeploymentVisualizationStageTest {
     @Before
     public void setup() throws IOException {
 
-        this.changelogURL = new URL("http://" + this.outputHostname + ":" + this.outputPort + "/v1/systems/"
-                + this.systemId + "/changelogs");
+        this.changelogURL = new URL("http://" + DeploymentVisualizationStageTest.OUTPUT_HOSTNAME + ":"
+                + DeploymentVisualizationStageTest.OUTPUT_PORT + "/v1/systems/"
+                + DeploymentVisualizationStageTest.SYSTEM_ID + "/changelogs");
 
-        this.deploymentVisualizationStage = new DeploymentVisualizationStage(this.changelogURL, this.systemId,
-                this.mockedResourceContainerModelProvider, this.mockedAssemblyContextModelProvider,
-                this.mockedCorrespondenceModel);
+        this.deploymentVisualizationStage = new DeploymentVisualizationStage(this.changelogURL,
+                DeploymentVisualizationStageTest.SYSTEM_ID, this.mockedResourceContainerModelProvider,
+                this.mockedAssemblyContextModelProvider, this.mockedCorrespondenceModel);
 
         /** test events */
         this.servletEvent = new ServletDeployedEvent(DeploymentVisualizationStageTest.DEPLOY_TIME,
@@ -178,8 +179,8 @@ public class DeploymentVisualizationStageTest {
         Assert.assertThat(expectedServiceInstance.get("type"), Is.is("serviceInstance"));
         Assert.assertEquals(expectedService.get("id"), expectedServiceInstance.get("serviceId"));
 
-        Assert.assertThat(expectedService.get("systemId"), Is.is(this.systemId));
-        Assert.assertThat(expectedServiceInstance.get("systemId"), Is.is(this.systemId));
+        Assert.assertThat(expectedService.get("systemId"), Is.is(DeploymentVisualizationStageTest.SYSTEM_ID));
+        Assert.assertThat(expectedServiceInstance.get("systemId"), Is.is(DeploymentVisualizationStageTest.SYSTEM_ID));
     }
 
     /**
@@ -200,7 +201,7 @@ public class DeploymentVisualizationStageTest {
         Assert.assertThat(expectedServiceInstance.get("type"), Is.is("serviceInstance"));
         Assert.assertEquals(expectedService.get("id"), expectedServiceInstance.get("serviceId"));
 
-        Assert.assertThat(expectedService.get("systemId"), Is.is(this.systemId));
-        Assert.assertThat(expectedServiceInstance.get("systemId"), Is.is(this.systemId));
+        Assert.assertThat(expectedService.get("systemId"), Is.is(DeploymentVisualizationStageTest.SYSTEM_ID));
+        Assert.assertThat(expectedServiceInstance.get("systemId"), Is.is(DeploymentVisualizationStageTest.SYSTEM_ID));
     }
 }

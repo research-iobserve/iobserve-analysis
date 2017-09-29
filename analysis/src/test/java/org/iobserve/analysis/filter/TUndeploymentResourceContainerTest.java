@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
@@ -49,8 +51,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import teetime.framework.test.StageTester;
-
 /**
  * Tests for {@link TUndeployment} filter, in case the {@link ResourceContainer} exists already.
  *
@@ -80,8 +80,6 @@ public class TUndeploymentResourceContainerTest {
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
     private static final String UNDEPLOYMENT_ID = "service-01";
-    private static final String URL = "http://" + TUndeploymentResourceContainerTest.SERVICE + '/'
-            + TUndeploymentResourceContainerTest.CONTEXT;
 
     /** test events */
     private static ServletUndeployedEvent servletUndeploymentEvent;

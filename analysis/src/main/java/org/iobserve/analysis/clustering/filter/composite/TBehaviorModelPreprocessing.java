@@ -15,13 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.composite;
 
-import org.iobserve.analysis.clustering.filter.TBehaviorModelPreperation;
-import org.iobserve.analysis.clustering.filter.TBehaviorModelTableGeneration;
-import org.iobserve.analysis.clustering.filter.TEntryCallSequenceFilter;
-import org.iobserve.analysis.clustering.filter.TInstanceTransformations;
-import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
@@ -29,7 +22,15 @@ import teetime.stage.basic.distributor.Distributor;
 import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
 import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import teetime.stage.basic.merger.Merger;
-import teetime.stage.basic.merger.strategy.BusyWaitingRoundRobinStrategy;
+import teetime.stage.basic.merger.strategy.BlockingBusyWaitingRoundRobinStrategy;
+
+import org.iobserve.analysis.clustering.filter.TBehaviorModelPreperation;
+import org.iobserve.analysis.clustering.filter.TBehaviorModelTableGeneration;
+import org.iobserve.analysis.clustering.filter.TEntryCallSequenceFilter;
+import org.iobserve.analysis.clustering.filter.TInstanceTransformations;
+import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
+import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+
 import weka.core.Instances;
 
 /**
@@ -59,7 +60,7 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         this.distributor = new Distributor<>(strategy);
 
-        this.merger = new Merger<>(new BusyWaitingRoundRobinStrategy());
+        this.merger = new Merger<>(new BlockingBusyWaitingRoundRobinStrategy());
 
         this.tBehaviorModelTableGeneration = new TBehaviorModelTableGeneration(
                 configuration.getRepresentativeStrategy(), configuration.keepEmptyTransitions());

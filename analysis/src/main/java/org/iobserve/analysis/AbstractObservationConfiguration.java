@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import teetime.framework.Configuration;
+
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
@@ -33,9 +35,6 @@ import org.iobserve.analysis.filter.TAllocationFinished;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
-import org.iobserve.analysis.filter.TEntryCallSequenceWithPCM;
-import org.iobserve.analysis.filter.TEntryEventSequence;
-import org.iobserve.analysis.filter.TNetworkLink;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -47,7 +46,6 @@ import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
-import teetime.framework.Configuration;
 import weka.core.ManhattanDistance;
 
 /**
@@ -116,7 +114,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             final AllocationModelProvider allocationModelProvider,
             final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload, final String visualizationServiceURL, final EAggregationType aggregationType,
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
+            final String visualizationServiceURL, final EAggregationType aggregationType,
             final EOutputMode outputMode) {
 
         /** configure filter. */
@@ -134,8 +133,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         final TEntryCall tEntryCall = new TEntryCall();
 
-        //final TEntryCallSequenceWithPCM tEntryCallSequenceWithPCM;
-        //final TEntryEventSequence tEntryEventSequence;
+        // final TEntryCallSequenceWithPCM tEntryCallSequenceWithPCM;
+        // final TEntryEventSequence tEntryEventSequence;
 
         /** new extended clustering. */
         final TEntryCallSequence tEntryCallSequence = new TEntryCallSequence();
@@ -174,9 +173,11 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 varianceOfUserGroups, thinkTime, closedWorkload);
 
         /** plain clustering. It might be included in the setup above. */
-        //tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);
-        //tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider, repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
-        //final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
+        // tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);
+        // tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
+        // repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
+        // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
+        // systemModelProvider, resourceEnvironmentModelProvider);
 
         /** -- end plain clustering. */
 
@@ -185,7 +186,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), this.undeployment.getInputPort());
         this.connectPorts(this.recordSwitch.getAllocationOutputPort(), tAllocation.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), tEntryCall.getInputPort());
-        //this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
+        // this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
         this.connectPorts(this.deployment.getDeploymentOutputPort(), tAllocationFinished.getDeploymentInputPort());
         this.connectPorts(this.deployment.getAllocationOutputPort(), this.tAllocationAfterDeploy.getInputPort());

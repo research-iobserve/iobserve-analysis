@@ -20,6 +20,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.BooleanConverter;
+import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
+
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
+
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.clustering.EAggregationType;
@@ -33,22 +43,11 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.neo4j.graphdb.GraphDatabaseService;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.converters.BooleanConverter;
-import com.beust.jcommander.converters.FileConverter;
-import com.beust.jcommander.converters.IntegerConverter;
-
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
 
 /**
  * Main class for starting the iObserve application.
@@ -82,22 +81,20 @@ public final class AnalysisMain {
             "--pcm" }, required = true, description = "Directory containing PCM model data.", converter = FileConverter.class)
     private File pcmModelsDirectory;
 
-    @Parameter(names = { "-pn4j", "--pcmneo4j" }, required = true, description = "Directory containing Neo4j database with PCM model data.", converter = FileConverter.class)
+    @Parameter(names = { "-pn4j",
+            "--pcmneo4j" }, required = true, description = "Directory containing Neo4j database with PCM model data.", converter = FileConverter.class)
     private File pcmModelsNeo4jDirectory;
-    
+
     @Parameter(names = { "-u",
             "--ubm-visualization" }, required = false, description = "User behavior model visualitation service URL.")
     private String visualizationServiceURL;
 
-    @Parameter(names = { "-o",
-    		"--ubm-output" }, required = false, description = "File output of user behavior.")
+    @Parameter(names = { "-o", "--ubm-output" }, required = false, description = "File output of user behavior.")
     private String outputPathPrefix;
-    
-    @Parameter(names = { "-m",
-	"--aggregation-type" }, required = true, description = "Aggregation type.")
+
+    @Parameter(names = { "-m", "--aggregation-type" }, required = true, description = "Aggregation type.")
     private String aggregationTypeName;
-    
-    
+
     /**
      * Default constructor.
      */
@@ -136,24 +133,24 @@ public final class AnalysisMain {
             /** process parameter. */
 
             EAggregationType aggregationType;
-            if ("em".equals(aggregationTypeName)) {
-            	aggregationType = EAggregationType.EM_CLUSTERING;
-            } else if ("xmeans".equals(aggregationTypeName)) {
-            	aggregationType = EAggregationType.X_MEANS_CLUSTERING;
+            if ("em".equals(this.aggregationTypeName)) {
+                aggregationType = EAggregationType.EM_CLUSTERING;
+            } else if ("xmeans".equals(this.aggregationTypeName)) {
+                aggregationType = EAggregationType.X_MEANS_CLUSTERING;
             } else {
-            	commander.usage();
-            	return;
+                commander.usage();
+                return;
             }
-            
+
             /** this is an ugly hack. For now lets keep it. */
             EOutputMode outputMode;
-            if (outputPathPrefix != null) {
-            	visualizationServiceURL = outputPathPrefix;
-            	outputMode = EOutputMode.FILE_OUTPUT;
+            if (this.outputPathPrefix != null) {
+                this.visualizationServiceURL = this.outputPathPrefix;
+                outputMode = EOutputMode.FILE_OUTPUT;
             } else {
-            	outputMode = EOutputMode.UBM_VISUALIZATION;
+                outputMode = EOutputMode.UBM_VISUALIZATION;
             }
-            
+
             /** create and run application */
             final Collection<File> monitoringDataDirectories = new ArrayList<>();
             AnalysisMain.findDirectories(this.monitoringDataDirectory.listFiles(), monitoringDataDirectories);
@@ -173,33 +170,30 @@ public final class AnalysisMain {
             final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
             Graph resourceEnvironmentModelGraph = graphLoader
                     .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
-            Graph allocationModelGraph = graphLoader
-                    .initializeAllocationModelGraph(allocationModelProvider.getModel());
+            Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
             Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
             Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
-            
+
             // load neo4j graphs
             resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
             allocationModelGraph = graphLoader.getAllocationModelGraph();
             systemModelGraph = graphLoader.getSystemModelGraph();
             usageModelGraph = graphLoader.getUsageModelGraph();
-            
+
             // new graphModelProvider
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
                     resourceEnvironmentModelGraph);
             final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
                     resourceEnvironmentModelGraph);
-            final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(
-                    allocationModelGraph);
+            final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(allocationModelGraph);
             final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider = new ModelProvider<>(
                     allocationModelGraph);
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                     systemModelGraph);
-            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(
-                    systemModelGraph);
+            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(systemModelGraph);
             final ModelProvider<UsageModel> usageModelGraphProvider = new ModelProvider<>(usageModelGraph);
-            			
-			final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
+
+            final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
                     correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                     resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
                     systemModelProvider, systemModelGraphProvider, this.varianceOfUserGroups, this.thinkTime,

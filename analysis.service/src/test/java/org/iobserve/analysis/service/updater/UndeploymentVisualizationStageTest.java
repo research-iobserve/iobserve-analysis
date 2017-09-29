@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
@@ -44,12 +46,11 @@ import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
-import teetime.framework.test.StageTester;
 import util.TestHandler;
 
 /**
  * Tests for {@link UndeploymentVisualizationStage}
- * 
+ *
  * @author jweg
  *
  */
@@ -86,8 +87,6 @@ public class UndeploymentVisualizationStageTest {
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
     private static final String DEPLOYMENT_ID = "service-01";
-    private static final String URL = "http://" + UndeploymentVisualizationStageTest.SERVICE + '/'
-            + UndeploymentVisualizationStageTest.CONTEXT;
 
     /** test correspondent */
     private static Correspondent testCorrespondent;
