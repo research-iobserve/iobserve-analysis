@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.AllocationModelBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
@@ -46,8 +48,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import teetime.framework.test.StageTester;
-
 /**
  * Tests for {@link TUndeployment} filter, in case the {@link ResourceContainer} does not exist.
  *
@@ -59,10 +59,10 @@ import teetime.framework.test.StageTester;
 @PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelBuilder.class, SystemModelBuilder.class })
 public class TUndeploymentNoResourceContainerTest {
 
-    /** stage under test */
+    /** stage under test. */
     private TUndeployment tUndeployment;
 
-    /** mocks */
+    /** mocks. */
     @Mock
     private static ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
     @Mock
@@ -72,28 +72,28 @@ public class TUndeploymentNoResourceContainerTest {
     @Mock
     private static ICorrespondence mockedCorrespondence;
 
-    /** data for generating test events */
+    /** data for generating test events. */
     private static final long UNDEPLOY_TIME = 1;
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
     private static final String UNDEPLOYMENT_ID = "service-01";
 
-    /** test events */
+    /** test events. */
     private static ServletUndeployedEvent servletUndeploymentEvent;
     private static EJBUndeployedEvent ejbUndeploymentEvent;
 
-    /** input events */
+    /** input events. */
     private static List<IUndeploymentRecord> inputServletEvents = new ArrayList<>();
     private static List<IUndeploymentRecord> inputEJBEvents = new ArrayList<>();
 
-    /** test correspondent */
+    /** test correspondent. */
     private static Correspondent testCorrespondent;
     private static Optional<Correspondent> optTestCorrespondent;
 
-    /** test resource environment */
+    /** test resource environment. */
     private static ResourceEnvironment testResourceEnvironment;
 
-    /** test resource container with null value */
+    /** test resource container with null value. */
     private static Optional<ResourceContainer> optTestNullResourceContainer;
 
     /**
@@ -135,6 +135,7 @@ public class TUndeploymentNoResourceContainerTest {
      * {@link AssemblyContext} do not exist in the given {@link ResourceEnvironment} model. No
      * unemployment should take place.
      */
+    @SuppressWarnings("unchecked")
     @Before
     public void stubMocksResourceContainer() {
 

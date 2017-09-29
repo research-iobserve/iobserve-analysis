@@ -16,6 +16,10 @@
 package org.iobserve.analysis;
 
 import teetime.framework.Configuration;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
+import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
+import teetime.util.ConcurrentHashMapWithDefault;
 
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
@@ -47,21 +51,12 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-
+import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceAcceptanceMatcher;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceSignatureCleanupRewriter;
-
-import teetime.framework.Configuration;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
-import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
-import teetime.util.ConcurrentHashMapWithDefault;
-
-import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
 
 import weka.core.ManhattanDistance;
 
@@ -78,8 +73,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
     protected final RecordSwitch recordSwitch;
 
     protected TAllocation tAllocationSuccDeploy;
-
-    protected TAllocationFinished tAllocationFinished;
 
     protected TDeployment deployment;
 
@@ -149,12 +142,12 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
 
         /** Trace reconstruction. */
-        ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<Long, EventBasedTrace>(
+        final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<>(
                 EventBasedTraceFactory.INSTANCE);
 
         final TraceReconstructionFilter traceReconstructionFilter = new TraceReconstructionFilter(traceBuffer);
 
-        IEntryCallTraceMatcher matcher = new JPetStoreCallTraceMatcher();
+        final IEntryCallTraceMatcher matcher = new JPetStoreCallTraceMatcher();
 
         final TEntryCall tEntryCall = new TEntryCall(matcher);
 

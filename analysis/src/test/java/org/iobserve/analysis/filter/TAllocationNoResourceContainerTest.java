@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
@@ -37,8 +39,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import teetime.framework.test.StageTester;
-
 /**
  * Tests for {@link TAllocation} filter, in case the {@link ResourceContainer} does not exist yet.
  *
@@ -50,25 +50,25 @@ import teetime.framework.test.StageTester;
 @PrepareForTest(ResourceEnvironmentModelBuilder.class)
 public class TAllocationNoResourceContainerTest {
 
-    /** stage under test */
+    /** stage under test. */
     private TAllocation tAllocation;
 
-    /** mocks */
+    /** mocks. */
     private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
 
-    /** test event */
+    /** test event. */
     private static ContainerAllocationEvent allocationEvent;
 
-    /** input events */
+    /** input events. */
     private static List<IAllocationRecord> inputEvents = new ArrayList<>();
 
-    /** data for generating test container allocation event */
+    /** data for generating test container allocation event. */
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
     private static final String URL = "http://" + TAllocationNoResourceContainerTest.SERVICE + '/'
             + TAllocationNoResourceContainerTest.CONTEXT;
 
-    /** test resource containers */
+    /** test resource containers. */
     private static Optional<ResourceContainer> optTestNullResourceContainer;
     private static ResourceContainer testResourceContainer;
 
@@ -105,6 +105,7 @@ public class TAllocationNoResourceContainerTest {
      * Define the test situation in which a {@link ContainerAllocationEvent} is defined as input and
      * the specified {@link ResourceContainer} does not exist in the {@link ResourceEnvironment}.
      */
+    @SuppressWarnings("unchecked")
     @Before
     public void stubMocksNoResourceContainer() {
 

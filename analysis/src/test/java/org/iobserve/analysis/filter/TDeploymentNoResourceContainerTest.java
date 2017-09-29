@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
@@ -44,8 +46,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import teetime.framework.test.StageTester;
-
 /**
  * Tests for {@link TDeployment} filter, in case the {@link ResourceContainer} does not exist, yet.
  *
@@ -57,10 +57,10 @@ import teetime.framework.test.StageTester;
 @PrepareForTest(ResourceEnvironmentModelBuilder.class)
 public class TDeploymentNoResourceContainerTest {
 
-    /** stage under test */
+    /** stage under test. */
     private TDeployment tDeployment;
 
-    /** mocks */
+    /** mocks. */
     @Mock
     private static ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
     @Mock
@@ -70,7 +70,7 @@ public class TDeploymentNoResourceContainerTest {
     @Mock
     private static ICorrespondence mockedCorrespondence;
 
-    /** data for generating test events */
+    /** data for generating test events. */
     private static final long DEPLOY_TIME = 1;
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
@@ -78,25 +78,26 @@ public class TDeploymentNoResourceContainerTest {
     private static final String URL = "http://" + TDeploymentNoResourceContainerTest.SERVICE + '/'
             + TDeploymentNoResourceContainerTest.CONTEXT;
 
-    /** test events */
+    /** test events. */
     private static ServletDeployedEvent servletDeploymentEvent;
     private static EJBDeployedEvent ejbDeploymentEvent;
     private static ContainerAllocationEvent allocationEvent;
 
-    /** input events */
+    /** input events. */
     private static List<IDeploymentRecord> inputServletEvents = new ArrayList<>();
     private static List<IDeploymentRecord> inputEJBEvents = new ArrayList<>();
 
-    /** test correspondent */
+    /** test correspondent. */
     private static Correspondent testCorrespondent;
     private static Optional<Correspondent> optTestCorrespondent;
 
-    /** test resource container */
+    /** test resource container. */
     private static Optional<ResourceContainer> optTestNullResourceContainer;
 
     /**
      * Initialize test events and mocks necessary classes.
      */
+    @SuppressWarnings("unchecked")
     @BeforeClass
     public static void setup() {
         /** test events */

@@ -62,10 +62,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelBuilder.class, SystemModelBuilder.class })
 public class TUndeploymentResourceContainerTest {
 
-    /** stage under test */
+    /** stage under test. */
     private TUndeployment tUndeployment;
 
-    /** mocks */
+    /** mocks. */
     @Mock
     private static ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
     @Mock
@@ -75,38 +75,38 @@ public class TUndeploymentResourceContainerTest {
     @Mock
     private static ICorrespondence mockedCorrespondence;
 
-    /** data for generating test events */
+    /** data for generating test events. */
     private static final long UNDEPLOY_TIME = 1;
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
     private static final String UNDEPLOYMENT_ID = "service-01";
 
-    /** test events */
+    /** test events. */
     private static ServletUndeployedEvent servletUndeploymentEvent;
     private static EJBUndeployedEvent ejbUndeploymentEvent;
 
-    /** input events */
+    /** input events. */
     private static List<IUndeploymentRecord> inputServletEvents = new ArrayList<>();
     private static List<IUndeploymentRecord> inputEJBEvents = new ArrayList<>();
 
-    /** test correspondent */
+    /** test correspondent. */
     private static Correspondent testCorrespondent;
     private static Optional<Correspondent> optTestCorrespondent;
 
-    /** test allocation */
+    /** test allocation. */
     private static Allocation testAllocation;
 
-    /** test resource environment */
+    /** test resource environment. */
     private static ResourceEnvironment testResourceEnvironment;
 
-    /** test system */
+    /** test system. */
     private static org.palladiosimulator.pcm.system.System testSystem;
 
-    /** test resource container */
+    /** test resource container. */
     private static ResourceContainer testResourceContainer;
     private static Optional<ResourceContainer> optTestResourceContainer;
 
-    /** test assembly context */
+    /** test assembly context. */
     private static AssemblyContext testAssemblyContext;
     private static Optional<AssemblyContext> optTestAssemblyContext;
 
@@ -165,6 +165,7 @@ public class TUndeploymentResourceContainerTest {
      * Define the test situation in which the needed {@link ResourceContainer} and
      * {@link AssemblyContext} exist in the given {@link ResourceEnvironment} model.
      */
+    @SuppressWarnings("unchecked")
     @Before
     public void stubMocksResourceContainer() {
 

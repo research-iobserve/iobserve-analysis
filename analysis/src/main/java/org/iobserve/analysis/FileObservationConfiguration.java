@@ -18,6 +18,9 @@ package org.iobserve.analysis;
 import java.io.File;
 import java.util.Collection;
 
+import teetime.stage.InitialElementProducer;
+import teetime.stage.className.ClassNameRegistryRepository;
+
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
@@ -30,9 +33,6 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import teetime.stage.InitialElementProducer;
-import teetime.stage.className.ClassNameRegistryRepository;
 
 /**
  *
@@ -71,7 +71,7 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      *            variance of user groups, configuration for entry event filter
      * @param thinkTime
      *            think time, configuration for entry event filter
-     * @param closedWorkloadnull
+     * @param closedWorkload
      *            kind of workload, configuration for entry event filter
      * @param visualizationServiceURL
      *            url to the visualization service
@@ -92,7 +92,8 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
             final EOutputMode outputMode) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
-                systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload, visualizationServiceURL, aggregationType, outputMode);
+                systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload,
+                visualizationServiceURL, aggregationType, outputMode);
 
         this.files = new InitialElementProducer<>(directories);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());

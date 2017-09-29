@@ -62,10 +62,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelBuilder.class, SystemModelBuilder.class })
 public class TDeploymentResourceContainerTest {
 
-    /** stage under test */
+    /** stage under test. */
     private TDeployment tDeployment;
 
-    /** mocks */
+    /** mocks. */
     @Mock
     private static ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
     @Mock
@@ -75,44 +75,45 @@ public class TDeploymentResourceContainerTest {
     @Mock
     private static ICorrespondence mockedCorrespondence;
 
-    /** data for generating test events */
+    /** data for generating test events. */
     private static final long DEPLOY_TIME = 1;
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
     private static final String DEPLOYMENT_ID = "service-01";
 
-    /** test events */
+    /** test events. */
     private static ServletDeployedEvent servletDeploymentEvent;
     private static EJBDeployedEvent ejbDeploymentEvent;
 
-    /** input events */
+    /** input events. */
     private static List<IDeploymentRecord> inputServletEvents = new ArrayList<>();
     private static List<IDeploymentRecord> inputEJBEvents = new ArrayList<>();
 
-    /** test correspondent */
+    /** test correspondent. */
     private static Correspondent testCorrespondent;
     private static Optional<Correspondent> optTestCorrespondent;
 
-    /** test allocation */
+    /** test allocation. */
     private static Allocation testAllocation;
 
-    /** test resource environment */
+    /** test resource environment. */
     private static ResourceEnvironment testResourceEnvironment;
 
-    /** test system */
+    /** test system. */
     private static org.palladiosimulator.pcm.system.System testSystem;
 
-    /** test resource container */
+    /** test resource container. */
     private static ResourceContainer testResourceContainer;
     private static Optional<ResourceContainer> optTestResourceContainer;
 
-    /** test assembly context */
+    /** test assembly context. */
     private static AssemblyContext testAssemblyContext;
     private static Optional<AssemblyContext> optTestAssemblyContext;
 
     /**
      * Initialize test events and mock necessary classes.
      */
+    @SuppressWarnings("unchecked")
     @BeforeClass
     public static void setup() {
         /** test events */
