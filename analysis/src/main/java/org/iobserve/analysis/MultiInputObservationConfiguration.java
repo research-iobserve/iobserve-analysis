@@ -24,6 +24,9 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -48,10 +51,16 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            the repository model provider
      * @param resourceEnvironmentModelProvider
      *            the resource environment provider
+     * @param resourceEnvironmentModelGraphProvider
+     *            the resource environment graph provider
      * @param allocationModelProvider
      *            the allocation model provider
+     * @param allocationModelGraphProvider
+     *            the allocation model graph provider
      * @param systemModelProvider
      *            the system model provider
+     * @param systemModelGraphProvider
+     *            the system model graph provider
      * @param varianceOfUserGroups
      *            variance of user groups, configuration for entry event filter
      * @param thinkTime
@@ -66,16 +75,21 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
     public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+            final AllocationModelProvider allocationModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
+                resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
+                systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload,
                 visualizationServiceURL, aggregationType, outputMode);
 
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
                 MultiInputObservationConfiguration.CAPACITY);
         this.connectPorts(reader.getOutputPort(), this.recordSwitch.getInputPort());
+
     }
 
 }

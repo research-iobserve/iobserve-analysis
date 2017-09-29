@@ -29,6 +29,13 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.Graph;
+import org.iobserve.analysis.modelneo4j.GraphLoader;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -73,6 +80,10 @@ public class AnalysisDaemon implements Daemon {
     @Parameter(names = { "-p",
             "--pcm" }, required = true, description = "Directory containing PCM model data.", converter = FileConverter.class)
     private File pcmModelsDirectory;
+
+    @Parameter(names = { "-pn4j",
+            "--pcmneo4j" }, required = true, description = "Directory containing Neo4j database with PCM model data.", converter = FileConverter.class)
+    private File pcmModelsNeo4jDirectory;
 
     @Parameter(names = { "-u",
             "--ubm-visualization" }, required = true, description = "User behavior model visualitation service URL.")
@@ -119,15 +130,43 @@ public class AnalysisDaemon implements Daemon {
             final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
             final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
             final RepositoryModelProvider repositoryModelProvider = modelProvider.getRepositoryModelProvider();
-            final ResourceEnvironmentModelProvider resourceEvnironmentModelProvider = modelProvider
+            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider = modelProvider
                     .getResourceEnvironmentModelProvider();
             final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
             final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
 
+            final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
+            graphLoader.initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
+            System.out.println("Initialized resource environment model graph");
+            graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
+            System.out.println("Initialized allocation model graph");
+            graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
+            System.out.println("Initialized system model graph");
+
+            final Graph resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
+            System.out.println("Loaded resource environment model graph");
+            final Graph allocationModelGraph = graphLoader.getAllocationModelGraph();
+            System.out.println("Loaded allocation model graph");
+            final Graph systemModelGraph = graphLoader.getSystemModelGraph();
+            System.out.println("Loaded system model graph");
+
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
+                    resourceEnvironmentModelGraph);
+            final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
+                    resourceEnvironmentModelGraph);
+            final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(allocationModelGraph);
+            final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider = new ModelProvider<>(
+                    allocationModelGraph);
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
+                    systemModelGraph);
+            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(systemModelGraph);
+
             final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname, outputPort,
                     this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
-                    usageModelProvider, repositoryModelProvider, resourceEvnironmentModelProvider,
-                    allocationModelProvider, systemModelProvider, this.visualizationServiceURL);
+                    usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
+                    resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider, allocationModelProvider,
+                    allocationModelGraphProvider, assemblyContextModelGraphProvider, systemModelProvider,
+                    systemModelGraphProvider, assCtxSystemModelGraphProvider, this.visualizationServiceURL);
 
             this.thread = new AnalysisThread(this, configuration);
         } else {

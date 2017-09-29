@@ -18,6 +18,8 @@ package org.iobserve.analysis.modelneo4j.legacyprovider;
 import java.io.File;
 
 import org.eclipse.emf.ecore.EPackage;
+import org.iobserve.analysis.modelneo4j.Graph;
+import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
@@ -34,11 +36,11 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
     /**
      * Create model provider to provide {@link ResourceEnvironment} model.
      *
-     * @param dirResourceEnvironmentDb
-     *            DB directory
+     * @param neo4jPcmModelDirectory
+     *            DB root directory
      */
-    public ResourceEnvironmentModelProvider(final File dirResourceEnvironmentDb) {
-        super(dirResourceEnvironmentDb);
+    public ResourceEnvironmentModelProvider(final File neo4jPcmModelDirectory) {
+        super(neo4jPcmModelDirectory);
     }
 
     @Override
@@ -46,7 +48,8 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
         this.model = this.modelProvider.readRootComponent(ResourceEnvironment.class);
 
         if (this.model == null) {
-            java.lang.System.out.printf("Model at %s could not be loaded!\n", this.dirModelDb.getAbsolutePath());
+            java.lang.System.out.printf("Model at %s could not be loaded!\n",
+                    this.neo4jPcmModelDirectory.getAbsolutePath());
         }
     }
 
@@ -60,6 +63,11 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
     @Override
     protected EPackage getPackage() {
         return ResourceenvironmentPackage.eINSTANCE;
+    }
+
+    @Override
+    protected Graph getModelTypeGraph(final File neo4jPcmModelDirectory) {
+        return new GraphLoader(neo4jPcmModelDirectory).getResourceEnvironmentModelGraph();
     }
 
 }

@@ -24,6 +24,7 @@ import teetime.framework.OutputPort;
 
 /**
  * TODO: There should be a short description.
+ * TODO: This should be moved into the filter package.
  *
  * @author jweg
  *
