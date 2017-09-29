@@ -15,10 +15,18 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EReference;
 import org.neo4j.graphdb.Label;
+import org.neo4j.graphdb.Node;
+import org.neo4j.graphdb.NotFoundException;
+import org.neo4j.graphdb.Relationship;
 import org.neo4j.graphdb.RelationshipType;
 import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -65,12 +73,86 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 
 /**
- * Provides different utilities for the {@link #ModelProvider}.
+ * Provides different utilities for the {@link ModelProvider}.
  *
  * @author Lars Bluemke
  *
  */
 public class ModelProviderUtil {
+
+    /**
+     * Based on a certain component's URI and a list of references to nodes which possibly represent
+     * that component, this method returns the node which actually represents the component or null
+     * if there is none in the list. Relationships to matching nodes are removed from the list, so
+     * this method can also be used to reduce a list of references to those references which link to
+     * nodes whose component does not exist anymore.
+     *
+     * @param uri
+     *            The component's URI
+     * @param rels
+     *            The relationships to possibly matching nodes
+     * @return The node representing the component or null if there is none
+     */
+    public static Node findMatchingNode(final String uri, final List<Relationship> rels) {
+
+        if (uri != null) {
+            for (final Relationship r : rels) {
+                final Node node = r.getEndNode();
+                try {
+                    final String nodeUri = node.getProperty(ModelProvider.EMF_URI).toString();
+
+                    if (uri.equals(nodeUri)) {
+                        rels.remove(r);
+                        return node;
+                    }
+                } catch (final NotFoundException e) {
+                    // node as already been deleted
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns a URI based on the components containing the passed component.
+     *
+     * @param component
+     *            The component to compute a URI to
+     * @return The URI
+     */
+    public static String getUriString(final EObject component) {
+        EObject comp = component;
+        EObject container;
+        String label;
+        String uri = "";
+        EAttribute idAttr;
+
+        do {
+            container = comp.eContainer();
+            label = ModelProviderUtil.getTypeName(comp.eClass());
+            idAttr = comp.eClass().getEIDAttribute();
+
+            if (uri.isEmpty()) {
+                if (idAttr != null) {
+                    uri = label + "#" + comp.eGet(idAttr);
+                } else {
+                    uri = label;
+                }
+            } else {
+                if (idAttr != null) {
+                    uri = label + "#" + comp.eGet(idAttr) + "." + uri;
+                } else {
+                    uri = label + "." + uri;
+                }
+            }
+
+            comp = container;
+
+        } while (container != null);
+
+        return uri;
+    }
 
     /**
      * Returns the first of several labels.
@@ -144,8 +226,25 @@ public class ModelProviderUtil {
      * @return The attribute's value in the proper data type
      */
     public static Object instantiateAttribute(final Class<?> clazz, final String value) {
+
         if (clazz == String.class) {
             return value;
+        } else if (clazz == boolean.class) {
+            return Boolean.parseBoolean(value);
+        } else if (clazz == char.class) {
+            return value.charAt(0);
+        } else if (clazz == byte.class) {
+            return Byte.parseByte(value);
+        } else if (clazz == short.class) {
+            return Short.parseShort(value);
+        } else if (clazz == int.class) {
+            return Integer.parseInt(value);
+        } else if (clazz == long.class) {
+            return Long.parseLong(value);
+        } else if (clazz == float.class) {
+            return Float.parseFloat(value);
+        } else if (clazz == double.class) {
+            return Double.parseDouble(value);
         } else if (clazz == ParameterModifier.class) {
             if (value.equals(ParameterModifier.NONE.toString())) {
                 return ParameterModifier.NONE;
@@ -266,4 +365,23 @@ public class ModelProviderUtil {
         return null;
     }
 
+    /**
+     * Sorts an Iterable of relationships by their position properties.
+     *
+     * @param relationships
+     *            The relationships to be sorted
+     * @return The sorted relationships
+     */
+    public static Iterable<Relationship> sortRelsByPosition(final Iterable<Relationship> relationships) {
+        if (relationships == null) {
+            return Collections.emptyList();
+        }
+
+        final List<Relationship> sortedRels = new ArrayList<>();
+        relationships.forEach(sortedRels::add);
+
+        Collections.sort(sortedRels, new RelationshipComparator());
+
+        return sortedRels;
+    }
 }

@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import teetime.framework.Configuration;
+
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
@@ -31,6 +33,7 @@ import org.iobserve.analysis.filter.CollectUserSessionsFilter;
 import org.iobserve.analysis.filter.IEntryCallTraceMatcher;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
+import org.iobserve.analysis.filter.TAllocationFinished;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
@@ -44,6 +47,7 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+
 import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceAcceptanceMatcher;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceSignatureCleanupRewriter;
@@ -53,6 +57,12 @@ import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
 import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
 import teetime.util.ConcurrentHashMapWithDefault;
+
+import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+
+
 import weka.core.ManhattanDistance;
 
 /**
@@ -73,7 +83,10 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
     protected TDeployment deployment;
 
+    protected final TDeployment deploymentAfterAllocation;
     protected TDeployment deploymentSuccAllocation;
+
+    protected final TAllocation tAllocationAfterDeploy;
 
     protected TUndeployment undeployment;
 
@@ -88,10 +101,16 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            the repository model provider
      * @param resourceEnvironmentModelProvider
      *            the resource environment provider
+     * @param resourceEnvironmentModelGraphProvider
+     *            the resource environment graph provider
      * @param allocationModelProvider
      *            the allocation model provider
+     * @param allocationModelGraphProvider
+     *            the allocation model graph provider
      * @param systemModelProvider
-     *            the system model provider
+     *            the system model provide
+     * @param systemModelGraphProvider
+     *            the system model graph provider
      * @param varianceOfUserGroups
      *            variance of user groups, configuration for entry event filter
      * @param thinkTime
@@ -108,25 +127,26 @@ public abstract class AbstractObservationConfiguration extends Configuration {
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+            final AllocationModelProvider allocationModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType,
             final EOutputMode outputMode) {
+
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
-        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelProvider);
-        // this.deployment = new TDeployment(correspondenceModel, allocationModelProvider,
-        // systemModelProvider,
-        // resourceEnvironmentModelProvider);
-        // this.tAllocationSuccDeploy = new TAllocation(resourceEnvironmentModelProvider);
-        // this.tAllocationFinished = new TAllocationFinished();
-        // this.deploymentSuccAllocation = new TDeployment(correspondenceModel,
-        // allocationModelProvider,
-        // systemModelProvider, resourceEnvironmentModelProvider);
-        // this.undeployment = new TUndeployment(correspondenceModel, allocationModelProvider,
-        // systemModelProvider,
-        // resourceEnvironmentModelProvider);
+        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelGraphProvider);
+        final TAllocationFinished tAllocationFinished = new TAllocationFinished();
+        this.deployment = new TDeployment(correspondenceModel, allocationModelGraphProvider, systemModelGraphProvider,
+                resourceEnvironmentModelGraphProvider);
+        this.deploymentAfterAllocation = new TDeployment(correspondenceModel, allocationModelGraphProvider,
+                systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
+        this.tAllocationAfterDeploy = new TAllocation(resourceEnvironmentModelGraphProvider);
+        this.undeployment = new TUndeployment(correspondenceModel, allocationModelGraphProvider,
+                systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
 
         /** Trace reconstruction. */
         ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<Long, EventBasedTrace>(
@@ -190,32 +210,25 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         /** plain clustering. It might be included in the setup above. */
         // tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);
         // tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
-        // repositoryModelProvider,
-        // varianceOfUserGroups, thinkTime, closedWorkload);
+        // repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
         // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
-        // systemModelProvider,
-        // resourceEnvironmentModelProvider);
+        // systemModelProvider, resourceEnvironmentModelProvider);
 
         /** -- end plain clustering. */
 
         /** dispatch different monitoring data. */
-        // this.connectPorts(this.recordSwitch.getDeploymentOutputPort(),
-        // this.deployment.getInputPort());
-        // this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(),
-        // this.undeployment.getInputPort());
+        this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), this.deployment.getInputPort());
+        this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), this.undeployment.getInputPort());
         this.connectPorts(this.recordSwitch.getAllocationOutputPort(), tAllocation.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), traceReconstructionFilter.getInputPort());
         this.connectPorts(traceReconstructionFilter.getTraceValidOutputPort(), tEntryCall.getInputPort());
         // this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
-        // this.connectPorts(this.deployment.getDeploymentOutputPort(),
-        // this.tAllocationFinished.getDeploymentInputPort());
-        // this.connectPorts(this.deployment.getAllocationOutputPort(),
-        // this.tAllocationSuccDeploy.getInputPort());
-        // this.connectPorts(this.tAllocationSuccDeploy.getAllocationFinishedOutputPort(),
-        // this.tAllocationFinished.getAllocationFinishedInputPort());
-        // this.connectPorts(this.tAllocationFinished.getDeploymentOutputPort(),
-        // this.deploymentSuccAllocation.getInputPort());
+        this.connectPorts(this.deployment.getDeploymentOutputPort(), tAllocationFinished.getDeploymentInputPort());
+        this.connectPorts(this.deployment.getAllocationOutputPort(), this.tAllocationAfterDeploy.getInputPort());
+        this.connectPorts(this.tAllocationAfterDeploy.getAllocationFinishedOutputPort(),
+                tAllocationFinished.getAllocationFinishedInputPort());
+        this.connectPorts(tAllocationFinished.getDeploymentOutputPort(), this.deploymentAfterAllocation.getInputPort());
 
         this.connectPorts(tEntryCall.getOutputPort(), entryCallSequence.getEntryCallInputPort());
         this.connectPorts(this.recordSwitch.getSessionEventPort(), entryCallSequence.getSessionEventInputPort());

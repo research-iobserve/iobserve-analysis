@@ -141,7 +141,6 @@
 		<!-- See http://checkstyle.sf.net/config_blocks.html ! -->
 		<!-- KIEKER removed LITERAL_CATCH ! -->
 		<module name="EmptyBlock">
-			<!-- property name="option" value="stmt" / -->
 			<property name="tokens"
 				value="LITERAL_DO,
                                            LITERAL_ELSE, LITERAL_FINALLY, LITERAL_IF, LITERAL_FOR,

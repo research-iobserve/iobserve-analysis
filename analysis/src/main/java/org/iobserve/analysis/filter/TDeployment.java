@@ -17,15 +17,14 @@ package org.iobserve.analysis.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.data.AddAllocationContextEvent;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.iobserve.analysis.model.AllocationModelBuilder;
-import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelBuilder;
-import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.ContainerAllocationEvent;
@@ -33,8 +32,10 @@ import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IAllocationRecord;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -46,19 +47,21 @@ import teetime.framework.OutputPort;
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
+ * @author jweg
  */
 public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> {
+
+    private static final Logger LOGGER = LogManager.getLogger(TDeployment.class);
 
     /** reference to correspondent model. */
     private final ICorrespondence correspondence;
     /** reference to allocation model provider. */
-    private final AllocationModelProvider allocationModelProvider;
+    private final ModelProvider<Allocation> allocationModelGraphProvider;
     /** reference to system model provider. */
-    private final SystemModelProvider systemModelProvider;
+    private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
     /** reference to resource environment model provider. */
-    private final ResourceEnvironmentModelProvider resourceEnvModelProvider;
+    private final ModelProvider<ResourceEnvironment> resourceEnvModelGraphProvider;
 
-    private final OutputPort<AddAllocationContextEvent> allocationContextOutputPort = this.createOutputPort();
     private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
     private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
     private final OutputPort<IDeploymentRecord> deploymentFinishedOutputPort = this.createOutputPort();
@@ -69,21 +72,22 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      *
      * @param correspondence
      *            the correspondence model access
-     * @param allocationModelProvider
+     * @param allocationModelGraphProvider
      *            allocation model provider
-     * @param systemModelProvider
+     * @param systemModelGraphProvider
      *            system model provider
-     * @param resourceEnvironmentModelProvider
+     * @param resourceEnvironmentModelGraphProvider
      *            resource environment model provider
      */
-    public TDeployment(final ICorrespondence correspondence, final AllocationModelProvider allocationModelProvider,
-            final SystemModelProvider systemModelProvider,
-            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+    public TDeployment(final ICorrespondence correspondence,
+            final ModelProvider<Allocation> allocationModelGraphProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         // get all model references
         this.correspondence = correspondence;
-        this.allocationModelProvider = allocationModelProvider;
-        this.systemModelProvider = systemModelProvider;
-        this.resourceEnvModelProvider = resourceEnvironmentModelProvider;
+        this.allocationModelGraphProvider = allocationModelGraphProvider;
+        this.systemModelGraphProvider = systemModelGraphProvider;
+        this.resourceEnvModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
 
     /**
@@ -107,13 +111,6 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     }
 
     /**
-     * @return allocationContextOutputPort
-     */
-    public OutputPort<AddAllocationContextEvent> getallocationContextOutputPort() {
-        return this.allocationContextOutputPort;
-    }
-
-    /**
      * @return allocationOutputPort
      */
     public OutputPort<IAllocationRecord> getAllocationOutputPort() {
@@ -128,10 +125,10 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     }
 
     /**
-     * @return deploymentOutputPort
+     * @return deploymentFinishedOutputPort
      */
     public OutputPort<IDeploymentRecord> getDeploymentFinishedOutputPort() {
-        return this.deploymentOutputPort;
+        return this.deploymentFinishedOutputPort;
     }
 
     /**
@@ -145,12 +142,12 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         final String context = event.getContext();
 
         // build the containerAllocationEvent
-        final String urlContext = context.replaceAll(".", "/");
+        final String urlContext = context.replaceAll("\\.", "/");
         final String url = "http://" + service + '/' + urlContext;
 
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
                 .apply(correspondence -> this.updateModel(service, correspondence, url, event))
-                .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
+                .elseApply(() -> TDeployment.LOGGER.info("No correspondent found for " + service + "."));
     }
 
     /**
@@ -163,13 +160,13 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         final String service = event.getSerivce();
         final String context = event.getContext();
 
-        // build the containerAllocationEvent
+        // build the url for the containerAllocationEvent
         final String urlContext = context.replaceAll("\\.", "/");
         final String url = "http://" + service + '/' + urlContext;
 
         Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
                 .apply(correspondent -> this.updateModel(service, correspondent, url, event))
-                .elseApply(() -> System.out.printf("No correspondent found for %s \n", service));
+                .elseApply(() -> TDeployment.LOGGER.info("No correspondent found for " + service + "."));
     }
 
     /**
@@ -179,6 +176,10 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      *            name of the server
      * @param correspondent
      *            correspondent
+     * @param url
+     *            url for {@link ContainerAllocationEvent}
+     * @param event
+     *            initial deployment event
      *
      */
     private void updateModel(final String serverName, final Correspondent correspondent, final String url,
@@ -191,16 +192,20 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
 
         // get the model parts by name
         final Optional<ResourceContainer> optResourceContainer = ResourceEnvironmentModelBuilder
-                .getResourceContainerByName(this.resourceEnvModelProvider.getModel(), serverName);
+                .getResourceContainerByName(
+                        this.resourceEnvModelGraphProvider.readOnlyRootComponent(ResourceEnvironment.class),
+                        serverName);
 
         Opt.of(optResourceContainer).ifPresent()
                 .apply(resourceContainer -> this.updateAllocationModel(resourceContainer, asmContextName, event))
-                // .elseApply(() -> System.out.printf("AssemblyContext %s was not available?!\n",
-                // asmContextName));
                 .elseApply(() -> {
+                    // if the resource container with this serverName is not available, send an
+                    // event to TAllocation (creating the resource container) and forward the
+                    // deployment event to TDeployment (deploying on created resource container)
                     this.allocationOutputPort.send(new ContainerAllocationEvent(url));
                     this.deploymentOutputPort.send(event);
                 });
+
     }
 
     /**
@@ -211,40 +216,50 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
      *            instance of resource container
      * @param asmContextName
      *            entity name of assembly context
+     * @param event
+     *            deployment event
      */
     private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName,
             final IDeploymentRecord event) {
         // get assembly context by name or create it if necessary.
         final AssemblyContext assemblyContext;
-        final Optional<AssemblyContext> optAssCtx = SystemModelBuilder
-                .getAssemblyContextByName(this.systemModelProvider.getModel(), asmContextName);
+
+        final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
+                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+
+        final Optional<AssemblyContext> optAssCtx = SystemModelBuilder.getAssemblyContextByName(systemModel,
+                asmContextName);
+
         if (optAssCtx.isPresent()) {
             assemblyContext = optAssCtx.get();
         } else {
-            assemblyContext = TDeployment.createAssemblyContextByName(this.systemModelProvider, asmContextName);
+            assemblyContext = TDeployment.createAssemblyContextByName(this.systemModelGraphProvider, asmContextName);
         }
 
-        // update the allocation model
-        this.allocationModelProvider.loadModel();
-        AllocationModelBuilder.addAllocationContextIfAbsent(this.allocationModelProvider.getModel(), resourceContainer,
-                assemblyContext);
-        this.allocationModelProvider.save();
+        // update the allocation graph
+        final Allocation allocationModel = this.allocationModelGraphProvider.readOnlyRootComponent(Allocation.class);
+        AllocationModelBuilder.addAllocationContextIfAbsent(allocationModel, resourceContainer, assemblyContext);
+        this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
+
+        // signal deployment update
         this.deploymentFinishedOutputPort.send(event);
     }
 
     /**
      * Create {@link AssemblyContext} with the given name.
      *
-     * @param provider
-     *            provider
+     * @param systemModelGraphProvider
+     *            system model provider
      * @param name
      *            name
      * @return created assembly context
      */
-    private static AssemblyContext createAssemblyContextByName(final SystemModelProvider provider, final String name) {
-        provider.loadModel();
-        final AssemblyContext ctx = SystemModelBuilder.createAssemblyContextsIfAbsent(provider.getModel(), name);
-        provider.save();
+    private static AssemblyContext createAssemblyContextByName(
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider, final String name) {
+        final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
+                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+        final AssemblyContext ctx = SystemModelBuilder.createAssemblyContextsIfAbsent(systemModel, name);
+        systemModelGraphProvider.updateComponent(org.palladiosimulator.pcm.system.System.class, systemModel);
         return ctx;
     }
 

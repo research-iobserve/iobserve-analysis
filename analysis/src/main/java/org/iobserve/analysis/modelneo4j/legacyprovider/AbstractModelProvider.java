@@ -21,9 +21,8 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.iobserve.analysis.model.ModelSaveStrategy;
+import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 
 import de.uka.ipd.sdq.identifier.Identifier;
 
@@ -38,7 +37,7 @@ import de.uka.ipd.sdq.identifier.Identifier;
 public abstract class AbstractModelProvider<T extends EObject> {
 
     /** database location. */
-    protected File dirModelDb;
+    protected File neo4jPcmModelDirectory;
     /** generic model provider. */
     protected final ModelProvider<T> modelProvider;
     /** save strategy of model. */
@@ -49,13 +48,12 @@ public abstract class AbstractModelProvider<T extends EObject> {
     /**
      * Create a model provider for the given.
      *
-     * @param dirModelDb
-     *            DB directory
+     * @param neo4jPcmModelDirectory
+     *            DB root directory
      */
-    AbstractModelProvider(final File dirModelDb) {
-        final GraphDatabaseService graph = new GraphDatabaseFactory().newEmbeddedDatabase(dirModelDb);
-        this.registerShutdownHook(graph);
-        this.dirModelDb = dirModelDb;
+    public AbstractModelProvider(final File neo4jPcmModelDirectory) {
+        final Graph graph = this.getModelTypeGraph(neo4jPcmModelDirectory);
+        this.neo4jPcmModelDirectory = neo4jPcmModelDirectory;
         this.modelProvider = new ModelProvider<>(graph);
         this.loadModel();
     }
@@ -160,19 +158,12 @@ public abstract class AbstractModelProvider<T extends EObject> {
     }
 
     /**
-     * Registers a shutdown hook for the Neo4j instance so that it shuts down when the VM exits
-     * (even if you "Ctrl-C" the running application).
+     * Returns a the graph for the provider's type.
      *
-     * @param graphDb
-     *            The graph database service
+     * @param neo4jPcmModelDirectory
+     *            DB root directory
+     * @return DB Graph
      */
-    private void registerShutdownHook(final GraphDatabaseService graphDb) {
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                graphDb.shutdown();
-            }
-        });
-    }
+    protected abstract Graph getModelTypeGraph(File neo4jPcmModelDirectory);
 
 }
