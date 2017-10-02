@@ -42,6 +42,8 @@ import javax.servlet.descriptor.JspConfigDescriptor;
  */
 public class TestServletContext implements ServletContext {
 
+    public static final String CONTEXT_PATH = "/main/context/path";
+
     /**
      * Create a dummy servlect context.
      */
@@ -50,7 +52,7 @@ public class TestServletContext implements ServletContext {
 
     @Override
     public String getContextPath() {
-        return "/main/context/path";
+        return TestServletContext.CONTEXT_PATH;
     }
 
     @Override

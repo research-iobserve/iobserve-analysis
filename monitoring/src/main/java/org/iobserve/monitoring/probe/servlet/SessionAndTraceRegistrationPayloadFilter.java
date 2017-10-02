@@ -131,7 +131,7 @@ public class SessionAndTraceRegistrationPayloadFilter implements Filter, IMonito
             if (request instanceof HttpServletRequest) {
                 final HttpServletRequest httpRequest = (HttpServletRequest) request;
                 method = httpRequest.getMethod();
-                final String requestPath = httpRequest.getRequestURI().replace('/', '.').substring(1);
+                final String requestPath = httpRequest.getRequestURI();
 
                 // TODO is this a generic thing?
                 /** remove sessionId from request path. */
@@ -139,7 +139,7 @@ public class SessionAndTraceRegistrationPayloadFilter implements Filter, IMonito
 
                 sessionId = httpRequest.getSession().getId();
 
-                final String operationSignature = path.replaceAll("\\.[A-Za-z0-9]*$", "");
+                final String operationSignature = path;
 
                 final List<String> parameters = new ArrayList<>();
                 final List<String> parameterValues = new ArrayList<>();

@@ -49,6 +49,8 @@ import javax.servlet.http.Part;
  */
 public class TestHttpServletRequest implements HttpServletRequest {
 
+    public static final String REQUEST_URI = "http://test/context/path/example";
+
     private final Map<String, String> parameters = new HashMap<>();
     private final ServletContext servletContext;
     private final HttpSession httpSession;
@@ -67,6 +69,10 @@ public class TestHttpServletRequest implements HttpServletRequest {
         }
         this.servletContext = servletContext;
         this.httpSession = httpSession;
+    }
+
+    public Map<String, String> getParameters() {
+        return this.parameters;
     }
 
     @Override
@@ -346,7 +352,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getRequestURI() {
-        return "http://test/context/path/example";
+        return TestHttpServletRequest.REQUEST_URI;
     }
 
     @Override

@@ -16,7 +16,7 @@
 package org.iobserve.monitoring.probe.servlet;
 
 import java.io.IOException;
-import java.nio.CharBuffer;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.FilterChain;
@@ -25,14 +25,15 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import kieker.common.record.IMonitoringRecord;
-import kieker.common.record.io.IValueSerializer;
-import kieker.common.record.io.TextValueSerializer;
+import kieker.common.record.flow.trace.TraceMetadata;
+import kieker.common.record.flow.trace.operation.AfterOperationEvent;
+import kieker.common.record.misc.KiekerMetadataRecord;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
 
+import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +72,7 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
         final ServletContext context = new TestServletContext();
         final ServletResponse response = new TestHttpServletResponse();
         final HttpSession session = new TestHttpSession(context);
-        final HttpServletRequest request = new TestHttpServletRequest(context, session);
+        final TestHttpServletRequest request = new TestHttpServletRequest(context, session);
         final FilterConfig filterConfig = new TestFilterConfig(context);
 
         final SessionAndTraceRegistrationPayloadFilter filter = new SessionAndTraceRegistrationPayloadFilter();
@@ -84,17 +85,43 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
 
             Thread.sleep(1000);
 
-            final CharBuffer buffer = CharBuffer.allocate(4000);
-            final IValueSerializer serializer = TextValueSerializer.create(buffer);
+            IMonitoringRecord record = storage.get(0);
+            Assert.assertEquals("Should be KiekerMetadataRecord", KiekerMetadataRecord.class, record.getClass());
+            record = storage.get(1);
+            Assert.assertEquals("Should be TraceMetadata", TraceMetadata.class, record.getClass());
+            record = storage.get(2);
+            Assert.assertEquals("Should be EntryLevelBeforeOperationEvent", EntryLevelBeforeOperationEvent.class,
+                    record.getClass());
+            if (record instanceof EntryLevelBeforeOperationEvent) {
+                final EntryLevelBeforeOperationEvent beforeEvent = (EntryLevelBeforeOperationEvent) record;
 
-            for (final IMonitoringRecord record : storage) {
-                record.serialize(serializer);
-                buffer.flip();
-                System.out.println("> " + record.getClass().getCanonicalName() + " " + buffer);
-                buffer.clear();
+                Assert.assertEquals("Class signature does not match", TestServletContext.CONTEXT_PATH,
+                        beforeEvent.getClassSignature());
+                Assert.assertEquals("Operation signature does not match", TestHttpServletRequest.REQUEST_URI,
+                        beforeEvent.getOperationSignature());
+
+                final Iterator<String> keys = request.getParameters().keySet().iterator();
+                for (final String label : beforeEvent.getParameters()) {
+                    if (!keys.hasNext()) {
+                        Assert.fail("Found more parameters than defined in the request.");
+                    } else {
+                        Assert.assertEquals("Same parameter", keys.next(), label);
+                    }
+                }
+
+                final Iterator<String> values = request.getParameters().values().iterator();
+                for (final String label : beforeEvent.getValues()) {
+                    if (!values.hasNext()) {
+                        Assert.fail("Found more parameters than defined in the request.");
+                    } else {
+                        Assert.assertEquals("Same parameter", values.next(), label);
+                    }
+                }
+
             }
+            record = storage.get(3);
+            Assert.assertEquals("Should be AfterOperationEvent", AfterOperationEvent.class, record.getClass());
 
-            Assert.assertEquals("Test value", filter, filter);
             Assert.assertEquals("Wrong number of records ", 4, storage.size());
         } catch (final ServletException e) {
             e.printStackTrace();
