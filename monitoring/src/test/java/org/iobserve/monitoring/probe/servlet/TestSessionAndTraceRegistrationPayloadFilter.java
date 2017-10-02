@@ -16,6 +16,8 @@
 package org.iobserve.monitoring.probe.servlet;
 
 import java.io.IOException;
+import java.nio.CharBuffer;
+import java.util.List;
 
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -26,6 +28,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.io.IValueSerializer;
+import kieker.common.record.io.TextValueSerializer;
+import kieker.monitoring.core.configuration.ConfigurationFactory;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,6 +42,14 @@ import org.junit.Test;
  *
  */
 public class TestSessionAndTraceRegistrationPayloadFilter {
+
+    private static final String WRITER_NAME = TestDumpWriter.class.getCanonicalName();
+
+    static {
+        System.setProperty(ConfigurationFactory.CONTROLLER_NAME, "iObserve-Experiments");
+        System.setProperty(ConfigurationFactory.WRITER_CLASSNAME,
+                TestSessionAndTraceRegistrationPayloadFilter.WRITER_NAME);
+    }
 
     /**
      * @throws java.lang.Exception
@@ -47,9 +62,11 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
     /**
      * Test method for
      * {@link org.iobserve.monitoring.probe.servlet.SessionAndTraceRegistrationPayloadFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)}.
+     *
+     * @throws InterruptedException
      */
     @Test
-    public void testDoFilter() {
+    public void testDoFilter() throws InterruptedException {
 
         final ServletContext context = new TestServletContext();
         final ServletResponse response = new TestHttpServletResponse();
@@ -62,7 +79,23 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
         try {
             filter.init(filterConfig);
             filter.doFilter(request, response, this.createChain());
+
+            final List<IMonitoringRecord> storage = TestDumpWriter.getRecords();
+
+            Thread.sleep(1000);
+
+            final CharBuffer buffer = CharBuffer.allocate(4000);
+            final IValueSerializer serializer = TextValueSerializer.create(buffer);
+
+            for (final IMonitoringRecord record : storage) {
+                record.serialize(serializer);
+                buffer.flip();
+                System.out.println("> " + record.getClass().getCanonicalName() + " " + buffer);
+                buffer.clear();
+            }
+
             Assert.assertEquals("Test value", filter, filter);
+            Assert.assertEquals("Wrong number of records ", 4, storage.size());
         } catch (final ServletException e) {
             e.printStackTrace();
         } catch (final IOException e) {
