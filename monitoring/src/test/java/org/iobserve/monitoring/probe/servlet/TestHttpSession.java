@@ -27,13 +27,14 @@ import javax.servlet.http.HttpSessionContext;
  * @author Reiner Jung
  *
  */
+@SuppressWarnings("deprecation")
 public class TestHttpSession implements HttpSession {
 
     private final ServletContext servletContext;
 
     /**
      * Create a http session for the given servlet context.
-     * 
+     *
      * @param servletContext
      *            the context
      */
@@ -70,7 +71,6 @@ public class TestHttpSession implements HttpSession {
         return 0;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public HttpSessionContext getSessionContext() {
         return null;
