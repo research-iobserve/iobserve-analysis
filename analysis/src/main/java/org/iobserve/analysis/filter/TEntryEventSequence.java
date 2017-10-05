@@ -52,6 +52,8 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 	private final boolean closedWorkload;
 
 	private final RepositoryModelProvider repositoryModelProvider;
+	
+	private long timestamp = 0;
 
 	/**
 	 * Create a entry event sequence filter.
@@ -85,8 +87,14 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 	protected void execute(final EntryCallSequenceModel model) {
 	    ExecutionTimeLogger.getInstance().startLogging(model);
 	    
-		// Resets the current usage model
-		this.usageModelProvider.loadModel();
+	    // Calculating the timestamp takes way less time than loading the model in each iteration.
+	    long timestamp = this.usageModelProvider.getTimestamp();
+	    
+	    if(this.timestamp != timestamp) {
+	        // Resets the current usage model
+	        this.usageModelProvider.loadModel();
+	    }
+		
 		int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
 		
 		// Executes the user behavior modeling procedure
@@ -104,6 +112,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 
 		// Sets the new usage model within iObserve
 		this.usageModelProvider.save();
+		this.timestamp = this.usageModelProvider.getTimestamp();
 		
 		ExecutionTimeLogger.getInstance().stopLogging(model);
 	}

@@ -151,6 +151,21 @@ public abstract class AbstractModelProvider<T extends EObject> {
             System.out.printf("Model at %s could not be loaded!\n", this.uriModelInstance.toString());
         }
     }
+    
+    public long getTimestamp() {
+        this.getPackage().eClass();
+
+        final Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+        final Map<String, Object> map = reg.getExtensionToFactoryMap();
+        map.put("*", new XMIResourceFactoryImpl());
+
+        final ResourceSet resSet = new ResourceSetImpl();
+        resSet.setResourceFactoryRegistry(reg);
+
+        final Resource resource = resSet.getResource(this.uriModelInstance, true);
+        
+        return resource.getTimeStamp();
+    }
 
     /**
      * Clears model content.
