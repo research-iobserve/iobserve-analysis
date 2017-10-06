@@ -32,6 +32,7 @@ import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.misc.KiekerMetadataRecord;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
+import kieker.monitoring.core.controller.MonitoringController;
 
 import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
 import org.junit.Assert;
@@ -81,9 +82,12 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
             filter.init(filterConfig);
             filter.doFilter(request, response, this.createChain());
 
-            final List<IMonitoringRecord> storage = TestDumpWriter.getRecords();
+            MonitoringController.getInstance().terminateMonitoring();
+            while (!MonitoringController.getInstance().isMonitoringTerminated()) {
+                Thread.sleep(1000);
+            }
 
-            Thread.sleep(1000);
+            final List<IMonitoringRecord> storage = TestDumpWriter.getRecords();
 
             IMonitoringRecord record = storage.get(0);
             Assert.assertEquals("Should be KiekerMetadataRecord", KiekerMetadataRecord.class, record.getClass());

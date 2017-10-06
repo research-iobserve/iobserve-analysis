@@ -19,6 +19,15 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.BooleanConverter;
+import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
+
+import teetime.framework.Configuration;
+
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
@@ -36,14 +45,6 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.converters.FileConverter;
-import com.beust.jcommander.converters.IntegerConverter;
-
-import teetime.framework.Configuration;
 
 /**
  * @author Reiner Jung
@@ -63,7 +64,7 @@ public class AnalysisDaemon implements Daemon {
     private int thinkTime;
 
     @Parameter(names = { "-c",
-            "--closed-workload" }, required = false, description = "Closed workload.", converter = IntegerConverter.class)
+            "--closed-workload" }, required = false, description = "Closed workload.", converter = BooleanConverter.class)
     private final boolean closedWorkload = false;
 
     @Parameter(names = { "-i",
