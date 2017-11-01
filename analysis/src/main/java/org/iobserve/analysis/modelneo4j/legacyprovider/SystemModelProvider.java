@@ -48,8 +48,8 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
         this.model = this.modelProvider.readRootComponent(System.class);
 
         if (this.model == null) {
-            java.lang.System.out.printf("Model at %s could not be loaded!\n",
-                    this.neo4jPcmModelDirectory.getAbsolutePath());
+            AbstractModelProvider.LOG
+                    .debug("Model at " + this.neo4jPcmModelDirectory.getAbsolutePath() + " could not be loaded!");
         }
     }
 

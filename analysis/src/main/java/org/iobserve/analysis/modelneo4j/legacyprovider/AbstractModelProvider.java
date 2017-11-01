@@ -17,6 +17,8 @@ package org.iobserve.analysis.modelneo4j.legacyprovider;
 
 import java.io.File;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
@@ -44,6 +46,8 @@ public abstract class AbstractModelProvider<T extends EObject> {
     private ModelSaveStrategy saveStrategy = ModelSaveStrategy.OVERRIDE;
     /** the model instance. */
     protected T model;
+
+    protected static final Logger LOG = LogManager.getLogger(AbstractModelProvider.class);
 
     /**
      * Create a model provider for the given.

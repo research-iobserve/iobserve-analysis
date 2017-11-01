@@ -132,10 +132,8 @@ class CorrespondenceModelImpl implements ICorrespondence {
 
     @Override
     public Optional<Correspondent> getCorrespondent(final String classSig, final String operationSig) {
-        // TODO debug print, remove later
-        // System.out.print(String.format("Try to get correspondence for classSig=%s,
-        // operationSig=%s...",
-        // classSig, operationSig));
+        CorrespondenceModelImpl.LOGGER.debug(String.format(
+                "Try to get correspondence for classSig= " + classSig + ", operationSig= " + operationSig + "..."));
 
         // assert parameters are not null
         if ((classSig == null) || (operationSig == null)) {
@@ -280,9 +278,9 @@ class CorrespondenceModelImpl implements ICorrespondence {
     @SuppressWarnings("unused")
     private void printAllMappings() {
         for (final String nextMappingKey : this.mapping.keySet()) {
-            System.out.println(nextMappingKey);
+            CorrespondenceModelImpl.LOGGER.debug(nextMappingKey);
             final PcmEntityCorrespondent correspondent = this.mapping.get(nextMappingKey);
-            System.out.println(correspondent);
+            CorrespondenceModelImpl.LOGGER.debug(correspondent);
         }
     }
 }

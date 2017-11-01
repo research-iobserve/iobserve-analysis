@@ -19,10 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import kieker.common.record.flow.trace.TraceMetadata;
-
-import teetime.framework.AbstractConsumerStage;
-
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -33,6 +29,11 @@ import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+import kieker.common.record.flow.trace.TraceMetadata;
+import teetime.framework.AbstractConsumerStage;
 
 /**
  * TNetworkLink runs asynchronous from the other filters like TAllocation, TDeployment, TEntryCall ,
@@ -57,6 +58,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private final SystemModelProvider systemModelProvider;
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+    private static final Log LOG = LogFactory.getLog(TNetworkLink.class);
 
     /**
      * Create new TNetworkLink filter.
@@ -129,7 +131,8 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
         final String asm1Name = asm1.getEntityName().substring(0, asm1.getEntityName().indexOf("_", 0));
         final String asm2Name = asm2.getEntityName().substring(0, asm2.getEntityName().indexOf("_", 0));
 
-        System.out.printf("isEqual?Id: %s==%s, Name: %s==%s\n", asm1.getId(), asm2.getId(), asm1Name, asm2Name);
+        TNetworkLink.LOG.debug(
+                "isEqual?Id: " + asm1.getId() + "==" + asm2.getId() + ", Name: " + asm1Name + "==" + asm2Name + "\n");
 
         return asm1Name.contains(asm2Name);
     }

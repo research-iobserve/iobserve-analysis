@@ -21,6 +21,8 @@ import java.util.Map;
 import org.eclipse.net4j.util.collection.Pair;
 import org.iobserve.analysis.clustering.XMeansClustering;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 import weka.core.FastVector;
@@ -36,6 +38,7 @@ import weka.core.Instances;
  */
 public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<Instance, Double>>>> {
     private final OutputPort<Instances> outputPort = this.createOutputPort();
+    private static final Log LOG = LogFactory.getLog(ClusterMerger.class);
 
     /*
      * (non-Javadoc)
@@ -72,14 +75,15 @@ public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<
 
     private void printInstances(final Instances instances) {
         for (int i = 0; i < instances.numInstances(); i++) {
-            System.out.println("***************************");
-            System.out.println("Cluster " + i);
-            System.out.println("***************************");
+            String logString = "";
+            logString += "***************************";
+            logString += "Cluster " + i;
+            logString += "***************************";
             final Instance instance = instances.instance(i);
             for (int a = 0; a < instance.numAttributes(); a++) {
-                System.out.println(instances.attribute(a).name() + " : " + instance.value(a));
-
+                logString += instances.attribute(a).name() + " : " + instance.value(a);
             }
+            ClusterMerger.LOG.info(logString);
         }
     }
 }

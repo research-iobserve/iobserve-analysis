@@ -18,20 +18,19 @@ package org.iobserve.analysis.filter;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import kieker.common.record.IMonitoringRecord;
-import kieker.common.record.flow.IFlowRecord;
-import kieker.common.record.flow.trace.TraceMetadata;
-import kieker.common.record.misc.KiekerMetadataRecord;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.common.record.IAllocationRecord;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeploymentRecord;
+
+import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.flow.IFlowRecord;
+import kieker.common.record.flow.trace.TraceMetadata;
+import kieker.common.record.misc.KiekerMetadataRecord;
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 /**
  * The record switch filter is used to scan the event stream and send events based on their type to
@@ -74,7 +73,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     @Override
     protected void execute(final IMonitoringRecord element) {
         this.recordCount++;
-        if (this.recordCount % 1000 == 0) {
+        if ((this.recordCount % 1000) == 0) {
             RecordSwitch.LOGGER.debug("Records processed " + this.recordCount);
         }
         if (element instanceof IDeploymentRecord) {
@@ -107,7 +106,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             } else {
                 hits++;
                 this.unknownRecords.put(className, hits);
-                if (hits % 1000 == 0) {
+                if ((hits % 1000) == 0) {
                     RecordSwitch.LOGGER.error("Event occurances " + hits + " of unknown eventtype " + className);
                 }
             }
@@ -115,7 +114,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     }
 
     @Override
-    public void onTerminating() throws Exception {
+    public void onTerminating() {
         RecordSwitch.LOGGER.info("Records processed in total " + this.recordCount);
         super.onTerminating();
     }

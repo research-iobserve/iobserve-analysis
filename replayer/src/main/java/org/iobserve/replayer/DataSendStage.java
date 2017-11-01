@@ -16,6 +16,8 @@
 package org.iobserve.replayer;
 
 import kieker.common.configuration.Configuration;
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
 import kieker.monitoring.core.controller.IMonitoringController;
@@ -37,6 +39,8 @@ public class DataSendStage extends AbstractConsumerStage<IMonitoringRecord> {
 
     private long count = 0;
 
+    private static final Log LOG = LogFactory.getLog(DataSendStage.class);
+
     /**
      * Configure and setup the Kieker writer.
      *
@@ -55,7 +59,7 @@ public class DataSendStage extends AbstractConsumerStage<IMonitoringRecord> {
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_HOSTNAME, hostname);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_PORT, port);
 
-        System.out.println("Configuration complete");
+        DataSendStage.LOG.info("Configuration complete");
 
         this.ctrl = MonitoringController.createInstance(configuration);
     }
@@ -64,8 +68,8 @@ public class DataSendStage extends AbstractConsumerStage<IMonitoringRecord> {
     protected void execute(final IMonitoringRecord record) {
         this.count++;
         this.ctrl.newMonitoringRecord(record);
-        if (this.count % 1000 == 0) {
-            System.out.println("Saved " + this.count + " records");
+        if ((this.count % 1000) == 0) {
+            DataSendStage.LOG.info("Saved " + this.count + " records");
         }
     }
 

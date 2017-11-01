@@ -28,26 +28,19 @@ import org.iobserve.analysis.service.services.NodegroupService;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.service.services.SystemService;
-import org.iobserve.analysis.service.services.UsergroupService;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
-import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
-import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
-import org.palladiosimulator.pcm.usagemodel.Branch;
-import org.palladiosimulator.pcm.usagemodel.BranchTransition;
-import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
-import org.palladiosimulator.pcm.usagemodel.Loop;
-import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import util.Changelog;
 import util.SendHttpRequest;
 
@@ -64,7 +57,6 @@ public final class InitializeDeploymentVisualization {
     private final ModelProvider<Allocation> allocationModelGraphProvider;
     private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
-    private final ModelProvider<UsageModel> usageModelGraphProvider;
 
     /** services for visualization elements. */
     private final SystemService systemService = new SystemService();
@@ -74,10 +66,11 @@ public final class InitializeDeploymentVisualization {
     private final ServiceInstanceService serviceinstanceService = new ServiceInstanceService();
     private final CommunicationService communicationService = new CommunicationService();
     private final CommunicationInstanceService communicationinstanceService = new CommunicationInstanceService();
-    private final UsergroupService usergroupService = new UsergroupService();
 
     private final URL changelogUrl;
     private final URL systemUrl;
+
+    private static final Log LOG = LogFactory.getLog(AnalysisMain.class);
 
     /**
      * constructor.
@@ -106,7 +99,6 @@ public final class InitializeDeploymentVisualization {
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
-        this.usageModelGraphProvider = usageModelGraphProvider;
     }
 
     /**
@@ -139,10 +131,6 @@ public final class InitializeDeploymentVisualization {
                 .getLinkingResources__ResourceEnvironment();
         final List<ResourceContainer> resourceContainers = resourceEnvironmentModel
                 .getResourceContainer_ResourceEnvironment();
-
-        // set up the usage model and take parts from it
-        final UsageModel usageModel = this.usageModelGraphProvider.readOnlyRootComponent(UsageModel.class);
-        final List<UsageScenario> usageScenarios = usageModel.getUsageScenario_UsageModel();
 
         // sending created components to visualization (in predefined order stated in changelog
         // constraints)
@@ -198,14 +186,13 @@ public final class InitializeDeploymentVisualization {
                                 this.systemService.getSystemId(), technology)),
                         this.systemUrl, this.changelogUrl);
 
-                SendHttpRequest.post(
-                        Changelog.create(this.communicationinstanceService.createCommunicationInstance(
-                                (AssemblyConnector) connector, this.systemService.getSystemId(),
-                                this.communicationService.getCommunicationId())),
+                SendHttpRequest.post(Changelog.create(
+                        this.communicationinstanceService.createCommunicationInstance((AssemblyConnector) connector,
+                                this.systemService.getSystemId(), this.communicationService.getCommunicationId())),
                         this.systemUrl, this.changelogUrl);
 
             } else {
-                System.out.printf("no AssemblyConnector: %s\n", connector.getEntityName());
+                InitializeDeploymentVisualization.LOG.debug("no AssemblyConnector: connector.getEntityName()");
             }
 
         }
@@ -311,95 +298,6 @@ public final class InitializeDeploymentVisualization {
             }
         }
         return technology;
-    }
-
-    /**
-     * Help function for taking all {@link EntryLevelSystemCall}s from a {@link UsageScenario}.
-     * {@link EntryLevelSystemCall}s with the same {@link ProvidedRole} are added just once. This
-     * list will be passed to the {@link UsergroupService}.
-     *
-     * @param usageScenarios
-     *            list of usage scenarios
-     * @return list of EntryLevelSystemCalls
-     */
-
-    private List<EntryLevelSystemCall> collectEntryLevelSystemCalls(final List<UsageScenario> usageScenarios) {
-
-        final List<EntryLevelSystemCall> entryLevelSystemCalls = new ArrayList<>();
-
-        for (int h = 0; h < usageScenarios.size(); h++) {
-            final UsageScenario usageScenario = usageScenarios.get(h);
-
-            final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-            final List<AbstractUserAction> usageActions = scenarioBehaviour.getActions_ScenarioBehaviour();
-
-            for (int i = 0; i < usageActions.size(); i++) {
-                final AbstractUserAction actualUsageAction = usageActions.get(i);
-
-                if ((actualUsageAction instanceof EntryLevelSystemCall) && !(this.containsProvidedRole(
-                        entryLevelSystemCalls,
-                        ((EntryLevelSystemCall) actualUsageAction).getProvidedRole_EntryLevelSystemCall().getId()))) {
-                    entryLevelSystemCalls.add((EntryLevelSystemCall) actualUsageAction);
-
-                }
-                if (actualUsageAction instanceof Branch) {
-                    final List<BranchTransition> branches = ((Branch) actualUsageAction).getBranchTransitions_Branch();
-                    AbstractUserAction branchAction;
-                    List<AbstractUserAction> branchActions;
-
-                    for (int j = 0; j < branches.size(); j++) {
-                        final BranchTransition branchTransition = branches.get(j);
-                        branchActions = branchTransition.getBranchedBehaviour_BranchTransition()
-                                .getActions_ScenarioBehaviour();
-                        for (int k = 0; k < branchActions.size(); k++) {
-                            branchAction = branchActions.get(k);
-
-                            if ((branchAction instanceof EntryLevelSystemCall) && !(this
-                                    .containsProvidedRole(entryLevelSystemCalls, ((EntryLevelSystemCall) branchAction)
-                                            .getProvidedRole_EntryLevelSystemCall().getId()))) {
-                                entryLevelSystemCalls.add((EntryLevelSystemCall) branchAction);
-                            }
-                        }
-                    }
-                }
-                if (actualUsageAction instanceof Loop) {
-                    final ScenarioBehaviour loopBehaviour = ((Loop) actualUsageAction).getBodyBehaviour_Loop();
-                    final List<AbstractUserAction> loopActions = loopBehaviour.getActions_ScenarioBehaviour();
-
-                    for (int l = 0; l < loopActions.size(); l++) {
-                        final AbstractUserAction loopAction = loopActions.get(l);
-                        System.out.printf("loopAction:%s\n", loopAction);
-                        if ((loopAction instanceof EntryLevelSystemCall) && !(this.containsProvidedRole(
-                                entryLevelSystemCalls,
-                                ((EntryLevelSystemCall) loopAction).getProvidedRole_EntryLevelSystemCall().getId()))) {
-                            entryLevelSystemCalls.add((EntryLevelSystemCall) loopAction);
-                        }
-                    }
-                }
-
-            }
-        }
-        return entryLevelSystemCalls;
-    }
-
-    /**
-     * Help function for adding {@link EntryLevelSystemCall}s with new {@link ProvidedRole}.
-     *
-     * @param entryLevelSystemCalls
-     *            list of containing EntryLevelSystemCalls
-     * @param providedRoleId
-     *            Id of provided role
-     * @return true, if an element in the list has the same provided role as the new element, else:
-     *         false
-     */
-    private boolean containsProvidedRole(final List<EntryLevelSystemCall> entryLevelSystemCalls,
-            final String providedRoleId) {
-        for (final EntryLevelSystemCall o : entryLevelSystemCalls) {
-            if ((o != null) && o.getProvidedRole_EntryLevelSystemCall().getId().equals(providedRoleId)) {
-                return true;
-            }
-        }
-        return false;
     }
 
 }

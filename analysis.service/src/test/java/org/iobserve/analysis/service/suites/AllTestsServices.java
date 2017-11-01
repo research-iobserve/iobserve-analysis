@@ -28,7 +28,7 @@ import org.junit.runners.Suite.SuiteClasses;
 /**
  * Test suite that runs all tests for classes in org.iobserve.analysis.service.services.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 @RunWith(Suite.class)

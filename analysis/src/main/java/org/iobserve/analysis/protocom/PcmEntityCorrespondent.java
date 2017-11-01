@@ -80,7 +80,7 @@ public class PcmEntityCorrespondent {
                 builder.append(method.getParameters());
             }
             builder.append(")");
-            // TODO <exception throws signature> is missing since this.
+            // <exception throws signature> is missing since this.
             // is not retrievable from protocom-generation process so far.
 
             final String methodSig = builder.toString().trim();

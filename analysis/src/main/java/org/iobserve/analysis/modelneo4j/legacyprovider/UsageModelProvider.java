@@ -56,7 +56,8 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
         this.model = this.modelProvider.readRootComponent(UsageModel.class);
 
         if (this.model == null) {
-            System.out.printf("Model at %s could not be loaded!\n", this.neo4jPcmModelDirectory.getAbsolutePath());
+            AbstractModelProvider.LOG
+                    .debug("Model at " + this.neo4jPcmModelDirectory.getAbsolutePath() + " could not be loaded!");
         }
     }
 

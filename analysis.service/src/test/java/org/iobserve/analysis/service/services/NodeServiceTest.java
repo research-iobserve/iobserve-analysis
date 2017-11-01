@@ -25,22 +25,22 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
 /**
- * Tests for {@link NodeService}
+ * Tests for {@link NodeService}.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 public class NodeServiceTest {
 
-    /** class under test */
+    /** class under test. */
     private NodeService nodeService;
 
-    /** test data */
+    /** test data. */
     private ResourceContainer testResourceContainer;
     private String testSystemId;
     private String testNodegroupId;
 
-    /** expected result */
+    /** expected result. */
     private JsonObject expectedNode;
 
     /**

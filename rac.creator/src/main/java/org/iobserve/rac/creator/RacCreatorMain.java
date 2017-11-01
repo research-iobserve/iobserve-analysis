@@ -29,6 +29,8 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
@@ -43,6 +45,7 @@ public class RacCreatorMain {
     private static final String RAC_FILENAME = "mapping.rac";
     private static final String MAPPED_CLASSES_FILENAME = "mapped.txt";
     private static final String UNMAPPED_CLASSES_FILENAME = "unmapped.txt";
+    private static final Log LOG = LogFactory.getLog(RacCreatorMain.class);
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Input direcory.", converter = FileConverter.class)
@@ -77,21 +80,21 @@ public class RacCreatorMain {
             commander.parse(args);
             main.execute(commander);
         } catch (final ParameterException e) {
-            System.err.println(e.getLocalizedMessage());
+            RacCreatorMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
 
     private void execute(final JCommander commander) throws IOException, ParserConfigurationException, SAXException {
         if (!this.outputPath.isDirectory() || !this.outputPath.exists()) {
-            System.err.println(
+            RacCreatorMain.LOG.error(
                     "Output path " + this.outputPath.getCanonicalPath() + " does not exist or is not a directory.");
             commander.usage();
             System.exit(1);
         }
 
         if (!this.inputPath.isDirectory() || !this.inputPath.exists()) {
-            System.err.println(
+            RacCreatorMain.LOG.error(
                     "Input path " + this.inputPath.getCanonicalPath() + " does not exist or is not a directory.");
             commander.usage();
             System.exit(1);
@@ -122,11 +125,11 @@ public class RacCreatorMain {
         final Configuration configuration = new ObservationConfiguration(inputPaths, repositoryFileReader,
                 mappingFileReader, mappedClassesFile, unmappedClassesFile, racFile);
 
-        System.out.println("RAC creator configuration");
+        RacCreatorMain.LOG.info("RAC creator configuration");
         final Execution<Configuration> analysis = new Execution<>(configuration);
-        System.out.println("start");
+        RacCreatorMain.LOG.info("start");
         analysis.executeBlocking();
-        System.out.println("complete");
+        RacCreatorMain.LOG.info("complete");
 
         // final RacCreator racCreator = new RacCreator(RacCreatorMain.inputPath,
         // RacCreatorMain.repositoryFile,
@@ -140,15 +143,15 @@ public class RacCreatorMain {
 
     private boolean fileReadOk(final File file, final String label) throws IOException {
         if (!file.exists()) {
-            System.err.println(label + " " + file.getCanonicalPath() + " does not exist.");
+            RacCreatorMain.LOG.error(label + " " + file.getCanonicalPath() + " does not exist.");
             return false;
         }
         if (!file.isFile()) {
-            System.err.println(label + " " + file.getCanonicalPath() + " is not a file.");
+            RacCreatorMain.LOG.error(label + " " + file.getCanonicalPath() + " is not a file.");
             return false;
         }
         if (!file.canRead()) {
-            System.err.println(label + " " + file.getCanonicalPath() + " cannot be read.");
+            RacCreatorMain.LOG.error(label + " " + file.getCanonicalPath() + " cannot be read.");
             return false;
         }
 

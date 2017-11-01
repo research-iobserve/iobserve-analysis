@@ -41,6 +41,8 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
@@ -54,6 +56,7 @@ import teetime.framework.Execution;
  * @author Lars Bluemke
  */
 public final class AnalysisMainNeo4j {
+    private static final Log LOG = LogFactory.getLog(AnalysisMain.class);
 
     @Parameter(names = "--help", help = true)
     private boolean help;
@@ -113,10 +116,10 @@ public final class AnalysisMainNeo4j {
             commander.parse(args);
             main.execute(commander);
         } catch (final ParameterException e) {
-            System.err.println(e.getLocalizedMessage());
+            AnalysisMainNeo4j.LOG.error(e.getLocalizedMessage());
             commander.usage();
         } catch (final IOException e) {
-            System.err.println(e.getLocalizedMessage());
+            AnalysisMainNeo4j.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
@@ -156,38 +159,38 @@ public final class AnalysisMainNeo4j {
                 // first setup or if you want to return to clean test data in the graph.
                 Graph allocationModelGraph = graphLoader
                         .initializeAllocationModelGraph(allocationModelProvider.getModel());
-                System.out.println("Initialized allocation model graph");
+                AnalysisMainNeo4j.LOG.info("Initialized allocation model graph");
                 Graph repositoryModelGraph = graphLoader
                         .initializeRepositoryModelGraph(repositoryModelProvider.getModel());
-                System.out.println("Initialized repository model graph");
+                AnalysisMainNeo4j.LOG.info("Initialized repository model graph");
                 Graph resourceEnvironmentModelGraph = graphLoader
                         .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
-                System.out.println("Initialized resource environment model graph");
+                AnalysisMainNeo4j.LOG.info("Initialized resource environment model graph");
                 Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
-                System.out.println("Initialized system model graph");
+                AnalysisMainNeo4j.LOG.info("Initialized system model graph");
                 @SuppressWarnings("unused")
                 Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
-                System.out.println("Initialized usage model graph");
+                AnalysisMainNeo4j.LOG.info("Initialized usage model graph");
 
                 // Alternatively, if there are already graphs in the database, you can simply get
                 // them
                 allocationModelGraph = graphLoader.getAllocationModelGraph();
-                System.out.println("Loaded allocation model graph");
+                AnalysisMainNeo4j.LOG.info("Loaded allocation model graph");
                 repositoryModelGraph = graphLoader.getRepositoryModelGraph();
-                System.out.println("Loaded repository model graph");
+                AnalysisMainNeo4j.LOG.info("Loaded repository model graph");
                 resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
-                System.out.println("Loaded resource environment model graph");
+                AnalysisMainNeo4j.LOG.info("Loaded resource environment model graph");
                 systemModelGraph = graphLoader.getSystemModelGraph();
-                System.out.println("Loaded system model graph");
+                AnalysisMainNeo4j.LOG.info("Loaded system model graph");
                 usageModelGraph = graphLoader.getUsageModelGraph();
-                System.out.println("Loaded usage model graph");
+                AnalysisMainNeo4j.LOG.info("Loaded usage model graph");
 
                 // You can access it with a model provider, for example
                 final String idOfInterfaceIWant = repositoryModelProvider.getModel().getInterfaces__Repository().get(0)
                         .getId();
                 final OperationInterface opInter = new ModelProvider<OperationInterface>(repositoryModelGraph)
                         .readComponentById(OperationInterface.class, idOfInterfaceIWant);
-                System.out.println(opInter);
+                AnalysisMainNeo4j.LOG.debug(opInter.toString());
 
                 // Or you can clone the current graph to a new version
                 new ModelProvider<ResourceEnvironment>(resourceEnvironmentModelGraph)
@@ -216,11 +219,11 @@ public final class AnalysisMainNeo4j {
                         assemblyContextModelGraphProvider, systemModelProvider, systemModelGraphProvider,
                         assCtxSystemModelGraphProvider, this.visualizationServiceURL);
 
-                System.out.println("Analysis configuration");
+                AnalysisMainNeo4j.LOG.info("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);
-                System.out.println("Analysis start");
+                AnalysisMainNeo4j.LOG.info("Analysis start");
                 analysis.executeBlocking();
-                System.out.println("Anaylsis complete");
+                AnalysisMainNeo4j.LOG.info("Anaylsis complete");
                 ExecutionTimeLogger.getInstance().exportAsCsv();
             }
         }
@@ -229,12 +232,13 @@ public final class AnalysisMainNeo4j {
     private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
             throws IOException {
         if (!location.exists()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            AnalysisMainNeo4j.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
             commander.usage();
             System.exit(1);
         }
         if (!location.isDirectory()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            AnalysisMainNeo4j.LOG
+                    .error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
             commander.usage();
             System.exit(1);
         }

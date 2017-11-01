@@ -24,6 +24,8 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.Execution;
 
 /**
@@ -32,6 +34,8 @@ import teetime.framework.Execution;
  * @author Reiner Jung
  */
 public final class ReplayerMain {
+
+    private static final Log LOG = LogFactory.getLog(ReplayerMain.class);
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Input data directory.", converter = FileConverter.class)
@@ -65,10 +69,10 @@ public final class ReplayerMain {
             commander.parse(args);
             main.execute(commander);
         } catch (final ParameterException e) {
-            System.err.println(e.getLocalizedMessage());
+            ReplayerMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         } catch (final IOException e) {
-            System.err.println(e.getLocalizedMessage());
+            ReplayerMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
@@ -76,7 +80,7 @@ public final class ReplayerMain {
     private void execute(final JCommander commander) throws IOException {
         this.checkDirectory(this.dataLocation, "Output Kieker directory", commander);
 
-        System.out.println("Receiver");
+        ReplayerMain.LOG.debug("Receiver");
         final ReplayerConfiguration configuration = new ReplayerConfiguration(this.dataLocation, this.hostname,
                 this.outputPort);
 
@@ -97,15 +101,15 @@ public final class ReplayerMain {
                 }
             }));
 
-            System.out.println("Running analysis");
+            ReplayerMain.LOG.info("Running analysis");
 
             analysis.executeBlocking();
 
-            System.out.println("Records send " + configuration.getCounter().getCount());
+            ReplayerMain.LOG.info("Records send " + configuration.getCounter().getCount());
 
-            System.out.println("Done");
+            ReplayerMain.LOG.info("Done");
         } else {
-            System.out.println("Cannot connect to host.");
+            ReplayerMain.LOG.info("Cannot connect to host.");
         }
 
     }
@@ -113,12 +117,12 @@ public final class ReplayerMain {
     private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
             throws IOException {
         if (!location.exists()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            ReplayerMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
             commander.usage();
             System.exit(1);
         }
         if (!location.isDirectory()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            ReplayerMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
             commander.usage();
             System.exit(1);
         }

@@ -16,6 +16,8 @@
 package org.iobserve.splitter;
 
 import kieker.common.configuration.Configuration;
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
 import kieker.monitoring.core.controller.IMonitoringController;
@@ -36,6 +38,8 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
     private final IMonitoringController ctrl;
 
     private long count = 0;
+
+    private static final Log LOG = LogFactory.getLog(DataDumpStage.class);
 
     /**
      * Configure and setup the Kieker writer.
@@ -60,7 +64,7 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
         configuration.setProperty(AsciiFileWriter.CONFIG_PATH, dataLocation);
         configuration.setProperty(AsciiFileWriter.CONFIG_SHOULD_COMPRESS, "false");
 
-        System.out.println("Configuration complete");
+        DataDumpStage.LOG.info("Configuration complete");
 
         this.ctrl = MonitoringController.createInstance(configuration);
     }
@@ -70,7 +74,7 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
         this.count++;
         this.ctrl.newMonitoringRecord(record);
         if ((this.count % 1000) == 0) {
-            System.out.println("Saved " + this.count + " records");
+            DataDumpStage.LOG.debug("Saved " + this.count + " records");
         }
     }
 

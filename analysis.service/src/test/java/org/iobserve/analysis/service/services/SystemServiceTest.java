@@ -24,22 +24,25 @@ import org.junit.Test;
 import org.palladiosimulator.pcm.system.SystemFactory;
 
 /**
- * Tests for {@link SystemService}
+ * Tests for {@link SystemService}.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 public class SystemServiceTest {
 
-    /** class under test */
+    /** class under test. */
     private SystemService systemService;
 
-    /** test data */
+    /** test data. */
     private org.palladiosimulator.pcm.system.System testSystemModel;
 
-    /** expected result */
+    /** expected result. */
     private JsonObject expectedSystem;
 
+    /**
+     * Test setup.
+     */
     @Before
     public void setup() {
 

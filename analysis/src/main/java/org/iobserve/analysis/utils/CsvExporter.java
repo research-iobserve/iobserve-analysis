@@ -20,19 +20,23 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 /**
  *
  * @author unknown
  *
  */
 public class CsvExporter {
+    private static final Log LOG = LogFactory.getLog(CsvExporter.class);
 
     private final String filePath;
     private final StringBuilder fileContent;
 
     /**
      * Create new CSV exporter.
-     * 
+     *
      * @param filePath
      *            path for output file
      */
@@ -43,7 +47,7 @@ public class CsvExporter {
 
     /**
      * Set header.
-     * 
+     *
      * @param headline
      *            the header.
      */
@@ -56,7 +60,7 @@ public class CsvExporter {
 
     /**
      * Add a row to the CSV file.
-     * 
+     *
      * @param elements
      *            elements for the row
      */
@@ -74,15 +78,14 @@ public class CsvExporter {
      * Export CSV data.
      */
     public void export() {
+        PrintWriter pw;
         try {
-            final PrintWriter pw = new PrintWriter(this.filePath, "UTF-8");
+            pw = new PrintWriter(this.filePath, "UTF-8");
             pw.write(this.fileContent.toString());
             pw.close();
-        } catch (final FileNotFoundException e) {
-            System.err.println("Could not create file " + this.filePath);
-            e.printStackTrace();
-        } catch (final UnsupportedEncodingException e) {
-            e.printStackTrace();
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            CsvExporter.LOG.error("Could not create file " + this.filePath, e);
         }
+
     }
 }

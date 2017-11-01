@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.service.updater;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,17 +42,17 @@ import util.TestHandler;
 /**
  * Tests for {@link AllocationVisualizationStage}.
  *
- * @author jweg
+ * @author Josefine WEgert
  *
  */
 
 @RunWith(MockitoJUnitRunner.class)
 public class AllocationVisualizationStageTest {
 
-    /** stage under test */
+    /** stage under test. */
     private AllocationVisualizationStage allocationVisualizationStage;
 
-    /** test parameters for stage under test */
+    /** test parameters for stage under test. */
     @Mock
     private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
     private static final String SYSTEM_ID = "test_systemId";
@@ -59,29 +60,31 @@ public class AllocationVisualizationStageTest {
     private final String outputPort = "9090";
     private static final String OUTPUT_HOSTNAME = "localhost";
 
-    /** input events */
+    /** input events. */
     private final List<IAllocationRecord> inputEvents = new ArrayList<>();
 
-    /** test event */
+    /** test event. */
     private ContainerAllocationEvent allocationEvent;
 
-    /** data for generating test container allocation event */
+    /** data for generating test container allocation event. */
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
     private static final String URL = "http://" + AllocationVisualizationStageTest.SERVICE + '/'
             + AllocationVisualizationStageTest.CONTEXT;
 
-    /** list of test resource container */
+    /** list of test resource container. */
     private final List<ResourceContainer> testResourceContainerList = new ArrayList<>();
     private ResourceContainer testResourceContainer;
 
     /**
      * Initialize test data and stub necessary method calls.
      *
-     * @throws Exception
+     * @throws MalformedURLException
+     *             if the creation of the URL fails.
+     *
      */
     @Before
-    public void setupAndInitServer() throws Exception {
+    public void setupAndInitServer() throws MalformedURLException {
 
         this.changelogURL = new URL("http://" + AllocationVisualizationStageTest.OUTPUT_HOSTNAME + ":" + this.outputPort
                 + "/v1/systems/" + AllocationVisualizationStageTest.SYSTEM_ID + "/changelogs");

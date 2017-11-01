@@ -24,6 +24,8 @@ import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.Execution;
 
 /**
@@ -32,6 +34,7 @@ import teetime.framework.Execution;
  * @author Reiner Jung
  */
 public final class CollectorMain {
+    private static final Log LOG = LogFactory.getLog(CollectorMain.class);
 
     @Parameter(names = { "-d",
             "--data" }, required = true, description = "Output data directory.", converter = FileConverter.class)
@@ -61,10 +64,10 @@ public final class CollectorMain {
             commander.parse(args);
             main.execute(commander);
         } catch (final ParameterException e) {
-            System.err.println(e.getLocalizedMessage());
+            CollectorMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         } catch (final IOException e) {
-            System.err.println(e.getLocalizedMessage());
+            CollectorMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
@@ -72,7 +75,7 @@ public final class CollectorMain {
     private void execute(final JCommander commander) throws IOException {
         this.checkDirectory(this.dataLocation, "Output Kieker directory", commander);
 
-        System.out.println("Receiver");
+        CollectorMain.LOG.debug("Receiver");
         final SimpleBridgeConfiguration configuration = new SimpleBridgeConfiguration(
                 this.dataLocation.getCanonicalPath(), this.inputPort);
         final Execution<SimpleBridgeConfiguration> analysis = new Execution<>(configuration);
@@ -90,25 +93,25 @@ public final class CollectorMain {
             }
         }));
 
-        System.out.println("Running analysis");
+        CollectorMain.LOG.debug("Running analysis");
 
         analysis.executeBlocking();
 
-        System.out.println("Counts " + configuration.getCounter().getCount());
+        CollectorMain.LOG.debug("Counts " + configuration.getCounter().getCount());
 
-        System.out.println("Done");
+        CollectorMain.LOG.debug("Done");
 
     }
 
     private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
             throws IOException {
         if (!location.exists()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            CollectorMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
             commander.usage();
             System.exit(1);
         }
         if (!location.isDirectory()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            CollectorMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
             commander.usage();
             System.exit(1);
         }

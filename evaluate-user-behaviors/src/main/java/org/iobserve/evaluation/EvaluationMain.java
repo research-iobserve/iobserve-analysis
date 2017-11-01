@@ -23,6 +23,8 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.Execution;
 
 /**
@@ -31,6 +33,8 @@ import teetime.framework.Execution;
  * @author Reiner Jung
  */
 public final class EvaluationMain {
+
+    private static final Log LOG = LogFactory.getLog(EvaluationMain.class);
 
     @Parameter(names = { "-b",
             "--baseline-model" }, required = true, description = "Baseline model file.", converter = FileConverter.class)
@@ -59,7 +63,7 @@ public final class EvaluationMain {
      */
     public static void main(final String[] args) {
 
-        System.out.println("Evaluation of behavior models.");
+        EvaluationMain.LOG.debug("Evaluation of behavior models.");
 
         final EvaluationMain main = new EvaluationMain();
         final JCommander commander = new JCommander(main);
@@ -67,22 +71,22 @@ public final class EvaluationMain {
             commander.parse(args);
             main.execute(commander);
         } catch (final ParameterException e) {
-            System.err.println(e.getLocalizedMessage());
+            EvaluationMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         } catch (final IOException e) {
-            System.err.println(e.getLocalizedMessage());
+            EvaluationMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
 
     private void execute(final JCommander commander) throws IOException {
         if (!this.baselineModelLocation.canRead()) {
-            System.err.println("reading baseline failed: " + this.baselineModelLocation.getCanonicalPath());
+            EvaluationMain.LOG.error("reading baseline failed: " + this.baselineModelLocation.getCanonicalPath());
             commander.usage();
             return;
         }
         if (!this.testModelLocation.canRead()) {
-            System.err.println("reading test model failed: " + this.testModelLocation.getCanonicalPath());
+            EvaluationMain.LOG.error("reading test model failed: " + this.testModelLocation.getCanonicalPath());
             commander.usage();
             return;
         }
@@ -104,11 +108,11 @@ public final class EvaluationMain {
             }
         }));
 
-        System.out.println("Running evaluation");
+        EvaluationMain.LOG.debug("Running evaluation");
 
         evaluation.executeBlocking();
 
-        System.out.println("Done");
+        EvaluationMain.LOG.debug("Done");
 
     }
 

@@ -28,6 +28,12 @@ public class TestFilterConfig implements FilterConfig {
 
     private final ServletContext context;
 
+    /**
+     * .
+     * 
+     * @param context
+     *            .
+     */
     public TestFilterConfig(final ServletContext context) {
         this.context = context;
     }

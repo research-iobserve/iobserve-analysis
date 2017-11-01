@@ -67,10 +67,22 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      *            provider for the repository model
      * @param resourceEnvironmentModelProvider
      *            provider for the resource model
+     * @param resourceEnvironmentModelGraphProvider
+     *            graph provider for the resource model
      * @param allocationModelProvider
      *            provider for the allocation model
+     * @param allocationModelGraphProvider
+     *            graph provider for the allocation model
      * @param systemModelProvider
      *            provider for the system model
+     * @param systemModelGraphProvider
+     *            graph provider for the system model
+     * @param resourceContainerModelGraphProvider
+     *            graph provider for the resource container model
+     * @param assemblyContextModelGraphProvider
+     *            graph provider for the assembly context model
+     * @param assCtxSystemModelGraphProvider
+     *            graph provider for the assembly context system model
      * @param visualizationServiceURL
      *            url to the visualization service
      *
@@ -89,7 +101,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
             final SystemModelProvider systemModelProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider, final String visualizationServiceURL) throws MalformedURLException {
+            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider, final String visualizationServiceURL)
+            throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider, allocationModelProvider,
                 allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider, varianceOfUserGroups,

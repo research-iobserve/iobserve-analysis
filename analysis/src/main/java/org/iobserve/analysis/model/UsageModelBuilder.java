@@ -35,6 +35,9 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 /**
  * UsageModelBuilder is able to build a {@link UsageModel}.
  *
@@ -44,6 +47,7 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
  *
  */
 public final class UsageModelBuilder {
+    private static final Log LOG = LogFactory.getLog(UsageModelBuilder.class);
 
     /**
      * Create a usage model builder.
@@ -242,8 +246,8 @@ public final class UsageModelBuilder {
             eSysCall.setProvidedRole_EntryLevelSystemCall(providedRole);
         } else {
             eSysCall = null;
-            System.err.printf("%s caused Nullpointer since OperationSignature=% is null?!", operationID,
-                    String.valueOf(opSig));
+            UsageModelBuilder.LOG.error(operationID + "final caused Nullpointer since OperationSignature="
+                    + String.valueOf(opSig) + " is null?!");
         }
         return eSysCall;
     }

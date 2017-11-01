@@ -27,17 +27,16 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
+import org.junit.Assert;
+import org.junit.Test;
+
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.misc.KiekerMetadataRecord;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
 import kieker.monitoring.core.controller.MonitoringController;
-
-import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 
 /**
  * @author Reiner Jung
@@ -54,18 +53,11 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
     }
 
     /**
-     * @throws java.lang.Exception
-     */
-    @Before
-    public void setUp() throws Exception {
-
-    }
-
-    /**
      * Test method for
      * {@link org.iobserve.monitoring.probe.servlet.SessionAndTraceRegistrationPayloadFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)}.
      *
      * @throws InterruptedException
+     *             during the sleep time of the thread
      */
     @Test
     public void testDoFilter() throws InterruptedException {

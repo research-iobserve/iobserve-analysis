@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.util.filesystem.BinaryCompressionMethod;
 import kieker.common.util.filesystem.FSUtil;
@@ -46,6 +48,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
     private final Merger<IMonitoringRecord> recordMerger;
 
     private ClassNameRegistryRepository classNameRegistryRepository;
+    private static final Log LOG = LogFactory.getLog(Dir2RecordsFilter.class);
 
     /**
      * Default constructor using a new instance of {@link ClassNameRegistryRepository}.
@@ -75,8 +78,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
                 try {
                     return o1.getCanonicalFile().compareTo(o2.getCanonicalFile());
                 } catch (final IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    Dir2RecordsFilter.LOG.error("Exception while getting canonical file name", e);
                     return 0;
                 }
             }

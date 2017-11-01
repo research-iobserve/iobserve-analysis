@@ -22,6 +22,8 @@ import java.util.Collection;
 
 import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
@@ -39,6 +41,7 @@ public class SimpleSplitterConfiguration extends Configuration {
     private final DataDumpStage[] consumer;
     private final Splitter splitter;
     private final Filter filter;
+    private static final Log LOG = LogFactory.getLog(SimpleSplitterConfiguration.class);
 
     /**
      * Configure analysis.
@@ -55,7 +58,7 @@ public class SimpleSplitterConfiguration extends Configuration {
     public SimpleSplitterConfiguration(final File dataLocation, final File outputLocation, final String[] hostnames)
             throws IOException {
 
-        System.out.println("Read from " + dataLocation);
+        SimpleSplitterConfiguration.LOG.debug("Read from " + dataLocation);
 
         final Collection<File> directories = new ArrayList<>();
 

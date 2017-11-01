@@ -36,6 +36,8 @@ import org.iobserve.common.record.ExtendedAfterOperationEvent;
 import org.iobserve.common.record.ExtendedBeforeOperationEvent;
 
 import kieker.common.exception.RecordInstantiationException;
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.factory.CachedRecordFactoryCatalog;
@@ -73,6 +75,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
     private static final int INT_BYTES = AbstractMonitoringRecord.TYPE_SIZE_INT;
     private static final int LONG_BYTES = AbstractMonitoringRecord.TYPE_SIZE_LONG;
     private static final Charset ENCODING = StandardCharsets.UTF_8;
+    private static final Log LOG = LogFactory.getLog(MultipleConnectionTcpReaderStage.class);
 
     private final CachedRecordFactoryCatalog recordFactories = CachedRecordFactoryCatalog.getInstance();
 
@@ -107,7 +110,8 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
             while (this.isActive()) {
                 final SocketChannel socketChannel = serverSocket.accept();
                 if (socketChannel != null) {
-                    System.out.println("Connection from " + socketChannel.getRemoteAddress().toString());
+                    MultipleConnectionTcpReaderStage.LOG
+                            .debug("Connection from " + socketChannel.getRemoteAddress().toString());
                     // add socketChannel to list of channels
                     socketChannel.configureBlocking(false);
                     final SelectionKey key = socketChannel.register(readSelector, SelectionKey.OP_READ);
@@ -158,7 +162,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
         this.processBuffer(connection);
 
         if (endOfStreamReached) {
-            System.out.println("Socket closed: " + socketChannel.getRemoteAddress().toString());
+            MultipleConnectionTcpReaderStage.LOG.debug("Socket closed: " + socketChannel.getRemoteAddress().toString());
             key.attach(null);
             key.cancel();
             key.channel().close();
@@ -201,8 +205,8 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
 
     private boolean registerRegistryEntry(final Connection connection, final int clazzId) {
         // identify string identifier and string length
-        if (connection.getBuffer().remaining() < MultipleConnectionTcpReaderStage.INT_BYTES
-                + MultipleConnectionTcpReaderStage.INT_BYTES) {
+        if (connection.getBuffer().remaining() < (MultipleConnectionTcpReaderStage.INT_BYTES
+                + MultipleConnectionTcpReaderStage.INT_BYTES)) {
             return false;
         } else {
             final int id = connection.getBuffer().getInt();

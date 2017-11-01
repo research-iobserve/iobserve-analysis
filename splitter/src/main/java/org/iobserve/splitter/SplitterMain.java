@@ -23,6 +23,8 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.Execution;
 
 /**
@@ -31,6 +33,8 @@ import teetime.framework.Execution;
  * @author Reiner Jung
  */
 public final class SplitterMain {
+
+    private static final Log LOG = LogFactory.getLog(SplitterMain.class);
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Input directory.", converter = FileConverter.class)
@@ -58,7 +62,7 @@ public final class SplitterMain {
      */
     public static void main(final String[] args) {
 
-        System.out.println("Splitter");
+        SplitterMain.LOG.debug("Splitter");
 
         final SplitterMain main = new SplitterMain();
         final JCommander commander = new JCommander(main);
@@ -66,10 +70,10 @@ public final class SplitterMain {
             commander.parse(args);
             main.execute(commander);
         } catch (final ParameterException e) {
-            System.err.println(e.getLocalizedMessage());
+            SplitterMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         } catch (final IOException e) {
-            System.err.println(e.getLocalizedMessage());
+            SplitterMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
@@ -95,23 +99,23 @@ public final class SplitterMain {
             }
         }));
 
-        System.out.println("Running analysis");
+        SplitterMain.LOG.debug("Running analysis");
 
         analysis.executeBlocking();
 
-        System.out.println("Done");
+        SplitterMain.LOG.debug("Done");
 
     }
 
     private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
             throws IOException {
         if (!location.exists()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            SplitterMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
             commander.usage();
             System.exit(1);
         }
         if (!location.isDirectory()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            SplitterMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
             commander.usage();
             System.exit(1);
         }

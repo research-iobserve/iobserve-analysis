@@ -40,10 +40,16 @@ import util.TestHandler;
 @SuiteClasses({ AllocationVisualizationStageTest.class, DeploymentVisualizationStageTest.class,
         UndeploymentVisualizationStageTest.class })
 public class AllTestsUpdater {
-    /** handler for http requests */
+    /** handler for http requests. */
     private static TestHandler testHandler;
     private static HttpServer server;
 
+    /**
+     * Sets up the server to test the methods that require a http connection.
+     *
+     * @throws IOException
+     *             if the server could not be created (E.g. the socket is already used.
+     */
     @BeforeClass
     public static void setUpClass() throws IOException {
         /** test server */

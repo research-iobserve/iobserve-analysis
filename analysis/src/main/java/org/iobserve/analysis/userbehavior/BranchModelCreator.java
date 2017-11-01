@@ -250,10 +250,11 @@ public class BranchModelCreator {
         return branchModel;
     }
 
+    // TODO This function is largely broken as it modifies input parameter.
+
     /**
      * It creates a new branch and adds it to the current examined branch as a new child branch.
      *
-     * TODO this function is largely broken as it modifies input parameter
      *
      * @param examinedBranch
      *            that is splitted

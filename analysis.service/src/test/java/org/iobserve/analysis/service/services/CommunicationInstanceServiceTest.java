@@ -26,24 +26,24 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 
 /**
- * Tests for {@link CommunicationInstanceService}
+ * Tests for {@link CommunicationInstanceService}.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 public class CommunicationInstanceServiceTest {
 
-    /** class under test */
+    /** class under test. */
     private CommunicationInstanceService communicationInstanceService;
 
-    /** test data */
+    /** test data. */
     private AssemblyConnector testAssemblyConnector;
     private AssemblyContext testSourceAssemblyContext;
     private AssemblyContext testTargetAssemblyContext;
     private String systemId;
     private String communicationId;
 
-    /** expected result */
+    /** expected result. */
     private JsonObject expectedCreateCommunicationInstance;
     private JsonObject expectedDeleteCommunicationInstance;
 

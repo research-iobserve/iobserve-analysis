@@ -15,13 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.service.updater;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import teetime.framework.test.StageTester;
 
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.correspondence.Correspondent;
@@ -46,21 +44,22 @@ import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
+import teetime.framework.test.StageTester;
 import util.TestHandler;
 
 /**
- * Tests for {@link UndeploymentVisualizationStage}
+ * Tests for {@link UndeploymentVisualizationStage}.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class UndeploymentVisualizationStageTest {
 
-    /** stage under test */
+    /** stage under test. */
     private UndeploymentVisualizationStage undeploymentVisualizationStage;
 
-    /** test parameters for stage under test */
+    /** test parameters for stage under test. */
     private URL changelogURL;
     private final String outputPort = "9090";
     private final String outputHostname = "localhost";
@@ -74,40 +73,42 @@ public class UndeploymentVisualizationStageTest {
     @Mock
     private ICorrespondence mockedCorrespondenceModel;
 
-    /** input events */
+    /** input events. */
     private final List<ServletUndeployedEvent> inputServletEvents = new ArrayList<>();
     private final List<EJBUndeployedEvent> inputEJBEvents = new ArrayList<>();
 
-    /** test event */
+    /** test event. */
     private ServletUndeployedEvent servletEvent;
     private EJBUndeployedEvent ejbEvent;
 
-    /** data for generating test events */
+    /** data for generating test events. */
     private static final long DEPLOY_TIME = 1;
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
     private static final String DEPLOYMENT_ID = "service-01";
 
-    /** test correspondent */
+    /** test correspondent. */
     private static Correspondent testCorrespondent;
     private static Optional<Correspondent> optTestCorrespondent;
 
-    /** test resource container */
+    /** test resource container. */
     private final List<ResourceContainer> testResourceContainers = new ArrayList<>();
     private final String testNodeId = "test_nodeId";
     private ResourceContainer testResourceContainer;
 
-    /** test assembly context */
+    /** test assembly context. */
     private final List<AssemblyContext> testAssemblyContexts = new ArrayList<>();
     private AssemblyContext testAssemblyContext;
 
     /**
      * Initialize test data and stub necessary method calls.
      *
-     * @throws IOException
+     * @throws MalformedURLException
+     *             if the creation of the URL fails.
+     *
      */
     @Before
-    public void setup() throws IOException {
+    public void setup() throws MalformedURLException {
 
         this.changelogURL = new URL("http://" + this.outputHostname + ":" + this.outputPort + "/v1/systems/"
                 + this.systemId + "/changelogs");
@@ -164,10 +165,9 @@ public class UndeploymentVisualizationStageTest {
      * Check the changelog for deleting a serviceInstance. A {@link ServletDeployedEvent} is defined
      * as input.
      *
-     * @throws IOException
      */
     @Test
-    public void testServlet() throws IOException {
+    public void testServlet() {
 
         StageTester.test(this.undeploymentVisualizationStage).and().send(this.inputServletEvents)
                 .to(this.undeploymentVisualizationStage.getInputPort()).start();
@@ -183,10 +183,9 @@ public class UndeploymentVisualizationStageTest {
      * Check the changelog for deleting a serviceInstance. A {@link EJBDeployedEvent} is defined as
      * input.
      *
-     * @throws IOException
      */
     @Test
-    public void testEJB() throws IOException {
+    public void testEJB() {
 
         StageTester.test(this.undeploymentVisualizationStage).and().send(this.inputEJBEvents)
                 .to(this.undeploymentVisualizationStage.getInputPort()).start();

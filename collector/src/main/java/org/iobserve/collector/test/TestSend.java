@@ -16,6 +16,8 @@
 package org.iobserve.collector.test;
 
 import kieker.common.configuration.Configuration;
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
@@ -31,6 +33,7 @@ import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
  *
  */
 public final class TestSend {
+    private static final Log LOG = LogFactory.getLog(TestSend.class);
 
     private static final String WRITER_NAME = "kieker.monitoring.writer.tcp.SingleSocketTcpWriter";
 
@@ -47,7 +50,7 @@ public final class TestSend {
      *            arguments are ignored.
      */
     public static void main(final String[] args) {
-        System.out.println("Sender");
+        TestSend.LOG.debug("Sender");
         final Configuration configuration = ConfigurationFactory.createDefaultConfiguration();
         configuration.setProperty(ConfigurationFactory.CONTROLLER_NAME, "Kieker-Test");
         configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, TestSend.WRITER_NAME);
@@ -60,21 +63,21 @@ public final class TestSend {
         configuration.setProperty(ConfigurationFactory.PREFIX + "test", "true");
         configuration.setProperty(TestSend.WRITER_NAME + ".test", "true");
 
-        System.out.println("Configuration complete");
+        TestSend.LOG.debug("Configuration complete");
 
         final IMonitoringController ctrl = MonitoringController.createInstance(configuration);
 
-        System.out.println("Controller active");
-        System.out.println("Send first record");
+        TestSend.LOG.debug("Controller active");
+        TestSend.LOG.debug("Send first record");
 
         IMonitoringRecord record = new TraceMetadata(1, 2, "demo", "hostname", 0, 0);
         ctrl.newMonitoringRecord(record);
 
-        System.out.println("Send second record");
+        TestSend.LOG.debug("Send second record");
 
         record = new BeforeOperationEvent(0, 1, 0, "Send", "main");
         ctrl.newMonitoringRecord(record);
 
-        System.out.println("Done");
+        TestSend.LOG.debug("Done");
     }
 }

@@ -121,7 +121,7 @@ public final class TEntryCallSequence extends AbstractStage {
     }
 
     @Override
-    public void onTerminating() throws Exception {
+    public void onTerminating() {
         for (final UserSession session : this.sessions.values()) {
             this.userSessionOutputPort.send(session);
         }

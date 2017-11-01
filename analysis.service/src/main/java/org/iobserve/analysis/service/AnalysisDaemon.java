@@ -19,15 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.converters.BooleanConverter;
-import com.beust.jcommander.converters.FileConverter;
-import com.beust.jcommander.converters.IntegerConverter;
-
-import teetime.framework.Configuration;
-
 import org.apache.commons.daemon.Daemon;
 import org.apache.commons.daemon.DaemonContext;
 import org.apache.commons.daemon.DaemonInitException;
@@ -46,11 +37,23 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.BooleanConverter;
+import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
+
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+import teetime.framework.Configuration;
+
 /**
  * @author Reiner Jung
  *
  */
 public class AnalysisDaemon implements Daemon {
+    private static final Log LOG = LogFactory.getLog(AnalysisDaemon.class);
 
     @Parameter(names = "--help", help = true)
     private boolean help;
@@ -107,10 +110,10 @@ public class AnalysisDaemon implements Daemon {
             commander.parse(args);
             this.execute(commander);
         } catch (final ParameterException e) {
-            System.err.println(e.getLocalizedMessage());
+            AnalysisDaemon.LOG.error(e.getLocalizedMessage());
             commander.usage();
         } catch (final IOException e) {
-            System.err.println(e.getLocalizedMessage());
+            AnalysisDaemon.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
@@ -138,18 +141,18 @@ public class AnalysisDaemon implements Daemon {
 
             final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
             graphLoader.initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
-            System.out.println("Initialized resource environment model graph");
+            AnalysisDaemon.LOG.info("Initialized resource environment model graph");
             graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
-            System.out.println("Initialized allocation model graph");
+            AnalysisDaemon.LOG.info("Initialized allocation model graph");
             graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
-            System.out.println("Initialized system model graph");
+            AnalysisDaemon.LOG.info("Initialized system model graph");
 
             final Graph resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
-            System.out.println("Loaded resource environment model graph");
+            AnalysisDaemon.LOG.info("Loaded resource environment model graph");
             final Graph allocationModelGraph = graphLoader.getAllocationModelGraph();
-            System.out.println("Loaded allocation model graph");
+            AnalysisDaemon.LOG.info("Loaded allocation model graph");
             final Graph systemModelGraph = graphLoader.getSystemModelGraph();
-            System.out.println("Loaded system model graph");
+            AnalysisDaemon.LOG.info("Loaded system model graph");
 
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
                     resourceEnvironmentModelGraph);
@@ -189,7 +192,7 @@ public class AnalysisDaemon implements Daemon {
         try {
             this.thread.join(1000);
         } catch (final InterruptedException e) {
-            System.err.println(e.getMessage());
+            AnalysisDaemon.LOG.error(e.getMessage());
             throw e;
         }
     }
@@ -206,12 +209,12 @@ public class AnalysisDaemon implements Daemon {
     private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
             throws IOException {
         if (!location.exists()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            AnalysisDaemon.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
             commander.usage();
             System.exit(1);
         }
         if (!location.isDirectory()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            AnalysisDaemon.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
             commander.usage();
             System.exit(1);
         }

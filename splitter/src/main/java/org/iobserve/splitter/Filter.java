@@ -22,6 +22,8 @@ import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ITraceHelper;
 import org.iobserve.common.record.IUndeploymentRecord;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -33,7 +35,7 @@ import teetime.framework.OutputPort;
  *
  */
 public class Filter extends AbstractConsumerStage<IMonitoringRecord> {
-
+    private static final Log LOG = LogFactory.getLog(AbstractConsumerStage.class);
     private final OutputPort<IMonitoringRecord> outputPort = this.createOutputPort();
 
     @Override
@@ -41,7 +43,7 @@ public class Filter extends AbstractConsumerStage<IMonitoringRecord> {
         if ((element instanceof IDeploymentRecord) || (element instanceof IUndeploymentRecord)
                 || (element instanceof ITraceHelper) || (element instanceof IAllocationRecord)
                 || (element instanceof IDeallocationRecord) || (element instanceof GeoLocation)) {
-            System.out.println("Got iobserve record " + element);
+            Filter.LOG.debug("Got iobserve record " + element);
         } else {
             this.outputPort.send(element);
         }

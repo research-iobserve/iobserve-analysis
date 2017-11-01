@@ -20,6 +20,8 @@ import java.util.Optional;
 import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
 import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 import weka.core.Instance;
@@ -32,8 +34,8 @@ import weka.core.Instances;
  */
 
 public class TVectorQuantizationClustering extends AbstractConsumerStage<Instances> {
+    private static final Log LOG = LogFactory.getLog(TVectorQuantizationClustering.class);
     private final IVectorQuantizationClustering clustering;
-
     private final OutputPort<Instances> outputPort = this.createOutputPort();
 
     /**
@@ -59,14 +61,15 @@ public class TVectorQuantizationClustering extends AbstractConsumerStage<Instanc
         results.printClusteringResults();
         final Instances centroids = results.getClusteringMetrics().getCentroids();
         for (int i = 0; i < centroids.numInstances(); i++) {
-            System.out.println("***************************");
-            System.out.println("Cluster " + i);
-            System.out.println("***************************");
+            String logString = "";
+            logString += "***************************";
+            logString += "Cluster " + i;
+            logString += "***************************";
             final Instance instance = centroids.instance(i);
             for (int a = 0; a < instance.numAttributes(); a++) {
-                System.out.println(centroids.attribute(a).name() + " : " + instance.value(a));
-
+                logString += centroids.attribute(a).name() + " : " + instance.value(a);
             }
+            TVectorQuantizationClustering.LOG.info(logString);
         }
     }
 

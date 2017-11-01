@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.ITraceRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
@@ -44,6 +46,7 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
     private int recordCount;
 
     private final String[] hostnames;
+    private static final Log LOG = LogFactory.getLog(Splitter.class);
 
     /**
      * Splitter constructor.
@@ -95,7 +98,7 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
             }
         } else if (element instanceof KiekerMetadataRecord) {
             /** ignore. */
-            System.out.println("Metadata record " + element);
+            Splitter.LOG.debug("Metadata record " + element);
         } else {
             for (int i = 0; i < this.hostnames.length; i++) {
                 this.outputPorts.get(i).send(element);

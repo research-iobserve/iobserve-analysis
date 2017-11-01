@@ -30,6 +30,12 @@ public class TestDumpWriter extends AbstractMonitoringWriter {
 
     private static final List<IMonitoringRecord> STORAGE = new ArrayList<>();
 
+    /**
+     * Constructor.
+     *
+     * @param configuration
+     *            the Kieker configuration which defines monitoring parameters.
+     */
     public TestDumpWriter(final Configuration configuration) {
         super(configuration);
     }
@@ -41,7 +47,7 @@ public class TestDumpWriter extends AbstractMonitoringWriter {
      */
     @Override
     public void onStarting() {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
 
     }
 
@@ -66,7 +72,7 @@ public class TestDumpWriter extends AbstractMonitoringWriter {
      */
     @Override
     public void onTerminating() {
-        // TODO Auto-generated method stub
+        // Auto-generated method stub
 
     }
 

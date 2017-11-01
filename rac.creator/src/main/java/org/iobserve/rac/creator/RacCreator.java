@@ -38,6 +38,9 @@ import org.iobserve.analysis.protocom.PcmMapping;
 import org.iobserve.analysis.protocom.PcmOperationSignature;
 import org.xml.sax.SAXException;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 /**************************************************************************************************
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Important!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * This application is only for testing purposes and should never be used in working code!
@@ -55,6 +58,7 @@ import org.xml.sax.SAXException;
  *
  *************************************************************************************************/
 public class RacCreator {
+    private static final Log LOG = LogFactory.getLog(RacCreator.class);
 
     private static final String RAC_FILENAME = "mapping.rac";
     private static final String MAPPED_CLASSES_FILE = "mapped.txt";
@@ -145,7 +149,6 @@ public class RacCreator {
             }
             in.close();
         } catch (final Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -222,7 +225,7 @@ public class RacCreator {
             mapping.setEntities(new ArrayList<>(entityMapping.values()));
             JAXB.marshal(mapping, this.outputPath.getCanonicalPath() + File.separator + filename);
         } catch (final IOException e) {
-            System.err.println("Error creating RAC " + e.getLocalizedMessage());
+            RacCreator.LOG.error("Error creating RAC " + e.getLocalizedMessage());
         }
     }
 
@@ -262,7 +265,7 @@ public class RacCreator {
             }
             writer.close();
         } catch (final IOException e) {
-            System.err.println("Error creating " + label + " file " + e.getLocalizedMessage());
+            RacCreator.LOG.error("Error creating " + label + " file " + e.getLocalizedMessage());
         }
     }
 

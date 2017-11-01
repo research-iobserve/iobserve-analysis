@@ -85,7 +85,7 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
     }
 
     @Override
-    public void onTerminating() throws Exception {
+    public void onTerminating() {
 
         final BehaviorModelTable fixedTable = this.modelTable
                 .toClearedFixedSizeBehaviorModelTable(this.keepEmptyTransitions);

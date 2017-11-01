@@ -32,6 +32,9 @@ import org.iobserve.analysis.data.PayloadAwareEntryCallEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 /**
  * table representation of a behavior model.
  *
@@ -52,6 +55,8 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
 
     /** Aggregation strategy. */
     private final IRepresentativeStrategy strategy;
+
+    private static final Log LOG = LogFactory.getLog(DynamicBehaviorModelTable.class);
 
     /**
      * advanced constructor.
@@ -140,8 +145,7 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
             }
 
         } catch (final IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            DynamicBehaviorModelTable.LOG.error("Exception while adding information to behavior table", e);
         }
 
     }
@@ -269,8 +273,7 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
             }
 
         } catch (final JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            DynamicBehaviorModelTable.LOG.error("Exception transforming the Behavior Table to a string", e);
         }
 
         //

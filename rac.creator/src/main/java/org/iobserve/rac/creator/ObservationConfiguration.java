@@ -29,8 +29,8 @@ import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
 
+// TODO complete this class. This configuration is incomplete as the read Kieker data is not further
 /**
- * TODO complete this class. This configuration is incomplete as the read Kieker data is not further
  * processed.
  *
  * @author Reiner Jung

@@ -97,8 +97,6 @@ public abstract class AbstractBehaviorModelTable {
 
         if (event instanceof PayloadAwareEntryCallEvent) {
             this.addInformation((PayloadAwareEntryCallEvent) event);
-        } else {
-            System.out.println();
         }
     }
 

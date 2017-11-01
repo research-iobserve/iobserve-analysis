@@ -21,16 +21,17 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
-
 import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
 import org.iobserve.analysis.protocom.PcmEntity;
 import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
 import org.xml.sax.SAXException;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
+// TODO This is a filter containing the core functionality. It can be divided into smaller filters.
 /**
- * TODO This is a filter containing the core functionality. It can be divided into smaller filters.
+ *
  * Presently, it is used to support incremental refactoring.
  *
  * @author Reiner Jung
@@ -99,9 +100,10 @@ public class DoAllFilter extends AbstractConsumerStage<ClassAndMethod> {
         this.racOutputPort.send(this.repositoryMapping);
     }
 
+    // TODO this has a nasty side effect.
+
     /**
-     * Returns a correspondent for the given name, if not already contained it is created. TODO this
-     * has a nasty side effect.
+     * Returns a correspondent for the given name, if not already contained it is created.
      *
      * @param classSignature
      * @param correspondentMapping

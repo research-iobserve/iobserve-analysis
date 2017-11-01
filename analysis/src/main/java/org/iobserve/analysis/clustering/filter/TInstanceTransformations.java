@@ -61,7 +61,7 @@ public class TInstanceTransformations extends AbstractConsumerStage<BehaviorMode
      * @see teetime.framework.AbstractStage#onTerminating()
      */
     @Override
-    public void onTerminating() throws Exception {
+    public void onTerminating() {
         if (this.instances == null) {
             TInstanceTransformations.LOGGER.error("No instances created!");
         } else {

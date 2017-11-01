@@ -24,6 +24,8 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -56,6 +58,8 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
     private final RepositoryModelProvider repositoryModelProvider;
 
     private final OutputPort<UsageModel> outputPort;
+
+    private static final Log LOG = LogFactory.getLog(TEntryEventSequence.class);
 
     /**
      * Create a entry event sequence filter.
@@ -92,7 +96,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
         // Resets the current usage model
         this.usageModelProvider.loadModel();
         int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-        System.out.println("EntryEventSequence found: numberOfUserGroups before: " + numberOfUserGroups);
+        TEntryEventSequence.LOG.debug("EntryEventSequence found: numberOfUserGroups before: " + numberOfUserGroups);
 
         // Executes the user behavior modeling procedure
         final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(entryCallSequenceModel,
@@ -104,14 +108,12 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
             this.usageModelProvider.updateModel(behaviorModeling.getPcmUsageModel());
 
             numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-            System.out.println("Model changed: numberOfUserGroups after: " + numberOfUserGroups);
+            TEntryEventSequence.LOG.debug("Model changed: numberOfUserGroups after: " + numberOfUserGroups);
 
         } catch (final IOException e) {
             e.printStackTrace();
         }
         this.outputPort.send(behaviorModeling.getPcmUsageModel());
-        // Sets the new usage model within iObserve
-        // this.usageModelProvider.save();
     }
 
     public OutputPort<UsageModel> getOutputPort() {

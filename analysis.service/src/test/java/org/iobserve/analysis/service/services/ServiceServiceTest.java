@@ -25,21 +25,21 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 
 /**
- * Tests for {@link ServiceService}
+ * Tests for {@link ServiceService}.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 public class ServiceServiceTest {
 
-    /** class under test */
+    /** class under test. */
     private ServiceService serviceService;
 
-    /** test data */
+    /** test data. */
     private AssemblyContext testAssemblyContext;
     private String systemId;
 
-    /** expected result */
+    /** expected result. */
     private JsonObject expectedService;
 
     /**

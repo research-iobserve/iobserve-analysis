@@ -38,7 +38,7 @@ import teetime.framework.OutputPort;
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
- * @author jweg
+ * @author Josefine Wegert
  */
 public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> {
 
@@ -123,13 +123,13 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
             // signal allocation update
             this.allocationOutputPort.send(event);
         }).elseApply(serverNamePresent -> {
-            System.out.printf("ResourceContainer %s was available.\n", serverName);
+            this.logger.debug("ResourceContainer %s was available." + serverName);
             final List<ProcessingResourceSpecification> procResSpec = serverNamePresent
                     .getActiveResourceSpecifications_ResourceContainer();
             for (int i = 0; i < procResSpec.size(); i++) {
                 final String nodeGroupName = procResSpec.get(i).getActiveResourceType_ActiveResourceSpecification()
                         .getEntityName();
-                System.out.println(nodeGroupName);
+                this.logger.debug(nodeGroupName);
             }
         });
 

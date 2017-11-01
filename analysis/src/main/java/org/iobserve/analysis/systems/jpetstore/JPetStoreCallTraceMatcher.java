@@ -23,7 +23,7 @@ import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 /**
- * This matcher detects entry calls for JPetStore. TODO: Please note that this is a superficial
+ * This matcher detects entry calls for JPetStore. Please note that this is a superficial
  * implementation, which does not really identify internal methods.
  *
  * @author Reiner Jung

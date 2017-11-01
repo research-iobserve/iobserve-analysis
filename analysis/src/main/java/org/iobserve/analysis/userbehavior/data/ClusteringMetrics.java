@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.data;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import weka.core.DistanceFunction;
 import weka.core.EuclideanDistance;
 import weka.core.Instances;
@@ -35,6 +37,7 @@ public class ClusteringMetrics {
     private final Instances centroids;
     private final Instances instances;
     private final int[] assignments;
+    private static final Log LOG = LogFactory.getLog(ClusteringMetrics.class);
 
     /**
      * Construct cluster metrics.
@@ -87,9 +90,9 @@ public class ClusteringMetrics {
      */
     public void printSimilarityMetrics() {
         if (this.sumOfSquaredErrors == 0) {
-            System.out.println("Metrics have not been calculated");
+            ClusteringMetrics.LOG.debug("Metrics have not been calculated");
         } else {
-            System.out.println("Sum of squared errors: " + this.sumOfSquaredErrors);
+            ClusteringMetrics.LOG.debug("Sum of squared errors: " + this.sumOfSquaredErrors);
         }
     }
 

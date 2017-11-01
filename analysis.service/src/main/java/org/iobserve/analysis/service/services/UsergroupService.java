@@ -32,7 +32,6 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
  *
  */
 public class UsergroupService {
-    private ServiceService service;
     private final String usergroupId = "test_usergroup_id" + Math.random();
 
     /**
@@ -46,12 +45,13 @@ public class UsergroupService {
      * Builds data for creating a user group for the deployment visualization.
      *
      * @param systemId
-     * @return
+     *            .
+     * @param userInvokedServices
+     *            .
+     * @return JSon object for the creation of a user group
      */
     public JsonObject createUsergroup(final String systemId, final List<AssemblyContext> userInvokedServices) {
-        final JsonObject invokedServiceObject;
         final JsonArrayBuilder builder = Json.createArrayBuilder();
-        this.service = new ServiceService();
 
         // build array of targetIds
         for (int i = 0; i < userInvokedServices.size(); i++) {

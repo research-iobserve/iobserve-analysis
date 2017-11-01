@@ -18,9 +18,10 @@ package org.iobserve.analysis.systems.jpetstore;
 import java.util.HashMap;
 import java.util.Map;
 
+//TODO this class should be integrated into the JPetStoreParameterValueDoubleMapper
+
 /**
- * All JPetStore data values. TODO this class should be integrated into the
- * JPetStoreParameterValueDoubleMapper
+ * All JPetStore data values. T
  *
  * @author Christoph Dornieden
  *

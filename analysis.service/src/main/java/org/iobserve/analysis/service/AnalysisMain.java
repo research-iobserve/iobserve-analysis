@@ -19,15 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.converters.FileConverter;
-import com.beust.jcommander.converters.IntegerConverter;
-
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
-
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
@@ -45,6 +36,17 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
+
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
+
 /**
  * Main class for starting the iObserve application.
  *
@@ -53,6 +55,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  * @author Alessandro Giusa
  */
 public final class AnalysisMain {
+    private static final Log LOG = LogFactory.getLog(AnalysisMain.class);
 
     @Parameter(names = "--help", help = true)
     private boolean help;
@@ -109,10 +112,10 @@ public final class AnalysisMain {
             commander.parse(args);
             main.execute(commander);
         } catch (final ParameterException e) {
-            System.err.println(e.getLocalizedMessage());
+            AnalysisMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         } catch (final IOException e) {
-            System.err.println(e.getLocalizedMessage());
+            AnalysisMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
@@ -186,8 +189,7 @@ public final class AnalysisMain {
                 try {
                     deploymentVisualization.initialize();
                 } catch (final Exception e) {
-                    System.out.println("deploymentVisualization.initialize() went wrong!");
-                    e.printStackTrace();
+                    AnalysisMain.LOG.debug("deploymentVisualization.initialize() went wrong!", e);
                 }
 
                 final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
@@ -198,11 +200,11 @@ public final class AnalysisMain {
                         assemblyContextModelGraphProvider, systemModelProvider, systemModelGraphProvider,
                         assCtxSystemModelGraphProvider, this.visualizationServiceURL);
 
-                System.out.println("Analysis configuration");
+                AnalysisMain.LOG.info("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);
-                System.out.println("Analysis start");
+                AnalysisMain.LOG.info("Analysis start");
                 analysis.executeBlocking();
-                System.out.println("Anaylsis complete");
+                AnalysisMain.LOG.info("Anaylsis complete");
                 ExecutionTimeLogger.getInstance().exportAsCsv();
             }
         }
@@ -211,12 +213,12 @@ public final class AnalysisMain {
     private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
             throws IOException {
         if (!location.exists()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            AnalysisMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
             commander.usage();
             System.exit(1);
         }
         if (!location.isDirectory()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            AnalysisMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
             commander.usage();
             System.exit(1);
         }

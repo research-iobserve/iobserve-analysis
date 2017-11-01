@@ -20,16 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.converters.BooleanConverter;
-import com.beust.jcommander.converters.FileConverter;
-import com.beust.jcommander.converters.IntegerConverter;
-
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
-
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.clustering.EAggregationType;
@@ -44,10 +34,19 @@ import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.BooleanConverter;
+import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
+
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
 
 /**
  * Main class for starting the iObserve application.
@@ -57,6 +56,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  * @author Alessandro Giusa
  */
 public final class AnalysisMain {
+    private static final Log LOG = LogFactory.getLog(AnalysisMain.class);
 
     @Parameter(names = "--help", help = true)
     private boolean help;
@@ -115,15 +115,16 @@ public final class AnalysisMain {
             commander.parse(args);
             main.execute(commander);
         } catch (final ParameterException e) {
-            System.err.println(e.getLocalizedMessage());
+            AnalysisMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         } catch (final IOException e) {
-            System.err.println(e.getLocalizedMessage());
+            AnalysisMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
 
     private void execute(final JCommander commander) throws IOException {
+
         if (this.help) {
             commander.usage();
             System.exit(1);
@@ -173,26 +174,18 @@ public final class AnalysisMain {
                     .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
             Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
             Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
-            Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
 
             // load neo4j graphs
             resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
             allocationModelGraph = graphLoader.getAllocationModelGraph();
             systemModelGraph = graphLoader.getSystemModelGraph();
-            usageModelGraph = graphLoader.getUsageModelGraph();
 
             // new graphModelProvider
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
                     resourceEnvironmentModelGraph);
-            final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
-                    resourceEnvironmentModelGraph);
             final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(allocationModelGraph);
-            final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider = new ModelProvider<>(
-                    allocationModelGraph);
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                     systemModelGraph);
-            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(systemModelGraph);
-            final ModelProvider<UsageModel> usageModelGraphProvider = new ModelProvider<>(usageModelGraph);
 
             final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
                     correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
@@ -200,23 +193,23 @@ public final class AnalysisMain {
                     systemModelProvider, systemModelGraphProvider, this.varianceOfUserGroups, this.thinkTime,
                     this.closedWorkload, this.visualizationServiceURL, aggregationType, outputMode);
 
-            System.out.println("Analysis configuration");
+            AnalysisMain.LOG.info("Analysis configuration");
             final Execution<Configuration> analysis = new Execution<>(configuration);
-            System.out.println("Analysis start");
+            AnalysisMain.LOG.info("Analysis start");
             analysis.executeBlocking();
-            System.out.println("Anaylsis complete");
+            AnalysisMain.LOG.info("Anaylsis complete");
         }
     }
 
     private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
             throws IOException {
         if (!location.exists()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            AnalysisMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
             commander.usage();
             System.exit(1);
         }
         if (!location.isDirectory()) {
-            System.err.println(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            AnalysisMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
             commander.usage();
             System.exit(1);
         }

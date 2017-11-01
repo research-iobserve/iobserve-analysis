@@ -44,8 +44,9 @@ public class BranchModel {
         this.likelihoodOfUserGroup = likelihoodOfUserGroup;
     }
 
+    // TODO what is the purpose of this?
     /**
-     * get the requested branch. TODO what is the purpose of this?
+     * Get the requested branch.
      *
      * @param branchGuide
      *            selector for a branch

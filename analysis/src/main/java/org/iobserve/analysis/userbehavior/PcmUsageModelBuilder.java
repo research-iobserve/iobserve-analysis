@@ -45,6 +45,9 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 /**
  * This class creates a PCM usage model from the passed LoopBranchModels. For each user group its
  * own LoopBranchModel was created before. This class creates for each user group its own usage
@@ -62,6 +65,7 @@ public class PcmUsageModelBuilder {
     private final List<Map<Integer, ScenarioBehaviour>> branchScenarioBehavioursOfUserGroups;
     private final RepositoryModelProvider repositoryModelProvider;
     private final ICorrespondence correspondenceModel;
+    private static final Log LOG = LogFactory.getLog(PcmUsageModelBuilder.class);
 
     /**
      *
@@ -202,8 +206,8 @@ public class PcmUsageModelBuilder {
                         .getCorrespondent(branchElement.getClassSignature(), operationSplit[operationSplit.length - 1]);
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                    System.out.println("Usage: Found Correspondent: " + correspondent.getPcmEntityName() + " "
-                            + correspondent.getPcmOperationName());
+                    PcmUsageModelBuilder.LOG.debug("Usage: Found Correspondent: " + correspondent.getPcmEntityName()
+                            + " " + correspondent.getPcmOperationName());
                     eSysCall = UsageModelBuilder.createEntryLevelSystemCall(this.repositoryModelProvider,
                             correspondent);
                 }

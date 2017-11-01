@@ -34,24 +34,24 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 
 /**
- * Tests for {@link ServiceInstanceService}
+ * Tests for {@link ServiceInstanceService}.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ServiceInstanceServiceTest {
 
-    /** class under test */
+    /** class under test. */
     private ServiceInstanceService serviceInstanceService;
 
-    /** mocks */
+    /** mocks. */
     @Mock
     private ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
     @Mock
     private CommunicationInstanceService mockedCommunicationInstanceService;
 
-    /** test data */
+    /** test data. */
     private AssemblyContext testAssemblyContext;
     private String systemId;
     private String nodeId;
@@ -59,7 +59,7 @@ public class ServiceInstanceServiceTest {
 
     private List<EObject> noAssemblyConnectors;
 
-    /** expected result */
+    /** expected result. */
     private JsonObject expectedCreateServiceInstance;
     private JsonObject expectedDeleteServiceInstance;
 

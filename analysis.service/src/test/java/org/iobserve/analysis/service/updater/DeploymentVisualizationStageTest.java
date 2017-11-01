@@ -15,13 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.service.updater;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import teetime.framework.test.StageTester;
 
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.correspondence.Correspondent;
@@ -44,27 +42,28 @@ import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
+import teetime.framework.test.StageTester;
 import util.TestHandler;
 
 /**
- * Tests for {@link DeploymentVisualizationStage}
+ * Tests for {@link DeploymentVisualizationStage}.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 @RunWith(MockitoJUnitRunner.class)
 public class DeploymentVisualizationStageTest {
 
-    /** stage under test */
+    /** stage under test. */
     private DeploymentVisualizationStage deploymentVisualizationStage;
 
-    /** test parameters for stage under test */
+    /** test parameters for stage under test. */
     private URL changelogURL;
     private static final String OUTPUT_PORT = "9090";
     private static final String OUTPUT_HOSTNAME = "localhost";
     private static final String SYSTEM_ID = "test_systemId";
 
-    /** data for generating test events */
+    /** data for generating test events. */
     private static final long DEPLOY_TIME = 1;
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
@@ -77,34 +76,36 @@ public class DeploymentVisualizationStageTest {
     @Mock
     private ICorrespondence mockedCorrespondenceModel;
 
-    /** input events */
+    /** input events. */
     private final List<ServletDeployedEvent> inputServletEvents = new ArrayList<>();
     private final List<EJBDeployedEvent> inputEJBEvents = new ArrayList<>();
 
-    /** test event */
+    /** test event. */
     private ServletDeployedEvent servletEvent;
     private EJBDeployedEvent ejbEvent;
 
-    /** test correspondent */
+    /** test correspondent. */
     private static Correspondent testCorrespondent;
     private static Optional<Correspondent> optTestCorrespondent;
 
-    /** test resource container */
+    /** test resource container. */
     private final List<ResourceContainer> testResourceContainers = new ArrayList<>();
     private final String testNodeId = "test_nodeId";
     private ResourceContainer testResourceContainer;
 
-    /** test assembly context */
+    /** test assembly context. */
     private final List<AssemblyContext> testAssemblyContexts = new ArrayList<>();
     private AssemblyContext testAssemblyContext;
 
     /**
      * Initialize test data and stub necessary method calls.
      *
-     * @throws IOException
+     * @throws MalformedURLException
+     *             if the creation of the URL fails.
+     *
      */
     @Before
-    public void setup() throws IOException {
+    public void setup() throws MalformedURLException {
 
         this.changelogURL = new URL("http://" + DeploymentVisualizationStageTest.OUTPUT_HOSTNAME + ":"
                 + DeploymentVisualizationStageTest.OUTPUT_PORT + "/v1/systems/"
@@ -163,10 +164,9 @@ public class DeploymentVisualizationStageTest {
      * creating the serviceInstance (constraint on deployment visualization). A
      * {@link ServletDeployedEvent} is defined as input.
      *
-     * @throws IOException
      */
     @Test
-    public void checkServletChangelog() throws IOException {
+    public void checkServletChangelog() {
 
         StageTester.test(this.deploymentVisualizationStage).and().send(this.inputServletEvents)
                 .to(this.deploymentVisualizationStage.getInputPort()).start();

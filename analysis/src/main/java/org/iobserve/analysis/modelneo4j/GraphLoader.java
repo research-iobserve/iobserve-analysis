@@ -25,6 +25,9 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 /**
  * Used to load a {@link Graph} including each of the different PCM models.
  *
@@ -32,6 +35,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  *
  */
 public class GraphLoader {
+    private static final Log LOG = LogFactory.getLog(GraphLoader.class);
 
     protected static final String VERSION_PREFIX = "_v";
 
@@ -75,7 +79,7 @@ public class GraphLoader {
             try {
                 FileUtils.copyDirectory(currentGraphDir, newGraphDir);
             } catch (final IOException e) {
-                java.lang.System.err.println("Could not copy old graph version.");
+                GraphLoader.LOG.error("Could not copy old graph version.");
             }
         }
 

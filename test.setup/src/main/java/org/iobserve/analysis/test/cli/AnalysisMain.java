@@ -24,6 +24,8 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
@@ -33,6 +35,8 @@ import teetime.framework.Execution;
  * @author Reiner Jung
  */
 public final class AnalysisMain {
+
+    private static final Log LOG = LogFactory.getLog(AnalysisMain.class);
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Directory containing monitoring data.", converter = FileConverter.class)
@@ -55,7 +59,7 @@ public final class AnalysisMain {
             commander.parse(args);
             main.execute(commander);
         } catch (final ParameterException e) {
-            System.err.println(e.getLocalizedMessage());
+            AnalysisMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
@@ -69,18 +73,18 @@ public final class AnalysisMain {
                 final Configuration configuration = new ObservationConfiguration(monitoringDataDirectories,
                         this.outputLocation);
 
-                System.out.println("Analysis configuration");
+                AnalysisMain.LOG.info("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);
-                System.out.println("Analysis start");
+                AnalysisMain.LOG.info("Analysis start");
                 analysis.executeBlocking();
-                System.out.println("Anaylsis complete");
+                AnalysisMain.LOG.info("Anaylsis complete");
             } else {
-                System.err.println(
+                AnalysisMain.LOG.error(
                         "CLI error: Input path " + this.monitoringDataDirectory.getName() + " is not a directory.");
                 commander.usage();
             }
         } else {
-            System.err.println("CLI error: Output path " + this.outputLocation.getName() + " is not a directory.");
+            AnalysisMain.LOG.error("CLI error: Output path " + this.outputLocation.getName() + " is not a directory.");
             commander.usage();
         }
 

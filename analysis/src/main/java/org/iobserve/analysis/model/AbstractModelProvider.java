@@ -18,8 +18,8 @@ package org.iobserve.analysis.model;
 import java.io.IOException;
 import java.util.Map;
 
-import de.uka.ipd.sdq.identifier.Identifier;
-
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -29,6 +29,8 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+
+import de.uka.ipd.sdq.identifier.Identifier;
 
 /**
  * Base class for pcm model provider. Implements common methods for loading/saving pcm model.
@@ -46,6 +48,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
     private ModelSaveStrategy saveStrategy = ModelSaveStrategy.OVERRIDE;
     /** the model instance. */
     private T model;
+    private static final Logger LOG = LogManager.getLogger(AbstractModelProvider.class);
 
     /**
      * Create a model provider for the given. Uses {@link #MODEL_FILE_LOADER} as loader and
@@ -148,7 +151,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
         }
 
         if (this.model == null) {
-            System.out.printf("Model at %s could not be loaded!\n", this.uriModelInstance.toString());
+            AbstractModelProvider.LOG.debug("Model at " + this.uriModelInstance.toString() + "could not be loaded!\n");
         }
     }
 

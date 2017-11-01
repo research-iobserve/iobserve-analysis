@@ -25,6 +25,9 @@ import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.analysis.userbehavior.test.builder.SimpleSequenceReference;
 import org.junit.Test;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 /**
  * Test of the TEntryEventSequence filter.
  *
@@ -44,6 +47,8 @@ public final class TEntryEventSequenceTest {
 
     private static final String REFERENCE_USAGE_MODEL = TEntryEventSequenceTest.USAGE_MODEL_FOLDER
             + "ReferenceModel.usagemodel";
+
+    private static final Log LOG = LogFactory.getLog(TEntryEventSequenceTest.class);
 
     /**
      * Test class.
@@ -91,11 +96,11 @@ public final class TEntryEventSequenceTest {
             final double relativeMeasurementError = WorkloadEvaluation.calculateRME(behaviorModeling.getPcmUsageModel(),
                     referenceElements);
 
-            System.out.println("RME " + relativeMeasurementError);
+            TEntryEventSequenceTest.LOG.debug("RME " + relativeMeasurementError);
 
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), TEntryEventSequenceTest.OUTPUT_USAGE_MODEL);
 
-            System.out.println("Iteration :" + i + "/" + numberOfIterations);
+            TEntryEventSequenceTest.LOG.debug("Iteration :" + i + "/" + numberOfIterations);
         }
 
         TestHelper.writeAccuracyResults(results);

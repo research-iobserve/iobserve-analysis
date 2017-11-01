@@ -15,6 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.data;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 /**
  * It contains the results of the clustering: The assignments of the clustered data to the clusters
  * and the clustering metrics.
@@ -27,6 +30,7 @@ public class ClusteringResults {
     private final int numberOfClusters;
     private final int[] assignments;
     private final ClusteringMetrics clusteringMetrics;
+    private static final Log LOG = LogFactory.getLog(ClusteringResults.class);
 
     /**
      * Create a result node.
@@ -52,9 +56,11 @@ public class ClusteringResults {
      * Prints the clustering results.
      */
     public void printClusteringResults() {
-        System.out.println("#######################################");
-        System.out.println("Clustering method: " + this.clusteringMethod);
-        System.out.println("Number of clusters: " + this.numberOfClusters);
+        String logString = "";
+        logString += "#######################################";
+        logString += "Clustering method: " + this.clusteringMethod;
+        logString += "Number of clusters: " + this.numberOfClusters;
+        ClusteringResults.LOG.info(logString);
         this.clusteringMetrics.printSimilarityMetrics();
     }
 
