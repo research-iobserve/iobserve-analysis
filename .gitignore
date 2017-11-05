@@ -34,3 +34,7 @@ gradle.properties
 repos/
 *.log
 /analysis/res/working_dir/
+*.csv
+*.txt
+*.xlsx
+analysis/rac_creator/*
