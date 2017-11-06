@@ -56,8 +56,17 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
     };
 
     /** property name array. */
-    private static final String[] PROPERTY_NAMES = { "entryTime", "exitTime", "operationSignature", "classSignature",
-            "sessionId", "hostname", "parameters", "values", "requestType", };
+    private static final String[] PROPERTY_NAMES = { 
+        "entryTime", 
+        "exitTime", 
+        "operationSignature", 
+        "classSignature",
+        "sessionId", 
+        "hostname", 
+        "parameters", 
+        "values", 
+        "requestType", 
+    };
 
     /** property declarations. */
     private final String[] parameters;
@@ -163,9 +172,17 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
     @Override
     @Deprecated
     public Object[] toArray() {
-        return new Object[] { this.getEntryTime(), this.getExitTime(), this.getOperationSignature(),
-                this.getClassSignature(), this.getSessionId(), this.getHostname(), this.getParameters(),
-                this.getValues(), this.getRequestType() };
+        return new Object[] { 
+            this.getEntryTime(), 
+            this.getExitTime(), 
+            this.getOperationSignature(),
+            this.getClassSignature(), 
+            this.getSessionId(), 
+            this.getHostname(), 
+            this.getParameters(), 
+            this.getValues(), 
+            this.getRequestType() 
+        };
     }
 
     /**
@@ -310,5 +327,4 @@ public class PayloadAwareEntryCallEvent extends EntryCallEvent implements IPaylo
     public final int getRequestType() {
         return this.requestType;
     }
-
 }

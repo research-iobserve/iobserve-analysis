@@ -39,7 +39,8 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
             + TYPE_SIZE_STRING // ServerGeoLocation.address
     ;
 
-    public static final Class<?>[] TYPES = { long.class, // IEventRecord.timestamp
+    public static final Class<?>[] TYPES = { 
+            long.class, // IEventRecord.timestamp
             short.class, // GeoLocation.countryCode
             String.class, // ServerGeoLocation.hostname
             String.class, // ServerGeoLocation.address
@@ -136,7 +137,12 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
     @Override
     @Deprecated
     public Object[] toArray() {
-        return new Object[] { this.getTimestamp(), this.getCountryCode(), this.getHostname(), this.getAddress() };
+        return new Object[] { 
+            this.getTimestamp(), 
+            this.getCountryCode(), 
+            this.getHostname(), 
+            this.getAddress() 
+        };
     }
 
     /**
@@ -233,5 +239,4 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
     public final String getAddress() {
         return this.address;
     }
-
 }

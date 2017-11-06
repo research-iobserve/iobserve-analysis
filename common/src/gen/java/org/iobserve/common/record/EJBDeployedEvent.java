@@ -200,5 +200,4 @@ public class EJBDeployedEvent extends EJBDeploymentEvent implements IDeploymentR
             return false;
         return true;
     }
-
 }

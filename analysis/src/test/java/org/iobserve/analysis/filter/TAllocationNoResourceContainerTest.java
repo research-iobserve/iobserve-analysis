@@ -35,6 +35,7 @@ import org.mockito.Mockito;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -129,7 +130,7 @@ public class TAllocationNoResourceContainerTest {
 
         Mockito.when(ResourceEnvironmentModelBuilder.createResourceContainer(
                 TAllocationNoResourceContainerTest.testResourceEnvironment, TAllocationNoResourceContainerTest.SERVICE))
-                .thenReturn(TAllocationNoResourceContainerTest.testResourceContainer);
+                .thenReturn((ResourceContainerPrivacy) TAllocationNoResourceContainerTest.testResourceContainer);
 
         Mockito.doNothing().when(TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider)
                 .updateComponent(ResourceEnvironment.class, TAllocationNoResourceContainerTest.testResourceEnvironment);

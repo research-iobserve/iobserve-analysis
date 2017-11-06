@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
+
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -33,7 +34,9 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import kieker.common.record.flow.trace.TraceMetadata;
+
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 /**
  * TNetworkLink runs asynchronous from the other filters like TAllocation, TDeployment, TEntryCall ,
@@ -58,8 +61,9 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private final SystemModelProvider systemModelProvider;
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+    
     private static final Log LOG = LogFactory.getLog(TNetworkLink.class);
-
+    private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
     /**
      * Create new TNetworkLink filter.
      *
@@ -103,6 +107,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
         // build the model
         this.resourceEnvironmentModelProvider.save();
+        this.outputPortSnapshot.send(false);
     }
 
     /**
@@ -270,4 +275,12 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private static Optional<AssemblyConnector> tryCast(final Connector connector) {
         return connector instanceof AssemblyConnector ? Optional.of((AssemblyConnector) connector) : Optional.empty();
     }
+
+    
+    /**
+     * @return output port for snapshot filter stage
+     */
+	public OutputPort<Boolean> getOutputPortSnapshot() {
+		return this.outputPortSnapshot;
+	}
 }

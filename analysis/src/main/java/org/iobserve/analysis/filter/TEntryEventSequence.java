@@ -22,10 +22,12 @@ import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
+
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -58,6 +60,8 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
     private final RepositoryModelProvider repositoryModelProvider;
 
     private final OutputPort<UsageModel> outputPort;
+    
+    private final OutputPort<Boolean> outputPortSnapshot;
 
     private static final Log LOG = LogFactory.getLog(TEntryEventSequence.class);
 
@@ -89,6 +93,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
         this.closedWorkload = closedWorkload;
 
         this.outputPort = this.createOutputPort();
+        this.outputPortSnapshot = this.createOutputPort();
     }
 
     @Override
@@ -113,10 +118,22 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
         } catch (final IOException e) {
             e.printStackTrace();
         }
+        
+        // Sets the new usage model within iObserve
+		this.usageModelProvider.save();
+        
         this.outputPort.send(behaviorModeling.getPcmUsageModel());
+        this.outputPortSnapshot.send(false);
     }
 
     public OutputPort<UsageModel> getOutputPort() {
         return this.outputPort;
     }
+    
+    /**
+	 * @return output port for snapshot stage
+	 */
+	public OutputPort<Boolean> getOutputPortSnapshot() {
+		return this.outputPortSnapshot;
+	}
 }

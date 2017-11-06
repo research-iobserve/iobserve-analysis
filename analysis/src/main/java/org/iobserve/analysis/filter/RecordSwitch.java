@@ -24,6 +24,8 @@ import org.iobserve.common.record.IAllocationRecord;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.ServerGeoLocation;
+import org.iobserve.common.record.ServletTraceHelper;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.IFlowRecord;
@@ -32,9 +34,10 @@ import kieker.common.record.misc.KiekerMetadataRecord;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+
 /**
- * The record switch filter is used to scan the event stream and send events based on their type to
- * different output ports.
+ * The record switch filter is used to scan the event stream and send events
+ * based on their type to different output ports.
  *
  * @author Reiner Jung
  * @author Christoph Dornieden
@@ -56,6 +59,8 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     private final OutputPort<TraceMetadata> traceMetaPort = this.createOutputPort();
 
     private final OutputPort<ISessionEvent> sessionEventPort = this.createOutputPort();
+    /** output port for {@link ServerGeoLocation} */
+	private final OutputPort<ServerGeoLocation> geoLocationPort = this.createOutputPort();
 
     /** internal map to collect unknown record types. */
     private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<>();
@@ -78,12 +83,16 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
         }
         if (element instanceof IDeploymentRecord) {
             this.deploymentOutputPort.send((IDeploymentRecord) element);
+        } else if (element instanceof ServerGeoLocation) {
+            this.geoLocationPort.send((ServerGeoLocation) element);
         } else if (element instanceof ISessionEvent) {
             this.sessionEventPort.send((ISessionEvent) element);
         } else if (element instanceof IUndeploymentRecord) {
             this.undeploymentOutputPort.send((IUndeploymentRecord) element);
         } else if (element instanceof IAllocationRecord) {
             this.allocationOutputPort.send((IAllocationRecord) element);
+        } else if (element instanceof ServletTraceHelper) { // NOCS
+            // TODO this is later used to improve trace information
         } else if (element instanceof IFlowRecord) {
             this.flowOutputPort.send((IFlowRecord) element);
             if (element instanceof TraceMetadata) {
@@ -162,6 +171,13 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     public OutputPort<ISessionEvent> getSessionEventPort() {
         return this.sessionEventPort;
     }
+    
+    /**
+	 * @return serverGeoLocationPort
+	 */
+	public OutputPort<ServerGeoLocation> getGeoLocationPort() {
+		return this.geoLocationPort;
+	}
 
     public long getRecordCount() {
         return this.recordCount;

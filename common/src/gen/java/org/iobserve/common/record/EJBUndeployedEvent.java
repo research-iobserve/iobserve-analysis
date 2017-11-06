@@ -200,5 +200,4 @@ public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploym
             return false;
         return true;
     }
-
 }

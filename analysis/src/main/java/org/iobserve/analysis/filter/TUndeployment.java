@@ -64,6 +64,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
 
     private final OutputPort<RemoveAllocationContextEvent> modelOutputPort = this.createOutputPort();
     private final OutputPort<IUndeploymentRecord> visualizationOutputPort = this.createOutputPort();
+    private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -106,6 +107,7 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
         }
 
         ExecutionTimeLogger.getInstance().stopLogging(event);
+        this.outputPortSnapshot.send(false);
     }
 
     /**
@@ -218,6 +220,11 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
      */
     public OutputPort<IUndeploymentRecord> getVisualizationOutputPort() {
         return this.visualizationOutputPort;
+    }
+    
+    public OutputPort<Boolean> getOutputPortSnapshot()
+    {
+    	return this.outputPortSnapshot;
     }
 
 }

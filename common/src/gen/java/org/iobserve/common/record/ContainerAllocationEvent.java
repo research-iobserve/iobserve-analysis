@@ -176,5 +176,4 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
             return false;
         return true;
     }
-
 }

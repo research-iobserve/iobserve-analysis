@@ -200,5 +200,4 @@ public class ServletUndeployedEvent extends ServletDeploymentEvent implements IU
             return false;
         return true;
     }
-
 }

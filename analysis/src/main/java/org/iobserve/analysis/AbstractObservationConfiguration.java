@@ -21,6 +21,11 @@ import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
 import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
 import teetime.util.ConcurrentHashMapWithDefault;
 
+import org.iobserve.adaptation.AdaptationCalculation;
+import org.iobserve.adaptation.AdaptationExecution;
+import org.iobserve.adaptation.AdaptationPlanning;
+import org.iobserve.adaptation.IAdaptationEventListener;
+import org.iobserve.adaptation.SystemAdaptation;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
@@ -33,8 +38,6 @@ import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCr
 import org.iobserve.analysis.clustering.filter.models.configuration.examples.CoCoMEEntryCallRulesFactory;
 import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetStoreEntryCallRulesFactory;
 import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetstoreStrategy;
-import org.iobserve.analysis.filter.CollectUserSessionsFilter;
-import org.iobserve.analysis.filter.IEntryCallTraceMatcher;
 import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TAllocationFinished;
@@ -45,6 +48,8 @@ import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.filter.TimeTriggerFilter;
 import org.iobserve.analysis.filter.TraceAcceptanceFilter;
 import org.iobserve.analysis.filter.TraceOperationCleanupFilter;
+import org.iobserve.analysis.filter.CollectUserSessionsFilter;
+import org.iobserve.analysis.filter.IEntryCallTraceMatcher;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -52,11 +57,19 @@ import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceAcceptanceMatcher;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceSignatureCleanupRewriter;
+import org.iobserve.evaluation.ModelComparer;
+import org.iobserve.evaluation.SystemEvaluation;
+import org.iobserve.planning.CandidateGeneration;
+import org.iobserve.planning.CandidateProcessing;
+import org.iobserve.planning.ModelOptimization;
+import org.iobserve.planning.ModelProcessing;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.eclipse.emf.common.util.URI;
 
 import weka.core.ManhattanDistance;
 
@@ -82,7 +95,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
     protected final TAllocation tAllocationAfterDeploy;
 
     protected TUndeployment undeployment;
-
+    
     /**
      * Create a configuration with a ASCII file reader.
      *
@@ -118,16 +131,25 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            output mode
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
-            final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
+            final UsageModelProvider usageModelProvider, 
+            final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
             final AllocationModelProvider allocationModelProvider,
-            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider, 
+            final SystemModelProvider systemModelProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
-            final String visualizationServiceURL, final EAggregationType aggregationType,
-            final EOutputMode outputMode) {
-
+            final int varianceOfUserGroups, 
+            final int thinkTime, 
+            final boolean closedWorkload,
+            final String visualizationServiceURL, 
+            final EAggregationType aggregationType,
+            final EOutputMode outputMode,
+            final SnapshotBuilder snapshotBuilder, 
+            final URI perOpteryxHeadless, 
+            final URI lqnsDir, 
+            final IAdaptationEventListener eventListener,
+            final URI deployablesFolder) {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
@@ -206,7 +228,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         // repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
         // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
         // systemModelProvider, resourceEnvironmentModelProvider);
-
         /** -- end plain clustering. */
 
         /** dispatch different monitoring data. */
@@ -231,10 +252,26 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(traceAcceptanceFilter.getOutputPort(), traceOperationCleanupFilter.getInputPort());
         this.connectPorts(traceOperationCleanupFilter.getOutputPort(), collectUserSessions.getUserSessionInputPort());
         this.connectPorts(collectUserSessions.getOutputPort(), tBehaviorModelComparison.getInputPort());
+        
+        if(snapshotBuilder != null && perOpteryxHeadless != null && lqnsDir != null && deployablesFolder != null) {
+            // create filters for snapshot planning, evaluation and adaptation
+            final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless, lqnsDir),
+                    new ModelOptimization(), new CandidateProcessing());
+            // There is an AdaptionEventListener class, but in the previous implementation null was used instead.
+            final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(),
+                    new AdaptationPlanning(), new AdaptationExecution(eventListener, deployablesFolder));
+            final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
+            
+            // Path Snapshot => Planning
+            this.connectPorts(snapshotBuilder.getOutputPort(), candidateGenerator.getInputPort());
+            // Path Snapshot => Evaluation
+            this.connectPorts(snapshotBuilder.getEvaluationOutputPort(), systemEvaluator.getInputPort());
+            // Path Planning => Adaptation
+            this.connectPorts(candidateGenerator.getOutputPort(), systemAdaptor.getInputPort());
+        }
     }
 
     public RecordSwitch getRecordSwitch() {
         return this.recordSwitch;
     }
-
 }

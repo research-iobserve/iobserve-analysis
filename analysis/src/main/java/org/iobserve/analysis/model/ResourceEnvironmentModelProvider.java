@@ -17,38 +17,43 @@ package org.iobserve.analysis.model;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
+import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceenvironmentcloudPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
  * Model provider to provide {@link ResourceEnvironment} model.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
- *
+ * @author Philipp Weimann
  */
-public final class ResourceEnvironmentModelProvider extends AbstractModelProvider<ResourceEnvironment> {
+public class ResourceEnvironmentModelProvider extends AbstractModelProvider<ResourceEnvironment> {
 
-    /**
-     * Create model provider to provide {@link ResourceEnvironment} model.
-     *
-     * @param uriUsageModel
-     *            uri to the model
-     */
-    public ResourceEnvironmentModelProvider(final URI uriUsageModel) {
-        super(uriUsageModel);
-    }
+	/**
+	 * Create model provider to provide {@link ResourceEnvironment} model.
+	 *
+	 * @param uriUsageModel
+	 *            uri to the model
+	 */
+	public ResourceEnvironmentModelProvider(final URI uriUsageModel) {
+		super(uriUsageModel);
+		this.loadModel();
+	}
+	
+	public ResourceEnvironmentModelProvider() {
+		super();
+	}
 
-    @Override
-    public void resetModel() {
-        final ResourceEnvironment model = this.getModel();
-        model.getResourceContainer_ResourceEnvironment().clear();
-        model.getLinkingResources__ResourceEnvironment().clear();
-    }
+	@Override
+	public void resetModel() {
+		final ResourceEnvironment model = this.getModel();
+		model.getResourceContainer_ResourceEnvironment().clear();
+		model.getLinkingResources__ResourceEnvironment().clear();
+	}
 
-    @Override
-    protected EPackage getPackage() {
-        return ResourceenvironmentPackage.eINSTANCE;
-    }
+	@Override
+	protected EPackage getPackage() {
+		return ResourceenvironmentcloudPackage.eINSTANCE;
+	}
 
 }

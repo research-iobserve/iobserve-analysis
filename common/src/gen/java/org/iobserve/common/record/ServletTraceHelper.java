@@ -33,6 +33,7 @@ import kieker.common.record.flow.IFlowRecord;
  */
 public class ServletTraceHelper extends AbstractMonitoringRecord
         implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ITraceHelper, IFlowRecord {
+            
     private static final long serialVersionUID = 2363353535794190244L;
 
     /** Descriptive definition of the serialization size of the record. */
@@ -42,7 +43,8 @@ public class ServletTraceHelper extends AbstractMonitoringRecord
             + TYPE_SIZE_STRING // ServletTraceHelper.requestURI
     ;
 
-    public static final Class<?>[] TYPES = { long.class, // ITraceHelper.traceId
+    public static final Class<?>[] TYPES = { 
+            long.class, // ITraceHelper.traceId
             String.class, // ITraceHelper.host
             int.class, // ITraceHelper.port
             String.class, // ServletTraceHelper.requestURI
@@ -140,7 +142,12 @@ public class ServletTraceHelper extends AbstractMonitoringRecord
     @Override
     @Deprecated
     public Object[] toArray() {
-        return new Object[] { this.getTraceId(), this.getHost(), this.getPort(), this.getRequestURI() };
+        return new Object[] { 
+            this.getTraceId(), 
+            this.getHost(), 
+            this.getPort(), 
+            this.getRequestURI() 
+        };
     }
 
     /**
@@ -241,5 +248,4 @@ public class ServletTraceHelper extends AbstractMonitoringRecord
     public final String getRequestURI() {
         return this.requestURI;
     }
-
 }

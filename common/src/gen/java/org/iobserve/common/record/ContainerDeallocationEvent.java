@@ -176,5 +176,4 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
             return false;
         return true;
     }
-
 }

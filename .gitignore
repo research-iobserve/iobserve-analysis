@@ -38,6 +38,7 @@ rac.creator/mapping.rac
 rac.creator/unmapped.txt
 test.setup/kieker*tgz
 *.csv
+*.xlsx
 !/analysis/src/main/java/log4j2.properties
 
 
@@ -136,4 +137,3 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/eclipse,linux,windows
-
