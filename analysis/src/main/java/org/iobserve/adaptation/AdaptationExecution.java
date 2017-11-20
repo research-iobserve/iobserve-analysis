@@ -47,6 +47,8 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 
 		element.setDeployablesFolderURI(this.deployablesFolderURI);
 
+		element.setDeployablesFolderURI(this.deployablesFolderURI);
+
 		List<ActionScript> notAutoSupported = new ArrayList<>();
 		List<ActionScript> actionScripts = new ArrayList<>();
 

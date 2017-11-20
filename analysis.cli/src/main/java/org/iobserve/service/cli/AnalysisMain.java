@@ -28,6 +28,8 @@ import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -79,7 +81,7 @@ public final class AnalysisMain {
             "--closed-workload" }, required = false, description = "Closed workload.", converter = BooleanConverter.class)
     private boolean closedWorkload;
 
-@Parameter(names = { "-i",
+    @Parameter(names = { "-i",
             "--input" }, required = true, description = "Kieker monitoring data directory.", converter = FileConverter.class)
     private File monitoringDataDirectory;
 
@@ -101,23 +103,23 @@ public final class AnalysisMain {
     @Parameter(names = { "-m", "--aggregation-type" }, required = true, description = "Aggregation type.")
     private String aggregationTypeName;
     
-    @Parameter(names = { "-sl", "--snapshot-location" }, required = true, description = "snapshot save location")
+    @Parameter(names = { "-sl", "--snapshot-location" }, required = false, description = "snapshot save location")
     private String snapshotPath;
     
     @Parameter(names = { "-po",
-            "--perOpteryx-headless-location" }, required = true, description = "the location of the PerOpteryx headless plugin", converter = FileConverter.class)
+            "--perOpteryx-headless-location" }, required = false, description = "the location of the PerOpteryx headless plugin")
     private String perOpteryxUriPath;
     
     @Parameter(names = { "-l",
-            "--lqns-location" }, required = true, description = "the location of the LQN Solver for optimization", converter = FileConverter.class)
+            "--lqns-location" }, required = false, description = "the location of the LQN Solver for optimization")
     private String lqnsUriPath;
     
     @Parameter(names = { "-d",
-            "--deployables-folder" }, required = true, description = "the location of the deployable/executable scripts for adaptation execution", converter = FileConverter.class)
+            "--deployables-folder" }, required = false, description = "the location of the deployable/executable scripts for adaptation execution")
     private String deployablesFolderPath;
     
     @Parameter(names = { "-in",
-            "--interactive-adaptation" }, required = true, description = "interact with operator during adaptation", converter = FileConverter.class)
+            "--interactive-adaptation" }, required = false, description = "interact with operator during adaptation")
     private boolean interactiveMode;
 
     /**
@@ -215,11 +217,21 @@ public final class AnalysisMain {
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                     systemModelGraph);
             
-            SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(snapshotPath));
-            final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelProviderPlatform);
-            final URI perOpteryxUri = URI.createFileURI(perOpteryxUriPath);
-            final URI lqnsUri = URI.createFileURI(lqnsUriPath);
-            final URI deployablesFolder = URI.createFileURI(deployablesFolderPath);
+            final CloudProfileModelProvider cloudProfileModelProvider = 
+                    modelProviderPlatform.getCloudProfileModelProvider();
+			final CostModelProvider costModelProvider = modelProviderPlatform.getCostModelProvider();
+            
+            SnapshotBuilder snapshotBuilder = null;
+            URI perOpteryxUri = null;
+            URI lqnsUri = null;
+            URI deployablesFolder = null;
+            if(!snapshotPath.isEmpty() && !perOpteryxUriPath.isEmpty() && !lqnsUriPath.isEmpty() && !deployablesFolderPath.isEmpty()) {
+                SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(snapshotPath));
+                snapshotBuilder = new SnapshotBuilder("Runtime", modelProviderPlatform);
+                perOpteryxUri = URI.createFileURI(perOpteryxUriPath);
+                lqnsUri = URI.createFileURI(lqnsUriPath);
+                deployablesFolder = URI.createFileURI(deployablesFolderPath);
+            }
             final CLIEventListener eventListener = new CLIEventListener(interactiveMode);
             
             final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
@@ -227,7 +239,8 @@ public final class AnalysisMain {
                     resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
                     systemModelProvider, systemModelGraphProvider, this.varianceOfUserGroups, this.thinkTime,
                     this.closedWorkload, this.visualizationServiceURL, aggregationType, outputMode, snapshotBuilder,
-                    perOpteryxUri, lqnsUri, eventListener, deployablesFolder);
+                    cloudProfileModelProvider, costModelProvider, perOpteryxUri, lqnsUri, eventListener, 
+                    deployablesFolder);
 
             AnalysisMain.LOG.info("Analysis configuration");
             final Execution<Configuration> analysis = new Execution<>(configuration);

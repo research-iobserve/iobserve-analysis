@@ -23,6 +23,8 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -213,6 +215,10 @@ public final class AnalysisMain {
                     AnalysisMain.LOG.debug("deploymentVisualization.initialize() went wrong!", e);
                 }
                 
+                final CloudProfileModelProvider cloudProfileModelProvider = modelProvider
+                        .getCloudProfileModelProvider();
+                final CostModelProvider costModelProvider = modelProvider.getCostModelProvider();
+                
                 SnapshotBuilder snapshotBuilder = null;
                 URI perOpteryxUri = null;
                 URI lqnsUri = null;
@@ -231,7 +237,8 @@ public final class AnalysisMain {
                         allocationModelProvider, systemModelProvider, resourceEnvironmentModelGraphProvider, 
                         resourceContainerModelGraphProvider, allocationModelGraphProvider, assemblyContextModelGraphProvider,
                         systemModelGraphProvider, assCtxSystemModelGraphProvider, this.visualizationServiceURL,
-                        snapshotBuilder, perOpteryxUri, lqnsUri, deployablesFolder);
+                        snapshotBuilder, cloudProfileModelProvider, costModelProvider, perOpteryxUri, lqnsUri, 
+                        deployablesFolder);
 
                 AnalysisMain.LOG.info("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);

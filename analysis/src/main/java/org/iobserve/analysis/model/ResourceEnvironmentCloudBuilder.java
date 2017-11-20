@@ -21,14 +21,14 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 public class ResourceEnvironmentCloudBuilder {
 
 	// 100 ms latency is a conservative value
-	private static final double DEFAULT_LATENCY = 100;
+	private static final double DEFAULT_LATENCY = 0.1;
 
 	// Cloud providers normally have fast internet connections, so 100 Mbps as
 	// default throughput should be ok
 	private static final double DEFAULT_THROUGHPUT = 100000000;
 
-	// Default failure probability is 10%
-	private static final double DEFAULT_FAILURE_PROB = 0.1;
+	// Default failure probability is 0.1%
+	private static final double DEFAULT_FAILURE_PROB = 0.001;
 
 	/**
 	 * Creates a new processing resource specification for the given resource

@@ -1,7 +1,7 @@
 package org.iobserve.planning;
 
-import org.apache.log4j.Logger;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.utils.AbstractLinearComposition;
@@ -17,7 +17,7 @@ import org.iobserve.analysis.utils.AbstractLinearComposition;
 public class CandidateGeneration extends AbstractLinearComposition<URI, AdaptationData> {
 
 	protected static final Logger LOG = LogManager.getLogger(CandidateGeneration.class);
-	
+
 	/**
 	 * The constructor for the model creation part.
 	 *
@@ -28,8 +28,8 @@ public class CandidateGeneration extends AbstractLinearComposition<URI, Adaptati
 	 * @param candidateProcessor
 	 *            the processor for the generated candidate
 	 */
-	public CandidateGeneration(ModelProcessing modelPreProcessor, ModelOptimization modelOptimizer,
-			CandidateProcessing candidateProcessor) {
+	public CandidateGeneration(final ModelProcessing modelPreProcessor, final ModelOptimization modelOptimizer,
+			final CandidateProcessing candidateProcessor) {
 		super(modelPreProcessor.getInputPort(), candidateProcessor.getOutputPort());
 
 		this.connectPorts(modelPreProcessor.getOutputPort(), modelOptimizer.getInputPort());

@@ -37,21 +37,21 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 	}
 
 	private boolean isWindows() {
-		final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+		boolean isWindows = System.getProperty("os.name").startsWith("Windows");
 		return isWindows;
 	}
 
 	@Override
 	public void watch(final Process process) throws InterruptedException {
-		final Thread watcherThread = new Thread(() -> {
-			final BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+		Thread watcherThread = new Thread(() -> {
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			String line = null;
 			try {
 				while ((line = input.readLine()) != null) {
 					System.err.println("PerOpteryx Output: " + line);
 					// LOG.info("PerOpteryx Output: " + line);
 				}
-			} catch (final IOException e) {
+			} catch (IOException e) {
 				System.err.println("Watcher Thread terminated");
 				// LOG.error("IOException during PerOpteryx run: " +
 				// e.getStackTrace());
@@ -68,13 +68,13 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
 	@Override
 	public ProcessBuilder createProcess() {
 		LOG.info("Starting optimization process...");
-		final String modelDir = this.getInputModelDir().toFileString();
+		String modelDir = this.getInputModelDir().toFileString();
 
-		final ProcessBuilder builder = new ProcessBuilder(this.execEnvironment, this.execEnvironmentParam,
+		ProcessBuilder builder = new ProcessBuilder(this.execEnvironment, this.execEnvironmentParam,
 				this.execCommand + " -w " + modelDir);
 
-		final String perOpteryxDir = this.getPerOpteryxDir().toFileString();
-		final Map<String, String> env = builder.environment();
+		String perOpteryxDir = this.getPerOpteryxDir().toFileString();
+		Map<String, String> env = builder.environment();
 
 		String path;
 		if (this.isWindows()) {

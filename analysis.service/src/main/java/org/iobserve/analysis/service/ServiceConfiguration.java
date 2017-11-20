@@ -23,6 +23,8 @@ import org.iobserve.analysis.MultiInputObservationConfiguration;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -108,6 +110,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider, 
             final String visualizationServiceURL,
             final SnapshotBuilder snapshotBuilder, 
+            final CloudProfileModelProvider cloudProfileModelProvider,
+            final CostModelProvider costModelProvider,
             final URI perOpteryxDir, 
             final URI lqnsDir, 
             final URI deployablesFolder)
@@ -116,12 +120,12 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
                 resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider, allocationModelProvider,
                 allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
-                EOutputMode.UBM_VISUALIZATION, snapshotBuilder, perOpteryxDir, lqnsDir, deployablesFolder);
+                EOutputMode.UBM_VISUALIZATION, snapshotBuilder, cloudProfileModelProvider, costModelProvider, 
+                perOpteryxDir, lqnsDir, deployablesFolder);
 
-
-        final URL url = new URL(
-                "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
-
+		final URL url = new URL(
+				"http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
+		
         final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(url,
                 systemId, resourceContainerModelGraphProvider, assemblyContextModelGraphProvider, correspondenceModel);
         final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,

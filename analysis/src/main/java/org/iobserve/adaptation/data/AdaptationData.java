@@ -53,7 +53,7 @@ public class AdaptationData {
 	 * @param runtimeModelURI
 	 *            the runtimeModelURI to set
 	 */
-	public void setRuntimeModelURI(URI runtimeModelURI) {
+	public void setRuntimeModelURI(final URI runtimeModelURI) {
 		this.runtimeModelURI = runtimeModelURI;
 	}
 
@@ -68,7 +68,7 @@ public class AdaptationData {
 	 * @param runtimeGraph
 	 *            the runtimeGraph to set
 	 */
-	public void setRuntimeGraph(ModelGraph runtimeGraph) {
+	public void setRuntimeGraph(final ModelGraph runtimeGraph) {
 		this.runtimeGraph = runtimeGraph;
 	}
 
@@ -83,7 +83,7 @@ public class AdaptationData {
 	 * @param reDeploymentURI
 	 *            the reDeploymentURI to set
 	 */
-	public void setReDeploymentURI(URI reDeploymentURI) {
+	public void setReDeploymentURI(final URI reDeploymentURI) {
 		this.reDeploymentURI = reDeploymentURI;
 	}
 
@@ -98,7 +98,7 @@ public class AdaptationData {
 	 * @param reDeploymentGraph
 	 *            the reDeploymentGraph to set
 	 */
-	public void setReDeploymentGraph(ModelGraph reDeploymentGraph) {
+	public void setReDeploymentGraph(final ModelGraph reDeploymentGraph) {
 		this.reDeploymentGraph = reDeploymentGraph;
 	}
 
@@ -113,7 +113,7 @@ public class AdaptationData {
 	 * @param acActions
 	 *            the acActions to set
 	 */
-	public void setAcActions(List<AssemblyContextAction> acActions) {
+	public void setAcActions(final List<AssemblyContextAction> acActions) {
 		this.acActions = acActions;
 	}
 
@@ -128,7 +128,7 @@ public class AdaptationData {
 	 * @param rcActions
 	 *            the rcActions to set
 	 */
-	public void setRcActions(List<ResourceContainerAction> rcActions) {
+	public void setRcActions(final List<ResourceContainerAction> rcActions) {
 		this.rcActions = rcActions;
 	}
 
@@ -143,7 +143,7 @@ public class AdaptationData {
 	 * @param executionOrder
 	 *            the executionOrder to set
 	 */
-	public void setExecutionOrder(List<Action> executionOrder) {
+	public void setExecutionOrder(final List<Action> executionOrder) {
 		this.executionOrder = executionOrder;
 	}
 
@@ -151,7 +151,7 @@ public class AdaptationData {
 		return this.deployablesFolderURI;
 	}
 
-	public void setDeployablesFolderURI(URI deployablesFolderURI) {
+	public void setDeployablesFolderURI(final URI deployablesFolderURI) {
 		this.deployablesFolderURI = deployablesFolderURI;
 	}
 

@@ -22,6 +22,8 @@ import java.util.Optional;
 import teetime.framework.test.StageTester;
 
 import org.hamcrest.core.Is;
+import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.common.record.ContainerAllocationEvent;
@@ -55,6 +57,8 @@ public class TAllocationResourceContainerTest {
 
     /** mocks. */
     private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static CloudProfileModelProvider mockedCloudProfileModelProvider;
+    private static CostModelProvider mockedCostModelProvider;
 
     /** test event. */
     private static ContainerAllocationEvent allocationEvent;
@@ -114,9 +118,15 @@ public class TAllocationResourceContainerTest {
         /** mock for new graph provider */
         TAllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito
                 .mock(ModelProvider.class);
+        TAllocationResourceContainerTest.mockedCloudProfileModelProvider = Mockito
+                .mock(CloudProfileModelProvider.class);
+        TAllocationResourceContainerTest.mockedCostModelProvider = Mockito
+                .mock(CostModelProvider.class);
 
         this.tAllocation = new TAllocation(
-                TAllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
+                TAllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider,
+                TAllocationResourceContainerTest.mockedCloudProfileModelProvider,
+                TAllocationResourceContainerTest.mockedCostModelProvider);
 
         Mockito.when(TAllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .readOnlyRootComponent(ResourceEnvironment.class))

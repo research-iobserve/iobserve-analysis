@@ -10,15 +10,14 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.gradle.internal.impldep.com.esotericsoftware.minlog.Log;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.graph.GraphFactory;
 
 public class EvaluationGeneration {
 
-	 private static final Logger LOG = LogManager.getLogger(EvaluationGeneration.class);
+	private static final Logger LOG = LogManager.getLogger(EvaluationGeneration.class);
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 
 		final CommandLineParser parser = new DefaultParser();
 		try {
@@ -52,14 +51,16 @@ public class EvaluationGeneration {
 		}
 	}
 
-	private static void clearDirectory(String fileURI) {
+	private static void clearDirectory(final String fileURI) {
 		LOG.info("Clearing output folder: " + fileURI);
 		File outputDir = new File(fileURI);
 
 		if (outputDir.exists()) {
-			for (File file : outputDir.listFiles())
-				if (!file.isDirectory())
+			for (File file : outputDir.listFiles()) {
+				if (!file.isDirectory()) {
 					file.delete();
+				}
+			}
 		}
 	}
 

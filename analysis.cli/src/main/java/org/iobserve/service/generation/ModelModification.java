@@ -22,7 +22,7 @@ public class ModelModification {
 
 	private static final Logger LOG = LogManager.getLogger(ModelModification.class);
 
-	public static void createNewModel(CommandLine commandLine) throws InitializationException, IOException {
+	public static void createNewModel(final CommandLine commandLine) throws InitializationException, IOException {
 		LOG.info("Modifying model!");
 
 		URI inputModels = URI.createFileURI(commandLine.getOptionValue("i"));
@@ -94,7 +94,7 @@ public class ModelModification {
 	/*
 	 * Copys all files to the given output location.
 	 */
-	private static URI copyRepoToOutput(URI outputLocation, InitializeModelProviders modelProviders) {
+	private static URI copyRepoToOutput(final URI outputLocation, final InitializeModelProviders modelProviders) {
 		SnapshotBuilder.setBaseSnapshotURI(outputLocation);
 		SnapshotBuilder snapshotBuilder;
 		URI snapshotURI = null;

@@ -11,6 +11,7 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelBuilder;
 import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.DesignDecisionModelBuilder;
 import org.iobserve.analysis.model.DesignDecisionModelProvider;
@@ -27,6 +28,7 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProvider;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudResourceType;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.VMType;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -132,6 +134,7 @@ public class ModelTransformer {
 	}
 
 	private void clearUnneededElements() {
+		this.clearCosts();
 		this.clearCloudResourcesFromResourceEnv();
 		this.clearAllocationContexts();
 	}
@@ -139,6 +142,18 @@ public class ModelTransformer {
 	private void rebuildEnvironment() {
 		for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
 			final AllocationContext representingContext = allocationGroup.getRepresentingContext();
+
+			// Set assembly context from allocation group to the context from the processed model
+			final org.palladiosimulator.pcm.system.System system = this.processedModelProviders.getSystemModelProvider().getModel();
+			final AssemblyContext representedAsmCtx = system.getAssemblyContexts__ComposedStructure().stream().filter(
+					ctx -> representingContext.getAssemblyContext_AllocationContext().getId().equals(ctx.getId()))
+					.findFirst().orElse(null);
+
+			if (representedAsmCtx == null) {
+				throw new RuntimeException("There was something wrong with the system model. Please check your models.");
+			}
+
+			representingContext.setAssemblyContext_AllocationContext(representedAsmCtx);
 
 			this.createResourcesAndReplicationDegrees(this.decisionProvider.getModel(), allocationGroup);
 
@@ -207,6 +222,13 @@ public class ModelTransformer {
 					ResourceContainerCloud createdContainer;
 					if (this.isSameVMType(cloudVM, representingContainer)) {
 						createdContainer = representingContainer;
+						// If we just use the container, the references in the
+						// resulting environment would point to the original cloudprofile
+						createdContainer.setInstanceType(cloudVM);
+
+						CostModelBuilder.createFixedProcessingResourceCost(costs, 0.0, cloudVM.getPricePerHour(),
+								createdContainer.getActiveResourceSpecifications_ResourceContainer().get(0));
+
 						degreeName = String.format("%s_ReplicationDegree", allocationGroup.getName());
 					} else {
 						final String containerName = AllocationGroup.getAllocationGroupName(
@@ -231,6 +253,10 @@ public class ModelTransformer {
 
 	private void clearAllocationContexts() {
 		this.allocationProvider.resetModel();
+	}
+
+	private void clearCosts() {
+		this.costProvider.resetModel();
 	}
 
 	private void clearCloudResourcesFromResourceEnv() {

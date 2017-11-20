@@ -12,29 +12,26 @@ import teetime.stage.basic.AbstractTransformation;
  * is OS independent.
  *
  * @author Philipp Weimann
+ * @author Tobias Pöppke
  */
 public class ModelOptimization extends AbstractTransformation<PlanningData, PlanningData> {
 
 	private final static int EXEC_SUCCESS = 0;
-	private final static int EXEC_ERROR = 1;
 
 	@Override
-	protected void execute(PlanningData planningData) throws Exception {
-		CandidateGeneration.LOG.info("Model Optimizing");
+	protected void execute(final PlanningData planningData) throws Exception {
 
-		URI inputModelDir = planningData.getAdaptationData().getRuntimeModelURI();
-		AdaptationData adaptationData = planningData.getAdaptationData();
+		final URI inputModelDir = planningData.getProcessedModelDir();
+		final AdaptationData adaptationData = planningData.getAdaptationData();
 
-		ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir(), planningData.getLqnsDir());
+		final ExecutionWrapper exec = new ExecutionWrapper(inputModelDir, planningData.getPerOpteryxDir(), planningData.getLqnsDir());
 
-		int result = 2;//exec.startModelGeneration();
+		final int result = exec.startModelGeneration();
 
 		if (result != EXEC_SUCCESS) {
-			//adaptationData.setReDeploymentURI(URI.createFileURI("C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\processedModel\\PerOpteryx_results\\costOptimalModel"));
 			throw new RuntimeException("PerOpteryx exited with error code " + result);
-			//String uriString = "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\Test";
-
-			//adaptationData.setReDeploymentURI(URI.createFileURI(uriString));
+		} else {
+			adaptationData.setReDeploymentURI(planningData.getProcessedModelDir());
 		}
 
 		this.outputPort.send(planningData);

@@ -112,10 +112,10 @@ public final class ModelHelper {
 	 *            the name of this container
 	 * @return the newly created resource container
 	 */
-	public static ResourceContainerCloud createResourceContainerFromVMType(ResourceEnvironment environment,
-			CostRepository costRepository, VMType cloudVM, String containerName) {
+	public static ResourceContainerCloud createResourceContainerFromVMType(final ResourceEnvironment environment,
+	        final CostRepository costRepository, final VMType cloudVM, final String containerName) {
 		ResourceContainerCloud container = ResourceEnvironmentCloudBuilder.createResourceContainer(environment,
-				containerName);
+		        containerName);
 
 		container.setId(EcoreUtil.generateUUID());
 		container.setResourceEnvironment_ResourceContainer(environment);
@@ -130,7 +130,7 @@ public final class ModelHelper {
 
 		// Create processing resource and costs
 		ProcessingResourceSpecification processor = ResourceEnvironmentCloudBuilder.createProcessingResource(nrOfCores,
-				processingRate, container);
+		        processingRate, container);
 		container.getActiveResourceSpecifications_ResourceContainer().add(processor);
 		// TODO HDD is not used by peropteryx?
 
@@ -148,7 +148,8 @@ public final class ModelHelper {
 	 * @param container
 	 *            the container to add
 	 */
-	public static void addResourceContainerToEnvironment(ResourceEnvironment environment, ResourceContainer container) {
+	public static void addResourceContainerToEnvironment(final ResourceEnvironment environment,
+	        final ResourceContainer container) {
 		environment.getResourceContainer_ResourceEnvironment().add(container);
 
 		LinkingResource linkingResource = getInternetLinkingResource(environment);
@@ -164,16 +165,17 @@ public final class ModelHelper {
 	 * @param decisionSpace
 	 *            the decision space
 	 */
-	public static void addAllAllocationsToReplicationDegrees(Allocation allocation, DecisionSpace decisionSpace) {
+	public static void addAllAllocationsToReplicationDegrees(final Allocation allocation,
+	        final DecisionSpace decisionSpace) {
 		List<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
 
 		for (ResourceContainerReplicationDegree dof : ModelHelper.getAllDegreesOf(decisionSpace,
-				ResourceContainerReplicationDegree.class)) {
+		        ResourceContainerReplicationDegree.class)) {
 			dof.getChangeableElements().addAll(allocationContexts);
 		}
 	}
 
-	private static float getProcessingRate(VMType cloudVM) {
+	private static float getProcessingRate(final VMType cloudVM) {
 		float processingRate = cloudVM.getMinProcessingRate();
 		if (processingRate < 0) {
 			processingRate = cloudVM.getMaxProcessingRate();
@@ -182,7 +184,7 @@ public final class ModelHelper {
 		return processingRate * 1000000000;
 	}
 
-	private static int getNrOfCores(VMType cloudVM) {
+	private static int getNrOfCores(final VMType cloudVM) {
 		int nrOfCores = cloudVM.getMinCores();
 		if (nrOfCores < 0) {
 			nrOfCores = cloudVM.getMaxCores();
@@ -200,10 +202,10 @@ public final class ModelHelper {
 	 *            the class of degree to look for
 	 * @return a list of degrees of the requested type
 	 */
-	public static <T extends DegreeOfFreedomInstance> List<T> getAllDegreesOf(DecisionSpace decisionSpace,
-			Class<T> degreeClass) {
+	public static <T extends DegreeOfFreedomInstance> List<T> getAllDegreesOf(final DecisionSpace decisionSpace,
+	        final Class<T> degreeClass) {
 		List<T> results = decisionSpace.getDegreesOfFreedom().stream().filter(degreeClass::isInstance)
-				.map(degreeClass::cast).collect(Collectors.toList());
+		        .map(degreeClass::cast).collect(Collectors.toList());
 		return results;
 	}
 
@@ -222,7 +224,7 @@ public final class ModelHelper {
 	 *            the model providers with an initialized resource environment,
 	 *            cost model and cloud profile
 	 */
-	public static void fillResourceEnvironmentFromCloudProfile(InitializeModelProviders modelProviders) {
+	public static void fillResourceEnvironmentFromCloudProfile(final InitializeModelProviders modelProviders) {
 		ResourceEnvironmentModelProvider resourceProvider = modelProviders.getResourceEnvironmentModelProvider();
 		CloudProfileModelProvider cloudProfileProvider = modelProviders.getCloudProfileModelProvider();
 		CostModelProvider costProvider = modelProviders.getCostModelProvider();
@@ -251,7 +253,7 @@ public final class ModelHelper {
 	 *            the cloud container
 	 * @return the group name of this container
 	 */
-	public static String getGroupName(ResourceContainerCloud cloudContainer) {
+	public static String getGroupName(final ResourceContainerCloud cloudContainer) {
 		String groupName = cloudContainer.getGroupName();
 		if ((groupName == null) || groupName.trim().isEmpty()) {
 			groupName = cloudContainer.getEntityName();
@@ -269,7 +271,7 @@ public final class ModelHelper {
 	 *            the container for which to create the hostname
 	 * @return the hostname
 	 */
-	public static String getHostname(ResourceContainerCloud container) {
+	public static String getHostname(final ResourceContainerCloud container) {
 		return String.format("%s_%s", container.getId(), getGroupName(container));
 	}
 
@@ -287,8 +289,9 @@ public final class ModelHelper {
 	 *            the hostname to convert
 	 * @return the new cloud container or null in case of a problem
 	 */
-	public static ResourceContainerCloud getResourceContainerFromHostname(InitializeModelProviders modelProviders,
-			String hostname) {
+	public static ResourceContainerCloud getResourceContainerFromHostname(
+	        final ResourceEnvironment model, final CostModelProvider costProvider,
+	        final CloudProfileModelProvider cloudProfileProvider, final String hostname) {
 		String[] nameParts = hostname.split("_");
 
 		VMType vmType = null;
@@ -301,14 +304,14 @@ public final class ModelHelper {
 			String location = nameParts[3];
 			String instanceType = nameParts[4];
 
-			vmType = getVMType(modelProviders.getCloudProfileModelProvider(), providerName, location, instanceType);
+			vmType = getVMType(cloudProfileProvider, providerName, location, instanceType);
 
 			if (vmType != null) {
-				ResourceEnvironment environment = modelProviders.getResourceEnvironmentModelProvider().getModel();
-				CostRepository costRepository = modelProviders.getCostModelProvider().getModel();
+				ResourceEnvironment environment = model;
+				CostRepository costRepository = costProvider.getModel();
 
-				ResourceContainerCloud cloudContainer = createResourceContainerFromVMType(
-						environment, costRepository, vmType, hostname);
+				ResourceContainerCloud cloudContainer = createResourceContainerFromVMType(environment, costRepository,
+				        vmType, hostname);
 				cloudContainer.setGroupName(groupName);
 				return cloudContainer;
 			}
@@ -316,19 +319,19 @@ public final class ModelHelper {
 		return null;
 	}
 
-	private static VMType getVMType(CloudProfileModelProvider cloudProfileProvider, String cloudProviderName,
-			String location, String instanceType) {
+	private static VMType getVMType(final CloudProfileModelProvider cloudProfileProvider,
+	        final String cloudProviderName, final String location, final String instanceType) {
 		CloudProfile profile = cloudProfileProvider.getModel();
 
 		CloudProvider cloudProvider = profile.getCloudProviders().stream()
-				.filter(provider -> provider.getName().equals(cloudProviderName)).findFirst().orElse(null);
+		        .filter(provider -> provider.getName().equals(cloudProviderName)).findFirst().orElse(null);
 
 		if (cloudProvider != null) {
 			VMType vmType = cloudProvider.getCloudResources().stream()
-					.filter(resource -> ((resource instanceof VMType)
-							&& ((VMType) resource).getLocation().equals(location)
-							&& ((VMType) resource).getName().equals(instanceType)))
-					.map(resource -> (VMType) resource).findFirst().orElse(null);
+			        .filter(resource -> ((resource instanceof VMType)
+			                && ((VMType) resource).getLocation().equals(location)
+			                && ((VMType) resource).getName().equals(instanceType)))
+			        .map(resource -> (VMType) resource).findFirst().orElse(null);
 			return vmType;
 		}
 		return null;

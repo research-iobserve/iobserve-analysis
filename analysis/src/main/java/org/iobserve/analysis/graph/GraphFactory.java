@@ -43,7 +43,7 @@ public class GraphFactory {
 	public GraphFactory() {
 	}
 
-	public ModelGraph buildGraph(InitializeModelProviders modelProvider) throws Exception {
+	public ModelGraph buildGraph(final InitializeModelProviders modelProvider) throws Exception {
 		this.init(modelProvider);
 
 		this.extractAssemblyContexts(this.modelProvider.getSystemModelProvider());
@@ -58,7 +58,7 @@ public class GraphFactory {
 	/*
 	 * Prepare all data structures.
 	 */
-	private void init(InitializeModelProviders modelProvider) {
+	private void init(final InitializeModelProviders modelProvider) {
 		this.modelProvider = modelProvider;
 
 		this.assemblyContexts = new HashMap<String, AssemblyContext>();
@@ -72,7 +72,7 @@ public class GraphFactory {
 	/*
 	 * Extract Information Helpers
 	 */
-	private void extractAssemblyContexts(SystemModelProvider sysModelProv) {
+	private void extractAssemblyContexts(final SystemModelProvider sysModelProv) {
 		org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
 		EList<AssemblyContext> assemblyContexts = sysModel.getAssemblyContexts__ComposedStructure();
 		Set<String> acs = new HashSet<String>();
@@ -85,7 +85,7 @@ public class GraphFactory {
 		LOG.info("Individual Assembly Contexts found in System Model: " + acs.size());
 	}
 
-	private void extractAssemblyConnectors(SystemModelProvider sysModelProv) {
+	private void extractAssemblyConnectors(final SystemModelProvider sysModelProv) {
 		org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
 		EList<Connector> connectors = sysModel.getConnectors__ComposedStructure();
 
@@ -118,7 +118,7 @@ public class GraphFactory {
 		LOG.info("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
 	}
 
-	private void updatePrivacyLvl(AssemblyConnectorPrivacy acp, DataPrivacyLvl assemblyConnectorPrivacyLvl, String assemblyContext_ID) {
+	private void updatePrivacyLvl(final AssemblyConnectorPrivacy acp, final DataPrivacyLvl assemblyConnectorPrivacyLvl, final String assemblyContext_ID) {
 		// Check whether the AssemblyContext was found while extracting
 		AssemblyContext assemblyContext = this.assemblyContexts.get(assemblyContext_ID);
 		if (assemblyContext == null) {
@@ -140,7 +140,7 @@ public class GraphFactory {
 		this.assemblyContextPrivacyLvl.put(assemblyContext_ID, currentDataLevelPrivacy);
 	}
 
-	private void extractResourceContainers(ResourceEnvironmentModelProvider resEnvModelProv) {
+	private void extractResourceContainers(final ResourceEnvironmentModelProvider resEnvModelProv) {
 		ResourceEnvironment resEnvModel = resEnvModelProv.getModel();
 		EList<ResourceContainer> resourceContainers = resEnvModel.getResourceContainer_ResourceEnvironment();
 		for (ResourceContainer resourceContainer : resourceContainers) {
@@ -152,7 +152,7 @@ public class GraphFactory {
 		}
 	}
 
-	private void extractAllocations(AllocationModelProvider allocationModelProv) {
+	private void extractAllocations(final AllocationModelProvider allocationModelProv) {
 		Allocation allocation = allocationModelProv.getModel();
 		EList<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
 
@@ -175,8 +175,9 @@ public class GraphFactory {
 				correctIDs = false;
 			}
 
-			if (correctIDs)
+			if (correctIDs) {
 				this.ac2rcMap.put(assemblyContext.getId(), resContainer.getId());
+			}
 		}
 	}
 

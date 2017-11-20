@@ -24,11 +24,12 @@ import teetime.framework.OutputPort;
  * @author Philipp Weimann
  */
 public class SnapshotBuilder extends AbstractStage {
-	
+
 	protected static final Logger LOG = LogManager.getLogger(SnapshotBuilder.class);
 
 	private static URI baseSnapshotLocation = null;
-	private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES };
+	private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING,
+			StandardCopyOption.COPY_ATTRIBUTES };
 
 	private static boolean createSnapshot;
 	private static boolean evaluationMode;
@@ -48,11 +49,14 @@ public class SnapshotBuilder extends AbstractStage {
 	 *            the source pcm models
 	 * @throws InitializationException
 	 */
-	public SnapshotBuilder(final String subURI, final InitializeModelProviders modelProviders) throws InitializationException {
+	public SnapshotBuilder(final String subURI, final InitializeModelProviders modelProviders)
+			throws InitializationException {
 		super();
 
-		if (SnapshotBuilder.baseSnapshotLocation == null)
-			throw new InitializationException("Intitialize baseSnapshotLocation via setBaseSnapshotURI(...) first, befor calling the constructor!");
+		if (SnapshotBuilder.baseSnapshotLocation == null) {
+			throw new InitializationException(
+					"Intitialize baseSnapshotLocation via setBaseSnapshotURI(...) first, befor calling the constructor!");
+		}
 
 		SnapshotBuilder.createSnapshot = false;
 		this.snapshotURI = SnapshotBuilder.baseSnapshotLocation.appendSegment(subURI);
@@ -60,10 +64,9 @@ public class SnapshotBuilder extends AbstractStage {
 
 		String fileString = this.snapshotURI.toFileString();
 		File baseFolder = new File(fileString);
-		if (!baseFolder.exists())
+		if (!baseFolder.exists()) {
 			baseFolder.mkdirs();
-		else
-		{
+		} else {
 			for (File file : baseFolder.listFiles())
 				if (!file.isDirectory())
 					file.delete();
@@ -76,7 +79,7 @@ public class SnapshotBuilder extends AbstractStage {
 		// List<InputPort<?>> inputPorts = super.getInputPorts();
 		// Boolean createSnapshot = this.inputPort.receive();
 
-		if (SnapshotBuilder.createSnapshot) {		
+		if (SnapshotBuilder.createSnapshot) {
 			this.createSnapshot();
 			SnapshotBuilder.createSnapshot = false;
 
@@ -90,7 +93,7 @@ public class SnapshotBuilder extends AbstractStage {
 
 	public URI createSnapshot() throws IOException {
 		LOG.info("Creating Snapshot: \t" + this.snapshotURI.toFileString());
-		
+
 		this.createModelSnapshot(this.modelProviders.getAllocationModelProvider());
 		this.createModelSnapshot(this.modelProviders.getRepositoryModelProvider());
 		this.createModelSnapshot(this.modelProviders.getResourceEnvironmentModelProvider());
@@ -106,13 +109,13 @@ public class SnapshotBuilder extends AbstractStage {
 
 	/**
 	 * Creates the actual snapshot.
-	 * 
+	 *
 	 * @param modelProvider
 	 *            the model for the snapshot
 	 * @throws IOException
 	 *             if the model URI does not exist
 	 */
-	public void createModelSnapshot(AbstractModelProvider<?> modelProvider) throws IOException {
+	public void createModelSnapshot(final AbstractModelProvider<?> modelProvider) throws IOException {
 		if (modelProvider == null) {
 			return;
 		}
@@ -135,7 +138,7 @@ public class SnapshotBuilder extends AbstractStage {
 	/**
 	 * Sets the base location for all snapshots. Must be called before
 	 * initializing the SnapshotBuilder.
-	 * 
+	 *
 	 * @param baseSnapshotURI
 	 *            URI base location
 	 */
@@ -145,7 +148,7 @@ public class SnapshotBuilder extends AbstractStage {
 
 	/**
 	 * Return the snapshotURI.
-	 * 
+	 *
 	 * @return snapshot URI
 	 */
 	public URI getSnapshotURI() {
@@ -164,7 +167,7 @@ public class SnapshotBuilder extends AbstractStage {
 	 * @param evaluationMode
 	 *            the evaluationMode to set
 	 */
-	public static void setEvaluationMode(boolean evaluationMode) {
+	public static void setEvaluationMode(final boolean evaluationMode) {
 		SnapshotBuilder.evaluationMode = evaluationMode;
 	}
 

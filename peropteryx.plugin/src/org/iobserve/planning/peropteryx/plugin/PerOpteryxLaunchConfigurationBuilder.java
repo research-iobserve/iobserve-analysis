@@ -65,13 +65,13 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		// modelFile = "platform:/resource/" + modelDir;
 		// }
 
-		IPath filePath = ModelFileHelper.getModelFilePath(modelDir, fileExtension);
+		final IPath filePath = ModelFileHelper.getModelFilePath(modelDir, fileExtension);
 		LOG.info(String.format("Retrieved model file with path %s", filePath));
 		return filePath;
 	}
 
 	public static ILaunchConfiguration getDefaultLaunchConfiguration(final String projectModelDir,
-	        final String sourceModelDir) throws CoreException {
+			final String sourceModelDir) throws CoreException {
 		final Map<String, Object> attr = new HashMap<>();
 
 		setDefaultConfigFiles(projectModelDir, attr);
@@ -84,18 +84,20 @@ public class PerOpteryxLaunchConfigurationBuilder {
 
 		setDefaultReliabilityOptions(attr);
 
+		// We don't use Simucom, so no need to set options for it
+		// If you want to use it, you can uncomment this call
 		// setSimuComDefaultOptions(attr);
 		setLQNSDefaultOptions(attr, projectModelDir, sourceModelDir);
 
 		setDefaultTacticsOptions(attr);
 
-		ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-		ILaunchConfigurationType launchConfigType = launchManager.getLaunchConfigurationType(DSE_LAUNCH_TYPE_ID);
-		ILaunchConfigurationWorkingCopy workingCopy = launchConfigType.newInstance(null, DEFAULT_LAUNCH_CONFIG_NAME);
+		final ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+		final ILaunchConfigurationType launchConfigType = launchManager.getLaunchConfigurationType(DSE_LAUNCH_TYPE_ID);
+		final ILaunchConfigurationWorkingCopy workingCopy = launchConfigType.newInstance(null, DEFAULT_LAUNCH_CONFIG_NAME);
 
 		workingCopy.setAttributes(attr);
 
-		ILaunchConfiguration launchConfig = workingCopy.doSave();
+		final ILaunchConfiguration launchConfig = workingCopy.doSave();
 
 		LOG.info("Using launch configuration with attributes: " + attr.toString());
 
@@ -114,14 +116,14 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.PROCESSING_RATE_THRESHOLD_LOW_UTILISATION, Double.toString(0.2));
 		attr.put(DSEConstantsContainer.PROCESSING_RATE_WEIGHT, Double.toString(0.1));
 
-		attr.put(DSEConstantsContainer.USE_SERVER_CONSOLIDATION, false);
-		attr.put(DSEConstantsContainer.SERVER_CONSOLIDATION_THRESHOLD_LOW_UTILISATION, Double.toString(0.3));
+		attr.put(DSEConstantsContainer.USE_SERVER_CONSOLIDATION, true);
+		attr.put(DSEConstantsContainer.SERVER_CONSOLIDATION_THRESHOLD_LOW_UTILISATION, Double.toString(0.2));
 		attr.put(DSEConstantsContainer.SERVER_CONSOLIDATION_WEIGHT, Double.toString(0.5));
 
 		attr.put(DSEConstantsContainer.USE_SERVER_EXPANSION, false);
 		attr.put(DSEConstantsContainer.SERVER_EXPANSION_MAX_NUMBER_OF_REPLACEMENTS, Integer.toString(1));
-		attr.put(DSEConstantsContainer.SERVER_EXPANSION_THRESHOLD_HIGH_UTILISATION, Double.toString(0.7));
-		attr.put(DSEConstantsContainer.SERVER_EXPANSION_WEIGHT, Double.toString(0.7));
+		attr.put(DSEConstantsContainer.SERVER_EXPANSION_THRESHOLD_HIGH_UTILISATION, Double.toString(0.8));
+		attr.put(DSEConstantsContainer.SERVER_EXPANSION_WEIGHT, Double.toString(0.5));
 
 		attr.put(DSEConstantsContainer.USE_ANTIPATTERNS, false);
 	}
@@ -137,9 +139,9 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(AbstractSimulationConfig.VARIATION_ID, AbstractSimulationConfig.DEFAULT_VARIATION_NAME);
 		attr.put(AbstractSimulationConfig.SIMULATION_TIME, AbstractSimulationConfig.DEFAULT_SIMULATION_TIME);
 		attr.put(AbstractSimulationConfig.MAXIMUM_MEASUREMENT_COUNT,
-		        AbstractSimulationConfig.DEFAULT_MAXIMUM_MEASUREMENT_COUNT);
+				AbstractSimulationConfig.DEFAULT_MAXIMUM_MEASUREMENT_COUNT);
 		attr.put(AbstractSimulationConfig.PERSISTENCE_RECORDER_NAME,
-		        AbstractSimulationConfig.DEFAULT_PERSISTENCE_RECORDER_NAME);
+				AbstractSimulationConfig.DEFAULT_PERSISTENCE_RECORDER_NAME);
 		attr.put(AbstractSimulationConfig.USE_FIXED_SEED, false);
 		attr.put(SimuComConfig.USE_CONFIDENCE, SimuComConfig.DEFAULT_USE_CONFIDENCE);
 		attr.put(SimuComConfig.CONFIDENCE_LEVEL, Integer.toString(SimuComConfig.DEFAULT_CONFIDENCE_LEVEL));
@@ -147,10 +149,10 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(SimuComConfig.CONFIDENCE_MODELELEMENT_NAME, SimuComConfig.DEFAULT_CONFIDENCE_MODELELEMENT_NAME);
 		attr.put(SimuComConfig.CONFIDENCE_MODELELEMENT_URI, SimuComConfig.DEFAULT_CONFIDENCE_MODELELEMENT_URI);
 		attr.put(SimuComConfig.CONFIDENCE_USE_AUTOMATIC_BATCHES,
-		        SimuComConfig.DEFAULT_CONFIDENCE_USE_AUTOMATIC_BATCHES);
+				SimuComConfig.DEFAULT_CONFIDENCE_USE_AUTOMATIC_BATCHES);
 		attr.put(SimuComConfig.CONFIDENCE_BATCH_SIZE, Integer.toString(SimuComConfig.DEFAULT_CONFIDENCE_BATCH_SIZE));
 		attr.put(SimuComConfig.CONFIDENCE_MIN_NUMBER_OF_BATCHES,
-		        SimuComConfig.DEFAULT_CONFIDENCE_MIN_NUMBER_OF_BATCHES);
+				SimuComConfig.DEFAULT_CONFIDENCE_MIN_NUMBER_OF_BATCHES);
 		attr.put(AbstractSimulationConfig.VERBOSE_LOGGING, false);
 		attr.put(ConstantsContainer.DELETE_TEMPORARY_DATA_AFTER_ANALYSIS, true);
 
@@ -160,7 +162,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 	}
 
 	private static void setLQNSDefaultOptions(final Map<String, Object> attr, final String projectModelDir,
-	        final String sourceModelDir) {
+			final String sourceModelDir) {
 		LOG.info("sourceModelDir: " + sourceModelDir);
 		(new File(sourceModelDir + "/lqns_out")).mkdirs();
 		(new File(sourceModelDir + "/line_out")).mkdirs();
@@ -209,7 +211,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		final List<String> recorderNames = RecorderExtensionHelper.getRecorderNames();
 
 		String edp2RecorderName = null;
-		for (String name : recorderNames) {
+		for (final String name : recorderNames) {
 			if (name.contains("EDP2")) {
 				edp2RecorderName = name;
 				break;
@@ -228,11 +230,11 @@ public class PerOpteryxLaunchConfigurationBuilder {
 	}
 
 	private static void setEDP2ResourceRepository(final Map<String, Object> attr) {
-		EList<Repository> repositories = EDP2Plugin.INSTANCE.getRepositories().getAvailableRepositories();
+		final EList<Repository> repositories = EDP2Plugin.INSTANCE.getRepositories().getAvailableRepositories();
 		if (repositories.size() > 0) {
 			attr.put(AbstractEDP2RecorderConfigurationFactory.REPOSITORY_ID, repositories.get(0).getId());
 		} else {
-			LocalMemoryRepository repository = RepositoryFactory.eINSTANCE.createLocalMemoryRepository();
+			final LocalMemoryRepository repository = RepositoryFactory.eINSTANCE.createLocalMemoryRepository();
 			RepositoryManager.addRepository(EDP2Plugin.INSTANCE.getRepositories(), repository);
 			attr.put(AbstractEDP2RecorderConfigurationFactory.REPOSITORY_ID, repository.getId());
 		}
@@ -247,17 +249,17 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(MessageStrings.NUMBER_OF_EXACT_DECIMAL_PLACES, 1);
 		attr.put(MessageStrings.SOLVING_TIME_LIMIT_ENABLED, false);
 		attr.put(MessageStrings.SOLVING_TIME_LIMIT, 1);
-		attr.put(MessageStrings.LOG_FILE, "");
+		attr.put(MessageStrings.LOG_FILE, "markov.log");
 		attr.put(MessageStrings.MARKOV_MODEL_REDUCTION_ENABLED, true);
 		attr.put(MessageStrings.MARKOV_MODEL_TRACES_ENABLED, false);
-		attr.put(MessageStrings.ITERATION_OVER_PHYSICAL_SYSTEM_STATES_ENABLED, true);
+		attr.put(MessageStrings.ITERATION_OVER_PHYSICAL_SYSTEM_STATES_ENABLED, false);
 		attr.put(MessageStrings.MARKOV_MODEL_STORAGE_ENABLED, false);
 		attr.put(MessageStrings.MARKOV_MODEL_FILE, "");
-		attr.put(MessageStrings.MARKOV_EVALUATION_MODE, MarkovEvaluationType.POINTSOFFAILURE.toString());
+		attr.put(MessageStrings.MARKOV_EVALUATION_MODE, MarkovEvaluationType.SINGLE.toString());
 	}
 
 	private static void setDefaultResourceOptions(final Map<String, Object> attr) {
-		attr.put(DSEConstantsContainer.MIN_NUMBER_RESOURCE_CONTAINERS, Integer.toString(2));
+		attr.put(DSEConstantsContainer.MIN_NUMBER_RESOURCE_CONTAINERS, Integer.toString(1));
 		attr.put(DSEConstantsContainer.MAX_NUMBER_RESOURCE_CONTAINERS, Integer.toString(9));
 		attr.put(DSEConstantsContainer.NUMBER_OF_CANDIDATES_PER_ALLOCATION_LEVEL, Integer.toString(10));
 
@@ -270,7 +272,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.COST_QUALITY), "Cost Analysis");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.NQR_QUALITY), "none");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.RELIABILITY_QUALITY),
-		        "Reliability Solver Analysis");
+				"none");
 		attr.put(DSEConstantsContainer.getAnalysisMethod(QualityAttribute.SECURITY_QUALITY), "none");
 	}
 
@@ -284,7 +286,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.STORE_RESULTS_AS_EMF, true);
 		attr.put(DSEConstantsContainer.STORE_RESULTS_AS_CSV, true);
 		attr.put(DSEConstantsContainer.TC_INSIGNIFICANT_FRONT_CHANGE_ACTIVATE, true);
-		attr.put(DSEConstantsContainer.DSE_ITERATIONS, "1");
+		attr.put(DSEConstantsContainer.DSE_ITERATIONS, "2");
 		attr.put(DSEConstantsContainer.CROSSOVER_RATE, "0.5");
 		attr.put(DSEConstantsContainer.PREDEFINED_INSTANCES, "");
 		attr.put(DSEConstantsContainer.CACHE_INSTANCES, "");
@@ -298,58 +300,58 @@ public class PerOpteryxLaunchConfigurationBuilder {
 		attr.put(DSEConstantsContainer.USE_ANTIPATTERNS, false);
 		attr.put(DSEConstantsContainer.USE_STARTING_POPULATION_HEURISTIC, false);
 		attr.put(DSEConstantsContainer.STOP_ON_INITIAL_FAILURE, false);
-		attr.put(DSEConstantsContainer.INDIVIDUALS_PER_GENERATION, "3");
+		attr.put(DSEConstantsContainer.INDIVIDUALS_PER_GENERATION, "5");
 	}
 
 	private static void setDefaultConfigFiles(final String modelDir, final Map<String, Object> attr) {
 		// Standard PCM settings
-		IPath allocationFile = getModelFilePath(modelDir, "allocation");
+		final IPath allocationFile = getModelFilePath(modelDir, "allocation");
 		LOG.info("Allocation file: " + allocationFile);
 		attr.put(ConstantsContainer.ALLOCATION_FILE, allocationFile.toString());
 
-		IPath outputFolder = new Path("platform:/resource/output");
+		final IPath outputFolder = new Path("platform:/resource/output");
 		LOG.info("Output folder: " + outputFolder);
 		attr.put(ConstantsContainer.CLIENTOUT_PATH, outputFolder.toString());
 
-		IPath repositoryFile = getModelFilePath(modelDir, "repository");
+		final IPath repositoryFile = getModelFilePath(modelDir, "repository");
 		LOG.info("Repository file: " + repositoryFile);
 		attr.put(ConstantsContainer.REPOSITORY_FILE, repositoryFile.toString());
 
-		IPath resourceEnvFile = getModelFilePath(modelDir, "resourceenvironment");
+		final IPath resourceEnvFile = getModelFilePath(modelDir, "resourceenvironment");
 		LOG.info("Resourceenvironment file: " + resourceEnvFile);
 		attr.put(ConstantsContainer.RESOURCEENVIRONMENT_FILE, resourceEnvFile.toString());
 
-		IPath systemFile = getModelFilePath(modelDir, "system");
+		final IPath systemFile = getModelFilePath(modelDir, "system");
 		LOG.info("System file: " + systemFile);
 		attr.put(ConstantsContainer.SYSTEM_FILE, systemFile.toString());
 
 		// Has to be only the name because PerOpteryx will create a project with
 		// this name
-		IPath tempFolder = new Path("platform:/resource/temporary");
+		final IPath tempFolder = new Path("platform:/resource/temporary");
 		LOG.info("Temp folder: " + tempFolder);
 		attr.put(ConstantsContainer.TEMPORARY_DATA_LOCATION, tempFolder.toString());
 
-		IPath usageFile = getModelFilePath(modelDir, "usagemodel");
+		final IPath usageFile = getModelFilePath(modelDir, "usagemodel");
 		LOG.info("Usage file: " + usageFile);
 		attr.put(ConstantsContainer.USAGE_FILE, usageFile.toString());
 
 		attr.put(ConstantsContainer.ACCURACY_QUALITY_ANNOTATION_FILE,
-		        ConstantsContainer.DEFAULT_ACCURACY_QUALITY_ANNOTATION_FILE);
+				ConstantsContainer.DEFAULT_ACCURACY_QUALITY_ANNOTATION_FILE);
 		attr.put(ConstantsContainer.RMI_MIDDLEWARE_REPOSITORY_FILE,
-		        ConstantsContainer.DEFAULT_RMI_MIDDLEWARE_REPOSITORY_FILE);
+				ConstantsContainer.DEFAULT_RMI_MIDDLEWARE_REPOSITORY_FILE);
 		attr.put(ConstantsContainer.EVENT_MIDDLEWARE_REPOSITORY_FILE, ConstantsContainer.DEFAULT_EVENT_MIDDLEWARE_FILE);
 		attr.put(ConstantsContainer.FEATURE_CONFIG, ConstantsContainer.DEFAULT_FEATURE_CONFIGURATION_FILE);
 
 		// PerOpteryx specific settings
-		IPath costFile = getModelFilePath(modelDir, "cost");
+		final IPath costFile = getModelFilePath(modelDir, "cost");
 		LOG.info("Cost file: " + costFile);
 		attr.put(DSEConstantsContainer.COST_FILE, costFile.toString());
 
-		IPath decisionFile = getModelFilePath(modelDir, "designdecision");
+		final IPath decisionFile = getModelFilePath(modelDir, "designdecision");
 		LOG.info("Designdecision file: " + decisionFile);
 		attr.put(DSEConstantsContainer.DESIGN_DECISION_FILE, decisionFile.toString());
 
-		IPath qmlFile = getModelFilePath(modelDir, "qmldeclarations");
+		final IPath qmlFile = getModelFilePath(modelDir, "qmldeclarations");
 		LOG.info("QMLDeclarations file: " + qmlFile);
 		attr.put(DSEConstantsContainer.QML_DEFINITION_FILE, qmlFile.toString());
 	}

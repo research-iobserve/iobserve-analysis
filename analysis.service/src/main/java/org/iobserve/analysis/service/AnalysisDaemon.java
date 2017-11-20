@@ -26,6 +26,8 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
+import org.iobserve.analysis.model.CloudProfileModelProvider;
+import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -52,7 +54,6 @@ import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-
 
 /**
  * @author Reiner Jung
@@ -103,15 +104,15 @@ public class AnalysisDaemon implements Daemon {
     private String snapshotPath;
     
     @Parameter(names = { "-po",
-            "--perOpteryx-headless-location" }, required = false, description = "the location of the PerOpteryx headless plugin", converter = FileConverter.class)
+            "--perOpteryx-headless-location" }, required = false, description = "the location of the PerOpteryx headless plugin")
     private String perOpteryxUriPath;
     
     @Parameter(names = { "-l",
-            "--lqns-location" }, required = false, description = "the location of the LQN Solver for optimization", converter = FileConverter.class)
+            "--lqns-location" }, required = false, description = "the location of the LQN Solver for optimization")
     private String lqnsUriPath;
     
     @Parameter(names = { "-d",
-            "--deployables-folder" }, required = false, description = "the location of the deployable/executable scripts for adaptation execution", converter = FileConverter.class)
+            "--deployables-folder" }, required = false, description = "the location of the deployable/executable scripts for adaptation execution")
     private String deployablesFolderPath;
 
     private AnalysisThread thread;
@@ -189,6 +190,10 @@ public class AnalysisDaemon implements Daemon {
                     systemModelGraph);
             final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(systemModelGraph);
             
+            final CloudProfileModelProvider cloudProfileModelProvider = modelProvider
+								.getCloudProfileModelProvider();
+			final CostModelProvider costModelProvider = modelProvider.getCostModelProvider();
+            
             SnapshotBuilder snapshotBuilder = null;
             URI perOpteryxUri = null;
             URI lqnsUri = null;
@@ -207,7 +212,8 @@ public class AnalysisDaemon implements Daemon {
                     allocationModelProvider, systemModelProvider, resourceEnvironmentModelGraphProvider, 
                     resourceContainerModelGraphProvider, allocationModelGraphProvider, assemblyContextModelGraphProvider,
                     systemModelGraphProvider, assCtxSystemModelGraphProvider, this.visualizationServiceURL,
-                    snapshotBuilder, perOpteryxUri, lqnsUri, deployablesFolder);
+                    snapshotBuilder, cloudProfileModelProvider, costModelProvider, perOpteryxUri, lqnsUri, 
+                    deployablesFolder);
 
             this.thread = new AnalysisThread(this, configuration);
         } else {
