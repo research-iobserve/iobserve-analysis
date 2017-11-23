@@ -31,10 +31,10 @@ import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
 import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-
 import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -50,9 +50,6 @@ import com.beust.jcommander.converters.IntegerConverter;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
-
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
-
 
 /**
  * @author Reiner Jung
@@ -98,18 +95,18 @@ public class AnalysisDaemon implements Daemon {
     @Parameter(names = { "-u",
             "--ubm-visualization" }, required = true, description = "User behavior model visualitation service URL.")
     private String visualizationServiceURL;
-    
+
     @Parameter(names = { "-sl", "--snapshot-location" }, required = false, description = "snapshot save location")
     private String snapshotPath;
-    
+
     @Parameter(names = { "-po",
             "--perOpteryx-headless-location" }, required = false, description = "the location of the PerOpteryx headless plugin", converter = FileConverter.class)
     private String perOpteryxUriPath;
-    
+
     @Parameter(names = { "-l",
             "--lqns-location" }, required = false, description = "the location of the LQN Solver for optimization", converter = FileConverter.class)
     private String lqnsUriPath;
-    
+
     @Parameter(names = { "-d",
             "--deployables-folder" }, required = false, description = "the location of the deployable/executable scripts for adaptation execution", converter = FileConverter.class)
     private String deployablesFolderPath;
@@ -136,7 +133,7 @@ public class AnalysisDaemon implements Daemon {
         } catch (final IOException e) {
             AnalysisDaemon.LOG.error(e.getLocalizedMessage());
             commander.usage();
-        } catch (InitializationException e) {
+        } catch (final InitializationException e) {
             AnalysisDaemon.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
@@ -188,26 +185,27 @@ public class AnalysisDaemon implements Daemon {
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                     systemModelGraph);
             final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(systemModelGraph);
-            
+
             SnapshotBuilder snapshotBuilder = null;
             URI perOpteryxUri = null;
             URI lqnsUri = null;
             URI deployablesFolder = null;
-            if(!snapshotPath.isEmpty() && !perOpteryxUriPath.isEmpty() && !lqnsUriPath.isEmpty() && !deployablesFolderPath.isEmpty()) {
-                SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(snapshotPath));
+            if (!this.snapshotPath.isEmpty() && !this.perOpteryxUriPath.isEmpty() && !this.lqnsUriPath.isEmpty()
+                    && !this.deployablesFolderPath.isEmpty()) {
+                SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(this.snapshotPath));
                 snapshotBuilder = new SnapshotBuilder("Runtime", modelProvider);
-                perOpteryxUri = URI.createFileURI(perOpteryxUriPath);
-                lqnsUri = URI.createFileURI(lqnsUriPath);
-                deployablesFolder = URI.createFileURI(deployablesFolderPath);
+                perOpteryxUri = URI.createFileURI(this.perOpteryxUriPath);
+                lqnsUri = URI.createFileURI(this.lqnsUriPath);
+                deployablesFolder = URI.createFileURI(this.deployablesFolderPath);
             }
 
             final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname, outputPort,
                     this.systemId, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
-                    usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider, 
-                    allocationModelProvider, systemModelProvider, resourceEnvironmentModelGraphProvider, 
-                    resourceContainerModelGraphProvider, allocationModelGraphProvider, assemblyContextModelGraphProvider,
-                    systemModelGraphProvider, assCtxSystemModelGraphProvider, this.visualizationServiceURL,
-                    snapshotBuilder, perOpteryxUri, lqnsUri, deployablesFolder);
+                    usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
+                    allocationModelProvider, systemModelProvider, resourceEnvironmentModelGraphProvider,
+                    resourceContainerModelGraphProvider, allocationModelGraphProvider,
+                    assemblyContextModelGraphProvider, systemModelGraphProvider, assCtxSystemModelGraphProvider,
+                    this.visualizationServiceURL, snapshotBuilder, perOpteryxUri, lqnsUri, deployablesFolder);
 
             this.thread = new AnalysisThread(this, configuration);
         } else {

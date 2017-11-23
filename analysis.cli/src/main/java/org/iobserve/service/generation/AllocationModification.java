@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.service.generation;
 
 import java.util.HashMap;
@@ -17,128 +32,134 @@ import org.palladiosimulator.pcm.system.System;
 
 public class AllocationModification {
 
-	private Allocation allocationModel;
+    private final Allocation allocationModel;
 
-	private System systemModel;
-	private ResourceEnvironment resEnvModel;
-	private ResourceContainer[] resContainer;
-	private HashMap<String, List<AllocationContext>> resContainer2AllocationContext;
-	private HashMap<String, AllocationContext> assemblyCon2AllocationContext;
+    private final System systemModel;
+    private final ResourceEnvironment resEnvModel;
+    private final ResourceContainer[] resContainer;
+    private HashMap<String, List<AllocationContext>> resContainer2AllocationContext;
+    private HashMap<String, AllocationContext> assemblyCon2AllocationContext;
 
-	public AllocationModification(Allocation allocationModel, System systemModel, ResourceEnvironment resEnvModel) {
-		this.allocationModel = allocationModel;
-		this.systemModel = systemModel;
-		this.resEnvModel = resEnvModel;
+    public AllocationModification(final Allocation allocationModel, final System systemModel,
+            final ResourceEnvironment resEnvModel) {
+        this.allocationModel = allocationModel;
+        this.systemModel = systemModel;
+        this.resEnvModel = resEnvModel;
 
-		int resContainerCount = resEnvModel.getResourceContainer_ResourceEnvironment().size();
-		this.resContainer = resEnvModel.getResourceContainer_ResourceEnvironment().toArray(new ResourceContainer[resContainerCount]);
+        final int resContainerCount = resEnvModel.getResourceContainer_ResourceEnvironment().size();
+        this.resContainer = resEnvModel.getResourceContainer_ResourceEnvironment()
+                .toArray(new ResourceContainer[resContainerCount]);
 
-		this.initResContainer2AllocationContext();
-	}
+        this.initResContainer2AllocationContext();
+    }
 
-	private void initResContainer2AllocationContext() {
-		this.resContainer2AllocationContext = new HashMap<String, List<AllocationContext>>();
-		this.assemblyCon2AllocationContext = new HashMap<String, AllocationContext>();
+    private void initResContainer2AllocationContext() {
+        this.resContainer2AllocationContext = new HashMap<>();
+        this.assemblyCon2AllocationContext = new HashMap<>();
 
-		for (AllocationContext ac : this.allocationModel.getAllocationContexts_Allocation()) {
+        for (final AllocationContext ac : this.allocationModel.getAllocationContexts_Allocation()) {
 
-			ResourceContainer resCon = ac.getResourceContainer_AllocationContext();
-			if (!this.resContainer2AllocationContext.containsKey(resCon.getId())) {
-				this.resContainer2AllocationContext.put(resCon.getId(), new LinkedList<AllocationContext>());
-			}
-			this.resContainer2AllocationContext.get(resCon.getId()).add(ac);
+            final ResourceContainer resCon = ac.getResourceContainer_AllocationContext();
+            if (!this.resContainer2AllocationContext.containsKey(resCon.getId())) {
+                this.resContainer2AllocationContext.put(resCon.getId(), new LinkedList<AllocationContext>());
+            }
+            this.resContainer2AllocationContext.get(resCon.getId()).add(ac);
 
-			AssemblyContext assemblyCon = ac.getAssemblyContext_AllocationContext();
-			if (!this.assemblyCon2AllocationContext.containsKey(assemblyCon.getId())) {
-				this.assemblyCon2AllocationContext.put(assemblyCon.getId(), ac);
-			} else {
-				throw new RuntimeException("An assembly context was found twice during assembly context analysis!");
-			}
-		}
-	}
+            final AssemblyContext assemblyCon = ac.getAssemblyContext_AllocationContext();
+            if (!this.assemblyCon2AllocationContext.containsKey(assemblyCon.getId())) {
+                this.assemblyCon2AllocationContext.put(assemblyCon.getId(), ac);
+            } else {
+                throw new RuntimeException("An assembly context was found twice during assembly context analysis!");
+            }
+        }
+    }
 
-	/**
-	 * 
-	 * @param terminatedResContainers
-	 * @return
-	 */
-	public int modifyAllocation_FixTerminations(List<ResourceContainer> terminatedResContainers) {
+    /**
+     * 
+     * @param terminatedResContainers
+     * @return
+     */
+    public int modifyAllocationFixTerminations(final List<ResourceContainer> terminatedResContainers) {
 
-		int migrationsMade = 0;
+        int migrationsMade = 0;
 
-		for (ResourceContainer terminatedResCon : terminatedResContainers) {
-			if (this.resContainer2AllocationContext.containsKey(terminatedResCon.getId()))
-				for (AllocationContext allocation : this.resContainer2AllocationContext.get(terminatedResCon.getId())) {
-					migrateToRandomResourceContainer(allocation);
-					migrationsMade++;
-				}
-		}
+        for (final ResourceContainer terminatedResCon : terminatedResContainers) {
+            if (this.resContainer2AllocationContext.containsKey(terminatedResCon.getId())) {
+                for (final AllocationContext allocation : this.resContainer2AllocationContext
+                        .get(terminatedResCon.getId())) {
+                    this.migrateToRandomResourceContainer(allocation);
+                    migrationsMade++;
+                }
+            }
+        }
 
-		return migrationsMade;
-	}
+        return migrationsMade;
+    }
 
-	/**
-	 * 
-	 * @param deallocatedAssemblyContexts
-	 */
-	public void modifyAllocation_FixDeallocations(List<AssemblyContext> deallocatedAssemblyContexts) {
+    /**
+     * 
+     * @param deallocatedAssemblyContexts
+     */
+    public void modifyAllocationFixDeallocations(final List<AssemblyContext> deallocatedAssemblyContexts) {
 
-		for (AssemblyContext deallocatedAssemblyCon : deallocatedAssemblyContexts) {
+        for (final AssemblyContext deallocatedAssemblyCon : deallocatedAssemblyContexts) {
 
-			if (this.assemblyCon2AllocationContext.containsKey(deallocatedAssemblyCon.getId())) {
+            if (this.assemblyCon2AllocationContext.containsKey(deallocatedAssemblyCon.getId())) {
 
-				AllocationContext allocationCon = this.assemblyCon2AllocationContext.get(deallocatedAssemblyCon.getId());
-				this.allocationModel.getAllocationContexts_Allocation().remove(allocationCon);
-			}
-		}
-	}
+                final AllocationContext allocationCon = this.assemblyCon2AllocationContext
+                        .get(deallocatedAssemblyCon.getId());
+                this.allocationModel.getAllocationContexts_Allocation().remove(allocationCon);
+            }
+        }
+    }
 
-	/**
-	 * 
-	 * @param allocatedAssemblyContexts
-	 */
-	public void modifyAllocation_FixAllocations(List<AssemblyContext> allocatedAssemblyContexts) {
+    /**
+     * 
+     * @param allocatedAssemblyContexts
+     */
+    public void modifyAllocationFixAllocations(final List<AssemblyContext> allocatedAssemblyContexts) {
 
-		AllocationGeneration allocGen = new AllocationGeneration(this.allocationModel, this.systemModel, this.resEnvModel);
-		allocGen.generateAllocation(allocatedAssemblyContexts, "MOD");
-	}
+        final AllocationGeneration allocGen = new AllocationGeneration(this.allocationModel, this.systemModel,
+                this.resEnvModel);
+        allocGen.generateAllocation(allocatedAssemblyContexts, "MOD");
+    }
 
-	/**
-	 * 
-	 * 
-	 * @param migarions
-	 * @return
-	 */
-	public int modifyAllocation_Migrate(int migarions) {
-		int migrationsMade = 0;
-		Set<AllocationContext> usedAllocationContexts = new HashSet<AllocationContext>();
-		EList<AllocationContext> allocationContexts = this.allocationModel.getAllocationContexts_Allocation();
+    /**
+     * 
+     * 
+     * @param migarions
+     * @return
+     */
+    public int modifyAllocationMigrate(final int migarions) {
+        int migrationsMade = 0;
+        final Set<AllocationContext> usedAllocationContexts = new HashSet<>();
+        final EList<AllocationContext> allocationContexts = this.allocationModel.getAllocationContexts_Allocation();
 
-		for (int i = 0; i < migarions; i++) {
-			AllocationContext ac = null;
-			for (int j = 0; ac != null && j < allocationContexts.size() * 10; j++) {
-				int randomIndex = ThreadLocalRandom.current().nextInt(allocationContexts.size());
-				if (!usedAllocationContexts.contains(allocationContexts.get(randomIndex))) {
-					ac = allocationContexts.get(randomIndex);
-				}
+        for (int i = 0; i < migarions; i++) {
+            AllocationContext ac = null;
+            for (int j = 0; (ac != null) && (j < (allocationContexts.size() * 10)); j++) {
+                final int randomIndex = ThreadLocalRandom.current().nextInt(allocationContexts.size());
+                if (!usedAllocationContexts.contains(allocationContexts.get(randomIndex))) {
+                    ac = allocationContexts.get(randomIndex);
+                }
 
-				if (ac != null) {
-					this.migrateToRandomResourceContainer(ac);
-					migrationsMade++;
-				}
-			}
-		}
+                if (ac != null) {
+                    this.migrateToRandomResourceContainer(ac);
+                    migrationsMade++;
+                }
+            }
+        }
 
-		return migrationsMade;
-	}
+        return migrationsMade;
+    }
 
-	/*
-	 * 
-	 */
-	private void migrateToRandomResourceContainer(AllocationContext allocation) {
-		int randomIndex = ThreadLocalRandom.current().nextInt(this.resContainer.length);
-		ResourceContainer replaceResCon = this.resContainer[randomIndex];
-		allocation.setResourceContainer_AllocationContext(replaceResCon);
-	}
+    /*
+     * 
+     */
+    private void migrateToRandomResourceContainer(final AllocationContext allocation) {
+        final int randomIndex = ThreadLocalRandom.current().nextInt(this.resContainer.length);
+        final ResourceContainer replaceResCon = this.resContainer[randomIndex];
+        allocation.setResourceContainer_AllocationContext(replaceResCon);
+    }
 
 }

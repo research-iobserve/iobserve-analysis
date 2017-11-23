@@ -98,21 +98,21 @@ public final class AnalysisMainNeo4j {
     @Parameter(names = { "-u",
             "--ubm-visualization" }, required = true, description = "User behavior model visualitation service URL.")
     private String visualizationServiceURL;
-    
+
     @Parameter(names = { "-sl", "--snapshot-location" }, required = false, description = "snapshot save location")
-    private String snapshotPath = "";
-    
+    private final String snapshotPath = "";
+
     @Parameter(names = { "-po",
             "--perOpteryx-headless-location" }, required = false, description = "the location of the PerOpteryx headless plugin", converter = FileConverter.class)
-    private String perOpteryxUriPath = "";
-    
+    private final String perOpteryxUriPath = "";
+
     @Parameter(names = { "-l",
             "--lqns-location" }, required = false, description = "the location of the LQN Solver for optimization", converter = FileConverter.class)
-    private String lqnsUriPath = "";
-    
+    private final String lqnsUriPath = "";
+
     @Parameter(names = { "-d",
             "--deployables-folder" }, required = false, description = "the location of the deployable/executable scripts for adaptation execution", converter = FileConverter.class)
-    private String deployablesFolderPath = "";
+    private final String deployablesFolderPath = "";
 
     /**
      * Default constructor.
@@ -139,7 +139,7 @@ public final class AnalysisMainNeo4j {
         } catch (final IOException e) {
             AnalysisMainNeo4j.LOG.error(e.getLocalizedMessage());
             commander.usage();
-        } catch (InitializationException e) {
+        } catch (final InitializationException e) {
             AnalysisMainNeo4j.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
@@ -236,21 +236,23 @@ public final class AnalysisMainNeo4j {
                 URI perOpteryxUri = null;
                 URI lqnsUri = null;
                 URI deployablesFolder = null;
-                if(!snapshotPath.isEmpty() && !perOpteryxUriPath.isEmpty() && !lqnsUriPath.isEmpty() && !deployablesFolderPath.isEmpty()) {
-                    SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(snapshotPath));
+                if (!this.snapshotPath.isEmpty() && !this.perOpteryxUriPath.isEmpty() && !this.lqnsUriPath.isEmpty()
+                        && !this.deployablesFolderPath.isEmpty()) {
+                    SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(this.snapshotPath));
                     snapshotBuilder = new SnapshotBuilder("Runtime", modelProvider);
-                    perOpteryxUri = URI.createFileURI(perOpteryxUriPath);
-                    lqnsUri = URI.createFileURI(lqnsUriPath);
-                    deployablesFolder = URI.createFileURI(deployablesFolderPath);
+                    perOpteryxUri = URI.createFileURI(this.perOpteryxUriPath);
+                    lqnsUri = URI.createFileURI(this.lqnsUriPath);
+                    deployablesFolder = URI.createFileURI(this.deployablesFolderPath);
                 }
-                
-                final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname, outputPort,
-                        "", this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
-                        usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider, 
-                        allocationModelProvider, systemModelProvider, resourceEnvironmentModelGraphProvider, 
-                        resourceContainerModelGraphProvider, allocationModelGraphProvider, assemblyContextModelGraphProvider,
-                        systemModelGraphProvider, assCtxSystemModelGraphProvider, this.visualizationServiceURL,
-                        snapshotBuilder, perOpteryxUri, lqnsUri, deployablesFolder);
+
+                final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
+                        outputPort, "", this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
+                        correspondenceModel, usageModelProvider, repositoryModelProvider,
+                        resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider,
+                        resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider,
+                        allocationModelGraphProvider, assemblyContextModelGraphProvider, systemModelGraphProvider,
+                        assCtxSystemModelGraphProvider, this.visualizationServiceURL, snapshotBuilder, perOpteryxUri,
+                        lqnsUri, deployablesFolder);
 
                 AnalysisMainNeo4j.LOG.info("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);

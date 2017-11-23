@@ -22,7 +22,6 @@ import java.util.Collection;
 
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
-
 import org.iobserve.analysis.FileObservationConfiguration;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.clustering.EAggregationType;
@@ -37,7 +36,6 @@ import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -50,7 +48,6 @@ import com.beust.jcommander.converters.IntegerConverter;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
-
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
@@ -79,7 +76,7 @@ public final class AnalysisMain {
             "--closed-workload" }, required = false, description = "Closed workload.", converter = BooleanConverter.class)
     private boolean closedWorkload;
 
-@Parameter(names = { "-i",
+    @Parameter(names = { "-i",
             "--input" }, required = true, description = "Kieker monitoring data directory.", converter = FileConverter.class)
     private File monitoringDataDirectory;
 
@@ -100,22 +97,22 @@ public final class AnalysisMain {
 
     @Parameter(names = { "-m", "--aggregation-type" }, required = true, description = "Aggregation type.")
     private String aggregationTypeName;
-    
+
     @Parameter(names = { "-sl", "--snapshot-location" }, required = true, description = "snapshot save location")
     private String snapshotPath;
-    
+
     @Parameter(names = { "-po",
             "--perOpteryx-headless-location" }, required = true, description = "the location of the PerOpteryx headless plugin", converter = FileConverter.class)
     private String perOpteryxUriPath;
-    
+
     @Parameter(names = { "-l",
             "--lqns-location" }, required = true, description = "the location of the LQN Solver for optimization", converter = FileConverter.class)
     private String lqnsUriPath;
-    
+
     @Parameter(names = { "-d",
             "--deployables-folder" }, required = true, description = "the location of the deployable/executable scripts for adaptation execution", converter = FileConverter.class)
     private String deployablesFolderPath;
-    
+
     @Parameter(names = { "-in",
             "--interactive-adaptation" }, required = true, description = "interact with operator during adaptation", converter = FileConverter.class)
     private boolean interactiveMode;
@@ -145,7 +142,7 @@ public final class AnalysisMain {
         } catch (final IOException e) {
             AnalysisMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
-        } catch (InitializationException e) {
+        } catch (final InitializationException e) {
             AnalysisMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
@@ -214,14 +211,14 @@ public final class AnalysisMain {
             final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(allocationModelGraph);
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                     systemModelGraph);
-            
-            SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(snapshotPath));
+
+            SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(this.snapshotPath));
             final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelProviderPlatform);
-            final URI perOpteryxUri = URI.createFileURI(perOpteryxUriPath);
-            final URI lqnsUri = URI.createFileURI(lqnsUriPath);
-            final URI deployablesFolder = URI.createFileURI(deployablesFolderPath);
-            final CLIEventListener eventListener = new CLIEventListener(interactiveMode);
-            
+            final URI perOpteryxUri = URI.createFileURI(this.perOpteryxUriPath);
+            final URI lqnsUri = URI.createFileURI(this.lqnsUriPath);
+            final URI deployablesFolder = URI.createFileURI(this.deployablesFolderPath);
+            final CLIEventListener eventListener = new CLIEventListener(this.interactiveMode);
+
             final Configuration configuration = new FileObservationConfiguration(monitoringDataDirectories,
                     correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                     resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,

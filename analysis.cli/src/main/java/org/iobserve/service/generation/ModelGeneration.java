@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.service.generation;
 
 import java.io.File;
@@ -19,76 +34,81 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
 public class ModelGeneration {
-	
-	private static final Logger LOG = LogManager.getLogger(ModelGeneration.class);
-	
 
-	public static void createNewModel(CommandLine commandLine) throws InitializationException, IOException {
-		LOG.info("Creating new model!");
-		
-		URI repoLocation = URI.createFileURI(commandLine.getOptionValue("i"));
-		URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
+    private static final Logger LOG = LogManager.getLogger(ModelGeneration.class);
 
-		LOG.info("Copying repository model to new location.");
-		RepositoryModelProvider repoModelProvider = new RepositoryModelProvider(repoLocation);
-		ModelGeneration.copyRepoToOutput(outputLocation, repoModelProvider);
+    public static void createNewModel(final CommandLine commandLine) throws InitializationException, IOException {
+        ModelGeneration.LOG.info("Creating new model!");
 
-		LOG.info("Generating system model.");
-		System systemModel = generateAndSaveSystem(commandLine, outputLocation);
-		LOG.info("Generating resource environment model.");
-		ResourceEnvironment resEnvModel = generateAndSaveResourceEnvironment(commandLine, outputLocation, systemModel.getEntityName());
-		LOG.info("Generating allocation model.");
-		generateAndSaveAllocation(outputLocation, systemModel, resEnvModel);
-		LOG.info("Generating done!");
-	}
+        final URI repoLocation = URI.createFileURI(commandLine.getOptionValue("i"));
+        final URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
-	private static System generateAndSaveSystem(CommandLine commandLine, URI outputLocation) {
-		InitializeModelProviders modelProviders = new InitializeModelProviders(new File(outputLocation.toFileString()));
-		SystemGeneration systemGen = new SystemGeneration(modelProviders.getRepositoryModelProvider().getModel());
-		System systemModel = systemGen.generateSystemModel(Integer.parseInt(commandLine.getOptionValue("a")));
+        ModelGeneration.LOG.info("Copying repository model to new location.");
+        final RepositoryModelProvider repoModelProvider = new RepositoryModelProvider(repoLocation);
+        ModelGeneration.copyRepoToOutput(outputLocation, repoModelProvider);
 
-		SystemModelProvider systemModelProvider = new SystemModelProvider();
-		systemModelProvider.setModel(systemModel);
-		URI systemModelURI = URI.createFileURI(outputLocation.toFileString() + File.separator + systemModel.getEntityName() + ".system");
-		systemModelProvider.setModelUri(systemModelURI);
-		systemModelProvider.save();
-		return systemModel;
-	}
+        ModelGeneration.LOG.info("Generating system model.");
+        final System systemModel = ModelGeneration.generateAndSaveSystem(commandLine, outputLocation);
+        ModelGeneration.LOG.info("Generating resource environment model.");
+        final ResourceEnvironment resEnvModel = ModelGeneration.generateAndSaveResourceEnvironment(commandLine,
+                outputLocation, systemModel.getEntityName());
+        ModelGeneration.LOG.info("Generating allocation model.");
+        ModelGeneration.generateAndSaveAllocation(outputLocation, systemModel, resEnvModel);
+        ModelGeneration.LOG.info("Generating done!");
+    }
 
-	private static ResourceEnvironment generateAndSaveResourceEnvironment(CommandLine commandLine, URI outputLocation, String modelName) {
-		ResourceEnvironmentGeneration resEnvGen = new ResourceEnvironmentGeneration(modelName);
-		ResourceEnvironment resEnvModel = resEnvGen.craeteResourceEnvironment(Integer.parseInt(commandLine.getOptionValue("r")));
+    private static System generateAndSaveSystem(final CommandLine commandLine, final URI outputLocation) {
+        final InitializeModelProviders modelProviders = new InitializeModelProviders(
+                new File(outputLocation.toFileString()));
+        final SystemGeneration systemGen = new SystemGeneration(modelProviders.getRepositoryModelProvider().getModel());
+        final System systemModel = systemGen.generateSystemModel(Integer.parseInt(commandLine.getOptionValue("a")));
 
-		ResourceEnvironmentModelProvider resEnvModelProvider = new ResourceEnvironmentModelProvider();
-		resEnvModelProvider.setModel(resEnvModel);
-		URI resEnvModelURI = URI.createFileURI(outputLocation.toFileString() + File.separator + resEnvModel.getEntityName() + ".resourceenvironment");
-		resEnvModelProvider.setModelUri(resEnvModelURI);
-		resEnvModelProvider.save();
-		return resEnvModel;
-	}
+        final SystemModelProvider systemModelProvider = new SystemModelProvider();
+        systemModelProvider.setModel(systemModel);
+        final URI systemModelURI = URI.createFileURI(
+                outputLocation.toFileString() + File.separator + systemModel.getEntityName() + ".system");
+        systemModelProvider.setModelUri(systemModelURI);
+        systemModelProvider.save();
+        return systemModel;
+    }
 
-	private static Allocation generateAndSaveAllocation(URI outputLocation, System systemModel, ResourceEnvironment resEnvModel) {
-		AllocationGeneration allocationGen = new AllocationGeneration(systemModel, resEnvModel);
-		Allocation allocationModel = allocationGen.generateAllocation();
+    private static ResourceEnvironment generateAndSaveResourceEnvironment(final CommandLine commandLine,
+            final URI outputLocation, final String modelName) {
+        final ResourceEnvironmentGeneration resEnvGen = new ResourceEnvironmentGeneration(modelName);
+        final ResourceEnvironment resEnvModel = resEnvGen
+                .craeteResourceEnvironment(Integer.parseInt(commandLine.getOptionValue("r")));
 
-		AllocationModelProvider allocationModelProvider = new AllocationModelProvider();
-		allocationModelProvider.setModel(allocationModel);
-		URI allocationModelURI = URI.createFileURI(outputLocation.toFileString() + File.separator + resEnvModel.getEntityName() + ".allocation");
-		allocationModelProvider.setModelUri(allocationModelURI);
-		allocationModelProvider.save();
+        final ResourceEnvironmentModelProvider resEnvModelProvider = new ResourceEnvironmentModelProvider();
+        resEnvModelProvider.setModel(resEnvModel);
+        final URI resEnvModelURI = URI.createFileURI(
+                outputLocation.toFileString() + File.separator + resEnvModel.getEntityName() + ".resourceenvironment");
+        resEnvModelProvider.setModelUri(resEnvModelURI);
+        resEnvModelProvider.save();
+        return resEnvModel;
+    }
 
-		return allocationModel;
-	}
+    private static Allocation generateAndSaveAllocation(final URI outputLocation, final System systemModel,
+            final ResourceEnvironment resEnvModel) {
+        final AllocationGeneration allocationGen = new AllocationGeneration(systemModel, resEnvModel);
+        final Allocation allocationModel = allocationGen.generateAllocation();
 
-	private static boolean copyRepoToOutput(URI outputLocation, RepositoryModelProvider repoModelProvider)
-			throws InitializationException, IOException {
-		SnapshotBuilder.setBaseSnapshotURI(outputLocation);
-		SnapshotBuilder snapshotBuilder = new SnapshotBuilder("", null);
+        final AllocationModelProvider allocationModelProvider = new AllocationModelProvider();
+        allocationModelProvider.setModel(allocationModel);
+        final URI allocationModelURI = URI.createFileURI(
+                outputLocation.toFileString() + File.separator + resEnvModel.getEntityName() + ".allocation");
+        allocationModelProvider.setModelUri(allocationModelURI);
+        allocationModelProvider.save();
 
-		snapshotBuilder.createModelSnapshot(repoModelProvider);
-		return false;
-	}
+        return allocationModel;
+    }
 
-	
+    private static boolean copyRepoToOutput(final URI outputLocation, final RepositoryModelProvider repoModelProvider)
+            throws InitializationException, IOException {
+        SnapshotBuilder.setBaseSnapshotURI(outputLocation);
+        final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("", null);
+
+        snapshotBuilder.createModelSnapshot(repoModelProvider);
+        return false;
+    }
 
 }
