@@ -11,43 +11,50 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPri
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+/**
+ * TODO describe me.
+ * 
+ * @author unknown
+ *
+ */
 public class TGeoLocation extends AbstractConsumerStage<ServerGeoLocation> {
 
-	ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+    ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
 
-	private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
+    private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
 
-	public TGeoLocation(ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
-		this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
-	}
+    public TGeoLocation(final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
+    }
 
-	@Override
-	protected void execute(ServerGeoLocation element) throws Exception {
-		ResourceEnvironment resourceEnvironment = resourceEnvironmentModelProvider.getModel();
-		EList<ResourceContainer> resContainers = resourceEnvironment.getResourceContainer_ResourceEnvironment();
-		Boolean makeSnapshot = false;
+    @Override
+    protected void execute(final ServerGeoLocation element) throws Exception {
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider.getModel();
+        final EList<ResourceContainer> resContainers = resourceEnvironment.getResourceContainer_ResourceEnvironment();
+        Boolean makeSnapshot = false;
 
-		for (ResourceContainer resContainer : resContainers) {
-			if (resContainer.getEntityName().equals(element.getHostname()) && resContainer instanceof ResourceContainerPrivacy) {
-				
-				ResourceContainerPrivacy resContainerPrivacy = (ResourceContainerPrivacy) resContainer;
-				int geolocation = resContainerPrivacy.getGeolocation();
-				if (geolocation != element.getCountryCode()) {
-					resContainerPrivacy.setGeolocation(element.getCountryCode());
-					makeSnapshot = true;
-					SnapshotBuilder.setSnapshotFlag();
-				}
-				break;
-			}
-		}
-		this.outputPortSnapshot.send(makeSnapshot);
-	}
+        for (final ResourceContainer resContainer : resContainers) {
+            if (resContainer.getEntityName().equals(element.getHostname())
+                    && (resContainer instanceof ResourceContainerPrivacy)) {
 
-	/**
-	 * @return output port for snapshot
-	 */
-	public OutputPort<Boolean> getOutputPortSnapshot() {
-		return this.outputPortSnapshot;
-	}
+                final ResourceContainerPrivacy resContainerPrivacy = (ResourceContainerPrivacy) resContainer;
+                final int geolocation = resContainerPrivacy.getGeolocation();
+                if (geolocation != element.getCountryCode()) {
+                    resContainerPrivacy.setGeolocation(element.getCountryCode());
+                    makeSnapshot = true;
+                    SnapshotBuilder.setSnapshotFlag();
+                }
+                break;
+            }
+        }
+        this.outputPortSnapshot.send(makeSnapshot);
+    }
+
+    /**
+     * @return output port for snapshot
+     */
+    public OutputPort<Boolean> getOutputPortSnapshot() {
+        return this.outputPortSnapshot;
+    }
 
 }
