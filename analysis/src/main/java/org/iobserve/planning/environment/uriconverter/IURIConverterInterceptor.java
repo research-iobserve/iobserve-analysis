@@ -18,28 +18,19 @@ package org.iobserve.planning.environment.uriconverter;
 import org.eclipse.emf.common.util.URI;
 
 /**
- * If the URI to be converted matches the given prefix, the prefix is replaced by the given
- * replacement.
- *
  * @author Fabian Keller
  */
-public class PrefixConverter implements IURIConverterInterceptor {
+public interface IURIConverterInterceptor {
+    /**
+     * Determines whether this URI converter can convert the given URI.
+     * <p>
+     * Returning true results in the {@link IURIConverterInterceptor#convert(URI)} method to be
+     * called.
+     */
+    boolean canConvert(URI uri);
 
-    private final String prefix;
-    private final String replacement;
-
-    public PrefixConverter(final String prefix, final String replacement) {
-        this.prefix = prefix;
-        this.replacement = replacement;
-    }
-
-    @Override
-    public boolean canConvert(final URI uri) {
-        return uri.toString().startsWith(this.prefix);
-    }
-
-    @Override
-    public URI convert(final URI uri) {
-        return URI.createURI(uri.toString().replace(this.prefix, this.replacement));
-    }
+    /**
+     * Converts the given URI.
+     */
+    URI convert(URI uri);
 }

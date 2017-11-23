@@ -5,7 +5,7 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 import org.iobserve.adaptation.IAdaptationEventListener;
-import org.iobserve.adaptation.execution.ActionScript;
+import org.iobserve.adaptation.execution.AbstractActionScript;
 
 public class CLIEventListener implements IAdaptationEventListener {
 
@@ -16,7 +16,7 @@ public class CLIEventListener implements IAdaptationEventListener {
 	}
 
 	@Override
-	public void notifyUnsupportedActionsFound(List<ActionScript> unsupportedActions) {
+	public void notifyUnsupportedActionsFound(List<AbstractActionScript> unsupportedActions) {
 		String unsupportedActionsDesc = unsupportedActions.stream().map(script -> script.getDescription())
 				.collect(Collectors.joining("\n"));
 
@@ -41,7 +41,7 @@ public class CLIEventListener implements IAdaptationEventListener {
 	}
 
 	@Override
-	public void notifyExecutionError(ActionScript script, Throwable e) {
+	public void notifyExecutionError(AbstractActionScript script, Throwable e) {
 		System.out.println("There was an error executing the following script: ");
 		System.out.println(script.getDescription());
 		System.out.println(e.getMessage());

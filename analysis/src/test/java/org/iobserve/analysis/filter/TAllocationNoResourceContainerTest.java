@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import teetime.framework.test.StageTester;
-
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
@@ -35,10 +33,11 @@ import org.mockito.Mockito;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
-import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import teetime.framework.test.StageTester;
 
 /**
  * Tests for {@link TAllocation} filter, in case the {@link ResourceContainer} does not exist yet.
@@ -130,7 +129,7 @@ public class TAllocationNoResourceContainerTest {
 
         Mockito.when(ResourceEnvironmentModelBuilder.createResourceContainer(
                 TAllocationNoResourceContainerTest.testResourceEnvironment, TAllocationNoResourceContainerTest.SERVICE))
-                .thenReturn((ResourceContainerPrivacy) TAllocationNoResourceContainerTest.testResourceContainer);
+                .thenReturn(TAllocationNoResourceContainerTest.testResourceContainer);
 
         Mockito.doNothing().when(TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider)
                 .updateComponent(ResourceEnvironment.class, TAllocationNoResourceContainerTest.testResourceEnvironment);

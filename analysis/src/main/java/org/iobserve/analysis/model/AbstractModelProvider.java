@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -34,8 +33,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import de.uka.ipd.sdq.identifier.Identifier;
 
 /**
- * Base class for pcm model provider. Implements common methods for
- * loading/saving pcm model.
+ * Base class for pcm model provider. Implements common methods for loading/saving pcm model.
  *
  * @author Philipp Weimann
  * @author Tobias Poeppke
@@ -53,7 +51,10 @@ public abstract class AbstractModelProvider<T extends EObject> {
     /** the model instance. */
     private T model;
     private static final Logger LOG = LogManager.getLogger(AbstractModelProvider.class);
-    
+
+    /**
+     * The empty constructor.
+     */
     public AbstractModelProvider() {
         // don't do anything needed for AllocationModelBuilder
     }
@@ -96,25 +97,24 @@ public abstract class AbstractModelProvider<T extends EObject> {
             break;
         }
     }
-    
-    	/**
-	 * Saves the current model instance at the given location. Old files will be
-	 * overwritten.
-	 *
-	 * @param snapshotLocation
-	 *            location to save the current model instance to
-	 */
-	public final void save(final URI snapshotLocation) {
-		URI backupUIRI = this.uriModelInstance;
-		ModelSaveStrategy saveStrategyBackup = this.saveStrategy;
-		this.uriModelInstance = snapshotLocation;
-		this.setSaveStrategy(ModelSaveStrategy.OVERRIDE);
 
-		this.save();
+    /**
+     * Saves the current model instance at the given location. Old files will be overwritten.
+     *
+     * @param snapshotLocation
+     *            location to save the current model instance to
+     */
+    public final void save(final URI snapshotLocation) {
+        final URI backupUIRI = this.uriModelInstance;
+        final ModelSaveStrategy saveStrategyBackup = this.saveStrategy;
+        this.uriModelInstance = snapshotLocation;
+        this.setSaveStrategy(ModelSaveStrategy.OVERRIDE);
 
-		this.uriModelInstance = backupUIRI;
-		this.setSaveStrategy(saveStrategyBackup);
-	}
+        this.save();
+
+        this.uriModelInstance = backupUIRI;
+        this.setSaveStrategy(saveStrategyBackup);
+    }
 
     /**
      * Override existing model content.
@@ -204,12 +204,13 @@ public abstract class AbstractModelProvider<T extends EObject> {
     public URI getModelUri() {
         return this.uriModelInstance;
     }
-    
+
     /**
      * Sets the Uri.
+     * 
      * @param modelUri
      */
-    public void setModelUri(URI modelUri) {
+    public void setModelUri(final URI modelUri) {
         this.uriModelInstance = modelUri;
     }
 
@@ -226,9 +227,10 @@ public abstract class AbstractModelProvider<T extends EObject> {
         }
         return this.getModel();
     }
-    
+
     /**
      * Sets a new model.
+     * 
      * @param model
      */
     public void setModel(final T model) {

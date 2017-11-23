@@ -221,10 +221,9 @@ public final class TUndeployment extends AbstractConsumerStage<IUndeploymentReco
     public OutputPort<IUndeploymentRecord> getVisualizationOutputPort() {
         return this.visualizationOutputPort;
     }
-    
-    public OutputPort<Boolean> getOutputPortSnapshot()
-    {
-    	return this.outputPortSnapshot;
+
+    public OutputPort<Boolean> getOutputPortSnapshot() {
+        return this.outputPortSnapshot;
     }
 
 }

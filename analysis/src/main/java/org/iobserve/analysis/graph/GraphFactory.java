@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.graph;
 
 import java.util.Collection;
@@ -43,7 +58,7 @@ public class GraphFactory {
     private Map<String, String> assemblyID2allocID;
 
     /**
-     * Empty Constructor
+     * Empty Constructor.
      */
     public GraphFactory() {
     }
@@ -110,33 +125,33 @@ public class GraphFactory {
         for (final AssemblyConnectorPrivacy acp : acps) {
             final DataPrivacyLvl assemblyConnectorPrivacyLvl = acp.getPrivacyLevel();
 
-            final String providedAC_ID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
-            final String requiredAC_ID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
+            final String providedACID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
+            final String requiredACID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
 
-            this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, providedAC_ID);
-            this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, requiredAC_ID);
+            this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, providedACID);
+            this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, requiredACID);
 
-            acs.add(requiredAC_ID);
-            acs.add(providedAC_ID);
+            acs.add(requiredACID);
+            acs.add(providedACID);
         }
 
         GraphFactory.LOG.info("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
     }
 
     private void updatePrivacyLvl(final AssemblyConnectorPrivacy acp, final DataPrivacyLvl assemblyConnectorPrivacyLvl,
-            final String assemblyContext_ID) {
+            final String assemblyContextID) {
         // Check whether the AssemblyContext was found while extracting
-        final AssemblyContext assemblyContext = this.assemblyContexts.get(assemblyContext_ID);
+        final AssemblyContext assemblyContext = this.assemblyContexts.get(assemblyContextID);
         if (assemblyContext == null) {
-            GraphFactory.LOG.error("The provided AssemblyContext (ID: " + assemblyContext_ID
+            GraphFactory.LOG.error("The provided AssemblyContext (ID: " + assemblyContextID
                     + ") form the AssemblyConnectorPrivacy (ID:" + acp.getId() + ") "
                     + "was not found during the AssemblyContextExtraction");
 
-            this.assemblyContexts.put(assemblyContext_ID, acp.getProvidingAssemblyContext_AssemblyConnector());
+            this.assemblyContexts.put(assemblyContextID, acp.getProvidingAssemblyContext_AssemblyConnector());
         }
 
         // Do the actual job and update the privacy lvl
-        DataPrivacyLvl currentDataLevelPrivacy = this.assemblyContextPrivacyLvl.get(assemblyContext_ID);
+        DataPrivacyLvl currentDataLevelPrivacy = this.assemblyContextPrivacyLvl.get(assemblyContextID);
 
         if (currentDataLevelPrivacy != null) {
             currentDataLevelPrivacy = DataPrivacyLvl
@@ -145,7 +160,7 @@ public class GraphFactory {
             currentDataLevelPrivacy = assemblyConnectorPrivacyLvl;
         }
 
-        this.assemblyContextPrivacyLvl.put(assemblyContext_ID, currentDataLevelPrivacy);
+        this.assemblyContextPrivacyLvl.put(assemblyContextID, currentDataLevelPrivacy);
     }
 
     private void extractResourceContainers(final ResourceEnvironmentModelProvider resEnvModelProv) {
@@ -221,11 +236,11 @@ public class GraphFactory {
 
         // Set Edges
         for (final AssemblyConnectorPrivacy acp : this.assemblyConnectors.values()) {
-            final String provAC_ID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
-            final String reqAC_ID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
+            final String provACID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
+            final String reqACID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
 
-            final ComponentNode provNode = components.get(provAC_ID);
-            final ComponentNode reqNode = components.get(reqAC_ID);
+            final ComponentNode provNode = components.get(provACID);
+            final ComponentNode reqNode = components.get(reqACID);
 
             final ComponentEdge edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode,
                     acp.getPrivacyLevel());
