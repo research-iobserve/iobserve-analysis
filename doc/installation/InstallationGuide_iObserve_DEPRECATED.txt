@@ -1,0 +1,163 @@
+Installation of iObserve 
+(Date of creation 01.04.2016)
+
+1. Get Palladio Bench 4.0
+
+- Download an appropriate version from: 
+http://www.palladio-simulator.com/tools/download/
+
+
+2. Get iObserve from Github:
+
+2.1 Install git: https://git-scm.com/downloads (latest version)
+follow instructions. Once you installed git open a terminal and type:
+
+- git clone https://github.com/research-iobserve/iobserve-analysis.git
+(latest version)
+
+3. Installing additional Plugins to Palladio:
+(always restart Eclipse when you get asked)
+
+- Open Palladio installation from 1.) Just double-click on eclipse.exe within your 
+Palladio installation from 1.)
+
+In Palladio:
+3.1 Install Maven (1.6.X): Help > InstallNewSoftware > Work with: 
+http://download.eclipse.org/technology/m2e/releases
+
+Troubleshooting with maven related stuff:
+Just install maven as commando line tool and use it from there like so:
+mvn clean
+mvn compile
+mvn install
+
+or in just one call: mvn clean compile install
+
+3.2 Install JavaEE Dev-Tools (3.6.X): Help > InstallNewSoftware > Work with: 
+http://download.eclipse.org/releases/luna/
+
+Check: Web,XML, Java EE and OSGi Enterprise Developement > Eclipse Java EE Developer Tools
+install.
+
+3.3 Install Glassfish runtime (4.X):
+-> Download glassfish from: https://glassfish.java.net/download.html
+and unzip it somewhere. This is the glassfish installation path
+
+3.3.1 Install Glassfish-Tools (7.7.X): Help > InstallNewSoftware > Work with: 
+http://download.oracle.com/otn_software/oepe/luna
+
+Check: Tools > GlassFish Tools
+install.
+
+3.3.2 Add New Sever Runtime: Window > Preferences > Server > RuntimeEnvironment > 
+GlassFish > GlassFish4
+
+ServerRoot:browse to the your glassfish installation path
+i.e. glassfish-4.1.1\glassfish4\glassfish
+
+It is the last glassfish subfolder you'll find.
+
+4. Import iObserve projects
+
+4.1 Switch to Java-Perspective: Window > OpenPerspective > Java (evtl. Other > Java)
+
+4.2 Actual import:
+
+- File > Import > General > Existing Projects into Workspace > 
+select root directory (browse and navigate to iObserve folder) > select all > Finish
+-> do not check "copy into workspace" or any other just uncheck all.
+
+5. Resolving dependency issues:
+
+5.1 Maven-Issues:
+
+In org.iobserve.analysis:
+
+Open pom.xml
+- Adjust the <lib.location.palladio> to your palladio installation folder/Plugins
+- Adjust the <lib.location> to path to org.iobserve.analysis/libs
+
+5.2 Missing folder issue:
+In org.iobserve.monitoring:
+
+If there is this folders are missing add them by right click on the project >
+BuildPath > NewSourceFolder
+
+Folder which have to be there:
+
+src/test/java
+src/test/resource
+src/main/resource
+src/gen/java: If this is missing add it manually by:
+	- right click on project -> New -> Source Folder > type: src/gen/java > finish
+	once this is done you should have an additional src folder with the package
+	org.iobserve.analysis.data. Now you have to move the package org.iobserve.analysis.data
+	into the src/main/java source folder if this is not already the case.
+
+
+5.3 Eclipse-Libs issue:
+
+5.3.1 Create a UserLibrary
+Window > Preferences > Java > BuildPath > User Libraries > Add
+Give it a name
+Select the created library and clicke > Add External Jars
+Do not import org.palladiosimulator.* and de.uka.* stuff.
+
+5.3.2 Add the User library to org.iobserve.analysis
+Right click on the project > BuilPath > Add Libraries > User Library > Your just created library
+
+Congratualtions! You installed the preliminary stuff. Next is to set up iObserve it self
+
+---------------------------------------
+6. Additional Software (optional)
+
+6.1 Checkstyle plugin:(optional but recommended): Install checkstyle-plugin (latest version)
+Help > InstallNewSoftware > Work with: 
+http://eclipse-cs.sf.net/update
+
+6.2 Install Egit (latest version) (optional): Help > InstallNewSoftware > Work with:
+http://download.eclipse.org/egit/updates
+This plugin is for git-support in eclipse directly (limited support).
+
+---------------------------------------
+7. Setting up iObserve:
+
+7.1 Setup the AnalysisMain class in order to run the application:
+
+7.1.1 Add Run-Configuration:
+Run > Run Configuration > right click on Java-Application > New: Give it a name you remember
+
+7.1.2 Chose on <Project:> section org.iobserve.analysis
+7.1.3 Chose on <Main Class:> section org.iobserve.analysis.AnalysisMain class
+7.1.4 switch to the tab <Arguments> and start adding the parameters in the section <Program arguments:>
+
+7.2 Program arguments:
+	
+	(all paths relative or absolute is ok)
+    Arguments expained:
+    1. Directory where the kieker data is: It is assumed, that this directory contains a
+	   - .map file: Mapping file
+	   - .dat file: Actual data file
+	2. Path for the logging file creation (this file will be created for you).
+	3. Path to existing repository file. Normally this file has an extension like .repository
+	4. Path to existing usagemodel file. Normally this file has an extension like .usagemodel
+	5. Path for the updated usagemodel file creation (this file will be created for you)
+	6. Path to existing RAC mapping file.
+
+Examples of parameter:
+res/test/kieker output/log.txt res/test/modells/PCMInput/cocome.repository res/test/modells/PCMInput/cocome.usagemodel output/updated_usagemodel.usagemodel res/test/rac/mapping_fake.xml
+
+
+
+-------------------------------------------------------------------------------------------------
+Installation Gradle-Plugin:
+SpringSource Update Site for Gradle Integration for Eclipse - http://dist.springsource.com/release/TOOLS/gradle
+
+
+
+---------------------------------------
+Args
+
+--inDirMonitoringData=res/test/kieker --inPathPcmRepositoryModel=res/test/modells/PCMInput/cocome.repository --inPathPcmUsageModel=res/test/modells/PCMInput/cocome.usagemodel --inPathProtocomMappingFile=res/test/rac/mapping_fake.xml --outPathPcmUpdatedUsageModel=output/updated_usagemodel.usagemodel --outPathLoggingFile=output/log.txt
+
+
