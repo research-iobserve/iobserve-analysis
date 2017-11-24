@@ -15,6 +15,11 @@
  ***************************************************************************/
 package org.iobserve.monitoring.sampler.geolocation;
 
+/**
+* TODO .
+*
+* @author unknown
+**/
 public interface ICountryInvestigator {
 
     /**
