@@ -54,7 +54,8 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
 
     /**
      * Test method for
-     * {@link org.iobserve.monitoring.probe.servlet.SessionAndTraceRegistrationPayloadFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)}.
+     * {@link org.iobserve.monitoring.probe.servlet.SessionAndTraceRegistrationPayloadFilter#doFilter(javax.servlet.ServletRequest, 
+          javax.servlet.ServletResponse, javax.servlet.FilterChain)}.
      *
      * @throws InterruptedException
      *             during the sleep time of the thread
@@ -80,6 +81,8 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
             }
 
             final List<IMonitoringRecord> storage = TestDumpWriter.getRecords();
+
+            Assert.assertTrue("No records received", storage.size() > 0);
 
             IMonitoringRecord record = storage.get(0);
             Assert.assertEquals("Should be KiekerMetadataRecord", KiekerMetadataRecord.class, record.getClass());
