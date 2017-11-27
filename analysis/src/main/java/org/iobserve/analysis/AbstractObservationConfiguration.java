@@ -44,7 +44,6 @@ import org.iobserve.analysis.filter.TAllocationFinished;
 import org.iobserve.analysis.filter.TDeployment;
 import org.iobserve.analysis.filter.TEntryCall;
 import org.iobserve.analysis.filter.TEntryCallSequence;
-import org.iobserve.analysis.filter.TGeoLocation;
 import org.iobserve.analysis.filter.TUndeployment;
 import org.iobserve.analysis.filter.TimeTriggerFilter;
 import org.iobserve.analysis.filter.TraceAcceptanceFilter;
@@ -52,8 +51,6 @@ import org.iobserve.analysis.filter.TraceOperationCleanupFilter;
 import org.iobserve.analysis.filter.CollectUserSessionsFilter;
 import org.iobserve.analysis.filter.IEntryCallTraceMatcher;
 import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.CloudProfileModelProvider;
-import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -148,9 +145,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             final String visualizationServiceURL, 
             final EAggregationType aggregationType,
             final EOutputMode outputMode,
-            final SnapshotBuilder snapshotBuilder,
-            final CloudProfileModelProvider cloudProfileModelProvider,
-            final CostModelProvider costModelProvider,
+            final SnapshotBuilder snapshotBuilder, 
             final URI perOpteryxHeadless, 
             final URI lqnsDir, 
             final IAdaptationEventListener eventListener,
@@ -158,15 +153,13 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
-        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelGraphProvider, 
-                cloudProfileModelProvider, costModelProvider);
+        final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelGraphProvider);
         final TAllocationFinished tAllocationFinished = new TAllocationFinished();
         this.deployment = new TDeployment(correspondenceModel, allocationModelGraphProvider, systemModelGraphProvider,
                 resourceEnvironmentModelGraphProvider);
         this.deploymentAfterAllocation = new TDeployment(correspondenceModel, allocationModelGraphProvider,
                 systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
-        this.tAllocationAfterDeploy = new TAllocation(resourceEnvironmentModelGraphProvider, 
-                cloudProfileModelProvider, costModelProvider);
+        this.tAllocationAfterDeploy = new TAllocation(resourceEnvironmentModelGraphProvider);
         this.undeployment = new TUndeployment(correspondenceModel, allocationModelGraphProvider,
                 systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
 
@@ -261,7 +254,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(collectUserSessions.getOutputPort(), tBehaviorModelComparison.getInputPort());
         
         if(snapshotBuilder != null && perOpteryxHeadless != null && lqnsDir != null && deployablesFolder != null) {
-            final TGeoLocation tGeoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
             // create filters for snapshot planning, evaluation and adaptation
             final CandidateGeneration candidateGenerator = new CandidateGeneration(new ModelProcessing(perOpteryxHeadless, lqnsDir),
                     new ModelOptimization(), new CandidateProcessing());
@@ -270,9 +262,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                     new AdaptationPlanning(), new AdaptationExecution(eventListener, deployablesFolder));
             final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
             
-            // Path GeoLocation => Snapshot
-		    this.connectPorts(this.recordSwitch.getGeoLocationPort(), tGeoLocation.getInputPort());
-		    this.connectPorts(tGeoLocation.getOutputPortSnapshot(), snapshotBuilder.getInputPort());
             // Path Snapshot => Planning
             this.connectPorts(snapshotBuilder.getOutputPort(), candidateGenerator.getInputPort());
             // Path Snapshot => Evaluation

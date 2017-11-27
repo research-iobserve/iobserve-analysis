@@ -19,8 +19,6 @@ import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.filter.reader.MultipleConnectionTcpReaderStage;
 import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.CloudProfileModelProvider;
-import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -97,16 +95,14 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
             final EAggregationType aggregationType,
             final EOutputMode outputMode,
             final SnapshotBuilder snapshotBuilder, 
-            final CloudProfileModelProvider cloudProfileModelProvider,
-            final CostModelProvider costModelProvider,
             final URI perOpteryxHeadless, 
             final URI lqnsDir, 
             final URI deployablesFolder) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
                 systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, cloudProfileModelProvider,
-                costModelProvider, perOpteryxHeadless, lqnsDir, null, deployablesFolder);
+                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, perOpteryxHeadless, lqnsDir, 
+                null, deployablesFolder);
 
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
                 MultiInputObservationConfiguration.CAPACITY);

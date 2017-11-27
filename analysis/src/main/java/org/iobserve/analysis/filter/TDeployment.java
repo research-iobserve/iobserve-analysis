@@ -41,9 +41,9 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 /**
- * This class contains the transformation for updating the PCM allocation model
- * with respect to deployment. It processes deployment events and uses the
- * correspondence information in the RAC to update the PCM allocation model.
+ * This class contains the transformation for updating the PCM allocation model with respect to
+ * deployment. It processes deployment events and uses the correspondence information in the RAC to
+ * update the PCM allocation model.
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
@@ -65,7 +65,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
     private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
     private final OutputPort<IDeploymentRecord> deploymentFinishedOutputPort = this.createOutputPort();
-    private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort(); 
+    private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
@@ -109,7 +109,7 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
         }
 
         ExecutionTimeLogger.getInstance().stopLogging(event);
-        
+
         this.outputPortSnapshot.send(false);
     }
 
@@ -133,14 +133,13 @@ public final class TDeployment extends AbstractConsumerStage<IDeploymentRecord> 
     public OutputPort<IDeploymentRecord> getDeploymentFinishedOutputPort() {
         return this.deploymentFinishedOutputPort;
     }
-    
+
     /**
-	 * @return output port for snapshot
-	 */
-	public OutputPort<Boolean> getOutputPortSnapshot()
-	{
-		return this.outputPortSnapshot;
-	}
+     * @return output port for snapshot
+     */
+    public OutputPort<Boolean> getOutputPortSnapshot() {
+        return this.outputPortSnapshot;
+    }
 
     /**
      * Process the given {@link ServletDeployedEvent} event and update the model.
