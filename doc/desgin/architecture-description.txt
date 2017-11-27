@@ -1,0 +1,117 @@
+# iObserve General Architecture
+
+The iObserve architecture comprises of four core services supplemented
+by model storage, visualizations, and editors. The four services are:
+- Analysis
+- Prediction
+- Planning
+- Execution
+
+They are loosely coupled via TCP/HTTP connects which allow to trigger
+the "next" service if necessary.
+
+## Analysis
+
+Performs all the analysis and updates the PCM Runtime Model accordingly.
+It also informs the visualization and the prediction service about
+changes it has made on the PCM Runtime Model.
+
+## Prediction
+
+Performs predictions based on the PCM Runtime Model. It is triggered by
+the analysis. Not shown in the figure, prediction can also be used on
+model produced by the planning.
+
+The prediction triggers planning, in case the prediction detects any
+issues based on the current model.
+
+Note: It is unclear of components of the prediction service are also
+used in planning or the whole prediction service is reused, just with
+different configurations.
+
+## Planning
+
+The planning gets a complete report on all immanent and predicted
+issues. Based on that assessment, it computes pareto optimal future
+deployments based on the model variation points.
+
+These plans are stored in a planning repository. They can then be used
+by the execution service and edited in the edit service.
+
+The planning may automatically trigger the execution with a plan handle
+in case operator intervention is not required.
+
+## Execution
+
+Based on operator intervention or triggered by the planning service,
+the execution computes based on the present runtime model and either
+a planned model or an operator model or a mixture thereof, an execution
+plan. As the final execution plan relates to the actual system, it may
+require access to the RAC as a general model-implementation mapping
+model.
+
+## Interfaces
+
+### TCP Kieker
+
+Continuous stream of Kieker events from multiple nodes.
+
+### Update Visualization
+
+The Update Visualization interface is triggered by the analysis service
+and used to push visualization model changes to the Visualization
+service. This allows the Analysis and the Prediction to enrich the
+visualization with additional information.
+
+### RAC Access
+
+Provides read access to the RAC.
+
+### PCM Access
+
+Provides read and write access to one PCM model.
+
+### PCM Select & Access
+
+Provides read and write access to multiple PCM models combined with
+a model selector.
+
+### Model Select & Access
+
+Allows to access different models in a model repository. For operator
+models this includes, PCM models and fragments prepared by the operator,
+edited PCM models and execution plans.
+
+### Prediction Trigger
+
+The Prediction Trigger informs the prediction service that the analysis
+has updated the model and a prediction is required.
+
+### Planning Trigger
+
+In case issues were detected, the planning is triggered based on an
+issue report.
+
+### Planning Control
+
+Separate from automatic triggered planning, an operator can trigger
+planning through the Edit service.
+
+### Auto Execution Trigger
+
+In case immediate action is necessary, the planning can hand the
+Execution a prescriptive model reference via this interface.
+Based on that handle the Execution generates an adaptation plan and
+executes it.
+
+### Control Execution
+
+The execution of a plan can also be issued by the operator via the
+Control Execution interface.
+
+Technically, this interface hands over an execution plan.
+
+
+
+
+

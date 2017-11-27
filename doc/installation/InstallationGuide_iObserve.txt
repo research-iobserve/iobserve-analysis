@@ -1,0 +1,185 @@
+Installation of iObserve 
+(Date of creation 23.06.2016)
+Author: Nicolas Boltz
+Author: Alessandro Giusa
+
+0. General Notes:
+
+0.1 In order to use tools like git or gradle from the terminal (cmd in windows, bash in linux), it is necessary to set 
+environment variables pointing to the installation folder of those tools.
+
+Example Git:
+"C:\Program Files (x86)\Git\bin" on a windows machine.
+
+Useful links:
+https://en.wikipedia.org/wiki/Environment_variable
+https://java.com/en/download/help/path.xml
+
+or just google for setting environment variable on your system.
+
+-----------------------------------------------------------------------------------------------------------------------
+
+1. Get Palladio Bench 4.0
+
+- Download an appropriate version from: 
+https://sdqweb.ipd.kit.edu/eclipse/palladiobench/releases/4.0.0/
+
+-----------------------------------------------------------------------------------------------------------------------
+
+2. Command line tools you will need.
+
+2.1 GIT
+https://git-scm.com/downloads (latest version).
+
+-----------------------------------------------------------------------------------------------------------------------
+
+3. Eclipse-Plug-ins you will need to install on your downloaded Palladio-Eclipse version:
+(always restart Eclipse when you get asked)
+To install any plug-in in Eclipse, just click on the menu bar Help > Install New Software and enter the the update-site
+url in the text box "work-with"
+
+Tutorial:
+https://www.youtube.com/watch?v=AhSOyDi-P18
+
+just install all other plug-ins analogical.
+
+3.1 (mandatory) JavaEE Dev-Tools: (Help > InstallNewSoftware > Work with:)
+For Luna: http://download.eclipse.org/releases/luna/
+
+Check: Web,XML, Java EE and OSGi Enterprise Development > Eclipse Java EE Developer Tools
+
+3.2 (mandatory) Glassfish runtime (4.X):
+-> Download glassfish from: https://glassfish.java.net/download.html and unzip it somewhere. 
+This is the glassfish installation path
+
+3.2.1 (mandatory) Glassfish-Tools (7.7.X): (Help > InstallNewSoftware > Work with:)
+For Luna: http://download.oracle.com/otn_software/oepe/luna
+
+Check: Tools > GlassFish Tools
+
+3.2.2 Add New Sever Runtime: Window > Preferences > Server > RuntimeEnvironment > 
+GlassFish > GlassFish4
+
+ServerRoot:browse to the your glassfish installation path
+i.e. glassfish-4.1.1\glassfish4\glassfish
+(It is the last glassfish subfolder you'll find.)
+
+3.3 (mandatory) Gradle: (Help > InstallNewSoftware > Work with:)
+https://github.com/eclipse/buildship/blob/master/docs/user/Installation.md
+For Luna: http://download.eclipse.org/buildship/updates/e44/releases/1.0
+
+3.4 (recommended/mandatory) AspectJ: (Help > InstallNewSoftware > Work with:)
+ApectJ is only needed for logging time and memory usage of each step. There is no need to install it right away, 
+it can be installed later on if logging is needed.
+
+Search for build that suits the version of your eclipse installation.
+http://www.eclipse.org/ajdt/downloads/index.php
+For Luna: http://download.eclipse.org/tools/ajdt/44/dev/update
+
+Check: AspectJ Development Tools > AspectJ Development Tools
+
+3.5 (recommended/mandatory) Checkstyle: (Help > InstallNewSoftware > Work with:)
+http://eclipse-cs.sf.net/update
+
+Check: Checkstyle > Eclipse Checkstyle Plug-in
+
+Follow the instructions from this link:
+https://github.com/research-iobserve/iobserve-analysis/wiki/Eclipse-Setup-for-iObserve
+
+
+3.6 (optional) EGit, Eclipse version of Git:
+http://download.eclipse.org/egit/updates
+
+-----------------------------------------------------------------------------------------------------------------------
+
+4. Get iObserve from Github:
+Both are needed to build iobserve.
+
+- git clone https://github.com/research-iobserve/iobserve-analysis.git
+- git clone https://github.com/research-iobserve/iobserve-repository.git
+
+Important: The iobserve-repository repository must be located OUTSIDE of the iobserve-analysis repository!
+
+-----------------------------------------------------------------------------------------------------------------------
+
+5. Create User-Properties File
+Prior to importing the project we have to set user dependent properties. In order to do so we will create the file 
+
+	iobserve-analysis/gradle.properties
+
+5.1 Add Supplementary Repository path
+api.baseline=/PATH/iobserve-repository/mvn-repo
+
+Important: The path has to include the mvn-repo folder!
+
+-----------------------------------------------------------------------------------------------------------------------
+ 
+6. Import iObserve into Eclipse
+
+6.1 File > Import > Gradle (STS) > Browse
+browse to the root iobserve-analysis folder. Do NOT browse to a folder within the root iobserve-analysis folder, 
+those are just modules.
+
+- Click "Build-Model". 
+- Check the root node in the presented tree and 
+- Click "Finish".
+
+You should have 4 new projects:
+- iobserve-analysis (root)
+- org.iobserve.analysis (module)
+- org.iobserve.analysis.cli (module, houses the main-Method)
+- org.iobserve.analysis.service (module)
+- org.iobserve.common (module)
+- org.iobserve.monitoring (module)
+
+
+6.2 Right click on root project "iobserve-analysis" ContextMenu > Gradle(STS)> Refresh All
+this should refresh all stuff like dependencies..and so on. 
+
+After this step, the projects should be clean from errors.
+
+Important: For information on setting up a run configuration and running iobserve-analysis, as well as some knowledge 
+about the data necessary to run it, check out doc/general/UsageGuide_iObserve.txt.
+
+-----------------------------------------------------------------------------------------------------------------------
+
+7. Optional information
+
+7.1 Gradle
+
+(User Guide: https://docs.gradle.org/current/userguide/gradle_command_line.html)
+(From Terminal: gradle tasks --all)
+
+From Eclipse:
+Window > Show View > Other > Gradle (STS) > Gradle Tasks
+
+7.1.1 Refresh Dependencies
+
+From Eclipse:
+Right-Click on project you want to refresh deps > Gradle (STS) > Refresh Dependencies
+
+(From Terminal: gradle --refresh-dependencies)
+
+
+7.2 Additional libraries
+
+7.2.1 Maven repo:
+Just add the gradle specific pointer for the repository in the build.gradle file of the project which needs this 
+library in the 
+
+dependencies {
+...
+}
+
+section.
+
+7.2.2 Own library:
+If you just have a jar file and want to add it to the classpath. Just copy it into the libs/ folder and refresh the 
+dependencies like 8.1
+
+
+7.3 Used Gradle plug-ins
+
+7.3.1 AspectJ plugin
+https://github.com/eveoh/gradle-aspectj
+

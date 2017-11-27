@@ -1,0 +1,85 @@
+Guide on using iObserve
+(Date of creation 07.11.2016)
+Author: Nicolas Boltz
+
+0. General notes:
+    Prior to continuing with this guide, make sure that you have completely installed iObserve following the 
+    instructions in InstallationGuide_iObserve.txt.
+
+-----------------------------------------------------------------------------------------------------------------------
+
+1. Setting up iObserve Run-Configuration
+    This is the standard configuration for launching iObserve-Analysis. This makes it analyze and modify the data 
+    supplied in the folders that are specified in the arguments below. 
+
+    1.1 Add Run-Configuration:
+        Run > Run configurations... > Create new 'Java Application' Run-Configuration > New: Give it a name
+
+    1.2 Chose on <Project:> section org.iobserve.analysis.cli
+
+    1.3 Chose on <Main Class:> section org.iobserve.service.cli.AnalysisMain class
+
+    1.4 Switch to the tab <Arguments> and add the following string in the section <Program arguments:>
+        -i=Path to directory with kieker files
+        -p=Path to directory with pcm model files
+        -t=1
+        -V=1
+        -w
+
+    1.5 Apply
+	
+    These folders specify the location of the input and output files.
+	
+Important: If one of the folders, the arguments refer to, is missing, create it by hand(org.iobserve.analysis/FOLDER).
+
+-----------------------------------------------------------------------------------------------------------------------
+
+2. Setting up copy Run-Configuration
+    In general the idea is to have a directory where you can test your program using copies(working_dir) instead of 
+    original data(original_dir). The original_dir is located in org.iobserve.analysis/res/ next to the working_dir.
+
+    While copying the data from the original_dir to the working_dir by hand is fine, the Gradle build script of 
+    iObserve includes a commando that can copy the data from the original_dir into the working_dir.
+
+    2.1 Add Run-Configuration
+        Run > Run configurations... > Create new 'Gradle Project' Run-Configuration
+
+    2.2 Put 'copyPcmToWorkingDir' in <Gradle Tasks:>
+
+    2.3 On <Working Directory:> click button 'Workspace' and select 'iobserve-analysis'
+
+    2.4 Apply
+
+Hint: If you want to put the directories somewhere else, alter the paths in org.iobserve.analysis/build.gradle
+
+    ext {
+        working_dir = 'res/working_dir/'
+        original_dir = 'res/original_dir/'
+    }
+	
+and change the paths of the arguments in your iObserve Run-Configuration accordingly.
+
+-----------------------------------------------------------------------------------------------------------------------
+
+3. General knowledge before running iObserve
+    3.1 The original_dir or working_dir contain two directories:
+        3.1.1 pcm: The pcm dir contains a pcm model which specifies the base network and service structure.
+        3.1.2 kieker: This directory contains another directory(with an arbitary name) that holds the data which 
+        describes actions that have been done on or to the system.
+	
+    3.2 The kieker files
+        The files in the kieker directory consist of exactly one .map and at least one .dat files.
+
+        The .map file maps iObserve event types to tokens, that are used in the .dat files.
+
+        The .dat files contain a chronological collection of events, the monitoring data. Every line represents an 
+        single event, starting with a token that specifies the event type and containing different data depending on 
+        the event type. Most events reference a function of an object or an object itself, but since the object is only
+        specified by name/path the .rac file is needed for mapping.
+
+    3.3 The .rac file
+        Next to the pcm model files, the pcm directory contains a .rac file. This file maps objects(correspondents) and
+        their methods from the kieker monitoring data, to the corresponding element(pcmEntity) from the repository 
+        model that supplies them.
+        (Since the automatic creation of the .rac file is currently not supported, changes in the repository model or 
+        monitoring files have to be done in the .rac by hand.)

@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="13.2">
+  <zoom_level>9</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>486</x>
+      <y>405</y>
+      <w>405</w>
+      <h>243</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Interface&gt;&gt;
+CashDeskConnectorIf
+Package::tradingsystem_inventory_application_store.interfaces.ejb
+Project::.tradingsystem_inventory_application_store.ejbClient
+--
+bookSale0
+getProductWithStockItem1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>108</x>
+      <y>405</y>
+      <w>369</w>
+      <h>243</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Interface&gt;&gt;
+ITradingSystem_Inventory_Application_Store
+Package::tradingsystem_inventory_application_store.ejb
+Project::.tradingsystem_inventory_application_store.ejb
+--
+cashDeskConnectorIf_bookSale0
+storeIf_getStore0
+storeIf_getProductsWithLowStock1
+storeIf_getAllProducts2
+storeIf_getAllProductsWithOptionalStockItem3
+storeIf_orderProducts4
+storeIf_getOrder5
+storeIf_rollInReceivedOrder6
+storeIf_changePrice7
+storeIf_markProductsUnavailableInStock8
+storeIf_flushDatabase9
+cashDeskConnectorIf_getProductWithStockItem1</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>900</x>
+      <y>405</y>
+      <w>405</w>
+      <h>243</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Interface&gt;&gt;
+StoreIf
+Package::tradingsystem_inventory_application_store.interfaces.ejb
+Project::.tradingsystem_inventory_application_store.ejbClient
+--
+getStore0
+getProductsWithLowStock1
+getAllProducts2
+getAllProductsWithOptionalStockItem3
+orderProducts4
+getOrder5
+rollInReceivedOrder6
+changePrice7
+markProductsUnavailableInStock8
+flushDatabase9</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>108</x>
+      <y>765</y>
+      <w>369</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Class&gt;&gt;
+TradingSystem_Inventory_Application_Store
+Package::tradingsystem_inventory_application_store.ejb
+Project::.tradingsystem_inventory_application_store.ejb</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>288</x>
+      <y>639</y>
+      <w>27</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>486</x>
+      <y>765</y>
+      <w>405</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Class&gt;&gt;
+CashDeskConnectorIf_TradingSystem_Inventory_Application_Store
+Package::tradingsystem_inventory_application_store.ejb
+Project::.tradingsystem_inventory_application_store.ejb</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>675</x>
+      <y>639</y>
+      <w>27</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>900</x>
+      <y>765</y>
+      <w>405</w>
+      <h>72</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;Class&gt;&gt;
+StoreIf_TradingSystem_Inventory_Application_Store
+Package::tradingsystem_inventory_application_store.ejb
+Project::.tradingsystem_inventory_application_store.ejb</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1098</x>
+      <y>639</y>
+      <w>27</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>549</x>
+      <y>45</y>
+      <w>261</w>
+      <h>243</h>
+    </coordinates>
+    <panel_attributes>&lt;&lt;PCMComponent&gt;&gt;
+TradingSystem.Inventory.Application.Store
+--
+bookSale
+getStore
+getProductsWithLowStock
+getAllProducts
+getAllProductsWithOptionalStockItem
+orderProducts
+getOrder
+rollInReceivedOrder
+changePrice
+markProductsUnavailableInStock
+flushDatabase
+getProductWithStockItem</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>675</x>
+      <y>279</y>
+      <w>27</w>
+      <h>153</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;150.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>675</x>
+      <y>279</y>
+      <w>441</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;60.0;470.0;60.0;470.0;140.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>288</x>
+      <y>279</y>
+      <w>414</w>
+      <h>144</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;.</panel_attributes>
+    <additional_attributes>440.0;10.0;440.0;60.0;10.0;60.0;10.0;140.0</additional_attributes>
+  </element>
+</diagram>

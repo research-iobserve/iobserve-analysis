@@ -1,0 +1,146 @@
+Table Content
+1. Structure
+3. Build Process
+
+Basic paper:
+Run-time Architecture Models for Dynamic Adaptation and Evolution of Cloud Applications
+http://www.uni-kiel.de/journals/receive/jportal_jparticle_00000265
+
+iObserve overview paper:
+iObserve: Integrated Observation and Modeling Techniques to Support Adaptation and Evolution of Software Systems
+http://www.uni-kiel.de/journals/receive/jportal_jparticle_00000031
+
+1. Structure:
+
+1.1 Packages:
+	1.1.1 org.iobserve.analysis:
+	This packages contains all necessary classes to run iObserve:
+		o 	AnalysisMain: The main class containing also the main-method. Is designed as singleton. A reference can
+			be retrieved from everywhere using the AnalysisMain.getInstance() method.
+		o 	AnalysisMainParameterBean: This class is a java bean containing command line parameter. It can be
+			extended by adding new fields along with corresponding getter and setter according to the java bean
+			convention. Getters are annotated with @Parameter to set their names used on the command line. 
+			More information about this: https://github.com/AlessandroGiusa/giusa.tooling.cmd
+			
+		o	FilterTimeMemLogger: Logger to log the execution time and memory usage of each filter.
+		o	ObservationConfiguration: Configuration class to configure the TeeTime pipeline. TeeTime is used as
+			pipe- and filter framework.
+			More information: https://teetime-framework.github.io/
+
+	1.1.2 org.iobserve.analysis.correspondence:
+	This package contains all necessary classes to realize the runtime architecture correspondence concept described
+	in the basic paper page 16ff.
+	
+	o	ICorrespondence is the interface used in iobserve to get correspondence information between
+		implementation and model. 
+	o	CorrespondenceModelImpl is the current available implementation of ICorrespondence.
+	o	CorrespondenceModelFactory: is the factory to get a ICorrespondence instance.
+	o	Correspondent: is a java bean which is returned by the ICorrespondence.getCorrespondent(...) method. The 
+		contained information can be used on the model provider (see 1.1.5) to get actual pcm elements.
+	o	OperationSignatureSelector: When the correspondence model gets used to get an operation based on the provided
+		class- and method-signature, it has to somehow decide which operation it should return. Since an pcm entity can
+		have more than one operation and during code-generation it is not clear which operation gets implemented by
+		which method, one has to somehow decide using for example the name of the method. Since this issue was not 
+		clear during implementation, a selector was introduced, in order to make this part of the mapping algorithm
+		inside of the correspondence model flexible. The correspondence model will use the selector to compare operation
+		signature with method-signatures.
+		
+	1.1.3 org.iobserve.analysis.filter:
+	This package is the main package of iobserve.analysis. It contains all filters performing the actual transformations
+	on the models. Their are described in the basic paper page 18ff.
+	
+	o	RecordSwitch: This filter dispatches different types of IMonitoringRecord data to either IDeploymentRecord,
+		IUndeploymentRecord, IFlowRecord or TraceMetadata. IMonitoringRecord is the base class for all this subclasses.
+	o	TAllocation: This filter will create ResourceContainer, if a deployment happened on a unknown ResourceContainer.
+		Input:IDeploymentRecord
+	o	TDeployment: This filter will deploy a component on a ResourceContainer, if it is not yet deployed in the model.
+		Input: IDeploymentRecord
+	o	TUndeployment: This filter does the opposite of TDeployment.
+		Input: IUndeploymentRecord
+	o	TNetworkLink: When it happens that TAllocation created a new ResourceContainer in the model, then this new 
+		container is not connected to any other already available container. This filter will connect the container with
+		the other containers. It will get the deployed component on this new container and check in the system model,
+		which other component requires the services from this component. Based on this information, it will query all
+		containers of this components, requiring the "new" deployed one and connect their container with the "new" created
+		one.
+	o	TEntryCall: According to the basic paper page 19ff, it has to create EntryCallEvents based on the FlowEvents.
+		Input: IFlowRecords
+		Output: EntryCallEvent
+	o	TEntryCallSequence: According to the basic paper page 19ff, it has to aggregate EntryCallEvents to a
+		EntryCallSequenceModel. This is done by creating a UserSession per user. The UserSession has a list of all
+		Input: EntryCallEvent
+		Output: EntryCallSequenceModel
+		EntryCallEvents from the specific user.
+	o	TEntryEventSequence: This filter will construct the UsageModel based on the observed EntryCallSequenceModels
+		and update the existing one.
+		Input: EntryCallSequenceModel
+		
+	1.1.4 org.iobserve.analysis.filter.models:
+	This packages contains all kind of models used by the filters in 1.1.3. For example the UserSession used from 
+	TEntryCallSequence or the EntryCallSequenceModel used by TEntryEventSequence.
+	
+	1.1.5 org.iobserve.analysis.model
+	This package contains all model provider and model builder. Model provider are used to load and save pcm models 
+	as well as getting different elements out of a pcm models. The basic architecture is like following:
+	o	AbstractModelProvider: is the base class for all different model providers.
+	o	For each pcm model (i.e. System, UsageModel, ...) there is a specific model provider, providing the loading, 
+		and saving facilities as well as convenient methods to query for model elements.
+	o	AbstractModelBuilder: is the base class for all different model builders.
+	o	For each pcm model (i.e. System, UsageModel, ...) there is a specific model builder, providing convenient methods
+		to add, remove, modify pcm elements.
+	
+	o	ModelSaver: is used from the AbstractModelProvider to save the model. A default implementation can be get
+		from AbstractModelProvider. It is a implementation which can save to a file.
+		The idea behind this interface is to make it flexible how to save. It could be the case, that models are saved
+		in a kind of database. Therefore a you could provide an implementation for this use case. ModelSaver is set
+		by the constructor of AbstractModelProvider.
+	o	ModelLoader: same as ModelSaver but loading model.
+	o	ModelProviderPlatform: From this instance one can get all different model providers
+	
+	1.1.6 org.iobserve.analysis.utils
+	This package contains some utility or general purpose stuff.
+	
+	1.1.7 org.iobserve.logger
+	This package contains AspectJ files related to logging.
+	o	FilterLogging: Is an aspcet which will log the execute time and memory usage for each filter.
+	
+	
+1.2 Build process:
+	
+	1.2.1 Gradle
+	Building is done via Gradle (https://gradle.org/). iobserve.analysis is a multi-build conraining the following 
+	modules:
+	o	org.iobserve.analysis
+		- Some special tasks:
+		During development and testing, one will override models, and other important stuff. In order to not lose the
+		original resources, there is a taks called:
+		- copyPcmToWorkingDir: it will copy everything from res/original_dir into res/working_dir. The res/working_dir
+		is further used to work with during testing time.
+	o	org.iobserve.common
+	o	org.iobserve.monitoring
+	
+	Each of which has its own build.gradle file. Root project is iobserve.analysis and has as well a build file
+	in order to define some common stuff like repositories and similar.
+	
+	In order to build a runnable jar file, one should run the following command on the command line:
+	
+	> gradle fatJar
+	
+	(of course gradle should be installed and also available in your global environment path)
+
+	1.2.2 Used libraries
+	As far as possible, libraries are retrieved using maven. But of course there are some exceptions:
+	o	pcm stuff: in order to get all the pcm libraries one has to perform the step 5 and 5.1 of the 
+		iobserve-analysis/doc/installation/InstallationGuide_iObserve.txt
+	
+	Other libraries are put in org.iobserve.analysis/libs:
+	o	giusa.software.csv-1.0.jar: Simple csv-parser library:
+		One can see how it is used in org.iobserve.analysis.FilterTimeMemLogger.java
+	o	giusa.software.tooling.cmd-1.2.jar: Simple command line parsing library. This is used with the AnalysisMainParameterBean
+		class.
+		See iobserve-analysis/doc/api-usage/Parameter-Parser.txt
+	o	mapping.lib.jar along with mapping_src.zip: This library comes from the protocom-extension and is used to parse
+		the rac-file used form the correspondence model. It is basically a collection of java bean classes annotated with
+		Java JAXB annotations in order to marshall and unmarshall xml files.
+	o	net4j-utils.jar: needed from the pcm stuff
+	o	org.eclipse.emf.cdo.*: also pcm related stuff
