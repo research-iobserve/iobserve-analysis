@@ -42,6 +42,12 @@ import org.palladiosimulator.pcm.repository.RequiredRole;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.impl.SystemFactoryImpl;
 
+/**
+ * ToDo .
+ * 
+ * @author unknown
+ *
+ */
 public class SystemGeneration {
 
     private static final Logger LOG = LogManager.getLogger(SystemGeneration.class);

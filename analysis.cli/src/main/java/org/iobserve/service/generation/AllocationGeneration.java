@@ -26,6 +26,12 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
+/**
+ * Todo .
+ * 
+ * @author unknown
+ *
+ */
 public class AllocationGeneration {
 
     private static final AllocationFactory ALLOCATION_FACTORY = AllocationFactory.eINSTANCE;

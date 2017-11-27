@@ -33,6 +33,12 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
+/**
+ * ToDo .
+ * 
+ * @author unknown
+ *
+ */
 public class ModelGeneration {
 
     private static final Logger LOG = LogManager.getLogger(ModelGeneration.class);

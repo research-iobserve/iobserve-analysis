@@ -30,6 +30,12 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
+/**
+ * ToDo .
+ *
+ * @author unknown
+ *
+ */
 public class AllocationModification {
 
     private final Allocation allocationModel;
@@ -75,7 +81,8 @@ public class AllocationModification {
     }
 
     /**
-     * 
+     *
+     *
      * @param terminatedResContainers
      * @return
      */
@@ -97,7 +104,7 @@ public class AllocationModification {
     }
 
     /**
-     * 
+     *
      * @param deallocatedAssemblyContexts
      */
     public void modifyAllocationFixDeallocations(final List<AssemblyContext> deallocatedAssemblyContexts) {
@@ -114,7 +121,7 @@ public class AllocationModification {
     }
 
     /**
-     * 
+     *
      * @param allocatedAssemblyContexts
      */
     public void modifyAllocationFixAllocations(final List<AssemblyContext> allocatedAssemblyContexts) {
@@ -125,8 +132,8 @@ public class AllocationModification {
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * @param migarions
      * @return
      */
@@ -154,7 +161,7 @@ public class AllocationModification {
     }
 
     /*
-     * 
+     *
      */
     private void migrateToRandomResourceContainer(final AllocationContext allocation) {
         final int randomIndex = ThreadLocalRandom.current().nextInt(this.resContainer.length);

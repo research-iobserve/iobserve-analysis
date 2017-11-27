@@ -25,6 +25,12 @@ import org.eclipse.emf.common.util.EList;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
+/**
+ * ToDo .
+ * 
+ * @author unknown
+ *
+ */
 public class ResourceEnvironmentModification {
 
     private static final Logger LOG = LogManager.getLogger(ModelModification.class);
@@ -36,7 +42,7 @@ public class ResourceEnvironmentModification {
     }
 
     /**
-     * 
+     *
      * @param terminations
      * @return
      */
@@ -58,7 +64,7 @@ public class ResourceEnvironmentModification {
     }
 
     /**
-     * 
+     *
      * @param acquires
      */
     public void modifyResEnvAcquire(final int acquires) {

@@ -15,6 +15,12 @@
  ***************************************************************************/
 package org.iobserve.monitoring.sampler.geolocation;
 
+/**
+ * ToDo .
+ *
+ * @author unknown
+ *
+ */
 public class IDummyCountryInvestigator implements ICountryInvestigator {
 
     /**
@@ -22,7 +28,6 @@ public class IDummyCountryInvestigator implements ICountryInvestigator {
      */
     @Override
     public short getServerGeoLocationCountry() {
-        // TODO Auto-generated method stub
         return 0;
     }
 

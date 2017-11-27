@@ -24,6 +24,12 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceenvironmentP
 
 import com.neovisionaries.i18n.CountryCode;
 
+/**
+ * ToDo .
+ * 
+ * @author unknown
+ *
+ */
 public class ResourceEnvironmentGeneration {
 
     private static final ResourceenvironmentFactory RES_ENV_FACTORY = ResourceenvironmentFactory.eINSTANCE;
