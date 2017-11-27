@@ -17,7 +17,7 @@ package org.iobserve.monitoring.sampler.geolocation;
 
 /**
  * ToDo .
- * 
+ *
  * @author unknown
  *
  */
