@@ -1,7 +1,6 @@
 #!groovy
 
 node {
-  agent none
    stage ('Checkout') {
       steps{
         checkout scm
