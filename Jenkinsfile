@@ -1,8 +1,8 @@
 #!groovy
 
 node {
-    sh 'java -version'
-   stage ('Checkout') {
+    ls $JAVA_HOME
+    stage ('Checkout') {
         checkout scm
     }
 
