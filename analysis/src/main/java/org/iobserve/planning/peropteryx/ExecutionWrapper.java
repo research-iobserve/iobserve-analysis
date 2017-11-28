@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.planning.peropteryx;
 
 import java.io.BufferedReader;
@@ -17,81 +32,81 @@ import org.eclipse.emf.common.util.URI;
  */
 public class ExecutionWrapper extends AbstractExecutionWrapper {
 
-	private String execEnvironment;
-	private String execEnvironmentParam;
-	private String execCommand;
+    private String execEnvironment;
+    private String execEnvironmentParam;
+    private String execCommand;
 
-	public ExecutionWrapper(final URI inputModelDir, final URI perOpteryxDir, final URI lqnsDir) throws IOException {
-		super(inputModelDir, perOpteryxDir, lqnsDir);
+    public ExecutionWrapper(final URI inputModelDir, final URI perOpteryxDir, final URI lqnsDir) throws IOException {
+        super(inputModelDir, perOpteryxDir, lqnsDir);
 
-		if (this.isWindows()) {
-			this.execEnvironment = "cmd.exe";
-			this.execEnvironmentParam = "/C";
-			this.execCommand = "java  -jar .\\plugins\\org.eclipse.equinox.launcher_1.3.201.v20161025-1711.jar";
-		} else {
-			this.execEnvironment = "/bin/bash";
-			this.execEnvironmentParam = "-c";
-			this.execCommand = "./peropteryx-headless";
-		}
+        if (this.isWindows()) {
+            this.execEnvironment = "cmd.exe";
+            this.execEnvironmentParam = "/C";
+            this.execCommand = "java  -jar .\\plugins\\org.eclipse.equinox.launcher_1.3.201.v20161025-1711.jar";
+        } else {
+            this.execEnvironment = "/bin/bash";
+            this.execEnvironmentParam = "-c";
+            this.execCommand = "./peropteryx-headless";
+        }
 
-	}
+    }
 
-	private boolean isWindows() {
-		boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-		return isWindows;
-	}
+    private boolean isWindows() {
+        final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
+        return isWindows;
+    }
 
-	@Override
-	public void watch(final Process process) throws InterruptedException {
-		Thread watcherThread = new Thread(() -> {
-			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-			String line = null;
-			try {
-				while ((line = input.readLine()) != null) {
-					System.err.println("PerOpteryx Output: " + line);
-					// LOG.info("PerOpteryx Output: " + line);
-				}
-			} catch (IOException e) {
-				System.err.println("Watcher Thread terminated");
-				// LOG.error("IOException during PerOpteryx run: " +
-				// e.getStackTrace());
-			}
-		});
-		synchronized (watcherThread) {
-			System.out.println("Starting Watcher Thread!");
-			watcherThread.start();
-			watcherThread.wait();
-			System.out.println("Watcher Thread terminated");
-		}
-	}
+    @Override
+    public void watch(final Process process) throws InterruptedException {
+        final Thread watcherThread = new Thread(() -> {
+            final BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String line = null;
+            try {
+                while ((line = input.readLine()) != null) {
+                    AbstractExecutionWrapper.LOG.error("PerOpteryx Output: " + line);
+                    // LOG.info("PerOpteryx Output: " + line);
+                }
+            } catch (final IOException e) {
+                AbstractExecutionWrapper.LOG.error("Watcher Thread terminated");
+                // LOG.error("IOException during PerOpteryx run: " +
+                // e.getStackTrace());
+            }
+        });
+        synchronized (watcherThread) {
+            AbstractExecutionWrapper.LOG.info("Starting Watcher Thread!");
+            watcherThread.start();
+            watcherThread.wait();
+            AbstractExecutionWrapper.LOG.info("Watcher Thread terminated");
+        }
+    }
 
-	@Override
-	public ProcessBuilder createProcess() {
-		LOG.info("Starting optimization process...");
-		String modelDir = this.getInputModelDir().toFileString();
+    @Override
+    public ProcessBuilder createProcess() {
+        AbstractExecutionWrapper.LOG.info("Starting optimization process...");
+        final String modelDir = this.getInputModelDir().toFileString();
 
-		ProcessBuilder builder = new ProcessBuilder(this.execEnvironment, this.execEnvironmentParam,
-				this.execCommand + " -w " + modelDir);
+        final ProcessBuilder builder = new ProcessBuilder(this.execEnvironment, this.execEnvironmentParam,
+                this.execCommand + " -w " + modelDir);
 
-		String perOpteryxDir = this.getPerOpteryxDir().toFileString();
-		Map<String, String> env = builder.environment();
+        final String perOpteryxDir = this.getPerOpteryxDir().toFileString();
+        final Map<String, String> env = builder.environment();
 
-		String path;
-		if (this.isWindows()) {
-			path = env.get("Path");
-			path = this.getLQNSDir().toFileString()+ ";" + path;
-			env.put("Path", path);
-		} else {
-			path = env.get("PATH");
-			path = this.getLQNSDir().toFileString()+ ":" + path;
-			env.put("PATH", path);
-		}
+        String path;
+        if (this.isWindows()) {
+            path = env.get("Path");
+            path = this.getLQNSDir().toFileString() + ";" + path;
+            env.put("Path", path);
+        } else {
+            path = env.get("PATH");
+            path = this.getLQNSDir().toFileString() + ":" + path;
+            env.put("PATH", path);
+        }
 
-		LOG.info("Environment PATH: " + path);
-		builder.directory(new File(perOpteryxDir));
-		builder.redirectOutput();
-		builder.redirectErrorStream(true);
+        AbstractExecutionWrapper.LOG.info("Environment PATH: " + path);
+        builder.directory(new File(perOpteryxDir));
+        builder.redirectOutput();
+        builder.redirectErrorStream(true);
 
-		return builder;
-	}
+        return builder;
+    }
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 Kieker Project (http://kieker-monitoring.net)
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,19 @@
  ***************************************************************************/
 package org.iobserve.monitoring.sampler.geolocation;
 
+/**
+ * ToDo .
+ *
+ * @author unknown
+ *
+ */
 public interface ICountryInvestigator {
 
-	/**
-	 * Determines the servers current geolocation country.
-	 * 
-	 * @return the country encoded as ISO-3166.
-	 *         {@linkplain https://de.wikipedia.org/wiki/ISO-3166-1-Kodierliste}
-	 */
-	public short getServerGeoLocationCountry();
+    /**
+     * Determines the servers current geolocation country.
+     *
+     * @return the country encoded as ISO-3166.
+     *         {@linkplain https://de.wikipedia.org/wiki/ISO-3166-1-Kodierliste}
+     */
+    public short getServerGeoLocationCountry();
 }

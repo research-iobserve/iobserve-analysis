@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 Kieker Project (http://kieker-monitoring.net)
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,52 +25,60 @@ import org.iobserve.common.record.ServerGeoLocation;
 import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.controller.IMonitoringController;
 
+/**
+ * TODO .
+ * 
+ * @author unknown
+ *
+ */
 public class ServerGeoLocationSampler extends AbstractGeoLocationSampler {
 
-	/**
-	 * Constructs a new {@link AbstractGeoLocationSampler}. Use
-	 * GeoLocationSamplerFactory for instance creation.
-	 */
-	public ServerGeoLocationSampler(ICountryInvestigator countryInvestigator) {
-		super(countryInvestigator);
-	}
+    /**
+     * Constructs a new {@link AbstractGeoLocationSampler}. Use GeoLocationSamplerFactory for
+     * instance creation.
+     */
+    public ServerGeoLocationSampler(final ICountryInvestigator countryInvestigator) {
+        super(countryInvestigator);
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public IMonitoringRecord getGeoLocationRecord(long timestamp, String hostname, short countryCode, IMonitoringController monitoringCtr)
-			throws Exception {
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public IMonitoringRecord getGeoLocationRecord(final long timestamp, final String hostname, final short countryCode,
+            final IMonitoringController monitoringCtr) throws Exception {
 
-		Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
-		ServerGeoLocation record = null;
+        final Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
+        ServerGeoLocation record = null;
 
-		while (netInterfaces.hasMoreElements() && record == null) {
-			String address = getCorrectIPAdress(netInterfaces.nextElement());
-			if (address != null)
-				record = new ServerGeoLocation(timestamp, countryCode, hostname, address);
-		}
+        while (netInterfaces.hasMoreElements() && (record == null)) {
+            final String address = this.getCorrectIPAdress(netInterfaces.nextElement());
+            if (address != null) {
+                record = new ServerGeoLocation(timestamp, countryCode, hostname, address);
+            }
+        }
 
-		if (record == null)
-			throw new UnknownHostException("It was not possible to determine an IP Adress");
-		return record;
-	}
+        if (record == null) {
+            throw new UnknownHostException("It was not possible to determine an IP Adress");
+        }
+        return record;
+    }
 
-	/*
-	 * Iterates via all addresses in the NetIterface and selects the correct IP.
-	 */
-	private String getCorrectIPAdress(NetworkInterface netInterface) {
-		String localNetworkAddress = null;
+    /*
+     * Iterates via all addresses in the NetIterface and selects the correct IP.
+     */
+    private String getCorrectIPAdress(final NetworkInterface netInterface) {
+        String localNetworkAddress = null;
 
-		Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
-		while (addresses.hasMoreElements() && localNetworkAddress == null) {
-			InetAddress address = addresses.nextElement();
-			if (!address.isLoopbackAddress() && !address.isMulticastAddress() && !address.isAnyLocalAddress()) {
-				localNetworkAddress = address.getHostAddress();
-			}
-		}
+        final Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
+        while (addresses.hasMoreElements() && (localNetworkAddress == null)) {
+            final InetAddress address = addresses.nextElement();
+            if (!address.isLoopbackAddress() && !address.isMulticastAddress() && !address.isAnyLocalAddress()) {
+                localNetworkAddress = address.getHostAddress();
+            }
+        }
 
-		return localNetworkAddress;
-	}
+        return localNetworkAddress;
+    }
 
 }

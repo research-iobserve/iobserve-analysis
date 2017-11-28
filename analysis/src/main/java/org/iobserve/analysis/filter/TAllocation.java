@@ -20,18 +20,14 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 
-import org.iobserve.analysis.model.CloudProfileModelProvider;
-import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.IAllocationRecord;
-import org.iobserve.planning.utils.ModelHelper;
-
+import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -43,17 +39,12 @@ import teetime.framework.OutputPort;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  * @author Josefine Wegert
- * @author Tobias Pöppke
  */
 public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> {
 
     /** reference to {@link ResourceEnvironment} provider. */
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
-    private final CloudProfileModelProvider cloudProfileModelProvider;
-
-    private final CostModelProvider costModelProvider;
-    
     /** output ports. */
     private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
     private final OutputPort<IAllocationRecord> allocationFinishedOutputPort = this.createOutputPort();
@@ -65,11 +56,8 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
      * @param resourceEnvironmentModelGraphProvider
      *            the resource environment model
      */
-    public TAllocation(final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-        final CloudProfileModelProvider cloudProfileModelProvider, final CostModelProvider costModelProvider) {
+    public TAllocation(final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
-        this.cloudProfileModelProvider = cloudProfileModelProvider;
-        this.costModelProvider = costModelProvider;
     }
 
     /**
@@ -125,16 +113,11 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
                         serverName);
 
         Opt.of(optResourceContainer).ifNotPresent().apply(() -> {
-            ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelGraphProvider.
-                    readOnlyRootComponent(ResourceEnvironment.class);
-            
-            ResourceContainer cloudContainer = ModelHelper.getResourceContainerFromHostname(
-                    resourceEnvironmentModelGraph, this.costModelProvider, this.cloudProfileModelProvider,
-                    serverName);
-            if (cloudContainer == null) {
-                ResourceEnvironmentModelBuilder.createResourceContainer(resourceEnvironmentModelGraph, serverName);
-            }
-            this.resourceEnvironmentModelGraphProvider.updateComponent(ResourceEnvironment.class, 
+            // new provider: update the resource environment graph
+            final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelGraphProvider
+                    .readOnlyRootComponent(ResourceEnvironment.class);
+            ResourceEnvironmentModelBuilder.createResourceContainer(resourceEnvironmentModelGraph, serverName);
+            this.resourceEnvironmentModelGraphProvider.updateComponent(ResourceEnvironment.class,
                     resourceEnvironmentModelGraph);
 
             // signal allocation update
@@ -151,4 +134,5 @@ public final class TAllocation extends AbstractConsumerStage<IAllocationRecord> 
         });
 
     }
+
 }

@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.filter;
 
 import org.eclipse.emf.common.util.EList;
@@ -11,43 +26,50 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPri
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+/**
+ * TODO describe me.
+ *
+ * @author unknown
+ *
+ */
 public class TGeoLocation extends AbstractConsumerStage<ServerGeoLocation> {
 
-	ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+    private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
 
-	private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
+    private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
 
-	public TGeoLocation(ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
-		this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
-	}
+    public TGeoLocation(final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+        this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
+    }
 
-	@Override
-	protected void execute(ServerGeoLocation element) throws Exception {
-		ResourceEnvironment resourceEnvironment = resourceEnvironmentModelProvider.getModel();
-		EList<ResourceContainer> resContainers = resourceEnvironment.getResourceContainer_ResourceEnvironment();
-		Boolean makeSnapshot = false;
+    @Override
+    protected void execute(final ServerGeoLocation element) throws Exception {
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider.getModel();
+        final EList<ResourceContainer> resContainers = resourceEnvironment.getResourceContainer_ResourceEnvironment();
+        Boolean makeSnapshot = false;
 
-		for (ResourceContainer resContainer : resContainers) {
-			if (resContainer.getEntityName().equals(element.getHostname()) && resContainer instanceof ResourceContainerPrivacy) {
-				
-				ResourceContainerPrivacy resContainerPrivacy = (ResourceContainerPrivacy) resContainer;
-				int geolocation = resContainerPrivacy.getGeolocation();
-				if (geolocation != element.getCountryCode()) {
-					resContainerPrivacy.setGeolocation(element.getCountryCode());
-					makeSnapshot = true;
-					SnapshotBuilder.setSnapshotFlag();
-				}
-				break;
-			}
-		}
-		this.outputPortSnapshot.send(makeSnapshot);
-	}
+        for (final ResourceContainer resContainer : resContainers) {
+            if (resContainer.getEntityName().equals(element.getHostname())
+                    && (resContainer instanceof ResourceContainerPrivacy)) {
 
-	/**
-	 * @return output port for snapshot
-	 */
-	public OutputPort<Boolean> getOutputPortSnapshot() {
-		return this.outputPortSnapshot;
-	}
+                final ResourceContainerPrivacy resContainerPrivacy = (ResourceContainerPrivacy) resContainer;
+                final int geolocation = resContainerPrivacy.getGeolocation();
+                if (geolocation != element.getCountryCode()) {
+                    resContainerPrivacy.setGeolocation(element.getCountryCode());
+                    makeSnapshot = true;
+                    SnapshotBuilder.setSnapshotFlag();
+                }
+                break;
+            }
+        }
+        this.outputPortSnapshot.send(makeSnapshot);
+    }
+
+    /**
+     * @return output port for snapshot
+     */
+    public OutputPort<Boolean> getOutputPortSnapshot() {
+        return this.outputPortSnapshot;
+    }
 
 }
