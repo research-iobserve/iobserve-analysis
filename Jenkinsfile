@@ -1,7 +1,8 @@
 #!groovy
 
 pipeline {
-    agent none
+  agent none
+  stages{  
     stage ('Checkout') {
         checkout scm
     }
@@ -21,6 +22,5 @@ pipeline {
 
     stage ('4-release-check-short logs') {
     }
-  
-  
+  } 
 }
