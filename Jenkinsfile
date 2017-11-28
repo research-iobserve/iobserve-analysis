@@ -2,7 +2,6 @@
 
 pipeline {
     agent none
-  try {    
     stage ('Checkout') {
         checkout scm
     }
@@ -21,10 +20,8 @@ pipeline {
     }
 
     stage ('4-release-check-short logs') {
-        checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**\\build\\reports\\checkstyle\\*.xml', unHealthy: ''
+       // checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**\\build\\reports\\checkstyle\\*.xml', unHealthy: ''
     }
-  }
-  finally {
-    deleteDir()
-  }
+  
+  
 }
