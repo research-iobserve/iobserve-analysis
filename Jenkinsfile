@@ -1,7 +1,7 @@
 #!groovy
 
 node {
-    sh 'ls $JAVA_HOME'
+    sh 'whereis java'
     stage ('Checkout') {
         checkout scm
     }
