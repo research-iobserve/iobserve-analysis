@@ -5,4 +5,3 @@ jdk:
 
 script: gradle check build
 
-  
