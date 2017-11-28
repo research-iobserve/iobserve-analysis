@@ -1,9 +1,8 @@
 #!groovy
 
-pipeline {
+node {
   agent none
-  stages{  
-    stage ('Checkout') {
+   stage ('Checkout') {
       steps{
         checkout scm
       }
@@ -26,6 +25,5 @@ pipeline {
       steps{  
         sh  './gradlew -S check'
       }
-    } 
-  } 
+   } 
 }
