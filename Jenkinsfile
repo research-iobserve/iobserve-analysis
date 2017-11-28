@@ -26,11 +26,6 @@ pipeline {
       steps{  
         sh  './gradlew -S check'
       }
-    }
-
-    stage ('4-release-check-short logs') {
-     steps{
-     }
-    }
+    } 
   } 
 }
