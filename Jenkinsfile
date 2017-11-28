@@ -1,6 +1,9 @@
 #!groovy
 
 node {
+   tools{
+      jdk 'jdk8'
+   }
    stage ('Checkout') {
         checkout scm
     }
