@@ -4,23 +4,33 @@ pipeline {
   agent none
   stages{  
     stage ('Checkout') {
+      steps{
         checkout scm
+      }
     }
 
     stage ('1-compile logs') {
-        sh './gradlew -S compileJava compileTestJava'
+        steps{
+          sh './gradlew -S compileJava compileTestJava'
+        }
     }
 
     stage ('2-unit-test logs') {
-        sh './gradlew -S test'
-        junit '**/build/test-results/test/*.xml'
+        steps{
+            sh './gradlew -S test'
+            junit '**/build/test-results/test/*.xml'
+        }
     }
 
     stage ('3-static-analysis logs') {
+      steps{  
         sh  './gradlew -S check'
+      }
     }
 
     stage ('4-release-check-short logs') {
+     steps{
+     }
     }
   } 
 }
