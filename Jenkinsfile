@@ -20,7 +20,6 @@ pipeline {
     }
 
     stage ('4-release-check-short logs') {
-       // checkstyle canComputeNew: false, defaultEncoding: '', healthy: '', pattern: '**\\build\\reports\\checkstyle\\*.xml', unHealthy: ''
     }
   
   
