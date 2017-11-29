@@ -8,6 +8,7 @@ before_script:
 
 
 script: 
+- echo "Starting the build"
 - .travis/add_dependencies.sh
 - gradle check build
 
