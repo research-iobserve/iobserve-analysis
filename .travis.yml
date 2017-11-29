@@ -11,4 +11,5 @@ before_install:
 
 script: 
 - echo "Starting the build"
+- gradle check compileJava compileTestJava 
 
