@@ -3,11 +3,12 @@ language: java
 jdk:
 - oraclejdk8
 
-before_script:
+before_install:
+- echo "Adding dependencies"
 - chmod +x .travis/add_dependencies.sh
+- .travis/add_dependencies.sh
 
 
 script: 
 - echo "Starting the build"
-- .travis/add_dependencies.sh
 
