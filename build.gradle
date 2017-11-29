@@ -33,8 +33,8 @@ subprojects {
     group = 'org.iobserve'
     
     checkstyle {
-    	configFile = rootProject.file('iobserve-checkstyle-rules.xml')
-    	configProperties = [config_loc: "${rootDir}"]
+        configFile = rootProject.file('iobserve-checkstyle-rules.xml')
+        configProperties = [config_loc: "${rootDir}"]
     }
     
     tasks.withType(Checkstyle) {
@@ -55,17 +55,17 @@ subprojects {
         maven {url "https://repo.eclipse.org/content/groups/releases/" }
         maven {url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven {url "https://oss.sonatype.org/content/repositories/releases/" }
-		maven {url "https://mvnrepository.com/artifact/org.eclipse.emf/org.eclipse.emf.ecore" }
-		maven {url "https://oss.sonatype.org/content/groups/public/"}
-		maven {url "https://jitpack.io"}
-		maven {url "https://mvnrepository.com/artifact/org.eclipse/ocl" }
-		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo.p2"}
-		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo"}
-		maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}
-		maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
-		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
-		maven {url "https://mvnrepository.com/artifact/org.antlr/antlr-runtime"}
-		maven {url project.properties['api.baseline']}
+	maven {url "https://mvnrepository.com/artifact/org.eclipse.emf/org.eclipse.emf.ecore" }
+	maven {url "https://oss.sonatype.org/content/groups/public/"}
+	maven {url "https://jitpack.io"}
+	maven {url "https://mvnrepository.com/artifact/org.eclipse/ocl" }
+	maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo.p2"}
+	maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo"}
+	maven {url "http://mvnrepository.com/artifact/org.eclipselabs/cdo-maven"}
+	maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
+	maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
+	maven {url "https://mvnrepository.com/artifact/org.antlr/antlr-runtime"}
+	maven {url project.properties['api.baseline']}
     }
     
     eclipse {
