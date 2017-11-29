@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -34,8 +33,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import de.uka.ipd.sdq.identifier.Identifier;
 
 /**
- * Base class for pcm model provider. Implements common methods for
- * loading/saving pcm model.
+ * Base class for pcm model provider. Implements common methods for loading/saving pcm model.
  *
  * @author Philipp Weimann
  * @author Tobias Poeppke
@@ -45,83 +43,78 @@ import de.uka.ipd.sdq.identifier.Identifier;
  */
 public abstract class AbstractModelProvider<T extends EObject> {
 
-	private boolean modelLoaded = false;
-	/** uri to the pcm model. */
-	private URI uriModelInstance;
-	/** parent where this provider belongs to. */
-	/** save strategy of model. */
-	private ModelSaveStrategy saveStrategy = ModelSaveStrategy.OVERRIDE;
-	/** the model instance. */
-	private T model;
+    /** uri to the pcm model. */
+    private URI uriModelInstance;
+    /** parent where this provider belongs to. */
+    /** save strategy of model. */
+    private ModelSaveStrategy saveStrategy = ModelSaveStrategy.OVERRIDE;
+    /** the model instance. */
+    private T model;
     private static final Logger LOG = LogManager.getLogger(AbstractModelProvider.class);
 
-	/**
-	 * Create an empty instance! Set the URI after creation!
-	 */
-	public AbstractModelProvider() {
+    /**
+     * The empty constructor.
+     */
+    public AbstractModelProvider() {
         // don't do anything needed for AllocationModelBuilder
-	}
+    }
 
-	/**
-	 * Create a model provider for the given. Uses {@link #MODEL_FILE_LOADER} as
-	 * loader and {@link #MODEL_FILE_SAVER} as saver.
-	 *
-	 * @param theUriModelInstance
-	 *            uri to the model
-	 */
-	AbstractModelProvider(final URI theUriModelInstance) {
-		this.uriModelInstance = theUriModelInstance;
+    /**
+     * Create a model provider for the given. Uses {@link #MODEL_FILE_LOADER} as loader and
+     * {@link #MODEL_FILE_SAVER} as saver.
+     *
+     * @param theUriModelInstance
+     *            uri to the model
+     */
+    AbstractModelProvider(final URI theUriModelInstance) {
+        this.uriModelInstance = theUriModelInstance;
         this.loadModel();
-	}
+    }
 
-	/**
-	 * Set the save strategy which is used to save the model, when
-	 * {@link #save()} is called.
-	 *
-	 * @param saveStrategy
-	 *            save strategy
-	 */
-	public void setSaveStrategy(final ModelSaveStrategy saveStrategy) {
-		this.saveStrategy = saveStrategy;
-	}
+    /**
+     * Set the save strategy which is used to save the model, when {@link #save()} is called.
+     *
+     * @param saveStrategy
+     *            save strategy
+     */
+    public void setSaveStrategy(final ModelSaveStrategy saveStrategy) {
+        this.saveStrategy = saveStrategy;
+    }
 
-	/**
-	 * Save the internal model. This will override the existing.
-	 */
-	public final void save() {
-		if (this.modelLoaded) {
-			switch (this.saveStrategy) {
-			case OVERRIDE:
-				this.overrideModel();
-				break;
-			case MERGE:
-				throw new UnsupportedOperationException(
-                        String.format("%s save strategy does not exist yet!", ModelSaveStrategy.MERGE.name()));
-			default:
-				this.overrideModel();
-				break;
-			}
-		}
-	}
+    /**
+     * Save the internal model. This will override the existing.
+     */
+    public final void save() {
+        switch (this.saveStrategy) {
+        case OVERRIDE:
+            this.overrideModel();
+            break;
+        case MERGE:
+            throw new UnsupportedOperationException(
+                    String.format("%s save strategy does not exist yet!", ModelSaveStrategy.MERGE.name()));
+        default:
+            this.overrideModel();
+            break;
+        }
+    }
 
-	/**
-	 * Saves the current model instance at the given location. Old files will be
-	 * overwritten.
-	 *
-	 * @param snapshotLocation
-	 *            location to save the current model instance to
-	 */
-	public final void save(final URI snapshotLocation) {
-		URI backupUIRI = this.uriModelInstance;
-		ModelSaveStrategy saveStrategyBackup = this.saveStrategy;
-		this.uriModelInstance = snapshotLocation;
-		this.setSaveStrategy(ModelSaveStrategy.OVERRIDE);
+    /**
+     * Saves the current model instance at the given location. Old files will be overwritten.
+     *
+     * @param snapshotLocation
+     *            location to save the current model instance to
+     */
+    public final void save(final URI snapshotLocation) {
+        final URI backupUIRI = this.uriModelInstance;
+        final ModelSaveStrategy saveStrategyBackup = this.saveStrategy;
+        this.uriModelInstance = snapshotLocation;
+        this.setSaveStrategy(ModelSaveStrategy.OVERRIDE);
 
-		this.save();
+        this.save();
 
-		this.uriModelInstance = backupUIRI;
-		this.setSaveStrategy(saveStrategyBackup);
-	}
+        this.uriModelInstance = backupUIRI;
+        this.setSaveStrategy(saveStrategyBackup);
+    }
 
     /**
      * Override existing model content.
@@ -186,8 +179,6 @@ public abstract class AbstractModelProvider<T extends EObject> {
 
         if (this.model == null) {
             AbstractModelProvider.LOG.debug("Model at " + this.uriModelInstance.toString() + "could not be loaded!\n");
-        } else {
-            this.modelLoaded = true;
         }
     }
 
@@ -202,22 +193,8 @@ public abstract class AbstractModelProvider<T extends EObject> {
      * @return model
      */
     public T getModel() {
-        if (!this.modelLoaded && this.uriModelInstance != null) {
-			this.loadModel();
-		}
-		return this.model;
+        return this.model;
     }
-    
-    /**
-	 * Set the model in this provider to the new model.
-	 *
-	 * @param model
-	 *            the new model
-	 */
-	public void setModel(final T model) {
-		this.model = model;
-		this.modelLoaded = true;
-	}
 
     /**
      * Get the uri to the model.
@@ -227,12 +204,13 @@ public abstract class AbstractModelProvider<T extends EObject> {
     public URI getModelUri() {
         return this.uriModelInstance;
     }
-    
+
     /**
      * Sets the Uri.
+     * 
      * @param modelUri
      */
-    public void setModelUri(URI modelUri) {
+    public void setModelUri(final URI modelUri) {
         this.uriModelInstance = modelUri;
     }
 
@@ -248,6 +226,15 @@ public abstract class AbstractModelProvider<T extends EObject> {
             this.loadModel();
         }
         return this.getModel();
+    }
+
+    /**
+     * Sets a new model.
+     * 
+     * @param model
+     */
+    public void setModel(final T model) {
+        this.model = model;
     }
 
     /**

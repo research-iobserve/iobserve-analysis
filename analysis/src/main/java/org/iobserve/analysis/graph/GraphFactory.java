@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.graph;
 
 import java.util.Collection;
@@ -6,12 +21,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
 import org.eclipse.emf.common.util.EList;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.clustering.filter.models.DynamicBehaviorModelTable;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.SystemModelProvider;
@@ -25,202 +36,219 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
+/**
+ * TODO add description.
+ *
+ * @author unknown
+ *
+ */
 public class GraphFactory {
-    private static final Log LOG = LogFactory.getLog(DynamicBehaviorModelTable.class);
-    
-	private InitializeModelProviders modelProvider;
+    private static final Log LOG = LogFactory.getLog(GraphFactory.class);
 
-	private Map<String, AssemblyContext> assemblyContexts;
-	private Map<String, DataPrivacyLvl> assemblyContextPrivacyLvl;
-	private Map<String, ResourceContainerPrivacy> resourceContainers;
-	private Map<String, String> ac2rcMap;
-	private Map<String, AssemblyConnectorPrivacy> assemblyConnectors;
-	private Map<String, String> assemblyID2allocID;
+    private InitializeModelProviders modelProvider;
 
-	/**
-	 * Empty Constructor
-	 */
-	public GraphFactory() {
-	}
+    private Map<String, AssemblyContext> assemblyContexts;
+    private Map<String, DataPrivacyLvl> assemblyContextPrivacyLvl;
+    private Map<String, ResourceContainerPrivacy> resourceContainers;
+    private Map<String, String> ac2rcMap;
+    private Map<String, AssemblyConnectorPrivacy> assemblyConnectors;
+    private Map<String, String> assemblyID2allocID;
 
-	public ModelGraph buildGraph(final InitializeModelProviders modelProvider) throws Exception {
-		this.init(modelProvider);
+    /**
+     * Empty Constructor.
+     */
+    public GraphFactory() {
+    }
 
-		this.extractAssemblyContexts(this.modelProvider.getSystemModelProvider());
-		this.extractAssemblyConnectors(this.modelProvider.getSystemModelProvider());
-		this.extractResourceContainers(this.modelProvider.getResourceEnvironmentModelProvider());
-		this.adaptPrivacyLvl();
-		this.extractAllocations(this.modelProvider.getAllocationModelProvider());
+    public ModelGraph buildGraph(final InitializeModelProviders modelProvider) throws Exception {
+        this.init(modelProvider);
 
-		return this.createModelGraph();
-	}
+        this.extractAssemblyContexts(this.modelProvider.getSystemModelProvider());
+        this.extractAssemblyConnectors(this.modelProvider.getSystemModelProvider());
+        this.extractResourceContainers(this.modelProvider.getResourceEnvironmentModelProvider());
+        this.adaptPrivacyLvl();
+        this.extractAllocations(this.modelProvider.getAllocationModelProvider());
 
-	/*
-	 * Prepare all data structures.
-	 */
-	private void init(final InitializeModelProviders modelProvider) {
-		this.modelProvider = modelProvider;
+        return this.createModelGraph();
+    }
 
-		this.assemblyContexts = new HashMap<String, AssemblyContext>();
-		this.assemblyContextPrivacyLvl = new HashMap<String, DataPrivacyLvl>();
-		this.assemblyConnectors = new HashMap<String, AssemblyConnectorPrivacy>();
-		this.resourceContainers = new HashMap<String, ResourceContainerPrivacy>();
-		this.ac2rcMap = new HashMap<String, String>();
-		this.assemblyID2allocID = new HashMap<String, String>();
-	}
+    /*
+     * Prepare all data structures.
+     */
+    private void init(final InitializeModelProviders modelProvider) {
+        this.modelProvider = modelProvider;
 
-	/*
-	 * Extract Information Helpers
-	 */
-	private void extractAssemblyContexts(final SystemModelProvider sysModelProv) {
-		org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
-		EList<AssemblyContext> assemblyContexts = sysModel.getAssemblyContexts__ComposedStructure();
-		Set<String> acs = new HashSet<String>();
+        this.assemblyContexts = new HashMap<>();
+        this.assemblyContextPrivacyLvl = new HashMap<>();
+        this.assemblyConnectors = new HashMap<>();
+        this.resourceContainers = new HashMap<>();
+        this.ac2rcMap = new HashMap<>();
+        this.assemblyID2allocID = new HashMap<>();
+    }
 
-		for (AssemblyContext assemblyContext : assemblyContexts) {
-			this.assemblyContexts.put(assemblyContext.getId(), assemblyContext);
-			acs.add(assemblyContext.getId());
-		}
+    /*
+     * Extract Information Helpers
+     */
+    private void extractAssemblyContexts(final SystemModelProvider sysModelProv) {
+        final org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
+        final EList<AssemblyContext> assemblyContexts = sysModel.getAssemblyContexts__ComposedStructure();
+        final Set<String> acs = new HashSet<>();
 
-		LOG.info("Individual Assembly Contexts found in System Model: " + acs.size());
-	}
+        for (final AssemblyContext assemblyContext : assemblyContexts) {
+            this.assemblyContexts.put(assemblyContext.getId(), assemblyContext);
+            acs.add(assemblyContext.getId());
+        }
 
-	private void extractAssemblyConnectors(final SystemModelProvider sysModelProv) {
-		org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
-		EList<Connector> connectors = sysModel.getConnectors__ComposedStructure();
+        GraphFactory.LOG.info("Individual Assembly Contexts found in System Model: " + acs.size());
+    }
 
-		for (Connector connector : connectors) {
-			if (connector instanceof AssemblyConnectorPrivacy) {
-				AssemblyConnectorPrivacy acp = (AssemblyConnectorPrivacy) connector;
-				this.assemblyConnectors.put(connector.getId(), acp);
-			}
-		}
-	}
+    private void extractAssemblyConnectors(final SystemModelProvider sysModelProv) {
+        final org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
+        final EList<Connector> connectors = sysModel.getConnectors__ComposedStructure();
 
-	private void adaptPrivacyLvl() {
-		Collection<AssemblyConnectorPrivacy> acps = this.assemblyConnectors.values();
+        for (final Connector connector : connectors) {
+            if (connector instanceof AssemblyConnectorPrivacy) {
+                final AssemblyConnectorPrivacy acp = (AssemblyConnectorPrivacy) connector;
+                this.assemblyConnectors.put(connector.getId(), acp);
+            }
+        }
+    }
 
-		Set<String> acs = new HashSet<String>();
+    private void adaptPrivacyLvl() {
+        final Collection<AssemblyConnectorPrivacy> acps = this.assemblyConnectors.values();
 
-		for (AssemblyConnectorPrivacy acp : acps) {
-			DataPrivacyLvl assemblyConnectorPrivacyLvl = acp.getPrivacyLevel();
+        final Set<String> acs = new HashSet<>();
 
-			String providedAC_ID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
-			String requiredAC_ID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
+        for (final AssemblyConnectorPrivacy acp : acps) {
+            final DataPrivacyLvl assemblyConnectorPrivacyLvl = acp.getPrivacyLevel();
 
-			this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, providedAC_ID);
-			this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, requiredAC_ID);
+            final String providedACID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
+            final String requiredACID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
 
-			acs.add(requiredAC_ID);
-			acs.add(providedAC_ID);
-		}
+            this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, providedACID);
+            this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, requiredACID);
 
-		LOG.info("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
-	}
+            acs.add(requiredACID);
+            acs.add(providedACID);
+        }
 
-	private void updatePrivacyLvl(final AssemblyConnectorPrivacy acp, final DataPrivacyLvl assemblyConnectorPrivacyLvl, final String assemblyContext_ID) {
-		// Check whether the AssemblyContext was found while extracting
-		AssemblyContext assemblyContext = this.assemblyContexts.get(assemblyContext_ID);
-		if (assemblyContext == null) {
-			System.err.printf("The provided AssemblyContext (ID: %s) form the AssemblyConnectorPrivacy (ID: %s) "
-					+ "was not found during the AssemblyContextExtraction", assemblyContext_ID, acp.getId());
+        GraphFactory.LOG.info("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
+    }
 
-			this.assemblyContexts.put(assemblyContext_ID, acp.getProvidingAssemblyContext_AssemblyConnector());
-		}
+    private void updatePrivacyLvl(final AssemblyConnectorPrivacy acp, final DataPrivacyLvl assemblyConnectorPrivacyLvl,
+            final String assemblyContextID) {
+        // Check whether the AssemblyContext was found while extracting
+        final AssemblyContext assemblyContext = this.assemblyContexts.get(assemblyContextID);
+        if (assemblyContext == null) {
+            GraphFactory.LOG.error("The provided AssemblyContext (ID: " + assemblyContextID
+                    + ") form the AssemblyConnectorPrivacy (ID:" + acp.getId() + ") "
+                    + "was not found during the AssemblyContextExtraction");
 
-		// Do the actual job and update the privacy lvl
-		DataPrivacyLvl currentDataLevelPrivacy = this.assemblyContextPrivacyLvl.get(assemblyContext_ID);
+            this.assemblyContexts.put(assemblyContextID, acp.getProvidingAssemblyContext_AssemblyConnector());
+        }
 
-		if (currentDataLevelPrivacy != null) {
-			currentDataLevelPrivacy = DataPrivacyLvl.get(Math.min(assemblyConnectorPrivacyLvl.getValue(), currentDataLevelPrivacy.getValue()));
-		} else {
-			currentDataLevelPrivacy = assemblyConnectorPrivacyLvl;
-		}
+        // Do the actual job and update the privacy lvl
+        DataPrivacyLvl currentDataLevelPrivacy = this.assemblyContextPrivacyLvl.get(assemblyContextID);
 
-		this.assemblyContextPrivacyLvl.put(assemblyContext_ID, currentDataLevelPrivacy);
-	}
+        if (currentDataLevelPrivacy != null) {
+            currentDataLevelPrivacy = DataPrivacyLvl
+                    .get(Math.min(assemblyConnectorPrivacyLvl.getValue(), currentDataLevelPrivacy.getValue()));
+        } else {
+            currentDataLevelPrivacy = assemblyConnectorPrivacyLvl;
+        }
 
-	private void extractResourceContainers(final ResourceEnvironmentModelProvider resEnvModelProv) {
-		ResourceEnvironment resEnvModel = resEnvModelProv.getModel();
-		EList<ResourceContainer> resourceContainers = resEnvModel.getResourceContainer_ResourceEnvironment();
-		for (ResourceContainer resourceContainer : resourceContainers) {
-			if (resourceContainer instanceof ResourceContainerPrivacy) {
-				this.resourceContainers.put(resourceContainer.getId(), (ResourceContainerPrivacy) resourceContainer);
-			} else {
-				System.err.printf("A ResourceContainer (ID: %s) was found which has no privacy extention\n", resourceContainer.getId());
-			}
-		}
-	}
+        this.assemblyContextPrivacyLvl.put(assemblyContextID, currentDataLevelPrivacy);
+    }
 
-	private void extractAllocations(final AllocationModelProvider allocationModelProv) {
-		Allocation allocation = allocationModelProv.getModel();
-		EList<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
+    private void extractResourceContainers(final ResourceEnvironmentModelProvider resEnvModelProv) {
+        final ResourceEnvironment resEnvModel = resEnvModelProv.getModel();
+        final EList<ResourceContainer> resourceContainers = resEnvModel.getResourceContainer_ResourceEnvironment();
+        for (final ResourceContainer resourceContainer : resourceContainers) {
+            if (resourceContainer instanceof ResourceContainerPrivacy) {
+                this.resourceContainers.put(resourceContainer.getId(), (ResourceContainerPrivacy) resourceContainer);
+            } else {
+                GraphFactory.LOG.error("A ResourceContainer (ID: " + resourceContainer.getId()
+                        + ") was found which has no privacy extention\n");
+            }
+        }
+    }
 
-		for (AllocationContext allocationContext : allocationContexts) {
-			ResourceContainer resContainer = allocationContext.getResourceContainer_AllocationContext();
-			AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
+    private void extractAllocations(final AllocationModelProvider allocationModelProv) {
+        final Allocation allocation = allocationModelProv.getModel();
+        final EList<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
 
-			this.assemblyID2allocID.put(assemblyContext.getId(), allocationContext.getId());
+        for (final AllocationContext allocationContext : allocationContexts) {
+            final ResourceContainer resContainer = allocationContext.getResourceContainer_AllocationContext();
+            final AssemblyContext assemblyContext = allocationContext.getAssemblyContext_AllocationContext();
 
-			boolean correctIDs = true;
-			String resContainerID = resContainer.getId();
-			if (!this.resourceContainers.containsKey(resContainerID)) {
-				System.err.printf("A unknown ResourceContainer (ID: %s) was found during allocation context analysis.\n", resContainer.getId());
-				correctIDs = false;
-			}
+            this.assemblyID2allocID.put(assemblyContext.getId(), allocationContext.getId());
 
-			String assemblyContextID = assemblyContext.getId();
-			if (!this.assemblyContexts.containsKey(assemblyContextID)) {
-				System.err.printf("An unknown AssemblyContext (ID: %s) was found during allocation context analysis.\n", assemblyContext.getId());
-				correctIDs = false;
-			}
+            boolean correctIDs = true;
+            final String resContainerID = resContainer.getId();
+            if (!this.resourceContainers.containsKey(resContainerID)) {
+                GraphFactory.LOG.error("A unknown ResourceContainer (ID: " + resContainer.getId()
+                        + ") was found during allocation context analysis.\n");
+                correctIDs = false;
+            }
 
-			if (correctIDs) {
-				this.ac2rcMap.put(assemblyContext.getId(), resContainer.getId());
-			}
-		}
-	}
+            final String assemblyContextID = assemblyContext.getId();
+            if (!this.assemblyContexts.containsKey(assemblyContextID)) {
+                GraphFactory.LOG.error("An unknown AssemblyContext (ID: " + assemblyContext.getId()
+                        + ") was found during allocation context analysis.\n");
+                correctIDs = false;
+            }
 
-	/*
-	 * Build Graph Helpers
-	 */
-	private ModelGraph createModelGraph() {
-		HashMap<String, DeploymentNode> servers = new HashMap<String, DeploymentNode>();
-		HashMap<String, ComponentNode> components = new HashMap<String, ComponentNode>();
+            if (correctIDs) {
+                this.ac2rcMap.put(assemblyContext.getId(), resContainer.getId());
+            }
+        }
+    }
 
-		// Build Servers Nodes
-		for (ResourceContainerPrivacy resContainer : this.resourceContainers.values()) {
-			DeploymentNode server = new DeploymentNode(resContainer.getId(), resContainer.getEntityName(), resContainer.getGeolocation());
-			servers.put(resContainer.getId(), server);
-		}
+    /*
+     * Build Graph Helpers
+     */
+    private ModelGraph createModelGraph() {
+        final HashMap<String, DeploymentNode> servers = new HashMap<>();
+        final HashMap<String, ComponentNode> components = new HashMap<>();
 
-		// Build Component Nodes
-		for (AssemblyContext ac : this.assemblyContexts.values()) {
+        // Build Servers Nodes
+        for (final ResourceContainerPrivacy resContainer : this.resourceContainers.values()) {
+            final DeploymentNode server = new DeploymentNode(resContainer.getId(), resContainer.getEntityName(),
+                    resContainer.getGeolocation());
+            servers.put(resContainer.getId(), server);
+        }
 
-			DeploymentNode hostServer = servers.get(this.ac2rcMap.get(ac.getId()));
-			DataPrivacyLvl acPrivacyLvl = this.assemblyContextPrivacyLvl.get(ac.getId());
+        // Build Component Nodes
+        for (final AssemblyContext ac : this.assemblyContexts.values()) {
 
-			ComponentNode component = new ComponentNode(ac.getId(), ac.getEntityName(), acPrivacyLvl, hostServer,
-					ac.getEncapsulatedComponent__AssemblyContext().getId(), this.assemblyID2allocID.get(ac.getId()));
-			hostServer.addComponent(component);
+            final DeploymentNode hostServer = servers.get(this.ac2rcMap.get(ac.getId()));
+            final DataPrivacyLvl acPrivacyLvl = this.assemblyContextPrivacyLvl.get(ac.getId());
 
-			components.put(ac.getId(), component);
-		}
+            final ComponentNode component = new ComponentNode(ac.getId(), ac.getEntityName(), acPrivacyLvl, hostServer,
+                    ac.getEncapsulatedComponent__AssemblyContext().getId(), this.assemblyID2allocID.get(ac.getId()));
+            hostServer.addComponent(component);
 
-		// Set Edges
-		for (AssemblyConnectorPrivacy acp : this.assemblyConnectors.values()) {
-			String provAC_ID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
-			String reqAC_ID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
+            components.put(ac.getId(), component);
+        }
 
-			ComponentNode provNode = components.get(provAC_ID);
-			ComponentNode reqNode = components.get(reqAC_ID);
+        // Set Edges
+        for (final AssemblyConnectorPrivacy acp : this.assemblyConnectors.values()) {
+            final String provACID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
+            final String reqACID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
 
-			ComponentEdge edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode, acp.getPrivacyLevel());
+            final ComponentNode provNode = components.get(provACID);
+            final ComponentNode reqNode = components.get(reqACID);
 
-			provNode.addCommunicationEdge(edge);
-			reqNode.addCommunicationEdge(edge);
-		}
+            final ComponentEdge edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode,
+                    acp.getPrivacyLevel());
 
-		return new ModelGraph(servers.values(), components.values(), this.modelProvider);
-	}
+            provNode.addCommunicationEdge(edge);
+            reqNode.addCommunicationEdge(edge);
+        }
+
+        return new ModelGraph(servers.values(), components.values(), this.modelProvider);
+    }
 }

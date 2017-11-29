@@ -8,7 +8,7 @@
     testsDirectory="/planning.systemadaptation.tests/src/main/java" testSuiteClass="org.iobserve.planning.systemadaptation.tests.systemadaptationAllTests"
     importerID="org.eclipse.emf.importer.ecore" featureDelegation="Reflective" complianceLevel="8.0"
     copyrightFields="false" editPluginID="planning.systemadaptation.edit" editorPluginID="planning.systemadaptation.editor"
-    usedGenPackages="../../de.uka.ipd.sdq.identifier/model/identifier.genmodel#//identifier ../../org.palladiosimulator.pcm/model/pcm.genmodel#//pcm platform:/plugin/de.uka.ipd.sdq.probfunction/model/ProbabilityFunction.genmodel#//probfunction platform:/plugin/de.uka.ipd.sdq.stoex/model/stoex.genmodel#//stoex platform:/plugin/de.uka.ipd.sdq.units/model/Units.genmodel#//units"
+    usedGenPackages="../../de.uka.ipd.sdq.identifier/model/identifier.genmodel#//identifier ../../org.palladiosimulator.pcm/model/pcm.genmodel#//pcm ../../de.uka.ipd.sdq.probfunction/model/ProbabilityFunction.genmodel#//probfunction ../../de.uka.ipd.sdq.stoex/model/stoex.genmodel#//stoex ../../de.uka.ipd.sdq.units/model/Units.genmodel#//units"
     importOrganizing="true" pluginKey="systemadaptation">
   <foreignModel>systemadaptation.ecore</foreignModel>
   <genPackages prefix="systemadaptation" basePackage="org.iobserve.planning" resource="XMI"
@@ -16,7 +16,9 @@
     <genClasses ecoreClass="systemadaptation.ecore#//SystemAdaptation">
       <genFeatures property="None" children="true" createChild="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//SystemAdaptation/actions"/>
     </genClasses>
-    <genClasses ecoreClass="systemadaptation.ecore#//Action"/>
+    <genClasses ecoreClass="systemadaptation.ecore#//Action">
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//Action/resourceContainer"/>
+    </genClasses>
     <genClasses ecoreClass="systemadaptation.ecore#//AssemblyContextAction">
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//AssemblyContextAction/sourceAssemblyContext"/>
     </genClasses>
@@ -27,14 +29,11 @@
       <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//ChangeRepositoryComponentAction/newRepositoryComponent"/>
     </genClasses>
     <genClasses ecoreClass="systemadaptation.ecore#//AllocateAction">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//AllocateAction/newAllocationContext"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//AllocateAction/newAllocatinContext"/>
     </genClasses>
-    <genClasses ecoreClass="systemadaptation.ecore#//DeallocateAction">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//DeallocateAction/oldAllocationContext"/>
-    </genClasses>
+    <genClasses ecoreClass="systemadaptation.ecore#//DeallocateAction"/>
     <genClasses ecoreClass="systemadaptation.ecore#//MigrateAction">
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//MigrateAction/newAllocationContext"/>
-      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//MigrateAction/sourceAllocationContext"/>
+      <genFeatures notify="false" createChild="false" propertySortChoices="true" ecoreFeature="ecore:EReference systemadaptation.ecore#//MigrateAction/newAllocatinContext"/>
     </genClasses>
     <genClasses ecoreClass="systemadaptation.ecore#//AcquireAction"/>
     <genClasses ecoreClass="systemadaptation.ecore#//TerminateAction"/>

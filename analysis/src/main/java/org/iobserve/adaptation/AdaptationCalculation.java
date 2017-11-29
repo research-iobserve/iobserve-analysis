@@ -1,3 +1,19 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
+
 package org.iobserve.adaptation;
 
 import java.util.HashMap;
@@ -21,126 +37,129 @@ import org.iobserve.planning.systemadaptation.TerminateAction;
 import teetime.stage.basic.AbstractTransformation;
 
 /**
- * This class is the inital phase of the adaption filter stage. It compares a
- * runtime PCM to a redeployment PCM and calculates systemadaption
- * {@link Action}s to transform the deployed system towards the redeployment
- * model.
- * 
+ * This class is the inital phase of the adaption filter stage. It compares a runtime PCM to a
+ * redeployment PCM and calculates systemadaption {@link Action}s to transform the deployed system
+ * towards the redeployment model.
+ *
  * @author Philipp Weimann
  *
  */
 public class AdaptationCalculation extends AbstractTransformation<AdaptationData, AdaptationData> {
 
-	private HashMap<String, ComponentNode> runtimeComponentNodes;
-	private HashMap<String, DeploymentNode> runtimeDeploymentNodes;
+    private HashMap<String, ComponentNode> runtimeComponentNodes;
+    private HashMap<String, DeploymentNode> runtimeDeploymentNodes;
 
-	private HashSet<AssemblyContextAction> acActions;
-	private HashSet<ResourceContainerAction> rcActions;
+    private HashSet<AssemblyContextAction> acActions;
+    private HashSet<ResourceContainerAction> rcActions;
 
-	private void init(AdaptationData data) {
-		this.runtimeComponentNodes = new HashMap<String, ComponentNode>();
-		this.runtimeDeploymentNodes = new HashMap<String, DeploymentNode>();
+    private void init(final AdaptationData data) {
+        this.runtimeComponentNodes = new HashMap<>();
+        this.runtimeDeploymentNodes = new HashMap<>();
 
-		this.acActions = new HashSet<AssemblyContextAction>();
-		this.rcActions = new HashSet<ResourceContainerAction>();
+        this.acActions = new HashSet<>();
+        this.rcActions = new HashSet<>();
 
-		ActionFactory.runtimeModels = data.getRuntimeGraph().getPcmModels();
-		ActionFactory.redeploymentModels = data.getReDeploymentGraph().getPcmModels();
-	}
+        ActionFactory.setRuntimeModels(data.getRuntimeGraph().getPcmModels());
+        ActionFactory.setRedeploymentModels(data.getReDeploymentGraph().getPcmModels());
+    }
 
-	@Override
-	protected void execute(AdaptationData element) throws Exception {
+    @Override
+    protected void execute(final AdaptationData element) throws Exception {
 
-		assert (element.getRuntimeGraph() != null);
-		assert (element.getReDeploymentGraph() != null);
-		
-		SystemAdaptation.LOG.info("Calculating system adaptation");
+        assert (element.getRuntimeGraph() != null);
+        assert (element.getReDeploymentGraph() != null);
 
-		this.init(element);
-		this.addRuntimeData(element.getRuntimeGraph());
-		this.startComparison(element.getReDeploymentGraph());
+        SystemAdaptation.LOG.info("Calculating system adaptation");
 
-		element.setAcActions(this.acActions.stream().collect(Collectors.toList()));
-		element.setRcActions(this.rcActions.stream().collect(Collectors.toList()));
-		
-		this.outputPort.send(element);
-	}
+        this.init(element);
+        this.addRuntimeData(element.getRuntimeGraph());
+        this.startComparison(element.getReDeploymentGraph());
 
-	private void addRuntimeData(ModelGraph graph) {
-		for (ComponentNode component : graph.getComponents()) {
-			this.runtimeComponentNodes.put(component.getAssemblyContextID(), component);
-		}
+        element.setAcActions(this.acActions.stream().collect(Collectors.toList()));
+        element.setRcActions(this.rcActions.stream().collect(Collectors.toList()));
 
-		for (DeploymentNode server : graph.getServers()) {
-			if (server.getContainingComponents().size() > 0) {
-				// Don't add servers which don't host any components
-				this.runtimeDeploymentNodes.put(server.getResourceContainerID(), server);
-			}
-		}
-	}
+        this.outputPort.send(element);
+    }
 
-	private void startComparison(ModelGraph redeploymentGraph) {
-		this.compareComponents(redeploymentGraph.getComponents());
-		this.compareServers(redeploymentGraph.getServers());
-	}
+    private void addRuntimeData(final ModelGraph graph) {
+        for (final ComponentNode component : graph.getComponents()) {
+            this.runtimeComponentNodes.put(component.getAssemblyContextID(), component);
+        }
 
-	private void compareComponents(Set<ComponentNode> components) {
-		for (ComponentNode reDeplComp : components) {
+        for (final DeploymentNode server : graph.getServers()) {
+            if (server.getContainingComponents().size() > 0) {
+                // Don't add servers which don't host any components
+                this.runtimeDeploymentNodes.put(server.getResourceContainerID(), server);
+            }
+        }
+    }
 
-			ComponentNode runComp = this.runtimeComponentNodes.get(reDeplComp.getAssemblyContextID());
+    private void startComparison(final ModelGraph redeploymentGraph) {
+        this.compareComponents(redeploymentGraph.getComponents());
+        this.compareServers(redeploymentGraph.getServers());
+    }
 
-			if (runComp == null) {
-				// Allocate, since ID does not yet exits
-				AssemblyContextAction action = AssemblyContextActionFactory.generateAllocateAction(runComp, reDeplComp);
-				this.acActions.add(action);
-			} else if (!runComp.equals(reDeplComp)) {
-				// Components differ, so check what actions need to be done!
-				if (!runComp.getRepositoryComponentID().equals(reDeplComp.getRepositoryComponentID())) {
-					// AssemblyContexts contain different RepositoryComponents
-					AssemblyContextAction action = AssemblyContextActionFactory.generateChangeRepositoryComponentAction(runComp, reDeplComp);
-					this.acActions.add(action);
-				}
-				if (!runComp.getHostServer().getResourceContainerID().equals(reDeplComp.getHostServer().getResourceContainerID())) {
-					// AssemblyContexts are hosted on different Servers
-					AssemblyContextAction action = AssemblyContextActionFactory.generateMigrateAction(runComp, reDeplComp);
-					this.acActions.add(action);
-				}
-			}
+    private void compareComponents(final Set<ComponentNode> components) {
+        for (final ComponentNode reDeplComp : components) {
 
-			this.runtimeComponentNodes.remove(reDeplComp.getAssemblyContextID(), runComp);
-		}
+            final ComponentNode runComp = this.runtimeComponentNodes.get(reDeplComp.getAssemblyContextID());
 
-		for (ComponentNode runComp : this.runtimeComponentNodes.values()) {
-			// AssemblyContext does not exist anymore in redeployment model!
-			AssemblyContextAction action = AssemblyContextActionFactory.generateDeallocateAction(runComp);
-			this.acActions.add(action);
-		}
-	}
+            if (runComp == null) {
+                // Allocate, since ID does not yet exits
+                final AssemblyContextAction action = AssemblyContextActionFactory.generateAllocateAction(runComp,
+                        reDeplComp);
+                this.acActions.add(action);
+            } else if (!runComp.equals(reDeplComp)) {
+                // Components differ, so check what actions need to be done!
+                if (!runComp.getRepositoryComponentID().equals(reDeplComp.getRepositoryComponentID())) {
+                    // AssemblyContexts contain different RepositoryComponents
+                    final AssemblyContextAction action = AssemblyContextActionFactory
+                            .generateChangeRepositoryComponentAction(runComp, reDeplComp);
+                    this.acActions.add(action);
+                }
+                if (!runComp.getHostServer().getResourceContainerID()
+                        .equals(reDeplComp.getHostServer().getResourceContainerID())) {
+                    // AssemblyContexts are hosted on different Servers
+                    final AssemblyContextAction action = AssemblyContextActionFactory.generateMigrateAction(runComp,
+                            reDeplComp);
+                    this.acActions.add(action);
+                }
+            }
 
-	private void compareServers(Set<DeploymentNode> servers) {
-		for (DeploymentNode reDeplServer : servers) {
+            this.runtimeComponentNodes.remove(reDeplComp.getAssemblyContextID(), runComp);
+        }
 
-			if (reDeplServer.getContainingComponents().size() == 0) {
-				// If the server dosn't contain any components => IGNORE
-				continue;
-			}
+        for (final ComponentNode runComp : this.runtimeComponentNodes.values()) {
+            // AssemblyContext does not exist anymore in redeployment model!
+            final AssemblyContextAction action = AssemblyContextActionFactory.generateDeallocateAction(runComp);
+            this.acActions.add(action);
+        }
+    }
 
-			DeploymentNode runServer = this.runtimeDeploymentNodes.get(reDeplServer.getResourceContainerID());
+    private void compareServers(final Set<DeploymentNode> servers) {
+        for (final DeploymentNode reDeplServer : servers) {
 
-			if (runServer == null) {
-				// It is an so far unused server!
-				AcquireAction action = ResourceContainerActionFactory.generateAcquireAction(reDeplServer);
-				this.rcActions.add(action);
-			} else {
-				// Server was and is still in use
-				this.runtimeDeploymentNodes.remove(runServer.getResourceContainerID(), runServer);
-			}
-		}
+            if (reDeplServer.getContainingComponents().size() == 0) {
+                // If the server dosn't contain any components => IGNORE
+                continue;
+            }
 
-		for (DeploymentNode runServer : this.runtimeDeploymentNodes.values()) {
-			// AssemblyContext does not exist anymore in redeployment model!
-			TerminateAction action = ResourceContainerActionFactory.generateTerminateAction(runServer);
-			this.rcActions.add(action);
-		}
-	}
+            final DeploymentNode runServer = this.runtimeDeploymentNodes.get(reDeplServer.getResourceContainerID());
+
+            if (runServer == null) {
+                // It is an so far unused server!
+                final AcquireAction action = ResourceContainerActionFactory.generateAcquireAction(reDeplServer);
+                this.rcActions.add(action);
+            } else {
+                // Server was and is still in use
+                this.runtimeDeploymentNodes.remove(runServer.getResourceContainerID(), runServer);
+            }
+        }
+
+        for (final DeploymentNode runServer : this.runtimeDeploymentNodes.values()) {
+            // AssemblyContext does not exist anymore in redeployment model!
+            final TerminateAction action = ResourceContainerActionFactory.generateTerminateAction(runServer);
+            this.rcActions.add(action);
+        }
+    }
 }

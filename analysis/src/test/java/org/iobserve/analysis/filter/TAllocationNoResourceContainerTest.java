@@ -19,12 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import teetime.framework.test.StageTester;
-
 import org.hamcrest.core.Is;
-import org.iobserve.analysis.model.CloudProfileModelProvider;
-import org.iobserve.analysis.model.CostModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentCloudBuilder;
 import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.common.record.ContainerAllocationEvent;
@@ -35,13 +30,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import teetime.framework.test.StageTester;
 
 /**
  * Tests for {@link TAllocation} filter, in case the {@link ResourceContainer} does not exist yet.
@@ -59,8 +55,6 @@ public class TAllocationNoResourceContainerTest {
 
     /** mocks. */
     private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
-    private static CloudProfileModelProvider mockedCloudProfileModelProvider;
-    private static CostModelProvider mockedCostModelProvider;
 
     /** test event. */
     private static ContainerAllocationEvent allocationEvent;
@@ -121,15 +115,9 @@ public class TAllocationNoResourceContainerTest {
         /** mock for new graph provider */
         TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito
                 .mock(ModelProvider.class);
-        TAllocationNoResourceContainerTest.mockedCloudProfileModelProvider = Mockito
-                .mock(CloudProfileModelProvider.class);
-        TAllocationNoResourceContainerTest.mockedCostModelProvider = Mockito
-                .mock(CostModelProvider.class);
 
         this.tAllocation = new TAllocation(
-                TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider,
-                TAllocationNoResourceContainerTest.mockedCloudProfileModelProvider,
-                TAllocationNoResourceContainerTest.mockedCostModelProvider);
+                TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .readOnlyRootComponent(ResourceEnvironment.class))
@@ -139,9 +127,9 @@ public class TAllocationNoResourceContainerTest {
                 TAllocationNoResourceContainerTest.testResourceEnvironment, TAllocationNoResourceContainerTest.SERVICE))
                 .thenReturn(TAllocationNoResourceContainerTest.optTestNullResourceContainer);
 
-        Mockito.when(ResourceEnvironmentCloudBuilder.createResourceContainer(
+        Mockito.when(ResourceEnvironmentModelBuilder.createResourceContainer(
                 TAllocationNoResourceContainerTest.testResourceEnvironment, TAllocationNoResourceContainerTest.SERVICE))
-                .thenReturn((ResourceContainerCloud) TAllocationNoResourceContainerTest.testResourceContainer);
+                .thenReturn(TAllocationNoResourceContainerTest.testResourceContainer);
 
         Mockito.doNothing().when(TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider)
                 .updateComponent(ResourceEnvironment.class, TAllocationNoResourceContainerTest.testResourceEnvironment);

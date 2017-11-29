@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2015 Kieker Project (http://kieker-monitoring.net)
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,19 @@
  ***************************************************************************/
 package org.iobserve.monitoring.sampler.geolocation;
 
+/**
+ * TODO .
+ *
+ * @author unknown
+ *
+ */
 public class GeoLocationSamplerFactory {
 
-	/**
-	 * @return ServerGeoLocationSampler with the DummyCountryInvestigator
-	 */
-	public static AbstractGeoLocationSampler getDummyGeoLocationSampler() {
-		return new ServerGeoLocationSampler(new DummyCountryInvestigator());
-	}
+    /**
+     * @return ServerGeoLocationSampler with the DummyCountryInvestigator
+     */
+    public static AbstractGeoLocationSampler getDummyGeoLocationSampler() {
+        return new ServerGeoLocationSampler(new IDummyCountryInvestigator());
+    }
 
 }

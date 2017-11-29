@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.planning.data;
 
 import java.util.LinkedHashMap;
@@ -19,102 +34,100 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  *
  */
 public class AllocationGroupsContainer {
-	private final Allocation allocation;
+    private final Allocation allocation;
 
-	private Map<String, ComponentGroup> componentNameToComponentGroupMap = new LinkedHashMap<>();
-	private Set<AllocationGroup> allocationGroups = new LinkedHashSet<>();
+    private final Map<String, ComponentGroup> componentNameToComponentGroupMap = new LinkedHashMap<>();
+    private final Set<AllocationGroup> allocationGroups = new LinkedHashSet<>();
 
-	/**
-	 * Constructs an allocation group container for all allocation groups
-	 * contained in the given allocation model.
-	 *
-	 * @param allocation
-	 *            the allocation model
-	 */
-	public AllocationGroupsContainer(Allocation allocation) {
-		this.allocation = allocation;
-		this.initAllocationGroups();
-	}
+    /**
+     * Constructs an allocation group container for all allocation groups contained in the given
+     * allocation model.
+     *
+     * @param allocation
+     *            the allocation model
+     */
+    public AllocationGroupsContainer(final Allocation allocation) {
+        this.allocation = allocation;
+        this.initAllocationGroups();
+    }
 
-	/**
-	 * Returns the allocation group to which the given allocation context
-	 * belongs.
-	 *
-	 * @param allocContext
-	 *            the allocation context for which to get the allocation group
-	 * @return the corresponding allocation group or null if there is none
-	 */
-	public AllocationGroup getAllocationGroup(AllocationContext allocContext) {
-		AssemblyContext asmContext = allocContext.getAssemblyContext_AllocationContext();
-		String componentName = asmContext.getEncapsulatedComponent__AssemblyContext().getEntityName();
+    /**
+     * Returns the allocation group to which the given allocation context belongs.
+     *
+     * @param allocContext
+     *            the allocation context for which to get the allocation group
+     * @return the corresponding allocation group or null if there is none
+     */
+    public AllocationGroup getAllocationGroup(final AllocationContext allocContext) {
+        final AssemblyContext asmContext = allocContext.getAssemblyContext_AllocationContext();
+        final String componentName = asmContext.getEncapsulatedComponent__AssemblyContext().getEntityName();
 
-		String containerIdentifier = ModelHelper
-				.getResourceContainerIdentifier(allocContext.getResourceContainer_AllocationContext());
+        final String containerIdentifier = ModelHelper
+                .getResourceContainerIdentifier(allocContext.getResourceContainer_AllocationContext());
 
-		return this.getAllocationGroup(componentName, containerIdentifier);
-	}
+        return this.getAllocationGroup(componentName, containerIdentifier);
+    }
 
-	private AllocationGroup getAllocationGroup(String componentName, String containerIdentifier) {
-		Map<String, AllocationGroup> allocationGroupsMap = this.componentNameToComponentGroupMap.get(componentName)
-				.getAllocationGroups();
+    private AllocationGroup getAllocationGroup(final String componentName, final String containerIdentifier) {
+        final Map<String, AllocationGroup> allocationGroupsMap = this.componentNameToComponentGroupMap
+                .get(componentName).getAllocationGroups();
 
-		return allocationGroupsMap.get(containerIdentifier);
-	}
+        return allocationGroupsMap.get(containerIdentifier);
+    }
 
-	/**
-	 * Returns all allocation groups contained in this allocation groups
-	 * container.
-	 *
-	 * @return all contained allocation groups
-	 */
-	public Set<AllocationGroup> getAllocationGroups() {
-		return this.allocationGroups;
-	}
+    /**
+     * Returns all allocation groups contained in this allocation groups container.
+     *
+     * @return all contained allocation groups
+     */
+    public Set<AllocationGroup> getAllocationGroups() {
+        return this.allocationGroups;
+    }
 
-	private void initAllocationGroups() {
-		for (AllocationContext context : this.allocation.getAllocationContexts_Allocation()) {
-			String componentName = context.getAssemblyContext_AllocationContext()
-					.getEncapsulatedComponent__AssemblyContext().getEntityName();
+    private void initAllocationGroups() {
+        for (final AllocationContext context : this.allocation.getAllocationContexts_Allocation()) {
+            final String componentName = context.getAssemblyContext_AllocationContext()
+                    .getEncapsulatedComponent__AssemblyContext().getEntityName();
 
-			ComponentGroup componentGroup = this.componentNameToComponentGroupMap.get(componentName);
+            ComponentGroup componentGroup = this.componentNameToComponentGroupMap.get(componentName);
 
-			if (componentGroup == null) {
-				componentGroup = new ComponentGroup(componentName);
-				this.componentNameToComponentGroupMap.put(componentName, componentGroup);
-			}
+            if (componentGroup == null) {
+                componentGroup = new ComponentGroup(componentName);
+                this.componentNameToComponentGroupMap.put(componentName, componentGroup);
+            }
 
-			ResourceContainer allocationContainer = context.getResourceContainer_AllocationContext();
-			String containerIdentifier = ModelHelper.getResourceContainerIdentifier(allocationContainer);
+            final ResourceContainer allocationContainer = context.getResourceContainer_AllocationContext();
+            final String containerIdentifier = ModelHelper.getResourceContainerIdentifier(allocationContainer);
 
-			AllocationGroup addedGroup = componentGroup.addAllocationContext(containerIdentifier, context);
-			this.allocationGroups.add(addedGroup);
-		}
-	}
+            final AllocationGroup addedGroup = componentGroup.addAllocationContext(containerIdentifier, context);
+            this.allocationGroups.add(addedGroup);
+        }
+    }
 
-	private static class ComponentGroup {
-		private Map<String, AllocationGroup> allocationGroupsMap = new LinkedHashMap<>();
+    private static class ComponentGroup {
+        private final Map<String, AllocationGroup> allocationGroupsMap = new LinkedHashMap<>();
 
-		private final String componentName;
+        private final String componentName;
 
-		ComponentGroup(String componentName) {
-			this.componentName = componentName;
-		}
+        ComponentGroup(final String componentName) {
+            this.componentName = componentName;
+        }
 
-		AllocationGroup addAllocationContext(String containerIdentifier, AllocationContext context) {
-			AllocationGroup group = this.allocationGroupsMap.get(containerIdentifier);
+        AllocationGroup addAllocationContext(final String containerIdentifier, final AllocationContext context) {
+            AllocationGroup group = this.allocationGroupsMap.get(containerIdentifier);
 
-			if (group == null) {
-				group = new AllocationGroup(this.componentName, containerIdentifier);
-				this.allocationGroupsMap.put(containerIdentifier, group);
-			}
+            if (group == null) {
+                group = new AllocationGroup(this.componentName, containerIdentifier);
+                this.allocationGroupsMap.put(containerIdentifier, group);
+            }
 
-			group.addAllocationContext(context);
-			return group;
-		}
+            group.addAllocationContext(context);
+            return group;
+        }
 
-		Map<String, AllocationGroup> getAllocationGroups() {
-			return this.allocationGroupsMap;
-		}
-	}
+        Map<String, AllocationGroup> getAllocationGroups() {
+            return this.allocationGroupsMap;
+        }
+    }
 
 }
