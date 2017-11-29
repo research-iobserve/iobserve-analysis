@@ -1,5 +1,7 @@
 # iObserve Monitoring and Analysis
 
+<a href="https://travis-ci.org/research-iobserve/iobserve-analysis"><img src="https://travis-ci.org/research-iobserve/iobserve-analysis.svg?branch=master" alt="Build Status"></a>
+
 This repository contains the sources for the iobserve analysis including
 - common for the monitoring records (event types)
 - monitoring for the monitoring probes
