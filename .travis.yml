@@ -5,7 +5,9 @@ jdk:
 
 before_script:
 - chmod +x .travis/add_dependencies.sh
-- .travis/add_dependencies.sh
 
-script: gradle check build
+
+script: 
+- .travis/add_dependencies.sh
+- gradle check build
 
