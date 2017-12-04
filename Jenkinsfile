@@ -1,13 +1,12 @@
 #!groovy
 
 node {
-    sh 'whereis java'
     stage ('Checkout') {
         checkout scm
     }
 
     stage ('1-compile logs') {
-          sh './gradlew -S compileJava compileTestJava'
+          sh 'gradle -S compileJava compileTestJava'
     }
 
     stage ('2-unit-test logs') {
