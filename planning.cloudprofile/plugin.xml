@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+-->
+
+<plugin>
+
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated CloudProfile -->
+      <package
+            uri="http://iobserve.org/CloudProfile"
+            class="org.iobserve.planning.cloudprofile.cloudprofilePackage"
+            genModel="model/CloudProfile.genmodel"/>
+   </extension>
+
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated CloudProfile -->
+      <parser
+            type="cloudprofile"
+            class="org.iobserve.planning.cloudprofile.util.cloudprofileResourceFactoryImpl"/>
+   </extension>
+
+</plugin>

@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.planning;
 
 import java.io.File;
@@ -11,7 +26,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.CloudProfileModelProvider;
-import org.iobserve.analysis.model.CostModelBuilder;
 import org.iobserve.analysis.model.CostModelProvider;
 import org.iobserve.analysis.model.DesignDecisionModelBuilder;
 import org.iobserve.analysis.model.DesignDecisionModelProvider;
@@ -28,7 +42,6 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProvider;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudResourceType;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.VMType;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -37,240 +50,212 @@ import de.uka.ipd.sdq.pcm.cost.CostRepository;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 
 /**
- * Class for performing the transformation of the original PCM model into the
- * simplified model with allocation groups.
+ * Class for performing the transformation of the original PCM model into the simplified model with
+ * allocation groups.
  *
- * The processed model is stored in a new 'processedModel' subfolder of the
- * original model folder, so PerOpteryx should use this model during the
- * optimization.
+ * The processed model is stored in a new 'processedModel' subfolder of the original model folder,
+ * so PerOpteryx should use this model during the optimization.
  *
  * @author Tobias Pöppke
  *
  */
 public class ModelTransformer {
 
-	private final PlanningData planningData;
-	private final InitializeModelProviders originalModelProviders;
-	private InitializeModelProviders processedModelProviders;
+    private final PlanningData planningData;
+    private final InitializeModelProviders originalModelProviders;
+    private InitializeModelProviders processedModelProviders;
 
-	private AllocationGroupsContainer originalAllocationGroups;
+    private AllocationGroupsContainer originalAllocationGroups;
 
-	private AllocationModelProvider allocationProvider;
-	private CostModelProvider costProvider;
-	private ResourceEnvironmentModelProvider resourceProvider;
-	private CloudProfileModelProvider cloudProfileProvider;
-	private DesignDecisionModelProvider decisionProvider;
+    private AllocationModelProvider allocationProvider;
+    private CostModelProvider costProvider;
+    private ResourceEnvironmentModelProvider resourceProvider;
+    private CloudProfileModelProvider cloudProfileProvider;
+    private DesignDecisionModelProvider decisionProvider;
 
-	/**
-	 * Constructs a new model transformer with the given planning data and
-	 * updates the planning data with the original model directory.
-	 *
-	 * @param planningData
-	 */
-	public ModelTransformer(final PlanningData planningData) {
-		this.planningData = planningData;
-		final String originalModelDir = planningData.getOriginalModelDir().toFileString();
-		this.originalModelProviders = new InitializeModelProviders(new File(originalModelDir));
-	}
+    /**
+     * Constructs a new model transformer with the given planning data and updates the planning data
+     * with the original model directory.
+     *
+     * @param planningData
+     */
+    public ModelTransformer(final PlanningData planningData) {
+        this.planningData = planningData;
+        final String originalModelDir = planningData.getOriginalModelDir().toFileString();
+        this.originalModelProviders = new InitializeModelProviders(new File(originalModelDir));
+    }
 
-	/**
-	 * Performs the actual model transformation.
-	 *
-	 * First the original model is copied into the processed model folder and a
-	 * new decision space is created. The original allocation groups are
-	 * extracted and saved for further processing. The next step is to clear all
-	 * cloud containers from the resource environment and clear all allocation
-	 * contexts.
-	 *
-	 * Now the new resource environment is built with only one set of resource
-	 * containers for each allocation group, derived from the available VMTypes
-	 * in the cloud profile. For each of these resource containers a replication
-	 * degree is created. A new allocation context is then created for each
-	 * allocation group, allocating the referenced assembly context to the
-	 * correct type of resource container. A new allocation degree is also
-	 * created for each allocation group, with all available resource containers
-	 * as viable choices.
-	 *
-	 * @throws IOException
-	 *             if an error occured while saving the models
-	 * @throws InitializationException
-	 *             if an error occurred during snapshot generation
-	 */
-	public void transformModel() throws IOException, InitializationException {
-		this.initModelTransformation();
-		this.clearUnneededElements();
-		this.rebuildEnvironment();
-	}
+    /**
+     * Performs the actual model transformation.
+     *
+     * First the original model is copied into the processed model folder and a new decision space
+     * is created. The original allocation groups are extracted and saved for further processing.
+     * The next step is to clear all cloud containers from the resource environment and clear all
+     * allocation contexts.
+     *
+     * Now the new resource environment is built with only one set of resource containers for each
+     * allocation group, derived from the available VMTypes in the cloud profile. For each of these
+     * resource containers a replication degree is created. A new allocation context is then created
+     * for each allocation group, allocating the referenced assembly context to the correct type of
+     * resource container. A new allocation degree is also created for each allocation group, with
+     * all available resource containers as viable choices.
+     *
+     * @throws IOException
+     *             if an error occured while saving the models
+     * @throws InitializationException
+     *             if an error occurred during snapshot generation
+     */
+    public void transformModel() throws IOException, InitializationException {
+        this.initModelTransformation();
+        this.clearUnneededElements();
+        this.rebuildEnvironment();
+    }
 
-	private void initModelTransformation() throws IOException, InitializationException {
-		final URI processedModelDir = this.planningData.getOriginalModelDir()
-				.appendSegment(ModelProcessing.PROCESSED_MODEL_FOLDER);
+    private void initModelTransformation() throws IOException, InitializationException {
+        final URI processedModelDir = this.planningData.getOriginalModelDir()
+                .appendSegment(ModelProcessing.PROCESSED_MODEL_FOLDER);
 
-		SnapshotBuilder.setBaseSnapshotURI(this.planningData.getOriginalModelDir());
+        SnapshotBuilder.setBaseSnapshotURI(this.planningData.getOriginalModelDir());
 
-		final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER,
-				this.originalModelProviders);
-		snapshotBuilder.createSnapshot();
+        final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER,
+                this.originalModelProviders);
+        snapshotBuilder.createSnapshot();
 
-		this.planningData.setProcessedModelDir(processedModelDir);
-		this.processedModelProviders = new InitializeModelProviders(new File(processedModelDir.toFileString()));
+        this.planningData.setProcessedModelDir(processedModelDir);
+        this.processedModelProviders = new InitializeModelProviders(new File(processedModelDir.toFileString()));
 
-		this.allocationProvider = this.processedModelProviders.getAllocationModelProvider();
-		this.cloudProfileProvider = this.processedModelProviders.getCloudProfileModelProvider();
-		this.costProvider = this.processedModelProviders.getCostModelProvider();
-		this.resourceProvider = this.processedModelProviders.getResourceEnvironmentModelProvider();
-		this.decisionProvider = this.processedModelProviders.getDesignDecisionModelProvider();
+        this.allocationProvider = this.processedModelProviders.getAllocationModelProvider();
+        this.cloudProfileProvider = this.processedModelProviders.getCloudProfileModelProvider();
+        this.costProvider = this.processedModelProviders.getCostModelProvider();
+        this.resourceProvider = this.processedModelProviders.getResourceEnvironmentModelProvider();
+        this.decisionProvider = this.processedModelProviders.getDesignDecisionModelProvider();
 
-		DecisionSpace decisionSpace = this.processedModelProviders.getDesignDecisionModelProvider().getModel();
+        DecisionSpace decisionSpace = this.processedModelProviders.getDesignDecisionModelProvider().getModel();
 
-		if (decisionSpace == null) {
-			decisionSpace = DesignDecisionModelBuilder.createDecisionSpace("processedDecision");
-			this.processedModelProviders.getDesignDecisionModelProvider().setModel(decisionSpace);
-		}
+        if (decisionSpace == null) {
+            decisionSpace = DesignDecisionModelBuilder.createDecisionSpace("processedDecision");
+            this.processedModelProviders.getDesignDecisionModelProvider().setModel(decisionSpace);
+        }
 
-		final Allocation originalAllocation = this.originalModelProviders.getAllocationModelProvider().getModel();
+        final Allocation originalAllocation = this.originalModelProviders.getAllocationModelProvider().getModel();
 
-		this.originalAllocationGroups = new AllocationGroupsContainer(originalAllocation);
-	}
+        this.originalAllocationGroups = new AllocationGroupsContainer(originalAllocation);
+    }
 
-	private void clearUnneededElements() {
-		this.clearCosts();
-		this.clearCloudResourcesFromResourceEnv();
-		this.clearAllocationContexts();
-	}
+    private void clearUnneededElements() {
+        this.clearCloudResourcesFromResourceEnv();
+        this.clearAllocationContexts();
+    }
 
-	private void rebuildEnvironment() {
-		for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
-			final AllocationContext representingContext = allocationGroup.getRepresentingContext();
+    private void rebuildEnvironment() {
+        for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
+            final AllocationContext representingContext = allocationGroup.getRepresentingContext();
 
-			// Set assembly context from allocation group to the context from the processed model
-			final org.palladiosimulator.pcm.system.System system = this.processedModelProviders.getSystemModelProvider().getModel();
-			final AssemblyContext representedAsmCtx = system.getAssemblyContexts__ComposedStructure().stream().filter(
-					ctx -> representingContext.getAssemblyContext_AllocationContext().getId().equals(ctx.getId()))
-					.findFirst().orElse(null);
+            this.createResourcesAndReplicationDegrees(this.decisionProvider.getModel(), allocationGroup);
 
-			if (representedAsmCtx == null) {
-				throw new RuntimeException("There was something wrong with the system model. Please check your models.");
-			}
+            this.allocationProvider.getModel().getAllocationContexts_Allocation().add(representingContext);
+        }
 
-			representingContext.setAssemblyContext_AllocationContext(representedAsmCtx);
+        for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
+            final String allocationDegreeName = String.format("%s_AllocationDegree", allocationGroup.getName());
 
-			this.createResourcesAndReplicationDegrees(this.decisionProvider.getModel(), allocationGroup);
+            DesignDecisionModelBuilder.createAllocationDegree(this.decisionProvider.getModel(), allocationDegreeName,
+                    allocationGroup.getRepresentingContext(),
+                    this.resourceProvider.getModel().getResourceContainer_ResourceEnvironment());
+        }
 
-			this.allocationProvider.getModel().getAllocationContexts_Allocation().add(representingContext);
-		}
+        ModelHelper.addAllAllocationsToReplicationDegrees(this.allocationProvider.getModel(),
+                this.decisionProvider.getModel());
 
-		for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
-			final String allocationDegreeName = String.format("%s_AllocationDegree", allocationGroup.getName());
+        this.saveModels();
+    }
 
-			DesignDecisionModelBuilder.createAllocationDegree(this.decisionProvider.getModel(), allocationDegreeName,
-					allocationGroup.getRepresentingContext(),
-					this.resourceProvider.getModel().getResourceContainer_ResourceEnvironment());
-		}
+    private void saveModels() {
+        this.decisionProvider.save();
+        this.allocationProvider.save();
+        this.costProvider.save();
+        this.resourceProvider.save();
+    }
 
-		ModelHelper.addAllAllocationsToReplicationDegrees(this.allocationProvider.getModel(),
-				this.decisionProvider.getModel());
+    private void createResourcesAndReplicationDegrees(final DecisionSpace decisionSpace,
+            final AllocationGroup allocationGroup) {
+        final CloudProfile profile = this.cloudProfileProvider.getModel();
+        final ResourceEnvironment environment = this.resourceProvider.getModel();
+        final CostRepository costs = this.costProvider.getModel();
 
-		this.saveModels();
-	}
+        // Get resource container that represents the instances this allocation
+        // group is currently deployed on
+        final ResourceContainerCloud representingContainer = allocationGroup.getRepresentingResourceContainer();
 
-	private void saveModels() {
-		this.decisionProvider.save();
-		this.allocationProvider.save();
-		this.costProvider.save();
-		this.resourceProvider.save();
-	}
+        if (representingContainer == null) {
+            throw new IllegalArgumentException(
+                    String.format("Could not find a cloud container for allocation group '%s'. Check your model.",
+                            allocationGroup.getName()));
+        }
 
-	private void createResourcesAndReplicationDegrees(final DecisionSpace decisionSpace,
-			final AllocationGroup allocationGroup) {
-		final CloudProfile profile = this.cloudProfileProvider.getModel();
-		final ResourceEnvironment environment = this.resourceProvider.getModel();
-		final CostRepository costs = this.costProvider.getModel();
+        // Set group name of the representing container and add it to the
+        // resource environment
+        representingContainer.setGroupName(allocationGroup.getName());
+        representingContainer.setEntityName(allocationGroup.getName());
+        ModelHelper.addResourceContainerToEnvironment(environment, representingContainer);
 
-		// Get resource container that represents the instances this allocation
-		// group is currently deployed on
-		final ResourceContainerCloud representingContainer = allocationGroup.getRepresentingResourceContainer();
+        final int nrOfCurrentReplicas = allocationGroup.getAllocationContexts().size();
 
-		if (representingContainer == null) {
-			throw new IllegalArgumentException(
-					String.format("Could not find a cloud container for allocation group '%s'. Check your model.",
-							allocationGroup.getName()));
-		}
+        // Upper bound for number of replicas for one resource
+        // container type should be sufficiently high
+        final int toNrOfReplicas = (nrOfCurrentReplicas + PlanningData.POSSIBLE_REPLICAS_OFFSET)
+                * PlanningData.POSSIBLE_REPLICAS_FACTOR;
 
-		// Set group name of the representing container and add it to the
-		// resource environment
-		representingContainer.setGroupName(allocationGroup.getName());
-		representingContainer.setEntityName(allocationGroup.getName());
-		ModelHelper.addResourceContainerToEnvironment(environment, representingContainer);
+        // Create a new resource container with replication degree for each
+        // VMType in the cloud profile, except for the one already added as the
+        // representing container create only replication degree
+        for (final CloudProvider provider : profile.getCloudProviders()) {
+            for (final CloudResourceType cloudResource : provider.getCloudResources()) {
+                if (cloudResource instanceof VMType) {
+                    final VMType cloudVM = (VMType) cloudResource;
 
-		final int nrOfCurrentReplicas = allocationGroup.getAllocationContexts().size();
+                    String degreeName;
+                    ResourceContainerCloud createdContainer;
+                    if (this.isSameVMType(cloudVM, representingContainer)) {
+                        createdContainer = representingContainer;
+                        degreeName = String.format("%s_ReplicationDegree", allocationGroup.getName());
+                    } else {
+                        final String containerName = AllocationGroup.getAllocationGroupName(
+                                allocationGroup.getComponentName(),
+                                ModelHelper.getResourceContainerIdentifier(cloudVM));
+                        createdContainer = ModelHelper.createResourceContainerFromVMType(environment, costs, cloudVM,
+                                containerName);
+                        degreeName = String.format("%s_ReplicationDegree", containerName);
+                    }
 
-		// Upper bound for number of replicas for one resource
-		// container type should be sufficiently high
-		final int toNrOfReplicas = (nrOfCurrentReplicas + PlanningData.POSSIBLE_REPLICAS_OFFSET)
-				* PlanningData.POSSIBLE_REPLICAS_FACTOR;
+                    DesignDecisionModelBuilder.createReplicationDegree(decisionSpace, degreeName, createdContainer, 1,
+                            toNrOfReplicas);
 
-		// Create a new resource container with replication degree for each
-		// VMType in the cloud profile, except for the one already added as the
-		// representing container create only replication degree
-		for (final CloudProvider provider : profile.getCloudProviders()) {
-			for (final CloudResourceType cloudResource : provider.getCloudResources()) {
-				if (cloudResource instanceof VMType) {
-					final VMType cloudVM = (VMType) cloudResource;
+                }
+            }
+        }
+    }
 
-					String degreeName;
-					ResourceContainerCloud createdContainer;
-					if (this.isSameVMType(cloudVM, representingContainer)) {
-						createdContainer = representingContainer;
-						// If we just use the container, the references in the
-						// resulting environment would point to the original cloudprofile
-						createdContainer.setInstanceType(cloudVM);
+    private boolean isSameVMType(final VMType cloudVM, final ResourceContainerCloud representingContainer) {
+        return EcoreUtil.equals(cloudVM, representingContainer.getInstanceType());
+    }
 
-						CostModelBuilder.createFixedProcessingResourceCost(costs, 0.0, cloudVM.getPricePerHour(),
-								createdContainer.getActiveResourceSpecifications_ResourceContainer().get(0));
+    private void clearAllocationContexts() {
+        this.allocationProvider.resetModel();
+    }
 
-						degreeName = String.format("%s_ReplicationDegree", allocationGroup.getName());
-					} else {
-						final String containerName = AllocationGroup.getAllocationGroupName(
-								allocationGroup.getComponentName(),
-								ModelHelper.getResourceContainerIdentifier(cloudVM));
-						createdContainer = ModelHelper.createResourceContainerFromVMType(environment, costs, cloudVM,
-								containerName);
-						degreeName = String.format("%s_ReplicationDegree", containerName);
-					}
+    private void clearCloudResourcesFromResourceEnv() {
+        final ResourceEnvironment environment = this.resourceProvider.getModel();
 
-					DesignDecisionModelBuilder.createReplicationDegree(decisionSpace, degreeName, createdContainer, 1,
-							toNrOfReplicas);
+        final List<ResourceContainer> resourceContainers = environment.getResourceContainer_ResourceEnvironment();
+        for (final Iterator<ResourceContainer> iter = resourceContainers.iterator(); iter.hasNext();) {
+            final ResourceContainer container = iter.next();
+            if (container instanceof ResourceContainerCloud) {
+                iter.remove();
+            }
+        }
 
-				}
-			}
-		}
-	}
-
-	private boolean isSameVMType(final VMType cloudVM, final ResourceContainerCloud representingContainer) {
-		return EcoreUtil.equals(cloudVM, representingContainer.getInstanceType());
-	}
-
-	private void clearAllocationContexts() {
-		this.allocationProvider.resetModel();
-	}
-
-	private void clearCosts() {
-		this.costProvider.resetModel();
-	}
-
-	private void clearCloudResourcesFromResourceEnv() {
-		final ResourceEnvironment environment = this.resourceProvider.getModel();
-
-		final List<ResourceContainer> resourceContainers = environment.getResourceContainer_ResourceEnvironment();
-		for (final Iterator<ResourceContainer> iter = resourceContainers.iterator(); iter.hasNext();) {
-			final ResourceContainer container = iter.next();
-			if (container instanceof ResourceContainerCloud) {
-				iter.remove();
-			}
-		}
-
-		final LinkingResource linkingResource = ModelHelper.getInternetLinkingResource(environment);
-		linkingResource.getConnectedResourceContainers_LinkingResource().clear();
-	}
+        final LinkingResource linkingResource = ModelHelper.getInternetLinkingResource(environment);
+        linkingResource.getConnectedResourceContainers_LinkingResource().clear();
+    }
 }

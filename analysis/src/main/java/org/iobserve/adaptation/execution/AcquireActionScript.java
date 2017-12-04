@@ -1,8 +1,19 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.adaptation.execution;
-
-import static com.google.common.collect.Iterables.concat;
-import static com.google.common.collect.Iterables.getOnlyElement;
-import static org.jclouds.compute.options.TemplateOptions.Builder.runScript;
 
 import java.io.IOException;
 
@@ -19,11 +30,14 @@ import org.jclouds.compute.domain.OsFamily;
 import org.jclouds.compute.domain.Template;
 import org.jclouds.compute.domain.TemplateBuilder;
 import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.compute.options.TemplateOptions.Builder;
 import org.jclouds.scriptbuilder.domain.Statement;
 import org.jclouds.scriptbuilder.statements.login.AdminAccess;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.VMType;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+
+import com.google.common.collect.Iterables;
 
 /**
  * Action script for acquiring a new cloud resource container.
@@ -31,98 +45,101 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @author Tobias Pöppke
  *
  */
-public class AcquireActionScript extends ActionScript {
-	private static final Logger LOG = LogManager.getLogger();
+public class AcquireActionScript extends AbstractActionScript {
+    private static final Logger LOG = LogManager.getLogger();
 
-	private final AcquireAction action;
+    private final AcquireAction action;
 
-	/**
-	 * Create a new acquire action script with the given data.
-	 *
-	 * @param data
-	 *            the data shared in the adaptation stage
-	 * @param action
-	 *            the action item to be executed
-	 */
-	public AcquireActionScript(AdaptationData data, AcquireAction action) {
-		super(data);
-		this.action = action;
-	}
+    /**
+     * Create a new acquire action script with the given data.
+     *
+     * @param data
+     *            the data shared in the adaptation stage
+     * @param action
+     *            the action item to be executed
+     */
+    public AcquireActionScript(final AdaptationData data, final AcquireAction action) {
+        super(data);
+        this.action = action;
+    }
 
-	@Override
-	public void execute() throws RunNodesException {
-		ResourceContainer container = this.action.getSourceResourceContainer();
+    @Override
+    public void execute() throws RunNodesException {
+        final ResourceContainer container = this.action.getSourceResourceContainer();
 
-		ResourceContainerCloud cloudContainer = this.getResourceContainerCloud(container);
+        final ResourceContainerCloud cloudContainer = this.getResourceContainerCloud(container);
 
-		ComputeService client = this.getComputeServiceForContainer(cloudContainer);
+        final ComputeService client = this.getComputeServiceForContainer(cloudContainer);
 
-		TemplateBuilder templateBuilder = client.templateBuilder();
+        final TemplateBuilder templateBuilder = client.templateBuilder();
 
-		VMType instanceType = cloudContainer.getInstanceType();
-		
-		templateBuilder.hardwareId(instanceType.getName());
-		templateBuilder.locationId(instanceType.getLocation());
-		// TODO maybe make this configurable
-		templateBuilder.osFamily(OsFamily.UBUNTU);
+        final VMType instanceType = cloudContainer.getInstanceType();
 
-		Statement setupAdminInstructions = AdminAccess.standard();
+        templateBuilder.hardwareId(instanceType.getName());
+        templateBuilder.locationId(instanceType.getLocation());
+        // TODO maybe make this configurable
+        templateBuilder.osFamily(OsFamily.UBUNTU);
 
-		// Necessary to set hostname to allow mapping for later events
-		TemplateOptions options = runScript(setupAdminInstructions).runScript(getChangeHostnameScript(cloudContainer))
-				.runScript(this.getStartupScript());
-		templateBuilder.options(options);
+        final Statement setupAdminInstructions = AdminAccess.standard();
 
-		Template template = templateBuilder.build();
+        // Necessary to set hostname to allow mapping for later events
+        final TemplateOptions options = Builder.runScript(setupAdminInstructions)
+                .runScript(AcquireActionScript.getChangeHostnameScript(cloudContainer))
+                .runScript(this.getStartupScript());
+        templateBuilder.options(options);
 
-		String groupName = ModelHelper.getGroupName(cloudContainer);
+        final Template template = templateBuilder.build();
 
-		NodeMetadata node = getOnlyElement(client.createNodesInGroup(groupName, 1, template));
+        final String groupName = ModelHelper.getGroupName(cloudContainer);
 
-		LOG.info(String.format("Acquired node for resource container '%s'. NodeID: %s, Hostname: %s, Adresses: %s",
-				cloudContainer.getEntityName(), node.getId(), node.getHostname(),
-				concat(node.getPrivateAddresses(), node.getPublicAddresses())));
+        final NodeMetadata node = Iterables.getOnlyElement(client.createNodesInGroup(groupName, 1, template));
 
-		// TODO write resource container to original model to enable mapping
+        AcquireActionScript.LOG
+                .info(String.format("Acquired node for resource container '%s'. NodeID: %s, Hostname: %s, Adresses: %s",
+                        cloudContainer.getEntityName(), node.getId(), node.getHostname(),
+                        Iterables.concat(node.getPrivateAddresses(), node.getPublicAddresses())));
 
-	}
+        // TODO write resource container to original model to enable mapping
 
-	private static String getChangeHostnameScript(ResourceContainerCloud cloudContainer) {
-		// This only works on a *nix OS and is valid until rebooting the node
-		return String.format("hostname %s", cloudContainer.getEntityName());
-	}
+    }
 
-	private String getStartupScript() {
-		URI nodeStartupScriptURI = this.data.getDeployablesFolderURI()
-				.appendSegment(AdaptationData.NODE_STARTUP_SCRIPT_NAME);
+    private static String getChangeHostnameScript(final ResourceContainerCloud cloudContainer) {
+        // This only works on a *nix OS and is valid until rebooting the node
+        return String.format("hostname %s", cloudContainer.getEntityName());
+    }
 
-		try {
-			return this.getFileContents(nodeStartupScriptURI);
-		} catch (IOException e) {
-			// No script found, so we can not execute anything
-			LOG.warn("Could not find script for node startup. No script will be executed.");
-			return "";
-		}
-	}
+    private String getStartupScript() {
+        final URI nodeStartupScriptURI = this.data.getDeployablesFolderURI()
+                .appendSegment(AdaptationData.NODE_STARTUP_SCRIPT_NAME);
 
-	@Override
-	public boolean isAutoExecutable() {
-		return true;
-	}
+        try {
+            return this.getFileContents(nodeStartupScriptURI);
+        } catch (final IOException e) {
+            // No script found, so we can not execute anything
+            AcquireActionScript.LOG.warn("Could not find script for node startup. No script will be executed.");
+            return "";
+        }
+    }
 
-	@Override
-	public String getDescription() {
-		ResourceContainerCloud container = this.getResourceContainerCloud(this.action.getSourceResourceContainer());
+    @Override
+    public boolean isAutoExecutable() {
+        return true;
+    }
 
-		StringBuilder builder = new StringBuilder();
-		builder.append("Acquire Action: Acquire container from provider '");
-		builder.append(container.getInstanceType().getProvider().getName());
-		builder.append("' of type '");
-		builder.append(container.getInstanceType());
-		builder.append("' in location '");
-		builder.append(container.getInstanceType().getLocation());
-		builder.append("'");
-		return builder.toString();
+    @Override
+    public String getDescription() {
+        final ResourceContainerCloud container = this
+                .getResourceContainerCloud(this.action.getSourceResourceContainer());
 
-	}
+        final StringBuilder builder = new StringBuilder();
+        builder.append("Acquire Action: Acquire container from provider '");
+        builder.append(container.getInstanceType().getProvider().getName());
+        builder.append("' of type '");
+        builder.append(container.getInstanceType());
+        builder.append("' in location '");
+        builder.append(container.getInstanceType().getLocation());
+        builder.append("'");
+        return builder.toString();
+
+    }
 }

@@ -24,12 +24,7 @@ Require-Bundle: org.eclipse.core.runtime,
  de.uka.ipd.sdq.sensorframework.adapter,
  de.uka.ipd.sdq.pcm.codegen.simucom,
  de.uka.ipd.sdq.codegen.simucontroller,
- org.palladiosimulator.solver,
- org.palladiosimulator.solver.lqn,
- org.palladiosimulator.solver.context,
- org.palladiosimulator.solver.spa,
- org.palladiosimulator.solver.spa.basicsolver,
- org.palladiosimulator.solver.spa.resourcemodel
+ org.palladiosimulator.solver
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: org.iobserve.planning.peropteryx.plugin
 Bundle-ClassPath: .

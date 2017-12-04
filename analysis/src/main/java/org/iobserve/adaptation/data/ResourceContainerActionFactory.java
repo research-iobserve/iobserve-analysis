@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.adaptation.data;
 
 import org.iobserve.analysis.graph.ComponentNode;
@@ -7,71 +22,81 @@ import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.TerminateAction;
 import org.iobserve.planning.systemadaptation.systemadaptationFactory;
-import org.iobserve.planning.systemadaptation.impl.systemadaptationFactoryImpl;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
- * This class provides a factory for system adaption Actions. It provides all
- * basic functions. Initialize the static fields {@value runtimeModels} and
- * {@value redeploymentModels} before using this class.
- * 
+ * This class provides a factory for system adaption Actions. It provides all basic functions.
+ * Initialize the static fields {@value runtimeModels} and {@value redeploymentModels} before using
+ * this class.
+ *
  * @author Philipp Weimann
  */
 public class ResourceContainerActionFactory extends ActionFactory {
 
-	private static ResourceContainerAction setSourceResourceContainer(ResourceContainerAction action, String resourceContainerID) {
-		ResourceEnvironment resEnvModel = ActionFactory.runtimeModels.getResourceEnvironmentModelProvider().getModel();
-		ResourceContainer resourceContainer = ActionFactory.getResourceContainer(resourceContainerID, resEnvModel);
-		action.setSourceResourceContainer(resourceContainer);
-		return action;
-	}
+    private static ResourceContainerAction setSourceResourceContainer(final ResourceContainerAction action,
+            final String resourceContainerID) {
+        final ResourceEnvironment resEnvModel = ActionFactory.getRuntimeModels().getResourceEnvironmentModelProvider()
+                .getModel();
+        final ResourceContainer resourceContainer = ActionFactory.getResourceContainer(resourceContainerID,
+                resEnvModel);
+        action.setSourceResourceContainer(resourceContainer);
+        return action;
+    }
 
-	public static TerminateAction generateTerminateAction(DeploymentNode runtimeServer) {
-		systemadaptationFactory factory = systemadaptationFactoryImpl.eINSTANCE;
-		TerminateAction action = factory.createTerminateAction();
+    public static TerminateAction generateTerminateAction(final DeploymentNode runtimeServer) {
+        final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
+        final TerminateAction action = factory.createTerminateAction();
 
-		ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
+        ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
 
-		return action;
-	}
-	
-	public static AcquireAction generateAcquireAction(DeploymentNode reDeploymentServer) {
-		systemadaptationFactory factory = systemadaptationFactoryImpl.eINSTANCE;
-		AcquireAction action = factory.createAcquireAction();
+        return action;
+    }
 
-		ResourceEnvironment reDeplResEnvModel = ActionFactory.redeploymentModels.getResourceEnvironmentModelProvider().getModel();
-		ResourceContainer resourceContainer = ActionFactory.getResourceContainer(reDeploymentServer.getResourceContainerID(), reDeplResEnvModel);
-		action.setSourceResourceContainer(resourceContainer);
+    public static AcquireAction generateAcquireAction(final DeploymentNode reDeploymentServer) {
+        final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
+        final AcquireAction action = factory.createAcquireAction();
 
-		return action;
-	}
+        final ResourceEnvironment reDeplResEnvModel = ActionFactory.getRedeploymentModels()
+                .getResourceEnvironmentModelProvider().getModel();
+        final ResourceContainer resourceContainer = ActionFactory
+                .getResourceContainer(reDeploymentServer.getResourceContainerID(), reDeplResEnvModel);
+        action.setSourceResourceContainer(resourceContainer);
 
-	public static ReplicateAction generateReplicateAction(DeploymentNode runtimeServer, DeploymentNode reDeploymentServer) {
-		systemadaptationFactory factory = systemadaptationFactoryImpl.eINSTANCE;
-		ReplicateAction action = factory.createReplicateAction();
+        return action;
+    }
 
-		ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
+    public static ReplicateAction generateReplicateAction(final DeploymentNode runtimeServer,
+            final DeploymentNode reDeploymentServer) {
+        final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
+        final ReplicateAction action = factory.createReplicateAction();
 
-		Allocation runtimeAllocModel = ActionFactory.runtimeModels.getAllocationModelProvider().getModel();
-		for (ComponentNode component : runtimeServer.getContainingComponents()) {
-			AllocationContext oldAllocationContext = ActionFactory.getAllocationContext(component.getAllocationContextID(), runtimeAllocModel);
-			action.getSourceAllocationContext().add(oldAllocationContext);
-		}
+        ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
 
-		Allocation reDeplAllocModel = ActionFactory.redeploymentModels.getAllocationModelProvider().getModel();
-		for (ComponentNode component : reDeploymentServer.getContainingComponents()) {
-			AllocationContext newAllocationContext = ActionFactory.getAllocationContext(component.getAllocationContextID(), reDeplAllocModel);
-			action.getSourceAllocationContext().add(newAllocationContext);
-		}
+        final Allocation runtimeAllocModel = ActionFactory.getRuntimeModels().getAllocationModelProvider().getModel();
+        for (final ComponentNode component : runtimeServer.getContainingComponents()) {
+            final AllocationContext oldAllocationContext = ActionFactory
+                    .getAllocationContext(component.getAllocationContextID(), runtimeAllocModel);
+            action.getSourceAllocationContext().add(oldAllocationContext);
+        }
 
-		ResourceEnvironment resEnvModel = redeploymentModels.getResourceEnvironmentModelProvider().getModel();
-		ResourceContainer newResourceContainer = ActionFactory.getResourceContainer(reDeploymentServer.getResourceContainerID(), resEnvModel);
-		action.setNewResourceContainer(newResourceContainer);
+        final Allocation reDeplAllocModel = ActionFactory.getRedeploymentModels().getAllocationModelProvider()
+                .getModel();
+        for (final ComponentNode component : reDeploymentServer.getContainingComponents()) {
+            final AllocationContext newAllocationContext = ActionFactory
+                    .getAllocationContext(component.getAllocationContextID(), reDeplAllocModel);
+            action.getSourceAllocationContext().add(newAllocationContext);
+        }
 
-		return action;
-	}
+        final ResourceEnvironment resEnvModel = ActionFactory.getRedeploymentModels()
+                .getResourceEnvironmentModelProvider().getModel();
+        final ResourceContainer newResourceContainer = ActionFactory
+                .getResourceContainer(reDeploymentServer.getResourceContainerID(), resEnvModel);
+        action.setNewResourceContainer(newResourceContainer);
+
+        return action;
+    }
 
 }
