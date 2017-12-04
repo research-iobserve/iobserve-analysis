@@ -6,7 +6,7 @@ node {
     }
 
     stage ('1-compile logs') {
-          sh 'gradle -S compileJava compileTestJava'
+          sh './gradlew -S compileJava compileTestJava'
     }
 
     stage ('2-unit-test logs') {
