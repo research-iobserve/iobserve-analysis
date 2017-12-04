@@ -2,6 +2,7 @@
 
 node {
     stage ('Checkout') {
+        sh '.travis/add_dependencies.sh'
         checkout scm
     }
 
