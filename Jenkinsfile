@@ -3,8 +3,8 @@
 node {
   try {
     stage ('Checkout') {
-      sh 'rm -rf*'
-        checkout scm
+      sh 'rm -rf *'
+      checkout scm
       sh 'java -version'
       sh '.jenkinsfile/add_jenkins_dependencies.sh'
 
