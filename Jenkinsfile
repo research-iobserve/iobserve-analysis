@@ -7,11 +7,13 @@ node {
       checkout scm
       sh 'java -version'
       sh '.jenkinsfile/add_jenkins_dependencies.sh'
+      sh 'ls -al'
 
     }
 
     stage ('1-compile logs') {
-          sh './gradlew build --refresh-dependencies'
+          sh './gradlew --refresh-dependencies'
+          sh './gradlew build'
     }
 
     stage ('2-unit-test logs') {
