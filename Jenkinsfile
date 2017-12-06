@@ -4,6 +4,7 @@ node {
   try {
     stage ('Checkout') {
         checkout scm
+      sh 'java -version'
         sh '.jenkinsfile/add_jenkins_dependencies.sh'
 
     }
