@@ -4,7 +4,13 @@ node {
   try {
     stage ('Checkout') {
         checkout scm
-        sh '.travis/add_dependencies.sh'
+        sh 'git clone $repo_path'
+        sh 'path="$(pwd -P )"'
+        sh 'path=$path"/iobserve-repository/mvn-repo/"'
+        sh 'echo "Repo at "$path'
+        sh 'cd $old_path'
+        sh 'file_entry="api.baseline="$path'
+        sh 'echo $file_entry >"gradle.properties"'
     }
 
     stage ('1-compile logs') {
