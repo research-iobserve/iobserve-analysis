@@ -3,8 +3,8 @@
 node {
   try {
     stage ('Checkout') {
-        sh '.travis/add_dependencies.sh'
         checkout scm
+        sh '.travis/add_dependencies.sh'
     }
 
     stage ('1-compile logs') {
