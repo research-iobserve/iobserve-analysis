@@ -1,6 +1,7 @@
 #!groovy
 
 node {
+  try {
     stage ('Checkout') {
         sh '.travis/add_dependencies.sh'
         checkout scm
@@ -18,4 +19,8 @@ node {
     stage ('3-static-analysis logs') {
         sh  './gradlew -S check'
    } 
+ }
+ finally {
+    deleteDir()
+ }
 }
