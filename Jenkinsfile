@@ -12,7 +12,7 @@ node {
     }
 
     stage ('1-compile logs') {
-          sh './gradlew --refresh-dependencies'
+          sh './gradlew clean --refresh-dependencies'
           sh './gradlew build'
     }
 
