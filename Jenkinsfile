@@ -4,7 +4,7 @@ node {
   try {
     stage ('Checkout') {
         checkout scm
-        sh 'git clone $repo_path'
+        sh 'git clone https://github.com/research-iobserve/iobserve-repository.git'
         sh 'path="$(pwd -P )"'
         sh 'path=$path"/iobserve-repository/mvn-repo/"'
         sh 'echo "Repo at "$path'
