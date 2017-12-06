@@ -4,13 +4,8 @@ node {
   try {
     stage ('Checkout') {
         checkout scm
-        sh 'git clone https://github.com/research-iobserve/iobserve-repository.git'
-        sh 'path="$(pwd -P )"'
-        sh 'path=$path"/iobserve-repository/mvn-repo/"'
-        sh 'echo "Repo at "$path'
-        sh 'cd $old_path'
-        sh 'file_entry="api.baseline="$path'
-        sh 'echo $file_entry >"gradle.properties"'
+        sh '.jenkinsfile/add_jenkins_dependencies.sh'
+
     }
 
     stage ('1-compile logs') {
