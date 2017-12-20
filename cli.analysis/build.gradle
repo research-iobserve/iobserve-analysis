@@ -1,0 +1,17 @@
+apply plugin: 'application'
+
+mainClassName='org.iobserve.service.cli.AnalysisMain'
+
+dependencies {
+	compile project(":analysis")
+	compile "com.beust:jcommander:1.60"
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.version = version
+        pom.groupId = 'org.iobserve'
+        pom.artifactId = 'analysis.cli'
+    }
+}
+

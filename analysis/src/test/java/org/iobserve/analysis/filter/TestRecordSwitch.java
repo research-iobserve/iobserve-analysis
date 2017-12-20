@@ -21,6 +21,7 @@ import java.util.List;
 import org.hamcrest.core.Is;
 import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.iobserve.stages.general.RecordSwitch;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

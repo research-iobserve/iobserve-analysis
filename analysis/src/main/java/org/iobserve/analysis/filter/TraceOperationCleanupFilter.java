@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.UserSession;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;

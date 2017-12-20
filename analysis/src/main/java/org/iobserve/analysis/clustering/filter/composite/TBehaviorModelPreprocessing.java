@@ -22,7 +22,8 @@ import teetime.stage.basic.distributor.Distributor;
 import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
 import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import teetime.stage.basic.merger.Merger;
-import teetime.stage.basic.merger.strategy.BlockingBusyWaitingRoundRobinStrategy;
+import teetime.stage.basic.merger.strategy.BlockingBusyWaitingRoundRobinMergerStrategy;
+import teetime.stage.basic.merger.strategy.IMergerStrategy;
 
 import org.iobserve.analysis.clustering.filter.TBehaviorModelPreperation;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelTableGeneration;
@@ -60,7 +61,8 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         this.distributor = new Distributor<>(strategy);
 
-        this.merger = new Merger<>(new BlockingBusyWaitingRoundRobinStrategy());
+        final IMergerStrategy mergerStrategy = new BlockingBusyWaitingRoundRobinMergerStrategy();
+        this.merger = new Merger<>(mergerStrategy);
 
         this.tBehaviorModelTableGeneration = new TBehaviorModelTableGeneration(
                 configuration.getRepresentativeStrategy(), configuration.keepEmptyTransitions());

@@ -16,13 +16,26 @@
 package org.iobserve.monitoring.probe.servlet;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpSession;
 
+import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.flow.trace.TraceMetadata;
+import kieker.common.record.flow.trace.operation.AfterOperationEvent;
+import kieker.common.record.misc.KiekerMetadataRecord;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
+import kieker.monitoring.core.controller.MonitoringController;
+
+import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
+import org.junit.Assert;
 
 /**
  * @author Reiner Jung
@@ -40,8 +53,7 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
 
     /**
      * Test method for
-     * {@link org.iobserve.monitoring.probe.servlet.SessionAndTraceRegistrationPayloadFilter#doFilter(javax.servlet.ServletRequest, 
-          javax.servlet.ServletResponse, javax.servlet.FilterChain)}.
+     * {@link org.iobserve.monitoring.probe.servlet.SessionAndTraceRegistrationPayloadFilter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)}.
      *
      * @throws InterruptedException
      *             during the sleep time of the thread
@@ -116,7 +128,6 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
             e.printStackTrace();
         }
     }
->>>>>>> minor changes
 
     private FilterChain createChain() {
         return new FilterChain() {

@@ -49,7 +49,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
- * Tests for {@link TUndeployment} filter, in case the {@link ResourceContainer} does not exist.
+ * Tests for {@link UndeploymentModelUpdater} filter, in case the {@link ResourceContainer} does not exist.
  *
  * @author jweg
  *
@@ -60,7 +60,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class TUndeploymentNoResourceContainerTest {
 
     /** stage under test. */
-    private TUndeployment tUndeployment;
+    private UndeploymentModelUpdater tUndeployment;
 
     /** mocks. */
     @Mock
@@ -154,7 +154,7 @@ public class TUndeploymentNoResourceContainerTest {
         /** mock for correspondence model */
         TUndeploymentNoResourceContainerTest.mockedCorrespondence = Mockito.mock(ICorrespondence.class);
 
-        this.tUndeployment = new TUndeployment(TUndeploymentNoResourceContainerTest.mockedCorrespondence,
+        this.tUndeployment = new UndeploymentModelUpdater(TUndeploymentNoResourceContainerTest.mockedCorrespondence,
                 TUndeploymentNoResourceContainerTest.mockedAllocationModelGraphProvider,
                 TUndeploymentNoResourceContainerTest.mockedSystemModelGraphProvider,
                 TUndeploymentNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);

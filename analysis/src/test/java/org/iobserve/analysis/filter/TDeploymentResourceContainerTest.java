@@ -52,7 +52,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
- * Tests for {@link TDeployment} filter, in case the {@link ResourceContainer} exists already.
+ * Tests for {@link DeploymentModelUpdater} filter, in case the {@link ResourceContainer} exists already.
  *
  * @author jweg
  *
@@ -63,7 +63,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class TDeploymentResourceContainerTest {
 
     /** stage under test. */
-    private TDeployment tDeployment;
+    private DeploymentModelUpdater tDeployment;
 
     /** mocks. */
     @Mock
@@ -184,7 +184,7 @@ public class TDeploymentResourceContainerTest {
         PowerMockito.mockStatic(AllocationModelBuilder.class);
         PowerMockito.mockStatic(SystemModelBuilder.class);
 
-        this.tDeployment = new TDeployment(TDeploymentResourceContainerTest.mockedCorrespondence,
+        this.tDeployment = new DeploymentModelUpdater(TDeploymentResourceContainerTest.mockedCorrespondence,
                 TDeploymentResourceContainerTest.mockedAllocationModelGraphProvider,
                 TDeploymentResourceContainerTest.mockedSystemModelGraphProvider,
                 TDeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);

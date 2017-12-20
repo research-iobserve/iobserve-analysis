@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.systems.jpetstore;
 
-import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.ITraceAcceptanceMatcher;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
  * Matches if a given call is valid in context of the user behavior analysis for the JPetStore.

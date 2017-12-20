@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IAllocationRecord;
@@ -29,6 +28,7 @@ import org.iobserve.common.record.IDeploymentRecord;
 import org.iobserve.common.record.IUndeploymentRecord;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;

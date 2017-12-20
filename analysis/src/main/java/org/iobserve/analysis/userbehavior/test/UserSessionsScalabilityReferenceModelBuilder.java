@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.test;
 
-import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
  *

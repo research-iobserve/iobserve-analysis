@@ -26,8 +26,8 @@ import java.util.Optional;
 import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.clustering.SingleOrNoneCollector;
 import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.data.PayloadAwareEntryCallEvent;
+import org.iobserve.stages.general.data.EntryCallEvent;
+import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

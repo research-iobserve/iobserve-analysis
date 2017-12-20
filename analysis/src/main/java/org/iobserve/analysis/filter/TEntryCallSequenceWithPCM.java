@@ -20,11 +20,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.iobserve.analysis.data.PayloadAwareEntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
+import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;

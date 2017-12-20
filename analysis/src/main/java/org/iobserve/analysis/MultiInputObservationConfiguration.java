@@ -17,7 +17,6 @@ package org.iobserve.analysis;
 
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
-import org.iobserve.analysis.filter.reader.MultipleConnectionTcpReaderStage;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -26,7 +25,7 @@ import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-
+import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 import org.eclipse.emf.common.util.URI;
 
 import org.palladiosimulator.pcm.allocation.Allocation;

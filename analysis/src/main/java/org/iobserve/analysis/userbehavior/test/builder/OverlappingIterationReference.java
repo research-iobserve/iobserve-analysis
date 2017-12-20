@@ -18,7 +18,6 @@ package org.iobserve.analysis.userbehavior.test.builder;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.UsageModelBuilder;
@@ -27,6 +26,7 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
 import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.test.TestHelper;
+import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;

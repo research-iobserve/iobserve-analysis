@@ -47,7 +47,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
- * Tests for {@link TDeployment} filter, in case the {@link ResourceContainer} does not exist, yet.
+ * Tests for {@link DeploymentModelUpdater} filter, in case the {@link ResourceContainer} does not exist, yet.
  *
  * @author jweg
  *
@@ -58,7 +58,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class TDeploymentNoResourceContainerTest {
 
     /** stage under test. */
-    private TDeployment tDeployment;
+    private DeploymentModelUpdater tDeployment;
 
     /** mocks. */
     @Mock
@@ -141,7 +141,7 @@ public class TDeploymentNoResourceContainerTest {
      */
     @Before
     public void stubMocksNoServletResourceContainer() {
-        this.tDeployment = new TDeployment(TDeploymentNoResourceContainerTest.mockedCorrespondence,
+        this.tDeployment = new DeploymentModelUpdater(TDeploymentNoResourceContainerTest.mockedCorrespondence,
                 TDeploymentNoResourceContainerTest.mockedAllocationModelGraphProvider,
                 TDeploymentNoResourceContainerTest.mockedSystemModelGraphProvider,
                 TDeploymentNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);

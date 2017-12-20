@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.filter;
 
-import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
  * Interface for EntryCallEvent acceptance matcher. Not every EntryCallEvent might represent and

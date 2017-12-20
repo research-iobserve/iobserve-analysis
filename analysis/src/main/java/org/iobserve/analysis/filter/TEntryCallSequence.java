@@ -20,11 +20,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.iobserve.analysis.data.PayloadAwareEntryCallEvent;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.SessionEndEvent;
 import org.iobserve.common.record.SessionStartEvent;
+import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;

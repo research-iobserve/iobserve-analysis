@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project
+ * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,28 +15,30 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
+
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Generic Kieker
  * 
- * @since 1.13
+ * @since 1.10
  */
 public final class EJBDeployedEventFactory implements IRecordFactory<EJBDeployedEvent> {
-
-    @Override
-    public EJBDeployedEvent create(final IValueDeserializer deserializer) {
-        return new EJBDeployedEvent(deserializer);
-    }
-
-    @Override
-    @Deprecated
-    public EJBDeployedEvent create(final Object[] values) {
-        return new EJBDeployedEvent(values);
-    }
-
-    public int getRecordSizeInBytes() {
-        return EJBDeployedEvent.SIZE;
-    }
+	
+	
+	@Override
+	public EJBDeployedEvent create(final IValueDeserializer deserializer) {
+		return new EJBDeployedEvent(deserializer);
+	}
+	
+	@Override
+	@Deprecated
+	public EJBDeployedEvent create(final Object[] values) {
+		return new EJBDeployedEvent(values);
+	}
+	
+	public int getRecordSizeInBytes() {
+		return EJBDeployedEvent.SIZE;
+	}
 }

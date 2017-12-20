@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.userbehavior.data.Branch;
@@ -30,6 +29,7 @@ import org.iobserve.analysis.userbehavior.data.BranchTransitionElement;
 import org.iobserve.analysis.userbehavior.data.CallElement;
 import org.iobserve.analysis.userbehavior.data.ExitElement;
 import org.iobserve.analysis.userbehavior.data.ISequenceElement;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
  * This class holds a set of methods to create a BranchModel from an EntryCallSequenceModel and to

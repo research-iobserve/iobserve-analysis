@@ -38,18 +38,15 @@ import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCr
 import org.iobserve.analysis.clustering.filter.models.configuration.examples.CoCoMEEntryCallRulesFactory;
 import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetStoreEntryCallRulesFactory;
 import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetstoreStrategy;
-import org.iobserve.analysis.filter.RecordSwitch;
 import org.iobserve.analysis.filter.TAllocation;
 import org.iobserve.analysis.filter.TAllocationFinished;
-import org.iobserve.analysis.filter.TDeployment;
-import org.iobserve.analysis.filter.TEntryCall;
+import org.iobserve.analysis.filter.DeploymentModelUpdater;
 import org.iobserve.analysis.filter.TEntryCallSequence;
-import org.iobserve.analysis.filter.TUndeployment;
+import org.iobserve.analysis.filter.UndeploymentModelUpdater;
 import org.iobserve.analysis.filter.TimeTriggerFilter;
 import org.iobserve.analysis.filter.TraceAcceptanceFilter;
 import org.iobserve.analysis.filter.TraceOperationCleanupFilter;
 import org.iobserve.analysis.filter.CollectUserSessionsFilter;
-import org.iobserve.analysis.filter.IEntryCallTraceMatcher;
 import org.iobserve.analysis.model.AllocationModelProvider;
 import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
@@ -67,6 +64,9 @@ import org.iobserve.planning.CandidateGeneration;
 import org.iobserve.planning.CandidateProcessing;
 import org.iobserve.planning.ModelOptimization;
 import org.iobserve.planning.ModelProcessing;
+import org.iobserve.stages.general.IEntryCallTraceMatcher;
+import org.iobserve.stages.general.RecordSwitch;
+import org.iobserve.stages.general.TEntryCallStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.eclipse.emf.common.util.URI;
@@ -87,14 +87,14 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
     protected TAllocation tAllocationSuccDeploy;
 
-    protected TDeployment deployment;
+    protected DeploymentModelUpdater deployment;
 
-    protected final TDeployment deploymentAfterAllocation;
-    protected TDeployment deploymentSuccAllocation;
+    protected final DeploymentModelUpdater deploymentAfterAllocation;
+    protected DeploymentModelUpdater deploymentSuccAllocation;
 
     protected final TAllocation tAllocationAfterDeploy;
 
-    protected TUndeployment undeployment;
+    protected UndeploymentModelUpdater undeployment;
     
     /**
      * Create a configuration with a ASCII file reader.
@@ -155,12 +155,12 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         final TAllocation tAllocation = new TAllocation(resourceEnvironmentModelGraphProvider);
         final TAllocationFinished tAllocationFinished = new TAllocationFinished();
-        this.deployment = new TDeployment(correspondenceModel, allocationModelGraphProvider, systemModelGraphProvider,
+        this.deployment = new DeploymentModelUpdater(correspondenceModel, allocationModelGraphProvider, systemModelGraphProvider,
                 resourceEnvironmentModelGraphProvider);
-        this.deploymentAfterAllocation = new TDeployment(correspondenceModel, allocationModelGraphProvider,
+        this.deploymentAfterAllocation = new DeploymentModelUpdater(correspondenceModel, allocationModelGraphProvider,
                 systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
         this.tAllocationAfterDeploy = new TAllocation(resourceEnvironmentModelGraphProvider);
-        this.undeployment = new TUndeployment(correspondenceModel, allocationModelGraphProvider,
+        this.undeployment = new UndeploymentModelUpdater(correspondenceModel, allocationModelGraphProvider,
                 systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
 
         /** Trace reconstruction. */
@@ -171,7 +171,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         final IEntryCallTraceMatcher matcher = new JPetStoreCallTraceMatcher();
 
-        final TEntryCall tEntryCall = new TEntryCall(matcher);
+        final TEntryCallStage tEntryCall = new TEntryCallStage(matcher);
 
         // final TEntryCallSequenceWithPCM tEntryCallSequenceWithPCM;
         // final TEntryEventSequence tEntryEventSequence;

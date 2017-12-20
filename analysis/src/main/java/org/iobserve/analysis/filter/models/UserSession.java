@@ -21,8 +21,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.common.record.ISessionEvent;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
  * Represents a user session.

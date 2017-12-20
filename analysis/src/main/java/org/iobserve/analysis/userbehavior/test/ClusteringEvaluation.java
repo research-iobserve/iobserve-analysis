@@ -22,10 +22,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.iobserve.analysis.data.EntryCallEvent;
 import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
 import org.iobserve.analysis.filter.models.UserSession;
 import org.iobserve.analysis.userbehavior.UserGroupExtraction;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
  * Contains the evaluation of the clustering. For three user groups user sessions with a user group
