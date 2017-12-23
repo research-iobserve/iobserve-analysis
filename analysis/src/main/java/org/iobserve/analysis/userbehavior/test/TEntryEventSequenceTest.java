@@ -19,8 +19,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iobserve.analysis.model.RepositoryModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.provider.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.analysis.userbehavior.test.builder.SimpleSequenceReference;
 import org.junit.Test;

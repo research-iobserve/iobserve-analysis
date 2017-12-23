@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.test;
 
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**

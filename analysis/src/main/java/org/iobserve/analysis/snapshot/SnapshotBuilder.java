@@ -26,7 +26,7 @@ import org.apache.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.AbstractModelProvider;
+import org.iobserve.analysis.model.provider.AbstractModelProvider;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;

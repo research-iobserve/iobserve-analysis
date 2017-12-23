@@ -19,10 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import teetime.framework.test.StageTester;
-
 import org.hamcrest.core.Is;
-import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
+import org.iobserve.analysis.deployment.DeploymentModelUpdater;
+import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -46,8 +45,11 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import teetime.framework.test.StageTester;
+
 /**
- * Tests for {@link DeploymentModelUpdater} filter, in case the {@link ResourceContainer} does not exist, yet.
+ * Tests for {@link DeploymentModelUpdater} filter, in case the {@link ResourceContainer} does not
+ * exist, yet.
  *
  * @author jweg
  *

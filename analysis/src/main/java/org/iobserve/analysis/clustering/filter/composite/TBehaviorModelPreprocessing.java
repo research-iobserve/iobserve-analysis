@@ -15,6 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.composite;
 
+import org.iobserve.analysis.clustering.filter.TBehaviorModelPreperation;
+import org.iobserve.analysis.clustering.filter.TBehaviorModelTableGeneration;
+import org.iobserve.analysis.clustering.filter.TEntryCallSequenceFilter;
+import org.iobserve.analysis.clustering.filter.TInstanceTransformations;
+import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
+import org.iobserve.analysis.data.EntryCallSequenceModel;
+
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
@@ -24,14 +31,6 @@ import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import teetime.stage.basic.merger.Merger;
 import teetime.stage.basic.merger.strategy.BlockingBusyWaitingRoundRobinMergerStrategy;
 import teetime.stage.basic.merger.strategy.IMergerStrategy;
-
-import org.iobserve.analysis.clustering.filter.TBehaviorModelPreperation;
-import org.iobserve.analysis.clustering.filter.TBehaviorModelTableGeneration;
-import org.iobserve.analysis.clustering.filter.TEntryCallSequenceFilter;
-import org.iobserve.analysis.clustering.filter.TInstanceTransformations;
-import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-
 import weka.core.Instances;
 
 /**

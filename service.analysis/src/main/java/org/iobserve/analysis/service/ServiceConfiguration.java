@@ -22,23 +22,21 @@ import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.MultiInputObservationConfiguration;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.provider.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.SystemModelProvider;
+import org.iobserve.analysis.model.provider.UsageModelProvider;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
 
 /**
  * @author Reiner Jung
@@ -46,7 +44,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  */
 public class ServiceConfiguration extends MultiInputObservationConfiguration {
 
-	/**
+    /**
      * Setup service configuration.
      *
      * @param inputPort
@@ -98,26 +96,20 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
             final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, 
-            final SystemModelProvider systemModelProvider,
+            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
             final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
             final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider, 
-            final String visualizationServiceURL,
-            final SnapshotBuilder snapshotBuilder, 
-            final URI perOpteryxDir, 
-            final URI lqnsDir, 
-            final URI deployablesFolder)
-            throws MalformedURLException {
+            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider, final String visualizationServiceURL,
+            final SnapshotBuilder snapshotBuilder, final URI perOpteryxDir, final URI lqnsDir,
+            final URI deployablesFolder) throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider, allocationModelProvider,
                 allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
                 EOutputMode.UBM_VISUALIZATION, snapshotBuilder, perOpteryxDir, lqnsDir, deployablesFolder);
-
 
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
@@ -132,7 +124,7 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
 
         this.connectPorts(this.deploymentAfterAllocation.getDeploymentFinishedOutputPort(),
                 deploymentVisualizationStage.getInputPort());
-        this.connectPorts(this.tAllocationAfterDeploy.getAllocationOutputPort(),
+        this.connectPorts(this.allocationAfterDeploy.getAllocationOutputPort(),
                 allocationVisualizationStage.getInputPort());
         this.connectPorts(this.undeployment.getVisualizationOutputPort(),
                 undeploymentVisualizationStage.getInputPort());

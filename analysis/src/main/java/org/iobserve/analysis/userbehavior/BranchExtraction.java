@@ -19,7 +19,7 @@ package org.iobserve.analysis.userbehavior;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
 
 /**

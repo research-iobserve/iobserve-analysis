@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.adaptation.data;
 
-import org.iobserve.analysis.graph.ComponentNode;
-import org.iobserve.analysis.graph.DeploymentNode;
+import org.iobserve.analysis.data.graph.ComponentNode;
+import org.iobserve.analysis.data.graph.DeploymentNode;
 import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;

@@ -23,7 +23,7 @@ import javax.json.JsonObject;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.iobserve.analysis.filter.DeploymentModelUpdater;
+import org.iobserve.analysis.deployment.DeploymentModelUpdater;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.services.ServiceInstanceService;

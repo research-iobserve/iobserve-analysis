@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.systems.jpetstore;
 
-import org.iobserve.analysis.filter.ITraceAcceptanceMatcher;
+import org.iobserve.analysis.traces.ITraceAcceptanceMatcher;
 import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**

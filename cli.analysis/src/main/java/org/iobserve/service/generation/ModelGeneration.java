@@ -24,10 +24,10 @@ import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
+import org.iobserve.analysis.model.provider.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.SystemModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -35,7 +35,7 @@ import org.palladiosimulator.pcm.system.System;
 
 /**
  * ToDo .
- * 
+ *
  * @author unknown
  *
  */

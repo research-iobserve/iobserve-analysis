@@ -18,18 +18,12 @@ package org.iobserve.service.privacy.violation;
 import java.io.File;
 import java.util.List;
 
-import teetime.framework.Configuration;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
-import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
-import teetime.util.ConcurrentHashMapWithDefault;
-
-import org.iobserve.analysis.filter.DeploymentModelUpdater;
-import org.iobserve.analysis.filter.TGeoLocation;
-import org.iobserve.analysis.filter.UndeploymentModelUpdater;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.deployment.DeploymentModelUpdater;
+import org.iobserve.analysis.deployment.UndeploymentModelUpdater;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.privacy.TGeoLocation;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
 import org.iobserve.service.privacy.violation.filter.AlarmAnalysis;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
@@ -46,6 +40,12 @@ import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+
+import teetime.framework.Configuration;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
+import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
+import teetime.util.ConcurrentHashMapWithDefault;
 
 /**
  * Configuration for the log replayer.

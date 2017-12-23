@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.filter.models.UserSession;
+import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSession;
 import org.iobserve.analysis.userbehavior.UserGroupExtraction;
 import org.iobserve.stages.general.data.EntryCallEvent;
 

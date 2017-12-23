@@ -26,11 +26,11 @@ import org.apache.commons.cli.Options;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.graph.GraphFactory;
+import org.iobserve.analysis.data.graph.GraphFactory;
 
 /**
  * ToDo .
- * 
+ *
  * @author unknown
  *
  */

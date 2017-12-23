@@ -19,10 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import teetime.framework.test.StageTester;
-
 import org.hamcrest.core.Is;
-import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
+import org.iobserve.analysis.deployment.AllocationStage;
+import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationRecord;
@@ -39,6 +38,8 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import teetime.framework.test.StageTester;
+
 /**
  * Tests for {@link TAllocation} filter, when the {@link ResourceContainer} already exists.
  *
@@ -51,7 +52,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class TAllocationResourceContainerTest {
 
     /** stage under test. */
-    private TAllocation tAllocation;
+    private AllocationStage tAllocation;
 
     /** mocks. */
     private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
@@ -115,7 +116,7 @@ public class TAllocationResourceContainerTest {
         TAllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito
                 .mock(ModelProvider.class);
 
-        this.tAllocation = new TAllocation(
+        this.tAllocation = new AllocationStage(
                 TAllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(TAllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider

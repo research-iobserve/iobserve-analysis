@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior.test.builder;
 
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
+import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.userbehavior.test.ReferenceElements;
 import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.test.TestHelper;

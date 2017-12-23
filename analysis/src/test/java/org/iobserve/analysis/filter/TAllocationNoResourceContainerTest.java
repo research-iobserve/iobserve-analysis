@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Optional;
 
 import org.hamcrest.core.Is;
-import org.iobserve.analysis.model.ResourceEnvironmentModelBuilder;
+import org.iobserve.analysis.deployment.AllocationStage;
+import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationRecord;
@@ -51,7 +52,7 @@ import teetime.framework.test.StageTester;
 public class TAllocationNoResourceContainerTest {
 
     /** stage under test. */
-    private TAllocation tAllocation;
+    private AllocationStage tAllocation;
 
     /** mocks. */
     private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
@@ -116,7 +117,7 @@ public class TAllocationNoResourceContainerTest {
         TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito
                 .mock(ModelProvider.class);
 
-        this.tAllocation = new TAllocation(
+        this.tAllocation = new AllocationStage(
                 TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider

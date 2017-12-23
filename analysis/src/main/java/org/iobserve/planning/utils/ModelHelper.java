@@ -21,11 +21,11 @@ import java.util.stream.Collectors;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.CloudProfileModelProvider;
-import org.iobserve.analysis.model.CostModelBuilder;
-import org.iobserve.analysis.model.CostModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentCloudBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.builder.CostModelBuilder;
+import org.iobserve.analysis.model.builder.ResourceEnvironmentCloudBuilder;
+import org.iobserve.analysis.model.provider.CloudProfileModelProvider;
+import org.iobserve.analysis.model.provider.CostModelProvider;
+import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
@@ -105,8 +105,9 @@ public final class ModelHelper {
         final Optional<LinkingResource> internetLink = linkingResources.stream()
                 .filter(link -> link.getEntityName().contains(ModelHelper.INTERNET_LINKING_RESOURCE_NAME)).findFirst();
 
-        linkingResource = internetLink.orElseGet(() -> ResourceEnvironmentCloudBuilder
-                .createLinkingResource(environment, null, ModelHelper.INTERNET_LINKING_RESOURCE_NAME));
+        linkingResource = internetLink
+                .orElseGet(() -> org.iobserve.analysis.model.builder.ResourceEnvironmentCloudBuilder
+                        .createLinkingResource(environment, null, ModelHelper.INTERNET_LINKING_RESOURCE_NAME));
 
         return linkingResource;
     }

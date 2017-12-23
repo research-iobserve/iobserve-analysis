@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.systems.jpetstore;
 
-import org.iobserve.analysis.filter.ITraceSignatureCleanupRewriter;
+import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
 
 /**
  * Performs cleanup operations on class and operation signatures for the JPetStore application.

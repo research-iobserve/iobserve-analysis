@@ -18,18 +18,18 @@ package org.iobserve.analysis;
 import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.model.AbstractModelProvider;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.CloudProfileModelProvider;
-import org.iobserve.analysis.model.CostModelProvider;
-import org.iobserve.analysis.model.DesignDecisionModelProvider;
-import org.iobserve.analysis.model.QMLDeclarationsModelProvider;
-import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.CorrespondeceModelFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.provider.AbstractModelProvider;
+import org.iobserve.analysis.model.provider.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.CloudProfileModelProvider;
+import org.iobserve.analysis.model.provider.CostModelProvider;
+import org.iobserve.analysis.model.provider.DesignDecisionModelProvider;
+import org.iobserve.analysis.model.provider.QMLDeclarationsModelProvider;
+import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.SystemModelProvider;
+import org.iobserve.analysis.model.provider.UsageModelProvider;
 
 /**
  *

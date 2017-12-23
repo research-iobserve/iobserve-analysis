@@ -15,19 +15,18 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.provider.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.SystemModelProvider;
+import org.iobserve.analysis.model.provider.UsageModelProvider;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
-import org.eclipse.emf.common.util.URI;
-
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -39,7 +38,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  */
 public class MultiInputObservationConfiguration extends AbstractObservationConfiguration {
 
-	private static final int CAPACITY = (1024 * 1024);
+    private static final int CAPACITY = (1024 * 1024);
 
     /**
      * Construct an analysis for multiple TCP inputs.
@@ -77,30 +76,21 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      * @param outputMode
      *            output mode
      */
-    public MultiInputObservationConfiguration(final int inputPort, 
-            final ICorrespondence correspondenceModel,
-            final UsageModelProvider usageModelProvider, 
-            final RepositoryModelProvider repositoryModelProvider,
+    public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
+            final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
             final AllocationModelProvider allocationModelProvider,
-            final ModelProvider<Allocation> allocationModelGraphProvider, 
-            final SystemModelProvider systemModelProvider,
+            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final int varianceOfUserGroups, 
-            final int thinkTime, 
-            final boolean closedWorkload,
-            final String visualizationServiceURL, 
-            final EAggregationType aggregationType,
-            final EOutputMode outputMode,
-            final SnapshotBuilder snapshotBuilder, 
-            final URI perOpteryxHeadless, 
-            final URI lqnsDir, 
+            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
+            final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
+            final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,
             final URI deployablesFolder) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
                 systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, perOpteryxHeadless, lqnsDir, 
+                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, perOpteryxHeadless, lqnsDir,
                 null, deployablesFolder);
 
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
