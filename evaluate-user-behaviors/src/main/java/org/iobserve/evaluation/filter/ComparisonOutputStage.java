@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.evaluation;
+package org.iobserve.evaluation.filter;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,6 +29,8 @@ import teetime.framework.AbstractConsumerStage;
 import org.iobserve.analysis.clustering.filter.models.CallInformation;
 import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
 import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
+import org.iobserve.evaluation.data.ComparisonResult;
+import org.iobserve.evaluation.data.NodeDifference;
 
 /**
  * Sync all incoming records with a Kieker writer to a text file log.

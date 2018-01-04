@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.evaluation;
+package org.iobserve.evaluation.filter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,8 @@ import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
 import org.iobserve.analysis.clustering.filter.models.CallInformation;
 import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
 import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
+import org.iobserve.evaluation.data.ComparisonResult;
+import org.iobserve.evaluation.data.NodeDifference;
 
 /**
  * Compare two behavior models and compute their differences.

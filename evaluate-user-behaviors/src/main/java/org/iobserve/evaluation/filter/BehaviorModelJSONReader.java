@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.evaluation;
+package org.iobserve.evaluation.filter;
 
 import java.io.File;
 
@@ -51,7 +51,7 @@ public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel
 
         this.outputPort.send(model);
 
-        this.terminateStage();
+        this.workCompleted();
     }
 
 }
