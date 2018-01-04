@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.userbehavior.test;
+package org.iobserve.analysis.userbehavior;
 
 /**
  * Counts the assignments of user user sessions of each user group to a cluster Used for the

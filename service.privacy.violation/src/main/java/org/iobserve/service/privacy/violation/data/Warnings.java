@@ -23,14 +23,9 @@ import java.util.List;
  *
  */
 public class Warnings {
-    List<String> warnings = new ArrayList<>();
+    private final List<String> warnings = new ArrayList<>();
 
     public final List<String> getWarnings() {
         return this.warnings;
     }
-
-    public final void setWarnings(final List<String> warnings) {
-        this.warnings = warnings;
-    }
-
 }

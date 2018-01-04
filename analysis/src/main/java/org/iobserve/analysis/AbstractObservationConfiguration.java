@@ -235,7 +235,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(allocationFinished.getDeploymentOutputPort(), this.deploymentAfterAllocation.getInputPort());
 
         this.connectPorts(tEntryCall.getOutputPort(), entryCallSequence.getEntryCallInputPort());
-        this.connectPorts(this.recordSwitch.getSessionEventPort(), entryCallSequence.getSessionEventInputPort());
+        this.connectPorts(this.recordSwitch.getSessionEventOutputPort(), entryCallSequence.getSessionEventInputPort());
 
         this.connectPorts(timeTriggerFilter.getOutputPort(), collectUserSessions.getTimeTriggerInputPort());
         this.connectPorts(entryCallSequence.getUserSessionOutputPort(), traceAcceptanceFilter.getInputPort());

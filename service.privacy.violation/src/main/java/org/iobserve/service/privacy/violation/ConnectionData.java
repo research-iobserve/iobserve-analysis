@@ -13,19 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.privacy.violation.data;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.iobserve.service.privacy.violation;
 
 /**
+ * Connection to be used to control monitoring.
+ *
  * @author Reiner Jung
  *
  */
-public class Alarms {
-    private final List<String> alarms = new ArrayList<>();
+public class ConnectionData {
+    private final String host;
+    private final Integer port;
 
-    public final List<String> getAlarms() {
-        return this.alarms;
+    /**
+     * Create a new connection information set.
+     *
+     * @param host
+     *            host to connect to
+     * @param port
+     *            port to connect to
+     */
+    public ConnectionData(final String host, final Integer port) {
+        this.host = host;
+        this.port = port;
     }
+
+    public final String getHost() {
+        return this.host;
+    }
+
+    public final Integer getPort() {
+        return this.port;
+    }
+
 }

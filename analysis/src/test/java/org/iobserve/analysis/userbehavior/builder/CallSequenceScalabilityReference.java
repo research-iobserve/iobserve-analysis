@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.userbehavior.test.builder;
+package org.iobserve.analysis.userbehavior.builder;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.userbehavior.test.ReferenceElements;
-import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
-import org.iobserve.analysis.userbehavior.test.TestHelper;
+import org.iobserve.analysis.userbehavior.ReferenceElements;
+import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
+import org.iobserve.analysis.userbehavior.TestHelper;
 import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**

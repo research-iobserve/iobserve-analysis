@@ -12,6 +12,9 @@ if (group.isEmpty()) {
 
 dependencies {
     compile project(":analysis")
+
+	clover 'org.openclover:clover:4.2.0'
+
     compile 'commons-daemon:commons-daemon:1.0.15'
     compile "com.beust:jcommander:1.60"
     compile 'javax.json:javax.json-api:1.0'
@@ -28,6 +31,13 @@ dependencies {
     testCompile 'org.powermock:powermock-core:1.6.1'
     testCompile 'org.powermock:powermock-module-junit4:1.6.1'
     testCompile 'org.powermock:powermock-api-mockito:1.6.1'
+}
+
+clover {
+	report {
+		html=true
+	}
+	
 }
 
 test {

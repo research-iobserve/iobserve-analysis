@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.userbehavior.test;
+package org.iobserve.analysis.userbehavior;
 
 /**
  * Contains the information of an PCM usage model element. Thereby, a model element can be any model

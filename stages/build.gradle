@@ -18,6 +18,9 @@ sourceCompatibility = 1.8
 
 dependencies {
 	compile gradleApi()
+
+	clover 'org.openclover:clover:4.2.0'
+
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
 	
@@ -91,6 +94,13 @@ dependencies {
             'org.powermock:powermock-api-mockito:1.6.1'
 	
 	compile 'com.neovisionaries:nv-i18n:1.20'
+}
+
+clover {
+	report {
+		html=true
+	}
+	
 }
 
 sourceSets {

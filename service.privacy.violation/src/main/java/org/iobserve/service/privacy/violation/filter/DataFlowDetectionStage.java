@@ -33,7 +33,20 @@ public class DataFlowDetectionStage extends AbstractConsumerStage<PCMEntryCallEv
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
     private final ModelProvider<System> systemModelGraphProvider;
     private final ModelProvider<Allocation> allocationModelGraphProvider;
+    private final OutputPort<?> outputPort = this.createOutputPort(Object.class); // TODO define
+                                                                                  // better
+                                                                                  // data type
 
+    /**
+     * Create a data flow detection stage.
+     *
+     * @param allocationModelGraphProvider
+     *            allocation model provider
+     * @param systemModelGraphProvider
+     *            system model provider
+     * @param resourceEnvironmentModelGraphProvider
+     *            resource environment model provider
+     */
     public DataFlowDetectionStage(final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<System> systemModelGraphProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
@@ -48,9 +61,8 @@ public class DataFlowDetectionStage extends AbstractConsumerStage<PCMEntryCallEv
 
     }
 
-    public OutputPort getOutputPort() {
-        // TODO Auto-generated method stub
-        return null;
+    public OutputPort<?> getOutputPort() {
+        return this.outputPort;
     }
 
 }

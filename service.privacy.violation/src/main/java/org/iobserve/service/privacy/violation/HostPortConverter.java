@@ -17,12 +17,18 @@ package org.iobserve.service.privacy.violation;
 
 import com.beust.jcommander.IStringConverter;
 
-public class HostPortConverter implements IStringConverter<Control> {
+/**
+ * Converter for command line input to separate host and port.
+ *
+ * @author Reiner Jung
+ *
+ */
+public class HostPortConverter implements IStringConverter<ConnectionData> {
 
     @Override
-    public Control convert(final String value) {
+    public ConnectionData convert(final String value) {
         final String[] s = value.split(":");
 
-        return new Control(s[0], new Integer(Integer.parseInt(s[1])));
+        return new ConnectionData(s[0], new Integer(Integer.parseInt(s[1])));
     }
 }

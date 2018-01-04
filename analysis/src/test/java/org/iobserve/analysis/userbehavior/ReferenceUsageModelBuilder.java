@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.userbehavior.test;
+package org.iobserve.analysis.userbehavior;
 
 /**
  *
  * This class is used to create reference usage models that can be used to evaluate the approach's
  * modeling accuracy by matching the reference usage model against an approach's generated usage
  * model. The matching is done in the
- * {@link org.iobserve.analysis.userbehavior.test.UserBehaviorEvaluation}. Each reference model
+ * {@link org.iobserve.analysis.userbehavior.UserBehaviorEvaluation}. Each reference model
  * represents a certain user behavior that is evaluated. According to the user behavior user
  * sessions are created whose call sequences correspond to the user behavior of the reference model
  * Subsequently, the approach can be executed with the created user sessions and the obtained usage

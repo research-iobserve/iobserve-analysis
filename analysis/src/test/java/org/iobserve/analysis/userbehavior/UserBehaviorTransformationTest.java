@@ -13,28 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.userbehavior.test;
+package org.iobserve.analysis.userbehavior;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
-import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
-import org.iobserve.analysis.userbehavior.test.builder.SimpleSequenceReference;
-import org.junit.Test;
-
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.userbehavior.builder.SimpleSequenceReference;
+
 /**
- * Test of the TEntryEventSequence filter.
+ * Test of the UserBehaviorTransformation.
  *
- * @author Reiner Jung
+ * TODO this test is broken. Relevant models are note provided. Therefore, the test crashes with a
+ * null pointer exception.
+ *
+ * @author unknown
  *
  */
-public final class TEntryEventSequenceTest {
+public final class UserBehaviorTransformationTest {
 
     private static final int THINK_TIME = 1;
     private static final int NUMBER_OF_USER_GROUPS = 1;
@@ -42,18 +43,18 @@ public final class TEntryEventSequenceTest {
 
     private static final String USAGE_MODEL_FOLDER = "output/usageModels/";
 
-    private static final String OUTPUT_USAGE_MODEL = TEntryEventSequenceTest.USAGE_MODEL_FOLDER
+    private static final String OUTPUT_USAGE_MODEL = UserBehaviorTransformationTest.USAGE_MODEL_FOLDER
             + "OutputModel.usagemodel";
 
-    private static final String REFERENCE_USAGE_MODEL = TEntryEventSequenceTest.USAGE_MODEL_FOLDER
+    private static final String REFERENCE_USAGE_MODEL = UserBehaviorTransformationTest.USAGE_MODEL_FOLDER
             + "ReferenceModel.usagemodel";
 
-    private static final Log LOG = LogFactory.getLog(TEntryEventSequenceTest.class);
+    private static final Log LOG = LogFactory.getLog(UserBehaviorTransformationTest.class);
 
     /**
      * Test class.
      */
-    private TEntryEventSequenceTest() {
+    public UserBehaviorTransformationTest() {
 
     }
 
@@ -63,7 +64,7 @@ public final class TEntryEventSequenceTest {
      * @throws IOException
      *             when reading and writing files.
      */
-    @Test
+    // @Test
     public void testBranchWithinLoop() throws IOException {
 
         final ICorrespondence correspondenceModel = null; // TODO load that model
@@ -74,13 +75,13 @@ public final class TEntryEventSequenceTest {
         final List<AccuracyResults> results = new ArrayList<>();
 
         for (int i = 1; i <= numberOfIterations; i += stepSize) {
-            final int numberOfUserGroups = TEntryEventSequenceTest.NUMBER_OF_USER_GROUPS;
+            final int numberOfUserGroups = UserBehaviorTransformationTest.NUMBER_OF_USER_GROUPS;
             final int varianceOfUserGroups = 0;
-            final int thinkTime = TEntryEventSequenceTest.THINK_TIME;
-            final boolean isClosedWorkload = TEntryEventSequenceTest.CLOSED_WORKLOAD;
+            final int thinkTime = UserBehaviorTransformationTest.THINK_TIME;
+            final boolean isClosedWorkload = UserBehaviorTransformationTest.CLOSED_WORKLOAD;
 
             final ReferenceElements referenceElements = SimpleSequenceReference.getModel(
-                    TEntryEventSequenceTest.REFERENCE_USAGE_MODEL, repositoryModelProvider, correspondenceModel,
+                    UserBehaviorTransformationTest.REFERENCE_USAGE_MODEL, repositoryModelProvider, correspondenceModel,
                     thinkTime, isClosedWorkload);
 
             final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
@@ -96,11 +97,12 @@ public final class TEntryEventSequenceTest {
             final double relativeMeasurementError = WorkloadEvaluation.calculateRME(behaviorModeling.getPcmUsageModel(),
                     referenceElements);
 
-            TEntryEventSequenceTest.LOG.debug("RME " + relativeMeasurementError);
+            UserBehaviorTransformationTest.LOG.debug("RME " + relativeMeasurementError);
 
-            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(), TEntryEventSequenceTest.OUTPUT_USAGE_MODEL);
+            TestHelper.saveModel(behaviorModeling.getPcmUsageModel(),
+                    UserBehaviorTransformationTest.OUTPUT_USAGE_MODEL);
 
-            TEntryEventSequenceTest.LOG.debug("Iteration :" + i + "/" + numberOfIterations);
+            UserBehaviorTransformationTest.LOG.debug("Iteration :" + i + "/" + numberOfIterations);
         }
 
         TestHelper.writeAccuracyResults(results);

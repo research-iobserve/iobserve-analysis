@@ -19,17 +19,30 @@ import java.util.List;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.service.privacy.violation.Control;
+import org.iobserve.service.privacy.violation.ConnectionData;
 
+/**
+ * Receives probe on off events which it relays to the corresponding services.
+ *
+ * @author Reiner Jung
+ *
+ */
 public class ProbeController extends AbstractConsumerStage<Object> {
 
-    public ProbeController(final List<Control> outputs) {
-        // TODO Auto-generated constructor stub
+    private final List<ConnectionData> outputs;
+
+    /**
+     * Create a probe controller.
+     *
+     * @param outputs
+     *            output descriptions
+     */
+    public ProbeController(final List<ConnectionData> outputs) {
+        this.outputs = outputs;
     }
 
     @Override
     protected void execute(final Object element) throws Exception {
-        // TODO Auto-generated method stub
 
     }
 

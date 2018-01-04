@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.userbehavior.test.builder;
+package org.iobserve.analysis.userbehavior.builder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,9 +25,9 @@ import org.iobserve.analysis.model.builder.UsageModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.RepositoryModelProvider;
-import org.iobserve.analysis.userbehavior.test.ReferenceElements;
-import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
-import org.iobserve.analysis.userbehavior.test.TestHelper;
+import org.iobserve.analysis.userbehavior.ReferenceElements;
+import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
+import org.iobserve.analysis.userbehavior.TestHelper;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
@@ -113,7 +113,7 @@ public final class SimpleBranchReference {
 
             lastAction = startBranchTransition;
 
-            if ((i >= 0) && (i < 5)) {
+            if (i >= 0 && i < 5) {
                 correspondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
             } else {

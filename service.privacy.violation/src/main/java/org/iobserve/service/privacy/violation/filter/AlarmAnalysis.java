@@ -18,21 +18,26 @@ package org.iobserve.service.privacy.violation.filter;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.service.privacy.violation.data.Alarms;
+
 /**
  * @author Reiner Jung
  *
  */
 public class AlarmAnalysis extends AbstractConsumerStage<Object> {
 
+    private final OutputPort<Alarms> outputPort = this.createOutputPort(Alarms.class);
+
+    /**
+     * Perform alarm analysis.
+     */
     @Override
     protected void execute(final Object element) throws Exception {
         // TODO Auto-generated method stub
-
     }
 
-    public OutputPort getOutputPort() {
-        // TODO Auto-generated method stub
-        return null;
+    public OutputPort<Alarms> getOutputPort() {
+        return this.outputPort;
     }
 
 }

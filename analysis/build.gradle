@@ -18,6 +18,9 @@ sourceCompatibility = 1.8
 
 dependencies {
 	compile gradleApi()
+	
+	clover 'org.openclover:clover:4.2.0'
+	
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
 	
@@ -35,7 +38,7 @@ dependencies {
 	compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
 	compile 'org.eclipse.emf:org.eclipse.emf.mwe.core:1.3.20+'
 	compile 'org.eclipse.uml2:org.eclipse.uml2.types:2.0.0+'
-        compile 'org.eclipse.platform:org.eclipse.equinox.common:3.8.0+'
+	compile 'org.eclipse.platform:org.eclipse.equinox.common:3.8.0+'
 		
 	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
 	compile 'org.apache.logging.log4j:log4j-core:2.6.2'
@@ -54,7 +57,7 @@ dependencies {
 	compile 'extra:org.palladiosimulator.pcm.privacy:4.0.2.2017-05-31'
 	compile 'extra:org.palladiosimulator.pcm.cloud:1.0.0+'
 	compile 'extra:org.palladiosimulator.analyzer.workflow:1.0.0+'
-        compile 'extra:org.palladiosimulator.analyzer.completions:1.0.0+'
+	compile 'extra:org.palladiosimulator.analyzer.completions:1.0.0+'
 	compile 'extra:org.palladiosimulator.analyzer.resultdecorator:1.0.0+'
 	compile 'extra:org.palladiosimulator.analyzer.quality:1.0.0+'
 	compile 'extra:org.palladiosimulator.solver:3.0.0+'
@@ -107,6 +110,13 @@ sourceSets {
 				srcDir 'src/gen/java-factory'
 	    	}
 	}    
+}
+
+clover {
+	report {
+		html=true
+	}
+	
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

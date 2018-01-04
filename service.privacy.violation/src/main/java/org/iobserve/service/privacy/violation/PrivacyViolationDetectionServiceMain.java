@@ -50,7 +50,7 @@ public final class PrivacyViolationDetectionServiceMain {
 
     @Parameter(names = { "-c",
             "--control" }, required = true, description = "Control hosts and ports.", splitter = CommaParameterSplitter.class, converter = HostPortConverter.class)
-    private List<Control> outputs;
+    private List<ConnectionData> outputs;
 
     private File warningFile;
 

@@ -29,6 +29,20 @@ public class PCMEntryCallEvent {
     private final String sessionId;
     private final String hostname;
 
+    /**
+     * Create a new PCM entry call.
+     *
+     * @param entryTime
+     *            entry time
+     * @param exitTime
+     *            exit time
+     * @param entity
+     *            related pcm entity
+     * @param sessionId
+     *            session id
+     * @param hostname
+     *            hostname
+     */
     public PCMEntryCallEvent(final long entryTime, final long exitTime, final PcmEntity entity, final String sessionId,
             final String hostname) {
         this.entryTime = entryTime;

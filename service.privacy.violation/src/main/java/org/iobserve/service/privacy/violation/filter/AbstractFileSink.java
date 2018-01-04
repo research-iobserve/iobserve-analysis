@@ -15,41 +15,41 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.service.privacy.violation.data.ProbeLocation;
+import teetime.framework.AbstractConsumerStage;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 /**
- * Translate model level probe control events to code level events.
+ * Generic file sink which serializes input.
  *
  * @author Reiner Jung
  *
+ * @param <T>
+ *            input data type to be serialized
+ *
  */
-public class ProbeMapper extends AbstractConsumerStage<ProbeLocation> {
+public abstract class AbstractFileSink<T> extends AbstractConsumerStage<T> {
 
-    private final OutputPort<String> outputPort = this.createOutputPort();
-    private final ICorrespondence rac;
+    protected static final Logger LOGGER = LogManager.getLogger(AbstractFileSink.class);
+    protected final PrintWriter output;
 
     /**
-     * Initialize probe mapper from model to code level.
+     * Create an file sink.
      *
-     * @param rac
-     *            correspondence model used for mapping
+     * @param file
+     *            the file handle to be used.
+     * @throws IOException
+     *             on file access issues
      */
-    public ProbeMapper(final ICorrespondence rac) {
-        this.rac = rac;
-    }
-
-    @Override
-    protected void execute(final ProbeLocation element) throws Exception {
-        // TODO Auto-generated method stub
-
-    }
-
-    public OutputPort<String> getOutputPort() {
-        return this.outputPort;
+    public AbstractFileSink(final File file) throws IOException {
+        this.output = new PrintWriter(new BufferedWriter(new FileWriter(file, true)));
     }
 
 }

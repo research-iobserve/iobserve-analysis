@@ -13,23 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.privacy.violation;
+package org.iobserve.stages.general;
 
-public class Control {
-    String host;
-    Integer port;
+import org.junit.runner.RunWith;
+import org.junit.runners.Suite;
+import org.junit.runners.Suite.SuiteClasses;
 
-    public Control(final String host, final Integer port) {
-        this.host = host;
-        this.port = port;
-    }
-
-    public final String getHost() {
-        return this.host;
-    }
-
-    public final Integer getPort() {
-        return this.port;
-    }
+/**
+ * Test suite that run all tests for classes in org.iobserve.analysis.filter.
+ *
+ * @author jweg
+ *
+ */
+@RunWith(Suite.class)
+@SuiteClasses({ RecordSwitchTests.class })
+public class AllTestsFilter {
 
 }

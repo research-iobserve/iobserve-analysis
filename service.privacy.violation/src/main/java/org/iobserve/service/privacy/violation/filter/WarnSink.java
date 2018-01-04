@@ -16,26 +16,34 @@
 package org.iobserve.service.privacy.violation.filter;
 
 import java.io.File;
-
-import teetime.framework.AbstractConsumerStage;
+import java.io.IOException;
 
 import org.iobserve.service.privacy.violation.data.Warnings;
 
 /**
- * @author Reiner jung
+ * @author Reiner Jung
  *
  */
-public class WarnSink extends AbstractConsumerStage<Warnings> {
+public class WarnSink extends AbstractFileSink<Warnings> {
 
-    public WarnSink(final File warningFile) {
-        // TODO Auto-generated constructor stub
+    /**
+     * Create a warning sink.
+     *
+     * @param warningFile
+     *            file to log all warnings.
+     * @throws IOException
+     *             on file operation errors
+     */
+    public WarnSink(final File warningFile) throws IOException {
+        super(warningFile);
     }
 
     @Override
     protected void execute(final Warnings element) throws Exception {
-        System.out.println("Warnings");
+        AbstractFileSink.LOGGER.debug("Alarms");
         for (final String warning : element.getWarnings()) {
-            System.out.println("\t" + warning);
+            AbstractFileSink.LOGGER.debug("\t" + warning);
+            this.output.println(warning);
         }
     }
 

@@ -1,14 +1,8 @@
-buildscript { 
-	
-	// this block can be used later to add custom plug-ins for gradle
-	// just an example for now
-	
-    repositories {
-        //jcenter()
-    }
-    dependencies {
-        //classpath "com.jfrog.bintray.gradle:gradle-bintray-plugin:0.4.1"
-    }
+apply plugin: 'java'
+
+repositories {
+    mavenCentral()
+    mavenLocal()
 }
 
 // checking the presence of an Eclipse API baseline repositorsy
@@ -22,16 +16,29 @@ if (project.properties['api.baseline'] == null || project.properties['api.baseli
 	println "iObserve API baseline repository is at: " + project.properties['api.baseline']
 }
 
+buildscript { 
+		
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        jcenter()
+    }
+    
+    dependencies {
+        classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
+    }
+}
 
 subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'eclipse'
     apply plugin: 'checkstyle'
-
+    apply plugin: 'com.bmuschko.clover'
+    
     version = '0.0.2-SNAPSHOT'
     group = 'org.iobserve'
-    
+        
     checkstyle {
         configFile = rootProject.file('iobserve-checkstyle-rules.xml')
         configProperties = [config_loc: "${rootDir}"]
@@ -73,6 +80,7 @@ subprojects {
 	       downloadSources=true
 	       downloadJavadoc=true
 	    }
-	}
+    }
 }
+
 

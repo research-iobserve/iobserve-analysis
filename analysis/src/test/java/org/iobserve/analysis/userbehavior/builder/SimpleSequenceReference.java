@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.userbehavior.test.builder;
+package org.iobserve.analysis.userbehavior.builder;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -27,9 +27,9 @@ import org.iobserve.analysis.model.builder.UsageModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.RepositoryModelProvider;
-import org.iobserve.analysis.userbehavior.test.ReferenceElements;
-import org.iobserve.analysis.userbehavior.test.ReferenceUsageModelBuilder;
-import org.iobserve.analysis.userbehavior.test.TestHelper;
+import org.iobserve.analysis.userbehavior.ReferenceElements;
+import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
+import org.iobserve.analysis.userbehavior.TestHelper;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
@@ -105,7 +105,7 @@ public final class SimpleSequenceReference {
         // According to the randomly set length of the call sequence, EntryLevelSystemCalls are
         // created
         for (int i = 0; i < numberOfCalls; i++) {
-            if ((i >= 0) && (i < 5)) {
+            if (i >= 0 && i < 5) {
                 correspondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[i],
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
             } else {
@@ -139,7 +139,7 @@ public final class SimpleSequenceReference {
             }
             for (int k = 0; k < numberOfCalls; k++) {
                 EntryCallEvent entryCallEvent = null;
-                if ((k >= 0) && (k < 5)) {
+                if (k >= 0 && k < 5) {
                     entryCallEvent = new EntryCallEvent(entryTime, exitTime,
                             ReferenceUsageModelBuilder.OPERATION_SIGNATURE[k],
                             ReferenceUsageModelBuilder.CLASS_SIGNATURE[k], String.valueOf(i), "hostname");
@@ -161,7 +161,7 @@ public final class SimpleSequenceReference {
         TestHelper.saveModel(usageModel, referenceUsageModelFileName);
         referenceElements.setEntryCallSequenceModel(entryCallSequenceModel);
         referenceElements.setUsageModel(usageModel);
-        referenceElements.setMeanInterArrivalTime(meanInterArrivalTime + (numberOfCalls * 2));
+        referenceElements.setMeanInterArrivalTime(meanInterArrivalTime + numberOfCalls * 2);
         referenceElements.setMeanConcurrentUserSessions(
                 SimpleSequenceReference.calculateTheNumberOfConcurrentUsers(entryCallSequenceModel.getUserSessions()));
 

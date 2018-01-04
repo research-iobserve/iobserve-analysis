@@ -19,6 +19,7 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
@@ -28,18 +29,25 @@ import org.iobserve.stages.general.data.EntryCallEvent;
 public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent> {
 
     private final ICorrespondence rac;
+    private final OutputPort<PCMEntryCallEvent> outputPort = this.createOutputPort(PCMEntryCallEvent.class);
 
+    /**
+     * Entry event mapper.
+     *
+     * @param rac
+     *            correspondence model
+     */
     public EntryEventMapperStage(final ICorrespondence rac) {
         this.rac = rac;
     }
 
     @Override
     protected void execute(final EntryCallEvent event) throws Exception {
-
+        // TODO implement stuff
     }
 
-    public OutputPort getOutputPort() {
-        return null;
+    public OutputPort<PCMEntryCallEvent> getOutputPort() {
+        return this.outputPort;
     }
 
 }
