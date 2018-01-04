@@ -17,11 +17,11 @@ package org.iobserve.evaluation;
 
 import java.io.File;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import teetime.framework.AbstractProducerStage;
+
+import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
 
 /**
  * Read a JSON serialized behavior model.
@@ -35,7 +35,7 @@ public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel
 
     /**
      * Create a JSON reader stage.
-     * 
+     *
      * @param inputFile
      *            JSON file source
      */
