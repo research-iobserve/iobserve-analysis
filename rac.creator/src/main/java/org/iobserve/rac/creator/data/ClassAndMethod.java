@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.rac.creator;
+package org.iobserve.rac.creator.data;
 
 import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
 

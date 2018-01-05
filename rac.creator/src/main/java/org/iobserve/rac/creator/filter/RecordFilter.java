@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.rac.creator;
+package org.iobserve.rac.creator.filter;
 
 import kieker.common.record.flow.IFlowRecord;
 import kieker.common.record.flow.trace.operation.AbstractOperationEvent;

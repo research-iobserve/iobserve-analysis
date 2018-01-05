@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.rac.creator;
+package org.iobserve.rac.creator.filter;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
+import org.iobserve.rac.creator.data.ClassAndMethod;
 
 import kieker.common.record.flow.trace.operation.AbstractOperationEvent;
 import teetime.framework.AbstractConsumerStage;

@@ -13,48 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.rac.creator;
+package org.iobserve.rac.creator.filter;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Map;
-
-import javax.xml.bind.JAXB;
-
-import org.iobserve.analysis.protocom.PcmEntity;
-import org.iobserve.analysis.protocom.PcmMapping;
+import java.util.Collection;
 
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 /**
+ * Find duplicates in an event stream and filters them out. Note: This filter has a state and the
+ * memory demand may grow depending on the number of different strings passing through.
  *
  * @author Reiner Jung
  *
  */
-public class RACWriter extends AbstractConsumerStage<Map<String, PcmEntity>> {
+public class UniqueFilter extends AbstractConsumerStage<String> {
 
-    private final PcmMapping mapping = new PcmMapping();
-    private final File file;
+    private final Collection<String> stringCollection = new ArrayList<>();
 
-    /**
-     * Create the RAC file writer.
-     *
-     * @param file
-     *            the RAC file name.
-     */
-    public RACWriter(final File file) {
-        this.file = file;
+    private final OutputPort<String> outputPort = this.createOutputPort();
+
+    public OutputPort<String> getOutputPort() {
+        return this.outputPort;
     }
 
     @Override
-    protected void execute(final Map<String, PcmEntity> element) throws Exception {
-        this.mapping.setEntities(new ArrayList<>(element.values()));
+    protected void execute(final String element) throws Exception {
+        if (!this.stringCollection.contains(element)) {
+            this.stringCollection.add(element);
+            this.outputPort.send(element);
+        }
     }
-
-    @Override
-    public void onTerminating() {
-        super.onTerminating();
-        JAXB.marshal(this.mapping, this.file);
-    }
-
 }

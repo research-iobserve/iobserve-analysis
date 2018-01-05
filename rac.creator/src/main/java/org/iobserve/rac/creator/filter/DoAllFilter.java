@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.rac.creator;
+package org.iobserve.rac.creator.filter;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -24,6 +24,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
 import org.iobserve.analysis.protocom.PcmEntity;
 import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
+import org.iobserve.rac.creator.ModelMappingReader;
+import org.iobserve.rac.creator.RepositoryFileReader;
+import org.iobserve.rac.creator.data.ClassAndMethod;
 import org.xml.sax.SAXException;
 
 import teetime.framework.AbstractConsumerStage;

@@ -83,4 +83,45 @@ subprojects {
     }
 }
 
+task reports {
+	doLast {
+		def reportCollection = ""
+		subprojects.each { s -> 
+			reportCollection += "\t\t<h2>" + s.name + "</h2>\n"
+			reportCollection += "\t\t<ul>\n"
 
+			def folder = new File ("$projectDir/" + s.name + "/build/reports/checkstyle")
+
+			if (folder.exists()) {
+				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/checkstyle/main.html\">checkstyle main</a></li>\n"
+				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/checkstyle/test.html\">checkstyle test</a></li>\n"
+			}
+
+			folder = new File ("$projectDir/" + s.name + "/build/reports/tests")
+			if (folder.exists()) {
+				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/tests/test/index.html\">JUnit tests</a></li>\n"
+
+			}
+			
+			folder = new File ("$projectDir/" + s.name + "/build/reports/clover")
+			if (folder.exists()) {
+				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/clover/html/index.html\">Test coverage</a></li>\n"
+			}
+
+			reportCollection += "\t\t</ul>\n"
+		}
+
+
+		new File("$projectDir/reports.html").text = """
+<html>
+	<head>
+		<title>Project Summary</title>
+	</head>
+	<body>
+		<h1>Project Summary</h1>
+$reportCollection
+	</body>
+</html>
+"""
+	}
+}
