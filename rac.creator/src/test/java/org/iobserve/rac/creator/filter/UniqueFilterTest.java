@@ -15,21 +15,51 @@
  ***************************************************************************/
 package org.iobserve.rac.creator.filter;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import teetime.framework.test.StageTester;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author reiner
+ * @author Reiner Jung
  *
  */
 public class UniqueFilterTest {
+
+    private UniqueFilter uniqueFilter;
+    private List<String> inputList;
+    private List<String> expectedOutputList;
 
     /**
      * @throws java.lang.Exception
      */
     @Before
     public void setUp() throws Exception {
+        this.uniqueFilter = new UniqueFilter();
+
+        this.inputList = new ArrayList<>();
+
+        this.inputList.add("A");
+        this.inputList.add("B");
+        this.inputList.add("C");
+        this.inputList.add("D");
+        this.inputList.add("E");
+        this.inputList.add("A");
+        this.inputList.add("A");
+        this.inputList.add("C");
+        this.inputList.add("B");
+
+        this.expectedOutputList = new ArrayList<>();
+
+        this.expectedOutputList.add("A");
+        this.expectedOutputList.add("B");
+        this.expectedOutputList.add("C");
+        this.expectedOutputList.add("D");
+        this.expectedOutputList.add("E");
     }
 
     /**
@@ -38,7 +68,13 @@ public class UniqueFilterTest {
      */
     @Test
     public void testExecuteString() {
-        Assert.assertTrue("not yet implemented.", true);
+        final List<String> outputList = new ArrayList<>();
+        StageTester.test(this.uniqueFilter).and().send(this.inputList).to(this.uniqueFilter.getInputPort()).and()
+                .receive(outputList).from(this.uniqueFilter.getOutputPort()).start();
+        Assert.assertEquals("Not the correct number of results.", this.expectedOutputList.size(), outputList.size());
+        for (int i = 0; i < this.expectedOutputList.size(); i++) {
+            Assert.assertEquals("Not the same values.", this.expectedOutputList.get(i), outputList.get(i));
+        }
     }
 
 }
