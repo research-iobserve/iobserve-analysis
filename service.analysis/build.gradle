@@ -46,8 +46,7 @@ test {
   include '**/service/suites/*'
   exclude '**/service/services/*'
   exclude '**/service/updater/*'
-  
-  }
+}
 
 install {
     repositories.mavenInstaller {

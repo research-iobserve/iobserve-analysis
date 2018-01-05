@@ -1,4 +1,5 @@
 apply plugin: 'application'
+apply plugin: 'java'
 
 mainClassName='org.iobserve.collector.CollectorMain'
 
@@ -7,13 +8,7 @@ dependencies {
 
 	compile project(":analysis")
 	compile "com.beust:jcommander:1.60"
-}
-
-clover {
-	report {
-		html=true
-	}
-	
+	testCompile "junit:junit:4.12"
 }
 
 install {

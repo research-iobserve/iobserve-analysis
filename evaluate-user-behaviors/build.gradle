@@ -1,5 +1,5 @@
 apply plugin: 'application'
-//apply plugin: 'java'
+apply plugin: 'java'
 
 mainClassName='org.iobserve.evaluation.EvaluationMain'
 
@@ -21,6 +21,8 @@ clover {
 test {
   println 'Starting unit tests.'
   scanForTestClasses= false
+  include '**/evaluation/suites/*'
+  exclude '**/evaluation/filter/*'
 }
 
 install {
