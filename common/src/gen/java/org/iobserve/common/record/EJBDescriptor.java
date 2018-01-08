@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
+ * Copyright 2018 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,8 @@ import kieker.common.record.io.IValueDeserializer;
  * 
  * @since 1.10
  */
-public abstract class ServletDeploymentEvent extends AbstractEvent  {
-	private static final long serialVersionUID = 8783132850967133880L;
+public abstract class EJBDescriptor extends AbstractEvent  {
+	private static final long serialVersionUID = 126790665277574583L;
 
 	
 	
@@ -54,7 +54,7 @@ public abstract class ServletDeploymentEvent extends AbstractEvent  {
 	 * @param deploymentId
 	 *            deploymentId
 	 */
-	public ServletDeploymentEvent(final long timestamp, final String serivce, final String context, final String deploymentId) {
+	public EJBDescriptor(final long timestamp, final String serivce, final String context, final String deploymentId) {
 		super(timestamp);
 		this.serivce = serivce == null?"":serivce;
 		this.context = context == null?"":context;
@@ -70,10 +70,10 @@ public abstract class ServletDeploymentEvent extends AbstractEvent  {
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServletDeploymentEvent(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #EJBDescriptor(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	protected ServletDeploymentEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
+	protected EJBDescriptor(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
 		this.serivce = (String) values[1];
 		this.context = (String) values[2];
@@ -85,7 +85,7 @@ public abstract class ServletDeploymentEvent extends AbstractEvent  {
 	 * @param deserializer
 	 *            The deserializer to use
 	 */
-	public ServletDeploymentEvent(final IValueDeserializer deserializer) {
+	public EJBDescriptor(final IValueDeserializer deserializer) {
 		super(deserializer);
 		this.serivce = deserializer.getString();
 		this.context = deserializer.getString();
@@ -113,7 +113,7 @@ public abstract class ServletDeploymentEvent extends AbstractEvent  {
 		if (obj == this) return true;
 		if (obj.getClass() != this.getClass()) return false;
 		
-		final ServletDeploymentEvent castedRecord = (ServletDeploymentEvent) obj;
+		final EJBDescriptor castedRecord = (EJBDescriptor) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
 		if (!this.getSerivce().equals(castedRecord.getSerivce())) return false;

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
+ * Copyright 2018 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,30 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import kieker.common.record.IMonitoringRecord;
+
+import kieker.common.record.factory.IRecordFactory;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Generic Kieker
  * 
  * @since 1.10
  */
-public interface IDeploymentRecord extends IMonitoringRecord {
+public final class Privacy_ServletUndeployedEventFactory implements IRecordFactory<Privacy_ServletUndeployedEvent> {
+	
+	
+	@Override
+	public Privacy_ServletUndeployedEvent create(final IValueDeserializer deserializer) {
+		return new Privacy_ServletUndeployedEvent(deserializer);
+	}
+	
+	@Override
+	@Deprecated
+	public Privacy_ServletUndeployedEvent create(final Object[] values) {
+		return new Privacy_ServletUndeployedEvent(values);
+	}
+	
+	public int getRecordSizeInBytes() {
+		return Privacy_ServletUndeployedEvent.SIZE;
+	}
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
+ * Copyright 2018 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
-import org.iobserve.common.record.EJBDeploymentEvent;
+import org.iobserve.common.record.EJBDescriptor;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
-import org.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.IUndeployed;
 
 /**
  * @author Generic Kieker
@@ -30,21 +30,21 @@ import org.iobserve.common.record.IUndeploymentRecord;
  * 
  * @since 1.10
  */
-public class EJBUndeployedEvent extends EJBDeploymentEvent implements IUndeploymentRecord {
-	private static final long serialVersionUID = 918721494471850423L;
+public class EJBUndeployedEvent extends EJBDescriptor implements IUndeployed {
+	private static final long serialVersionUID = 7230772533266246535L;
 
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
-			 + TYPE_SIZE_STRING // EJBDeploymentEvent.serivce
-			 + TYPE_SIZE_STRING // EJBDeploymentEvent.context
-			 + TYPE_SIZE_STRING // EJBDeploymentEvent.deploymentId
+			 + TYPE_SIZE_STRING // EJBDescriptor.serivce
+			 + TYPE_SIZE_STRING // EJBDescriptor.context
+			 + TYPE_SIZE_STRING // EJBDescriptor.deploymentId
 	;
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEventRecord.timestamp
-		String.class, // EJBDeploymentEvent.serivce
-		String.class, // EJBDeploymentEvent.context
-		String.class, // EJBDeploymentEvent.deploymentId
+		String.class, // EJBDescriptor.serivce
+		String.class, // EJBDescriptor.context
+		String.class, // EJBDescriptor.deploymentId
 	};
 	
 	

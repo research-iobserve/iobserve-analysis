@@ -17,12 +17,12 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
-import kieker.common.record.flow.AbstractEvent;
+import org.iobserve.common.record.ServletDeployedEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
-import org.iobserve.common.record.GeoLocation;
+import org.iobserve.common.record.Privacy;
 
 /**
  * @author Generic Kieker
@@ -30,59 +30,58 @@ import org.iobserve.common.record.GeoLocation;
  * 
  * @since 1.10
  */
-public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
-	private static final long serialVersionUID = -9109740651531232541L;
+public class Privacy_ServletDeployedEvent extends ServletDeployedEvent implements Privacy {
+	private static final long serialVersionUID = -5415340962242031012L;
 
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+			 + TYPE_SIZE_STRING // ServletDescriptor.serivce
+			 + TYPE_SIZE_STRING // ServletDescriptor.context
+			 + TYPE_SIZE_STRING // ServletDescriptor.deploymentId
 			 + TYPE_SIZE_SHORT // GeoLocation.countryCode
-			 + TYPE_SIZE_STRING // ServerGeoLocation.hostname
-			 + TYPE_SIZE_STRING // ServerGeoLocation.address
 	;
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEventRecord.timestamp
+		String.class, // ServletDescriptor.serivce
+		String.class, // ServletDescriptor.context
+		String.class, // ServletDescriptor.deploymentId
 		short.class, // GeoLocation.countryCode
-		String.class, // ServerGeoLocation.hostname
-		String.class, // ServerGeoLocation.address
 	};
 	
 	
 	/** default constants. */
 	public static final short COUNTRY_CODE = 49;
-	public static final String HOSTNAME = "";
-	public static final String ADDRESS = "";
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
 		"timestamp",
+		"serivce",
+		"context",
+		"deploymentId",
 		"countryCode",
-		"hostname",
-		"address",
 	};
 	
 	/** property declarations. */
 	private final short countryCode;
-	private final String hostname;
-	private final String address;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
 	 * @param timestamp
 	 *            timestamp
+	 * @param serivce
+	 *            serivce
+	 * @param context
+	 *            context
+	 * @param deploymentId
+	 *            deploymentId
 	 * @param countryCode
 	 *            countryCode
-	 * @param hostname
-	 *            hostname
-	 * @param address
-	 *            address
 	 */
-	public ServerGeoLocation(final long timestamp, final short countryCode, final String hostname, final String address) {
-		super(timestamp);
+	public Privacy_ServletDeployedEvent(final long timestamp, final String serivce, final String context, final String deploymentId, final short countryCode) {
+		super(timestamp, serivce, context, deploymentId);
 		this.countryCode = countryCode;
-		this.hostname = hostname == null?"":hostname;
-		this.address = address == null?"":address;
 	}
 
 	/**
@@ -92,14 +91,12 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServerGeoLocation(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #Privacy_ServletDeployedEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	public ServerGeoLocation(final Object[] values) { // NOPMD (direct store of values)
+	public Privacy_ServletDeployedEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
-		this.countryCode = (Short) values[1];
-		this.hostname = (String) values[2];
-		this.address = (String) values[3];
+		this.countryCode = (Short) values[4];
 	}
 
 	/**
@@ -110,14 +107,12 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServerGeoLocation(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #Privacy_ServletDeployedEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	protected ServerGeoLocation(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
+	protected Privacy_ServletDeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
-		this.countryCode = (Short) values[1];
-		this.hostname = (String) values[2];
-		this.address = (String) values[3];
+		this.countryCode = (Short) values[4];
 	}
 
 	
@@ -125,11 +120,9 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 * @param deserializer
 	 *            The deserializer to use
 	 */
-	public ServerGeoLocation(final IValueDeserializer deserializer) {
+	public Privacy_ServletDeployedEvent(final IValueDeserializer deserializer) {
 		super(deserializer);
 		this.countryCode = deserializer.getShort();
-		this.hostname = deserializer.getString();
-		this.address = deserializer.getString();
 	}
 	
 	/**
@@ -142,9 +135,10 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTimestamp(),
-			this.getCountryCode(),
-			this.getHostname(),
-			this.getAddress()
+			this.getSerivce(),
+			this.getContext(),
+			this.getDeploymentId(),
+			this.getCountryCode()
 		};
 	}
 	/**
@@ -152,8 +146,9 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 */
 	@Override
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getHostname());
-		stringRegistry.get(this.getAddress());
+		stringRegistry.get(this.getSerivce());
+		stringRegistry.get(this.getContext());
+		stringRegistry.get(this.getDeploymentId());
 	}
 	/**
 	 * {@inheritDoc}
@@ -162,9 +157,10 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
 		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
+		serializer.putString(this.getSerivce());
+		serializer.putString(this.getContext());
+		serializer.putString(this.getDeploymentId());
 		serializer.putShort(this.getCountryCode());
-		serializer.putString(this.getHostname());
-		serializer.putString(this.getAddress());
 	}
 	/**
 	 * {@inheritDoc}
@@ -210,27 +206,18 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		if (obj == this) return true;
 		if (obj.getClass() != this.getClass()) return false;
 		
-		final ServerGeoLocation castedRecord = (ServerGeoLocation) obj;
+		final Privacy_ServletDeployedEvent castedRecord = (Privacy_ServletDeployedEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
+		if (!this.getSerivce().equals(castedRecord.getSerivce())) return false;
+		if (!this.getContext().equals(castedRecord.getContext())) return false;
+		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		if (this.getCountryCode() != castedRecord.getCountryCode()) return false;
-		if (!this.getHostname().equals(castedRecord.getHostname())) return false;
-		if (!this.getAddress().equals(castedRecord.getAddress())) return false;
 		return true;
 	}
 	
 	public final short getCountryCode() {
 		return this.countryCode;
-	}
-	
-	
-	public final String getHostname() {
-		return this.hostname;
-	}
-	
-	
-	public final String getAddress() {
-		return this.address;
 	}
 	
 }

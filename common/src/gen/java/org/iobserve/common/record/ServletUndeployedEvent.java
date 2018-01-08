@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
+ * Copyright 2018 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,12 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
-import org.iobserve.common.record.ServletDeploymentEvent;
+import org.iobserve.common.record.ServletDescriptor;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
-import org.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.IUndeployed;
 
 /**
  * @author Generic Kieker
@@ -30,21 +30,21 @@ import org.iobserve.common.record.IUndeploymentRecord;
  * 
  * @since 1.10
  */
-public class ServletUndeployedEvent extends ServletDeploymentEvent implements IUndeploymentRecord {
-	private static final long serialVersionUID = 5313323648401206208L;
+public class ServletUndeployedEvent extends ServletDescriptor implements IUndeployed {
+	private static final long serialVersionUID = 5640274338492927811L;
 
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
-			 + TYPE_SIZE_STRING // ServletDeploymentEvent.serivce
-			 + TYPE_SIZE_STRING // ServletDeploymentEvent.context
-			 + TYPE_SIZE_STRING // ServletDeploymentEvent.deploymentId
+			 + TYPE_SIZE_STRING // ServletDescriptor.serivce
+			 + TYPE_SIZE_STRING // ServletDescriptor.context
+			 + TYPE_SIZE_STRING // ServletDescriptor.deploymentId
 	;
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEventRecord.timestamp
-		String.class, // ServletDeploymentEvent.serivce
-		String.class, // ServletDeploymentEvent.context
-		String.class, // ServletDeploymentEvent.deploymentId
+		String.class, // ServletDescriptor.serivce
+		String.class, // ServletDescriptor.context
+		String.class, // ServletDescriptor.deploymentId
 	};
 	
 	

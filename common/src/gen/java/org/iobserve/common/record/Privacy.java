@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project (http://www.iobserve-devops.net)
+ * Copyright 2018 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,11 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import kieker.common.record.IMonitoringRecord;
 
 /**
  * @author Generic Kieker
  * 
  * @since 1.10
  */
-public interface IUndeploymentRecord extends IMonitoringRecord {
+public interface Privacy extends GeoLocation {
 }

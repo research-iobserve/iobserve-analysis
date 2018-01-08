@@ -18,15 +18,9 @@ package org.iobserve.common.record;
 import kieker.common.record.IMonitoringRecord;
 
 /**
- * @author Reiner Jung
+ * @author Generic Kieker
  * 
- * @since 1.0
+ * @since 1.10
  */
-public interface ITraceHelper extends IMonitoringRecord {
-	public long getTraceId() ;
-	
-	public String getHost() ;
-	
-	public int getPort() ;
-	
+public interface IDeploymentChange extends IMonitoringRecord {
 }

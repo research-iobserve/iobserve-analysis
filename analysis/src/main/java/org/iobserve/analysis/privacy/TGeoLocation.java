@@ -15,16 +15,16 @@
  ***************************************************************************/
 package org.iobserve.analysis.privacy;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.eclipse.emf.common.util.EList;
 import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.common.record.ServerGeoLocation;
+import org.iobserve.common.record.IDeployed;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * TODO describe me.
@@ -32,7 +32,7 @@ import teetime.framework.OutputPort;
  * @author unknown
  *
  */
-public class TGeoLocation extends AbstractConsumerStage<ServerGeoLocation> {
+public class TGeoLocation extends AbstractConsumerStage<IDeployed> {
 
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
 
@@ -43,14 +43,14 @@ public class TGeoLocation extends AbstractConsumerStage<ServerGeoLocation> {
     }
 
     @Override
-    protected void execute(final ServerGeoLocation element) throws Exception {
+    protected void execute(final IDeployed element) throws Exception {
         final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider.getModel();
         final EList<ResourceContainer> resContainers = resourceEnvironment.getResourceContainer_ResourceEnvironment();
         Boolean makeSnapshot = false;
 
         for (final ResourceContainer resContainer : resContainers) {
             if (resContainer.getEntityName().equals(element.getHostname())
-                    && (resContainer instanceof ResourceContainerPrivacy)) {
+                    && resContainer instanceof ResourceContainerPrivacy) {
 
                 final ResourceContainerPrivacy resContainerPrivacy = (ResourceContainerPrivacy) resContainer;
                 final int geolocation = resContainerPrivacy.getGeolocation();

@@ -15,18 +15,30 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import kieker.common.record.IMonitoringRecord;
+
+import kieker.common.record.factory.IRecordFactory;
+import kieker.common.record.io.IValueDeserializer;
 
 /**
- * @author Reiner Jung
+ * @author Generic Kieker
  * 
- * @since 1.0
+ * @since 1.10
  */
-public interface ITraceHelper extends IMonitoringRecord {
-	public long getTraceId() ;
+public final class Privacy_EJBDeployedEventFactory implements IRecordFactory<Privacy_EJBDeployedEvent> {
 	
-	public String getHost() ;
 	
-	public int getPort() ;
+	@Override
+	public Privacy_EJBDeployedEvent create(final IValueDeserializer deserializer) {
+		return new Privacy_EJBDeployedEvent(deserializer);
+	}
 	
+	@Override
+	@Deprecated
+	public Privacy_EJBDeployedEvent create(final Object[] values) {
+		return new Privacy_EJBDeployedEvent(values);
+	}
+	
+	public int getRecordSizeInBytes() {
+		return Privacy_EJBDeployedEvent.SIZE;
+	}
 }

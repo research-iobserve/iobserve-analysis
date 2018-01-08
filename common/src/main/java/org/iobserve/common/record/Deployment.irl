@@ -21,33 +21,35 @@ import kieker.common.record.flow.IEventRecord
 /** 
  * Marker interfaces for deployment and undeployment.	 
  */ 
-template IDeploymentRecord
-template IUndeploymentRecord
+template IDeploymentChange
+template IDeployed : IDeploymentChange
+template IUndeployed : IDeploymentChange
 	  
 /**
  * Event records for PaaS servlet/WAR deployment/undeployment.
  */	 
-abstract entity ServletDeploymentEvent extends AbstractEvent { 
+abstract entity ServletDescriptor extends AbstractEvent { 
 	string serivce
 	string context
 	string deploymentId	
 }
 
-entity ServletDeployedEvent extends ServletDeploymentEvent : IDeploymentRecord
-entity ServletUndeployedEvent extends ServletDeploymentEvent : IUndeploymentRecord
+entity ServletDeployedEvent extends ServletDescriptor : IDeployed
+entity ServletUndeployedEvent extends ServletDescriptor : IUndeployed
 
 /**
  * Event records for PaaS servlet/WAR deployment/undeployment.	 
  */	 
-abstract entity EJBDeploymentEvent extends AbstractEvent { 
+abstract entity EJBDescriptor extends AbstractEvent { 
 	string serivce
 	string context
 	string deploymentId
 }
 
-entity EJBDeployedEvent extends EJBDeploymentEvent : IDeploymentRecord
-entity EJBUndeployedEvent extends EJBDeploymentEvent : IUndeploymentRecord
+entity EJBDeployedEvent extends EJBDescriptor : IDeployed
+entity EJBUndeployedEvent extends EJBDescriptor : IUndeployed
 
-
+model Deployment IDeployed, IUndeployed
+sub Privacy Deployment : org.iobserve.common.record.GeoLocation
 
 

@@ -19,6 +19,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import teetime.framework.Configuration;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
+import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
+import teetime.util.ConcurrentHashMapWithDefault;
+
 import org.iobserve.analysis.deployment.DeploymentModelUpdater;
 import org.iobserve.analysis.deployment.UndeploymentModelUpdater;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -41,12 +47,6 @@ import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
-
-import teetime.framework.Configuration;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
-import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
-import teetime.util.ConcurrentHashMapWithDefault;
 
 /**
  * Configuration for the log replayer.
@@ -127,10 +127,10 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
                 /** connect ports. */
                 this.connectPorts(reader.getOutputPort(), recordSwitch.getInputPort());
-                this.connectPorts(recordSwitch.getDeploymentOutputPort(), deploymentModelUpdater.getInputPort());
-                this.connectPorts(deploymentModelUpdater.getOutputPortSnapshot(), privacyWarner.getInputPort());
-                this.connectPorts(recordSwitch.getUndeploymentOutputPort(), undeploymentModelUpdater.getInputPort());
-                this.connectPorts(deploymentModelUpdater.getOutputPortSnapshot(), privacyWarner.getInputPort());
+                this.connectPorts(recordSwitch.getDeployedOutputPort(), deploymentModelUpdater.getInputPort());
+                this.connectPorts(deploymentModelUpdater.getDeploymentOutputPort(), geoLocation.getInputPort());
+                this.connectPorts(recordSwitch.getUndeployedOutputPort(), undeploymentModelUpdater.getInputPort());
+                this.connectPorts(undeploymentModelUpdater.getOutputPortSnapshot(), privacyWarner.getInputPort());
                 this.connectPorts(recordSwitch.getGeoLocationOutputPort(), geoLocation.getInputPort());
                 this.connectPorts(geoLocation.getOutputPortSnapshot(), privacyWarner.getInputPort());
 

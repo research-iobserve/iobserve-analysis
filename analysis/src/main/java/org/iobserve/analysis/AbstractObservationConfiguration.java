@@ -221,8 +221,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         /** -- end plain clustering. */
 
         /** dispatch different monitoring data. */
-        this.connectPorts(this.recordSwitch.getDeploymentOutputPort(), this.deployment.getInputPort());
-        this.connectPorts(this.recordSwitch.getUndeploymentOutputPort(), this.undeployment.getInputPort());
+        this.connectPorts(this.recordSwitch.getDeployedOutputPort(), this.deployment.getInputPort());
+        this.connectPorts(this.recordSwitch.getUndeployedOutputPort(), this.undeployment.getInputPort());
         this.connectPorts(this.recordSwitch.getAllocationOutputPort(), allocation.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), traceReconstructionFilter.getInputPort());
         this.connectPorts(traceReconstructionFilter.getTraceValidOutputPort(), tEntryCall.getInputPort());

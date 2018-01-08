@@ -30,9 +30,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.common.record.IAllocationRecord;
 import org.iobserve.common.record.IDeallocationRecord;
-import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IDeployed;
 import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.IUndeployed;
 import org.iobserve.common.record.ServerGeoLocation;
 import org.iobserve.common.record.ServletTraceHelper;
 
@@ -51,9 +51,9 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     private static final int LOOP_COUNT = 1000;
 
     /** output port for deployment events. */
-    private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
+    private final OutputPort<IDeployed> deployedOutputPort = this.createOutputPort();
     /** output port for undeployment events. */
-    private final OutputPort<IUndeploymentRecord> undeploymentOutputPort = this.createOutputPort();
+    private final OutputPort<IUndeployed> undeployedOutputPort = this.createOutputPort();
     /** output port for allocation events. */
     private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
     /** output port for deallocation events. */
@@ -87,14 +87,14 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
         if (this.recordCount % RecordSwitch.LOOP_COUNT == 0) {
             RecordSwitch.LOGGER.debug("Records processed " + this.recordCount);
         }
-        if (element instanceof IDeploymentRecord) {
-            this.deploymentOutputPort.send((IDeploymentRecord) element);
+        if (element instanceof IDeployed) {
+            this.deployedOutputPort.send((IDeployed) element);
         } else if (element instanceof ServerGeoLocation) {
             this.geoLocationOutputPort.send((ServerGeoLocation) element);
         } else if (element instanceof ISessionEvent) {
             this.sessionEventOutputPort.send((ISessionEvent) element);
-        } else if (element instanceof IUndeploymentRecord) {
-            this.undeploymentOutputPort.send((IUndeploymentRecord) element);
+        } else if (element instanceof IUndeployed) {
+            this.undeployedOutputPort.send((IUndeployed) element);
         } else if (element instanceof IAllocationRecord) {
             this.allocationOutputPort.send((IAllocationRecord) element);
         } else if (element instanceof IDeallocationRecord) {
@@ -139,15 +139,15 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     /**
      * @return the deploymentOutputPort
      */
-    public final OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
-        return this.deploymentOutputPort;
+    public final OutputPort<IDeployed> getDeployedOutputPort() {
+        return this.deployedOutputPort;
     }
 
     /**
      * @return the undeploymentOutputPort
      */
-    public final OutputPort<IUndeploymentRecord> getUndeploymentOutputPort() {
-        return this.undeploymentOutputPort;
+    public final OutputPort<IUndeployed> getUndeployedOutputPort() {
+        return this.undeployedOutputPort;
     }
 
     /**

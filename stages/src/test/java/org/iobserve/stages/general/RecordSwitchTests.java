@@ -35,9 +35,9 @@ import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IAllocationRecord;
 import org.iobserve.common.record.IDeallocationRecord;
-import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IDeployed;
 import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.common.record.IUndeployed;
 import org.iobserve.common.record.ServerGeoLocation;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.common.record.ServletTraceHelper;
@@ -83,10 +83,10 @@ public class RecordSwitchTests {
     private static final long COLLECTION_TIME_MS = 121230;
 
     private final List<IMonitoringRecord> inputRecords = new ArrayList<>();
-    private final List<IDeploymentRecord> deploymentRecords = new ArrayList<>();
+    private final List<IDeployed> deploymentRecords = new ArrayList<>();
     private final List<ServerGeoLocation> geolocationRecords = new ArrayList<>();
     private final List<ISessionEvent> sessionEventRecords = new ArrayList<>();
-    private final List<IUndeploymentRecord> undeploymentRecords = new ArrayList<>();
+    private final List<IUndeployed> undeploymentRecords = new ArrayList<>();
     private final List<IAllocationRecord> allocationRecords = new ArrayList<>();
     private final List<IDeallocationRecord> deallocationRecords = new ArrayList<>();
     private final List<ServletTraceHelper> servletTraceHelperRecords = new ArrayList<>();
@@ -221,7 +221,7 @@ public class RecordSwitchTests {
         final RecordSwitch recordSwitch = new RecordSwitch();
 
         StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(this.deploymentRecords).from(recordSwitch.getDeploymentOutputPort()).start();
+                .receive(this.deploymentRecords).from(recordSwitch.getDeployedOutputPort()).start();
 
         Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
     }
@@ -260,7 +260,7 @@ public class RecordSwitchTests {
         final RecordSwitch recordSwitch = new RecordSwitch();
 
         StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(this.undeploymentRecords).from(recordSwitch.getUndeploymentOutputPort()).start();
+                .receive(this.undeploymentRecords).from(recordSwitch.getUndeployedOutputPort()).start();
 
         Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
     }

@@ -17,6 +17,9 @@ package org.iobserve.analysis.deployment;
 
 import java.util.Optional;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.analysis.model.builder.AllocationModelBuilder;
@@ -29,15 +32,12 @@ import org.iobserve.analysis.utils.Opt;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IAllocationRecord;
-import org.iobserve.common.record.IDeploymentRecord;
+import org.iobserve.common.record.IDeployed;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * This class contains the transformation for updating the PCM allocation model with respect to
@@ -48,7 +48,7 @@ import teetime.framework.OutputPort;
  * @author Alessandro Giusa
  * @author jweg
  */
-public final class DeploymentModelUpdater extends AbstractConsumerStage<IDeploymentRecord> {
+public final class DeploymentModelUpdater<T extends IDeployed> extends AbstractConsumerStage<IDeployed> {
 
     private static final Logger LOGGER = LogManager.getLogger(DeploymentModelUpdater.class);
 
@@ -62,8 +62,8 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<IDeploym
     private final ModelProvider<ResourceEnvironment> resourceEnvModelGraphProvider;
 
     private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
-    private final OutputPort<IDeploymentRecord> deploymentOutputPort = this.createOutputPort();
-    private final OutputPort<IDeploymentRecord> deploymentFinishedOutputPort = this.createOutputPort();
+    private final OutputPort<T> deploymentOutputPort = this.createOutputPort();
+    private final OutputPort<T> deploymentFinishedOutputPort = this.createOutputPort();
     private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
 
     /**
@@ -96,7 +96,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<IDeploym
      *            one deployment event to be processed
      */
     @Override
-    protected void execute(final IDeploymentRecord event) {
+    protected void execute(final IDeployed event) {
         if (event instanceof ServletDeployedEvent) {
             this.process((ServletDeployedEvent) event);
 
@@ -117,14 +117,14 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<IDeploym
     /**
      * @return deploymentOutputPort
      */
-    public OutputPort<IDeploymentRecord> getDeploymentOutputPort() {
+    public OutputPort<T> getDeploymentOutputPort() {
         return this.deploymentOutputPort;
     }
 
     /**
      * @return deploymentFinishedOutputPort
      */
-    public OutputPort<IDeploymentRecord> getDeploymentFinishedOutputPort() {
+    public OutputPort<T> getDeploymentFinishedOutputPort() {
         return this.deploymentFinishedOutputPort;
     }
 
@@ -188,8 +188,8 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<IDeploym
      *            initial deployment event
      *
      */
-    private void updateModel(final String serverName, final Correspondent correspondent, final String url,
-            final IDeploymentRecord event) {
+    private <R extends T> void updateModel(final String serverName, final Correspondent correspondent, final String url,
+            final R event) {
         // get the model entity name
         final String entityName = correspondent.getPcmEntityName();
 
@@ -226,7 +226,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<IDeploym
      *            deployment event
      */
     private void updateAllocationModel(final ResourceContainer resourceContainer, final String asmContextName,
-            final IDeploymentRecord event) {
+            final T event) {
         // get assembly context by name or create it if necessary.
         final AssemblyContext assemblyContext;
 
