@@ -17,27 +17,16 @@ package org.iobserve.analysis.deployment;
 
 import java.util.Optional;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.iobserve.analysis.data.RemoveAllocationContextEvent;
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.model.builder.AllocationModelBuilder;
-import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.builder.SystemModelBuilder;
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.iobserve.analysis.utils.ExecutionTimeLogger;
-import org.iobserve.analysis.utils.Opt;
-import org.iobserve.common.record.EJBUndeployedEvent;
-import org.iobserve.common.record.IUndeploymentRecord;
-import org.iobserve.common.record.ServletUndeployedEvent;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * This class contains the transformation for updating the PCM allocation model with respect to
@@ -46,32 +35,22 @@ import teetime.framework.OutputPort;
  *
  * @author Robert Heinrich
  * @author Reiner Jung
- * @author jweg
+ * @author Josefine Wegner
  *
  */
-public final class UndeploymentModelUpdater extends AbstractConsumerStage<IUndeploymentRecord> {
+public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUndeployedEvent> {
 
-    private static final Logger LOGGER = LogManager.getLogger(UndeploymentModelUpdater.class);
-
-    /** reference to correspondence interface. */
-    private final ICorrespondence correspondence;
     /** reference to allocation model provider. */
     private final ModelProvider<Allocation> allocationModelGraphProvider;
     /** reference to system model provider. */
     private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
-    /** reference to resource environment model provider. */
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
-    private final OutputPort<RemoveAllocationContextEvent> modelOutputPort = this.createOutputPort();
-    private final OutputPort<IUndeploymentRecord> visualizationOutputPort = this.createOutputPort();
-    private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
+    private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
     /**
      * Most likely the constructor needs an additional field for the PCM access. But this has to be
      * discussed with Robert.
      *
-     * @param correspondence
-     *            correspondence model
      * @param allocationModelGraphProvider
      *            allocation model access
      * @param systemModelGraphProvider
@@ -79,14 +58,10 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<IUndep
      * @param resourceEnvironmentModelGraphProvider
      *            resource environment model access
      */
-    public UndeploymentModelUpdater(final ICorrespondence correspondence,
-            final ModelProvider<Allocation> allocationModelGraphProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
-        this.correspondence = correspondence;
+    public UndeploymentModelUpdater(final ModelProvider<Allocation> allocationModelGraphProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
-        this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
 
     /**
@@ -96,92 +71,14 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<IUndep
      *            undeployment event
      */
     @Override
-    protected void execute(final IUndeploymentRecord event) {
-        ExecutionTimeLogger.getInstance().startLogging(event);
-
-        if (event instanceof ServletUndeployedEvent) {
-            this.process((ServletUndeployedEvent) event);
-
-        } else if (event instanceof EJBUndeployedEvent) {
-            this.process((EJBUndeployedEvent) event);
-        }
-
-        ExecutionTimeLogger.getInstance().stopLogging(event);
-        this.outputPortSnapshot.send(false);
-    }
-
-    /**
-     * Process the given {@link ServletUndeployedEvent} event and update the model.
-     *
-     * @param event
-     *            event to process
-     */
-    private void process(final ServletUndeployedEvent event) {
-        final String service = event.getSerivce();
-        final String context = event.getContext();
-        Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
-                .apply(correspondence -> this.updateModel(service, correspondence, event))
-                .elseApply(() -> UndeploymentModelUpdater.LOGGER.info("No correspondent found for " + service + "."));
-    }
-
-    /**
-     * Process the given {@link EJBUndeployedEvent} event and update the model.
-     *
-     * @param event
-     *            event to process
-     */
-    private void process(final EJBUndeployedEvent event) {
-        final String service = event.getSerivce();
-        final String context = event.getContext();
-        Opt.of(this.correspondence.getCorrespondent(context)).ifPresent()
-                .apply(correspondent -> this.updateModel(service, correspondent, event))
-                .elseApply(() -> UndeploymentModelUpdater.LOGGER.info("No correspondent found for " + service + "."));
-    }
-
-    /**
-     * Update the system- and allocation-model by the given correspondent.
-     *
-     * @param serverName
-     *            name of the server
-     * @param correspondent
-     *            correspondent
-     * @param event
-     *            undeployment event
-     */
-    private void updateModel(final String serverName, final Correspondent correspondent,
-            final IUndeploymentRecord event) {
+    protected void execute(final PCMUndeployedEvent event) {
         // get the model entity name
-        final String entityName = correspondent.getPcmEntityName();
+        final String entityName = event.getCorrespondent().getPcmEntityName();
 
         // build the assembly context name
-        final String asmContextName = entityName + "_" + serverName;
+        final String asmContextName = entityName + "_" + event.getService();
 
-        // get the model parts by name
-        final Optional<ResourceContainer> optResourceContainer = ResourceEnvironmentModelBuilder
-                .getResourceContainerByName(
-                        this.resourceEnvironmentModelGraphProvider.readOnlyRootComponent(ResourceEnvironment.class),
-                        serverName);
-
-        // this can not happen since TAllocation should have created the resource container already.
-        Opt.of(optResourceContainer).ifPresent()
-                .apply(resourceContainer -> this.updateModel(resourceContainer, asmContextName, event))
-                .elseApply(() -> UndeploymentModelUpdater.LOGGER
-                        .info("AssemblyContext " + asmContextName + " was not available."));
-    }
-
-    /**
-     * Remove allocation context from allocation model with the given {@link ResourceContainer} and
-     * {@link AssemblyContext} identified by the given entity name.
-     *
-     * @param resourceContainer
-     *            instance of resource container
-     * @param asmContextName
-     *            entity name of assembly context
-     * @param event
-     *            undeployment event
-     */
-    private void updateModel(final ResourceContainer resourceContainer, final String asmContextName,
-            final IUndeploymentRecord event) {
+        final ResourceContainer resourceContainer = event.getResourceContainer();
 
         // get assembly context by name or create it if necessary.
         final Optional<AssemblyContext> optAssemblyContext = SystemModelBuilder.getAssemblyContextByName(
@@ -189,7 +86,6 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<IUndep
                 asmContextName);
 
         if (optAssemblyContext.isPresent()) {
-
             // update the allocation graph
             final Allocation allocationModel = this.allocationModelGraphProvider
                     .readOnlyRootComponent(Allocation.class);
@@ -197,34 +93,19 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<IUndep
                     optAssemblyContext.get());
             this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
 
-            this.modelOutputPort.send(new RemoveAllocationContextEvent(resourceContainer));
             // signal allocation update
-            this.visualizationOutputPort.send(event);
+            this.outputPort.send(event);
         } else {
-            this.logger.info("AssemblyContext for " + resourceContainer.getEntityName() + " not found! \n");
+            this.logger.warn("AssemblyContext for " + resourceContainer.getEntityName() + " not found! \n");
         }
-    }
-
-    /**
-     *
-     * @deprecated This port is not used anymore.
-     * @return model output port
-     */
-    @Deprecated
-    public OutputPort<RemoveAllocationContextEvent> getModelOutputPort() {
-        return this.modelOutputPort;
     }
 
     /**
      *
      * @return output port that signals a model update to the deployment visualization
      */
-    public OutputPort<IUndeploymentRecord> getVisualizationOutputPort() {
-        return this.visualizationOutputPort;
-    }
-
-    public OutputPort<Boolean> getOutputPortSnapshot() {
-        return this.outputPortSnapshot;
+    public OutputPort<PCMUndeployedEvent> getOutputPort() {
+        return this.outputPort;
     }
 
 }

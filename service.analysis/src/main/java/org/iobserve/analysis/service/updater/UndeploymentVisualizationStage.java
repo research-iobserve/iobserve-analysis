@@ -21,43 +21,33 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.iobserve.analysis.deployment.DeploymentModelUpdater;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import teetime.framework.AbstractConsumerStage;
+
+import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
-import org.iobserve.analysis.utils.Opt;
-import org.iobserve.common.record.EJBUndeployedEvent;
-import org.iobserve.common.record.IUndeploymentRecord;
-import org.iobserve.common.record.ServletUndeployedEvent;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-import teetime.framework.AbstractConsumerStage;
 import util.Changelog;
 import util.SendHttpRequest;
 
 /**
  * This stage is triggered by an analysis undeployment update.
  *
- * @author jweg
+ * @author Josefine Wegert
+ * @author Reiner Jung
  *
  */
-public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndeploymentRecord> {
+public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUndeployedEvent> {
 
-    private static final Logger LOGGER = LogManager.getLogger(DeploymentModelUpdater.class);
-
-    private final ServiceInstanceService serviceinstanceService = new ServiceInstanceService();
+    private final ServiceInstanceService serviceInstanceService = new ServiceInstanceService();
 
     private final URL outputURL;
     private final String systemId;
     private final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider;
     private final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider;
     private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
-    private final ICorrespondence correspondenceModel;
-
-    private String entityName;
 
     /**
      * Output visualization configuration.
@@ -74,30 +64,21 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
      *            context
      * @param systemModelGraphProvider
      *            provider for system model
-     * @param correspondenceModel
-     *            correspondence model
      */
     public UndeploymentVisualizationStage(final URL outputURL, final String systemId,
             final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
             final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final ICorrespondence correspondenceModel) {
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
         this.outputURL = outputURL;
         this.systemId = systemId;
         this.resourceContainerModelGraphProvider = resourceContainerModelGraphProvider;
         this.assemblyContextModelGraphProvider = assemblyContextModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
-        this.correspondenceModel = correspondenceModel;
     }
 
     @Override
-    protected void execute(final IUndeploymentRecord undeployment) throws Exception {
-        if (undeployment instanceof ServletUndeployedEvent) {
-            SendHttpRequest.post(this.createData((ServletUndeployedEvent) undeployment), this.outputURL);
-        } else if (undeployment instanceof EJBUndeployedEvent) {
-            SendHttpRequest.post(this.createData((EJBUndeployedEvent) undeployment), this.outputURL);
-        }
-
+    protected void execute(final PCMUndeployedEvent undeployment) throws Exception {
+        SendHttpRequest.post(this.createData(undeployment), this.outputURL);
     }
 
     /**
@@ -107,54 +88,21 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<IUndep
      *            servlet undeployed event
      * @return array that contains a changelog for deleting a service instance
      */
-    private JsonArray createData(final ServletUndeployedEvent undeployment) {
+    private JsonArray createData(final PCMUndeployedEvent undeployment) {
 
-        final String serverName = undeployment.getSerivce();
-        final String context = undeployment.getContext();
+        final String serverName = undeployment.getService();
+
         final String nodeId = this.resourceContainerModelGraphProvider
                 .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
 
-        Opt.of(this.correspondenceModel.getCorrespondent(context)).ifPresent()
-                .apply(correspondent -> this.entityName = correspondent.getPcmEntityName())
-                .elseApply(() -> UndeploymentVisualizationStage.LOGGER.info(
-                        "This should not happen, because the service was created and the models were updated before."));
-
-        final String asmContextName = this.entityName + "_" + serverName;
+        final String asmContextName = undeployment.getResourceContainer().getEntityName() + "_" + serverName;
         final AssemblyContext assemblyContext = this.assemblyContextModelGraphProvider
                 .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
 
-        final JsonObject serviceInstanceObject = Changelog.delete(this.serviceinstanceService
+        final JsonObject serviceInstanceObject = Changelog.delete(this.serviceInstanceService
                 .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));
         final JsonArray dataArray = Json.createArrayBuilder().add(serviceInstanceObject).build();
-        return dataArray;
-    }
 
-    /**
-     ** Collects information for deleting a service instance element in the visualization.
-     *
-     * @param undeployment
-     *            ejb undeployed event
-     * @return array that contains a changelog for deleting a service instance
-     */
-    private JsonArray createData(final EJBUndeployedEvent undeployment) {
-
-        final String serverName = undeployment.getSerivce();
-        final String context = undeployment.getContext();
-        final String nodeId = this.resourceContainerModelGraphProvider
-                .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
-
-        Opt.of(this.correspondenceModel.getCorrespondent(context)).ifPresent()
-                .apply(correspondent -> this.entityName = correspondent.getPcmEntityName())
-                .elseApply(() -> UndeploymentVisualizationStage.LOGGER.info(
-                        "This should not happen, because the service was created and the models were updated before."));
-
-        final String asmContextName = this.entityName + "_" + serverName;
-        final AssemblyContext assemblyContext = this.assemblyContextModelGraphProvider
-                .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
-
-        final JsonObject serviceInstanceObject = Changelog.delete(this.serviceinstanceService
-                .deleteServiceInstance(assemblyContext, this.systemId, nodeId, this.systemModelGraphProvider));
-        final JsonArray dataArray = Json.createArrayBuilder().add(serviceInstanceObject).build();
         return dataArray;
     }
 

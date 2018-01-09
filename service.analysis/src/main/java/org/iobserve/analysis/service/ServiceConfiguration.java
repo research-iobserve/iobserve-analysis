@@ -115,19 +115,18 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
 
         final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(url,
-                systemId, resourceContainerModelGraphProvider, assemblyContextModelGraphProvider, correspondenceModel);
+                systemId, resourceContainerModelGraphProvider, assemblyContextModelGraphProvider);
         final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
-                systemId, resourceContainerModelGraphProvider);
+                systemId);
         final UndeploymentVisualizationStage undeploymentVisualizationStage = new UndeploymentVisualizationStage(url,
-                systemId, resourceContainerModelGraphProvider, assCtxSystemModelGraphProvider, systemModelGraphProvider,
-                correspondenceModel);
+                systemId, resourceContainerModelGraphProvider, assCtxSystemModelGraphProvider,
+                systemModelGraphProvider);
 
-        this.connectPorts(this.deploymentAfterAllocation.getDeploymentFinishedOutputPort(),
-                deploymentVisualizationStage.getInputPort());
-        this.connectPorts(this.allocationAfterDeploy.getAllocationOutputPort(),
-                allocationVisualizationStage.getInputPort());
-        this.connectPorts(this.undeployment.getVisualizationOutputPort(),
+        this.connectPorts(this.deploymentStage.getDeployedOutputPort(), deploymentVisualizationStage.getInputPort());
+        this.connectPorts(this.deploymentStage.getAllocationOutputPort(), allocationVisualizationStage.getInputPort());
+        this.connectPorts(this.undeploymentStage.getUndeployedOutputPort(),
                 undeploymentVisualizationStage.getInputPort());
+        // TODO missing deallocate
 
     }
 

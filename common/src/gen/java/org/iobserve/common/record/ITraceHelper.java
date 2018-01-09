@@ -20,7 +20,7 @@ import kieker.common.record.IMonitoringRecord;
 /**
  * @author Reiner Jung
  * 
- * @since 1.0
+ * @since 0.0.2
  */
 public interface ITraceHelper extends IMonitoringRecord {
 	public long getTraceId() ;

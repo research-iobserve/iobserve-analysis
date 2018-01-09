@@ -22,16 +22,16 @@ import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
-import org.iobserve.common.record.IAllocationRecord;
+import org.iobserve.common.record.IAllocationEvent;
 
 /**
- * @author Generic Kieker
+ * @author Reiner Jung
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.10
+ * @since 0.0.2
  */
-public class ContainerAllocationEvent extends ContainerEvent implements IAllocationRecord {
-	private static final long serialVersionUID = 5666865394947027540L;
+public class ContainerAllocationEvent extends ContainerEvent implements IAllocationEvent {
+	private static final long serialVersionUID = -6028448119522385906L;
 
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_STRING // ContainerEvent.url

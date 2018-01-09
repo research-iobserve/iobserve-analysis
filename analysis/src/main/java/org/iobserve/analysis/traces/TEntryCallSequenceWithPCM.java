@@ -20,14 +20,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.data.UserSession;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * Represents the TEntryCallSequence Transformation in the paper <i>Run-time Architecture Models for
@@ -82,8 +81,6 @@ public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<Paylo
             final List<UserSession> listToSend = this.sessions.values().stream()
                     .filter(session -> session.size() > TEntryCallSequenceWithPCM.USER_SESSION_THRESHOLD)
                     .collect(Collectors.toList());
-
-            ExecutionTimeLogger.getInstance().stopLogging(event);
 
             if (!listToSend.isEmpty()) {
                 this.outputPort.send(new EntryCallSequenceModel(listToSend));

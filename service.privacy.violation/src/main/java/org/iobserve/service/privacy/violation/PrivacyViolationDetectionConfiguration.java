@@ -25,12 +25,13 @@ import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
 import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
 import teetime.util.ConcurrentHashMapWithDefault;
 
-import org.iobserve.analysis.deployment.DeploymentModelUpdater;
-import org.iobserve.analysis.deployment.UndeploymentModelUpdater;
+import org.iobserve.analysis.deployment.AllocationStage;
+import org.iobserve.analysis.deployment.DeploymentCompositeStage;
+import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.iobserve.analysis.privacy.TGeoLocation;
+import org.iobserve.analysis.privacy.GeoLocation;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
 import org.iobserve.service.privacy.violation.filter.AlarmAnalysis;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
@@ -94,12 +95,17 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                 PrivacyViolationDetectionConfiguration.BUFFER_SIZE);
         final RecordSwitch recordSwitch = new RecordSwitch();
 
-        final DeploymentModelUpdater deploymentModelUpdater = new DeploymentModelUpdater(rac,
-                allocationModelGraphProvider, systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
-        final UndeploymentModelUpdater undeploymentModelUpdater = new UndeploymentModelUpdater(rac,
-                allocationModelGraphProvider, systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
+        /** allocation. */
+        final AllocationStage allocationStage = new AllocationStage(resourceEnvironmentModelGraphProvider);
 
-        final TGeoLocation geoLocation = new TGeoLocation(resourceEnvironmentModelProvider);
+        /** deployment. */
+        final DeploymentCompositeStage deploymentStage = new DeploymentCompositeStage(
+                resourceEnvironmentModelGraphProvider, allocationModelGraphProvider, systemModelGraphProvider, rac);
+        final UndeploymentCompositeStage undeploymentStage = new UndeploymentCompositeStage(
+                resourceEnvironmentModelGraphProvider, allocationModelGraphProvider, systemModelGraphProvider, rac);
+
+        /** geolocation. */
+        final GeoLocation geoLocation = new GeoLocation(resourceEnvironmentModelProvider);
 
         final PrivacyWarner privacyWarner = new PrivacyWarner(allocationModelGraphProvider, systemModelGraphProvider,
                 resourceEnvironmentModelGraphProvider);
@@ -127,12 +133,13 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
                 /** connect ports. */
                 this.connectPorts(reader.getOutputPort(), recordSwitch.getInputPort());
-                this.connectPorts(recordSwitch.getDeployedOutputPort(), deploymentModelUpdater.getInputPort());
-                this.connectPorts(deploymentModelUpdater.getDeploymentOutputPort(), geoLocation.getInputPort());
-                this.connectPorts(recordSwitch.getUndeployedOutputPort(), undeploymentModelUpdater.getInputPort());
-                this.connectPorts(undeploymentModelUpdater.getOutputPortSnapshot(), privacyWarner.getInputPort());
-                this.connectPorts(recordSwitch.getGeoLocationOutputPort(), geoLocation.getInputPort());
-                this.connectPorts(geoLocation.getOutputPortSnapshot(), privacyWarner.getInputPort());
+                this.connectPorts(recordSwitch.getDeployedOutputPort(), deploymentStage.getDeployedInputPort());
+                this.connectPorts(recordSwitch.getUndeployedOutputPort(), undeploymentStage.getUndeployedInputPort());
+                this.connectPorts(recordSwitch.getAllocationOutputPort(), allocationStage.getInputPort());
+
+                this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocation.getInputPort());
+                this.connectPorts(geoLocation.getOutputPort(), privacyWarner.getInputPort());
+                this.connectPorts(undeploymentStage.getUndeployedOutputPort(), privacyWarner.getInputPort());
 
                 this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
                 this.connectPorts(modelProbeController.getOutputPort(), probeMapper.getInputPort());

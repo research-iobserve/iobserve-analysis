@@ -19,9 +19,8 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.eclipse.emf.common.util.EList;
+import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.common.record.IDeployed;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
@@ -32,32 +31,30 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPri
  * @author unknown
  *
  */
-public class TGeoLocation extends AbstractConsumerStage<IDeployed> {
+public class GeoLocation extends AbstractConsumerStage<PCMDeployedEvent> {
 
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
 
     private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
 
-    public TGeoLocation(final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+    public GeoLocation(final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
         this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
     }
 
     @Override
-    protected void execute(final IDeployed element) throws Exception {
+    protected void execute(final PCMDeployedEvent element) throws Exception {
         final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider.getModel();
         final EList<ResourceContainer> resContainers = resourceEnvironment.getResourceContainer_ResourceEnvironment();
-        Boolean makeSnapshot = false;
+        final Boolean makeSnapshot = false;
 
         for (final ResourceContainer resContainer : resContainers) {
-            if (resContainer.getEntityName().equals(element.getHostname())
+            if (resContainer.getEntityName().equals(element.getService())
                     && resContainer instanceof ResourceContainerPrivacy) {
 
                 final ResourceContainerPrivacy resContainerPrivacy = (ResourceContainerPrivacy) resContainer;
                 final int geolocation = resContainerPrivacy.getGeolocation();
                 if (geolocation != element.getCountryCode()) {
                     resContainerPrivacy.setGeolocation(element.getCountryCode());
-                    makeSnapshot = true;
-                    SnapshotBuilder.setSnapshotFlag();
                 }
                 break;
             }
@@ -65,11 +62,8 @@ public class TGeoLocation extends AbstractConsumerStage<IDeployed> {
         this.outputPortSnapshot.send(makeSnapshot);
     }
 
-    /**
-     * @return output port for snapshot
-     */
-    public OutputPort<Boolean> getOutputPortSnapshot() {
-        return this.outputPortSnapshot;
+    public OutputPort<PCMDeployedEvent> getOutputPort() {
+        return null;
     }
 
 }

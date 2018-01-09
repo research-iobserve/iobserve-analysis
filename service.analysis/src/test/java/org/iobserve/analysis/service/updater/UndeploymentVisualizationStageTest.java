@@ -21,15 +21,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
+import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.iobserve.common.record.EJBDeployedEvent;
-import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.ServletDeployedEvent;
-import org.iobserve.common.record.ServletUndeployedEvent;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -44,7 +44,6 @@ import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
-import teetime.framework.test.StageTester;
 import util.TestHandler;
 
 /**
@@ -74,12 +73,10 @@ public class UndeploymentVisualizationStageTest {
     private ICorrespondence mockedCorrespondenceModel;
 
     /** input events. */
-    private final List<ServletUndeployedEvent> inputServletEvents = new ArrayList<>();
-    private final List<EJBUndeployedEvent> inputEJBEvents = new ArrayList<>();
+    private final List<PCMUndeployedEvent> inputEvents = new ArrayList<>();
 
     /** test event. */
-    private ServletUndeployedEvent servletEvent;
-    private EJBUndeployedEvent ejbEvent;
+    private PCMUndeployedEvent undeployedEvent;
 
     /** data for generating test events. */
     private static final long DEPLOY_TIME = 1;
@@ -115,25 +112,25 @@ public class UndeploymentVisualizationStageTest {
 
         this.undeploymentVisualizationStage = new UndeploymentVisualizationStage(this.changelogURL, this.systemId,
                 this.mockedResourceContainerModelProvider, this.mockedAssemblyContextModelProvider,
-                this.mockedSystemModelGraphProvider, this.mockedCorrespondenceModel);
-
-        /** test events */
-        this.servletEvent = new ServletUndeployedEvent(UndeploymentVisualizationStageTest.DEPLOY_TIME,
-                UndeploymentVisualizationStageTest.SERVICE, UndeploymentVisualizationStageTest.CONTEXT,
-                UndeploymentVisualizationStageTest.DEPLOYMENT_ID);
-        this.ejbEvent = new EJBUndeployedEvent(UndeploymentVisualizationStageTest.DEPLOY_TIME,
-                UndeploymentVisualizationStageTest.SERVICE, UndeploymentVisualizationStageTest.CONTEXT,
-                UndeploymentVisualizationStageTest.DEPLOYMENT_ID);
-
-        /** input events */
-        this.inputServletEvents.add(this.servletEvent);
-        this.inputEJBEvents.add(this.ejbEvent);
+                this.mockedSystemModelGraphProvider);
 
         /** test correspondent */
         UndeploymentVisualizationStageTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity",
                 "testPcmEntityId", "testPcmOperationName", "testPcmOperationId");
         UndeploymentVisualizationStageTest.optTestCorrespondent = Optional
                 .of(UndeploymentVisualizationStageTest.testCorrespondent);
+
+        /** test events */
+        final String urlContext = UndeploymentVisualizationStageTest.CONTEXT.replaceAll("\\.", "/");
+        final String url = "http://" + UndeploymentVisualizationStageTest.SERVICE + '/' + urlContext;
+
+        this.undeployedEvent = new PCMUndeployedEvent(UndeploymentVisualizationStageTest.SERVICE,
+                UndeploymentVisualizationStageTest.testCorrespondent);
+
+        this.undeployedEvent.setResourceContainer(this.testResourceContainer);
+
+        /** input events */
+        this.inputEvents.add(this.undeployedEvent);
 
         /** test resource container */
         this.testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
@@ -169,25 +166,7 @@ public class UndeploymentVisualizationStageTest {
     @Test
     public void testServlet() {
 
-        StageTester.test(this.undeploymentVisualizationStage).and().send(this.inputServletEvents)
-                .to(this.undeploymentVisualizationStage.getInputPort()).start();
-
-        final JSONArray changelogs = new JSONArray(TestHandler.getRequestBody());
-        final JSONObject expectedServiceInstance = new JSONObject(changelogs.getJSONObject(0).get("data").toString());
-
-        Assert.assertThat(changelogs.getJSONObject(0).get("operation"), Is.is("DELETE"));
-        Assert.assertThat(expectedServiceInstance.getString("type"), Is.is("serviceInstance"));
-    }
-
-    /**
-     * Check the changelog for deleting a serviceInstance. A {@link EJBDeployedEvent} is defined as
-     * input.
-     *
-     */
-    @Test
-    public void testEJB() {
-
-        StageTester.test(this.undeploymentVisualizationStage).and().send(this.inputEJBEvents)
+        StageTester.test(this.undeploymentVisualizationStage).and().send(this.inputEvents)
                 .to(this.undeploymentVisualizationStage.getInputPort()).start();
 
         final JSONArray changelogs = new JSONArray(TestHandler.getRequestBody());

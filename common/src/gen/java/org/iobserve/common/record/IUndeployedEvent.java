@@ -15,12 +15,11 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-import kieker.common.record.IMonitoringRecord;
 
 /**
- * @author Generic Kieker
+ * @author Reiner Jung
  * 
- * @since 1.10
+ * @since 0.0.2
  */
-public interface IDeallocationRecord extends IMonitoringRecord {
+public interface IUndeployedEvent extends IDeploymentChange {
 }

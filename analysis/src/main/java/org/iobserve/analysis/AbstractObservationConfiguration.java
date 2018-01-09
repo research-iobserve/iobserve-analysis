@@ -15,6 +15,12 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import teetime.framework.Configuration;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
+import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
+import teetime.util.ConcurrentHashMapWithDefault;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.AdaptationCalculation;
 import org.iobserve.adaptation.AdaptationExecution;
@@ -33,10 +39,9 @@ import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCr
 import org.iobserve.analysis.clustering.filter.models.configuration.examples.CoCoMEEntryCallRulesFactory;
 import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetStoreEntryCallRulesFactory;
 import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetstoreStrategy;
-import org.iobserve.analysis.deployment.AllocationFinishedStage;
 import org.iobserve.analysis.deployment.AllocationStage;
-import org.iobserve.analysis.deployment.DeploymentModelUpdater;
-import org.iobserve.analysis.deployment.UndeploymentModelUpdater;
+import org.iobserve.analysis.deployment.DeploymentCompositeStage;
+import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.AllocationModelProvider;
 import org.iobserve.analysis.model.provider.RepositoryModelProvider;
@@ -65,11 +70,6 @@ import org.iobserve.stages.source.TimeTriggerFilter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
-import teetime.framework.Configuration;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
-import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
-import teetime.util.ConcurrentHashMapWithDefault;
 import weka.core.ManhattanDistance;
 
 /**
@@ -84,16 +84,9 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      */
     protected final RecordSwitch recordSwitch;
 
-    protected AllocationStage allocationSuccDeploy;
-
-    protected DeploymentModelUpdater deployment;
-
-    protected final DeploymentModelUpdater deploymentAfterAllocation;
-    protected DeploymentModelUpdater deploymentSuccAllocation;
-
-    protected final AllocationStage allocationAfterDeploy;
-
-    protected UndeploymentModelUpdater undeployment;
+    protected final AllocationStage allocation;
+    protected final DeploymentCompositeStage deploymentStage;
+    protected final UndeploymentCompositeStage undeploymentStage;
 
     /**
      * Create a configuration with a ASCII file reader.
@@ -143,15 +136,19 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
-        final AllocationStage allocation = new AllocationStage(resourceEnvironmentModelGraphProvider);
-        final AllocationFinishedStage allocationFinished = new AllocationFinishedStage();
-        this.deployment = new DeploymentModelUpdater(correspondenceModel, allocationModelGraphProvider,
-                systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
-        this.deploymentAfterAllocation = new DeploymentModelUpdater(correspondenceModel, allocationModelGraphProvider,
-                systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
-        this.allocationAfterDeploy = new AllocationStage(resourceEnvironmentModelGraphProvider);
-        this.undeployment = new UndeploymentModelUpdater(correspondenceModel, allocationModelGraphProvider,
-                systemModelGraphProvider, resourceEnvironmentModelGraphProvider);
+        /** allocation. */
+        this.allocation = new AllocationStage(resourceEnvironmentModelGraphProvider);
+
+        /** deployment. */
+        this.deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelGraphProvider,
+                allocationModelGraphProvider, systemModelGraphProvider, correspondenceModel);
+
+        /** undeployment. */
+        this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelGraphProvider,
+                allocationModelGraphProvider, systemModelGraphProvider, correspondenceModel);
+
+        /** deallocation. */
+        // TODO missing
 
         /** Trace reconstruction. */
         final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<>(
@@ -221,21 +218,16 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         /** -- end plain clustering. */
 
         /** dispatch different monitoring data. */
-        this.connectPorts(this.recordSwitch.getDeployedOutputPort(), this.deployment.getInputPort());
-        this.connectPorts(this.recordSwitch.getUndeployedOutputPort(), this.undeployment.getInputPort());
-        this.connectPorts(this.recordSwitch.getAllocationOutputPort(), allocation.getInputPort());
+        this.connectPorts(this.recordSwitch.getDeployedOutputPort(), this.deploymentStage.getDeployedInputPort());
+        this.connectPorts(this.recordSwitch.getUndeployedOutputPort(), this.undeploymentStage.getUndeployedInputPort());
+        this.connectPorts(this.recordSwitch.getAllocationOutputPort(), this.allocation.getInputPort());
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), traceReconstructionFilter.getInputPort());
+        this.connectPorts(this.recordSwitch.getSessionEventOutputPort(), entryCallSequence.getSessionEventInputPort());
+
         this.connectPorts(traceReconstructionFilter.getTraceValidOutputPort(), tEntryCall.getInputPort());
         // this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
 
-        this.connectPorts(this.deployment.getDeploymentOutputPort(), allocationFinished.getDeploymentInputPort());
-        this.connectPorts(this.deployment.getAllocationOutputPort(), this.allocationAfterDeploy.getInputPort());
-        this.connectPorts(this.allocationAfterDeploy.getAllocationFinishedOutputPort(),
-                allocationFinished.getAllocationFinishedInputPort());
-        this.connectPorts(allocationFinished.getDeploymentOutputPort(), this.deploymentAfterAllocation.getInputPort());
-
         this.connectPorts(tEntryCall.getOutputPort(), entryCallSequence.getEntryCallInputPort());
-        this.connectPorts(this.recordSwitch.getSessionEventOutputPort(), entryCallSequence.getSessionEventInputPort());
 
         this.connectPorts(timeTriggerFilter.getOutputPort(), collectUserSessions.getTimeTriggerInputPort());
         this.connectPorts(entryCallSequence.getUserSessionOutputPort(), traceAcceptanceFilter.getInputPort());
@@ -243,8 +235,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(traceOperationCleanupFilter.getOutputPort(), collectUserSessions.getUserSessionInputPort());
         this.connectPorts(collectUserSessions.getOutputPort(), tBehaviorModelComparison.getInputPort());
 
-        if ((snapshotBuilder != null) && (perOpteryxHeadless != null) && (lqnsDir != null)
-                && (deployablesFolder != null)) {
+        if (snapshotBuilder != null && perOpteryxHeadless != null && lqnsDir != null && deployablesFolder != null) {
             // create filters for snapshot planning, evaluation and adaptation
             final CandidateGeneration candidateGenerator = new CandidateGeneration(
                     new ModelProcessing(perOpteryxHeadless, lqnsDir), new ModelOptimization(),

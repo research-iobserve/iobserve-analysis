@@ -21,24 +21,24 @@ import kieker.common.record.io.IValueDeserializer;
 
 
 /**
- * @author Generic Kieker
+ * @author Reiner Jung
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.10
+ * @since 0.0.2
  */
 public abstract class ServletDescriptor extends AbstractEvent  {
-	private static final long serialVersionUID = -6539911306458178607L;
+	private static final long serialVersionUID = -468514807414704775L;
 
 	
 	
 	/** default constants. */
-	public static final String SERIVCE = "";
+	public static final String SERVICE = "";
 	public static final String CONTEXT = "";
 	public static final String DEPLOYMENT_ID = "";
 	
 		
 	/** property declarations. */
-	private final String serivce;
+	private final String service;
 	private final String context;
 	private final String deploymentId;
 	
@@ -47,16 +47,16 @@ public abstract class ServletDescriptor extends AbstractEvent  {
 	 * 
 	 * @param timestamp
 	 *            timestamp
-	 * @param serivce
-	 *            serivce
+	 * @param service
+	 *            service
 	 * @param context
 	 *            context
 	 * @param deploymentId
 	 *            deploymentId
 	 */
-	public ServletDescriptor(final long timestamp, final String serivce, final String context, final String deploymentId) {
+	public ServletDescriptor(final long timestamp, final String service, final String context, final String deploymentId) {
 		super(timestamp);
-		this.serivce = serivce == null?"":serivce;
+		this.service = service == null?"":service;
 		this.context = context == null?"":context;
 		this.deploymentId = deploymentId == null?"":deploymentId;
 	}
@@ -75,7 +75,7 @@ public abstract class ServletDescriptor extends AbstractEvent  {
 	@Deprecated
 	protected ServletDescriptor(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
-		this.serivce = (String) values[1];
+		this.service = (String) values[1];
 		this.context = (String) values[2];
 		this.deploymentId = (String) values[3];
 	}
@@ -87,7 +87,7 @@ public abstract class ServletDescriptor extends AbstractEvent  {
 	 */
 	public ServletDescriptor(final IValueDeserializer deserializer) {
 		super(deserializer);
-		this.serivce = deserializer.getString();
+		this.service = deserializer.getString();
 		this.context = deserializer.getString();
 		this.deploymentId = deserializer.getString();
 	}
@@ -116,14 +116,14 @@ public abstract class ServletDescriptor extends AbstractEvent  {
 		final ServletDescriptor castedRecord = (ServletDescriptor) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (!this.getSerivce().equals(castedRecord.getSerivce())) return false;
+		if (!this.getService().equals(castedRecord.getService())) return false;
 		if (!this.getContext().equals(castedRecord.getContext())) return false;
 		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		return true;
 	}
 	
-	public final String getSerivce() {
-		return this.serivce;
+	public final String getService() {
+		return this.service;
 	}
 	
 	

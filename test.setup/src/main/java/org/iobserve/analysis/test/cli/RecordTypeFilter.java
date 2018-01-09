@@ -15,13 +15,14 @@
  ***************************************************************************/
 package org.iobserve.analysis.test.cli;
 
-import org.iobserve.common.record.IDeploymentRecord;
-import org.iobserve.common.record.IUndeploymentRecord;
-import org.iobserve.common.record.ServletTraceHelper;
-
 import kieker.common.record.IMonitoringRecord;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.iobserve.common.record.IDeployedEvent;
+import org.iobserve.common.record.IUndeployedEvent;
+import org.iobserve.common.record.ServletTraceHelper;
 
 /**
  *
@@ -38,7 +39,7 @@ public class RecordTypeFilter extends AbstractConsumerStage<IMonitoringRecord> {
 
     @Override
     protected void execute(final IMonitoringRecord element) throws Exception {
-        if (!(element instanceof IDeploymentRecord) && !(element instanceof IUndeploymentRecord)
+        if (!(element instanceof IDeployedEvent) && !(element instanceof IUndeployedEvent)
                 && !(element instanceof ServletTraceHelper)) {
             this.outputPort.send(element);
         }

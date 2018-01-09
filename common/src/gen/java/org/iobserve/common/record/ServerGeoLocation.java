@@ -25,10 +25,10 @@ import kieker.common.util.registry.IRegistry;
 import org.iobserve.common.record.GeoLocation;
 
 /**
- * @author Generic Kieker
+ * @author Reiner Jung
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.10
+ * @since 0.0.2
  */
 public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	private static final long serialVersionUID = -9109740651531232541L;

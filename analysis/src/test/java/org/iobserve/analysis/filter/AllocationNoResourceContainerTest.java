@@ -19,12 +19,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.common.record.ContainerAllocationEvent;
-import org.iobserve.common.record.IAllocationRecord;
+import org.iobserve.common.record.IAllocationEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -38,8 +40,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import teetime.framework.test.StageTester;
-
 /**
  * Tests for {@link TAllocation} filter, in case the {@link ResourceContainer} does not exist yet.
  *
@@ -49,7 +49,7 @@ import teetime.framework.test.StageTester;
 @RunWith(PowerMockRunner.class)
 // write all final classes here
 @PrepareForTest(ResourceEnvironmentModelBuilder.class)
-public class TAllocationNoResourceContainerTest {
+public class AllocationNoResourceContainerTest {
 
     /** stage under test. */
     private AllocationStage tAllocation;
@@ -61,13 +61,13 @@ public class TAllocationNoResourceContainerTest {
     private static ContainerAllocationEvent allocationEvent;
 
     /** input events. */
-    private static List<IAllocationRecord> inputEvents = new ArrayList<>();
+    private static List<IAllocationEvent> inputEvents = new ArrayList<>();
 
     /** data for generating test container allocation event. */
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
-    private static final String URL = "http://" + TAllocationNoResourceContainerTest.SERVICE + '/'
-            + TAllocationNoResourceContainerTest.CONTEXT;
+    private static final String URL = "http://" + AllocationNoResourceContainerTest.SERVICE + '/'
+            + AllocationNoResourceContainerTest.CONTEXT;
 
     /** test resource containers. */
     private static Optional<ResourceContainer> optTestNullResourceContainer;
@@ -82,22 +82,22 @@ public class TAllocationNoResourceContainerTest {
     public static void setup() {
 
         /** test event */
-        TAllocationNoResourceContainerTest.allocationEvent = new ContainerAllocationEvent(
-                TAllocationNoResourceContainerTest.URL);
+        AllocationNoResourceContainerTest.allocationEvent = new ContainerAllocationEvent(
+                AllocationNoResourceContainerTest.URL);
 
         /** input allocation event */
-        TAllocationNoResourceContainerTest.inputEvents.add(TAllocationNoResourceContainerTest.allocationEvent);
+        AllocationNoResourceContainerTest.inputEvents.add(AllocationNoResourceContainerTest.allocationEvent);
 
         /** optional test resource container without value */
-        TAllocationNoResourceContainerTest.optTestNullResourceContainer = Optional.ofNullable(null);
+        AllocationNoResourceContainerTest.optTestNullResourceContainer = Optional.ofNullable(null);
         // /** test resource container with value */
-        TAllocationNoResourceContainerTest.testResourceContainer = ResourceenvironmentFactory.eINSTANCE
+        AllocationNoResourceContainerTest.testResourceContainer = ResourceenvironmentFactory.eINSTANCE
                 .createResourceContainer();
-        TAllocationNoResourceContainerTest.testResourceContainer.setEntityName("TestResourceContainer");
-        TAllocationNoResourceContainerTest.testResourceContainer.setId("_resourcecontainer_test_id");
+        AllocationNoResourceContainerTest.testResourceContainer.setEntityName("TestResourceContainer");
+        AllocationNoResourceContainerTest.testResourceContainer.setId("_resourcecontainer_test_id");
 
         /** test resource environment */
-        TAllocationNoResourceContainerTest.testResourceEnvironment = ResourceenvironmentFactory.eINSTANCE
+        AllocationNoResourceContainerTest.testResourceEnvironment = ResourceenvironmentFactory.eINSTANCE
                 .createResourceEnvironment();
 
     }
@@ -114,26 +114,26 @@ public class TAllocationNoResourceContainerTest {
         // use PowerMockito for calling static methods of this final class
         PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
         /** mock for new graph provider */
-        TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito
+        AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito
                 .mock(ModelProvider.class);
 
         this.tAllocation = new AllocationStage(
-                TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
+                AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
 
-        Mockito.when(TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
+        Mockito.when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .readOnlyRootComponent(ResourceEnvironment.class))
-                .thenReturn(TAllocationNoResourceContainerTest.testResourceEnvironment);
+                .thenReturn(AllocationNoResourceContainerTest.testResourceEnvironment);
 
         Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
-                TAllocationNoResourceContainerTest.testResourceEnvironment, TAllocationNoResourceContainerTest.SERVICE))
-                .thenReturn(TAllocationNoResourceContainerTest.optTestNullResourceContainer);
+                AllocationNoResourceContainerTest.testResourceEnvironment, AllocationNoResourceContainerTest.SERVICE))
+                .thenReturn(AllocationNoResourceContainerTest.optTestNullResourceContainer);
 
         Mockito.when(ResourceEnvironmentModelBuilder.createResourceContainer(
-                TAllocationNoResourceContainerTest.testResourceEnvironment, TAllocationNoResourceContainerTest.SERVICE))
-                .thenReturn(TAllocationNoResourceContainerTest.testResourceContainer);
+                AllocationNoResourceContainerTest.testResourceEnvironment, AllocationNoResourceContainerTest.SERVICE))
+                .thenReturn(AllocationNoResourceContainerTest.testResourceContainer);
 
-        Mockito.doNothing().when(TAllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider)
-                .updateComponent(ResourceEnvironment.class, TAllocationNoResourceContainerTest.testResourceEnvironment);
+        Mockito.doNothing().when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider)
+                .updateComponent(ResourceEnvironment.class, AllocationNoResourceContainerTest.testResourceEnvironment);
     }
 
     /**
@@ -143,13 +143,13 @@ public class TAllocationNoResourceContainerTest {
     @Test
     public void checkAllocationFinished() {
 
-        final List<IAllocationRecord> allocationFinishedEvents = new ArrayList<>();
+        final List<ResourceContainer> allocationFinishedEvents = new ArrayList<>();
 
-        StageTester.test(this.tAllocation).and().send(TAllocationNoResourceContainerTest.inputEvents)
+        StageTester.test(this.tAllocation).and().send(AllocationNoResourceContainerTest.inputEvents)
                 .to(this.tAllocation.getInputPort()).and().receive(allocationFinishedEvents)
-                .from(this.tAllocation.getAllocationFinishedOutputPort()).start();
+                .from(this.tAllocation.getAllocationNotifyOutputPort()).start();
 
-        Assert.assertThat(allocationFinishedEvents.get(0), Is.is(TAllocationNoResourceContainerTest.allocationEvent));
+        Assert.assertThat(allocationFinishedEvents.get(0), Is.is(AllocationNoResourceContainerTest.allocationEvent));
     }
 
     /**
@@ -159,13 +159,13 @@ public class TAllocationNoResourceContainerTest {
     @Test
     public void checkAllocationUpdate() {
 
-        final List<IAllocationRecord> allocationEvents = new ArrayList<>();
+        final List<IAllocationEvent> allocationEvents = new ArrayList<>();
 
-        StageTester.test(this.tAllocation).and().send(TAllocationNoResourceContainerTest.inputEvents)
+        StageTester.test(this.tAllocation).and().send(AllocationNoResourceContainerTest.inputEvents)
                 .to(this.tAllocation.getInputPort()).and().receive(allocationEvents)
                 .from(this.tAllocation.getAllocationOutputPort()).start();
 
-        Assert.assertThat(allocationEvents.get(0), Is.is(TAllocationNoResourceContainerTest.allocationEvent));
+        Assert.assertThat(allocationEvents.get(0), Is.is(AllocationNoResourceContainerTest.allocationEvent));
 
     }
 

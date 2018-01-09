@@ -28,12 +28,11 @@ import teetime.framework.OutputPort;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.iobserve.common.record.IAllocationRecord;
-import org.iobserve.common.record.IDeallocationRecord;
-import org.iobserve.common.record.IDeployed;
+import org.iobserve.common.record.IAllocationEvent;
+import org.iobserve.common.record.IDeallocationEvent;
+import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.common.record.IUndeployed;
-import org.iobserve.common.record.ServerGeoLocation;
+import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.ServletTraceHelper;
 
 /**
@@ -51,13 +50,13 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     private static final int LOOP_COUNT = 1000;
 
     /** output port for deployment events. */
-    private final OutputPort<IDeployed> deployedOutputPort = this.createOutputPort();
+    private final OutputPort<IDeployedEvent> deployedOutputPort = this.createOutputPort();
     /** output port for undeployment events. */
-    private final OutputPort<IUndeployed> undeployedOutputPort = this.createOutputPort();
+    private final OutputPort<IUndeployedEvent> undeployedOutputPort = this.createOutputPort();
     /** output port for allocation events. */
-    private final OutputPort<IAllocationRecord> allocationOutputPort = this.createOutputPort();
+    private final OutputPort<IAllocationEvent> allocationOutputPort = this.createOutputPort();
     /** output port for deallocation events. */
-    private final OutputPort<IDeallocationRecord> deallocationOutputPort = this.createOutputPort();
+    private final OutputPort<IDeallocationEvent> deallocationOutputPort = this.createOutputPort();
 
     /** output port for flow events. */
     private final OutputPort<IFlowRecord> flowOutputPort = this.createOutputPort();
@@ -65,8 +64,6 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     private final OutputPort<TraceMetadata> traceMetadataOutputPort = this.createOutputPort();
 
     private final OutputPort<ISessionEvent> sessionEventOutputPort = this.createOutputPort();
-    /** output port for {@link ServerGeoLocation} */
-    private final OutputPort<ServerGeoLocation> geoLocationOutputPort = this.createOutputPort();
 
     /** internal map to collect unknown record types. */
     private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<>();
@@ -87,18 +84,16 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
         if (this.recordCount % RecordSwitch.LOOP_COUNT == 0) {
             RecordSwitch.LOGGER.debug("Records processed " + this.recordCount);
         }
-        if (element instanceof IDeployed) {
-            this.deployedOutputPort.send((IDeployed) element);
-        } else if (element instanceof ServerGeoLocation) {
-            this.geoLocationOutputPort.send((ServerGeoLocation) element);
+        if (element instanceof IDeployedEvent) {
+            this.deployedOutputPort.send((IDeployedEvent) element);
         } else if (element instanceof ISessionEvent) {
             this.sessionEventOutputPort.send((ISessionEvent) element);
-        } else if (element instanceof IUndeployed) {
-            this.undeployedOutputPort.send((IUndeployed) element);
-        } else if (element instanceof IAllocationRecord) {
-            this.allocationOutputPort.send((IAllocationRecord) element);
-        } else if (element instanceof IDeallocationRecord) {
-            this.deallocationOutputPort.send((IDeallocationRecord) element);
+        } else if (element instanceof IUndeployedEvent) {
+            this.undeployedOutputPort.send((IUndeployedEvent) element);
+        } else if (element instanceof IAllocationEvent) {
+            this.allocationOutputPort.send((IAllocationEvent) element);
+        } else if (element instanceof IDeallocationEvent) {
+            this.deallocationOutputPort.send((IDeallocationEvent) element);
         } else if (element instanceof ServletTraceHelper) { // NOCS
             // TODO this is later used to improve trace information
         } else if (element instanceof IFlowRecord) {
@@ -139,21 +134,21 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     /**
      * @return the deploymentOutputPort
      */
-    public final OutputPort<IDeployed> getDeployedOutputPort() {
+    public final OutputPort<IDeployedEvent> getDeployedOutputPort() {
         return this.deployedOutputPort;
     }
 
     /**
      * @return the undeploymentOutputPort
      */
-    public final OutputPort<IUndeployed> getUndeployedOutputPort() {
+    public final OutputPort<IUndeployedEvent> getUndeployedOutputPort() {
         return this.undeployedOutputPort;
     }
 
     /**
      * @return the allocationOutputPort
      */
-    public final OutputPort<IAllocationRecord> getAllocationOutputPort() {
+    public final OutputPort<IAllocationEvent> getAllocationOutputPort() {
         return this.allocationOutputPort;
     }
 
@@ -180,18 +175,11 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
         return this.sessionEventOutputPort;
     }
 
-    /**
-     * @return serverGeoLocationPort
-     */
-    public OutputPort<ServerGeoLocation> getGeoLocationOutputPort() {
-        return this.geoLocationOutputPort;
-    }
-
     public long getRecordCount() {
         return this.recordCount;
     }
 
-    public OutputPort<IDeallocationRecord> getDeallocationOutputPort() {
+    public OutputPort<IDeallocationEvent> getDeallocationOutputPort() {
         return this.deallocationOutputPort;
     }
 }

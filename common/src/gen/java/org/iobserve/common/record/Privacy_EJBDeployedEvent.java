@@ -28,14 +28,14 @@ import org.iobserve.common.record.Privacy;
  * @author Generic Kieker
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.10
+ * @since 1.13
  */
 public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privacy {
 	private static final long serialVersionUID = 3364660760163783830L;
 
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
-			 + TYPE_SIZE_STRING // EJBDescriptor.serivce
+			 + TYPE_SIZE_STRING // EJBDescriptor.service
 			 + TYPE_SIZE_STRING // EJBDescriptor.context
 			 + TYPE_SIZE_STRING // EJBDescriptor.deploymentId
 			 + TYPE_SIZE_SHORT // GeoLocation.countryCode
@@ -43,7 +43,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEventRecord.timestamp
-		String.class, // EJBDescriptor.serivce
+		String.class, // EJBDescriptor.service
 		String.class, // EJBDescriptor.context
 		String.class, // EJBDescriptor.deploymentId
 		short.class, // GeoLocation.countryCode
@@ -56,7 +56,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
 		"timestamp",
-		"serivce",
+		"service",
 		"context",
 		"deploymentId",
 		"countryCode",
@@ -70,8 +70,8 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	 * 
 	 * @param timestamp
 	 *            timestamp
-	 * @param serivce
-	 *            serivce
+	 * @param service
+	 *            service
 	 * @param context
 	 *            context
 	 * @param deploymentId
@@ -79,8 +79,8 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	 * @param countryCode
 	 *            countryCode
 	 */
-	public Privacy_EJBDeployedEvent(final long timestamp, final String serivce, final String context, final String deploymentId, final short countryCode) {
-		super(timestamp, serivce, context, deploymentId);
+	public Privacy_EJBDeployedEvent(final long timestamp, final String service, final String context, final String deploymentId, final short countryCode) {
+		super(timestamp, service, context, deploymentId);
 		this.countryCode = countryCode;
 	}
 
@@ -135,7 +135,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	public Object[] toArray() {
 		return new Object[] {
 			this.getTimestamp(),
-			this.getSerivce(),
+			this.getService(),
 			this.getContext(),
 			this.getDeploymentId(),
 			this.getCountryCode()
@@ -146,7 +146,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	 */
 	@Override
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getSerivce());
+		stringRegistry.get(this.getService());
 		stringRegistry.get(this.getContext());
 		stringRegistry.get(this.getDeploymentId());
 	}
@@ -157,7 +157,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {
 		//super.serialize(serializer);
 		serializer.putLong(this.getTimestamp());
-		serializer.putString(this.getSerivce());
+		serializer.putString(this.getService());
 		serializer.putString(this.getContext());
 		serializer.putString(this.getDeploymentId());
 		serializer.putShort(this.getCountryCode());
@@ -209,7 +209,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 		final Privacy_EJBDeployedEvent castedRecord = (Privacy_EJBDeployedEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
 		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (!this.getSerivce().equals(castedRecord.getSerivce())) return false;
+		if (!this.getService().equals(castedRecord.getService())) return false;
 		if (!this.getContext().equals(castedRecord.getContext())) return false;
 		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
 		if (this.getCountryCode() != castedRecord.getCountryCode()) return false;

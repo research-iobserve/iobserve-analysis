@@ -33,11 +33,11 @@ import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.ContainerDeallocationEvent;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
-import org.iobserve.common.record.IAllocationRecord;
-import org.iobserve.common.record.IDeallocationRecord;
-import org.iobserve.common.record.IDeployed;
+import org.iobserve.common.record.IAllocationEvent;
+import org.iobserve.common.record.IDeallocationEvent;
+import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.common.record.IUndeployed;
+import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.ServerGeoLocation;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.common.record.ServletTraceHelper;
@@ -83,12 +83,12 @@ public class RecordSwitchTests {
     private static final long COLLECTION_TIME_MS = 121230;
 
     private final List<IMonitoringRecord> inputRecords = new ArrayList<>();
-    private final List<IDeployed> deploymentRecords = new ArrayList<>();
+    private final List<IDeployedEvent> deploymentRecords = new ArrayList<>();
     private final List<ServerGeoLocation> geolocationRecords = new ArrayList<>();
     private final List<ISessionEvent> sessionEventRecords = new ArrayList<>();
-    private final List<IUndeployed> undeploymentRecords = new ArrayList<>();
-    private final List<IAllocationRecord> allocationRecords = new ArrayList<>();
-    private final List<IDeallocationRecord> deallocationRecords = new ArrayList<>();
+    private final List<IUndeployedEvent> undeploymentRecords = new ArrayList<>();
+    private final List<IAllocationEvent> allocationRecords = new ArrayList<>();
+    private final List<IDeallocationEvent> deallocationRecords = new ArrayList<>();
     private final List<ServletTraceHelper> servletTraceHelperRecords = new ArrayList<>();
     private final List<IFlowRecord> flowRecords = new ArrayList<>();
     private final List<TraceMetadata> traceMetadataRecords = new ArrayList<>();
@@ -222,19 +222,6 @@ public class RecordSwitchTests {
 
         StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
                 .receive(this.deploymentRecords).from(recordSwitch.getDeployedOutputPort()).start();
-
-        Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
-    }
-
-    /**
-     * Check whether all geo location records are found.
-     */
-    @Test
-    public void checkServerGeolocationDetection() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
-
-        StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(this.geolocationRecords).from(recordSwitch.getGeoLocationOutputPort()).start();
 
         Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
     }

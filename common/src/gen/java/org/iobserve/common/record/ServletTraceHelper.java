@@ -30,7 +30,7 @@ import kieker.common.record.flow.IFlowRecord;
  * @author Reiner Jung
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.0
+ * @since 0.0.2
  */
 public class ServletTraceHelper extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ITraceHelper, IFlowRecord {
 	private static final long serialVersionUID = 2363353535794190244L;

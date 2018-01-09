@@ -119,7 +119,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
         } catch (final IOException e) {
             this.logger.error("Cannot establish listening port", e);
         } finally {
-            this.terminateStage();
+            this.workCompleted();
         }
     }
 
@@ -221,9 +221,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
                     final IMonitoringRecord record = recordFactory.create(connection.getValueDeserializer());
                     record.setLoggingTimestamp(loggingTimestamp);
 
-                    // TODO rewriting deactivated.
-                    final IMonitoringRecord rewrittenRecord = record; // this.recordRewrite(connection,
-                                                                      // record);
+                    final IMonitoringRecord rewrittenRecord = this.recordRewrite(connection, record);
                     if (rewrittenRecord != null) {
                         this.outputPort.send(rewrittenRecord);
                     }
@@ -261,8 +259,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
             final TraceMetadata metaData = this.metadatamap.get(this.getIP(connection.getChannel().getRemoteAddress()))
                     .get(((ITraceRecord) record).getTraceId());
             /** this mess could be avoided with setters in Kieker records. */
-            // TODO to be used within Kieker 1.14
-            // ((ITraceRecord)record).setTraceId(metaData.getTraceId());
+            ((ITraceRecord) record).setTraceId(metaData.getTraceId());
             return record;
         } else if (record instanceof KiekerMetadataRecord) {
             return null;

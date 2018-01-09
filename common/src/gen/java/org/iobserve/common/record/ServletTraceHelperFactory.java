@@ -22,7 +22,7 @@ import kieker.common.record.io.IValueDeserializer;
 /**
  * @author Reiner Jung
  * 
- * @since 1.0
+ * @since 0.0.2
  */
 public final class ServletTraceHelperFactory implements IRecordFactory<ServletTraceHelper> {
 	

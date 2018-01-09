@@ -19,8 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.UndeploymentModelUpdater;
+import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.model.builder.AllocationModelBuilder;
 import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.builder.SystemModelBuilder;
@@ -28,8 +31,8 @@ import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.iobserve.common.record.EJBUndeployedEvent;
-import org.iobserve.common.record.IUndeploymentRecord;
+import org.iobserve.analysis.test.data.ImplementationLevelData;
+import org.iobserve.analysis.test.data.ModelLevelData;
 import org.iobserve.common.record.ServletUndeployedEvent;
 import org.junit.Assert;
 import org.junit.Before;
@@ -47,22 +50,21 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import teetime.framework.test.StageTester;
-
 /**
  * Tests for {@link UndeploymentModelUpdater} filter, in case the {@link ResourceContainer} does not
  * exist.
  *
- * @author jweg
+ * @author Josefine Wegert
+ * @author Reiner Jung
  *
  */
 @RunWith(PowerMockRunner.class)
 // write all final classes here
 @PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelBuilder.class, SystemModelBuilder.class })
-public class TUndeploymentNoResourceContainerTest {
+public class UndeploymentNoResourceContainerTest {
 
     /** stage under test. */
-    private UndeploymentModelUpdater tUndeployment;
+    private UndeploymentModelUpdater undeploymentUpdater;
 
     /** mocks. */
     @Mock
@@ -74,19 +76,9 @@ public class TUndeploymentNoResourceContainerTest {
     @Mock
     private static ICorrespondence mockedCorrespondence;
 
-    /** data for generating test events. */
-    private static final long UNDEPLOY_TIME = 1;
-    private static final String SERVICE = "test-service";
-    private static final String CONTEXT = "/path/test";
-    private static final String UNDEPLOYMENT_ID = "service-01";
-
-    /** test events. */
-    private static ServletUndeployedEvent servletUndeploymentEvent;
-    private static EJBUndeployedEvent ejbUndeploymentEvent;
-
     /** input events. */
-    private static List<IUndeploymentRecord> inputServletEvents = new ArrayList<>();
-    private static List<IUndeploymentRecord> inputEJBEvents = new ArrayList<>();
+    private static PCMUndeployedEvent undeployedEvent;
+    private static List<PCMUndeployedEvent> inputEvents = new ArrayList<>();
 
     /** test correspondent. */
     private static Correspondent testCorrespondent;
@@ -103,32 +95,23 @@ public class TUndeploymentNoResourceContainerTest {
      */
     @BeforeClass
     public static void setup() {
-        /** test events */
-        TUndeploymentNoResourceContainerTest.servletUndeploymentEvent = new ServletUndeployedEvent(
-                TUndeploymentNoResourceContainerTest.UNDEPLOY_TIME, TUndeploymentNoResourceContainerTest.SERVICE,
-                TUndeploymentNoResourceContainerTest.CONTEXT, TUndeploymentNoResourceContainerTest.UNDEPLOYMENT_ID);
-        TUndeploymentNoResourceContainerTest.ejbUndeploymentEvent = new EJBUndeployedEvent(
-                TUndeploymentNoResourceContainerTest.UNDEPLOY_TIME, TUndeploymentNoResourceContainerTest.SERVICE,
-                TUndeploymentNoResourceContainerTest.CONTEXT, TUndeploymentNoResourceContainerTest.UNDEPLOYMENT_ID);
 
         /** input deployment event */
-        TUndeploymentNoResourceContainerTest.inputServletEvents
-                .add(TUndeploymentNoResourceContainerTest.servletUndeploymentEvent);
-        TUndeploymentNoResourceContainerTest.inputEJBEvents
-                .add(TUndeploymentNoResourceContainerTest.ejbUndeploymentEvent);
+        UndeploymentNoResourceContainerTest.undeployedEvent = ModelLevelData.createPCMUndeployedEvent();
+        UndeploymentNoResourceContainerTest.inputEvents.add(UndeploymentNoResourceContainerTest.undeployedEvent);
 
         /** test correspondent */
-        TUndeploymentNoResourceContainerTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity",
+        UndeploymentNoResourceContainerTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity",
                 "testPcmEntityId", "testPcmOperationName", "testPcmOperationId");
-        TUndeploymentNoResourceContainerTest.optTestCorrespondent = Optional
-                .of(TUndeploymentNoResourceContainerTest.testCorrespondent);
+        UndeploymentNoResourceContainerTest.optTestCorrespondent = Optional
+                .of(UndeploymentNoResourceContainerTest.testCorrespondent);
 
         /** test resourceEnvironment */
-        TUndeploymentNoResourceContainerTest.testResourceEnvironment = ResourceenvironmentFactory.eINSTANCE
+        UndeploymentNoResourceContainerTest.testResourceEnvironment = ResourceenvironmentFactory.eINSTANCE
                 .createResourceEnvironment();
 
         /** optional test resource container with null value */
-        TUndeploymentNoResourceContainerTest.optTestNullResourceContainer = Optional.ofNullable(null);
+        UndeploymentNoResourceContainerTest.optTestNullResourceContainer = Optional.ofNullable(null);
 
     }
 
@@ -148,33 +131,31 @@ public class TUndeploymentNoResourceContainerTest {
         PowerMockito.mockStatic(SystemModelBuilder.class);
 
         /** mocks for model graph provider */
-        TUndeploymentNoResourceContainerTest.mockedSystemModelGraphProvider = Mockito.mock(ModelProvider.class);
-        TUndeploymentNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito
+        UndeploymentNoResourceContainerTest.mockedSystemModelGraphProvider = Mockito.mock(ModelProvider.class);
+        UndeploymentNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito
                 .mock(ModelProvider.class);
-        TUndeploymentNoResourceContainerTest.mockedAllocationModelGraphProvider = Mockito.mock(ModelProvider.class);
+        UndeploymentNoResourceContainerTest.mockedAllocationModelGraphProvider = Mockito.mock(ModelProvider.class);
 
         /** mock for correspondence model */
-        TUndeploymentNoResourceContainerTest.mockedCorrespondence = Mockito.mock(ICorrespondence.class);
+        UndeploymentNoResourceContainerTest.mockedCorrespondence = Mockito.mock(ICorrespondence.class);
 
-        this.tUndeployment = new UndeploymentModelUpdater(TUndeploymentNoResourceContainerTest.mockedCorrespondence,
-                TUndeploymentNoResourceContainerTest.mockedAllocationModelGraphProvider,
-                TUndeploymentNoResourceContainerTest.mockedSystemModelGraphProvider,
-                TUndeploymentNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
+        this.undeploymentUpdater = new UndeploymentModelUpdater(
+                UndeploymentNoResourceContainerTest.mockedAllocationModelGraphProvider,
+                UndeploymentNoResourceContainerTest.mockedSystemModelGraphProvider);
 
         /** get models */
-        Mockito.when(TUndeploymentNoResourceContainerTest.mockedCorrespondence
-                .getCorrespondent(TUndeploymentNoResourceContainerTest.CONTEXT))
-                .thenReturn(TUndeploymentNoResourceContainerTest.optTestCorrespondent);
+        Mockito.when(UndeploymentNoResourceContainerTest.mockedCorrespondence
+                .getCorrespondent(ImplementationLevelData.CONTEXT))
+                .thenReturn(UndeploymentNoResourceContainerTest.optTestCorrespondent);
 
-        Mockito.when(TUndeploymentNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
+        Mockito.when(UndeploymentNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .readOnlyRootComponent(ResourceEnvironment.class))
-                .thenReturn(TUndeploymentNoResourceContainerTest.testResourceEnvironment);
+                .thenReturn(UndeploymentNoResourceContainerTest.testResourceEnvironment);
 
         /** get part of models */
         Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
-                TUndeploymentNoResourceContainerTest.testResourceEnvironment,
-                TUndeploymentNoResourceContainerTest.SERVICE))
-                .thenReturn(TUndeploymentNoResourceContainerTest.optTestNullResourceContainer);
+                UndeploymentNoResourceContainerTest.testResourceEnvironment, ImplementationLevelData.SERVICE))
+                .thenReturn(UndeploymentNoResourceContainerTest.optTestNullResourceContainer);
 
     }
 
@@ -183,27 +164,12 @@ public class TUndeploymentNoResourceContainerTest {
      * exist. A {@link ServletUndeployedEvent} is defined as input.
      */
     @Test
-    public void checkNoServletAllocationNeeded() {
-        final List<IUndeploymentRecord> undeploymentEvents = new ArrayList<>();
+    public void checkNoAllocationNeeded() {
+        final List<PCMUndeployedEvent> undeploymentEvents = new ArrayList<>();
 
-        StageTester.test(this.tUndeployment).and().send(TUndeploymentNoResourceContainerTest.inputServletEvents)
-                .to(this.tUndeployment.getInputPort()).and().receive(undeploymentEvents)
-                .from(this.tUndeployment.getVisualizationOutputPort()).start();
-
-        Assert.assertThat(undeploymentEvents.size(), Is.is(0));
-    }
-
-    /**
-     * Check whether no event is triggered, when the needed {@link ResourceContainer} does not
-     * exist. An {@link EJBUndeployedEvent} is defined as input.
-     */
-    @Test
-    public void checkNoEjbAllocationNeeded() {
-        final List<IUndeploymentRecord> undeploymentEvents = new ArrayList<>();
-
-        StageTester.test(this.tUndeployment).and().send(TUndeploymentNoResourceContainerTest.inputEJBEvents)
-                .to(this.tUndeployment.getInputPort()).and().receive(undeploymentEvents)
-                .from(this.tUndeployment.getVisualizationOutputPort()).start();
+        StageTester.test(this.undeploymentUpdater).and().send(UndeploymentNoResourceContainerTest.inputEvents)
+                .to(this.undeploymentUpdater.getInputPort()).and().receive(undeploymentEvents)
+                .from(this.undeploymentUpdater.getOutputPort()).start();
 
         Assert.assertThat(undeploymentEvents.size(), Is.is(0));
     }

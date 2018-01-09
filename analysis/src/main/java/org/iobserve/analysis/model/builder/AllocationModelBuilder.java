@@ -58,26 +58,24 @@ public final class AllocationModelBuilder {
     }
 
     /**
-     * Create an {@link AllocationContext} for the given {@link ResourceContainer} and
-     * {@link AssemblyContext} if they are absent to this model. Check is done via
+     * Test whether an {@link AllocationContext} for the given {@link ResourceContainer} and
+     * {@link AssemblyContext} is present this model. Check is done via
      * {@link ResourceContainer#getEntityName()} and {@link AssemblyContext#getEntityName()}.
      *
-     * @param model
+     * @param allocationModel
      *            the allocation model
-     * @param resContainer
+     * @param resourceContainer
      *            container
-     * @param asmCtx
+     * @param assemblyContext
      *            assembly context.
      */
-    public static void addAllocationContextIfAbsent(final Allocation model, final ResourceContainer resContainer,
-            final AssemblyContext asmCtx) {
-        if (!model.getAllocationContexts_Allocation().stream().filter(
-                context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(asmCtx.getEntityName())
+    public static boolean isAllocationPresent(final Allocation allocationModel, final ResourceContainer resourceContainer,
+            final AssemblyContext assemblyContext) {
+        return allocationModel.getAllocationContexts_Allocation().stream().filter(
+                context -> context.getAssemblyContext_AllocationContext().getEntityName().equals(assemblyContext.getEntityName())
                         && context.getResourceContainer_AllocationContext().getEntityName()
-                                .equals(resContainer.getEntityName()))
-                .findAny().isPresent()) {
-            AllocationModelBuilder.addAllocationContext(model, resContainer, asmCtx);
-        }
+                                .equals(resourceContainer.getEntityName()))
+                .findAny().isPresent();
     }
 
     /**
@@ -100,30 +98,6 @@ public final class AllocationModelBuilder {
                         && context.getResourceContainer_AllocationContext().getEntityName()
                                 .equals(resContainer.getEntityName()))
                 .findFirst().ifPresent(ctx -> model.getAllocationContexts_Allocation().remove(ctx));
-    }
-
-    /**
-     * add an allocation context.
-     *
-     * @param model
-     *            allocation model
-     * @param type
-     *            type to be added
-     */
-    public static void addAllocationContext(final Allocation model, final Class<?> type) {
-        // TODO add an allocation
-    }
-
-    /**
-     * remove an allocation context.
-     *
-     * @param model
-     *            allocation model
-     * @param type
-     *            type to be removed
-     */
-    public static void removeAllocationContext(final Allocation model, final Class<?> type) {
-        // TODO remove allocation context
     }
 
 }

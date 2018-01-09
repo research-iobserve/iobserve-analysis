@@ -18,16 +18,19 @@ package org.iobserve.common.record
 /**
  * Marker interfaces for allocation and deallocation.	 
  */
-template IAllocationRecord 
-template IDeallocationRecord
+@author "Reiner Jung" @since "0.0.2"
+template IAllocationEvent 
+template IDeallocationEvent
 
 /**	 
  * Event records for PaaS allocation deallocation.
  */
+@author "Reiner Jung" @since "0.0.2"
 abstract entity ContainerEvent {
 	string url
 }
 
-entity ContainerAllocationEvent extends ContainerEvent : IAllocationRecord
-entity ContainerDeallocationEvent extends ContainerEvent : IDeallocationRecord
-
+@author "Reiner Jung" @since "0.0.2"
+entity ContainerAllocationEvent extends ContainerEvent : IAllocationEvent
+@author "Reiner Jung" @since "0.0.2"
+entity ContainerDeallocationEvent extends ContainerEvent : IDeallocationEvent

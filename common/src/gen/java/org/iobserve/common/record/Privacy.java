@@ -19,7 +19,7 @@ package org.iobserve.common.record;
 /**
  * @author Generic Kieker
  * 
- * @since 1.10
+ * @since 1.13
  */
 public interface Privacy extends GeoLocation {
 }

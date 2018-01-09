@@ -18,9 +18,9 @@ package org.iobserve.common.record;
 import kieker.common.record.IMonitoringRecord;
 
 /**
- * @author Generic Kieker
+ * @author Reiner Jung
  * 
- * @since 1.10
+ * @since 0.0.2
  */
 public interface IDeploymentChange extends IMonitoringRecord {
 }

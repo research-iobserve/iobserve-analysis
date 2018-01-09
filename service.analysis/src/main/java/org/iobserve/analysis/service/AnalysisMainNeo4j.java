@@ -18,6 +18,18 @@ package org.iobserve.analysis.service;
 import java.io.File;
 import java.io.IOException;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
+
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
+
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
@@ -31,23 +43,11 @@ import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.converters.FileConverter;
-import com.beust.jcommander.converters.IntegerConverter;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
 
 /**
  * Main class for starting the iObserve application. This class is mainly meant as an example of the
@@ -259,7 +259,6 @@ public final class AnalysisMainNeo4j {
                 AnalysisMainNeo4j.LOG.info("Analysis start");
                 analysis.executeBlocking();
                 AnalysisMainNeo4j.LOG.info("Anaylsis complete");
-                ExecutionTimeLogger.getInstance().exportAsCsv();
             }
         }
     }
