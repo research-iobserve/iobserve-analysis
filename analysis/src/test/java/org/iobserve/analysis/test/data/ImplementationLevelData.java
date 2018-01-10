@@ -29,7 +29,7 @@ public class ImplementationLevelData {
     public static final String CONTEXT = "/path/test";
     public static final String DEPLOYMENT_ID = "service-01";
 
-    private static final String URL = "http://" + ImplementationLevelData.SERVICE + '/'
+    public static final String URL = "http://" + ImplementationLevelData.SERVICE + '/'
             + ImplementationLevelData.CONTEXT;
 
     public ServletDeployedEvent createServletDeployedEvent() {

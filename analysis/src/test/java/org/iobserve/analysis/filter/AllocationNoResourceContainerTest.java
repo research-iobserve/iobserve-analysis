@@ -25,6 +25,8 @@ import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.test.data.ImplementationLevelData;
+import org.iobserve.analysis.test.data.ResourceEnvironmentData;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.junit.Assert;
@@ -43,7 +45,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 /**
  * Tests for {@link TAllocation} filter, in case the {@link ResourceContainer} does not exist yet.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 @RunWith(PowerMockRunner.class)
@@ -52,7 +54,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class AllocationNoResourceContainerTest {
 
     /** stage under test. */
-    private AllocationStage tAllocation;
+    private AllocationStage allocationStage;
 
     /** mocks. */
     private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
@@ -62,12 +64,6 @@ public class AllocationNoResourceContainerTest {
 
     /** input events. */
     private static List<IAllocationEvent> inputEvents = new ArrayList<>();
-
-    /** data for generating test container allocation event. */
-    private static final String SERVICE = "test-service";
-    private static final String CONTEXT = "/path/test";
-    private static final String URL = "http://" + AllocationNoResourceContainerTest.SERVICE + '/'
-            + AllocationNoResourceContainerTest.CONTEXT;
 
     /** test resource containers. */
     private static Optional<ResourceContainer> optTestNullResourceContainer;
@@ -82,19 +78,16 @@ public class AllocationNoResourceContainerTest {
     public static void setup() {
 
         /** test event */
-        AllocationNoResourceContainerTest.allocationEvent = new ContainerAllocationEvent(
-                AllocationNoResourceContainerTest.URL);
+        AllocationNoResourceContainerTest.allocationEvent = new ContainerAllocationEvent(ImplementationLevelData.URL);
 
         /** input allocation event */
         AllocationNoResourceContainerTest.inputEvents.add(AllocationNoResourceContainerTest.allocationEvent);
 
         /** optional test resource container without value */
         AllocationNoResourceContainerTest.optTestNullResourceContainer = Optional.ofNullable(null);
-        // /** test resource container with value */
-        AllocationNoResourceContainerTest.testResourceContainer = ResourceenvironmentFactory.eINSTANCE
-                .createResourceContainer();
-        AllocationNoResourceContainerTest.testResourceContainer.setEntityName("TestResourceContainer");
-        AllocationNoResourceContainerTest.testResourceContainer.setId("_resourcecontainer_test_id");
+
+        AllocationNoResourceContainerTest.testResourceContainer = ResourceEnvironmentData.createResourceContainer()
+                .get();
 
         /** test resource environment */
         AllocationNoResourceContainerTest.testResourceEnvironment = ResourceenvironmentFactory.eINSTANCE
@@ -117,7 +110,7 @@ public class AllocationNoResourceContainerTest {
         AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito
                 .mock(ModelProvider.class);
 
-        this.tAllocation = new AllocationStage(
+        this.allocationStage = new AllocationStage(
                 AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider);
 
         Mockito.when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
@@ -125,11 +118,11 @@ public class AllocationNoResourceContainerTest {
                 .thenReturn(AllocationNoResourceContainerTest.testResourceEnvironment);
 
         Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
-                AllocationNoResourceContainerTest.testResourceEnvironment, AllocationNoResourceContainerTest.SERVICE))
+                AllocationNoResourceContainerTest.testResourceEnvironment, ImplementationLevelData.SERVICE))
                 .thenReturn(AllocationNoResourceContainerTest.optTestNullResourceContainer);
 
         Mockito.when(ResourceEnvironmentModelBuilder.createResourceContainer(
-                AllocationNoResourceContainerTest.testResourceEnvironment, AllocationNoResourceContainerTest.SERVICE))
+                AllocationNoResourceContainerTest.testResourceEnvironment, ImplementationLevelData.SERVICE))
                 .thenReturn(AllocationNoResourceContainerTest.testResourceContainer);
 
         Mockito.doNothing().when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider)
@@ -145,9 +138,9 @@ public class AllocationNoResourceContainerTest {
 
         final List<ResourceContainer> allocationFinishedEvents = new ArrayList<>();
 
-        StageTester.test(this.tAllocation).and().send(AllocationNoResourceContainerTest.inputEvents)
-                .to(this.tAllocation.getInputPort()).and().receive(allocationFinishedEvents)
-                .from(this.tAllocation.getAllocationNotifyOutputPort()).start();
+        StageTester.test(this.allocationStage).and().send(AllocationNoResourceContainerTest.inputEvents)
+                .to(this.allocationStage.getInputPort()).and().receive(allocationFinishedEvents)
+                .from(this.allocationStage.getAllocationNotifyOutputPort()).start();
 
         Assert.assertThat(allocationFinishedEvents.get(0), Is.is(AllocationNoResourceContainerTest.allocationEvent));
     }
@@ -161,9 +154,9 @@ public class AllocationNoResourceContainerTest {
 
         final List<IAllocationEvent> allocationEvents = new ArrayList<>();
 
-        StageTester.test(this.tAllocation).and().send(AllocationNoResourceContainerTest.inputEvents)
-                .to(this.tAllocation.getInputPort()).and().receive(allocationEvents)
-                .from(this.tAllocation.getAllocationOutputPort()).start();
+        StageTester.test(this.allocationStage).and().send(AllocationNoResourceContainerTest.inputEvents)
+                .to(this.allocationStage.getInputPort()).and().receive(allocationEvents)
+                .from(this.allocationStage.getAllocationOutputPort()).start();
 
         Assert.assertThat(allocationEvents.get(0), Is.is(AllocationNoResourceContainerTest.allocationEvent));
 

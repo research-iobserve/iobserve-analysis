@@ -196,6 +196,33 @@ public class EntryLevelBeforeOperationEvent extends BeforeOperationEvent impleme
 	}
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} instead.
+	 */
+	@Override
+	@Deprecated
+	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
+		buffer.putLong(this.getTimestamp());
+		buffer.putLong(this.getTraceId());
+		buffer.putInt(this.getOrderIndex());
+		buffer.putInt(stringRegistry.get(this.getOperationSignature()));
+		buffer.putInt(stringRegistry.get(this.getClassSignature()));
+		// store array sizes
+		int _parameters_size0 = this.getParameters().length;
+		buffer.putInt(_parameters_size0);
+		for (int i0=0;i0<_parameters_size0;i0++)
+			buffer.putInt(stringRegistry.get(this.getParameters()[i0]));
+		
+		// store array sizes
+		int _values_size0 = this.getValues().length;
+		buffer.putInt(_values_size0);
+		for (int i0=0;i0<_values_size0;i0++)
+			buffer.putInt(stringRegistry.get(this.getValues()[i0]));
+		
+		buffer.putInt(this.getRequestType());
+	}
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {

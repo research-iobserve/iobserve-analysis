@@ -118,6 +118,16 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	}
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} instead.
+	 */
+	@Override
+	@Deprecated
+	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
+		buffer.putInt(stringRegistry.get(this.getUrl()));
+	}
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {

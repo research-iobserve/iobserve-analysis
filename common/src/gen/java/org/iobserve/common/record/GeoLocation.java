@@ -18,11 +18,11 @@ package org.iobserve.common.record;
 import kieker.common.record.IMonitoringRecord;
 
 /**
- * @author Reiner Jung
+ * @author Generic Kieker
  * 
- * @since 0.0.2
+ * @since 1.13
  */
 public interface GeoLocation extends IMonitoringRecord {
-	public short getCountryCode() ;
+	public short getCountryCode();
 	
 }

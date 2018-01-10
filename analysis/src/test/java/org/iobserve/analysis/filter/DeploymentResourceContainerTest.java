@@ -80,7 +80,7 @@ public class DeploymentResourceContainerTest {
     private static ICorrespondence mockedCorrespondence;
 
     /** test events. */
-    private static PCMDeployedEvent deploymentEvent = ModelLevelData.createPCMDeployedEvent();
+    private static PCMDeployedEvent deploymentEvent;
 
     /** input events. */
     private static List<PCMDeployedEvent> inputEvents = new ArrayList<>();
@@ -122,6 +122,7 @@ public class DeploymentResourceContainerTest {
         DeploymentResourceContainerTest.mockedCorrespondence = Mockito.mock(ICorrespondence.class);
 
         /** input deployment event */
+        DeploymentResourceContainerTest.deploymentEvent = ModelLevelData.createPCMDeployedEvent();
         DeploymentResourceContainerTest.inputEvents.add(DeploymentResourceContainerTest.deploymentEvent);
 
         /** test correspondent */

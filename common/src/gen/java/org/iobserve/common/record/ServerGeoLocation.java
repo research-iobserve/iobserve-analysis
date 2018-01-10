@@ -25,10 +25,10 @@ import kieker.common.util.registry.IRegistry;
 import org.iobserve.common.record.GeoLocation;
 
 /**
- * @author Reiner Jung
+ * @author Generic Kieker
  * API compatibility: Kieker 1.13.0
  * 
- * @since 0.0.2
+ * @since 1.13
  */
 public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	private static final long serialVersionUID = -9109740651531232541L;
@@ -154,6 +154,19 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
 		stringRegistry.get(this.getHostname());
 		stringRegistry.get(this.getAddress());
+	}
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} instead.
+	 */
+	@Override
+	@Deprecated
+	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
+		buffer.putLong(this.getTimestamp());
+		buffer.putShort(this.getCountryCode());
+		buffer.putInt(stringRegistry.get(this.getHostname()));
+		buffer.putInt(stringRegistry.get(this.getAddress()));
 	}
 	/**
 	 * {@inheritDoc}

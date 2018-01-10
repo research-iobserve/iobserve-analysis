@@ -18,13 +18,13 @@ package org.iobserve.common.record;
 import kieker.common.record.IMonitoringRecord;
 
 /**
- * @author Reiner Jung
+ * @author Generic Kieker
  * 
- * @since 0.0.2
+ * @since 1.13
  */
 public interface ISessionEvent extends IMonitoringRecord {
-	public String getHostname() ;
+	public String getHostname();
 	
-	public String getSessionId() ;
+	public String getSessionId();
 	
 }

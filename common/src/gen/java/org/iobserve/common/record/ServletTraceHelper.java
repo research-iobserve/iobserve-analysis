@@ -161,6 +161,19 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	}
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} instead.
+	 */
+	@Override
+	@Deprecated
+	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
+		buffer.putLong(this.getTraceId());
+		buffer.putInt(stringRegistry.get(this.getHost()));
+		buffer.putInt(this.getPort());
+		buffer.putInt(stringRegistry.get(this.getRequestURI()));
+	}
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {

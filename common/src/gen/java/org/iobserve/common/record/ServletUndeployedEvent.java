@@ -138,6 +138,19 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 	}
 	/**
 	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} instead.
+	 */
+	@Override
+	@Deprecated
+	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
+		buffer.putLong(this.getTimestamp());
+		buffer.putInt(stringRegistry.get(this.getService()));
+		buffer.putInt(stringRegistry.get(this.getContext()));
+		buffer.putInt(stringRegistry.get(this.getDeploymentId()));
+	}
+	/**
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void serialize(final IValueSerializer serializer) throws BufferOverflowException {

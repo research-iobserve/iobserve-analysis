@@ -25,10 +25,10 @@ import kieker.common.util.registry.IRegistry;
 import org.iobserve.common.record.ISessionEvent;
 
 /**
- * @author Reiner Jung
+ * @author Generic Kieker
  * API compatibility: Kieker 1.13.0
  * 
- * @since 0.0.2
+ * @since 1.13
  */
 public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	private static final long serialVersionUID = -3984952055142342793L;
@@ -142,6 +142,18 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
 		stringRegistry.get(this.getHostname());
 		stringRegistry.get(this.getSessionId());
+	}
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} instead.
+	 */
+	@Override
+	@Deprecated
+	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
+		buffer.putLong(this.getTimestamp());
+		buffer.putInt(stringRegistry.get(this.getHostname()));
+		buffer.putInt(stringRegistry.get(this.getSessionId()));
 	}
 	/**
 	 * {@inheritDoc}

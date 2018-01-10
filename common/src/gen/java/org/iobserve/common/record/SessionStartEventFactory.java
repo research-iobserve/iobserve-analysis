@@ -20,9 +20,9 @@ import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
 /**
- * @author Reiner Jung
+ * @author Generic Kieker
  * 
- * @since 0.0.2
+ * @since 1.13
  */
 public final class SessionStartEventFactory implements IRecordFactory<SessionStartEvent> {
 	
