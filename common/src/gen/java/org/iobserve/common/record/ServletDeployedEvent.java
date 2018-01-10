@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://www.iobserve-devops.net)
+ * Copyright 2017 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -135,19 +135,6 @@ public class ServletDeployedEvent extends ServletDescriptor implements IDeployed
 		stringRegistry.get(this.getService());
 		stringRegistry.get(this.getContext());
 		stringRegistry.get(this.getDeploymentId());
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} instead.
-	 */
-	@Override
-	@Deprecated
-	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
-		buffer.putLong(this.getTimestamp());
-		buffer.putInt(stringRegistry.get(this.getService()));
-		buffer.putInt(stringRegistry.get(this.getContext()));
-		buffer.putInt(stringRegistry.get(this.getDeploymentId()));
 	}
 	/**
 	 * {@inheritDoc}

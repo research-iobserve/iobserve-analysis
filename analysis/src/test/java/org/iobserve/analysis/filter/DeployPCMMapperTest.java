@@ -21,17 +21,14 @@ import java.util.Optional;
 
 import teetime.framework.test.StageTester;
 
-import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.DeployPCMMapper;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.test.data.CorrespondenceModelData;
 import org.iobserve.analysis.test.data.ImplementationLevelData;
-import org.iobserve.common.record.EJBDeployedEvent;
+import org.iobserve.analysis.test.data.ModelLevelData;
 import org.iobserve.common.record.IDeployedEvent;
-import org.iobserve.common.record.ServletDeployedEvent;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -55,8 +52,6 @@ public class DeployPCMMapperTest {
 
     @Mock
     private static ICorrespondence mockedCorrespondence;
-    private static Correspondent testCorrespondent = CorrespondenceModelData.createCorrespondent();
-    private static Optional<Correspondent> optTestCorrespondent;
 
     private static List<IDeployedEvent> inputEvents = new ArrayList<>();
 
@@ -66,17 +61,15 @@ public class DeployPCMMapperTest {
      * @throws java.lang.Exception
      */
     @BeforeClass
-    public void setUp() throws Exception {
+    public static void setUp() throws Exception {
         /** mock for correspondence model */
         DeployPCMMapperTest.mockedCorrespondence = Mockito.mock(ICorrespondence.class);
-        DeployPCMMapperTest.optTestCorrespondent = Optional.of(DeployPCMMapperTest.testCorrespondent);
 
-        DeployPCMMapperTest.inputEvents
-                .add(new ServletDeployedEvent(ImplementationLevelData.DEPLOY_TIME, ImplementationLevelData.SERVICE,
-                        ImplementationLevelData.CONTEXT, ImplementationLevelData.DEPLOYMENT_ID));
-        DeployPCMMapperTest.inputEvents
-                .add(new EJBDeployedEvent(ImplementationLevelData.DEPLOY_TIME, ImplementationLevelData.SERVICE,
-                        ImplementationLevelData.CONTEXT, ImplementationLevelData.DEPLOYMENT_ID));
+        DeployPCMMapperTest.inputEvents.add(ImplementationLevelData.SERVLET_DEPLOYED_EVENT);
+        DeployPCMMapperTest.inputEvents.add(ImplementationLevelData.EJB_DEPLOYED_EVENT);
+
+        DeployPCMMapperTest.pcmDeployedEvents.add(ModelLevelData.PCM_DEPLOYED_EVENT);
+        DeployPCMMapperTest.pcmDeployedEvents.add(ModelLevelData.PCM_DEPLOYED_EVENT);
     }
 
     /**
@@ -86,7 +79,7 @@ public class DeployPCMMapperTest {
     @Before
     public void stubMocksNoServletResourceContainer() {
         Mockito.when(DeployPCMMapperTest.mockedCorrespondence.getCorrespondent(ImplementationLevelData.CONTEXT))
-                .thenReturn(DeployPCMMapperTest.optTestCorrespondent);
+                .thenReturn(Optional.of(CorrespondenceModelData.CORRESPONDENT));
     }
 
     /**
@@ -102,7 +95,10 @@ public class DeployPCMMapperTest {
         StageTester.test(mapper).and().send(DeployPCMMapperTest.inputEvents).to(mapper.getInputPort()).and()
                 .receive(deploymentEvents).from(mapper.getOutputPort()).start();
 
-        Assert.assertThat(deploymentEvents.get(0), Is.is(DeployPCMMapperTest.pcmDeployedEvents));
+        Assert.assertEquals("Number of events differ.", deploymentEvents.size(),
+                DeployPCMMapperTest.pcmDeployedEvents.size());
+        Assert.assertEquals("Different events.", deploymentEvents.get(0).getService(),
+                ModelLevelData.PCM_DEPLOYED_EVENT.getService());
     }
 
 }

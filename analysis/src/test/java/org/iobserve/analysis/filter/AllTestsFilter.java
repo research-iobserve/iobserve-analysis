@@ -27,8 +27,8 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({ AllocationNoResourceContainerTest.class, AllocationResourceContainerTest.class,
-        DeploymentNoResourceContainerTest.class, DeploymentResourceContainerTest.class,
-        UndeploymentNoResourceContainerTest.class, UndeploymentResourceContainerTest.class })
+        DeployPCMMapperTest.class, DeploymentResourceContainerTest.class, UndeploymentNoResourceContainerTest.class,
+        UndeploymentResourceContainerTest.class })
 public class AllTestsFilter {
 
 }

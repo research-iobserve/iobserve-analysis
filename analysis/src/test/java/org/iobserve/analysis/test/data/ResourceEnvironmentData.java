@@ -15,9 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.test.data;
 
-import java.util.Optional;
-
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
 /**
@@ -29,13 +28,20 @@ public class ResourceEnvironmentData {
     public static final String RESOURCE_CONTAINER_NAME = "TestResourceContainer";
     public static final String RESOURCE_CONAINTER_ID = "_resourcecontainer_test_id";
 
-    public static Optional<ResourceContainer> createResourceContainer() {
+    public static final ResourceContainer RESOURCE_CONTAINER = ResourceEnvironmentData.createResourceContainer();
+    public static final ResourceEnvironment RESOURCE_ENVIRONMENT = ResourceEnvironmentData.createResourceEnvironment();
+
+    private static ResourceContainer createResourceContainer() {
         /** optional test resource container with value */
         final ResourceContainer container = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
 
         container.setEntityName(ResourceEnvironmentData.RESOURCE_CONTAINER_NAME);
         container.setId(ResourceEnvironmentData.RESOURCE_CONAINTER_ID);
 
-        return Optional.of(container);
+        return container;
+    }
+
+    private static ResourceEnvironment createResourceEnvironment() {
+        return ResourceenvironmentFactory.eINSTANCE.createResourceEnvironment();
     }
 }

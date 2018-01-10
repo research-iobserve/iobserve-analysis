@@ -32,17 +32,23 @@ public class ImplementationLevelData {
     public static final String URL = "http://" + ImplementationLevelData.SERVICE + '/'
             + ImplementationLevelData.CONTEXT;
 
-    public ServletDeployedEvent createServletDeployedEvent() {
+    public static final ServletDeployedEvent SERVLET_DEPLOYED_EVENT = ImplementationLevelData
+            .createServletDeployedEvent();
+    public static final EJBDeployedEvent EJB_DEPLOYED_EVENT = ImplementationLevelData.createEJBDeployedEvent();
+    public static final ContainerAllocationEvent CONTAINER_ALLOCATION_EVENT = ImplementationLevelData
+            .createContainerAllocationEvent();
+
+    private static ServletDeployedEvent createServletDeployedEvent() {
         return new ServletDeployedEvent(ImplementationLevelData.DEPLOY_TIME, ImplementationLevelData.SERVICE,
                 ImplementationLevelData.CONTEXT, ImplementationLevelData.DEPLOYMENT_ID);
     }
 
-    public EJBDeployedEvent createEJBDeployedEvent() {
+    private static EJBDeployedEvent createEJBDeployedEvent() {
         return new EJBDeployedEvent(ImplementationLevelData.DEPLOY_TIME, ImplementationLevelData.SERVICE,
                 ImplementationLevelData.CONTEXT, ImplementationLevelData.DEPLOYMENT_ID);
     }
 
-    public ContainerAllocationEvent createContainerAllocationEvent() {
+    private static ContainerAllocationEvent createContainerAllocationEvent() {
         return new ContainerAllocationEvent(ImplementationLevelData.URL);
     }
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2017 Kieker Project (http://kieker-monitoring.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,32 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.common.record;
+package org.iobserve.analysis.test.data;
 
-
-import kieker.common.record.factory.IRecordFactory;
-import kieker.common.record.io.IValueDeserializer;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationFactory;
 
 /**
  * @author Reiner Jung
- * 
- * @since 0.0.2
+ *
  */
-public final class ContainerAllocationEventFactory implements IRecordFactory<ContainerAllocationEvent> {
-	
-	
-	@Override
-	public ContainerAllocationEvent create(final IValueDeserializer deserializer) {
-		return new ContainerAllocationEvent(deserializer);
-	}
-	
-	@Override
-	@Deprecated
-	public ContainerAllocationEvent create(final Object[] values) {
-		return new ContainerAllocationEvent(values);
-	}
-	
-	public int getRecordSizeInBytes() {
-		return ContainerAllocationEvent.SIZE;
-	}
+public class AllocationData {
+    public static final Allocation ALLOCATION = AllocationData.createAllocation();
+
+    private static Allocation createAllocation() {
+        return AllocationFactory.eINSTANCE.createAllocation();
+    }
 }

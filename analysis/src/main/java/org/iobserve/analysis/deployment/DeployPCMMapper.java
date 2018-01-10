@@ -70,6 +70,7 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
 
         final Correspondent correspondent = this.correspondence.getCorrespondent(context).get();
         if (correspondent != null) {
+
             if (event instanceof Privacy_EJBDeployedEvent) {
                 this.outputPort.send(new PCMDeployedEvent(service, correspondent, url,
                         ((Privacy_EJBDeployedEvent) event).getCountryCode()));
@@ -77,7 +78,7 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
                 this.outputPort.send(new PCMDeployedEvent(service, correspondent, url, (short) 0));
             }
         } else {
-            DeployPCMMapper.LOGGER.info("No correspondent found for " + service + ".");
+            DeployPCMMapper.LOGGER.warn("No correspondent found for " + service + ".");
         }
     }
 

@@ -37,15 +37,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
- * Tests for {@link TAllocation} filter, in case the {@link ResourceContainer} does not exist yet.
+ * Tests for {@link AllocationStage} filter, in case the {@link ResourceContainer} does not exist
+ * yet.
  *
  * @author Josefine Wegert
+ * @author Reiner Jung
  *
  */
 @RunWith(PowerMockRunner.class)
@@ -59,40 +60,16 @@ public class AllocationNoResourceContainerTest {
     /** mocks. */
     private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
 
-    /** test event. */
-    private static ContainerAllocationEvent allocationEvent;
-
-    /** input events. */
-    private static List<IAllocationEvent> inputEvents = new ArrayList<>();
-
     /** test resource containers. */
     private static Optional<ResourceContainer> optTestNullResourceContainer;
-    private static ResourceContainer testResourceContainer;
-
-    private static ResourceEnvironment testResourceEnvironment;
 
     /**
      * Initialize test data.
      */
     @BeforeClass
     public static void setup() {
-
-        /** test event */
-        AllocationNoResourceContainerTest.allocationEvent = new ContainerAllocationEvent(ImplementationLevelData.URL);
-
-        /** input allocation event */
-        AllocationNoResourceContainerTest.inputEvents.add(AllocationNoResourceContainerTest.allocationEvent);
-
         /** optional test resource container without value */
         AllocationNoResourceContainerTest.optTestNullResourceContainer = Optional.ofNullable(null);
-
-        AllocationNoResourceContainerTest.testResourceContainer = ResourceEnvironmentData.createResourceContainer()
-                .get();
-
-        /** test resource environment */
-        AllocationNoResourceContainerTest.testResourceEnvironment = ResourceenvironmentFactory.eINSTANCE
-                .createResourceEnvironment();
-
     }
 
     /**
@@ -115,18 +92,18 @@ public class AllocationNoResourceContainerTest {
 
         Mockito.when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .readOnlyRootComponent(ResourceEnvironment.class))
-                .thenReturn(AllocationNoResourceContainerTest.testResourceEnvironment);
+                .thenReturn(ResourceEnvironmentData.RESOURCE_ENVIRONMENT);
 
         Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
-                AllocationNoResourceContainerTest.testResourceEnvironment, ImplementationLevelData.SERVICE))
+                ResourceEnvironmentData.RESOURCE_ENVIRONMENT, ImplementationLevelData.SERVICE))
                 .thenReturn(AllocationNoResourceContainerTest.optTestNullResourceContainer);
 
-        Mockito.when(ResourceEnvironmentModelBuilder.createResourceContainer(
-                AllocationNoResourceContainerTest.testResourceEnvironment, ImplementationLevelData.SERVICE))
-                .thenReturn(AllocationNoResourceContainerTest.testResourceContainer);
+        Mockito.when(ResourceEnvironmentModelBuilder
+                .createResourceContainer(ResourceEnvironmentData.RESOURCE_ENVIRONMENT, ImplementationLevelData.SERVICE))
+                .thenReturn(ResourceEnvironmentData.RESOURCE_CONTAINER);
 
         Mockito.doNothing().when(AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider)
-                .updateComponent(ResourceEnvironment.class, AllocationNoResourceContainerTest.testResourceEnvironment);
+                .updateComponent(ResourceEnvironment.class, ResourceEnvironmentData.RESOURCE_ENVIRONMENT);
     }
 
     /**
@@ -135,31 +112,21 @@ public class AllocationNoResourceContainerTest {
      */
     @Test
     public void checkAllocationFinished() {
+        final List<IAllocationEvent> inputEvents = new ArrayList<>();
+        inputEvents.add(ImplementationLevelData.CONTAINER_ALLOCATION_EVENT);
 
         final List<ResourceContainer> allocationFinishedEvents = new ArrayList<>();
-
-        StageTester.test(this.allocationStage).and().send(AllocationNoResourceContainerTest.inputEvents)
-                .to(this.allocationStage.getInputPort()).and().receive(allocationFinishedEvents)
-                .from(this.allocationStage.getAllocationNotifyOutputPort()).start();
-
-        Assert.assertThat(allocationFinishedEvents.get(0), Is.is(AllocationNoResourceContainerTest.allocationEvent));
-    }
-
-    /**
-     * Check whether the {@link ContainerAllocationEvent} is forwarded to the next stage after the
-     * {@link ResourceEnvironment} is updated.
-     */
-    @Test
-    public void checkAllocationUpdate() {
-
         final List<IAllocationEvent> allocationEvents = new ArrayList<>();
 
-        StageTester.test(this.allocationStage).and().send(AllocationNoResourceContainerTest.inputEvents)
-                .to(this.allocationStage.getInputPort()).and().receive(allocationEvents)
-                .from(this.allocationStage.getAllocationOutputPort()).start();
+        StageTester.test(this.allocationStage).and().send(inputEvents).to(this.allocationStage.getInputPort()).and()
+                .receive(allocationFinishedEvents).from(this.allocationStage.getAllocationNotifyOutputPort()).and()
+                .receive(allocationEvents).from(this.allocationStage.getAllocationOutputPort()).start();
 
-        Assert.assertThat(allocationEvents.get(0), Is.is(AllocationNoResourceContainerTest.allocationEvent));
+        Assert.assertEquals("Wrong number of ResourceContainers relayed", 1, allocationFinishedEvents.size());
+        Assert.assertEquals("Wrong number of create operations", 1, allocationEvents.size());
 
+        Assert.assertThat(allocationFinishedEvents.get(0), Is.is(ResourceEnvironmentData.RESOURCE_CONTAINER));
+        Assert.assertThat(allocationEvents.get(0), Is.is(ImplementationLevelData.CONTAINER_ALLOCATION_EVENT));
     }
 
 }

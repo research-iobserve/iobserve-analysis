@@ -18,6 +18,7 @@ package org.iobserve.analysis.deployment;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Optional;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -86,25 +87,28 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
         final URL url = new URL(event.toArray()[0].toString());
         final String hostName = url.getHost();
 
-        final ResourceContainer resourceContainer = ResourceEnvironmentModelBuilder.getResourceContainerByName(
-                this.resourceEnvironmentModelGraphProvider.readOnlyRootComponent(ResourceEnvironment.class), hostName)
-                .get();
+        final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelBuilder
+                .getResourceContainerByName(
+                        this.resourceEnvironmentModelGraphProvider.readOnlyRootComponent(ResourceEnvironment.class),
+                        hostName);
 
-        if (resourceContainer == null) {
+        if (!resourceContainer.isPresent()) {
             /** new provider: update the resource environment graph. */
             final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelGraphProvider
                     .readOnlyRootComponent(ResourceEnvironment.class);
-            ResourceEnvironmentModelBuilder.createResourceContainer(resourceEnvironmentModelGraph, hostName);
+            final ResourceContainer newResourceContainer = ResourceEnvironmentModelBuilder
+                    .createResourceContainer(resourceEnvironmentModelGraph, hostName);
+            resourceEnvironmentModelGraph.getResourceContainer_ResourceEnvironment().add(newResourceContainer);
             this.resourceEnvironmentModelGraphProvider.updateComponent(ResourceEnvironment.class,
                     resourceEnvironmentModelGraph);
 
             /** signal allocation update. */
-            this.allocationNotifyOutputPort.send(resourceContainer);
+            this.allocationNotifyOutputPort.send(newResourceContainer);
             this.allocationOutputPort.send(event);
         } else {
             /** error allocation already happened. */
             this.logger.debug("ResourceContainer %s was available." + hostName);
-            final List<ProcessingResourceSpecification> procResSpec = resourceContainer
+            final List<ProcessingResourceSpecification> procResSpec = resourceContainer.get()
                     .getActiveResourceSpecifications_ResourceContainer();
             for (int i = 0; i < procResSpec.size(); i++) {
                 final String nodeGroupName = procResSpec.get(i).getActiveResourceType_ActiveResourceSpecification()
@@ -113,7 +117,7 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
             }
 
             /** Notify with existing container. */
-            this.allocationNotifyOutputPort.send(resourceContainer);
+            this.allocationNotifyOutputPort.send(resourceContainer.get());
         }
     }
 

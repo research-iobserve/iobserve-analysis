@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://www.iobserve-devops.net)
+ * Copyright 2017 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -193,33 +193,6 @@ public class EntryLevelBeforeOperationEvent extends BeforeOperationEvent impleme
 		int _values_size0 = this.getValues().length;
 		for (int i0=0;i0<_values_size0;i0++)
 			stringRegistry.get(this.getValues()[i0]);
-	}
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} instead.
-	 */
-	@Override
-	@Deprecated
-	public void writeBytes(final ByteBuffer buffer, final IRegistry<String> stringRegistry) throws BufferOverflowException {
-		buffer.putLong(this.getTimestamp());
-		buffer.putLong(this.getTraceId());
-		buffer.putInt(this.getOrderIndex());
-		buffer.putInt(stringRegistry.get(this.getOperationSignature()));
-		buffer.putInt(stringRegistry.get(this.getClassSignature()));
-		// store array sizes
-		int _parameters_size0 = this.getParameters().length;
-		buffer.putInt(_parameters_size0);
-		for (int i0=0;i0<_parameters_size0;i0++)
-			buffer.putInt(stringRegistry.get(this.getParameters()[i0]));
-		
-		// store array sizes
-		int _values_size0 = this.getValues().length;
-		buffer.putInt(_values_size0);
-		for (int i0=0;i0<_values_size0;i0++)
-			buffer.putInt(stringRegistry.get(this.getValues()[i0]));
-		
-		buffer.putInt(this.getRequestType());
 	}
 	/**
 	 * {@inheritDoc}

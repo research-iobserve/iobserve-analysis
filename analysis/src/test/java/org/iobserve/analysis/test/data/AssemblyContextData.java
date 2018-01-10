@@ -15,25 +15,23 @@
  ***************************************************************************/
 package org.iobserve.analysis.test.data;
 
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 
 /**
  * @author Reiner Jung
  *
  */
-public class CorrespondenceModelData {
+public class AssemblyContextData {
+    public static final String ASSEMBLY_CONTEXT_NAME = CorrespondenceModelData.PCM_ENTITY_NAME + "_"
+            + ImplementationLevelData.SERVICE;
+    public static final AssemblyContext ASSEMBLY_CONTEXT = AssemblyContextData.createAssemblyContext();
 
-    public static final String PCM_ENTITY_NAME = "test.org.pcm.entity";
-    public static final String PCM_ENTITY_ID = "testPcmEntityId";
-    public static final String PCM_OPERATION_NAME = "testPcmOperationName";
-    public static final String PCM_OPERATION_ID = "testPcmOperationId";
+    private static AssemblyContext createAssemblyContext() {
+        final AssemblyContext assemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+        assemblyContext.setEntityName(AssemblyContextData.ASSEMBLY_CONTEXT_NAME);
+        assemblyContext.setId("_assemblycontext_test_id");
 
-    public static final Correspondent CORRESPONDENT = CorrespondenceModelData.createCorrespondent();
-
-    private static Correspondent createCorrespondent() {
-        return CorrespondentFactory.newInstance(CorrespondenceModelData.PCM_ENTITY_NAME,
-                CorrespondenceModelData.PCM_ENTITY_ID, CorrespondenceModelData.PCM_OPERATION_NAME,
-                CorrespondenceModelData.PCM_OPERATION_ID);
+        return assemblyContext;
     }
 }

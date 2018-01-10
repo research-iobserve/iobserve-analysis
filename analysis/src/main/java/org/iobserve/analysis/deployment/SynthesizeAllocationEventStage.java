@@ -27,10 +27,22 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
- * @author reiner
+ * The filter checks if there exists an ResourceContainer for the deployment specified in the
+ * PCMDeployedEvent. In case it exists the ResourceContainer is added to the PCMDeployedEvent. In
+ * case no such container exists, an allocation event is generated and send to the allocation event
+ * output port and the incomplete PCMDeployedEvent is relayed via the deployedRelayOutputPort.
+ *
+ * Ports:
+ * <ul>
+ * <li>allocationOutputPort = synthesized allocation event</li>
+ * <li>deployedOutputPort = updated PCMDeployedEvent</li>
+ * <li>deployedRelayOutputPort = the unchanged PCMDeployedEvent</li>
+ * </ul>
+ *
+ * @author Reiner Jung
  *
  */
-public class SynthesizeAllocationEvent extends AbstractConsumerStage<PCMDeployedEvent> {
+public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
     /** reference to resource environment model provider. */
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
@@ -39,7 +51,8 @@ public class SynthesizeAllocationEvent extends AbstractConsumerStage<PCMDeployed
     private final OutputPort<PCMDeployedEvent> deployedOutputPort = this.createOutputPort();
     private final OutputPort<PCMDeployedEvent> deployedRelayOutputPort = this.createOutputPort();
 
-    public SynthesizeAllocationEvent(final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
+    public SynthesizeAllocationEventStage(
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
 

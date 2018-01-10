@@ -27,29 +27,26 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.model.builder.AllocationModelBuilder;
 import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.builder.SystemModelBuilder;
-import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.test.data.AllocationData;
+import org.iobserve.analysis.test.data.AssemblyContextData;
 import org.iobserve.analysis.test.data.CorrespondenceModelData;
 import org.iobserve.analysis.test.data.ImplementationLevelData;
 import org.iobserve.analysis.test.data.ModelLevelData;
 import org.iobserve.analysis.test.data.ResourceEnvironmentData;
+import org.iobserve.analysis.test.data.SystemData;
 import org.iobserve.common.record.ServletUndeployedEvent;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.allocation.AllocationFactory;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
-import org.palladiosimulator.pcm.system.SystemFactory;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -79,64 +76,6 @@ public class UndeploymentResourceContainerTest {
     private static ModelProvider<Allocation> mockedAllocationModelGraphProvider;
     @Mock
     private static ICorrespondence mockedCorrespondence;
-
-    /** input events. */
-    private static PCMUndeployedEvent undeployedEvent;
-    private static List<PCMUndeployedEvent> inputEvents = new ArrayList<>();
-
-    /** test correspondent. */
-    private static Optional<Correspondent> optTestCorrespondent;
-
-    /** test allocation. */
-    private static Allocation testAllocation;
-
-    /** test resource environment. */
-    private static ResourceEnvironment testResourceEnvironment;
-
-    /** test system. */
-    private static org.palladiosimulator.pcm.system.System testSystem;
-
-    /** test resource container. */
-    private static Optional<ResourceContainer> optTestResourceContainer;
-
-    /** test assembly context. */
-    private static AssemblyContext testAssemblyContext;
-    private static Optional<AssemblyContext> optTestAssemblyContext;
-
-    /**
-     * Initialize test events and mock necessary classes.
-     */
-    @BeforeClass
-    public static void setup() {
-
-        /** input deployment event */
-        UndeploymentResourceContainerTest.undeployedEvent = ModelLevelData.createPCMUndeployedEvent();
-        UndeploymentResourceContainerTest.inputEvents.add(UndeploymentResourceContainerTest.undeployedEvent);
-
-        /** test correspondent */
-        UndeploymentResourceContainerTest.optTestCorrespondent = Optional
-                .of(CorrespondenceModelData.createCorrespondent());
-
-        /** test allocation */
-        UndeploymentResourceContainerTest.testAllocation = AllocationFactory.eINSTANCE.createAllocation();
-
-        /** test resourceEnvironment */
-        UndeploymentResourceContainerTest.testResourceEnvironment = ResourceenvironmentFactory.eINSTANCE
-                .createResourceEnvironment();
-
-        /** test system */
-        UndeploymentResourceContainerTest.testSystem = SystemFactory.eINSTANCE.createSystem();
-
-        UndeploymentResourceContainerTest.optTestResourceContainer = ResourceEnvironmentData.createResourceContainer();
-
-        /** optional test assembly context */
-        UndeploymentResourceContainerTest.testAssemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
-        UndeploymentResourceContainerTest.testAssemblyContext.setEntityName("TestAssemblyContext");
-        UndeploymentResourceContainerTest.testAssemblyContext.setId("_assemblycontext_test_id");
-        UndeploymentResourceContainerTest.optTestAssemblyContext = Optional
-                .of(UndeploymentResourceContainerTest.testAssemblyContext);
-
-    }
 
     /**
      * Define the test situation in which the needed {@link ResourceContainer} and
@@ -168,37 +107,34 @@ public class UndeploymentResourceContainerTest {
         /** get models */
         Mockito.when(UndeploymentResourceContainerTest.mockedCorrespondence
                 .getCorrespondent(ImplementationLevelData.CONTEXT))
-                .thenReturn(UndeploymentResourceContainerTest.optTestCorrespondent);
+                .thenReturn(Optional.of(CorrespondenceModelData.CORRESPONDENT));
 
         Mockito.when(UndeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .readOnlyRootComponent(ResourceEnvironment.class))
-                .thenReturn(UndeploymentResourceContainerTest.testResourceEnvironment);
+                .thenReturn(ResourceEnvironmentData.RESOURCE_ENVIRONMENT);
 
         Mockito.when(UndeploymentResourceContainerTest.mockedSystemModelGraphProvider
-                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class))
-                .thenReturn(UndeploymentResourceContainerTest.testSystem);
+                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class)).thenReturn(SystemData.SYSTEM);
 
         Mockito.when(UndeploymentResourceContainerTest.mockedAllocationModelGraphProvider
-                .readOnlyRootComponent(Allocation.class)).thenReturn(UndeploymentResourceContainerTest.testAllocation);
+                .readOnlyRootComponent(Allocation.class)).thenReturn(AllocationData.ALLOCATION);
 
         /** get part of models */
         Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
-                UndeploymentResourceContainerTest.testResourceEnvironment, ImplementationLevelData.SERVICE))
-                .thenReturn(UndeploymentResourceContainerTest.optTestResourceContainer);
+                ResourceEnvironmentData.RESOURCE_ENVIRONMENT, ImplementationLevelData.SERVICE))
+                .thenReturn(Optional.of(ResourceEnvironmentData.RESOURCE_CONTAINER));
 
-        final String asmCtxName = CorrespondenceModelData.PCM_ENTITY_NAME + "_" + ImplementationLevelData.SERVICE;
-        Mockito.when(
-                SystemModelBuilder.getAssemblyContextByName(UndeploymentResourceContainerTest.testSystem, asmCtxName))
-                .thenReturn(UndeploymentResourceContainerTest.optTestAssemblyContext);
+        Mockito.when(SystemModelBuilder.getAssemblyContextByName(SystemData.SYSTEM,
+                AssemblyContextData.ASSEMBLY_CONTEXT_NAME))
+                .thenReturn(Optional.of(AssemblyContextData.ASSEMBLY_CONTEXT));
 
         /** interaction with graphs */
         PowerMockito.doNothing().when(AllocationModelBuilder.class);
-        AllocationModelBuilder.removeAllocationContext(UndeploymentResourceContainerTest.testAllocation,
-                UndeploymentResourceContainerTest.optTestResourceContainer.get(),
-                UndeploymentResourceContainerTest.testAssemblyContext);
+        AllocationModelBuilder.removeAllocationContext(AllocationData.ALLOCATION,
+                ResourceEnvironmentData.RESOURCE_CONTAINER, AssemblyContextData.ASSEMBLY_CONTEXT);
 
         Mockito.doNothing().when(UndeploymentResourceContainerTest.mockedAllocationModelGraphProvider)
-                .updateComponent(Allocation.class, UndeploymentResourceContainerTest.testAllocation);
+                .updateComponent(Allocation.class, AllocationData.ALLOCATION);
     }
 
     /**
@@ -206,14 +142,16 @@ public class UndeploymentResourceContainerTest {
      * {@link ResourceContainer} exists. A {@link ServletUndeployedEvent} is defined as input.
      */
     @Test
-    public void checkNoAllocationNeeded() {
+    public void checkUndeployment() {
+        final List<PCMUndeployedEvent> inputEvents = new ArrayList<>();
+        inputEvents.add(ModelLevelData.PCM_UNDEPLOYED_EVENT);
+
         final List<PCMUndeployedEvent> undeploymentEvents = new ArrayList<>();
 
-        StageTester.test(this.undeploymentUpdater).and().send(UndeploymentResourceContainerTest.inputEvents)
-                .to(this.undeploymentUpdater.getInputPort()).and().receive(undeploymentEvents)
-                .from(this.undeploymentUpdater.getOutputPort()).start();
+        StageTester.test(this.undeploymentUpdater).and().send(inputEvents).to(this.undeploymentUpdater.getInputPort())
+                .and().receive(undeploymentEvents).from(this.undeploymentUpdater.getOutputPort()).start();
 
-        Assert.assertThat(undeploymentEvents.get(0), Is.is(UndeploymentResourceContainerTest.undeployedEvent));
+        Assert.assertThat(undeploymentEvents.get(0), Is.is(ModelLevelData.PCM_UNDEPLOYED_EVENT));
     }
 
 }

@@ -46,7 +46,7 @@ public class DeploymentCompositeStage extends CompositeStage {
             final ModelProvider<System> systemModelGraphProvider, final ICorrespondence correspondence) {
 
         this.deployPCMMapper = new DeployPCMMapper(correspondence);
-        final SynthesizeAllocationEvent synthesizeAllocationEvent = new SynthesizeAllocationEvent(
+        final SynthesizeAllocationEventStage synthesizeAllocationEvent = new SynthesizeAllocationEventStage(
                 resourceEnvironmentModelGraphProvider);
 
         final DeploymentModelUpdater deployment = new DeploymentModelUpdater(allocationModelGraphProvider,
