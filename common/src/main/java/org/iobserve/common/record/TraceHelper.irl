@@ -23,6 +23,6 @@ template ITraceHelper {
 }
 
 @author "Reiner Jung" @since "0.0.2"
-entity ServletTraceHelper : ITraceHelper, IFlowRecord {
+event ServletTraceHelper : ITraceHelper, IFlowRecord {
 	string requestURI	
 }

@@ -138,8 +138,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                 this.connectPorts(recordSwitch.getAllocationOutputPort(), allocationStage.getInputPort());
 
                 this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocation.getInputPort());
-                this.connectPorts(geoLocation.getOutputPort(), privacyWarner.getInputPort());
-                this.connectPorts(undeploymentStage.getUndeployedOutputPort(), privacyWarner.getInputPort());
+                this.connectPorts(geoLocation.getOutputPort(), privacyWarner.getDeployedInputPort());
+                this.connectPorts(undeploymentStage.getUndeployedOutputPort(), privacyWarner.getUndeployedInputPort());
 
                 this.connectPorts(privacyWarner.getProbesOutputPort(), modelProbeController.getInputPort());
                 this.connectPorts(modelProbeController.getOutputPort(), probeMapper.getInputPort());

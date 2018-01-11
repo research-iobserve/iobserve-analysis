@@ -22,6 +22,6 @@ template ISessionEvent {
 }
 
 @author "Reiner Jung" @since "0.0.2"
-entity SessionStartEvent extends AbstractEvent : ISessionEvent
+event SessionStartEvent extends AbstractEvent : ISessionEvent
 @author "Reiner Jung" @since "0.0.2"
-entity SessionEndEvent extends AbstractEvent : ISessionEvent
+event SessionEndEvent extends AbstractEvent : ISessionEvent

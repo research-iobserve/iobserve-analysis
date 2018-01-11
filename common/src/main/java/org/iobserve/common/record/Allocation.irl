@@ -26,11 +26,11 @@ template IDeallocationEvent
  * Event records for PaaS allocation deallocation.
  */
 @author "Reiner Jung" @since "0.0.2"
-abstract entity ContainerEvent {
+abstract event ContainerEvent {
 	string url
 }
 
 @author "Reiner Jung" @since "0.0.2"
-entity ContainerAllocationEvent extends ContainerEvent : IAllocationEvent
+event ContainerAllocationEvent extends ContainerEvent : IAllocationEvent
 @author "Reiner Jung" @since "0.0.2"
-entity ContainerDeallocationEvent extends ContainerEvent : IDeallocationEvent
+event ContainerDeallocationEvent extends ContainerEvent : IDeallocationEvent

@@ -25,10 +25,10 @@ import kieker.common.util.registry.IRegistry;
 import org.iobserve.common.record.ISessionEvent;
 
 /**
- * @author Generic Kieker
+ * @author Reiner Jung
  * API compatibility: Kieker 1.13.0
  * 
- * @since 1.13
+ * @since 0.0.2
  */
 public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	private static final long serialVersionUID = -3984952055142342793L;

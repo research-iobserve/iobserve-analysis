@@ -28,7 +28,7 @@ template GeoLocation {
  * server. 	 
  */
 @author "Reiner Jung" @since "0.0.2"
-entity ServerGeoLocation extends AbstractEvent : GeoLocation {
+event ServerGeoLocation extends AbstractEvent : GeoLocation {
 	string hostname
 	string address
 }

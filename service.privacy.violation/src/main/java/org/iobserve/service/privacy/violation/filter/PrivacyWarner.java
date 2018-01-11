@@ -16,6 +16,7 @@
 package org.iobserve.service.privacy.violation.filter;
 
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.modelneo4j.ModelProvider;
@@ -73,6 +74,16 @@ public class PrivacyWarner extends AbstractConsumerStage<Object> {
 
     public OutputPort<Warnings> getWarningsOutputPort() {
         return this.warningsOutputPort;
+    }
+
+    public InputPort getDeployedInputPort() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public InputPort getUndeployedInputPort() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

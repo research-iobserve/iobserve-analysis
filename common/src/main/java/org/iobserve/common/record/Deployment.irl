@@ -32,31 +32,31 @@ template IUndeployedEvent : IDeploymentChange
  * Event records for PaaS servlet/WAR deployment/undeployment.
  */	 
 @author "Reiner Jung" @since "0.0.2"
-abstract entity ServletDescriptor extends AbstractEvent { 
-	string service
-	string context
-	string deploymentId	
-}
-
-@author "Reiner Jung" @since "0.0.2"
-entity ServletDeployedEvent extends ServletDescriptor : IDeployedEvent
-@author "Reiner Jung" @since "0.0.2"
-entity ServletUndeployedEvent extends ServletDescriptor : IUndeployedEvent
-
-/**
- * Event records for PaaS servlet/WAR deployment/undeployment.	 
- */	 
-@author "Reiner Jung" @since "0.0.2"
-abstract entity EJBDescriptor extends AbstractEvent { 
+abstract event ServletDescriptor extends AbstractEvent { 
 	string service
 	string context
 	string deploymentId
 }
 
 @author "Reiner Jung" @since "0.0.2"
-entity EJBDeployedEvent extends EJBDescriptor : IDeployedEvent
+event ServletDeployedEvent extends ServletDescriptor : IDeployedEvent
 @author "Reiner Jung" @since "0.0.2"
-entity EJBUndeployedEvent extends EJBDescriptor : IUndeployedEvent
+event ServletUndeployedEvent extends ServletDescriptor : IUndeployedEvent
+
+/**
+ * Event records for PaaS servlet/WAR deployment/undeployment.	 
+ */	 
+@author "Reiner Jung" @since "0.0.2"
+abstract event EJBDescriptor extends AbstractEvent { 
+	string service
+	string context
+	string deploymentId
+}
+
+@author "Reiner Jung" @since "0.0.2"
+event EJBDeployedEvent extends EJBDescriptor : IDeployedEvent
+@author "Reiner Jung" @since "0.0.2"
+event EJBUndeployedEvent extends EJBDescriptor : IUndeployedEvent
 
 model Deployment IDeployedEvent, IUndeployedEvent
 sub Privacy Deployment : org.iobserve.common.record.GeoLocation
