@@ -24,7 +24,7 @@ import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.factory.UsageModelFactory;
-import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;

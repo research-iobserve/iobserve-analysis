@@ -17,17 +17,18 @@ package org.iobserve.analysis.traces;
 
 import java.io.IOException;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
-import org.iobserve.analysis.model.provider.file.UsageModelProvider;
-import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * Represents the TEntryEventSequence Transformation in the paper <i>Run-time Architecture Models

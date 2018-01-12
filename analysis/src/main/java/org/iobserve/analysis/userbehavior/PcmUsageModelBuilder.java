@@ -21,10 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.factory.UsageModelFactory;
-import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.data.Branch;
 import org.iobserve.analysis.userbehavior.data.BranchElement;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
@@ -44,9 +47,6 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 
 /**
  * This class creates a PCM usage model from the passed LoopBranchModels. For each user group its
