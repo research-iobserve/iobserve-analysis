@@ -27,6 +27,8 @@ import teetime.framework.OutputPort;
  *
  * @author Reiner Jung
  *
+ * @param <T>
+ *            type for input and output ports
  */
 public class AggregateEventStage<T> extends AbstractStage {
 
