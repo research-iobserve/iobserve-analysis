@@ -5,6 +5,21 @@ mainClassName='org.iobserve.service.cli.AnalysisMain'
 dependencies {
 	compile project(":analysis")
 	compile "com.beust:jcommander:1.60"
+	
+	//from service
+	compile 'commons-daemon:commons-daemon:1.0.15'
+    compile 'javax.json:javax.json-api:1.0'
+    compile 'org.glassfish:javax.json:1.0.4'
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+    compile group: 'org.json', name: 'json', version: '20170516'
+    
+    testCompile group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
+	
+	testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+    testCompile 'org.powermock:powermock-core:1.6.1'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.1'
+    testCompile 'org.powermock:powermock-api-mockito:1.6.1'
 }
 
 install {
@@ -49,3 +64,13 @@ task runAnalysis(type: JavaExec) {
 	classpath = sourceSets.main.runtimeClasspath
 	main = 'org.iobserve.service.cli.AnalysisMain'
 }
+
+//service
+test {
+  println 'Starting unit tests.'
+  scanForTestClasses= false
+  include '**/service/suites/*'
+  exclude '**/service/services/*'
+  exclude '**/service/updater/*'
+  
+  }

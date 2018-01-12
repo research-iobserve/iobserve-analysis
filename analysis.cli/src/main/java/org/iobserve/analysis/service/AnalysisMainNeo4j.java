@@ -17,7 +17,6 @@ package org.iobserve.analysis.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
@@ -33,11 +32,12 @@ import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.analysis.utils.ExecutionTimeLogger;
+import org.iobserve.service.cli.AnalysisMain;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -51,13 +51,15 @@ import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
 /**
- * Main class for starting the iObserve application.
+ * Main class for starting the iObserve application. This class is mainly meant as an example of the
+ * set up of the neo4j model providers.
  *
  * @author Reiner Jung
  * @author Robert Heinrich
  * @author Alessandro Giusa
+ * @author Lars Bluemke
  */
-public final class AnalysisMain {
+public final class AnalysisMainNeo4j {
     private static final Log LOG = LogFactory.getLog(AnalysisMain.class);
 
     @Parameter(names = "--help", help = true)
@@ -82,6 +84,9 @@ public final class AnalysisMain {
     @Parameter(names = { "-o",
             "--output" }, required = true, description = "hostname and port of the iobserve visualization, e.g., visualization:80.")
     private String output;
+
+    @Parameter(names = { "-s", "--system" }, required = true, description = "system id.")
+    private String systemId;
 
     @Parameter(names = { "-p",
             "--pcm" }, required = true, description = "Directory containing PCM model data.", converter = FileConverter.class)
@@ -113,7 +118,7 @@ public final class AnalysisMain {
     /**
      * Default constructor.
      */
-    private AnalysisMain() {
+    private AnalysisMainNeo4j() {
         // do nothing here
     }
 
@@ -124,19 +129,19 @@ public final class AnalysisMain {
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        final AnalysisMain main = new AnalysisMain();
+        final AnalysisMainNeo4j main = new AnalysisMainNeo4j();
         final JCommander commander = new JCommander(main);
         try {
             commander.parse(args);
             main.execute(commander);
         } catch (final ParameterException e) {
-            AnalysisMain.LOG.error(e.getLocalizedMessage());
+            AnalysisMainNeo4j.LOG.error(e.getLocalizedMessage());
             commander.usage();
         } catch (final IOException e) {
-            AnalysisMain.LOG.error(e.getLocalizedMessage());
+            AnalysisMainNeo4j.LOG.error(e.getLocalizedMessage());
             commander.usage();
         } catch (final InitializationException e) {
-            AnalysisMain.LOG.error(e.getLocalizedMessage());
+            AnalysisMainNeo4j.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
@@ -156,7 +161,6 @@ public final class AnalysisMain {
                 final String outputPort = outputs[1];
 
                 /** process parameter. */
-                // old model providers without neo4j
                 final InitializeModelProviders modelProvider = new InitializeModelProviders(this.pcmModelsDirectory);
 
                 final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
@@ -166,20 +170,53 @@ public final class AnalysisMain {
                         .getResourceEnvironmentModelProvider();
                 final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
                 final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
-                // initialize neo4j graphs
+
+                /** Neo4j database ************************************************************/
+                // Create a graph loader to receive the different neo4j graphs for each model
                 final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
-                Graph resourceEnvironmentModelGraph = graphLoader
-                        .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
+
+                // If you use the database for the very first time the graphs will be empty. You can
+                // initialize the graph with a model from an old provider. Note: The initialization
+                // overwrites possibly existing models, so you want to do this just on the very
+                // first setup or if you want to return to clean test data in the graph.
                 Graph allocationModelGraph = graphLoader
                         .initializeAllocationModelGraph(allocationModelProvider.getModel());
+                AnalysisMainNeo4j.LOG.info("Initialized allocation model graph");
+                Graph repositoryModelGraph = graphLoader
+                        .initializeRepositoryModelGraph(repositoryModelProvider.getModel());
+                AnalysisMainNeo4j.LOG.info("Initialized repository model graph");
+                Graph resourceEnvironmentModelGraph = graphLoader
+                        .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
+                AnalysisMainNeo4j.LOG.info("Initialized resource environment model graph");
                 Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
+                AnalysisMainNeo4j.LOG.info("Initialized system model graph");
+                @SuppressWarnings("unused")
                 Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
+                AnalysisMainNeo4j.LOG.info("Initialized usage model graph");
 
-                // load neo4j graphs
-                resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
+                // Alternatively, if there are already graphs in the database, you can simply get
+                // them
                 allocationModelGraph = graphLoader.getAllocationModelGraph();
+                AnalysisMainNeo4j.LOG.info("Loaded allocation model graph");
+                repositoryModelGraph = graphLoader.getRepositoryModelGraph();
+                AnalysisMainNeo4j.LOG.info("Loaded repository model graph");
+                resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
+                AnalysisMainNeo4j.LOG.info("Loaded resource environment model graph");
                 systemModelGraph = graphLoader.getSystemModelGraph();
+                AnalysisMainNeo4j.LOG.info("Loaded system model graph");
                 usageModelGraph = graphLoader.getUsageModelGraph();
+                AnalysisMainNeo4j.LOG.info("Loaded usage model graph");
+
+                // You can access it with a model provider, for example
+                final String idOfInterfaceIWant = repositoryModelProvider.getModel().getInterfaces__Repository().get(0)
+                        .getId();
+                final OperationInterface opInter = new ModelProvider<OperationInterface>(repositoryModelGraph)
+                        .readComponentById(OperationInterface.class, idOfInterfaceIWant);
+                AnalysisMainNeo4j.LOG.debug(opInter.toString());
+
+                // Or you can clone the current graph to a new version
+                new ModelProvider<ResourceEnvironment>(resourceEnvironmentModelGraph)
+                        .cloneNewGraphVersion(ResourceEnvironment.class);
 
                 // new graphModelProvider
                 final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
@@ -194,24 +231,7 @@ public final class AnalysisMain {
                         systemModelGraph);
                 final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(
                         systemModelGraph);
-                final ModelProvider<UsageModel> usageModelGraphProvider = new ModelProvider<>(usageModelGraph);
-
-                // get systemId
-                final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
-                        .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
-                final String systemId = systemModel.getId();
-                // URLs for sending updates to the deployment visualization
-                final URL systemUrl = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");
-                final URL changelogUrl = new URL(systemUrl + systemId + "/changelogs");
-
-                final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                        systemUrl, changelogUrl, allocationModelGraphProvider, systemModelGraphProvider,
-                        resourceEnvironmentModelGraphProvider, usageModelGraphProvider);
-                try {
-                    deploymentVisualization.initialize();
-                } catch (final Exception e) {
-                    AnalysisMain.LOG.debug("deploymentVisualization.initialize() went wrong!", e);
-                }
+                /******************************************************************************/
 
                 SnapshotBuilder snapshotBuilder = null;
                 URI perOpteryxUri = null;
@@ -235,11 +255,11 @@ public final class AnalysisMain {
                         assCtxSystemModelGraphProvider, this.visualizationServiceURL, snapshotBuilder, perOpteryxUri,
                         lqnsUri, deployablesFolder);
 
-                AnalysisMain.LOG.info("Analysis configuration");
+                AnalysisMainNeo4j.LOG.info("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);
-                AnalysisMain.LOG.info("Analysis start");
+                AnalysisMainNeo4j.LOG.info("Analysis start");
                 analysis.executeBlocking();
-                AnalysisMain.LOG.info("Anaylsis complete");
+                AnalysisMainNeo4j.LOG.info("Anaylsis complete");
                 ExecutionTimeLogger.getInstance().exportAsCsv();
             }
         }
@@ -248,12 +268,13 @@ public final class AnalysisMain {
     private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
             throws IOException {
         if (!location.exists()) {
-            AnalysisMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            AnalysisMainNeo4j.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
             commander.usage();
             System.exit(1);
         }
         if (!location.isDirectory()) {
-            AnalysisMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            AnalysisMainNeo4j.LOG
+                    .error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
             commander.usage();
             System.exit(1);
         }

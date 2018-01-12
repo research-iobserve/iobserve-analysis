@@ -17,6 +17,7 @@ package org.iobserve.service.cli;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -35,9 +36,15 @@ import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.modelneo4j.Graph;
 import org.iobserve.analysis.modelneo4j.GraphLoader;
 import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.service.InitializeDeploymentVisualization;
+import org.iobserve.analysis.service.ServiceConfiguration;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.analysis.utils.ExecutionTimeLogger;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
@@ -88,34 +95,47 @@ public final class AnalysisMain {
             "--pcmneo4j" }, required = true, description = "Directory containing Neo4j database with PCM model data.", converter = FileConverter.class)
     private File pcmModelsNeo4jDirectory;
 
+    @Parameter(names = { "-ser",
+            "--service" }, required = false, description = "Use service version.", converter = BooleanConverter.class)
+    private boolean service;
+
     @Parameter(names = { "-u",
-            "--ubm-visualization" }, required = false, description = "User behavior model visualitation service URL.")
+            "--ubm-visualization" }, required = false, description = "Required for service only. User behavior model visualitation service URL.")
     private String visualizationServiceURL;
+
+    @Parameter(names = { "-sl",
+            "--snapshot-location" }, required = false, description = "Required for cli only. snapshot save location")
+    private String snapshotPath;
+
+    @Parameter(names = { "-po",
+            "--perOpteryx-headless-location" }, required = false, description = "Required for cli only. the location of the PerOpteryx headless plugin", converter = FileConverter.class)
+    private String perOpteryxUriPath;
+
+    @Parameter(names = { "-l",
+            "--lqns-location" }, required = false, description = "Required for cli only. the location of the LQN Solver for optimization", converter = FileConverter.class)
+    private String lqnsUriPath;
+
+    @Parameter(names = { "-d",
+            "--deployables-folder" }, required = false, description = "Required for cli only. the location of the deployable/executable scripts for adaptation execution", converter = FileConverter.class)
+    private String deployablesFolderPath;
+
+    @Parameter(names = { "-in",
+            "--interactive-adaptation" }, required = false, description = "Required for cli only. interact with operator during adaptation", converter = FileConverter.class)
+    private boolean interactiveMode;
 
     @Parameter(names = { "-o", "--ubm-output" }, required = false, description = "File output of user behavior.")
     private String outputPathPrefix;
 
-    @Parameter(names = { "-m", "--aggregation-type" }, required = true, description = "Aggregation type.")
+    @Parameter(names = { "-m", "--aggregation-type" }, required = false, description = "Aggregation type.")
     private String aggregationTypeName;
 
-    @Parameter(names = { "-sl", "--snapshot-location" }, required = true, description = "snapshot save location")
-    private String snapshotPath;
+    @Parameter(names = { "-o",
+            "--output" }, required = false, description = "Required for service only. hostname and port of the iobserve visualization, e.g., visualization:80.")
+    private String output;
 
-    @Parameter(names = { "-po",
-            "--perOpteryx-headless-location" }, required = true, description = "the location of the PerOpteryx headless plugin", converter = FileConverter.class)
-    private String perOpteryxUriPath;
-
-    @Parameter(names = { "-l",
-            "--lqns-location" }, required = true, description = "the location of the LQN Solver for optimization", converter = FileConverter.class)
-    private String lqnsUriPath;
-
-    @Parameter(names = { "-d",
-            "--deployables-folder" }, required = true, description = "the location of the deployable/executable scripts for adaptation execution", converter = FileConverter.class)
-    private String deployablesFolderPath;
-
-    @Parameter(names = { "-in",
-            "--interactive-adaptation" }, required = true, description = "interact with operator during adaptation", converter = FileConverter.class)
-    private boolean interactiveMode;
+    @Parameter(names = { "-i",
+            "--input" }, required = false, description = "Required for service only. port number to listen for new connections of Kieker writers.", converter = IntegerConverter.class)
+    private int listenPort;
 
     /**
      * Default constructor.
@@ -135,7 +155,11 @@ public final class AnalysisMain {
         final JCommander commander = new JCommander(main);
         try {
             commander.parse(args);
-            main.execute(commander);
+            if (main.service) {
+                main.executeService(commander);
+            } else {
+                main.execute(commander);
+            }
         } catch (final ParameterException e) {
             AnalysisMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
@@ -148,11 +172,14 @@ public final class AnalysisMain {
         }
     }
 
-    private void execute(final JCommander commander) throws IOException, InitializationException {
-
+    private void execute(final JCommander commander) throws ParameterException, IOException, InitializationException {
         if (this.help) {
             commander.usage();
             System.exit(1);
+            // required parameters.
+        } else if ((this.snapshotPath == null) || (this.perOpteryxUriPath == null) || (this.lqnsUriPath == null)
+                || (this.deployablesFolderPath == null) || (this.interactiveMode == false)) {
+            throw new ParameterException("Missing required parameter for cli.");
         } else {
             this.checkDirectory(this.monitoringDataDirectory, "Kieker log", commander);
             this.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander);
@@ -231,6 +258,114 @@ public final class AnalysisMain {
             AnalysisMain.LOG.info("Analysis start");
             analysis.executeBlocking();
             AnalysisMain.LOG.info("Anaylsis complete");
+        }
+    }
+
+    // execute function of org.iobserve.analysis.service.AnalysisMain.java
+    private void executeService(final JCommander commander) throws IOException, InitializationException {
+        if (this.help) {
+            commander.usage();
+            System.exit(1);
+            // required parameters
+        } else if ((this.visualizationServiceURL == null) || (this.output == null) || (this.listenPort == 0)) {
+            throw new ParameterException("Missing required parameter.");
+        } else {
+            this.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander);
+            this.checkDirectory(this.pcmModelsNeo4jDirectory, "Palladio Model Neo4j", commander);
+            /** process parameter. */
+
+            final String[] outputs = this.output.split(":");
+            if (outputs.length == 2) {
+                final String outputHostname = outputs[0];
+                final String outputPort = outputs[1];
+
+                /** process parameter. */
+                // old model providers without neo4j
+                final InitializeModelProviders modelProvider = new InitializeModelProviders(this.pcmModelsDirectory);
+
+                final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
+                final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
+                final RepositoryModelProvider repositoryModelProvider = modelProvider.getRepositoryModelProvider();
+                final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider = modelProvider
+                        .getResourceEnvironmentModelProvider();
+                final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
+                final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
+                // initialize neo4j graphs
+                final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
+                Graph resourceEnvironmentModelGraph = graphLoader
+                        .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
+                Graph allocationModelGraph = graphLoader
+                        .initializeAllocationModelGraph(allocationModelProvider.getModel());
+                Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
+                Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
+
+                // load neo4j graphs
+                resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
+                allocationModelGraph = graphLoader.getAllocationModelGraph();
+                systemModelGraph = graphLoader.getSystemModelGraph();
+                usageModelGraph = graphLoader.getUsageModelGraph();
+
+                // new graphModelProvider
+                final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
+                        resourceEnvironmentModelGraph);
+                final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
+                        resourceEnvironmentModelGraph);
+                final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(
+                        allocationModelGraph);
+                final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider = new ModelProvider<>(
+                        allocationModelGraph);
+                final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
+                        systemModelGraph);
+                final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(
+                        systemModelGraph);
+                final ModelProvider<UsageModel> usageModelGraphProvider = new ModelProvider<>(usageModelGraph);
+
+                // get systemId
+                final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
+                        .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+                final String systemId = systemModel.getId();
+                // URLs for sending updates to the deployment visualization
+                final URL systemUrl = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");
+                final URL changelogUrl = new URL(systemUrl + systemId + "/changelogs");
+
+                final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
+                        systemUrl, changelogUrl, allocationModelGraphProvider, systemModelGraphProvider,
+                        resourceEnvironmentModelGraphProvider, usageModelGraphProvider);
+                try {
+                    deploymentVisualization.initialize();
+                } catch (final Exception e) {
+                    AnalysisMain.LOG.debug("deploymentVisualization.initialize() went wrong!", e);
+                }
+
+                SnapshotBuilder snapshotBuilder = null;
+                URI perOpteryxUri = null;
+                URI lqnsUri = null;
+                URI deployablesFolder = null;
+                if (!this.snapshotPath.isEmpty() && !this.perOpteryxUriPath.isEmpty() && !this.lqnsUriPath.isEmpty()
+                        && !this.deployablesFolderPath.isEmpty()) {
+                    SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(this.snapshotPath));
+                    snapshotBuilder = new SnapshotBuilder("Runtime", modelProvider);
+                    perOpteryxUri = URI.createFileURI(this.perOpteryxUriPath);
+                    lqnsUri = URI.createFileURI(this.lqnsUriPath);
+                    deployablesFolder = URI.createFileURI(this.deployablesFolderPath);
+                }
+
+                final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
+                        outputPort, "", this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
+                        correspondenceModel, usageModelProvider, repositoryModelProvider,
+                        resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider,
+                        resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider,
+                        allocationModelGraphProvider, assemblyContextModelGraphProvider, systemModelGraphProvider,
+                        assCtxSystemModelGraphProvider, this.visualizationServiceURL, snapshotBuilder, perOpteryxUri,
+                        lqnsUri, deployablesFolder);
+
+                AnalysisMain.LOG.info("Analysis configuration");
+                final Execution<Configuration> analysis = new Execution<>(configuration);
+                AnalysisMain.LOG.info("Analysis start");
+                analysis.executeBlocking();
+                AnalysisMain.LOG.info("Anaylsis complete");
+                ExecutionTimeLogger.getInstance().exportAsCsv();
+            }
         }
     }
 
