@@ -1,13 +1,19 @@
 #!groovy
 
 node {
-    sh 'ls $JAVA_HOME'
+  try {
     stage ('Checkout') {
-        checkout scm
+      sh 'rm -rf *'
+      checkout scm
+      sh 'java -version'
+      sh '.jenkinsfile/add_jenkins_dependencies.sh'
+      sh 'ls -al'
+
     }
 
     stage ('1-compile logs') {
-          sh './gradlew -S compileJava compileTestJava'
+          sh './gradlew clean --refresh-dependencies'
+          sh './gradlew build'
     }
 
     stage ('2-unit-test logs') {
@@ -18,4 +24,8 @@ node {
     stage ('3-static-analysis logs') {
         sh  './gradlew -S check'
    } 
+ }
+ finally {
+    deleteDir()
+ }
 }
