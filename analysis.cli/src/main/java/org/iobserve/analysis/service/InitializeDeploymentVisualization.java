@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.analysis.service.services.CommunicationInstanceService;
 import org.iobserve.analysis.service.services.CommunicationService;
 import org.iobserve.analysis.service.services.NodeService;
@@ -28,7 +28,6 @@ import org.iobserve.analysis.service.services.NodegroupService;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.service.services.SystemService;
-import org.iobserve.service.cli.AnalysisMain;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
@@ -111,7 +110,7 @@ public final class InitializeDeploymentVisualization {
      * @throws Exception
      *             when post request fails
      */
-    public void initialize() throws Exception {
+    protected void initialize() throws Exception {
         // set up the system model and take parts from it
         final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
@@ -187,10 +186,9 @@ public final class InitializeDeploymentVisualization {
                                 this.systemService.getSystemId(), technology)),
                         this.systemUrl, this.changelogUrl);
 
-                SendHttpRequest.post(
-                        Changelog.create(this.communicationinstanceService.createCommunicationInstance(
-                                (AssemblyConnector) connector, this.systemService.getSystemId(),
-                                this.communicationService.getCommunicationId())),
+                SendHttpRequest.post(Changelog.create(
+                        this.communicationinstanceService.createCommunicationInstance((AssemblyConnector) connector,
+                                this.systemService.getSystemId(), this.communicationService.getCommunicationId())),
                         this.systemUrl, this.changelogUrl);
 
             } else {

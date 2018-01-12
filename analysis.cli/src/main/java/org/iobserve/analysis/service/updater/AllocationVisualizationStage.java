@@ -17,20 +17,17 @@ package org.iobserve.analysis.service.updater;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import teetime.framework.AbstractConsumerStage;
+
 import org.iobserve.analysis.service.services.NodeService;
 import org.iobserve.analysis.service.services.NodegroupService;
-import org.iobserve.common.record.ContainerAllocationEvent;
-import org.iobserve.common.record.IAllocationRecord;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-import teetime.framework.AbstractConsumerStage;
 import util.Changelog;
 import util.SendHttpRequest;
 
@@ -42,7 +39,7 @@ import util.SendHttpRequest;
  * @author jweg
  *
  */
-public class AllocationVisualizationStage extends AbstractConsumerStage<IAllocationRecord> {
+public class AllocationVisualizationStage extends AbstractConsumerStage<ResourceContainer> {
 
     /** services for creating visualization elements. */
     private final NodegroupService nodegroupService = new NodegroupService();
@@ -51,7 +48,6 @@ public class AllocationVisualizationStage extends AbstractConsumerStage<IAllocat
     /** constructor parameters. */
     private final URL outputURL;
     private final String systemId;
-    private final ModelProvider<ResourceContainer> resourceContainerModelProvider;
 
     /**
      * constructor.
@@ -63,21 +59,14 @@ public class AllocationVisualizationStage extends AbstractConsumerStage<IAllocat
      * @param resourceContainerModelProvider
      *            part of the resource environment model graph about resource container
      */
-    public AllocationVisualizationStage(final URL outputURL, final String systemId,
-            final ModelProvider<ResourceContainer> resourceContainerModelProvider) {
+    public AllocationVisualizationStage(final URL outputURL, final String systemId) {
         this.outputURL = outputURL;
-        this.resourceContainerModelProvider = resourceContainerModelProvider;
         this.systemId = systemId;
     }
 
     @Override
-    protected void execute(final IAllocationRecord allocation) throws Exception {
-
-        if (allocation instanceof ContainerAllocationEvent) {
-
-            SendHttpRequest.post(this.createData(allocation), this.outputURL);
-        }
-
+    protected void execute(final ResourceContainer allocation) throws Exception {
+        SendHttpRequest.post(this.createData(allocation), this.outputURL);
     }
 
     /**
@@ -89,15 +78,7 @@ public class AllocationVisualizationStage extends AbstractConsumerStage<IAllocat
      *         deployment visualization
      * @throws MalformedURLException
      */
-    private JsonArray createData(final IAllocationRecord allocation) throws MalformedURLException {
-        final URL url = new URL(allocation.toArray()[0].toString());
-        final String hostname = url.getHost();
-
-        final List<ResourceContainer> resourceContainerHostname = this.resourceContainerModelProvider
-                .readOnlyComponentByName(ResourceContainer.class, hostname);
-
-        final ResourceContainer resourceContainer = resourceContainerHostname.get(0);
-
+    private JsonArray createData(final ResourceContainer resourceContainer) throws MalformedURLException {
         // Each node has its own nodegroup now. This can/should change in future.
         final JsonObject nodegroupObject = Changelog.create(this.nodegroupService.createNodegroup(this.systemId));
         final JsonObject nodeObject = Changelog.create(
