@@ -28,6 +28,8 @@ public interface IPCMResourceSetPartitionFactory {
 
     /**
      * Creates a {@link PCMResourceSetPartition} that can be used in headless mode.
+     *
+     * @return returns a pcm resource set partition
      */
     PCMResourceSetPartition create();
 

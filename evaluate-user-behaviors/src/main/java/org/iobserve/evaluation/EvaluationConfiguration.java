@@ -22,6 +22,10 @@ import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 
+import org.iobserve.evaluation.filter.BehaviorModelJSONReader;
+import org.iobserve.evaluation.filter.ComparisonOutputStage;
+import org.iobserve.evaluation.filter.ModelComparisonStage;
+
 /**
  * Analysis configuration for the data collector.
  *

@@ -15,9 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.composite;
 
-import teetime.framework.CompositeStage;
-import teetime.framework.InputPort;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iobserve.analysis.clustering.ExpectationMaximizationClustering;
@@ -25,9 +22,11 @@ import org.iobserve.analysis.clustering.filter.TBehaviorModelCreation;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelVisualization;
 import org.iobserve.analysis.clustering.filter.TVectorQuantizationClustering;
 import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.filter.writer.AbstractModelOutputFilter;
-import org.iobserve.analysis.filter.writer.BehaviorModelWriter;
+import org.iobserve.analysis.writer.AbstractModelOutputFilter;
+import org.iobserve.analysis.writer.BehaviorModelWriter;
 
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
 import weka.core.Instances;
 
 /**

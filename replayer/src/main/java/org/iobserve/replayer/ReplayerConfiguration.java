@@ -19,11 +19,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
-
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
+
+import org.iobserve.stages.source.Dir2RecordsFilter;
 
 /**
  * Configuration for the log replayer.

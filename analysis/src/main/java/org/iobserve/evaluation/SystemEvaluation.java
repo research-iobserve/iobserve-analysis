@@ -21,7 +21,7 @@ import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.analysis.utils.AbstractLinearComposition;
 
 /**
- * TODO add description.
+ * TODO add description for stage.
  *
  * @author unknown
  *
@@ -30,17 +30,32 @@ public class SystemEvaluation extends AbstractLinearComposition<URI, Boolean> {
 
     private static ModelComparer modelComparer;
 
+    /**
+     * Create a system evaluation stage.
+     *
+     * @param comparer
+     *            model comparer
+     */
     public SystemEvaluation(final ModelComparer comparer) {
         super(comparer.getInputPort(), comparer.getOutputPort());
 
         SystemEvaluation.modelComparer = comparer;
     }
 
+    /**
+     * enable evaluation.
+     *
+     * @param adaptationData
+     *            set base data
+     */
     public static void enableEvaluation(final AdaptationData adaptationData) {
         SystemEvaluation.modelComparer.setBaseData(adaptationData);
         SnapshotBuilder.setEvaluationMode(true);
     }
 
+    /**
+     * disable evaluation.
+     */
     public static void disableEvaluation() {
         SystemEvaluation.modelComparer.setBaseData(null);
         SnapshotBuilder.setEvaluationMode(false);

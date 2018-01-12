@@ -26,11 +26,21 @@ public interface IURIConverterInterceptor {
      * <p>
      * Returning true results in the {@link IURIConverterInterceptor#convert(URI)} method to be
      * called.
+     *
+     * @param uri
+     *            the uri checked to be convertible
+     *
+     * @return returns true when the conversion was possible
      */
     boolean canConvert(URI uri);
 
     /**
      * Converts the given URI.
+     *
+     * @param uri
+     *            the uri to be converted
+     *
+     * @return returns the converted URI
      */
     URI convert(URI uri);
 }

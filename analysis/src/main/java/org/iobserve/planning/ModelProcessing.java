@@ -17,13 +17,13 @@ package org.iobserve.planning;
 
 import java.io.File;
 
+import teetime.stage.basic.AbstractTransformation;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.PlanningData;
-
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  * Stage for processing the PCM model before the model is used in PerOpteryx for generating
@@ -45,6 +45,8 @@ public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
      *
      * @param perOpteryxDir
      *            the location of the headless PerOpteryx executable
+     * @param lqnsDir
+     *            directory for layered queuing networks
      */
     public ModelProcessing(final URI perOpteryxDir, final URI lqnsDir) {
         this.perOpteryxDir = perOpteryxDir;

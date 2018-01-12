@@ -18,8 +18,8 @@ package org.iobserve.analysis.test.cli;
 import java.io.File;
 import java.util.Collection;
 
-import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
-import org.iobserve.analysis.filter.writer.DataDumpStage;
+import org.iobserve.stages.sink.DataDumpStage;
+import org.iobserve.stages.source.Dir2RecordsFilter;
 
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;

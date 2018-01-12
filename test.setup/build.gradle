@@ -4,6 +4,9 @@ mainClassName='org.iobserve.analysis.test.cli.AnalysisMain'
 
 dependencies {
 	compile project(":analysis")
+
+	clover 'org.openclover:clover:4.2.0'
+
 	compile "com.beust:jcommander:1.60"
 }
 
@@ -13,6 +16,13 @@ install {
         pom.groupId = 'org.iobserve'
         pom.artifactId = 'analysis.cli'
     }
+}
+
+clover {
+	report {
+		html=true
+	}
+	
 }
 
 ext {

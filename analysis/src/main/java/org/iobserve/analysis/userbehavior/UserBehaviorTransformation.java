@@ -18,9 +18,9 @@ package org.iobserve.analysis.userbehavior;
 import java.io.IOException;
 import java.util.List;
 
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.model.RepositoryModelProvider;
+import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
@@ -125,7 +125,7 @@ public class UserBehaviorTransformation {
         final List<EntryCallSequenceModel> entryCallSequenceModels = extractionOfUserGroups
                 .getEntryCallSequenceModelsOfUserGroups();
         timeAfter = System.currentTimeMillis();
-        this.responseTimeOfUserGroupExtraction = (timeAfter - timeBefore);
+        this.responseTimeOfUserGroupExtraction = timeAfter - timeBefore;
 
         /**
          * 2. The aggregation of the call sequences. It aggregates each call sequence model that is
@@ -139,7 +139,7 @@ public class UserBehaviorTransformation {
         branchExtraction.createCallBranchModels();
         final List<BranchModel> branchModels = branchExtraction.getBranchOperationModels();
         timeAfter = System.currentTimeMillis();
-        this.responseTimeOfBranchExtraction = (timeAfter - timeBefore);
+        this.responseTimeOfBranchExtraction = timeAfter - timeBefore;
 
         /**
          * 3. The detection of iterated behavior. It detects iterated behavior within the created
@@ -153,7 +153,7 @@ public class UserBehaviorTransformation {
         loopDetection.createCallLoopBranchModels();
         final List<BranchModel> loopBranchModels = loopDetection.getloopBranchModels();
         timeAfter = System.currentTimeMillis();
-        this.responseTimeOfLoopExtraction = (timeAfter - timeBefore);
+        this.responseTimeOfLoopExtraction = timeAfter - timeBefore;
 
         /**
          * 4. Modeling of the usage behavior. It creates a PCM usage model corresponding to the
@@ -166,10 +166,10 @@ public class UserBehaviorTransformation {
                 this.isClosedWorkload, this.thinkTime, this.repositoryModelProvider, this.correspondenceModel);
         this.pcmUsageModel = pcmUsageModelBuilder.createUsageModel();
         timeAfter = System.currentTimeMillis();
-        this.responseTimeOfPcmModelling = (timeAfter - timeBefore);
+        this.responseTimeOfPcmModelling = timeAfter - timeBefore;
 
         timeAfterOverall = System.currentTimeMillis();
-        this.overallResponseTime = (timeAfterOverall - timeBeforeOverall);
+        this.overallResponseTime = timeAfterOverall - timeBeforeOverall;
     }
 
     /**

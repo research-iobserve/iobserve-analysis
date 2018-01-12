@@ -28,6 +28,14 @@ public class PrefixConverter implements IURIConverterInterceptor {
     private final String prefix;
     private final String replacement;
 
+    /**
+     * Create an prefix converter.
+     *
+     * @param prefix
+     *            prefix to be replaced
+     * @param replacement
+     *            replacement string
+     */
     public PrefixConverter(final String prefix, final String replacement) {
         this.prefix = prefix;
         this.replacement = replacement;

@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.adaptation.data;
 
-import org.iobserve.analysis.graph.ComponentNode;
-import org.iobserve.analysis.graph.DeploymentNode;
+import org.iobserve.analysis.data.graph.ComponentNode;
+import org.iobserve.analysis.data.graph.DeploymentNode;
 import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
@@ -46,7 +46,14 @@ public class ResourceContainerActionFactory extends ActionFactory {
         return action;
     }
 
-    public static TerminateAction generateTerminateAction(final DeploymentNode runtimeServer) {
+    /**
+     * Create a terminate action.
+     *
+     * @param runtimeServer
+     *            the node going to be terminated
+     * @return the action
+     */
+    public static TerminateAction createTerminateAction(final DeploymentNode runtimeServer) {
         final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
         final TerminateAction action = factory.createTerminateAction();
 
@@ -55,7 +62,14 @@ public class ResourceContainerActionFactory extends ActionFactory {
         return action;
     }
 
-    public static AcquireAction generateAcquireAction(final DeploymentNode reDeploymentServer) {
+    /**
+     * Create a acquire action.
+     *
+     * @param reDeploymentServer
+     *            the node where components can be deployed on
+     * @return the action
+     */
+    public static AcquireAction createAcquireAction(final DeploymentNode reDeploymentServer) {
         final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
         final AcquireAction action = factory.createAcquireAction();
 
@@ -68,7 +82,16 @@ public class ResourceContainerActionFactory extends ActionFactory {
         return action;
     }
 
-    public static ReplicateAction generateReplicateAction(final DeploymentNode runtimeServer,
+    /**
+     * Create replicate action.
+     *
+     * @param runtimeServer
+     *            source server
+     * @param reDeploymentServer
+     *            target server
+     * @return the action
+     */
+    public static ReplicateAction createReplicateAction(final DeploymentNode runtimeServer,
             final DeploymentNode reDeploymentServer) {
         final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
         final ReplicateAction action = factory.createReplicateAction();

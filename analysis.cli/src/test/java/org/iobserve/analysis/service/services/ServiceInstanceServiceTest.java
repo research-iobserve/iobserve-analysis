@@ -22,7 +22,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -109,7 +109,7 @@ public class ServiceInstanceServiceTest {
 
     /**
      * Check whether
-     * {@link ServiceInstanceService#deleteServiceInstance(AssemblyContext, String, String, org.iobserve.analysis.modelneo4j.ModelProvider)}
+     * {@link ServiceInstanceService#deleteServiceInstance(AssemblyContext, String, String, org.iobserve.analysis.model.provider.neo4j.ModelProvider)}
      * works as expected, when the ServiceInstance is not referenced by communicationInstances.
      */
     // TODO test when serviceInstance is referenced by communicationInstance

@@ -18,6 +18,17 @@ package org.iobserve.planning.environment;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
+import com.google.common.base.Throwables;
+
+import de.uka.ipd.sdq.pcm.cost.costPackage;
+import de.uka.ipd.sdq.pcm.cost.util.costResourceFactoryImpl;
+import de.uka.ipd.sdq.pcm.designdecision.designdecisionPackage;
+import de.uka.ipd.sdq.pcm.designdecision.gdof.gdofPackage;
+import de.uka.ipd.sdq.pcm.designdecision.gdof.util.gdofResourceFactoryImpl;
+import de.uka.ipd.sdq.pcm.designdecision.specific.specificPackage;
+import de.uka.ipd.sdq.pcm.designdecision.specific.util.specificResourceFactoryImpl;
+import de.uka.ipd.sdq.pcm.designdecision.util.designdecisionResourceFactoryImpl;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.ecore.EPackage;
@@ -25,7 +36,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.iobserve.analysis.model.PalladioResourceRepository;
+import org.iobserve.analysis.model.IPalladioResourceRepository;
 import org.iobserve.analysis.model.PalladioResourceRepositoryImpl;
 import org.iobserve.planning.environment.uriconverter.PrefixConverter;
 import org.iobserve.planning.environment.uriconverter.URIConverterHandler;
@@ -53,17 +64,6 @@ import org.palladiosimulator.pcm.subsystem.util.SubsystemResourceFactoryImpl;
 import org.palladiosimulator.pcm.system.util.SystemResourceFactoryImpl;
 import org.palladiosimulator.pcm.usagemodel.util.UsagemodelResourceFactoryImpl;
 import org.palladiosimulator.pcm.util.PcmResourceFactoryImpl;
-
-import com.google.common.base.Throwables;
-
-import de.uka.ipd.sdq.pcm.cost.costPackage;
-import de.uka.ipd.sdq.pcm.cost.util.costResourceFactoryImpl;
-import de.uka.ipd.sdq.pcm.designdecision.designdecisionPackage;
-import de.uka.ipd.sdq.pcm.designdecision.gdof.gdofPackage;
-import de.uka.ipd.sdq.pcm.designdecision.gdof.util.gdofResourceFactoryImpl;
-import de.uka.ipd.sdq.pcm.designdecision.specific.specificPackage;
-import de.uka.ipd.sdq.pcm.designdecision.specific.util.specificResourceFactoryImpl;
-import de.uka.ipd.sdq.pcm.designdecision.util.designdecisionResourceFactoryImpl;
 
 /**
  * As Palladio is executed outside an Eclipse environment, we'll have to manually provide certain
@@ -108,6 +108,8 @@ public enum PalladioEclipseEnvironment {
 
     /**
      * Determines whether setup of the environment has already been executed.
+     *
+     * @return returns true if the environment is set up
      */
     public boolean isSetup() {
         return this.isSetup;
@@ -205,6 +207,8 @@ public enum PalladioEclipseEnvironment {
 
     /**
      * Returns the intercepted URI converter. You may add your own interceptors.
+     *
+     * @return handler an URI converter
      */
     public URIConverterHandler getUriConverter() {
         assert this.isSetup();
@@ -221,7 +225,7 @@ public enum PalladioEclipseEnvironment {
         final ResourceRepository resources = new IPCMResourceSetPartitionFactory.DefaultFactory().create()
                 .getResourceTypeRepository();
         assert resources != null;
-        PalladioResourceRepository.INSTANCE.initResources(new PalladioResourceRepositoryImpl(resources));
+        IPalladioResourceRepository.INSTANCE.initResources(new PalladioResourceRepositoryImpl(resources));
     }
 
 }

@@ -31,7 +31,7 @@ import org.palladiosimulator.pcm.resourcetype.SchedulingPolicy;
  * @author Fabian Keller
  *
  */
-public class PalladioResourceRepositoryImpl implements PalladioResourceRepository {
+public class PalladioResourceRepositoryImpl implements IPalladioResourceRepository {
 
     private final ResourceRepository repository;
 
@@ -47,6 +47,12 @@ public class PalladioResourceRepositoryImpl implements PalladioResourceRepositor
     private final Map<String, Entity> resourceTypes = new HashMap<>();
     private final Map<String, SchedulingPolicy> schedulingPolicies = new HashMap<>();
 
+    /**
+     * Create an Palladio resource repository.
+     * 
+     * @param repository
+     *            the resource repository
+     */
     public PalladioResourceRepositoryImpl(final ResourceRepository repository) {
         this.repository = repository;
     }

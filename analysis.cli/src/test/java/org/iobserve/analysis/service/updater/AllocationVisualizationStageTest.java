@@ -20,10 +20,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.iobserve.common.record.ContainerAllocationEvent;
-import org.iobserve.common.record.IAllocationRecord;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -36,13 +36,12 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
-import teetime.framework.test.StageTester;
 import util.TestHandler;
 
 /**
  * Tests for {@link AllocationVisualizationStage}.
  *
- * @author Josefine WEgert
+ * @author Josefine Wegert
  *
  */
 
@@ -61,10 +60,10 @@ public class AllocationVisualizationStageTest {
     private static final String OUTPUT_HOSTNAME = "localhost";
 
     /** input events. */
-    private final List<IAllocationRecord> inputEvents = new ArrayList<>();
+    private final List<ResourceContainer> inputEvents = new ArrayList<>();
 
     /** test event. */
-    private ContainerAllocationEvent allocationEvent;
+    private ResourceContainer allocationEvent;
 
     /** data for generating test container allocation event. */
     private static final String SERVICE = "test-service";
@@ -90,19 +89,16 @@ public class AllocationVisualizationStageTest {
                 + "/v1/systems/" + AllocationVisualizationStageTest.SYSTEM_ID + "/changelogs");
 
         this.allocationVisualizationStage = new AllocationVisualizationStage(this.changelogURL,
-                AllocationVisualizationStageTest.SYSTEM_ID, this.mockedResourceContainerModelProvider);
-
-        /** test event */
-        this.allocationEvent = new ContainerAllocationEvent(AllocationVisualizationStageTest.URL);
-
-        /** input events */
-        this.inputEvents.add(this.allocationEvent);
+                AllocationVisualizationStageTest.SYSTEM_ID);
 
         /** list of test resource container */
         this.testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
         this.testResourceContainer.setEntityName("test_nodeName");
         this.testResourceContainer.setId("test_nodeId");
         this.testResourceContainerList.add(this.testResourceContainer);
+
+        /** input events */
+        this.inputEvents.add(this.testResourceContainer);
 
         // stubbing
         Mockito.when(this.mockedResourceContainerModelProvider.readOnlyComponentByName(ResourceContainer.class,

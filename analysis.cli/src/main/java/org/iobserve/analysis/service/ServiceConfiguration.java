@@ -22,23 +22,21 @@ import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.MultiInputObservationConfiguration;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
 
 /**
  * @author Reiner Jung
@@ -46,7 +44,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  */
 public class ServiceConfiguration extends MultiInputObservationConfiguration {
 
-	/**
+    /**
      * Setup service configuration.
      *
      * @param inputPort
@@ -98,44 +96,37 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
             final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, 
-            final SystemModelProvider systemModelProvider,
+            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
             final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
             final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider, 
-            final String visualizationServiceURL,
-            final SnapshotBuilder snapshotBuilder, 
-            final URI perOpteryxDir, 
-            final URI lqnsDir, 
-            final URI deployablesFolder)
-            throws MalformedURLException {
+            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider, final String visualizationServiceURL,
+            final SnapshotBuilder snapshotBuilder, final URI perOpteryxDir, final URI lqnsDir,
+            final URI deployablesFolder) throws MalformedURLException {
         super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider, allocationModelProvider,
                 allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
                 EOutputMode.UBM_VISUALIZATION, snapshotBuilder, perOpteryxDir, lqnsDir, deployablesFolder);
 
-
         final URL url = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
 
         final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(url,
-                systemId, resourceContainerModelGraphProvider, assemblyContextModelGraphProvider, correspondenceModel);
+                systemId, resourceContainerModelGraphProvider, assemblyContextModelGraphProvider);
         final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
-                systemId, resourceContainerModelGraphProvider);
+                systemId);
         final UndeploymentVisualizationStage undeploymentVisualizationStage = new UndeploymentVisualizationStage(url,
-                systemId, resourceContainerModelGraphProvider, assCtxSystemModelGraphProvider, systemModelGraphProvider,
-                correspondenceModel);
+                systemId, resourceContainerModelGraphProvider, assCtxSystemModelGraphProvider,
+                systemModelGraphProvider);
 
-        this.connectPorts(this.deploymentAfterAllocation.getDeploymentFinishedOutputPort(),
-                deploymentVisualizationStage.getInputPort());
-        this.connectPorts(this.tAllocationAfterDeploy.getAllocationOutputPort(),
-                allocationVisualizationStage.getInputPort());
-        this.connectPorts(this.undeployment.getVisualizationOutputPort(),
+        this.connectPorts(this.deploymentStage.getDeployedOutputPort(), deploymentVisualizationStage.getInputPort());
+        this.connectPorts(this.deploymentStage.getAllocationOutputPort(), allocationVisualizationStage.getInputPort());
+        this.connectPorts(this.undeploymentStage.getUndeployedOutputPort(),
                 undeploymentVisualizationStage.getInputPort());
+        // TODO missing deallocate
 
     }
 

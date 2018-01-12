@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2017 iObserve Project
+ * Copyright 2018 iObserve Project (http://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,28 +15,30 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
+
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
 /**
- * @author Generic Kieker
+ * @author Reiner Jung
  * 
- * @since 1.13
+ * @since 0.0.2
  */
 public final class ServletUndeployedEventFactory implements IRecordFactory<ServletUndeployedEvent> {
-
-    @Override
-    public ServletUndeployedEvent create(final IValueDeserializer deserializer) {
-        return new ServletUndeployedEvent(deserializer);
-    }
-
-    @Override
-    @Deprecated
-    public ServletUndeployedEvent create(final Object[] values) {
-        return new ServletUndeployedEvent(values);
-    }
-
-    public int getRecordSizeInBytes() {
-        return ServletUndeployedEvent.SIZE;
-    }
+	
+	
+	@Override
+	public ServletUndeployedEvent create(final IValueDeserializer deserializer) {
+		return new ServletUndeployedEvent(deserializer);
+	}
+	
+	@Override
+	@Deprecated
+	public ServletUndeployedEvent create(final Object[] values) {
+		return new ServletUndeployedEvent(values);
+	}
+	
+	public int getRecordSizeInBytes() {
+		return ServletUndeployedEvent.SIZE;
+	}
 }

@@ -16,26 +16,21 @@
 package org.iobserve.analysis.service.updater;
 
 import java.net.URL;
+import java.util.List;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.iobserve.analysis.filter.TDeployment;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import teetime.framework.AbstractConsumerStage;
+
+import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
-import org.iobserve.analysis.utils.Opt;
-import org.iobserve.common.record.EJBDeployedEvent;
-import org.iobserve.common.record.IDeploymentRecord;
-import org.iobserve.common.record.ServletDeployedEvent;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
-import teetime.framework.AbstractConsumerStage;
 import util.Changelog;
 import util.SendHttpRequest;
 
@@ -43,12 +38,10 @@ import util.SendHttpRequest;
  * This stage is triggered by an analysis deployment update.
  *
  * @author Reiner Jung
- * @author jweg
+ * @author Josefine Wegert
  *
  */
-public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploymentRecord> {
-
-    private static final Logger LOGGER = LogManager.getLogger(TDeployment.class);
+public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
     private final ServiceService serviceService = new ServiceService();
     private final ServiceInstanceService serviceinstanceService = new ServiceInstanceService();
@@ -57,9 +50,6 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
     private final String systemId;
     private final ModelProvider<ResourceContainer> resourceContainerModelProvider;
     private final ModelProvider<AssemblyContext> allocationModelProvider;
-    private final ICorrespondence correspondenceModel;
-
-    private String entityName;
 
     /**
      * Output visualization configuration.
@@ -73,27 +63,19 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
      *            container
      * @param allocationModelProvider
      *            model provider for the allocation model
-     * @param correspondenceModel
-     *            correspondence model
      */
     public DeploymentVisualizationStage(final URL outputURL, final String systemId,
             final ModelProvider<ResourceContainer> resourceContainerModelProvider,
-            final ModelProvider<AssemblyContext> allocationModelProvider, final ICorrespondence correspondenceModel) {
+            final ModelProvider<AssemblyContext> allocationModelProvider) {
         this.outputURL = outputURL;
         this.systemId = systemId;
         this.resourceContainerModelProvider = resourceContainerModelProvider;
         this.allocationModelProvider = allocationModelProvider;
-        this.correspondenceModel = correspondenceModel;
     }
 
     @Override
-    protected void execute(final IDeploymentRecord deployment) throws Exception {
-        if (deployment instanceof ServletDeployedEvent) {
-            SendHttpRequest.post(this.createData((ServletDeployedEvent) deployment), this.outputURL);
-        } else if (deployment instanceof EJBDeployedEvent) {
-            SendHttpRequest.post(this.createData((EJBDeployedEvent) deployment), this.outputURL);
-        }
-
+    protected void execute(final PCMDeployedEvent deployment) throws Exception {
+        SendHttpRequest.post(this.createData(deployment), this.outputURL);
     }
 
     /**
@@ -105,21 +87,16 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
      *            servlet deployed event
      * @return array that contains changelogs for creating a service and a service instance
      */
-    private JsonArray createData(final ServletDeployedEvent deployment) {
-
-        final String serverName = deployment.getSerivce();
-        final String context = deployment.getContext();
+    private JsonArray createData(final PCMDeployedEvent deployment) {
+        final String serverName = deployment.getService();
         final String nodeId = this.resourceContainerModelProvider
                 .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
 
-        Opt.of(this.correspondenceModel.getCorrespondent(context)).ifPresent()
-                .apply(correspondent -> this.entityName = correspondent.getPcmEntityName())
-                .elseApply(() -> DeploymentVisualizationStage.LOGGER.info(
-                        "This should not happen, because the service was created and the models were updated before."));
+        final String asmContextName = deployment.getResourceContainer().getEntityName() + "_" + serverName;
 
-        final String asmContextName = this.entityName + "_" + serverName;
-        final AssemblyContext assemblyContext = this.allocationModelProvider
-                .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
+        final List<AssemblyContext> contexts = this.allocationModelProvider
+                .readOnlyComponentByName(AssemblyContext.class, asmContextName);
+        final AssemblyContext assemblyContext = contexts.get(0);
 
         final JsonObject serviceObject = Changelog
                 .create(this.serviceService.createService(assemblyContext, this.systemId));
@@ -127,40 +104,8 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<IDeploym
                 .createServiceInstance(assemblyContext, this.systemId, nodeId, this.serviceService.getServiceId()));
 
         final JsonArray dataArray = Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();
+
         return dataArray;
     }
 
-    /**
-     * Collects information for building a service and a service instance element for the
-     * visualization. As the order of the changelogs matters, the elements are added to an array in
-     * the right order.
-     *
-     * @param deployment
-     *            ejb deployed event
-     * @return array that contains changelogs for creating a service and a service instance
-     */
-    private JsonArray createData(final EJBDeployedEvent deployment) {
-
-        final String serverName = deployment.getSerivce();
-        final String context = deployment.getContext();
-        final String nodeId = this.resourceContainerModelProvider
-                .readOnlyComponentByName(ResourceContainer.class, serverName).get(0).getId();
-
-        Opt.of(this.correspondenceModel.getCorrespondent(context)).ifPresent()
-                .apply(correspondent -> this.entityName = correspondent.getPcmEntityName())
-                .elseApply(() -> DeploymentVisualizationStage.LOGGER.info(
-                        "This should not happen, because the service was created and the models were updated before."));
-
-        final String asmContextName = this.entityName + "_" + serverName;
-        final AssemblyContext assemblyContext = this.allocationModelProvider
-                .readOnlyComponentByName(AssemblyContext.class, asmContextName).get(0);
-
-        final JsonObject serviceObject = Changelog
-                .create(this.serviceService.createService(assemblyContext, this.systemId));
-        final JsonObject serviceinstanceObject = Changelog.create(this.serviceinstanceService
-                .createServiceInstance(assemblyContext, this.systemId, nodeId, this.serviceService.getServiceId()));
-
-        final JsonArray dataArray = Json.createArrayBuilder().add(serviceObject).add(serviceinstanceObject).build();
-        return dataArray;
-    }
 }
