@@ -20,6 +20,7 @@ import org.iobserve.analysis.clustering.filter.TBehaviorModelTableGeneration;
 import org.iobserve.analysis.clustering.filter.TEntryCallSequenceFilter;
 import org.iobserve.analysis.clustering.filter.TInstanceTransformations;
 import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
+
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 
 import teetime.framework.CompositeStage;
@@ -30,7 +31,9 @@ import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
 import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import teetime.stage.basic.merger.Merger;
 import teetime.stage.basic.merger.strategy.BlockingBusyWaitingRoundRobinMergerStrategy;
+
 import teetime.stage.basic.merger.strategy.IMergerStrategy;
+
 import weka.core.Instances;
 
 /**
