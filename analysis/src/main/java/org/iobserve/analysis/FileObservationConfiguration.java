@@ -18,24 +18,24 @@ package org.iobserve.analysis;
 import java.io.File;
 import java.util.Collection;
 
+import teetime.stage.InitialElementProducer;
+import teetime.stage.className.ClassNameRegistryRepository;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.IAdaptationEventListener;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.AllocationModelProvider;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
-import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.provider.SystemModelProvider;
-import org.iobserve.analysis.model.provider.UsageModelProvider;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.stages.source.Dir2RecordsFilter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import teetime.stage.InitialElementProducer;
-import teetime.stage.className.ClassNameRegistryRepository;
 
 /**
  *

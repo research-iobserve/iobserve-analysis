@@ -19,10 +19,10 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.model.builder.UsageModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.factory.UsageModelFactory;
+import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -97,33 +97,33 @@ public final class OverlappingIterationReference {
 
         // In the following the reference usage model is created
         AbstractUserAction lastAction;
-        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelFactory.createUsageModel();
+        final UsageScenario usageScenario = UsageModelFactory.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-        final Start start = UsageModelBuilder.createStart("");
-        UsageModelBuilder.addUserAction(scenarioBehaviour, start);
-        final Stop stop = UsageModelBuilder.createStop("");
-        UsageModelBuilder.addUserAction(scenarioBehaviour, stop);
+        final Start start = UsageModelFactory.createStart("");
+        UsageModelFactory.addUserAction(scenarioBehaviour, start);
+        final Stop stop = UsageModelFactory.createStop("");
+        UsageModelFactory.addUserAction(scenarioBehaviour, stop);
         // According to the randomly set number of iterations the sequence that is iterated three
         // times is represented by a loop element. The other sequence is represented by a sequence
-        final Loop loop = UsageModelBuilder.createLoop("", scenarioBehaviour);
+        final Loop loop = UsageModelFactory.createLoop("", scenarioBehaviour);
 
         if (lengthOfSequence1 >= lengthOfSequence2) {
-            UsageModelBuilder.connect(start, loop);
+            UsageModelFactory.connect(start, loop);
             final PCMRandomVariable pcmLoopIteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
             pcmLoopIteration.setSpecification(String.valueOf(loopCount1));
             loop.setLoopIteration_Loop(pcmLoopIteration); // Set number of loops
-            final Start loopStart = UsageModelBuilder.createStart("");
-            UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
-            final Stop loopStop = UsageModelBuilder.createStop("");
-            UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
+            final Start loopStart = UsageModelFactory.createStart("");
+            UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
+            final Stop loopStop = UsageModelFactory.createStop("");
+            UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
 
             lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
                     correspondenceModel, 0, loopStart, scenarioBehaviour);
             lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
                     correspondenceModel, 2, lastAction, scenarioBehaviour);
 
-            UsageModelBuilder.connect(lastAction, loopStop);
+            UsageModelFactory.connect(lastAction, loopStop);
 
             lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
                     correspondenceModel, 3, loop, scenarioBehaviour);
@@ -132,7 +132,7 @@ public final class OverlappingIterationReference {
             lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
                     correspondenceModel, 3, lastAction, scenarioBehaviour);
 
-            UsageModelBuilder.connect(lastAction, stop);
+            UsageModelFactory.connect(lastAction, stop);
         } else {
             lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
                     correspondenceModel, 0, start, scenarioBehaviour);
@@ -141,14 +141,14 @@ public final class OverlappingIterationReference {
             lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
                     correspondenceModel, 0, lastAction, scenarioBehaviour);
 
-            UsageModelBuilder.connect(lastAction, loop);
+            UsageModelFactory.connect(lastAction, loop);
             final PCMRandomVariable pcmLoopIteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
             pcmLoopIteration.setSpecification(String.valueOf(loopCount2));
             loop.setLoopIteration_Loop(pcmLoopIteration); // Set number of loops
-            final Start loopStart = UsageModelBuilder.createStart("");
-            UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
-            final Stop loopStop = UsageModelBuilder.createStop("");
-            UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
+            final Start loopStart = UsageModelFactory.createStart("");
+            UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
+            final Stop loopStop = UsageModelFactory.createStop("");
+            UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
             lastAction = loopStart;
 
             lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
@@ -156,8 +156,8 @@ public final class OverlappingIterationReference {
             lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
                     correspondenceModel, 3, lastAction, scenarioBehaviour);
 
-            UsageModelBuilder.connect(lastAction, loopStop);
-            UsageModelBuilder.connect(loop, stop);
+            UsageModelFactory.connect(lastAction, loopStop);
+            UsageModelFactory.connect(loop, stop);
         }
 
         OverlappingIterationReference.createMatchingEntryAndExitEvents(entryCallSequenceModel, lengthOfSequence1,
@@ -295,10 +295,10 @@ public final class OverlappingIterationReference {
                 ReferenceUsageModelBuilder.CLASS_SIGNATURE[index],
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[index]);
         if (correspondent.isPresent()) {
-            final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+            final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                     .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
-            UsageModelBuilder.addUserAction(scenarioBehaviour, entryLevelSystemCall);
-            UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+            UsageModelFactory.addUserAction(scenarioBehaviour, entryLevelSystemCall);
+            UsageModelFactory.connect(lastAction, entryLevelSystemCall);
 
             return entryLevelSystemCall;
         } else {

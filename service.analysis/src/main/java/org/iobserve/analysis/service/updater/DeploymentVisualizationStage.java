@@ -25,7 +25,7 @@ import javax.json.JsonObject;
 import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;

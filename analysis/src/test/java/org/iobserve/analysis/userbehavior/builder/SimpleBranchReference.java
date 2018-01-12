@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.model.builder.UsageModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.factory.UsageModelFactory;
+import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -88,28 +88,28 @@ public final class SimpleBranchReference {
         // In the following the reference usage model is created
         Optional<Correspondent> correspondent;
 
-        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelFactory.createUsageModel();
+        final UsageScenario usageScenario = UsageModelFactory.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
 
-        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
-        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
+        final Start start = UsageModelFactory.createAddStartAction("", scenarioBehaviour);
+        final Stop stop = UsageModelFactory.createAddStopAction("", scenarioBehaviour);
 
         AbstractUserAction lastAction = start;
 
         // Creates the branch element and the branch transitions according to the random number of
         // branch transitions
-        final org.palladiosimulator.pcm.usagemodel.Branch branch = UsageModelBuilder.createBranch("",
+        final org.palladiosimulator.pcm.usagemodel.Branch branch = UsageModelFactory.createBranch("",
                 scenarioBehaviour);
-        UsageModelBuilder.connect(start, branch);
+        UsageModelFactory.connect(start, branch);
         // For each branch transition an alternative EntryLevelSystemCall is created to represent
         // the alternative call sequences
         for (int i = 0; i < numberOfBranchTransitions; i++) {
-            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branch);
+            final BranchTransition branchTransition = UsageModelFactory.createBranchTransition(branch);
             final ScenarioBehaviour branchTransitionBehaviour = branchTransition
                     .getBranchedBehaviour_BranchTransition();
-            final Start startBranchTransition = UsageModelBuilder.createAddStartAction("", branchTransitionBehaviour);
-            final Stop stopBranchTransition = UsageModelBuilder.createAddStopAction("", branchTransitionBehaviour);
+            final Start startBranchTransition = UsageModelFactory.createAddStartAction("", branchTransitionBehaviour);
+            final Stop stopBranchTransition = UsageModelFactory.createAddStopAction("", branchTransitionBehaviour);
 
             lastAction = startBranchTransition;
 
@@ -120,10 +120,10 @@ public final class SimpleBranchReference {
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
             if (correspondent.isPresent()) {
-                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                         .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
-                UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
+                UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
             if (i == 0) {
@@ -134,25 +134,25 @@ public final class SimpleBranchReference {
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0]);
             }
             if (correspondent.isPresent()) {
-                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                         .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
-                UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
+                UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
 
-            UsageModelBuilder.connect(lastAction, stopBranchTransition);
+            UsageModelFactory.connect(lastAction, stopBranchTransition);
         }
         correspondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[2],
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2]);
         if (correspondent.isPresent()) {
-            final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+            final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                     .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
-            UsageModelBuilder.addUserAction(scenarioBehaviour, entryLevelSystemCall);
-            UsageModelBuilder.connect(branch, entryLevelSystemCall);
+            UsageModelFactory.addUserAction(scenarioBehaviour, entryLevelSystemCall);
+            UsageModelFactory.connect(branch, entryLevelSystemCall);
             lastAction = entryLevelSystemCall;
         }
-        UsageModelBuilder.connect(lastAction, stop);
+        UsageModelFactory.connect(lastAction, stop);
 
         // According to the reference usage model user sessions are created that exactly represent
         // the user behavior of the reference usage model. The entry and exit times enable that the

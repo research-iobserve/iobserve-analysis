@@ -19,8 +19,8 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.factory.ResourceEnvironmentModelFactory;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -58,7 +58,7 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
 
     @Override
     protected void execute(final PCMDeployedEvent event) throws Exception {
-        final ResourceContainer resourceContainer = ResourceEnvironmentModelBuilder.getResourceContainerByName(
+        final ResourceContainer resourceContainer = ResourceEnvironmentModelFactory.getResourceContainerByName(
                 this.resourceEnvironmentModelGraphProvider.readOnlyRootComponent(ResourceEnvironment.class),
                 event.getService()).get();
 

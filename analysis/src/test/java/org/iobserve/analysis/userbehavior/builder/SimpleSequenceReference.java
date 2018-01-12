@@ -23,10 +23,10 @@ import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.data.UserSession;
-import org.iobserve.analysis.model.builder.UsageModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.factory.UsageModelFactory;
+import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -93,11 +93,11 @@ public final class SimpleSequenceReference {
         final ReferenceElements referenceElements = new ReferenceElements();
 
         // In the following the reference usage model is created
-        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelFactory.createUsageModel();
+        final UsageScenario usageScenario = UsageModelFactory.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
-        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
+        final Start start = UsageModelFactory.createAddStartAction("", scenarioBehaviour);
+        final Stop stop = UsageModelFactory.createAddStopAction("", scenarioBehaviour);
 
         AbstractUserAction lastAction = start;
 
@@ -112,14 +112,14 @@ public final class SimpleSequenceReference {
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
             if (correspondent.isPresent()) {
-                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                         .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
-                UsageModelBuilder.addUserAction(scenarioBehaviour, entryLevelSystemCall);
-                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                UsageModelFactory.addUserAction(scenarioBehaviour, entryLevelSystemCall);
+                UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
         }
-        UsageModelBuilder.connect(lastAction, stop);
+        UsageModelFactory.connect(lastAction, stop);
 
         // According to the reference usage model user sessions are created that exactly represent
         // the user behavior of the reference usage model. The entry and exit times are set randomly

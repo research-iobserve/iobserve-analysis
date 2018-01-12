@@ -19,10 +19,10 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.model.builder.UsageModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.factory.UsageModelFactory;
+import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -86,23 +86,23 @@ public final class SimpleLoopReference {
 
         // In the following the reference usage model is created
         AbstractUserAction lastAction;
-        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelFactory.createUsageModel();
+        final UsageScenario usageScenario = UsageModelFactory.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
-        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
+        final Start start = UsageModelFactory.createAddStartAction("", scenarioBehaviour);
+        final Stop stop = UsageModelFactory.createAddStopAction("", scenarioBehaviour);
 
         // A loop is created and the loop count is set
-        final Loop loop = UsageModelBuilder.createLoop("", scenarioBehaviour);
-        UsageModelBuilder.connect(start, loop);
+        final Loop loop = UsageModelFactory.createLoop("", scenarioBehaviour);
+        UsageModelFactory.connect(start, loop);
         final PCMRandomVariable pcmLoopIteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
         pcmLoopIteration.setSpecification(String.valueOf(loopCount));
         loop.setLoopIteration_Loop(pcmLoopIteration);
-        UsageModelBuilder.connect(loop, stop);
+        UsageModelFactory.connect(loop, stop);
 
         // The EntryLevelSystemCalls that are iterated are added to the loop element
-        final Start loopStart = UsageModelBuilder.createAddStartAction("", loop.getBodyBehaviour_Loop());
-        final Stop loopStop = UsageModelBuilder.createAddStopAction("", loop.getBodyBehaviour_Loop());
+        final Start loopStart = UsageModelFactory.createAddStartAction("", loop.getBodyBehaviour_Loop());
+        final Stop loopStop = UsageModelFactory.createAddStopAction("", loop.getBodyBehaviour_Loop());
         lastAction = loopStart;
 
         Optional<Correspondent> optionCorrespondent;
@@ -119,14 +119,14 @@ public final class SimpleLoopReference {
             }
             if (optionCorrespondent.isPresent()) {
                 final Correspondent correspondent = optionCorrespondent.get();
-                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                         .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
-                UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
-                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
+                UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
         }
-        UsageModelBuilder.connect(lastAction, loopStop);
+        UsageModelFactory.connect(lastAction, loopStop);
 
         // According to the reference usage model user sessions are created that exactly represent
         // the user behavior of the reference usage model. The entry and exit times enable that the

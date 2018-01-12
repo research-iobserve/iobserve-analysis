@@ -20,25 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.FileObservationConfiguration;
-import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.clustering.EAggregationType;
-import org.iobserve.analysis.clustering.EOutputMode;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.AllocationModelProvider;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
-import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.provider.SystemModelProvider;
-import org.iobserve.analysis.model.provider.UsageModelProvider;
-import org.iobserve.analysis.modelneo4j.Graph;
-import org.iobserve.analysis.modelneo4j.GraphLoader;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -48,8 +29,28 @@ import com.beust.jcommander.converters.IntegerConverter;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
+
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
+
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.eclipse.emf.common.util.URI;
+import org.iobserve.analysis.FileObservationConfiguration;
+import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.analysis.clustering.EAggregationType;
+import org.iobserve.analysis.clustering.EOutputMode;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.Graph;
+import org.iobserve.analysis.model.provider.neo4j.GraphLoader;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  * Main class for starting the iObserve application.

@@ -21,12 +21,13 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.analysis.model.builder.AllocationModelBuilder;
-import org.iobserve.analysis.model.builder.SystemModelBuilder;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.factory.AllocationModelFactory;
+import org.iobserve.analysis.model.factory.SystemModelFactory;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * This class contains the transformation for updating the PCM allocation model with respect to
@@ -76,27 +77,35 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
         final String entityName = event.getCorrespondent().getPcmEntityName();
 
         // build the assembly context name
-        final String asmContextName = entityName + "_" + event.getService();
+        final String assemblyContextName = entityName + "_" + event.getService();
 
         final ResourceContainer resourceContainer = event.getResourceContainer();
 
         // get assembly context by name or create it if necessary.
-        final Optional<AssemblyContext> optAssemblyContext = SystemModelBuilder.getAssemblyContextByName(
-                this.systemModelGraphProvider.readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class),
-                asmContextName);
+        final System system = this.systemModelGraphProvider
+                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+        final Optional<AssemblyContext> optAssemblyContext = SystemModelFactory.getAssemblyContextByName(system,
+                assemblyContextName);
 
         if (optAssemblyContext.isPresent()) {
             // update the allocation graph
             final Allocation allocationModel = this.allocationModelGraphProvider
                     .readOnlyRootComponent(Allocation.class);
-            AllocationModelBuilder.removeAllocationContext(allocationModel, resourceContainer,
+            AllocationModelFactory.removeAllocationContext(allocationModel, resourceContainer,
                     optAssemblyContext.get());
             this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
 
             // signal allocation update
             this.outputPort.send(event);
         } else {
-            this.logger.warn("AssemblyContext for " + resourceContainer.getEntityName() + " not found! \n");
+            if (resourceContainer != null) {
+                this.logger.warn("AssemblyContext " + assemblyContextName + " for " + resourceContainer.getEntityName()
+                        + " not found! \n");
+            } else {
+                this.logger.warn(
+                        "AssemblyContext " + assemblyContextName + " not found and no resource container specified.\n");
+            }
+
         }
     }
 

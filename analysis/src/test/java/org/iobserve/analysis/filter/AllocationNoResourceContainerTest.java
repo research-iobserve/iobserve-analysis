@@ -23,8 +23,8 @@ import teetime.framework.test.StageTester;
 
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.AllocationStage;
-import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.factory.ResourceEnvironmentModelFactory;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.analysis.test.data.ImplementationLevelData;
 import org.iobserve.analysis.test.data.ResourceEnvironmentData;
 import org.iobserve.common.record.ContainerAllocationEvent;
@@ -51,7 +51,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 // write all final classes here
-@PrepareForTest(ResourceEnvironmentModelBuilder.class)
+@PrepareForTest(ResourceEnvironmentModelFactory.class)
 public class AllocationNoResourceContainerTest {
 
     /** stage under test. */
@@ -82,7 +82,7 @@ public class AllocationNoResourceContainerTest {
 
         /** mock for ResourceEnvironmentModelBuilder */
         // use PowerMockito for calling static methods of this final class
-        PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
+        PowerMockito.mockStatic(ResourceEnvironmentModelFactory.class);
         /** mock for new graph provider */
         AllocationNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider = Mockito
                 .mock(ModelProvider.class);
@@ -94,11 +94,11 @@ public class AllocationNoResourceContainerTest {
                 .readOnlyRootComponent(ResourceEnvironment.class))
                 .thenReturn(ResourceEnvironmentData.RESOURCE_ENVIRONMENT);
 
-        Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
+        Mockito.when(ResourceEnvironmentModelFactory.getResourceContainerByName(
                 ResourceEnvironmentData.RESOURCE_ENVIRONMENT, ImplementationLevelData.SERVICE))
                 .thenReturn(AllocationNoResourceContainerTest.optTestNullResourceContainer);
 
-        Mockito.when(ResourceEnvironmentModelBuilder
+        Mockito.when(ResourceEnvironmentModelFactory
                 .createResourceContainer(ResourceEnvironmentData.RESOURCE_ENVIRONMENT, ImplementationLevelData.SERVICE))
                 .thenReturn(ResourceEnvironmentData.RESOURCE_CONTAINER);
 

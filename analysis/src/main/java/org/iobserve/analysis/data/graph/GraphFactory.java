@@ -21,11 +21,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 import org.eclipse.emf.common.util.EList;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.provider.AllocationModelProvider;
-import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.provider.SystemModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyConnectorPrivacy;
@@ -35,9 +38,6 @@ import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 
 /**
  * TODO add description.

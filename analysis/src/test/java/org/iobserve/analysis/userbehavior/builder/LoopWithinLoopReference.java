@@ -19,10 +19,10 @@ import java.io.IOException;
 import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.model.builder.UsageModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.factory.UsageModelFactory;
+import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -89,50 +89,50 @@ public final class LoopWithinLoopReference {
         // In the following the reference usage model is created
         Optional<Correspondent> optionCorrespondent;
         AbstractUserAction lastAction;
-        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelFactory.createUsageModel();
+        final UsageScenario usageScenario = UsageModelFactory.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-        final Start start = UsageModelBuilder.createStart("");
-        UsageModelBuilder.addUserAction(scenarioBehaviour, start);
-        final Stop stop = UsageModelBuilder.createStop("");
-        UsageModelBuilder.addUserAction(scenarioBehaviour, stop);
+        final Start start = UsageModelFactory.createStart("");
+        UsageModelFactory.addUserAction(scenarioBehaviour, start);
+        final Stop stop = UsageModelFactory.createStop("");
+        UsageModelFactory.addUserAction(scenarioBehaviour, stop);
         lastAction = start;
 
         // The exterior loop is created
-        final Loop loop = UsageModelBuilder.createLoop("", scenarioBehaviour);
-        UsageModelBuilder.connect(lastAction, loop);
-        UsageModelBuilder.connect(loop, stop);
+        final Loop loop = UsageModelFactory.createLoop("", scenarioBehaviour);
+        UsageModelFactory.connect(lastAction, loop);
+        UsageModelFactory.connect(loop, stop);
         final PCMRandomVariable pcmLoopIteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
         pcmLoopIteration.setSpecification(String.valueOf(countOfLoop1));
         loop.setLoopIteration_Loop(pcmLoopIteration);
-        final Start loopStart = UsageModelBuilder.createStart("");
-        UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
-        final Stop loopStop = UsageModelBuilder.createStop("");
-        UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
+        final Start loopStart = UsageModelFactory.createStart("");
+        UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
+        final Stop loopStop = UsageModelFactory.createStop("");
+        UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
         lastAction = loopStart;
 
         // The interior loop is created
-        final Loop loop2 = UsageModelBuilder.createLoop("", loop.getBodyBehaviour_Loop());
-        UsageModelBuilder.connect(lastAction, loop2);
+        final Loop loop2 = UsageModelFactory.createLoop("", loop.getBodyBehaviour_Loop());
+        UsageModelFactory.connect(lastAction, loop2);
         final PCMRandomVariable pcmLoop2Iteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
         pcmLoop2Iteration.setSpecification(String.valueOf(countOfLoop2));
         loop2.setLoopIteration_Loop(pcmLoop2Iteration);
-        final Start loop2Start = UsageModelBuilder.createStart("");
-        UsageModelBuilder.addUserAction(loop2.getBodyBehaviour_Loop(), loop2Start);
-        final Stop loop2Stop = UsageModelBuilder.createStop("");
-        UsageModelBuilder.addUserAction(loop2.getBodyBehaviour_Loop(), loop2Stop);
+        final Start loop2Start = UsageModelFactory.createStart("");
+        UsageModelFactory.addUserAction(loop2.getBodyBehaviour_Loop(), loop2Start);
+        final Stop loop2Stop = UsageModelFactory.createStop("");
+        UsageModelFactory.addUserAction(loop2.getBodyBehaviour_Loop(), loop2Stop);
         lastAction = loop2Start;
         optionCorrespondent = correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[2],
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2]);
         if (optionCorrespondent.isPresent()) {
             final Correspondent correspondent = optionCorrespondent.get();
-            final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+            final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                     .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
-            UsageModelBuilder.addUserAction(loop2.getBodyBehaviour_Loop(), entryLevelSystemCall);
-            UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+            UsageModelFactory.addUserAction(loop2.getBodyBehaviour_Loop(), entryLevelSystemCall);
+            UsageModelFactory.connect(lastAction, entryLevelSystemCall);
             lastAction = entryLevelSystemCall;
         }
-        UsageModelBuilder.connect(lastAction, loop2Stop);
+        UsageModelFactory.connect(lastAction, loop2Stop);
         lastAction = loop2;
 
         // The sequence that exclusively belongs to the exterior loop is created
@@ -153,14 +153,14 @@ public final class LoopWithinLoopReference {
             }
             if (optionCorrespondent.isPresent()) {
                 final Correspondent correspondent = optionCorrespondent.get();
-                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                         .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
-                UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
-                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
+                UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
         }
-        UsageModelBuilder.connect(lastAction, loopStop);
+        UsageModelFactory.connect(lastAction, loopStop);
 
         // According to the reference usage model user sessions are created that exactly represent
         // the user behavior of the reference usage model. The entry and exit times enable that the

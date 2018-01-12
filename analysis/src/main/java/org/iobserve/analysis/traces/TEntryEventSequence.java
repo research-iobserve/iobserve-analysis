@@ -19,8 +19,8 @@ import java.io.IOException;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
-import org.iobserve.analysis.model.provider.UsageModelProvider;
+import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.file.UsageModelProvider;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 

@@ -23,9 +23,9 @@ import teetime.framework.OutputPort;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.analysis.model.builder.AllocationModelBuilder;
-import org.iobserve.analysis.model.builder.SystemModelBuilder;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.factory.AllocationModelFactory;
+import org.iobserve.analysis.model.factory.SystemModelFactory;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
@@ -88,7 +88,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
         final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
 
-        final Optional<AssemblyContext> optAssemblyContext = SystemModelBuilder.getAssemblyContextByName(systemModel,
+        final Optional<AssemblyContext> optAssemblyContext = SystemModelFactory.getAssemblyContextByName(systemModel,
                 assemblyContextName);
 
         if (optAssemblyContext.isPresent()) {
@@ -100,9 +100,9 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
             /** update the PCM allocation model (deployment model). */
             final Allocation allocationModel = this.allocationModelGraphProvider
                     .readOnlyRootComponent(Allocation.class);
-            if (!AllocationModelBuilder.isAllocationPresent(allocationModel, event.getResourceContainer(),
+            if (!AllocationModelFactory.isAllocationPresent(allocationModel, event.getResourceContainer(),
                     assemblyContext)) {
-                AllocationModelBuilder.addAllocationContext(allocationModel, event.getResourceContainer(),
+                AllocationModelFactory.addAllocationContext(allocationModel, event.getResourceContainer(),
                         assemblyContext);
             }
             this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
@@ -132,7 +132,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider, final String name) {
         final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
-        final AssemblyContext assemblyContext = SystemModelBuilder.createAssemblyContextsIfAbsent(systemModel, name);
+        final AssemblyContext assemblyContext = SystemModelFactory.createAssemblyContextsIfAbsent(systemModel, name);
         systemModelGraphProvider.updateComponent(org.palladiosimulator.pcm.system.System.class, systemModel);
 
         return assemblyContext;

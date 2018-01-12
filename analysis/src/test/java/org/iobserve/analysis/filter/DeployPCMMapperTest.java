@@ -23,8 +23,8 @@ import teetime.framework.test.StageTester;
 
 import org.iobserve.analysis.deployment.DeployPCMMapper;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.analysis.test.data.CorrespondenceModelData;
 import org.iobserve.analysis.test.data.ImplementationLevelData;
 import org.iobserve.analysis.test.data.ModelLevelData;
@@ -47,7 +47,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 // write all final classes here
-@PrepareForTest(ResourceEnvironmentModelBuilder.class)
+@PrepareForTest(ResourceEnvironmentModelFactory.class)
 public class DeployPCMMapperTest {
 
     @Mock

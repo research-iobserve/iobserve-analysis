@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.model.builder.UsageModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.factory.UsageModelFactory;
+import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -72,7 +72,7 @@ public final class BranchWithinBranchReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final UsageModelBuilder usageModelBuilder, final RepositoryModelProvider repositoryModelProvider,
+            final UsageModelFactory usageModelBuilder, final RepositoryModelProvider repositoryModelProvider,
             final ICorrespondence correspondenceModel) throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
@@ -193,7 +193,7 @@ public final class BranchWithinBranchReference {
      * @param listOfbranchTransitionCounterInterior
      * @return
      */
-    private static UsageModel createTheReferenceModel(final UsageModelBuilder usageModelBuilder,
+    private static UsageModel createTheReferenceModel(final UsageModelFactory usageModelBuilder,
             final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel,
             final int numberOfTransitionsOfExteriorBranch, final int numberOfTransitionsOfInteriorBranches,
             final int numberOfConcurrentUsers, final List<Integer> branchTransitionCounter,
@@ -201,30 +201,30 @@ public final class BranchWithinBranchReference {
         // In the following the reference usage model is created
         AbstractUserAction lastAction;
         Optional<Correspondent> optionCorrespondent;
-        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelFactory.createUsageModel();
+        final UsageScenario usageScenario = UsageModelFactory.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
-        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
-        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
+        final Start start = UsageModelFactory.createAddStartAction("", scenarioBehaviour);
+        final Stop stop = UsageModelFactory.createAddStopAction("", scenarioBehaviour);
         lastAction = start;
 
         // The exterior branch is created
-        final org.palladiosimulator.pcm.usagemodel.Branch branch = UsageModelBuilder.createBranch("",
+        final org.palladiosimulator.pcm.usagemodel.Branch branch = UsageModelFactory.createBranch("",
                 scenarioBehaviour);
-        UsageModelBuilder.connect(lastAction, branch);
-        UsageModelBuilder.connect(branch, stop);
+        UsageModelFactory.connect(lastAction, branch);
+        UsageModelFactory.connect(branch, stop);
 
         // Creates branch transitions according to the random countOfBranchTransitions
         for (int i = 0; i < numberOfTransitionsOfExteriorBranch; i++) {
-            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branch);
+            final BranchTransition branchTransition = UsageModelFactory.createBranchTransition(branch);
             final ScenarioBehaviour branchTransitionBehaviour = branchTransition
                     .getBranchedBehaviour_BranchTransition();
             branchTransition
                     .setBranchProbability((double) branchTransitionCounter.get(i) / (double) numberOfConcurrentUsers);
-            final Start startBranchTransition = UsageModelBuilder.createStart("");
-            UsageModelBuilder.addUserAction(branchTransitionBehaviour, startBranchTransition);
-            final Stop stopBranchTransition = UsageModelBuilder.createStop("");
-            UsageModelBuilder.addUserAction(branchTransitionBehaviour, stopBranchTransition);
+            final Start startBranchTransition = UsageModelFactory.createStart("");
+            UsageModelFactory.addUserAction(branchTransitionBehaviour, startBranchTransition);
+            final Stop stopBranchTransition = UsageModelFactory.createStop("");
+            UsageModelFactory.addUserAction(branchTransitionBehaviour, stopBranchTransition);
             lastAction = startBranchTransition;
             if (i >= 0 && i < 3) {
                 optionCorrespondent = correspondenceModel.getCorrespondent(
@@ -234,21 +234,21 @@ public final class BranchWithinBranchReference {
                 throw new IllegalArgumentException("Illegal value of model element parameter");
             }
             if (optionCorrespondent.isPresent()) {
-                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                         .createEntryLevelSystemCall(repositoryModelProvider, optionCorrespondent.get());
-                UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
+                UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
 
             // The interior branch is created
-            final org.palladiosimulator.pcm.usagemodel.Branch branchInterior = UsageModelBuilder.createBranch("",
+            final org.palladiosimulator.pcm.usagemodel.Branch branchInterior = UsageModelFactory.createBranch("",
                     branchTransitionBehaviour);
-            UsageModelBuilder.connect(lastAction, branchInterior);
-            UsageModelBuilder.connect(branchInterior, stopBranchTransition);
+            UsageModelFactory.connect(lastAction, branchInterior);
+            UsageModelFactory.connect(branchInterior, stopBranchTransition);
 
             for (int j = 0; j < numberOfTransitionsOfInteriorBranches; j++) {
-                final BranchTransition branchTransitionInterior = UsageModelBuilder
+                final BranchTransition branchTransitionInterior = UsageModelFactory
                         .createBranchTransition(branchInterior);
                 final ScenarioBehaviour branchTransitionBehaviourInterior = branchTransitionInterior
                         .getBranchedBehaviour_BranchTransition();
@@ -256,9 +256,9 @@ public final class BranchWithinBranchReference {
                         .setBranchProbability((double) listOfbranchTransitionCounterInterior.get(i).get(j)
                                 / (double) branchTransitionCounter.get(i));
 
-                final Start startBranchTransitionInterior = UsageModelBuilder.createAddStartAction("",
+                final Start startBranchTransitionInterior = UsageModelFactory.createAddStartAction("",
                         branchTransitionBehaviourInterior);
-                final Stop stopBranchTransitionInterior = UsageModelBuilder.createAddStopAction("",
+                final Stop stopBranchTransitionInterior = UsageModelFactory.createAddStopAction("",
                         branchTransitionBehaviourInterior);
                 lastAction = startBranchTransitionInterior;
                 switch (j) {
@@ -282,13 +282,13 @@ public final class BranchWithinBranchReference {
                 }
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                    final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                    final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                             .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
-                    UsageModelBuilder.addUserAction(branchTransitionBehaviourInterior, entryLevelSystemCall);
-                    UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                    UsageModelFactory.addUserAction(branchTransitionBehaviourInterior, entryLevelSystemCall);
+                    UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                     lastAction = entryLevelSystemCall;
                 }
-                UsageModelBuilder.connect(lastAction, stopBranchTransitionInterior);
+                UsageModelFactory.connect(lastAction, stopBranchTransitionInterior);
 
             }
         }

@@ -21,10 +21,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.model.builder.UsageModelBuilder;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.factory.UsageModelFactory;
+import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -94,8 +94,8 @@ public final class LoopWithinBranchReference {
         final ReferenceElements referenceElements = new ReferenceElements();
 
         // In the following the reference usage model is created
-        final UsageModel usageModel = UsageModelBuilder.createUsageModel();
-        final UsageScenario usageScenario = UsageModelBuilder.createUsageScenario("", usageModel);
+        final UsageModel usageModel = UsageModelFactory.createUsageModel();
+        final UsageScenario usageScenario = UsageModelFactory.createUsageScenario("", usageModel);
         final ScenarioBehaviour scenarioBehaviour = usageScenario.getScenarioBehaviour_UsageScenario();
 
         // lastAction = start;
@@ -212,24 +212,24 @@ public final class LoopWithinBranchReference {
     private static Branch createBranch(final RepositoryModelProvider repositoryModelProvider,
             final ScenarioBehaviour scenarioBehaviour, final ICorrespondence correspondenceModel,
             final int numberOfBranchTransitions, final int lengthOfBranchSequence, final int countOfLoop) {
-        final Start start = UsageModelBuilder.createAddStartAction("", scenarioBehaviour);
-        final Branch branch = UsageModelBuilder.createBranch("", scenarioBehaviour);
-        final Stop stop = UsageModelBuilder.createAddStopAction("", scenarioBehaviour);
+        final Start start = UsageModelFactory.createAddStartAction("", scenarioBehaviour);
+        final Branch branch = UsageModelFactory.createBranch("", scenarioBehaviour);
+        final Stop stop = UsageModelFactory.createAddStopAction("", scenarioBehaviour);
 
-        UsageModelBuilder.connect(start, branch);
-        UsageModelBuilder.connect(branch, stop);
+        UsageModelFactory.connect(start, branch);
+        UsageModelFactory.connect(branch, stop);
 
         AbstractUserAction lastAction = start;
 
         // For each branch transition its calls are added to the branch transition
         for (int i = 0; i < numberOfBranchTransitions; i++) {
-            final BranchTransition branchTransition = UsageModelBuilder.createBranchTransition(branch);
+            final BranchTransition branchTransition = UsageModelFactory.createBranchTransition(branch);
             final ScenarioBehaviour branchTransitionBehaviour = branchTransition
                     .getBranchedBehaviour_BranchTransition();
-            final Start startBranchTransition = UsageModelBuilder.createStart("");
-            UsageModelBuilder.addUserAction(branchTransitionBehaviour, startBranchTransition);
-            final Stop stopBranchTransition = UsageModelBuilder.createStop("");
-            UsageModelBuilder.addUserAction(branchTransitionBehaviour, stopBranchTransition);
+            final Start startBranchTransition = UsageModelFactory.createStart("");
+            UsageModelFactory.addUserAction(branchTransitionBehaviour, startBranchTransition);
+            final Stop stopBranchTransition = UsageModelFactory.createStop("");
+            UsageModelFactory.addUserAction(branchTransitionBehaviour, stopBranchTransition);
             lastAction = startBranchTransition;
 
             if (i >= 0 && i < 3) {
@@ -238,10 +238,10 @@ public final class LoopWithinBranchReference {
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[i]);
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                    final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                    final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                             .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
-                    UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-                    UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                    UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
+                    UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                     lastAction = entryLevelSystemCall;
                 }
             } else {
@@ -254,24 +254,24 @@ public final class LoopWithinBranchReference {
                         ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                    final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                    final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                             .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
-                    UsageModelBuilder.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
-                    UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                    UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
+                    UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                     lastAction = entryLevelSystemCall;
                 }
             }
 
             // Within the branch transition a loop element is created
-            final Loop loop = UsageModelBuilder.createLoop("", branchTransitionBehaviour);
-            UsageModelBuilder.connect(lastAction, loop);
+            final Loop loop = UsageModelFactory.createLoop("", branchTransitionBehaviour);
+            UsageModelFactory.connect(lastAction, loop);
             final PCMRandomVariable pcmLoop2Iteration = CoreFactory.eINSTANCE.createPCMRandomVariable();
             pcmLoop2Iteration.setSpecification(String.valueOf(countOfLoop));
             loop.setLoopIteration_Loop(pcmLoop2Iteration);
-            final Start loopStart = UsageModelBuilder.createStart("");
-            UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
-            final Stop loopStop = UsageModelBuilder.createStop("");
-            UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
+            final Start loopStart = UsageModelFactory.createStart("");
+            UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), loopStart);
+            final Stop loopStop = UsageModelFactory.createStop("");
+            UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
             lastAction = loopStart;
 
             // The calls that are iterated are added to the loop
@@ -297,14 +297,14 @@ public final class LoopWithinBranchReference {
             }
             if (optionCorrespondent.isPresent()) {
                 final Correspondent correspondent = optionCorrespondent.get();
-                final EntryLevelSystemCall entryLevelSystemCall = UsageModelBuilder
+                final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
                         .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
-                UsageModelBuilder.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
-                UsageModelBuilder.connect(lastAction, entryLevelSystemCall);
+                UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
+                UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
             }
-            UsageModelBuilder.connect(lastAction, loopStop);
-            UsageModelBuilder.connect(loop, stopBranchTransition);
+            UsageModelFactory.connect(lastAction, loopStop);
+            UsageModelFactory.connect(loop, stopBranchTransition);
         }
 
         return branch;

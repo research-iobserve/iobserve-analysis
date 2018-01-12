@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.iobserve.analysis.modelneo4j.legacyprovider.AllocationModelProvider;
-import org.iobserve.analysis.modelneo4j.legacyprovider.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.modelneo4j.legacyprovider.SystemModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
 import org.iobserve.stages.general.RecordSwitch;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;

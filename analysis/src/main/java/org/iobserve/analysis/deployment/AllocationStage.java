@@ -23,8 +23,8 @@ import java.util.Optional;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.factory.ResourceEnvironmentModelFactory;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.common.record.IAllocationEvent;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -87,7 +87,7 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
         final URL url = new URL(event.toArray()[0].toString());
         final String hostName = url.getHost();
 
-        final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelBuilder
+        final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
                 .getResourceContainerByName(
                         this.resourceEnvironmentModelGraphProvider.readOnlyRootComponent(ResourceEnvironment.class),
                         hostName);
@@ -96,7 +96,7 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
             /** new provider: update the resource environment graph. */
             final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelGraphProvider
                     .readOnlyRootComponent(ResourceEnvironment.class);
-            final ResourceContainer newResourceContainer = ResourceEnvironmentModelBuilder
+            final ResourceContainer newResourceContainer = ResourceEnvironmentModelFactory
                     .createResourceContainer(resourceEnvironmentModelGraph, hostName);
             resourceEnvironmentModelGraph.getResourceContainer_ResourceEnvironment().add(newResourceContainer);
             this.resourceEnvironmentModelGraphProvider.updateComponent(ResourceEnvironment.class,

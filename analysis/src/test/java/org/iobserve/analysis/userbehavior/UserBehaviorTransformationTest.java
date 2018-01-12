@@ -23,7 +23,7 @@ import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.file.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.builder.SimpleSequenceReference;
 
 /**

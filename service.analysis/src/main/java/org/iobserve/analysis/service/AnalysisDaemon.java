@@ -19,27 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 
-import org.apache.commons.daemon.Daemon;
-import org.apache.commons.daemon.DaemonContext;
-import org.apache.commons.daemon.DaemonInitException;
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.AllocationModelProvider;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
-import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.provider.SystemModelProvider;
-import org.iobserve.analysis.model.provider.UsageModelProvider;
-import org.iobserve.analysis.modelneo4j.Graph;
-import org.iobserve.analysis.modelneo4j.GraphLoader;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -49,7 +28,29 @@ import com.beust.jcommander.converters.IntegerConverter;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
+
 import teetime.framework.Configuration;
+
+import org.apache.commons.daemon.Daemon;
+import org.apache.commons.daemon.DaemonContext;
+import org.apache.commons.daemon.DaemonInitException;
+import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
+import org.eclipse.emf.common.util.URI;
+import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.Graph;
+import org.iobserve.analysis.model.provider.neo4j.GraphLoader;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
  * @author Reiner Jung

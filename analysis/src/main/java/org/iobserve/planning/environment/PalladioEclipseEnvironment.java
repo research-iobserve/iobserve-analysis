@@ -25,7 +25,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.iobserve.analysis.model.PalladioResourceRepository;
+import org.iobserve.analysis.model.IPalladioResourceRepository;
 import org.iobserve.analysis.model.PalladioResourceRepositoryImpl;
 import org.iobserve.planning.environment.uriconverter.PrefixConverter;
 import org.iobserve.planning.environment.uriconverter.URIConverterHandler;
@@ -221,7 +221,7 @@ public enum PalladioEclipseEnvironment {
         final ResourceRepository resources = new IPCMResourceSetPartitionFactory.DefaultFactory().create()
                 .getResourceTypeRepository();
         assert resources != null;
-        PalladioResourceRepository.INSTANCE.initResources(new PalladioResourceRepositoryImpl(resources));
+        IPalladioResourceRepository.INSTANCE.initResources(new PalladioResourceRepositoryImpl(resources));
     }
 
 }

@@ -20,16 +20,19 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.builder.DesignDecisionModelBuilder;
-import org.iobserve.analysis.model.provider.AllocationModelProvider;
-import org.iobserve.analysis.model.provider.CloudProfileModelProvider;
-import org.iobserve.analysis.model.provider.CostModelProvider;
-import org.iobserve.analysis.model.provider.DesignDecisionModelProvider;
-import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.factory.DesignDecisionModelFactory;
+import org.iobserve.analysis.model.provider.file.CloudProfileModelProvider;
+import org.iobserve.analysis.model.provider.file.CostModelProvider;
+import org.iobserve.analysis.model.provider.file.DesignDecisionModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.AllocationGroup;
 import org.iobserve.planning.data.AllocationGroupsContainer;
@@ -45,9 +48,6 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.Resourc
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import de.uka.ipd.sdq.pcm.cost.CostRepository;
-import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 
 /**
  * Class for performing the transformation of the original PCM model into the simplified model with
@@ -133,7 +133,7 @@ public class ModelTransformer {
         DecisionSpace decisionSpace = this.processedModelProviders.getDesignDecisionModelProvider().getModel();
 
         if (decisionSpace == null) {
-            decisionSpace = DesignDecisionModelBuilder.createDecisionSpace("processedDecision");
+            decisionSpace = DesignDecisionModelFactory.createDecisionSpace("processedDecision");
             this.processedModelProviders.getDesignDecisionModelProvider().setModel(decisionSpace);
         }
 
@@ -159,7 +159,7 @@ public class ModelTransformer {
         for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
             final String allocationDegreeName = String.format("%s_AllocationDegree", allocationGroup.getName());
 
-            DesignDecisionModelBuilder.createAllocationDegree(this.decisionProvider.getModel(), allocationDegreeName,
+            DesignDecisionModelFactory.createAllocationDegree(this.decisionProvider.getModel(), allocationDegreeName,
                     allocationGroup.getRepresentingContext(),
                     this.resourceProvider.getModel().getResourceContainer_ResourceEnvironment());
         }
@@ -228,7 +228,7 @@ public class ModelTransformer {
                         degreeName = String.format("%s_ReplicationDegree", containerName);
                     }
 
-                    DesignDecisionModelBuilder.createReplicationDegree(decisionSpace, degreeName, createdContainer, 1,
+                    DesignDecisionModelFactory.createReplicationDegree(decisionSpace, degreeName, createdContainer, 1,
                             toNrOfReplicas);
 
                 }

@@ -24,11 +24,11 @@ import teetime.framework.test.StageTester;
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.UndeploymentModelUpdater;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.analysis.model.builder.AllocationModelBuilder;
-import org.iobserve.analysis.model.builder.ResourceEnvironmentModelBuilder;
-import org.iobserve.analysis.model.builder.SystemModelBuilder;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.factory.AllocationModelFactory;
+import org.iobserve.analysis.model.factory.ResourceEnvironmentModelFactory;
+import org.iobserve.analysis.model.factory.SystemModelFactory;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.analysis.test.data.AllocationData;
 import org.iobserve.analysis.test.data.AssemblyContextData;
 import org.iobserve.analysis.test.data.CorrespondenceModelData;
@@ -61,7 +61,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  */
 @RunWith(PowerMockRunner.class)
 // write all final classes here
-@PrepareForTest({ ResourceEnvironmentModelBuilder.class, AllocationModelBuilder.class, SystemModelBuilder.class })
+@PrepareForTest({ ResourceEnvironmentModelFactory.class, AllocationModelFactory.class, SystemModelFactory.class })
 public class UndeploymentResourceContainerTest {
 
     /** stage under test. */
@@ -87,9 +87,9 @@ public class UndeploymentResourceContainerTest {
 
         /** mock for ModelBuilder */
         // use PowerMockito for calling static methods of these final classes
-        PowerMockito.mockStatic(ResourceEnvironmentModelBuilder.class);
-        PowerMockito.mockStatic(AllocationModelBuilder.class);
-        PowerMockito.mockStatic(SystemModelBuilder.class);
+        PowerMockito.mockStatic(ResourceEnvironmentModelFactory.class);
+        PowerMockito.mockStatic(AllocationModelFactory.class);
+        PowerMockito.mockStatic(SystemModelFactory.class);
 
         /** mocks for model graph provider */
         UndeploymentResourceContainerTest.mockedSystemModelGraphProvider = Mockito.mock(ModelProvider.class);
@@ -120,17 +120,17 @@ public class UndeploymentResourceContainerTest {
                 .readOnlyRootComponent(Allocation.class)).thenReturn(AllocationData.ALLOCATION);
 
         /** get part of models */
-        Mockito.when(ResourceEnvironmentModelBuilder.getResourceContainerByName(
+        Mockito.when(ResourceEnvironmentModelFactory.getResourceContainerByName(
                 ResourceEnvironmentData.RESOURCE_ENVIRONMENT, ImplementationLevelData.SERVICE))
                 .thenReturn(Optional.of(ResourceEnvironmentData.RESOURCE_CONTAINER));
 
-        Mockito.when(SystemModelBuilder.getAssemblyContextByName(SystemData.SYSTEM,
+        Mockito.when(SystemModelFactory.getAssemblyContextByName(SystemData.SYSTEM,
                 AssemblyContextData.ASSEMBLY_CONTEXT_NAME))
                 .thenReturn(Optional.of(AssemblyContextData.ASSEMBLY_CONTEXT));
 
         /** interaction with graphs */
-        PowerMockito.doNothing().when(AllocationModelBuilder.class);
-        AllocationModelBuilder.removeAllocationContext(AllocationData.ALLOCATION,
+        PowerMockito.doNothing().when(AllocationModelFactory.class);
+        AllocationModelFactory.removeAllocationContext(AllocationData.ALLOCATION,
                 ResourceEnvironmentData.RESOURCE_CONTAINER, AssemblyContextData.ASSEMBLY_CONTEXT);
 
         Mockito.doNothing().when(UndeploymentResourceContainerTest.mockedAllocationModelGraphProvider)

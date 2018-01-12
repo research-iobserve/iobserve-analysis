@@ -31,7 +31,7 @@ import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
 import org.iobserve.analysis.clustering.XMeansClustering;
-import org.iobserve.analysis.clustering.filter.composite.TBehaviorModelComparison;
+import org.iobserve.analysis.clustering.filter.composite.BehaviorModelComparison;
 import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.clustering.filter.models.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.clustering.filter.models.configuration.GetLastXSignatureStrategy;
@@ -43,12 +43,12 @@ import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.AllocationModelProvider;
-import org.iobserve.analysis.model.provider.RepositoryModelProvider;
-import org.iobserve.analysis.model.provider.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.provider.SystemModelProvider;
-import org.iobserve.analysis.model.provider.UsageModelProvider;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceAcceptanceMatcher;
@@ -205,7 +205,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
 
-        final TBehaviorModelComparison tBehaviorModelComparison = new TBehaviorModelComparison(
+        final BehaviorModelComparison tBehaviorModelComparison = new BehaviorModelComparison(
                 behaviorModelConfiguration, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 varianceOfUserGroups, thinkTime, closedWorkload);
 
