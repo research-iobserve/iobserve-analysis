@@ -211,9 +211,10 @@ public abstract class AbstractModelProvider<T extends EObject> {
     }
 
     /**
-     * Sets the Uri.
+     * Sets the URI.
      *
      * @param modelUri
+     *            model uri
      */
     public void setModelUri(final URI modelUri) {
         this.uriModelInstance = modelUri;
@@ -237,6 +238,7 @@ public abstract class AbstractModelProvider<T extends EObject> {
      * Sets a new model.
      *
      * @param model
+     *            the new model
      */
     public void setModel(final T model) {
         this.model = model;

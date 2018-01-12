@@ -63,8 +63,17 @@ public class GraphFactory {
     public GraphFactory() {
     }
 
-    public ModelGraph buildGraph(final InitializeModelProviders modelProvider) throws Exception {
-        this.init(modelProvider);
+    /**
+     * Build a graph based on the given model provides.
+     *
+     * @param modelProviders
+     *            object containing all model providers
+     * @return returns the model graph for this
+     * @throws Exception
+     *             on error
+     */
+    public ModelGraph buildGraph(final InitializeModelProviders modelProviders) throws Exception {
+        this.init(modelProviders);
 
         this.extractAssemblyContexts(this.modelProvider.getSystemModelProvider());
         this.extractAssemblyConnectors(this.modelProvider.getSystemModelProvider());
@@ -94,10 +103,10 @@ public class GraphFactory {
      */
     private void extractAssemblyContexts(final SystemModelProvider sysModelProv) {
         final org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
-        final EList<AssemblyContext> assemblyContexts = sysModel.getAssemblyContexts__ComposedStructure();
+        final EList<AssemblyContext> newAssemblyContexts = sysModel.getAssemblyContexts__ComposedStructure();
         final Set<String> acs = new HashSet<>();
 
-        for (final AssemblyContext assemblyContext : assemblyContexts) {
+        for (final AssemblyContext assemblyContext : newAssemblyContexts) {
             this.assemblyContexts.put(assemblyContext.getId(), assemblyContext);
             acs.add(assemblyContext.getId());
         }
@@ -107,9 +116,9 @@ public class GraphFactory {
 
     private void extractAssemblyConnectors(final SystemModelProvider sysModelProv) {
         final org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
-        final EList<Connector> connectors = sysModel.getConnectors__ComposedStructure();
+        final EList<Connector> newConnectors = sysModel.getConnectors__ComposedStructure();
 
-        for (final Connector connector : connectors) {
+        for (final Connector connector : newConnectors) {
             if (connector instanceof AssemblyConnectorPrivacy) {
                 final AssemblyConnectorPrivacy acp = (AssemblyConnectorPrivacy) connector;
                 this.assemblyConnectors.put(connector.getId(), acp);
@@ -165,8 +174,8 @@ public class GraphFactory {
 
     private void extractResourceContainers(final ResourceEnvironmentModelProvider resEnvModelProv) {
         final ResourceEnvironment resEnvModel = resEnvModelProv.getModel();
-        final EList<ResourceContainer> resourceContainers = resEnvModel.getResourceContainer_ResourceEnvironment();
-        for (final ResourceContainer resourceContainer : resourceContainers) {
+        final EList<ResourceContainer> newResourceContainers = resEnvModel.getResourceContainer_ResourceEnvironment();
+        for (final ResourceContainer resourceContainer : newResourceContainers) {
             if (resourceContainer instanceof ResourceContainerPrivacy) {
                 this.resourceContainers.put(resourceContainer.getId(), (ResourceContainerPrivacy) resourceContainer);
             } else {

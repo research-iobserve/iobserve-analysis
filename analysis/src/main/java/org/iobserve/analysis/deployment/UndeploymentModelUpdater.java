@@ -56,8 +56,6 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      *            allocation model access
      * @param systemModelGraphProvider
      *            system model access
-     * @param resourceEnvironmentModelGraphProvider
-     *            resource environment model access
      */
     public UndeploymentModelUpdater(final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {

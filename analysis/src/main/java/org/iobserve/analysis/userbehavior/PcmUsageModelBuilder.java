@@ -171,7 +171,7 @@ public class PcmUsageModelBuilder {
      *            contains the child branches of the branch whose behavior is created
      * @return the created scenario behavior
      */
-    private ScenarioBehaviour transformSequenceToScenarioBehavior(final int indexOfScenario,
+    private ScenarioBehaviour transformSequenceToScenarioBehavior(final int indexOfScenario, // NOCS
             final List<ISequenceElement> sequence, final Branch branch) {
 
         final ScenarioBehaviour scenarioBehaviour = UsageModelFactory.createScenarioBehaviour();

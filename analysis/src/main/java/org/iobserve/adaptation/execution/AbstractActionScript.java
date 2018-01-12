@@ -112,7 +112,7 @@ public abstract class AbstractActionScript {
 
         final ComputeServiceContext context = ContextBuilder.newBuilder(provider.getName())
                 .credentials(provider.getIdentity(), provider.getCredential())
-                .modules(ImmutableSet.<Module> of(new SLF4JLoggingModule(), new SshjSshClientModule()))
+                .modules(ImmutableSet.<Module> of(new SLF4JLoggingModule(), new SshjSshClientModule())) // NOCS
                 .buildView(ComputeServiceContext.class);
 
         final ComputeService client = context.getComputeService();

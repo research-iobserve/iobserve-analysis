@@ -51,6 +51,12 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
     private final OutputPort<PCMDeployedEvent> deployedOutputPort = this.createOutputPort();
     private final OutputPort<PCMDeployedEvent> deployedRelayOutputPort = this.createOutputPort();
 
+    /**
+     * Create an allocation event synthesizer stage.
+     *
+     * @param resourceEnvironmentModelGraphProvider
+     *            the resource environment which is tested for a proper allocation
+     */
     public SynthesizeAllocationEventStage(
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;

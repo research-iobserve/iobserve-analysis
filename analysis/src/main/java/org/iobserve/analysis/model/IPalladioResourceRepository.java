@@ -27,18 +27,53 @@ import org.palladiosimulator.pcm.resourcetype.SchedulingPolicy;
  */
 public interface IPalladioResourceRepository {
 
+    /**
+     * Processing resource type CPU.
+     *
+     * @return returns cpu resource type
+     */
     ProcessingResourceType cpu();
 
+    /**
+     * Processing resource type HDD.
+     *
+     * @return returns hdd resource type
+     */
     ProcessingResourceType hdd();
 
+    /**
+     * Processing resource type delay.
+     *
+     * @return returns delay resource type
+     */
     ProcessingResourceType delay();
 
+    /**
+     * Communication link resource type.
+     *
+     * @return returns link type
+     */
     CommunicationLinkResourceType lan();
 
+    /**
+     * Scheduling policy processor sharing.
+     *
+     * @return returns scheduling policy
+     */
     SchedulingPolicy policyProcessorSharing();
 
+    /**
+     * Scheduling policy FCFS.
+     *
+     * @return returns scheduling policy
+     */
     SchedulingPolicy policyFCFS();
 
+    /**
+     * Scheduling policy delay.
+     *
+     * @return returns scheduling policy
+     */
     SchedulingPolicy policyDelay();
 
     /**

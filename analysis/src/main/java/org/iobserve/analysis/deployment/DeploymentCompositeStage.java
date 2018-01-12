@@ -23,6 +23,7 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.common.record.IDeployedEvent;
+import org.iobserve.stages.general.AggregateEventStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -38,9 +39,21 @@ import org.palladiosimulator.pcm.system.System;
 public class DeploymentCompositeStage extends CompositeStage {
 
     private final DeployPCMMapper deployPCMMapper;
-    private final RelayEventStage<PCMDeployedEvent> relayDeployedEventStage;
+    private final AggregateEventStage<PCMDeployedEvent> relayDeployedEventStage;
     private final AllocationStage syntehticAllocation;
 
+    /**
+     * Create a composite stage for deployment handling.
+     *
+     * @param resourceEnvironmentModelGraphProvider
+     *            model provider for the resource environment
+     * @param allocationModelGraphProvider
+     *            model provider for the allocation model (deployment model)
+     * @param systemModelGraphProvider
+     *            model provider for the system model
+     * @param correspondence
+     *            the correspondence model handler
+     */
     public DeploymentCompositeStage(final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
             final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<System> systemModelGraphProvider, final ICorrespondence correspondence) {
@@ -57,7 +70,7 @@ public class DeploymentCompositeStage extends CompositeStage {
         final DeploymentModelUpdater deploymentAfterAllocation = new DeploymentModelUpdater(
                 allocationModelGraphProvider, systemModelGraphProvider);
 
-        this.relayDeployedEventStage = new RelayEventStage<>(2);
+        this.relayDeployedEventStage = new AggregateEventStage<>(2);
 
         /** connect internal ports. */
         this.connectPorts(this.deployPCMMapper.getOutputPort(), synthesizeAllocationEvent.getInputPort());

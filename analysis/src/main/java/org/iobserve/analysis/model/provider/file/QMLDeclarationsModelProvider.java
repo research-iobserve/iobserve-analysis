@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.model.provider.file;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EPackage;
-
 import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarations;
 import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarationsPackage;
+
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EPackage;
 
 /**
  * TODO add description.
@@ -29,6 +29,12 @@ import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarations
  */
 public class QMLDeclarationsModelProvider extends AbstractModelProvider<QMLDeclarations> {
 
+    /**
+     * Create a QML declaration model provider.
+     *
+     * @param theUriModelInstance
+     *            reference to the model
+     */
     public QMLDeclarationsModelProvider(final URI theUriModelInstance) {
         super(theUriModelInstance);
     }

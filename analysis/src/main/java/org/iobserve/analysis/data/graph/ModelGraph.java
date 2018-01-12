@@ -36,6 +36,16 @@ public class ModelGraph {
     private final Set<ComponentNode> components;
     private final InitializeModelProviders pcmModels;
 
+    /**
+     * Create a model graph.
+     *
+     * @param servers
+     *            list of server nodes
+     * @param components
+     *            list of component nodes
+     * @param pcmModels
+     *            all PCM models TODO only use those models which are really necessary
+     */
     public ModelGraph(final Collection<DeploymentNode> servers, final Collection<ComponentNode> components,
             final InitializeModelProviders pcmModels) {
         this.servers = new HashSet<>(servers);
@@ -44,6 +54,9 @@ public class ModelGraph {
         // this.printGraph();
     }
 
+    /**
+     * Write graph to log file.
+     */
     public void printGraph() {
         for (final DeploymentNode server : this.getServers()) {
             ModelGraph.LOG.info(server.toString());
@@ -69,6 +82,16 @@ public class ModelGraph {
      */
     public InitializeModelProviders getPcmModels() {
         return this.pcmModels;
+    }
+
+    /**
+     * Compute hash code.
+     *
+     * @return returns the hash code
+     */
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
     @Override

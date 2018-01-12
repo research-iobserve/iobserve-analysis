@@ -40,6 +40,12 @@ public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
     private final ICorrespondence correspondence;
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
+    /**
+     * Creates and undeploy event mapper.
+     *
+     * @param correspondence
+     *            correspondence model handler
+     */
     public UndeployPCMMapper(final ICorrespondence correspondence) {
         this.correspondence = correspondence;
     }

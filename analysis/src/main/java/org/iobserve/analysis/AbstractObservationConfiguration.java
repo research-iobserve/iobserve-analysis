@@ -121,6 +121,16 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            aggregation type
      * @param outputMode
      *            output mode
+     * @param snapshotBuilder
+     *            snapshotbuilder
+     * @param perOpteryxHeadless
+     *            perOpterxyheadless URI
+     * @param lqnsDir
+     *            layered queuing networks directory
+     * @param eventListener
+     *            eventlistener of some kind
+     * @param deployablesFolder
+     *            folder containing deployables
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
@@ -205,9 +215,9 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
 
-        final BehaviorModelComparison tBehaviorModelComparison = new BehaviorModelComparison(
-                behaviorModelConfiguration, correspondenceModel, usageModelProvider, repositoryModelProvider,
-                varianceOfUserGroups, thinkTime, closedWorkload);
+        final BehaviorModelComparison tBehaviorModelComparison = new BehaviorModelComparison(behaviorModelConfiguration,
+                correspondenceModel, usageModelProvider, repositoryModelProvider, varianceOfUserGroups, thinkTime,
+                closedWorkload);
 
         /** plain clustering. It might be included in the setup above. */
         // tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);

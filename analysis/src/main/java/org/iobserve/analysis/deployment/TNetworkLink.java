@@ -19,6 +19,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+import kieker.common.record.flow.trace.TraceMetadata;
+
+import teetime.framework.AbstractConsumerStage;
+
 import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
@@ -30,12 +36,6 @@ import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-import kieker.common.record.flow.trace.TraceMetadata;
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * TNetworkLink runs asynchronous from the other filters like TAllocation, TDeployment, TEntryCall ,
@@ -54,15 +54,14 @@ import teetime.framework.OutputPort;
  */
 public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
+    private static final Log LOG = LogFactory.getLog(TNetworkLink.class);
+
     /** reference to allocation model provider. */
     private final AllocationModelProvider allocationModelProvider;
     /** reference to system model provider. */
     private final SystemModelProvider systemModelProvider;
     /** reference to resource environment model provider. */
     private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
-
-    private static final Log LOG = LogFactory.getLog(TNetworkLink.class);
-    private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
 
     /**
      * Create new TNetworkLink filter.
@@ -107,7 +106,6 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
         // build the model
         this.resourceEnvironmentModelProvider.save();
-        this.outputPortSnapshot.send(false);
     }
 
     /**
@@ -276,10 +274,4 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
         return connector instanceof AssemblyConnector ? Optional.of((AssemblyConnector) connector) : Optional.empty();
     }
 
-    /**
-     * @return output port for snapshot filter stage
-     */
-    public OutputPort<Boolean> getOutputPortSnapshot() {
-        return this.outputPortSnapshot;
-    }
 }

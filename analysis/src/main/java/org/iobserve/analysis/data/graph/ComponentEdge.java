@@ -15,10 +15,10 @@
  ***************************************************************************/
 package org.iobserve.analysis.data.graph;
 
-import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
-
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
+
+import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
 
 /**
  * This class is a model of a fully specified pcm assembly connector for the purpose of privacy
@@ -105,12 +105,22 @@ public class ComponentEdge {
         return this.privacyLvl;
     }
 
+    /**
+     * Compute hash code.
+     *
+     * @return returns the hash code
+     */
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof ComponentEdge) {
             final ComponentEdge compObj = (ComponentEdge) obj;
             if (this.id.equals(compObj.id) && this.assemblyConnectorName.equals(compObj.assemblyConnectorName)
-                    && (this.privacyLvl == compObj.privacyLvl)
+                    && this.privacyLvl == compObj.privacyLvl
                     && this.providingNode.getAssemblyContextID()
                             .contentEquals(compObj.providingNode.getAssemblyContextID())
                     && this.requiringNode.getAssemblyContextID()

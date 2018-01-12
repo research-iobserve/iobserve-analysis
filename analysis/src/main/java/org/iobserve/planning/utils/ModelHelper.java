@@ -213,6 +213,8 @@ public final class ModelHelper {
      *            the decision space in which to look for the degrees
      * @param degreeClass
      *            the class of degree to look for
+     * @param <T>
+     *            any specific type of degree of freedom
      * @return a list of degrees of the requested type
      */
     public static <T extends DegreeOfFreedomInstance> List<T> getAllDegreesOf(final DecisionSpace decisionSpace,

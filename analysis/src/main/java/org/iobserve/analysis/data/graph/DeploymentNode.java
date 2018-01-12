@@ -39,6 +39,8 @@ public class DeploymentNode {
      *
      * @param resourceContainerID
      *            the id of the represented resource container
+     * @param resourceContainerName
+     *            name of the resource container
      * @param isoCountryCode
      *            the (iso) country code of the country the resource container is located in
      */
@@ -104,13 +106,23 @@ public class DeploymentNode {
         return this.containingComponents;
     }
 
+    /**
+     * Compute hash code.
+     *
+     * @return returns the hash code
+     */
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof DeploymentNode) {
             final DeploymentNode compObj = (DeploymentNode) obj;
             if (this.resourceContainerID.equals(compObj.resourceContainerID)
                     && this.resourceContainerName.equals(compObj.resourceContainerName)
-                    && (this.isoCountryCode == compObj.isoCountryCode)) {
+                    && this.isoCountryCode == compObj.isoCountryCode) {
                 return true;
             }
         }

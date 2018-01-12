@@ -43,6 +43,9 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
         this.loadModel();
     }
 
+    /**
+     * Create an uninitialized empty provider.
+     */
     public AllocationModelProvider() {
         super();
     }

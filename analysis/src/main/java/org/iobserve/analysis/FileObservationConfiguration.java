@@ -82,6 +82,16 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      *            aggregation type
      * @param outputMode
      *            output mode
+     * @param snapshotBuilder
+     *            snapshotbuilder
+     * @param perOpteryxHeadless
+     *            perOpterxyheadless URI
+     * @param lqnsDir
+     *            layered queuing networks directory
+     * @param eventListener
+     *            eventlistener of some kind
+     * @param deployablesFolder
+     *            folder containing deployables
      */
     public FileObservationConfiguration(final Collection<File> directories, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,

@@ -43,6 +43,9 @@ public class ResourceEnvironmentModelProvider extends AbstractModelProvider<Reso
         this.loadModel();
     }
 
+    /**
+     * Create an empty resource environment model provider.
+     */
     public ResourceEnvironmentModelProvider() {
         super();
     }

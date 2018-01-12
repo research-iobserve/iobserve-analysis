@@ -30,6 +30,19 @@ public class PCMDeployedEvent {
     private ResourceContainer resourceContainer;
     private final short countryCode;
 
+    /**
+     * Create a deployment event which initialized values for service, correspondent, url, and
+     * countryCode.
+     *
+     * @param service
+     *            the service on which the component is deployed
+     * @param correspondent
+     *            the corresponding elemen in the PCM
+     * @param url
+     *            the service URL
+     * @param countryCode
+     *            the country code of the service in case that is available.
+     */
     public PCMDeployedEvent(final String service, final Correspondent correspondent, final String url,
             final short countryCode) {
         this.service = service;

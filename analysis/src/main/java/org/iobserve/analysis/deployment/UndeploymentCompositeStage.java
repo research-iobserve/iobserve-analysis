@@ -40,6 +40,18 @@ public class UndeploymentCompositeStage extends CompositeStage {
     private final UndeployPCMMapper undeployPCMMapper;
     private final UndeploymentModelUpdater undeployment;
 
+    /**
+     * Create a composite stage handling undeployment.
+     *
+     * @param resourceEnvironmentModelGraphProvider
+     *            resource environment provider
+     * @param allocationModelGraphProvider
+     *            allocation model provider
+     * @param systemModelGraphProvider
+     *            system model provider
+     * @param correspondence
+     *            correspondence model handler
+     */
     public UndeploymentCompositeStage(final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
             final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<System> systemModelGraphProvider, final ICorrespondence correspondence) {

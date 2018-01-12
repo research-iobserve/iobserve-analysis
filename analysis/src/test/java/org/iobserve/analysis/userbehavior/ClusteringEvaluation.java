@@ -24,7 +24,6 @@ import java.util.Random;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.data.UserSession;
-import org.iobserve.analysis.userbehavior.UserGroupExtraction;
 import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
@@ -281,7 +280,7 @@ public class ClusteringEvaluation {
      */
     private int getRandomInteger(final int max, final int min) {
         final Random rand = new Random();
-        return rand.nextInt((max - min) + 1) + min;
+        return rand.nextInt(max - min + 1) + min;
     }
 
     /**
@@ -293,7 +292,7 @@ public class ClusteringEvaluation {
      */
     private double getRandomDouble(final double max, final double min) {
         final Random r = new Random();
-        return min + ((max - min) * r.nextDouble());
+        return min + (max - min) * r.nextDouble();
     }
 
     /**
@@ -361,22 +360,22 @@ public class ClusteringEvaluation {
 
                 callDecisioner = this.getRandomDouble(1, 0);
 
-                if (entryCallEvent.getOperationSignature().equals("changePrice") && (callDecisioner <= 0.3)) {
+                if (entryCallEvent.getOperationSignature().equals("changePrice") && callDecisioner <= 0.3) {
                     entryCallEvent = new EntryCallEvent(entryTime, exitTime, "changePrice", "class", "2", "hostname");
                     userSession.add(entryCallEvent, true);
                     entryTime += 2;
                     exitTime += 2;
                     continue;
                 }
-                if (entryCallEvent.getOperationSignature().equals("changePrice") && (callDecisioner > 0.3)
-                        && (callDecisioner <= 0.6)) {
+                if (entryCallEvent.getOperationSignature().equals("changePrice") && callDecisioner > 0.3
+                        && callDecisioner <= 0.6) {
                     entryCallEvent = new EntryCallEvent(entryTime, exitTime, "orderProduct", "class", "2", "hostname");
                     userSession.add(entryCallEvent, true);
                     entryTime += 2;
                     exitTime += 2;
                     continue;
                 }
-                if (entryCallEvent.getOperationSignature().equals("changePrice") && (callDecisioner > 0.6)) {
+                if (entryCallEvent.getOperationSignature().equals("changePrice") && callDecisioner > 0.6) {
                     entryCallEvent = new EntryCallEvent(entryTime, exitTime, "commit", "class", "2", "hostname");
                     userSession.add(entryCallEvent, true);
                     entryTime += 2;
@@ -384,22 +383,22 @@ public class ClusteringEvaluation {
                     continue;
                 }
 
-                if (entryCallEvent.getOperationSignature().equals("orderProduct") && (callDecisioner <= 0.3)) {
+                if (entryCallEvent.getOperationSignature().equals("orderProduct") && callDecisioner <= 0.3) {
                     entryCallEvent = new EntryCallEvent(entryTime, exitTime, "changePrice", "class", "2", "hostname");
                     userSession.add(entryCallEvent, true);
                     entryTime += 2;
                     exitTime += 2;
                     continue;
                 }
-                if (entryCallEvent.getOperationSignature().equals("orderProduct") && (callDecisioner > 0.3)
-                        && (callDecisioner <= 0.6)) {
+                if (entryCallEvent.getOperationSignature().equals("orderProduct") && callDecisioner > 0.3
+                        && callDecisioner <= 0.6) {
                     entryCallEvent = new EntryCallEvent(entryTime, exitTime, "orderProduct", "class", "2", "hostname");
                     userSession.add(entryCallEvent, true);
                     entryTime += 2;
                     exitTime += 2;
                     continue;
                 }
-                if (entryCallEvent.getOperationSignature().equals("orderProduct") && (callDecisioner > 0.6)) {
+                if (entryCallEvent.getOperationSignature().equals("orderProduct") && callDecisioner > 0.6) {
                     entryCallEvent = new EntryCallEvent(entryTime, exitTime, "commit", "class", "2", "hostname");
                     userSession.add(entryCallEvent, true);
                     entryTime += 2;
@@ -435,21 +434,21 @@ public class ClusteringEvaluation {
 
                 final double callDecisioner = this.getRandomDouble(1, 0);
 
-                if (entryCallEvent.getOperationSignature().equals("checkDelivery") && (callDecisioner <= 0.3)) {
+                if (entryCallEvent.getOperationSignature().equals("checkDelivery") && callDecisioner <= 0.3) {
                     entryCallEvent = new EntryCallEvent(entryTime, exitTime, "checkDelivery", "class", "3", "hostname");
                     userSession.add(entryCallEvent, true);
                     entryTime += 2;
                     exitTime += 2;
                     continue;
                 }
-                if (entryCallEvent.getOperationSignature().equals("checkDelivery") && (callDecisioner > 0.3)) {
+                if (entryCallEvent.getOperationSignature().equals("checkDelivery") && callDecisioner > 0.3) {
                     entryCallEvent = new EntryCallEvent(entryTime, exitTime, "updateStock", "class", "3", "hostname");
                     userSession.add(entryCallEvent, true);
                     entryTime += 2;
                     exitTime += 2;
                     continue;
                 }
-                if (entryCallEvent.getOperationSignature().equals("updateStock") && (callDecisioner <= 0.4)) {
+                if (entryCallEvent.getOperationSignature().equals("updateStock") && callDecisioner <= 0.4) {
                     entryCallEvent = new EntryCallEvent(entryTime, exitTime, "checkDelivery", "class", "3", "hostname");
                     userSession.add(entryCallEvent, true);
                     entryTime += 2;
@@ -457,7 +456,7 @@ public class ClusteringEvaluation {
                     continue;
                 }
 
-                if (entryCallEvent.getOperationSignature().equals("updateStock") && (callDecisioner > 0.4)) {
+                if (entryCallEvent.getOperationSignature().equals("updateStock") && callDecisioner > 0.4) {
                     entryCallEvent = new EntryCallEvent(entryTime, exitTime, "confirm", "class", "3", "hostname");
                     userSession.add(entryCallEvent, true);
                     entryTime += 2;

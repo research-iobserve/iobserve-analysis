@@ -75,6 +75,14 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            aggregation type
      * @param outputMode
      *            output mode
+     * @param snapshotBuilder
+     *            snapshotbuilder
+     * @param perOpteryxHeadless
+     *            perOpterxyheadless URI
+     * @param lqnsDir
+     *            layered queuing networks directory
+     * @param deployablesFolder
+     *            folder containing deployables
      */
     public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,

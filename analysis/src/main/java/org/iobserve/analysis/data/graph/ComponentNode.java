@@ -36,14 +36,20 @@ public class ComponentNode {
     private final Set<ComponentEdge> edges;
 
     /**
-     * The constructor
+     * The constructor.
      *
      * @param assemblyContextID
      *            the pcm id of the represented (composed) component
+     * @param assemblyName
+     *            name of the assembly context
      * @param privacyLvl
-     *            the privacy level of the represended component
+     *            the privacy level of the represented component
      * @param hostContext
      *            the model representation of the resource container the component is deployed on
+     * @param repositoryComponentID
+     *            id of the repository component
+     * @param allocationContextID
+     *            id of the allocation context
      */
     public ComponentNode(final String assemblyContextID, final String assemblyName, final DataPrivacyLvl privacyLvl,
             final DeploymentNode hostContext, final String repositoryComponentID, final String allocationContextID) {
@@ -59,7 +65,7 @@ public class ComponentNode {
     /**
      * Add a component node, this component is communicating with.
      *
-     * @param communicationEge
+     * @param communicationEdge
      *            the communication partner
      * @return whether the add was successful
      */
@@ -129,9 +135,21 @@ public class ComponentNode {
     }
 
     /**
+     * Compute hash code.
+     *
+     * @return returns the hash code
+     */
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
+    /**
      * Checks whether the given object and the current ComponentNode are equal. Some properties
      * don't get compared since they can differ based on previously performed operations on the
      * graph.
+     *
+     * @return true when equal, else false
      */
     @Override
     public boolean equals(final Object obj) {

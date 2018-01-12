@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.deployment;
+package org.iobserve.stages.general;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,12 +28,18 @@ import teetime.framework.OutputPort;
  * @author Reiner Jung
  *
  */
-public class RelayEventStage<T> extends AbstractStage {
+public class AggregateEventStage<T> extends AbstractStage {
 
     private final List<InputPort<T>> inputPorts = new ArrayList<>();
     private OutputPort<T> outputPort;
 
-    public RelayEventStage(final int ports) {
+    /**
+     * Create an aggregation stages.
+     *
+     * @param ports
+     *            number of input ports
+     */
+    public AggregateEventStage(final int ports) {
         for (int i = 0; i < ports; i++) {
             this.inputPorts.add(this.createInputPort());
         }
@@ -49,10 +55,27 @@ public class RelayEventStage<T> extends AbstractStage {
         }
     }
 
+    /**
+     * Get one of the input ports.
+     *
+     * @param port
+     *            port number must be between 0 and the lower than the value specified in ports.
+     *
+     * @return the port associated with the port number or null on error.
+     */
     public InputPort<T> getInputPort(final int port) {
-        return this.inputPorts.get(port);
+        if (port >= 0 && port < this.inputPorts.size()) {
+            return this.inputPorts.get(port);
+        } else {
+            return null;
+        }
     }
 
+    /**
+     * Output port.
+     *
+     * @return returns the output port
+     */
     public OutputPort<T> getOutputPort() {
         return this.outputPort;
     }

@@ -60,8 +60,6 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      *            allocation model provider
      * @param systemModelGraphProvider
      *            system model provider
-     * @param resourceEnvironmentModelGraphProvider
-     *            resource environment model provider
      */
     public DeploymentModelUpdater(final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {

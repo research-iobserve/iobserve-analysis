@@ -28,6 +28,14 @@ public class PCMUndeployedEvent {
     private final Correspondent correspondent;
     private ResourceContainer resourceContainer;
 
+    /**
+     * Create an model level undeployed event.
+     * 
+     * @param service
+     *            the deployed service
+     * @param correspondent
+     *            the correspondent for the component to be removed
+     */
     public PCMUndeployedEvent(final String service, final Correspondent correspondent) {
         this.service = service;
         this.correspondent = correspondent;

@@ -58,7 +58,9 @@ public class DeployPCMMapperTest {
     private static List<PCMDeployedEvent> pcmDeployedEvents = new ArrayList<>();
 
     /**
-     * @throws java.lang.Exception
+     * Setup configuration.
+     *
+     * @throws Exception
      */
     @BeforeClass
     public static void setUp() throws Exception {

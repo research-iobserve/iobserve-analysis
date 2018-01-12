@@ -42,10 +42,21 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
     private final ICorrespondence correspondence;
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
+    /**
+     * Create a deployed event mapper.
+     *
+     * @param correspondence
+     *            correspondence model handler
+     */
     public DeployPCMMapper(final ICorrespondence correspondence) {
         this.correspondence = correspondence;
     }
 
+    /**
+     * Output port the mapped events.
+     *
+     * @return returns the port for mapped events
+     */
     public OutputPort<PCMDeployedEvent> getOutputPort() {
         return this.outputPort;
     }

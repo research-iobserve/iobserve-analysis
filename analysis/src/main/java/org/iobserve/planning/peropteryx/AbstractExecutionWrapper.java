@@ -42,6 +42,8 @@ public abstract class AbstractExecutionWrapper {
      *            the directory containing the pcm model for modification
      * @param perOpteryxDir
      *            the headless PerOpteryx directory
+     * @param lqnsDir
+     *            layered queuing networks directory
      */
     public AbstractExecutionWrapper(final URI inputModelDir, final URI perOpteryxDir, final URI lqnsDir) {
         this.inputModelDir = inputModelDir;
@@ -83,6 +85,8 @@ public abstract class AbstractExecutionWrapper {
      *
      * @param process
      *            the process executing the PerOpteryx headless
+     * @throws InterruptedException
+     *             when the thread gets interrupted
      */
     public abstract void watch(final Process process) throws InterruptedException;
 

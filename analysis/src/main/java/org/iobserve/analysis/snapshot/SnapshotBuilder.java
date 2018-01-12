@@ -63,6 +63,7 @@ public class SnapshotBuilder extends AbstractStage {
      * @param modelProviders
      *            the source pcm models
      * @throws InitializationException
+     *             when no snapshot location was specified
      */
     public SnapshotBuilder(final String subURI, final InitializeModelProviders modelProviders)
             throws InitializationException {
@@ -108,6 +109,13 @@ public class SnapshotBuilder extends AbstractStage {
         }
     }
 
+    /**
+     * Create an snapshot URI.
+     *
+     * @return the URI
+     * @throws IOException
+     *             on io error while producing output files
+     */
     public URI createSnapshot() throws IOException {
         SnapshotBuilder.LOG.info("Creating Snapshot: \t" + this.snapshotURI.toFileString());
 
@@ -149,8 +157,8 @@ public class SnapshotBuilder extends AbstractStage {
      * @throws IOException
      *             if the model URI does not exist
      */
-    public void createModelSnapshot(final org.iobserve.analysis.model.provider.file.AbstractModelProvider<?> modelProvider)
-            throws IOException {
+    public void createModelSnapshot(
+            final org.iobserve.analysis.model.provider.file.AbstractModelProvider<?> modelProvider) throws IOException {
         if (modelProvider == null) {
             return;
         }

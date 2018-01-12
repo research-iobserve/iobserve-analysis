@@ -42,6 +42,9 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
         this.loadModel();
     }
 
+    /**
+     * Create an empty model provider.
+     */
     public SystemModelProvider() {
         super();
     }
