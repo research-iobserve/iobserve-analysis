@@ -31,8 +31,8 @@ import kieker.common.logging.LogFactory;
 import teetime.framework.Execution;
 
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.file.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 

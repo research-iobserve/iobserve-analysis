@@ -15,10 +15,12 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
-import teetime.framework.AbstractConsumerStage;
+import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
+import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -31,11 +33,14 @@ import org.palladiosimulator.pcm.system.System;
  * @author Reiner Jung -- initial contribution
  *
  */
-public class PrivacyWarner extends AbstractConsumerStage<Object> {
+public class PrivacyWarner extends AbstractStage {
 
     private final ModelProvider<Allocation> allocationModelGraphProvider;
     private final ModelProvider<System> systemModelGraphProvider;
     private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+
+    private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
+    private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
 
     private final OutputPort<Warnings> probesOutputPort = this.createOutputPort(Warnings.class);
     private final OutputPort<Warnings> warningsOutputPort = this.createOutputPort(Warnings.class);
@@ -59,12 +64,20 @@ public class PrivacyWarner extends AbstractConsumerStage<Object> {
     }
 
     @Override
-    protected void execute(final Object element) throws Exception {
+    protected void execute() throws Exception {
         final Warnings warnings = new Warnings();
 
-        // TODO compute privacy setup
+        final PCMDeployedEvent deployedEvent = this.deployedInputPort.receive();
+        final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
+
+        if (deployedEvent != null) {
+            // TODO generate warnings after the last deployment
+        } else if (undeployedEvent != null) {
+            // TODO generate warnings after the last undeployment
+        }
 
         this.probesOutputPort.send(warnings);
+
         this.warningsOutputPort.send(warnings);
     }
 
@@ -76,14 +89,12 @@ public class PrivacyWarner extends AbstractConsumerStage<Object> {
         return this.warningsOutputPort;
     }
 
-    public InputPort getDeployedInputPort() {
-        // TODO Auto-generated method stub
-        return null;
+    public InputPort<PCMDeployedEvent> getDeployedInputPort() {
+        return this.deployedInputPort;
     }
 
-    public InputPort getUndeployedInputPort() {
-        // TODO Auto-generated method stub
-        return null;
+    public InputPort<PCMUndeployedEvent> getUndeployedInputPort() {
+        return this.undeployedInputPort;
     }
 
 }

@@ -19,6 +19,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.analysis.service.services.CommunicationInstanceService;
@@ -39,8 +42,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import util.Changelog;
 import util.SendHttpRequest;
 
@@ -110,7 +111,7 @@ public final class InitializeDeploymentVisualization {
      * @throws Exception
      *             when post request fails
      */
-    protected void initialize() throws Exception {
+    public void initialize() throws Exception {
         // set up the system model and take parts from it
         final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
@@ -279,7 +280,7 @@ public final class InitializeDeploymentVisualization {
             resourceTargetId = allocationContext.getResourceContainer_AllocationContext().getId();
         }
 
-        if ((resourceSourceId != null) && (resourceTargetId != null)) {
+        if (resourceSourceId != null && resourceTargetId != null) {
             for (int l = 0; l < linkingResources.size(); l++) {
                 final LinkingResource linkingResource = linkingResources.get(l);
                 if (linkingResource instanceof LinkingResourceImpl) {

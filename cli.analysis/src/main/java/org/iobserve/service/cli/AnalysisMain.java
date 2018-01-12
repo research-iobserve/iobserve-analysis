@@ -21,33 +21,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
-
-import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.FileObservationConfiguration;
-import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.clustering.EAggregationType;
-import org.iobserve.analysis.clustering.EOutputMode;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.model.UsageModelProvider;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.modelneo4j.Graph;
-import org.iobserve.analysis.modelneo4j.GraphLoader;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
-import org.iobserve.analysis.service.InitializeDeploymentVisualization;
-import org.iobserve.analysis.service.ServiceConfiguration;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.analysis.utils.ExecutionTimeLogger;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
@@ -76,9 +49,14 @@ import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.analysis.service.InitializeDeploymentVisualization;
+import org.iobserve.analysis.service.ServiceConfiguration;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * Main class for starting the iObserve application.
@@ -199,8 +177,8 @@ public final class AnalysisMain {
             commander.usage();
             System.exit(1);
             // required parameters.
-        } else if ((this.snapshotPath == null) || (this.perOpteryxUriPath == null) || (this.lqnsUriPath == null)
-                || (this.deployablesFolderPath == null) || (this.interactiveMode == false)) {
+        } else if (this.snapshotPath == null || this.perOpteryxUriPath == null || this.lqnsUriPath == null
+                || this.deployablesFolderPath == null || this.interactiveMode == false) {
             throw new ParameterException("Missing required parameter for cli.");
         } else {
             this.checkDirectory(this.monitoringDataDirectory, "Kieker log", commander);
@@ -289,7 +267,7 @@ public final class AnalysisMain {
             commander.usage();
             System.exit(1);
             // required parameters
-        } else if ((this.visualizationServiceURL == null) || (this.output == null) || (this.listenPort == 0)) {
+        } else if (this.visualizationServiceURL == null || this.output == null || this.listenPort == 0) {
             throw new ParameterException("Missing required parameter.");
         } else {
             this.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander);
@@ -386,7 +364,6 @@ public final class AnalysisMain {
                 AnalysisMain.LOG.info("Analysis start");
                 analysis.executeBlocking();
                 AnalysisMain.LOG.info("Anaylsis complete");
-                ExecutionTimeLogger.getInstance().exportAsCsv();
             }
         }
     }
