@@ -36,7 +36,7 @@ import util.SendHttpRequest;
  * the deployment visualization by adding a node. Therefore it gets the information about the added
  * resource container from the resource environment model.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 public class AllocationVisualizationStage extends AbstractConsumerStage<ResourceContainer> {
@@ -56,8 +56,6 @@ public class AllocationVisualizationStage extends AbstractConsumerStage<Resource
      *            the output URL
      * @param systemId
      *            the system id
-     * @param resourceContainerModelProvider
-     *            part of the resource environment model graph about resource container
      */
     public AllocationVisualizationStage(final URL outputURL, final String systemId) {
         this.outputURL = outputURL;

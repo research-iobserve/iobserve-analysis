@@ -87,6 +87,14 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      *            graph provider for the assembly context system model
      * @param visualizationServiceURL
      *            url to the visualization service
+     * @param snapshotBuilder
+     *            snapshot builder
+     * @param perOpteryxDir
+     *            directory to the peropteryx executable
+     * @param lqnsDir
+     *            layered queuing networks directory
+     * @param deployablesFolder
+     *            folder were deployable elements are stored
      *
      * @throws MalformedURLException
      *             if any passed URL in the configuration is broken.

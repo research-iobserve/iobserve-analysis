@@ -59,11 +59,9 @@ public class DeployPCMMapperTest {
 
     /**
      * Setup configuration.
-     *
-     * @throws Exception
      */
     @BeforeClass
-    public static void setUp() throws Exception {
+    public static void setUp() {
         /** mock for correspondence model */
         DeployPCMMapperTest.mockedCorrespondence = Mockito.mock(ICorrespondence.class);
 

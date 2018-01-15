@@ -26,7 +26,7 @@ import org.iobserve.adaptation.execution.AbstractActionScript;
 
 /**
  * ToDo .
- * 
+ *
  * @author unknown
  *
  */
@@ -35,6 +35,12 @@ public class CLIEventListener implements IAdaptationEventListener {
 
     private final boolean interactiveMode;
 
+    /**
+     * Create an CLIEventListener
+     * 
+     * @param interactiveMode
+     *            allows to set the listener into interactive mode
+     */
     public CLIEventListener(final boolean interactiveMode) {
         this.interactiveMode = interactiveMode;
     }

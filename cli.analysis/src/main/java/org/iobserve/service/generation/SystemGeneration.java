@@ -44,7 +44,7 @@ import org.palladiosimulator.pcm.system.impl.SystemFactoryImpl;
 
 /**
  * ToDo .
- * 
+ *
  * @author unknown
  *
  */
@@ -241,7 +241,7 @@ public class SystemGeneration {
                     // First search the not connected providing interfaces
                     provAC = this.getAndRemoveRandomAC(this.openProvidedInterfaces.get(interfaceID), requAC);
                 }
-                if ((provAC == null) && (this.connectedProvidedInterfaces.get(interfaceID).size() > 0)) {
+                if (provAC == null && this.connectedProvidedInterfaces.get(interfaceID).size() > 0) {
                     // Second search the connected providing interfaces
                     provAC = this.getAndRemoveRandomAC(this.connectedProvidedInterfaces.get(interfaceID), requAC);
                 }
@@ -420,7 +420,7 @@ public class SystemGeneration {
     private AssemblyContext getAndRemoveRandomAC(final List<AssemblyContext> container, final Object forbiddenRef) {
         AssemblyContext ac = null;
 
-        for (int i = 0; (ac == null) && (i < (container.size() * 10)); i++) {
+        for (int i = 0; ac == null && i < container.size() * 10; i++) {
 
             final int randIndex = ThreadLocalRandom.current().nextInt(container.size());
             final AssemblyContext randomAC = container.get(randIndex);
