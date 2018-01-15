@@ -27,7 +27,7 @@ import org.eclipse.core.runtime.Path;
 /**
  * A comment.
  *
- * @author LarsBlumke
+ * @author poeppke, weimann
  *
  */
 public class ModelFileHelper {
