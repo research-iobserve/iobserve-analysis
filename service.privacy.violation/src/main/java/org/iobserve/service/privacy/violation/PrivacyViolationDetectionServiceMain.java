@@ -21,18 +21,13 @@ import java.util.List;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.CommaParameterSplitter;
 import com.beust.jcommander.converters.IntegerConverter;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
-import teetime.framework.Execution;
 
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.service.AbstractServiceMain;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -41,9 +36,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  *
  * @author Reiner Jung
  */
-public final class PrivacyViolationDetectionServiceMain {
-
-    private static final Log LOG = LogFactory.getLog(PrivacyViolationDetectionServiceMain.class);
+public final class PrivacyViolationDetectionServiceMain
+        extends AbstractServiceMain<PrivacyViolationDetectionConfiguration> {
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Input port.", converter = IntegerConverter.class)
@@ -81,53 +75,19 @@ public final class PrivacyViolationDetectionServiceMain {
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        final PrivacyViolationDetectionServiceMain main = new PrivacyViolationDetectionServiceMain();
-        final JCommander commander = new JCommander(main);
-        try {
-            commander.parse(args);
-            main.execute(commander);
-        } catch (final ParameterException e) {
-            PrivacyViolationDetectionServiceMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
-        } catch (final IOException e) {
-            PrivacyViolationDetectionServiceMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
-        }
+        new PrivacyViolationDetectionServiceMain().run("Privacy Violation Detection Service", "service", args);
     }
 
-    private void execute(final JCommander commander) throws IOException {
-        PrivacyViolationDetectionServiceMain.LOG.debug("Receiver");
-        final PrivacyViolationDetectionConfiguration configuration = new PrivacyViolationDetectionConfiguration(
-                this.inputPort, this.outputs, this.rac, this.resourceEnvironmentModelProvider,
-                this.allocationModelGraphProvider, this.systemModelGraphProvider,
+    @Override
+    protected PrivacyViolationDetectionConfiguration createConfiguration() throws IOException {
+        return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs, this.rac,
+                this.resourceEnvironmentModelProvider, this.allocationModelGraphProvider, this.systemModelGraphProvider,
                 this.resourceEnvironmentModelGraphProvider, this.warningFile, this.alarmsFile);
+    }
 
-        if (configuration.isSetupComplete()) {
-
-            final Execution<PrivacyViolationDetectionConfiguration> analysis = new Execution<>(configuration);
-
-            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        synchronized (analysis) {
-                            analysis.abortEventually();
-                        }
-                    } catch (final Exception e) { // NOCS
-
-                    }
-                }
-            }));
-
-            PrivacyViolationDetectionServiceMain.LOG.info("Running analysis");
-
-            analysis.executeBlocking();
-
-            PrivacyViolationDetectionServiceMain.LOG.info("Done");
-        } else {
-            PrivacyViolationDetectionServiceMain.LOG.info("Setup failed.");
-        }
-
+    @Override
+    protected boolean checkParameters(final JCommander commander) throws IOException {
+        return true;
     }
 
 }

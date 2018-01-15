@@ -22,17 +22,16 @@ import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.xml.sax.SAXException;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
+
+import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.service.CommandLineParameterEvaluation;
+import org.xml.sax.SAXException;
 
 /**
  * Main CLI class for the rac creator.
@@ -40,7 +39,7 @@ import teetime.framework.Execution;
  * @author Reiner Jung
  *
  */
-public class RacCreatorMain {
+public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration> {
 
     private static final String RAC_FILENAME = "mapping.rac";
     private static final String MAPPED_CLASSES_FILENAME = "mapped.txt";
@@ -74,42 +73,11 @@ public class RacCreatorMain {
      *             parser configuration error
      */
     public static void main(final String[] args) throws IOException, ParserConfigurationException, SAXException {
-        final RacCreatorMain main = new RacCreatorMain();
-        final JCommander commander = new JCommander(main);
-        try {
-            commander.parse(args);
-            main.execute(commander);
-        } catch (final ParameterException e) {
-            RacCreatorMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
-        }
+        new RacCreatorMain().run("RAC Creator", "rac creator", args);
     }
 
-    private void execute(final JCommander commander) throws IOException, ParserConfigurationException, SAXException {
-        if (!this.outputPath.isDirectory() || !this.outputPath.exists()) {
-            RacCreatorMain.LOG.error(
-                    "Output path " + this.outputPath.getCanonicalPath() + " does not exist or is not a directory.");
-            commander.usage();
-            System.exit(1);
-        }
-
-        if (!this.inputPath.isDirectory() || !this.inputPath.exists()) {
-            RacCreatorMain.LOG.error(
-                    "Input path " + this.inputPath.getCanonicalPath() + " does not exist or is not a directory.");
-            commander.usage();
-            System.exit(1);
-        }
-
-        if (!this.fileReadOk(this.mappingFile, "Mapping file")) {
-            commander.usage();
-            System.exit(1);
-        }
-
-        if (!this.fileReadOk(this.repositoryFile, "Repository file")) {
-            commander.usage();
-            System.exit(1);
-        }
-
+    @Override
+    protected ObservationConfiguration createConfiguration() throws IOException {
         final Collection<File> inputPaths = new ArrayList<>();
         inputPaths.add(this.inputPath);
 
@@ -122,36 +90,37 @@ public class RacCreatorMain {
         final RepositoryFileReader repositoryFileReader = new RepositoryFileReader(this.repositoryFile);
         final ModelMappingReader mappingFileReader = new ModelMappingReader(this.mappingFile);
 
-        final Configuration configuration = new ObservationConfiguration(inputPaths, repositoryFileReader,
-                mappingFileReader, mappedClassesFile, unmappedClassesFile, racFile);
-
-        RacCreatorMain.LOG.info("RAC creator configuration");
-        final Execution<Configuration> analysis = new Execution<>(configuration);
-        RacCreatorMain.LOG.info("start");
-        analysis.executeBlocking();
-        RacCreatorMain.LOG.info("complete");
-
-        // final RacCreator racCreator = new RacCreator(RacCreatorMain.inputPath,
-        // RacCreatorMain.repositoryFile,
-        // RacCreatorMain.mappingFile, RacCreatorMain.outputPath);
-        //
-        // racCreator.execute();
-
-        System.exit(0);
-
+        try {
+            return new ObservationConfiguration(inputPaths, repositoryFileReader, mappingFileReader, mappedClassesFile,
+                    unmappedClassesFile, racFile);
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new IOException(e);
+        }
     }
 
-    private boolean fileReadOk(final File file, final String label) throws IOException {
-        if (!file.exists()) {
-            RacCreatorMain.LOG.error(label + " " + file.getCanonicalPath() + " does not exist.");
+    @Override
+    protected boolean checkParameters(final JCommander commander) throws IOException {
+        if (!this.outputPath.isDirectory() || !this.outputPath.exists()) {
+            RacCreatorMain.LOG.error(
+                    "Output path " + this.outputPath.getCanonicalPath() + " does not exist or is not a directory.");
+            commander.usage();
             return false;
         }
-        if (!file.isFile()) {
-            RacCreatorMain.LOG.error(label + " " + file.getCanonicalPath() + " is not a file.");
+
+        if (!this.inputPath.isDirectory() || !this.inputPath.exists()) {
+            RacCreatorMain.LOG.error(
+                    "Input path " + this.inputPath.getCanonicalPath() + " does not exist or is not a directory.");
+            commander.usage();
             return false;
         }
-        if (!file.canRead()) {
-            RacCreatorMain.LOG.error(label + " " + file.getCanonicalPath() + " cannot be read.");
+
+        if (!CommandLineParameterEvaluation.isFileReadable(this.mappingFile, "Mapping file")) {
+            commander.usage();
+            return false;
+        }
+
+        if (!CommandLineParameterEvaluation.isFileReadable(this.repositoryFile, "Repository file")) {
+            commander.usage();
             return false;
         }
 

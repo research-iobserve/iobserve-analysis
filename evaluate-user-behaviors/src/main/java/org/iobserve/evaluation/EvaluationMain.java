@@ -20,19 +20,19 @@ import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
-import teetime.framework.Execution;
+
+import org.iobserve.service.AbstractServiceMain;
 
 /**
  * Collector main class.
  *
  * @author Reiner Jung
  */
-public final class EvaluationMain {
+public final class EvaluationMain extends AbstractServiceMain<EvaluationConfiguration> {
 
     private static final Log LOG = LogFactory.getLog(EvaluationMain.class);
 
@@ -62,58 +62,28 @@ public final class EvaluationMain {
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-
-        EvaluationMain.LOG.debug("Evaluation of behavior models.");
-
-        final EvaluationMain main = new EvaluationMain();
-        final JCommander commander = new JCommander(main);
-        try {
-            commander.parse(args);
-            main.execute(commander);
-        } catch (final ParameterException e) {
-            EvaluationMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
-        } catch (final IOException e) {
-            EvaluationMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
-        }
+        new EvaluationMain().run("Evaluation of behavior models.", "evaluation", args);
     }
 
-    private void execute(final JCommander commander) throws IOException {
+    @Override
+    protected EvaluationConfiguration createConfiguration() throws IOException {
+        return new EvaluationConfiguration(this.baselineModelLocation, this.testModelLocation, this.targetLocation);
+    }
+
+    @Override
+    protected boolean checkParameters(final JCommander commander) throws IOException {
         if (!this.baselineModelLocation.canRead()) {
             EvaluationMain.LOG.error("reading baseline failed: " + this.baselineModelLocation.getCanonicalPath());
             commander.usage();
-            return;
+            return false;
         }
         if (!this.testModelLocation.canRead()) {
             EvaluationMain.LOG.error("reading test model failed: " + this.testModelLocation.getCanonicalPath());
             commander.usage();
-            return;
+            return false;
         }
 
-        final EvaluationConfiguration configuration = new EvaluationConfiguration(this.baselineModelLocation,
-                this.testModelLocation, this.targetLocation);
-        final Execution<EvaluationConfiguration> evaluation = new Execution<>(configuration);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    synchronized (evaluation) {
-                        evaluation.abortEventually();
-                    }
-                } catch (final Exception e) { // NOCS
-
-                }
-            }
-        }));
-
-        EvaluationMain.LOG.debug("Running evaluation");
-
-        evaluation.executeBlocking();
-
-        EvaluationMain.LOG.debug("Done");
-
+        return true;
     }
 
 }

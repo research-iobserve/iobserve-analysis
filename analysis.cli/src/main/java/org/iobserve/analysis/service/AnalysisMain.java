@@ -21,15 +21,8 @@ import java.net.URL;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
 
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
@@ -44,6 +37,8 @@ import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvid
 import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.service.CommandLineParameterEvaluation;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -57,9 +52,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public final class AnalysisMain {
-    private static final Log LOG = LogFactory.getLog(AnalysisMain.class);
-
+public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration> {
     @Parameter(names = "--help", help = true)
     private boolean help;
 
@@ -124,139 +117,108 @@ public final class AnalysisMain {
      *            command line arguments.
      */
     public static void main(final String[] args) {
-        final AnalysisMain main = new AnalysisMain();
-        final JCommander commander = new JCommander(main);
-        try {
-            commander.parse(args);
-            main.execute(commander);
-        } catch (final ParameterException e) {
-            AnalysisMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
-        } catch (final IOException e) {
-            AnalysisMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
-        } catch (final InitializationException e) {
-            AnalysisMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
-        }
+        new AnalysisMain().run("Analysis Service", "analysis", args);
     }
 
-    private void execute(final JCommander commander) throws IOException, InitializationException {
-        if (this.help) {
-            commander.usage();
-            System.exit(1);
-        } else {
-            this.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander);
-            this.checkDirectory(this.pcmModelsNeo4jDirectory, "Palladio Model Neo4j", commander);
+    @Override
+    protected ServiceConfiguration createConfiguration() throws IOException {
+        /** process parameter. */
+
+        final String[] outputs = this.output.split(":");
+        if (outputs.length == 2) {
+            final String outputHostname = outputs[0];
+            final String outputPort = outputs[1];
+
             /** process parameter. */
+            // old model providers without neo4j
+            final InitializeModelProviders modelProvider = new InitializeModelProviders(this.pcmModelsDirectory);
 
-            final String[] outputs = this.output.split(":");
-            if (outputs.length == 2) {
-                final String outputHostname = outputs[0];
-                final String outputPort = outputs[1];
+            final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
+            final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
+            final RepositoryModelProvider repositoryModelProvider = modelProvider.getRepositoryModelProvider();
+            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider = modelProvider
+                    .getResourceEnvironmentModelProvider();
+            final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
+            final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
+            // initialize neo4j graphs
+            final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
+            Graph resourceEnvironmentModelGraph = graphLoader
+                    .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
+            Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
+            Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
+            Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
 
-                /** process parameter. */
-                // old model providers without neo4j
-                final InitializeModelProviders modelProvider = new InitializeModelProviders(this.pcmModelsDirectory);
+            // load neo4j graphs
+            resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
+            allocationModelGraph = graphLoader.getAllocationModelGraph();
+            systemModelGraph = graphLoader.getSystemModelGraph();
+            usageModelGraph = graphLoader.getUsageModelGraph();
 
-                final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
-                final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
-                final RepositoryModelProvider repositoryModelProvider = modelProvider.getRepositoryModelProvider();
-                final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider = modelProvider
-                        .getResourceEnvironmentModelProvider();
-                final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
-                final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
-                // initialize neo4j graphs
-                final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
-                Graph resourceEnvironmentModelGraph = graphLoader
-                        .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
-                Graph allocationModelGraph = graphLoader
-                        .initializeAllocationModelGraph(allocationModelProvider.getModel());
-                Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
-                Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
+            // new graphModelProvider
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
+                    resourceEnvironmentModelGraph);
+            final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
+                    resourceEnvironmentModelGraph);
+            final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(allocationModelGraph);
+            final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider = new ModelProvider<>(
+                    allocationModelGraph);
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
+                    systemModelGraph);
+            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(systemModelGraph);
+            final ModelProvider<UsageModel> usageModelGraphProvider = new ModelProvider<>(usageModelGraph);
 
-                // load neo4j graphs
-                resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
-                allocationModelGraph = graphLoader.getAllocationModelGraph();
-                systemModelGraph = graphLoader.getSystemModelGraph();
-                usageModelGraph = graphLoader.getUsageModelGraph();
+            // get systemId
+            final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
+                    .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+            final String systemId = systemModel.getId();
+            // URLs for sending updates to the deployment visualization
+            final URL systemUrl = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");
+            final URL changelogUrl = new URL(systemUrl + systemId + "/changelogs");
 
-                // new graphModelProvider
-                final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
-                        resourceEnvironmentModelGraph);
-                final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
-                        resourceEnvironmentModelGraph);
-                final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(
-                        allocationModelGraph);
-                final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider = new ModelProvider<>(
-                        allocationModelGraph);
-                final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
-                        systemModelGraph);
-                final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(
-                        systemModelGraph);
-                final ModelProvider<UsageModel> usageModelGraphProvider = new ModelProvider<>(usageModelGraph);
+            final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
+                    systemUrl, changelogUrl, allocationModelGraphProvider, systemModelGraphProvider,
+                    resourceEnvironmentModelGraphProvider, usageModelGraphProvider);
+            try {
+                deploymentVisualization.initialize();
+            } catch (final Exception e) {
+                AbstractServiceMain.LOG.debug("deploymentVisualization.initialize() went wrong!", e);
+            }
 
-                // get systemId
-                final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
-                        .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
-                final String systemId = systemModel.getId();
-                // URLs for sending updates to the deployment visualization
-                final URL systemUrl = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");
-                final URL changelogUrl = new URL(systemUrl + systemId + "/changelogs");
-
-                final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                        systemUrl, changelogUrl, allocationModelGraphProvider, systemModelGraphProvider,
-                        resourceEnvironmentModelGraphProvider, usageModelGraphProvider);
+            SnapshotBuilder snapshotBuilder = null;
+            URI perOpteryxUri = null;
+            URI lqnsUri = null;
+            URI deployablesFolder = null;
+            if (!this.snapshotPath.isEmpty() && !this.perOpteryxUriPath.isEmpty() && !this.lqnsUriPath.isEmpty()
+                    && !this.deployablesFolderPath.isEmpty()) {
+                SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(this.snapshotPath));
                 try {
-                    deploymentVisualization.initialize();
-                } catch (final Exception e) {
-                    AnalysisMain.LOG.debug("deploymentVisualization.initialize() went wrong!", e);
-                }
-
-                SnapshotBuilder snapshotBuilder = null;
-                URI perOpteryxUri = null;
-                URI lqnsUri = null;
-                URI deployablesFolder = null;
-                if (!this.snapshotPath.isEmpty() && !this.perOpteryxUriPath.isEmpty() && !this.lqnsUriPath.isEmpty()
-                        && !this.deployablesFolderPath.isEmpty()) {
-                    SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(this.snapshotPath));
                     snapshotBuilder = new SnapshotBuilder("Runtime", modelProvider);
                     perOpteryxUri = URI.createFileURI(this.perOpteryxUriPath);
                     lqnsUri = URI.createFileURI(this.lqnsUriPath);
                     deployablesFolder = URI.createFileURI(this.deployablesFolderPath);
+                } catch (final InitializationException e) {
+                    throw new IOException(e);
                 }
 
-                final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
-                        outputPort, "", this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
-                        correspondenceModel, usageModelProvider, repositoryModelProvider,
-                        resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider,
-                        resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider,
-                        allocationModelGraphProvider, assemblyContextModelGraphProvider, systemModelGraphProvider,
-                        assCtxSystemModelGraphProvider, this.visualizationServiceURL, snapshotBuilder, perOpteryxUri,
-                        lqnsUri, deployablesFolder);
-
-                AnalysisMain.LOG.info("Analysis configuration");
-                final Execution<Configuration> analysis = new Execution<>(configuration);
-                AnalysisMain.LOG.info("Analysis start");
-                analysis.executeBlocking();
-                AnalysisMain.LOG.info("Anaylsis complete");
             }
+
+            return new ServiceConfiguration(this.listenPort, outputHostname, outputPort, "", this.varianceOfUserGroups,
+                    this.thinkTime, this.closedWorkload, correspondenceModel, usageModelProvider,
+                    repositoryModelProvider, resourceEnvironmentModelProvider, allocationModelProvider,
+                    systemModelProvider, resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider,
+                    allocationModelGraphProvider, assemblyContextModelGraphProvider, systemModelGraphProvider,
+                    assCtxSystemModelGraphProvider, this.visualizationServiceURL, snapshotBuilder, perOpteryxUri,
+                    lqnsUri, deployablesFolder);
+        } else {
+            return null;
         }
     }
 
-    private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
-            throws IOException {
-        if (!location.exists()) {
-            AnalysisMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
-            commander.usage();
-            System.exit(1);
-        }
-        if (!location.isDirectory()) {
-            AnalysisMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
-            commander.usage();
-            System.exit(1);
-        }
-
+    @Override
+    protected boolean checkParameters(final JCommander commander) throws IOException {
+        return CommandLineParameterEvaluation.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander)
+                && CommandLineParameterEvaluation.checkDirectory(this.pcmModelsNeo4jDirectory, "Palladio Model Neo4j",
+                        commander);
     }
 
 }

@@ -49,7 +49,7 @@ import util.SendHttpRequest;
  * Initializes the deployment visualization by mapping the initial palladio components to
  * visualization elements.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 public final class InitializeDeploymentVisualization {

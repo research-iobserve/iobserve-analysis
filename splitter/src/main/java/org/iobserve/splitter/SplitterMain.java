@@ -20,21 +20,17 @@ import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-import teetime.framework.Execution;
+import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.service.CommandLineParameterEvaluation;
 
 /**
- * Collector main class.
+ * Splitter main class.
  *
  * @author Reiner Jung
  */
-public final class SplitterMain {
-
-    private static final Log LOG = LogFactory.getLog(SplitterMain.class);
+public final class SplitterMain extends AbstractServiceMain<SimpleSplitterConfiguration> {
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Input directory.", converter = FileConverter.class)
@@ -61,65 +57,18 @@ public final class SplitterMain {
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-
-        SplitterMain.LOG.debug("Splitter");
-
-        final SplitterMain main = new SplitterMain();
-        final JCommander commander = new JCommander(main);
-        try {
-            commander.parse(args);
-            main.execute(commander);
-        } catch (final ParameterException e) {
-            SplitterMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
-        } catch (final IOException e) {
-            SplitterMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
-        }
+        new SplitterMain().run("Splitter", "splitter", args);
     }
 
-    private void execute(final JCommander commander) throws IOException {
-        this.checkDirectory(this.sourceLocation, "Source", commander);
-        this.checkDirectory(this.targetLocation, "Target", commander);
-
-        final SimpleSplitterConfiguration configuration = new SimpleSplitterConfiguration(this.sourceLocation,
-                this.targetLocation, this.hostnames);
-        final Execution<SimpleSplitterConfiguration> analysis = new Execution<>(configuration);
-
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    synchronized (analysis) {
-                        analysis.abortEventually();
-                    }
-                } catch (final Exception e) { // NOCS
-
-                }
-            }
-        }));
-
-        SplitterMain.LOG.debug("Running analysis");
-
-        analysis.executeBlocking();
-
-        SplitterMain.LOG.debug("Done");
-
+    @Override
+    protected SimpleSplitterConfiguration createConfiguration() throws IOException {
+        return new SimpleSplitterConfiguration(this.sourceLocation, this.targetLocation, this.hostnames);
     }
 
-    private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
-            throws IOException {
-        if (!location.exists()) {
-            SplitterMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
-            commander.usage();
-            System.exit(1);
-        }
-        if (!location.isDirectory()) {
-            SplitterMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
-            commander.usage();
-            System.exit(1);
-        }
-
+    @Override
+    protected boolean checkParameters(final JCommander commander) throws IOException {
+        return CommandLineParameterEvaluation.checkDirectory(this.sourceLocation, "Source", commander)
+                && CommandLineParameterEvaluation.checkDirectory(this.targetLocation, "Target", commander);
     }
 
 }

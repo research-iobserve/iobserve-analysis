@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.utils;
+package org.iobserve.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,36 +29,67 @@ import kieker.common.logging.LogFactory;
  * @author Reiner Jung
  *
  */
-public class CommandlineParameterEvaluation {
+public class CommandLineParameterEvaluation {
 
-    private static final Log LOG = LogFactory.getLog(CommandlineParameterEvaluation.class);
+    private static final Log LOG = LogFactory.getLog(CommandLineParameterEvaluation.class);
 
     /**
      * Check whether the given handle refers to an existing directory.
-     * 
+     *
      * @param location
      *            path to the directory
      * @param locationLabel
      *            label indicating the parameter of the given location
      * @param commander
      *            command line handler
+     *
+     * @return returns true if the directory exists, else false
      * @throws IOException
      *             on io error
      */
-    public static void checkDirectory(final File location, final String locationLabel, final JCommander commander)
+    public static boolean checkDirectory(final File location, final String locationLabel, final JCommander commander)
             throws IOException {
         if (!location.exists()) {
-            CommandlineParameterEvaluation.LOG
+            CommandLineParameterEvaluation.LOG
                     .error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
             commander.usage();
-            System.exit(1);
+            return false;
         }
         if (!location.isDirectory()) {
-            CommandlineParameterEvaluation.LOG
+            CommandLineParameterEvaluation.LOG
                     .error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
             commander.usage();
-            System.exit(1);
+            return false;
         }
 
+        return true;
+    }
+
+    /**
+     * Check whther a specified file is readable.
+     *
+     * @param file
+     *            the file handle
+     * @param label
+     *            label indicating the parameter of the given location
+     * @return true on success else false
+     * @throws IOException
+     *             on io error
+     */
+    public static boolean isFileReadable(final File file, final String label) throws IOException {
+        if (!file.exists()) {
+            CommandLineParameterEvaluation.LOG.error(label + " " + file.getCanonicalPath() + " does not exist.");
+            return false;
+        }
+        if (!file.isFile()) {
+            CommandLineParameterEvaluation.LOG.error(label + " " + file.getCanonicalPath() + " is not a file.");
+            return false;
+        }
+        if (!file.canRead()) {
+            CommandLineParameterEvaluation.LOG.error(label + " " + file.getCanonicalPath() + " cannot be read.");
+            return false;
+        }
+
+        return true;
     }
 }

@@ -26,6 +26,7 @@ import teetime.framework.Execution;
  * @author Reiner Jung
  *
  */
+@Deprecated
 public class AnalysisThread extends Thread {
 
     private final AnalysisDaemon daemon;

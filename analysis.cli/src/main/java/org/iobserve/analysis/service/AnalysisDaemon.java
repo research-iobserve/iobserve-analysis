@@ -56,6 +56,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  * @author Reiner Jung
  *
  */
+@Deprecated
 public class AnalysisDaemon implements Daemon {
     private static final Log LOG = LogFactory.getLog(AnalysisDaemon.class);
 

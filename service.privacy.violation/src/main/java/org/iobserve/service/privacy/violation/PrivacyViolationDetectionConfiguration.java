@@ -161,13 +161,4 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
     }
 
-    /**
-     * Check whether the setup is complete.
-     *
-     * @return true when the service is connected to its application.
-     */
-    public boolean isSetupComplete() {
-        return true;
-    }
-
 }
