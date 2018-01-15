@@ -65,7 +65,7 @@ public class PerOpteryxHeadless {
         PerOpteryxHeadless.LOG.info("Configuring PerOpteryx run...");
         final DSELaunch launch = new DSELaunch();
 
-        // this.configureInternalWorkspace(workingDir);
+        this.configureInternalWorkspace(workingDir);
 
         final String projectDir = PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_NAME + "/"
                 + PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_WORKING_DIR;

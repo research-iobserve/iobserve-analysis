@@ -90,7 +90,7 @@ public class PerOpteryxLaunchConfigurationBuilder {
 
         PerOpteryxLaunchConfigurationBuilder.setDefaultReliabilityOptions(attr);
 
-        // PerOpteryxLaunchConfigurationBuilder.setSimuComDefaultOptions(attr);
+        // setSimuComDefaultOptions(attr);
         PerOpteryxLaunchConfigurationBuilder.setLQNSDefaultOptions(attr, projectModelDir, sourceModelDir);
 
         PerOpteryxLaunchConfigurationBuilder.setDefaultTacticsOptions(attr);
@@ -311,40 +311,34 @@ public class PerOpteryxLaunchConfigurationBuilder {
 
     private static void setDefaultConfigFiles(final String modelDir, final Map<String, Object> attr) {
         // Standard PCM settings
-        final IPath allocationFile = new Path("/Users/LarsBlumke/Desktop/peropteryx-working-dir/default.allocation");// PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir,
-                                                                                                                     // "allocation");
+        final IPath allocationFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "allocation");
         PerOpteryxLaunchConfigurationBuilder.LOG.info("Allocation file: " + allocationFile);
         attr.put(ConstantsContainer.ALLOCATION_FILE, allocationFile.toString());
 
-        final IPath outputFolder = new Path("/Users/LarsBlumke/Desktop/peropteryx-working-dir/output"); // new
-                                                                                                        // Path("platform:/resource/output");
+        final IPath outputFolder = new Path("platform:/resource/output");
         PerOpteryxLaunchConfigurationBuilder.LOG.info("Output folder: " + outputFolder);
         attr.put(ConstantsContainer.CLIENTOUT_PATH, outputFolder.toString());
 
-        final IPath repositoryFile = new Path("/Users/LarsBlumke/Desktop/peropteryx-working-dir/default.repository");// PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir,
-                                                                                                                     // "repository");
+        final IPath repositoryFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "repository");
         PerOpteryxLaunchConfigurationBuilder.LOG.info("Repository file: " + repositoryFile);
         attr.put(ConstantsContainer.REPOSITORY_FILE, repositoryFile.toString());
 
-        final IPath resourceEnvFile = new Path(
-                "/Users/LarsBlumke/Desktop/peropteryx-working-dir/default.resourceenvironment");// PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir,"resourceenvironment");
+        final IPath resourceEnvFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir,
+                "resourceenvironment");
         PerOpteryxLaunchConfigurationBuilder.LOG.info("Resourceenvironment file: " + resourceEnvFile);
         attr.put(ConstantsContainer.RESOURCEENVIRONMENT_FILE, resourceEnvFile.toString());
 
-        final IPath systemFile = new Path("/Users/LarsBlumke/Desktop/peropteryx-working-dir/default.system");// PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir,
-                                                                                                             // "system");
+        final IPath systemFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "system");
         PerOpteryxLaunchConfigurationBuilder.LOG.info("System file: " + systemFile);
         attr.put(ConstantsContainer.SYSTEM_FILE, systemFile.toString());
 
         // Has to be only the name because PerOpteryx will create a project with
         // this name
-        final IPath tempFolder = new Path("/Users/LarsBlumke/Desktop/peropteryx-working-dir/resource/temporary");// new
-                                                                                                                 // Path("platform:/resource/temporary");
+        final IPath tempFolder = new Path("platform:/resource/temporary");
         PerOpteryxLaunchConfigurationBuilder.LOG.info("Temp folder: " + tempFolder);
         attr.put(ConstantsContainer.TEMPORARY_DATA_LOCATION, tempFolder.toString());
 
-        final IPath usageFile = new Path("/Users/LarsBlumke/Desktop/peropteryx-working-dir/default.usagemodel");// PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir,
-                                                                                                                // "usagemodel");
+        final IPath usageFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "usagemodel");
         PerOpteryxLaunchConfigurationBuilder.LOG.info("Usage file: " + usageFile);
         attr.put(ConstantsContainer.USAGE_FILE, usageFile.toString());
 
@@ -356,19 +350,15 @@ public class PerOpteryxLaunchConfigurationBuilder {
         attr.put(ConstantsContainer.FEATURE_CONFIG, ConstantsContainer.DEFAULT_FEATURE_CONFIGURATION_FILE);
 
         // PerOpteryx specific settings
-        final IPath costFile = new Path("/Users/LarsBlumke/Desktop/peropteryx-working-dir/default.cost");// PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir,
-                                                                                                         // "cost");
+        final IPath costFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "cost");
         PerOpteryxLaunchConfigurationBuilder.LOG.info("Cost file: " + costFile);
         attr.put(DSEConstantsContainer.COST_FILE, costFile.toString());
 
-        final IPath decisionFile = new Path("/Users/LarsBlumke/Desktop/peropteryx-working-dir/default.designdecision");// PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir,
-                                                                                                                       // "designdecision");
+        final IPath decisionFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "designdecision");
         PerOpteryxLaunchConfigurationBuilder.LOG.info("Designdecision file: " + decisionFile);
         attr.put(DSEConstantsContainer.DESIGN_DECISION_FILE, decisionFile.toString());
 
-        final IPath qmlFile = new Path(
-                "/Users/LarsBlumke/Desktop/peropteryx-working-dir/default.profile.qmldeclarations");// PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir,
-                                                                                                    // "qmldeclarations");
+        final IPath qmlFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "qmldeclarations");
         PerOpteryxLaunchConfigurationBuilder.LOG.info("QMLDeclarations file: " + qmlFile);
         attr.put(DSEConstantsContainer.QML_DEFINITION_FILE, qmlFile.toString());
     }
