@@ -30,6 +30,12 @@ public abstract class AbstractGeoLocationSampler implements ISampler {
 
     private final ICountryInvestigator countryInvestigator;
 
+    /**
+     * Create a geo location sampler.
+     *
+     * @param countryInvestigator
+     *            set country for sampler
+     */
     public AbstractGeoLocationSampler(final ICountryInvestigator countryInvestigator) {
         this.countryInvestigator = countryInvestigator;
     }
@@ -67,10 +73,15 @@ public abstract class AbstractGeoLocationSampler implements ISampler {
      *            the current time.
      * @param hostname
      *            the hostname of the machine where this measurement is performed
+     * @param countryCode
+     *            country code of the probe
      * @param monitoringCtr
      *            monitoring controller used in the measurement
      *
      * @return returns an a records containing the geolocation
+     *
+     * @throws Exception
+     *             on error in monitoring component
      */
     public abstract IMonitoringRecord getGeoLocationRecord(final long timestamp, final String hostname,
             short countryCode, final IMonitoringController monitoringCtr) throws Exception;

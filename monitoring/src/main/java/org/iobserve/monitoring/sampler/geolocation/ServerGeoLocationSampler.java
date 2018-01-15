@@ -20,14 +20,14 @@ import java.net.NetworkInterface;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 
-import org.iobserve.common.record.ServerGeoLocation;
-
 import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.controller.IMonitoringController;
 
+import org.iobserve.common.record.ServerGeoLocation;
+
 /**
  * TODO .
- * 
+ *
  * @author unknown
  *
  */
@@ -36,6 +36,9 @@ public class ServerGeoLocationSampler extends AbstractGeoLocationSampler {
     /**
      * Constructs a new {@link AbstractGeoLocationSampler}. Use GeoLocationSamplerFactory for
      * instance creation.
+     *
+     * @param countryInvestigator
+     *            set sample value
      */
     public ServerGeoLocationSampler(final ICountryInvestigator countryInvestigator) {
         super(countryInvestigator);
@@ -51,7 +54,7 @@ public class ServerGeoLocationSampler extends AbstractGeoLocationSampler {
         final Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
         ServerGeoLocation record = null;
 
-        while (netInterfaces.hasMoreElements() && (record == null)) {
+        while (netInterfaces.hasMoreElements() && record == null) {
             final String address = this.getCorrectIPAdress(netInterfaces.nextElement());
             if (address != null) {
                 record = new ServerGeoLocation(timestamp, countryCode, hostname, address);
@@ -71,7 +74,7 @@ public class ServerGeoLocationSampler extends AbstractGeoLocationSampler {
         String localNetworkAddress = null;
 
         final Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
-        while (addresses.hasMoreElements() && (localNetworkAddress == null)) {
+        while (addresses.hasMoreElements() && localNetworkAddress == null) {
             final InetAddress address = addresses.nextElement();
             if (!address.isLoopbackAddress() && !address.isMulticastAddress() && !address.isAnyLocalAddress()) {
                 localNetworkAddress = address.getHostAddress();
