@@ -27,6 +27,10 @@ import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
 /**
+ * Generic service main class.
+ *
+ * @param <T> type of the teetime Configuration to be used
+ *
  * @author Reiner Jung
  *
  */
