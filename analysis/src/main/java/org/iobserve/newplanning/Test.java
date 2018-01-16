@@ -17,11 +17,15 @@ package org.iobserve.newplanning;
 
 import java.io.File;
 
-import org.eclipse.core.runtime.CoreException;
-
+/**
+ * A class for testing.
+ * 
+ * @author LarsBlumke
+ *
+ */
 public class Test {
 
-    public static void main(final String[] args) throws CoreException {
+    public static void main(final String[] args) throws Exception {
         final File workingDir = new File("/Users/LarsBlumke/Desktop/peropteryx-working-dir");
 
         new PerOpteryxHeadless().launchPeropteryx(workingDir.getName());

@@ -16,6 +16,9 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 
 import de.uka.ipd.sdq.dsexplore.launch.DSELaunch;
 
@@ -60,6 +63,25 @@ public class PerOpteryxHeadless {
     //
     // return IApplication.EXIT_OK;
     // }
+
+    ResourcesPlugin resourcesPlugin;
+
+    public PerOpteryxHeadless() throws Exception {
+
+        this.resourcesPlugin = new ResourcesPlugin();
+
+        // found at http://tux2323.blogspot.de/2011/10/osgi-how-to-get-bundle-context-in-java.html
+        // but doesn't work either
+        // final BundleContext ctx =
+        // BundleReference.class.cast(ResourcesPlugin.class.getClassLoader()).getBundle()
+        // .getBundleContext();
+
+        final Bundle resourcesBundle = FrameworkUtil.getBundle(ResourcesPlugin.class);
+        final BundleContext resourcesCtx = resourcesBundle.getBundleContext();
+
+        this.resourcesPlugin.start(resourcesCtx);
+
+    }
 
     public void launchPeropteryx(final String workingDir) throws CoreException {
         PerOpteryxHeadless.LOG.info("Configuring PerOpteryx run...");
