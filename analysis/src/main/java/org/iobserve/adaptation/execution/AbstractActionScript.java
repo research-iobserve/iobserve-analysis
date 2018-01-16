@@ -19,6 +19,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.io.Files;
+import com.google.inject.Module;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -34,10 +38,6 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProvider;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.common.io.Files;
-import com.google.inject.Module;
 
 /**
  * Abstract class representing an execution script to be executed for a specific action.
@@ -112,7 +112,7 @@ public abstract class AbstractActionScript {
 
         final ComputeServiceContext context = ContextBuilder.newBuilder(provider.getName())
                 .credentials(provider.getIdentity(), provider.getCredential())
-                .modules(ImmutableSet.<Module> of(new SLF4JLoggingModule(), new SshjSshClientModule()))
+                .modules(ImmutableSet.<Module> of(new SLF4JLoggingModule(), new SshjSshClientModule())) // NOCS
                 .buildView(ComputeServiceContext.class);
 
         final ComputeService client = context.getComputeService();
@@ -130,7 +130,7 @@ public abstract class AbstractActionScript {
      */
     protected String getFileContents(final URI fileURI) throws IOException {
         if (fileURI.isFile()) {
-            return Files.toString(new File(fileURI.toFileString()), StandardCharsets.UTF_8);
+            return Files.asCharSource(new File(fileURI.toFileString()), StandardCharsets.UTF_8).read();
         } else {
             final String msg = String.format("File at '%s' is not a valid file! Path is probably wrong.",
                     fileURI.toFileString());

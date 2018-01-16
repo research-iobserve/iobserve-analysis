@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.iobserve.analysis.data.EntryCallEvent;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
  *

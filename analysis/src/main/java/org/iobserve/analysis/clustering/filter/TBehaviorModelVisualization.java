@@ -35,7 +35,7 @@ import org.iobserve.analysis.clustering.filter.models.CallInformation;
 import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
 import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCreationStrategy;
-import org.iobserve.analysis.filter.writer.AbstractModelOutputFilter;
+import org.iobserve.analysis.writer.AbstractModelOutputFilter;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.adaptation.data;
 
-import org.iobserve.analysis.graph.ComponentNode;
+import org.iobserve.analysis.data.graph.ComponentNode;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
@@ -45,6 +45,15 @@ public class AssemblyContextActionFactory extends ActionFactory {
         return action;
     }
 
+    /**
+     * Create a change repository component action.
+     *
+     * @param runtimeNode
+     *            node to be changed
+     * @param reDeploymentNode
+     *            target node
+     * @return returns the composed action
+     */
     public static ChangeRepositoryComponentAction generateChangeRepositoryComponentAction(
             final ComponentNode runtimeNode, final ComponentNode reDeploymentNode) {
         final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
@@ -61,6 +70,15 @@ public class AssemblyContextActionFactory extends ActionFactory {
         return action;
     }
 
+    /**
+     * Create a migration action.
+     *
+     * @param runtimeNode
+     *            source node
+     * @param reDeploymentNode
+     *            target node
+     * @return returns the migration action
+     */
     public static MigrateAction generateMigrateAction(final ComponentNode runtimeNode,
             final ComponentNode reDeploymentNode) {
         final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
@@ -79,6 +97,13 @@ public class AssemblyContextActionFactory extends ActionFactory {
         return action;
     }
 
+    /**
+     * Create a deallocation action.
+     *
+     * @param runtimeNode
+     *            node to be deallocated
+     * @return returns the deallocation action
+     */
     public static DeallocateAction generateDeallocateAction(final ComponentNode runtimeNode) {
         final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
         final DeallocateAction action = factory.createDeallocateAction();
@@ -92,6 +117,15 @@ public class AssemblyContextActionFactory extends ActionFactory {
         return action;
     }
 
+    /**
+     * Create an allocation action.
+     *
+     * @param runtimeNode
+     *            node to be allocated
+     * @param reDeploymentNode
+     *            node to be deployed
+     * @return returns the allocation action
+     */
     public static AllocateAction generateAllocateAction(final ComponentNode runtimeNode,
             final ComponentNode reDeploymentNode) {
         final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;

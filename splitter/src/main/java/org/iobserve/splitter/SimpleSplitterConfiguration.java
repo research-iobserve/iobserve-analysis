@@ -20,13 +20,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
-
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
+
+import org.iobserve.stages.source.Dir2RecordsFilter;
 
 /**
  * Analysis configuration for the data collector.

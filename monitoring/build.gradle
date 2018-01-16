@@ -9,6 +9,8 @@ if (group.isEmpty()) {
 }
 
 dependencies {
+	clover 'org.openclover:clover:4.2.0'
+
 	compile project(":common")
 	compile 'net.kieker-monitoring:kieker:1.13'
 	compile 'javax.interceptor:javax.interceptor-api:1.2'
@@ -19,6 +21,13 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
 	compile 'com.neovisionaries:nv-i18n:1.20'
+}
+
+clover {
+	report {
+		html=true
+	}
+	
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

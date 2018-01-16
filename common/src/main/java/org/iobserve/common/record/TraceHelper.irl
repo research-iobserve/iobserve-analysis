@@ -15,14 +15,14 @@
  ***************************************************************************/
 package org.iobserve.common.record
 
-@author "Reiner Jung" @since "1.0"
+@author "Reiner Jung" @since "0.0.2"
 template ITraceHelper {
 	long traceId
 	string host
 	int port
 }
 
-@author "Reiner Jung" @since "1.0"
-entity ServletTraceHelper : ITraceHelper, IFlowRecord {
+@author "Reiner Jung" @since "0.0.2"
+event ServletTraceHelper : ITraceHelper, IFlowRecord {
 	string requestURI	
 }

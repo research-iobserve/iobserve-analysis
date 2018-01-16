@@ -36,6 +36,18 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
     private String execEnvironmentParam;
     private String execCommand;
 
+    /**
+     * Create an execution wrapper.
+     *
+     * @param inputModelDir
+     *            input model directory
+     * @param perOpteryxDir
+     *            perOpteryx setup directory
+     * @param lqnsDir
+     *            layered queuing networks directory
+     * @throws IOException
+     *             on io error reading files
+     */
     public ExecutionWrapper(final URI inputModelDir, final URI perOpteryxDir, final URI lqnsDir) throws IOException {
         super(inputModelDir, perOpteryxDir, lqnsDir);
 

@@ -34,6 +34,14 @@ public abstract class AbstractLinearComposition<I, O> extends CompositeStage {
     /** composite output port, which sends whether privacy is violated. */
     private final OutputPort<O> outputPort;
 
+    /**
+     * Create an abstract linear composition.
+     *
+     * @param inputPort
+     *            input port
+     * @param outputPort
+     *            output port
+     */
     public AbstractLinearComposition(final InputPort<I> inputPort, final OutputPort<O> outputPort) {
         this.inputPort = inputPort;
         this.outputPort = outputPort;

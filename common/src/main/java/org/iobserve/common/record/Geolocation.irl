@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.common.record
 
+@author "Reiner Jung" @since "0.0.2"
 template GeoLocation {
 	short countryCode = 049 // country code ISO				
 		
@@ -25,8 +26,9 @@ template GeoLocation {
  * for the same host name. Therefore, the hostname may only 
  * describe the logical unit while the IP specifies a concrete
  * server. 	 
- */	 
-entity ServerGeoLocation extends AbstractEvent : GeoLocation {
+ */
+@author "Reiner Jung" @since "0.0.2"
+event ServerGeoLocation extends AbstractEvent : GeoLocation {
 	string hostname
 	string address
 }

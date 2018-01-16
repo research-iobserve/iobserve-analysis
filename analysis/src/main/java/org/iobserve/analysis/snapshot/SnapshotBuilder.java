@@ -21,16 +21,16 @@ import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.AbstractModelProvider;
-
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
+import org.iobserve.analysis.model.provider.neo4j.AbstractModelProvider;
 
 /**
  * This class creates a copy of the current PCM runtime model. (also called Snapshot) The output
@@ -63,6 +63,7 @@ public class SnapshotBuilder extends AbstractStage {
      * @param modelProviders
      *            the source pcm models
      * @throws InitializationException
+     *             when no snapshot location was specified
      */
     public SnapshotBuilder(final String subURI, final InitializeModelProviders modelProviders)
             throws InitializationException {
@@ -108,6 +109,13 @@ public class SnapshotBuilder extends AbstractStage {
         }
     }
 
+    /**
+     * Create an snapshot URI.
+     *
+     * @return the URI
+     * @throws IOException
+     *             on io error while producing output files
+     */
     public URI createSnapshot() throws IOException {
         SnapshotBuilder.LOG.info("Creating Snapshot: \t" + this.snapshotURI.toFileString());
 
@@ -125,14 +133,32 @@ public class SnapshotBuilder extends AbstractStage {
     }
 
     /**
-     * Creates the actual snapshot.
+     * Creates the actual snapshot. New API.
      *
      * @param modelProvider
      *            the model for the snapshot
      * @throws IOException
      *             if the model URI does not exist
      */
-    public void createModelSnapshot(final AbstractModelProvider<?> modelProvider) throws IOException {
+    private void createModelSnapshot(final AbstractModelProvider<?> modelProvider) {
+        if (modelProvider == null) {
+            return;
+        }
+
+        modelProvider.save();
+        // TODO make snapshot
+    }
+
+    /**
+     * Creates the actual snapshot. Old API.
+     *
+     * @param modelProvider
+     *            the model for the snapshot
+     * @throws IOException
+     *             if the model URI does not exist
+     */
+    public void createModelSnapshot(
+            final org.iobserve.analysis.model.provider.file.AbstractModelProvider<?> modelProvider) throws IOException {
         if (modelProvider == null) {
             return;
         }

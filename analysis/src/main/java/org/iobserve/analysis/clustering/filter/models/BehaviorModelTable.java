@@ -27,8 +27,8 @@ import org.apache.commons.math3.util.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.analysis.clustering.SingleOrNoneCollector;
-import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.data.PayloadAwareEntryCallEvent;
+import org.iobserve.stages.general.data.EntryCallEvent;
+import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
 import weka.core.Attribute;
 import weka.core.FastVector;

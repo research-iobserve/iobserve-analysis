@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.modelneo4j;
 
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;

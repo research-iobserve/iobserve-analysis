@@ -15,12 +15,12 @@
  ***************************************************************************/
 package org.iobserve.analysis.systems.jpetstore;
 
-import org.iobserve.analysis.filter.IEntryCallTraceMatcher;
-
 import kieker.common.record.flow.trace.AbstractTraceEvent;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+
+import org.iobserve.stages.general.IEntryCallTraceMatcher;
 
 /**
  * This matcher detects entry calls for JPetStore. Please note that this is a superficial

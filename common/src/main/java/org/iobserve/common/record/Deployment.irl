@@ -21,33 +21,44 @@ import kieker.common.record.flow.IEventRecord
 /** 
  * Marker interfaces for deployment and undeployment.	 
  */ 
-template IDeploymentRecord
-template IUndeploymentRecord
+@author "Reiner Jung" @since "0.0.2"
+template IDeploymentChange
+@author "Reiner Jung" @since "0.0.2"
+template IDeployedEvent : IDeploymentChange
+@author "Reiner Jung" @since "0.0.2"
+template IUndeployedEvent : IDeploymentChange
 	  
 /**
  * Event records for PaaS servlet/WAR deployment/undeployment.
  */	 
-abstract entity ServletDeploymentEvent extends AbstractEvent { 
-	string serivce
-	string context
-	string deploymentId	
-}
-
-entity ServletDeployedEvent extends ServletDeploymentEvent : IDeploymentRecord
-entity ServletUndeployedEvent extends ServletDeploymentEvent : IUndeploymentRecord
-
-/**
- * Event records for PaaS servlet/WAR deployment/undeployment.	 
- */	 
-abstract entity EJBDeploymentEvent extends AbstractEvent { 
-	string serivce
+@author "Reiner Jung" @since "0.0.2"
+abstract event ServletDescriptor extends AbstractEvent { 
+	string service
 	string context
 	string deploymentId
 }
 
-entity EJBDeployedEvent extends EJBDeploymentEvent : IDeploymentRecord
-entity EJBUndeployedEvent extends EJBDeploymentEvent : IUndeploymentRecord
+@author "Reiner Jung" @since "0.0.2"
+event ServletDeployedEvent extends ServletDescriptor : IDeployedEvent
+@author "Reiner Jung" @since "0.0.2"
+event ServletUndeployedEvent extends ServletDescriptor : IUndeployedEvent
 
+/**
+ * Event records for PaaS servlet/WAR deployment/undeployment.	 
+ */	 
+@author "Reiner Jung" @since "0.0.2"
+abstract event EJBDescriptor extends AbstractEvent { 
+	string service
+	string context
+	string deploymentId
+}
 
+@author "Reiner Jung" @since "0.0.2"
+event EJBDeployedEvent extends EJBDescriptor : IDeployedEvent
+@author "Reiner Jung" @since "0.0.2"
+event EJBUndeployedEvent extends EJBDescriptor : IUndeployedEvent
+
+model Deployment IDeployedEvent, IUndeployedEvent
+sub Privacy Deployment : org.iobserve.common.record.GeoLocation
 
 

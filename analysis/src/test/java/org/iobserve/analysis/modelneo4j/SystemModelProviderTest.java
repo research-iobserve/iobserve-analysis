@@ -21,6 +21,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.iobserve.analysis.model.provider.neo4j.Graph;
+import org.iobserve.analysis.model.provider.neo4j.GraphLoader;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;

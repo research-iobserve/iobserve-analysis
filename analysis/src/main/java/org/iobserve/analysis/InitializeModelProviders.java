@@ -18,18 +18,18 @@ package org.iobserve.analysis;
 import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.model.AbstractModelProvider;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.CloudProfileModelProvider;
-import org.iobserve.analysis.model.CostModelProvider;
-import org.iobserve.analysis.model.DesignDecisionModelProvider;
-import org.iobserve.analysis.model.QMLDeclarationsModelProvider;
-import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.CorrespondeceModelFactory;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.model.provider.file.CloudProfileModelProvider;
+import org.iobserve.analysis.model.provider.file.CostModelProvider;
+import org.iobserve.analysis.model.provider.file.DesignDecisionModelProvider;
+import org.iobserve.analysis.model.provider.file.QMLDeclarationsModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.AbstractModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
 
 /**
  *
@@ -63,24 +63,19 @@ public final class InitializeModelProviders {
             final String extension = this.getFileExtension(nextFile.getName());
 
             if ("repository".equalsIgnoreCase(extension)) {
-                final URI uri = this.getUri(nextFile);
-                this.repositoryModelProvider = new RepositoryModelProvider(uri);
+                this.repositoryModelProvider = new RepositoryModelProvider(nextFile);
 
             } else if ("allocation".equalsIgnoreCase(extension)) {
-                final URI uri = this.getUri(nextFile);
-                this.allocationModelProvider = new AllocationModelProvider(uri);
+                this.allocationModelProvider = new AllocationModelProvider(nextFile);
 
             } else if ("resourceenvironment".equalsIgnoreCase(extension)) {
-                final URI uri = this.getUri(nextFile);
-                this.resourceEnvironmentModelProvider = new ResourceEnvironmentModelProvider(uri);
+                this.resourceEnvironmentModelProvider = new ResourceEnvironmentModelProvider(nextFile);
 
             } else if ("system".equalsIgnoreCase(extension)) {
-                final URI uri = this.getUri(nextFile);
-                this.systemModelProvider = new SystemModelProvider(uri);
+                this.systemModelProvider = new SystemModelProvider(nextFile);
 
             } else if ("usagemodel".equalsIgnoreCase(extension)) {
-                final URI uri = this.getUri(nextFile);
-                this.usageModelProvider = new UsageModelProvider(uri);
+                this.usageModelProvider = new UsageModelProvider(nextFile);
 
             } else if ("rac".equalsIgnoreCase(extension)) {
                 final String pathMappingFile = nextFile.getAbsolutePath();
@@ -195,9 +190,17 @@ public final class InitializeModelProviders {
         this.saveModelProvider(this.usageModelProvider, fileLocationURI.appendFileExtension("usagemodel"));
     }
 
-    private void saveModelProvider(final AbstractModelProvider<?> provider, final URI fileLocationURI) {
+    private void saveModelProvider(final org.iobserve.analysis.model.provider.file.AbstractModelProvider<?> provider,
+            final URI fileLocationURI) {
         if (provider != null) {
             provider.save(fileLocationURI);
+        }
+    }
+
+    private void saveModelProvider(final AbstractModelProvider<?> provider, final URI fileLocationURI) {
+        if (provider != null) {
+            provider.getModel();
+            // TODO do we want to serialize the model here?
         }
     }
 

@@ -18,24 +18,24 @@ package org.iobserve.analysis;
 import java.io.File;
 import java.util.Collection;
 
+import teetime.stage.InitialElementProducer;
+import teetime.stage.className.ClassNameRegistryRepository;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.IAdaptationEventListener;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
-import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
-import org.iobserve.analysis.model.AllocationModelProvider;
-import org.iobserve.analysis.model.RepositoryModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.SystemModelProvider;
-import org.iobserve.analysis.model.UsageModelProvider;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.modelneo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.stages.source.Dir2RecordsFilter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import teetime.stage.InitialElementProducer;
-import teetime.stage.className.ClassNameRegistryRepository;
 
 /**
  *
@@ -44,8 +44,8 @@ import teetime.stage.className.ClassNameRegistryRepository;
  */
 public class FileObservationConfiguration extends AbstractObservationConfiguration {
 
-	private final InitialElementProducer<File> files;
-	private final Dir2RecordsFilter reader;
+    private final InitialElementProducer<File> files;
+    private final Dir2RecordsFilter reader;
 
     /**
      * Analysis configuration constructor.
@@ -82,6 +82,16 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      *            aggregation type
      * @param outputMode
      *            output mode
+     * @param snapshotBuilder
+     *            snapshotbuilder
+     * @param perOpteryxHeadless
+     *            perOpterxyheadless URI
+     * @param lqnsDir
+     *            layered queuing networks directory
+     * @param eventListener
+     *            eventlistener of some kind
+     * @param deployablesFolder
+     *            folder containing deployables
      */
     public FileObservationConfiguration(final Collection<File> directories, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
@@ -91,17 +101,17 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
             final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
-            final String visualizationServiceURL, final EAggregationType aggregationType,
-            final EOutputMode outputMode, final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, 
-            final URI lqnsDir, final IAdaptationEventListener eventListener, final URI deployablesFolder) {
+            final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
+            final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,
+            final IAdaptationEventListener eventListener, final URI deployablesFolder) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
                 systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, perOpteryxHeadless, lqnsDir, 
+                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, perOpteryxHeadless, lqnsDir,
                 eventListener, deployablesFolder);
 
-		this.files = new InitialElementProducer<>(directories);
-		this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
+        this.files = new InitialElementProducer<>(directories);
+        this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
 
         /** connecting filters */
         this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());

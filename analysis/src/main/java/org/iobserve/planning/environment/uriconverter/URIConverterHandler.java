@@ -33,16 +33,19 @@ public class URIConverterHandler extends ExtensibleURIConverterImpl {
 
     private static final Logger LOG = LogManager.getLogger(URIConverterHandler.class.getName());
 
-    private final URIConverter delegate;
+    private final URIConverter uriConverter;
 
     private final List<IURIConverterInterceptor> interceptors = new ArrayList<>();
 
     /**
      * Provide a delegate {@link URIConverter} to handle conversions not handled by the registered
      * interceptors.
+     *
+     * @param uriConverter
+     *            URI converter
      */
-    public URIConverterHandler(final URIConverter delegate) {
-        this.delegate = delegate;
+    public URIConverterHandler(final URIConverter uriConverter) {
+        this.uriConverter = uriConverter;
     }
 
     /**
@@ -50,6 +53,10 @@ public class URIConverterHandler extends ExtensibleURIConverterImpl {
      * <p>
      * Note: Interceptors will be called in the order they are added to the handler. The first
      * interceptor that is able to convert the URI will convert the URI.
+     *
+     * @param interceptor
+     *            the interceptor to be added
+     * @return this URIConverterHandler
      */
     public URIConverterHandler addInterceptor(final IURIConverterInterceptor interceptor) {
         this.interceptors.add(interceptor);
@@ -72,6 +79,6 @@ public class URIConverterHandler extends ExtensibleURIConverterImpl {
                 return interceptor.convert(uri);
             }
         }
-        return this.delegate.normalize(uri);
+        return this.uriConverter.normalize(uri);
     }
 }

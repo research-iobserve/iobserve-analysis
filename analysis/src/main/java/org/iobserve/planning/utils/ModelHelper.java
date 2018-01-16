@@ -19,13 +19,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
+import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
+
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.CloudProfileModelProvider;
-import org.iobserve.analysis.model.CostModelBuilder;
-import org.iobserve.analysis.model.CostModelProvider;
-import org.iobserve.analysis.model.ResourceEnvironmentCloudBuilder;
-import org.iobserve.analysis.model.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.factory.CostModelFactory;
+import org.iobserve.analysis.model.factory.ResourceEnvironmentCloudFactory;
+import org.iobserve.analysis.model.provider.file.CloudProfileModelProvider;
+import org.iobserve.analysis.model.provider.file.CostModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
@@ -37,11 +42,6 @@ import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import de.uka.ipd.sdq.pcm.cost.CostRepository;
-import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
-import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
-import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
 
 /**
  * Helper class for model related tasks, especially resource environment related.
@@ -105,8 +105,9 @@ public final class ModelHelper {
         final Optional<LinkingResource> internetLink = linkingResources.stream()
                 .filter(link -> link.getEntityName().contains(ModelHelper.INTERNET_LINKING_RESOURCE_NAME)).findFirst();
 
-        linkingResource = internetLink.orElseGet(() -> ResourceEnvironmentCloudBuilder
-                .createLinkingResource(environment, null, ModelHelper.INTERNET_LINKING_RESOURCE_NAME));
+        linkingResource = internetLink
+                .orElseGet(() -> org.iobserve.analysis.model.factory.ResourceEnvironmentCloudFactory
+                        .createLinkingResource(environment, null, ModelHelper.INTERNET_LINKING_RESOURCE_NAME));
 
         return linkingResource;
     }
@@ -127,7 +128,7 @@ public final class ModelHelper {
      */
     public static ResourceContainerCloud createResourceContainerFromVMType(final ResourceEnvironment environment,
             final CostRepository costRepository, final VMType cloudVM, final String containerName) {
-        final ResourceContainerCloud container = ResourceEnvironmentCloudBuilder.createResourceContainer(environment,
+        final ResourceContainerCloud container = ResourceEnvironmentCloudFactory.createResourceContainer(environment,
                 containerName);
 
         container.setId(EcoreUtil.generateUUID());
@@ -142,12 +143,12 @@ public final class ModelHelper {
         final float processingRate = ModelHelper.getProcessingRate(cloudVM);
 
         // Create processing resource and costs
-        final ProcessingResourceSpecification processor = ResourceEnvironmentCloudBuilder
+        final ProcessingResourceSpecification processor = ResourceEnvironmentCloudFactory
                 .createProcessingResource(nrOfCores, processingRate, container);
         container.getActiveResourceSpecifications_ResourceContainer().add(processor);
         // TODO HDD is not used by peropteryx?
 
-        CostModelBuilder.createFixedProcessingResourceCost(costRepository, 0.0, cloudVM.getPricePerHour(), processor);
+        CostModelFactory.createFixedProcessingResourceCost(costRepository, 0.0, cloudVM.getPricePerHour(), processor);
         return container;
     }
 
@@ -212,6 +213,8 @@ public final class ModelHelper {
      *            the decision space in which to look for the degrees
      * @param degreeClass
      *            the class of degree to look for
+     * @param <T>
+     *            any specific type of degree of freedom
      * @return a list of degrees of the requested type
      */
     public static <T extends DegreeOfFreedomInstance> List<T> getAllDegreesOf(final DecisionSpace decisionSpace,
@@ -266,7 +269,7 @@ public final class ModelHelper {
      */
     public static String getGroupName(final ResourceContainerCloud cloudContainer) {
         String groupName = cloudContainer.getGroupName();
-        if ((groupName == null) || groupName.trim().isEmpty()) {
+        if (groupName == null || groupName.trim().isEmpty()) {
             groupName = cloudContainer.getEntityName();
         }
         return groupName;
@@ -337,7 +340,7 @@ public final class ModelHelper {
 
         if (cloudProvider != null) {
             final VMType vmType = cloudProvider.getCloudResources().stream()
-                    .filter(resource -> ((resource instanceof VMType)
+                    .filter(resource -> (resource instanceof VMType
                             && ((VMType) resource).getLocation().equals(location)
                             && ((VMType) resource).getName().equals(instanceType)))
                     .map(resource -> (VMType) resource).findFirst().orElse(null);

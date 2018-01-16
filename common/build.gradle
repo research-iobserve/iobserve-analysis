@@ -3,6 +3,8 @@ project.ext {
 }
 
 dependencies {
+	clover 'org.openclover:clover:4.2.0'
+
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.kieker-monitoring:kieker:1.13'
 }
@@ -13,6 +15,13 @@ sourceSets {
 			srcDirs = ['src/main/java', 'src/gen/java']
 		}
 	}
+}
+
+clover {
+	report {
+		html=true
+	}
+	
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {

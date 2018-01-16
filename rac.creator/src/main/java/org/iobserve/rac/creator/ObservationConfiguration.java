@@ -21,8 +21,14 @@ import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.iobserve.analysis.filter.RecordSwitch;
-import org.iobserve.analysis.filter.reader.Dir2RecordsFilter;
+import org.iobserve.rac.creator.filter.DoAllFilter;
+import org.iobserve.rac.creator.filter.ListWriter;
+import org.iobserve.rac.creator.filter.PcmCorrespondentMethodStage;
+import org.iobserve.rac.creator.filter.RACWriter;
+import org.iobserve.rac.creator.filter.RecordFilter;
+import org.iobserve.rac.creator.filter.UniqueFilter;
+import org.iobserve.stages.general.RecordSwitch;
+import org.iobserve.stages.source.Dir2RecordsFilter;
 import org.xml.sax.SAXException;
 
 import teetime.framework.Configuration;

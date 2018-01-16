@@ -23,10 +23,10 @@ template IUserInformation {
 }
 
 @author 'Christoph Dornieden' @since "0.0.2"
-entity ExtendedAfterOperationEvent extends AfterOperationEvent : IUserInformation 
+event ExtendedAfterOperationEvent extends AfterOperationEvent : IUserInformation 
 
 @author 'Christoph Dornieden' @since "0.0.2"
-entity ExtendedBeforeOperationEvent extends BeforeOperationEvent : IUserInformation
+event ExtendedBeforeOperationEvent extends BeforeOperationEvent : IUserInformation
 
 @author 'Reiner Jung' @since "0.0.2"
 template IPayloadCharacterization {
@@ -36,7 +36,7 @@ template IPayloadCharacterization {
 }
 
 @author 'Reiner Jung' @since "0.0.2"
-entity EntryLevelBeforeOperationEvent extends BeforeOperationEvent : IPayloadCharacterization
+event EntryLevelBeforeOperationEvent extends BeforeOperationEvent : IPayloadCharacterization
 
 @author 'Reiner Jung' @since "0.0.2"
-entity EntryLevelBeforeOperationObjectEvent extends BeforeOperationObjectEvent : IPayloadCharacterization
+event EntryLevelBeforeOperationObjectEvent extends BeforeOperationObjectEvent : IPayloadCharacterization

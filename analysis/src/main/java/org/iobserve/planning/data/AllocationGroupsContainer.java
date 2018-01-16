@@ -104,6 +104,12 @@ public class AllocationGroupsContainer {
         }
     }
 
+    /**
+     * Internal class component group.
+     *
+     * @author Tobias Pöppke
+     *
+     */
     private static class ComponentGroup {
         private final Map<String, AllocationGroup> allocationGroupsMap = new LinkedHashMap<>();
 

@@ -22,12 +22,12 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import org.iobserve.analysis.data.EntryCallEvent;
-import org.iobserve.analysis.filter.models.EntryCallSequenceModel;
-import org.iobserve.analysis.filter.models.UserSession;
+import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSession;
 import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 import org.iobserve.analysis.userbehavior.data.UserSessionAsCountsOfCalls;
 import org.iobserve.analysis.userbehavior.data.WorkloadIntensity;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
  * This class holds a set of preprocessing and postprocessing methods for the clustering of user

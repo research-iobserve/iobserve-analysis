@@ -25,9 +25,9 @@ import org.iobserve.adaptation.data.ActionFactory;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.adaptation.data.AssemblyContextActionFactory;
 import org.iobserve.adaptation.data.ResourceContainerActionFactory;
-import org.iobserve.analysis.graph.ComponentNode;
-import org.iobserve.analysis.graph.DeploymentNode;
-import org.iobserve.analysis.graph.ModelGraph;
+import org.iobserve.analysis.data.graph.ComponentNode;
+import org.iobserve.analysis.data.graph.DeploymentNode;
+import org.iobserve.analysis.data.graph.ModelGraph;
 import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
@@ -148,7 +148,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 
             if (runServer == null) {
                 // It is an so far unused server!
-                final AcquireAction action = ResourceContainerActionFactory.generateAcquireAction(reDeplServer);
+                final AcquireAction action = ResourceContainerActionFactory.createAcquireAction(reDeplServer);
                 this.rcActions.add(action);
             } else {
                 // Server was and is still in use
@@ -158,7 +158,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 
         for (final DeploymentNode runServer : this.runtimeDeploymentNodes.values()) {
             // AssemblyContext does not exist anymore in redeployment model!
-            final TerminateAction action = ResourceContainerActionFactory.generateTerminateAction(runServer);
+            final TerminateAction action = ResourceContainerActionFactory.createTerminateAction(runServer);
             this.rcActions.add(action);
         }
     }
