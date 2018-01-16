@@ -1,5 +1,7 @@
 package org.iobserve.newplanning;
 
+import java.io.File;
+
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.Logger;
@@ -11,6 +13,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.adaptor.EclipseStarter;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -18,7 +21,6 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.debug.core.Launch;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.FrameworkUtil;
 
 import de.uka.ipd.sdq.dsexplore.launch.DSELaunch;
 
@@ -63,23 +65,42 @@ public class PerOpteryxHeadless {
     //
     // return IApplication.EXIT_OK;
     // }
-
     ResourcesPlugin resourcesPlugin;
 
     public PerOpteryxHeadless() throws Exception {
 
         this.resourcesPlugin = new ResourcesPlugin();
 
+        // found at https://stackoverflow.com/questions/4673406/programmatically-start-osgi-equinox,
+        // also see https://www.eclipsezone.com//eclipse/forums/t93976.rhtml
+        final String[] equinoxArgs = { "-console", "1234", "-noExit" };
+        final BundleContext context = EclipseStarter.startup(equinoxArgs, null);
+
+        // trying "install bundle" for jar including ResourcesPlugin, see
+        // https://www.programcreek.com/java-api-examples/index.php?class=org.osgi.framework.BundleContext&method=installBundle
+        File jar = new File(
+                "/Users/LarsBlumke/Documents/CAU/Masterarbeit/iObserve/iobserve-analysis/lib/org.eclipse.ant.core_3.5.0.v20170509-2149.jar");
+        context.installBundle(jar.toURI().toURL().toString());
+        jar = new File(
+                "/Users/LarsBlumke/Documents/CAU/Masterarbeit/iObserve/iobserve-analysis/lib/org.eclipse.core.expressions_3.6.0.v20170207-1037.jar");
+        context.installBundle(jar.toURI().toURL().toString());
+        jar = new File(
+                "/Users/LarsBlumke/Documents/CAU/Masterarbeit/iObserve/iobserve-analysis/lib/org.eclipse.core.resources_3.12.0.v20170417-1558.jar");
+        final Bundle resourceBundle = context.installBundle(jar.toURI().toURL().toString());
+        resourceBundle.start();
+
+        this.resourcesPlugin.start(context);
+
+        // Main.main(equinoxArgs);
+
         // found at http://tux2323.blogspot.de/2011/10/osgi-how-to-get-bundle-context-in-java.html
         // but doesn't work either
         // final BundleContext ctx =
         // BundleReference.class.cast(ResourcesPlugin.class.getClassLoader()).getBundle()
         // .getBundleContext();
-
-        final Bundle resourcesBundle = FrameworkUtil.getBundle(ResourcesPlugin.class);
-        final BundleContext resourcesCtx = resourcesBundle.getBundleContext();
-
-        this.resourcesPlugin.start(resourcesCtx);
+        // final Bundle resourcesBundle = FrameworkUtil.getBundle(ResourcesPlugin.class);
+        // final BundleContext resourcesCtx = resourcesBundle.getBundleContext();
+        // this.resourcesPlugin.start(resourcesCtx);
 
     }
 
