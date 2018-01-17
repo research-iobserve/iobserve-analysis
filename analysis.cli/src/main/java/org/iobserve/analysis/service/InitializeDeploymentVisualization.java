@@ -16,12 +16,10 @@
 package org.iobserve.analysis.service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.service.services.CommunicationInstanceService;
@@ -43,6 +41,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import util.Changelog;
 import util.SendHttpRequest;
 
@@ -77,10 +77,10 @@ public final class InitializeDeploymentVisualization {
     /**
      * constructor.
      *
-     * @param systemUrl
-     *            Url to send requests for creating a system
-     * @param changelogUrl
-     *            Url to send requests for changelogs
+     * @param visualizationBaseUrl
+     *            Url used for the visualization
+     * @param systemId
+     *            system id
      * @param allocationModelGraphProvider
      *            provider for allocation model
      * @param systemModelGraphProvider
@@ -89,15 +89,16 @@ public final class InitializeDeploymentVisualization {
      *            provider for resource environment model
      * @param usageModelGraphProvider
      *            provider for usage model
+     * @throws MalformedURLException
      */
 
-    public InitializeDeploymentVisualization(final URL systemUrl, final URL changelogUrl,
+    public InitializeDeploymentVisualization(final URL visualizationBaseUrl, final String systemId,
             final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final ModelProvider<UsageModel> usageModelGraphProvider) {
-        this.systemUrl = systemUrl;
-        this.changelogUrl = changelogUrl;
+            final ModelProvider<UsageModel> usageModelGraphProvider) throws MalformedURLException {
+        this.systemUrl = new URL(visualizationBaseUrl + "/v1/systems/");
+        this.changelogUrl = new URL(this.systemUrl + systemId + "/changelogs");
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
@@ -281,7 +282,7 @@ public final class InitializeDeploymentVisualization {
             resourceTargetId = allocationContext.getResourceContainer_AllocationContext().getId();
         }
 
-        if (resourceSourceId != null && resourceTargetId != null) {
+        if ((resourceSourceId != null) && (resourceTargetId != null)) {
             for (int l = 0; l < linkingResources.size(); l++) {
                 final LinkingResource linkingResource = linkingResources.get(l);
                 if (linkingResource instanceof LinkingResourceImpl) {

@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.model.provider.neo4j;
 
-import java.io.File;
-
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
+
+import kieker.common.configuration.Configuration;
 
 /**
  * Model provider to provide {@link Allocation} model.
@@ -40,8 +40,8 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public AllocationModelProvider(final File neo4jPcmModelDirectory) {
-        super(neo4jPcmModelDirectory);
+    public AllocationModelProvider(final Configuration configuration) {
+        super(configuration);
     }
 
     @Override
@@ -49,8 +49,7 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
         this.model = this.modelProvider.readRootComponent(Allocation.class);
 
         if (this.model == null) {
-            AbstractModelProvider.LOG
-                    .debug("Model at " + this.neo4jPcmModelDirectory.getAbsolutePath() + " could not be loaded!");
+            AbstractModelProvider.LOG.debug("Allocation model could not be loaded!");
         }
     }
 
@@ -69,7 +68,7 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
     }
 
     @Override
-    protected Graph getModelTypeGraph(final File neo4jPcmModelDirectory) {
-        return new GraphLoader(neo4jPcmModelDirectory).getAllocationModelGraph();
+    protected Graph getModelTypeGraph(final Configuration configuration) {
+        return new GraphLoader(configuration).getAllocationModelGraph();
     }
 }

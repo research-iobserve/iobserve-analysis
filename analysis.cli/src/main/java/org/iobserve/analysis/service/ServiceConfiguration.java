@@ -38,6 +38,8 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
+import kieker.common.configuration.Configuration;
+
 /**
  * @author Reiner Jung
  *
@@ -49,10 +51,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      *
      * @param inputPort
      *            analysis input port, default is 9876
-     * @param outputHostname
-     *            visualization hostname
-     * @param outputPort
-     *            port to be used for the visualization host
+     * @param visualizationBaseUrl
+     *            base URL of the visualization service
      * @param systemId
      *            system id to be used for the visualization
      * @param varianceOfUserGroups
@@ -99,7 +99,7 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      * @throws MalformedURLException
      *             if any passed URL in the configuration is broken.
      */
-    public ServiceConfiguration(final int inputPort, final String outputHostname, final String outputPort,
+    public ServiceConfiguration(final Configuration configuration, final URL visualizationBaseUrl,
             final String systemId, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
             final RepositoryModelProvider repositoryModelProvider,
@@ -113,14 +113,13 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider, final String visualizationServiceURL,
             final SnapshotBuilder snapshotBuilder, final URI perOpteryxDir, final URI lqnsDir,
             final URI deployablesFolder) throws MalformedURLException {
-        super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
+        super(configuration, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider, allocationModelProvider,
                 allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
                 EOutputMode.UBM_VISUALIZATION, snapshotBuilder, perOpteryxDir, lqnsDir, deployablesFolder);
 
-        final URL containerManagementURL = new URL(
-                "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
+        final URL containerManagementURL = new URL(visualizationBaseUrl, "/v1/systems/" + systemId + "/changelogs");
 
         final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(
                 containerManagementURL, systemId, resourceContainerModelGraphProvider,

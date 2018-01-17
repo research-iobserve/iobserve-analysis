@@ -20,12 +20,15 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
@@ -36,6 +39,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
+import kieker.common.configuration.Configuration;
+
 /**
  * Test cases for the model provider using an allocation model.
  *
@@ -43,21 +48,29 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
  *
  */
 public class AllocationModelProviderTest implements IModelProviderTest {
-    private static final File GRAPH_DIR = new File("./testdb");
-    private static final Graph GRAPH = new GraphLoader(AllocationModelProviderTest.GRAPH_DIR).getAllocationModelGraph();
+    private static final String GRAPH_DIR = "./testdb";
+
+    private Graph graph;
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
+
+    @BeforeClass
+    public void before() {
+        final Configuration configuration = new Configuration();
+        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, AllocationModelProviderTest.GRAPH_DIR);
+        this.graph = new GraphLoader(configuration).getAllocationModelGraph();
+    }
 
     @Override
     @Before
     public void clearGraph() {
-        new ModelProvider<>(AllocationModelProviderTest.GRAPH).clearGraph();
+        new ModelProvider<>(this.graph).clearGraph();
     }
 
     @Override
     @Test
     public void createThenCloneThenRead() {
-        final ModelProvider<Allocation> modelProvider1 = new ModelProvider<>(AllocationModelProviderTest.GRAPH);
+        final ModelProvider<Allocation> modelProvider1 = new ModelProvider<>(this.graph);
         final ModelProvider<Allocation> modelProvider2;
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final Allocation readModel;
@@ -77,7 +90,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenClearGraph() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.GRAPH);
+        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(this.graph);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
 
         modelProvider.createComponent(writtenModel);
@@ -92,7 +105,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadById() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.GRAPH);
+        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(this.graph);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final Allocation readModel;
 
@@ -105,7 +118,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadByName() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.GRAPH);
+        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(this.graph);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final List<Allocation> readModels;
 
@@ -120,7 +133,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.GRAPH);
+        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(this.graph);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final List<String> readIds;
 
@@ -136,7 +149,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadRoot() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.GRAPH);
+        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(this.graph);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final Allocation readModel;
 
@@ -149,7 +162,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.GRAPH);
+        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(this.graph);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
         final Allocation readModel;
         final AllocationContext writtenContext = writtenModel.getAllocationContexts_Allocation().get(0);
@@ -164,7 +177,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.GRAPH);
+        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(this.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final Allocation writtenModel = testModelBuilder.getAllocation();
         List<EObject> readReferencingComponents;
@@ -185,7 +198,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.GRAPH);
+        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(this.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final Allocation writtenModel = testModelBuilder.getAllocation();
         final AllocationContext businessOrderServerAllocationContext = testModelBuilder
@@ -227,7 +240,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenDeleteComponent() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.GRAPH);
+        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(this.graph);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
 
         modelProvider.createComponent(writtenModel);
@@ -237,8 +250,8 @@ public class AllocationModelProviderTest implements IModelProviderTest {
         modelProvider.deleteComponent(Allocation.class, writtenModel.getId());
 
         // Manually delete proxy nodes (as they are no containments in this graph)
-        try (Transaction tx = AllocationModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
-            AllocationModelProviderTest.GRAPH.getGraphDatabaseService().execute(
+        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
+            this.graph.getGraphDatabaseService().execute(
                     "MATCH (m:ResourceEnvironment), (n:System), (o:AssemblyContext), (p:ResourceContainer) DELETE n, m, o, p");
             tx.success();
         }
@@ -249,7 +262,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenDeleteComponentAndDatatypes() {
-        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.GRAPH);
+        final ModelProvider<Allocation> modelProvider = new ModelProvider<>(this.graph);
         final Allocation writtenModel = new TestModelBuilder().getAllocation();
 
         modelProvider.createComponent(writtenModel);
@@ -261,6 +274,11 @@ public class AllocationModelProviderTest implements IModelProviderTest {
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
+    @After
+    public void after() {
+        this.graph.getGraphDatabaseService().shutdown();
+    }
+
     /**
      * Remove database directory.
      *
@@ -269,8 +287,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
      */
     @AfterClass
     public static void cleanUp() throws IOException {
-        AllocationModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
-        FileUtils.deleteRecursively(AllocationModelProviderTest.GRAPH_DIR);
+        FileUtils.deleteRecursively(new File(AllocationModelProviderTest.GRAPH_DIR));
     }
 
 }

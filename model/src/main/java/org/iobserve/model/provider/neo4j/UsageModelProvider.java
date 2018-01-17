@@ -15,13 +15,13 @@
  ***************************************************************************/
 package org.iobserve.model.provider.neo4j;
 
-import java.io.File;
-
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 import org.palladiosimulator.pcm.usagemodel.UserData;
+
+import kieker.common.configuration.Configuration;
 
 /**
  * Model provider to provide a {@link UsageModel}.
@@ -43,8 +43,8 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public UsageModelProvider(final File neo4jPcmModelDirectory) {
-        super(neo4jPcmModelDirectory);
+    public UsageModelProvider(final Configuration configuration) {
+        super(configuration);
     }
 
     @Override
@@ -57,8 +57,7 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
         this.model = this.modelProvider.readRootComponent(UsageModel.class);
 
         if (this.model == null) {
-            AbstractModelProvider.LOG
-                    .debug("Model at " + this.neo4jPcmModelDirectory.getAbsolutePath() + " could not be loaded!");
+            AbstractModelProvider.LOG.debug("Usage odel could not be loaded!");
         }
     }
 
@@ -88,8 +87,8 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
     }
 
     @Override
-    protected Graph getModelTypeGraph(final File neo4jPcmModelDirectory) {
-        return new GraphLoader(neo4jPcmModelDirectory).getUsageModelGraph();
+    protected Graph getModelTypeGraph(final Configuration configuration) {
+        return new GraphLoader(configuration).getUsageModelGraph();
     }
 
 }

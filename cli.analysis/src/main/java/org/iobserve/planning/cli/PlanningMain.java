@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.planning.cli;
 
-import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
@@ -35,6 +34,8 @@ import org.iobserve.planning.ModelTransformer;
 import org.iobserve.planning.data.PlanningData;
 import org.iobserve.planning.environment.PalladioEclipseEnvironment;
 import org.iobserve.planning.utils.ModelHelper;
+
+import kieker.common.configuration.Configuration;
 
 /**
  * Main class for executing the planning phase outside of the pipeline and for creating cloud
@@ -132,7 +133,9 @@ public final class PlanningMain {
             }
         } else {
             PlanningMain.LOG.info("Creating ResourceEnvironment...");
-            final InitializeModelProviders modelProviders = new InitializeModelProviders(new File(workingDir));
+            final Configuration configuration = new Configuration();
+            configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, workingDir);
+            final InitializeModelProviders modelProviders = new InitializeModelProviders(configuration);
             ModelHelper.fillResourceEnvironmentFromCloudProfile(modelProviders);
             PlanningMain.LOG.info("ResourceEnvironment successfully created.");
         }

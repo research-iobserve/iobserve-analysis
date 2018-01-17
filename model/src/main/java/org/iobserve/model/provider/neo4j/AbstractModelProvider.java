@@ -15,16 +15,15 @@
  ***************************************************************************/
 package org.iobserve.model.provider.neo4j;
 
-import java.io.File;
-
-import de.uka.ipd.sdq.identifier.Identifier;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.iobserve.model.ModelSaveStrategy;
+
+import de.uka.ipd.sdq.identifier.Identifier;
+import kieker.common.configuration.Configuration;
 
 /**
  * Base class for pcm model provider. Implements common methods for loading/saving pcm model.
@@ -40,8 +39,8 @@ import org.iobserve.model.ModelSaveStrategy;
 @Deprecated
 public abstract class AbstractModelProvider<T extends EObject> {
 
-    /** database location. */
-    protected File neo4jPcmModelDirectory;
+    /** Configuration. */
+    protected Configuration configuration;
     /** generic model provider. */
     protected final ModelProvider<T> modelProvider;
     /** save strategy of model. */
@@ -57,9 +56,9 @@ public abstract class AbstractModelProvider<T extends EObject> {
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public AbstractModelProvider(final File neo4jPcmModelDirectory) {
-        final Graph graph = this.getModelTypeGraph(neo4jPcmModelDirectory);
-        this.neo4jPcmModelDirectory = neo4jPcmModelDirectory;
+    public AbstractModelProvider(final Configuration configuration) {
+        final Graph graph = this.getModelTypeGraph(configuration);
+        this.configuration = configuration;
         this.modelProvider = new ModelProvider<>(graph);
         this.loadModel();
     }
@@ -166,10 +165,10 @@ public abstract class AbstractModelProvider<T extends EObject> {
     /**
      * Returns a the graph for the provider's type.
      *
-     * @param neo4jPcmModelDirectory
-     *            DB root directory
+     * @param configuration
+     *            configuration containing DB root directory
      * @return DB Graph
      */
-    protected abstract Graph getModelTypeGraph(File neo4jPcmModelDirectory);
+    protected abstract Graph getModelTypeGraph(Configuration configuration);
 
 }

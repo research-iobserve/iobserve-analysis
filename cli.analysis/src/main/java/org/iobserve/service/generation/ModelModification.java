@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.service.generation;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -33,9 +32,11 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
+import kieker.common.configuration.Configuration;
+
 /**
  * ToDo .
- * 
+ *
  * @author unknown
  *
  */
@@ -50,10 +51,15 @@ public class ModelModification {
         final URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
         ModelModification.LOG.info("Copying models to new location.");
-        InitializeModelProviders modelProviders = new InitializeModelProviders(new File(inputModels.toFileString()));
+        final Configuration configuration = new Configuration();
+        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, inputModels.toFileString());
+
+        InitializeModelProviders modelProviders = new InitializeModelProviders(configuration);
         final URI copyURI = ModelModification.copyRepoToOutput(outputLocation, modelProviders);
 
-        modelProviders = new InitializeModelProviders(new File(copyURI.toFileString()));
+        final Configuration configuration2 = new Configuration();
+        configuration2.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, copyURI.toFileString());
+        modelProviders = new InitializeModelProviders(configuration2);
 
         final Allocation allocationModel = modelProviders.getAllocationModelProvider().getModel();
         final ResourceEnvironment resourceEnvironmentModel = modelProviders.getResourceEnvironmentModelProvider()

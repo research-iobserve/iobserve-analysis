@@ -20,12 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.converters.BooleanConverter;
-import com.beust.jcommander.converters.FileConverter;
-import com.beust.jcommander.converters.IntegerConverter;
-
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.ConfigurationException;
@@ -47,6 +41,14 @@ import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.converters.BooleanConverter;
+import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
+
+import kieker.common.configuration.Configuration;
 
 /**
  * Main class for starting the iObserve application.
@@ -163,7 +165,13 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
         final Collection<File> monitoringDataDirectories = new ArrayList<>();
         AnalysisMain.findDirectories(this.monitoringDataDirectory.listFiles(), monitoringDataDirectories);
 
-        final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(this.pcmModelsDirectory);
+        final Configuration configuration = new Configuration();
+        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY,
+                this.pcmModelsDirectory.getAbsolutePath());
+        configuration.setProperty(GraphLoader.PCM_MODEL_NEO4J_DIRECTORY,
+                this.pcmModelsNeo4jDirectory.getAbsolutePath());
+
+        final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(configuration);
 
         final ICorrespondence correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
         final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
@@ -174,7 +182,7 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
         final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
 
         // initialize neo4j graphs
-        final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
+        final GraphLoader graphLoader = new GraphLoader(configuration);
         Graph resourceEnvironmentModelGraph = graphLoader
                 .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
         Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
@@ -214,8 +222,8 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
 
-        if (this.snapshotPath == null || this.perOpteryxUriPath == null || this.lqnsUriPath == null
-                || this.deployablesFolderPath == null || this.interactiveMode == false) {
+        if ((this.snapshotPath == null) || (this.perOpteryxUriPath == null) || (this.lqnsUriPath == null)
+                || (this.deployablesFolderPath == null) || (this.interactiveMode == false)) {
             AbstractServiceMain.LOG.error("Missing required parameter for cli.");
             commander.usage();
             return false;

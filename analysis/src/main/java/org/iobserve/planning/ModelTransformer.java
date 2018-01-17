@@ -15,13 +15,9 @@
  ***************************************************************************/
 package org.iobserve.planning;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
-
-import de.uka.ipd.sdq.pcm.cost.CostRepository;
-import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
@@ -48,6 +44,10 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.Resourc
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+
+import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+import kieker.common.configuration.Configuration;
 
 /**
  * Class for performing the transformation of the original PCM model into the simplified model with
@@ -83,7 +83,9 @@ public class ModelTransformer {
     public ModelTransformer(final PlanningData planningData) {
         this.planningData = planningData;
         final String originalModelDir = planningData.getOriginalModelDir().toFileString();
-        this.originalModelProviders = new InitializeModelProviders(new File(originalModelDir));
+        final Configuration configuration = new Configuration();
+        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, originalModelDir);
+        this.originalModelProviders = new InitializeModelProviders(configuration);
     }
 
     /**
@@ -123,7 +125,9 @@ public class ModelTransformer {
         snapshotBuilder.createSnapshot();
 
         this.planningData.setProcessedModelDir(processedModelDir);
-        this.processedModelProviders = new InitializeModelProviders(new File(processedModelDir.toFileString()));
+        final Configuration configuration = new Configuration();
+        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, processedModelDir.toFileString());
+        this.processedModelProviders = new InitializeModelProviders(configuration);
 
         this.allocationProvider = this.processedModelProviders.getAllocationModelProvider();
         this.cloudProfileProvider = this.processedModelProviders.getCloudProfileModelProvider();
