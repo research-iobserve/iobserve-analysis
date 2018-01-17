@@ -22,6 +22,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 
@@ -61,14 +62,22 @@ public final class SplitterMain extends AbstractServiceMain<SimpleSplitterConfig
     }
 
     @Override
-    protected SimpleSplitterConfiguration createConfiguration() throws IOException {
-        return new SimpleSplitterConfiguration(this.sourceLocation, this.targetLocation, this.hostnames);
+    protected SimpleSplitterConfiguration createConfiguration() throws ConfigurationException {
+        try {
+            return new SimpleSplitterConfiguration(this.sourceLocation, this.targetLocation, this.hostnames);
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
     @Override
-    protected boolean checkParameters(final JCommander commander) throws IOException {
-        return CommandLineParameterEvaluation.checkDirectory(this.sourceLocation, "Source", commander)
-                && CommandLineParameterEvaluation.checkDirectory(this.targetLocation, "Target", commander);
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
+        try {
+            return CommandLineParameterEvaluation.checkDirectory(this.sourceLocation, "Source", commander)
+                    && CommandLineParameterEvaluation.checkDirectory(this.targetLocation, "Target", commander);
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
 }

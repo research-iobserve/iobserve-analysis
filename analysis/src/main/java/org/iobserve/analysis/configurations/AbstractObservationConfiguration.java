@@ -13,13 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis;
+package org.iobserve.analysis.configurations;
 
 import teetime.framework.Configuration;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
-import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
-import teetime.util.ConcurrentHashMapWithDefault;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.AdaptationCalculation;
@@ -41,6 +37,7 @@ import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPe
 import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetstoreStrategy;
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
+import org.iobserve.analysis.deployment.NetworkLink;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
@@ -49,23 +46,24 @@ import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.analysis.session.CollectUserSessionsFilter;
+import org.iobserve.analysis.session.SessionAcceptanceFilter;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceAcceptanceMatcher;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceSignatureCleanupRewriter;
-import org.iobserve.analysis.traces.CollectUserSessionsFilter;
-import org.iobserve.analysis.traces.TEntryCallSequence;
-import org.iobserve.analysis.traces.TraceAcceptanceFilter;
+import org.iobserve.analysis.traces.EntryCallSequence;
 import org.iobserve.analysis.traces.TraceOperationCleanupFilter;
+import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.evaluation.ModelComparer;
 import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.planning.CandidateGeneration;
 import org.iobserve.planning.CandidateProcessing;
 import org.iobserve.planning.ModelOptimization;
 import org.iobserve.planning.ModelProcessing;
+import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.iobserve.stages.general.RecordSwitch;
-import org.iobserve.stages.general.TEntryCallStage;
 import org.iobserve.stages.source.TimeTriggerFilter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -75,7 +73,10 @@ import weka.core.ManhattanDistance;
 /**
  * @author Reiner Jung
  *
+ * @deprecated since 0.0.2 use {@link AnalysisConfiguration} instead
+ *
  */
+@Deprecated
 public abstract class AbstractObservationConfiguration extends Configuration {
 
     /**
@@ -143,6 +144,9 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
             final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,
             final IAdaptationEventListener eventListener, final URI deployablesFolder) {
+
+        final kieker.common.configuration.Configuration configuration = new kieker.common.configuration.Configuration();
+
         /** configure filter. */
         this.recordSwitch = new RecordSwitch();
 
@@ -150,7 +154,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.allocation = new AllocationStage(resourceEnvironmentModelGraphProvider);
 
         /** deployment. */
-        this.deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelGraphProvider,
+        this.deploymentStage = new DeploymentCompositeStage(configuration, resourceEnvironmentModelGraphProvider,
                 allocationModelGraphProvider, systemModelGraphProvider, correspondenceModel);
 
         /** undeployment. */
@@ -160,27 +164,30 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         /** deallocation. */
         // TODO missing
 
+        /** link deployments. */
+        final NetworkLink networkLink = new NetworkLink(allocationModelProvider, systemModelProvider,
+                resourceEnvironmentModelProvider);
+
         /** Trace reconstruction. */
-        final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<>(
-                EventBasedTraceFactory.INSTANCE);
+        final TraceReconstructionCompositeStage traceReconstructionStage = new TraceReconstructionCompositeStage(
+                configuration);
 
-        final TraceReconstructionFilter traceReconstructionFilter = new TraceReconstructionFilter(traceBuffer);
-
+        /** entry call identifies. */
         final IEntryCallTraceMatcher matcher = new JPetStoreCallTraceMatcher();
 
-        final TEntryCallStage tEntryCall = new TEntryCallStage(matcher);
+        final EntryCallStage entryCallFilter = new EntryCallStage(matcher);
 
         // final TEntryCallSequenceWithPCM tEntryCallSequenceWithPCM;
         // final TEntryEventSequence tEntryEventSequence;
 
         /** new extended clustering. */
-        final TEntryCallSequence entryCallSequence = new TEntryCallSequence();
+        final EntryCallSequence entryCallSequence = new EntryCallSequence();
 
         // one hour interval or at least 10 user sessions
         final CollectUserSessionsFilter collectUserSessions = new CollectUserSessionsFilter(1000 * 60 * 60, 10);
         final TimeTriggerFilter timeTriggerFilter = new TimeTriggerFilter(1000);
 
-        final TraceAcceptanceFilter traceAcceptanceFilter = new TraceAcceptanceFilter(
+        final SessionAcceptanceFilter traceAcceptanceFilter = new SessionAcceptanceFilter(
                 new JPetStoreTraceAcceptanceMatcher());
 
         final TraceOperationCleanupFilter traceOperationCleanupFilter = new TraceOperationCleanupFilter(
@@ -231,13 +238,13 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(this.recordSwitch.getDeployedOutputPort(), this.deploymentStage.getDeployedInputPort());
         this.connectPorts(this.recordSwitch.getUndeployedOutputPort(), this.undeploymentStage.getUndeployedInputPort());
         this.connectPorts(this.recordSwitch.getAllocationOutputPort(), this.allocation.getInputPort());
-        this.connectPorts(this.recordSwitch.getFlowOutputPort(), traceReconstructionFilter.getInputPort());
+        this.connectPorts(this.recordSwitch.getFlowOutputPort(), traceReconstructionStage.getInputPort());
         this.connectPorts(this.recordSwitch.getSessionEventOutputPort(), entryCallSequence.getSessionEventInputPort());
 
-        this.connectPorts(traceReconstructionFilter.getTraceValidOutputPort(), tEntryCall.getInputPort());
-        // this.connectPorts(this.recordSwitch.getTraceMetaPort(), tNetworkLink.getInputPort());
+        this.connectPorts(traceReconstructionStage.getTraceValidOutputPort(), entryCallFilter.getInputPort());
+        this.connectPorts(this.recordSwitch.getTraceMetadataOutputPort(), networkLink.getInputPort());
 
-        this.connectPorts(tEntryCall.getOutputPort(), entryCallSequence.getEntryCallInputPort());
+        this.connectPorts(entryCallFilter.getOutputPort(), entryCallSequence.getEntryCallInputPort());
 
         this.connectPorts(timeTriggerFilter.getOutputPort(), collectUserSessions.getTimeTriggerInputPort());
         this.connectPorts(entryCallSequence.getUserSessionOutputPort(), traceAcceptanceFilter.getInputPort());

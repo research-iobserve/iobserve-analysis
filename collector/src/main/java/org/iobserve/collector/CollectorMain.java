@@ -23,6 +23,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
+import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 
@@ -58,13 +59,22 @@ public final class CollectorMain extends AbstractServiceMain<SimpleBridgeConfigu
     }
 
     @Override
-    protected SimpleBridgeConfiguration createConfiguration() throws IOException {
-        return new SimpleBridgeConfiguration(this.dataLocation.getCanonicalPath(), this.inputPort);
+    protected SimpleBridgeConfiguration createConfiguration() throws ConfigurationException {
+        try {
+            return new SimpleBridgeConfiguration(this.dataLocation.getCanonicalPath(), this.inputPort);
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
     @Override
-    protected boolean checkParameters(final JCommander commander) throws IOException {
-        return CommandLineParameterEvaluation.checkDirectory(this.dataLocation, "Output Kieker directory", commander);
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
+        try {
+            return CommandLineParameterEvaluation.checkDirectory(this.dataLocation, "Output Kieker directory",
+                    commander);
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
 }

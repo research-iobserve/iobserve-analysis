@@ -13,16 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis;
+package org.iobserve.analysis.configurations;
 
-import java.io.File;
-import java.util.Collection;
-
-import teetime.stage.InitialElementProducer;
-import teetime.stage.className.ClassNameRegistryRepository;
+import kieker.common.configuration.Configuration;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaptation.IAdaptationEventListener;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -33,25 +28,25 @@ import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvid
 import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.stages.source.Dir2RecordsFilter;
+import org.iobserve.analysis.source.TCPSourceCompositeStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
+ * Configuration prepared to handle multiple TCP input streams.
  *
  * @author Reiner Jung
  *
+ * @deprecated since 0.0.2 use AnalysisConfiguration
  */
-public class FileObservationConfiguration extends AbstractObservationConfiguration {
-
-    private final InitialElementProducer<File> files;
-    private final Dir2RecordsFilter reader;
+@Deprecated
+public class MultiInputObservationConfiguration extends AbstractObservationConfiguration {
 
     /**
-     * Analysis configuration constructor.
+     * Construct an analysis for multiple TCP inputs.
      *
-     * @param directories
-     *            a collection of directories containing kieker logs
+     * @param inputPort
+     *            the input port where the analysis is listening
      * @param correspondenceModel
      *            the correspondence model
      * @param usageModelProvider
@@ -88,12 +83,10 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      *            perOpterxyheadless URI
      * @param lqnsDir
      *            layered queuing networks directory
-     * @param eventListener
-     *            eventlistener of some kind
      * @param deployablesFolder
      *            folder containing deployables
      */
-    public FileObservationConfiguration(final Collection<File> directories, final ICorrespondence correspondenceModel,
+    public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
@@ -103,18 +96,20 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
             final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,
-            final IAdaptationEventListener eventListener, final URI deployablesFolder) {
+            final URI deployablesFolder) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
                 systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload,
                 visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, perOpteryxHeadless, lqnsDir,
-                eventListener, deployablesFolder);
+                null, deployablesFolder);
 
-        this.files = new InitialElementProducer<>(directories);
-        this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
+        final Configuration configuration = new Configuration();
 
-        /** connecting filters */
-        this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
-        this.connectPorts(this.reader.getOutputPort(), this.recordSwitch.getInputPort());
+        configuration.setProperty(TCPSourceCompositeStage.SOURCE_PORT, inputPort);
+
+        final TCPSourceCompositeStage reader = new TCPSourceCompositeStage(configuration);
+
+        this.connectPorts(reader.getOutputPort(), this.recordSwitch.getInputPort());
     }
+
 }

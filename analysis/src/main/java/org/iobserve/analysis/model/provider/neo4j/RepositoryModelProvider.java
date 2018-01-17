@@ -38,7 +38,10 @@ import org.palladiosimulator.pcm.repository.RepositoryPackage;
  * @author Alessandro Giusa
  * @author Lars Bluemke
  *
+ * @deprecated since 0.0.2 this provider was implemented to provide a convenient way to migrate from
+ *             the old file based providers.
  */
+@Deprecated
 public final class RepositoryModelProvider extends AbstractModelProvider<Repository> {
 
     /** map of operation interfaces mapped by id. */

@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.traces;
+package org.iobserve.analysis.session;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.data.UserSession;
-
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.session.data.UserSession;
 
 /**
  * The collect user sessions filter collects incoming user sessions and sends the collection as an
@@ -34,7 +34,7 @@ import teetime.framework.OutputPort;
  *
  * @author Reiner Jung
  *
- * @version 0.0.2
+ * @since 0.0.2
  */
 public class CollectUserSessionsFilter extends AbstractStage {
 
@@ -77,7 +77,7 @@ public class CollectUserSessionsFilter extends AbstractStage {
             /** remove expired sessions. */
             if (this.userSessions.size() > this.minCollectionSize) {
                 for (int i = 0; this.userSessions.size() > i; i++) {
-                    if ((this.userSessions.get(i).getExitTime() + this.keepTime) < triggerTime) {
+                    if (this.userSessions.get(i).getExitTime() + this.keepTime < triggerTime) {
                         this.userSessions.remove(i);
                     }
                 }

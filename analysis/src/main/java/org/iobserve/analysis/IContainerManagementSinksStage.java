@@ -15,22 +15,24 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import teetime.framework.InputPort;
+
+import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
+import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+
 /**
  * @author Reiner Jung
  *
  */
-public class ConfigurationException extends Exception {
-    /**
-    *
-    */
-    private static final long serialVersionUID = -6121223240278366389L;
+public interface IContainerManagementSinksStage {
 
-    public ConfigurationException(final String message) {
-        super(message);
-    }
+    InputPort<ResourceContainer> getAllocationInputPort();
 
-    public ConfigurationException(final Exception e) {
-        super(e);
-    }
+    InputPort<ResourceContainer> getDeallocationInputPort();
+
+    InputPort<PCMDeployedEvent> getDeployedInputPort();
+
+    InputPort<PCMUndeployedEvent> getUndeployedInputPort();
 
 }

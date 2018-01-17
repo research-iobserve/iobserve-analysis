@@ -27,7 +27,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  * @author Alessandro Giusa
  * @author Philipp Weimann
  *
- * @deprecated by {@link org.iobserve.analysis.modelneo4j.ResourceEnvironmentModelProvider}
+ * @deprecated since 0.0.2 we should use the new neo4j generic provider
+ *             {@link org.iobserve.analysis.model.provider.neo4j.ModelProvider}
  */
 @Deprecated
 public class ResourceEnvironmentModelProvider extends AbstractModelProvider<ResourceEnvironment> {

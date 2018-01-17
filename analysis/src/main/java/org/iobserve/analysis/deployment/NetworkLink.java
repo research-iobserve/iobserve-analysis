@@ -52,9 +52,9 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  * @author Reiner Jung
  * @author Alessandro Giusa
  */
-public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
+public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
-    private static final Log LOG = LogFactory.getLog(TNetworkLink.class);
+    private static final Log LOG = LogFactory.getLog(NetworkLink.class);
 
     /** reference to allocation model provider. */
     private final AllocationModelProvider allocationModelProvider;
@@ -73,7 +73,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * @param resourceEnvironmentModelProvider
      *            resource environment provider
      */
-    public TNetworkLink(final AllocationModelProvider allocationModelProvider,
+    public NetworkLink(final AllocationModelProvider allocationModelProvider,
             final SystemModelProvider systemModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
         this.allocationModelProvider = allocationModelProvider;
@@ -94,11 +94,11 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
         final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider.getModel();
         final org.palladiosimulator.pcm.system.System system = this.systemModelProvider.getModel(true);
         final Allocation allocation = this.allocationModelProvider.getModel(true);
-        TNetworkLink.collectUnLinkedResourceContainer(resourceEnvironment).stream().forEach(unLinkedResCont -> {
-            TNetworkLink.getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
-                    .map(asmCtx -> TNetworkLink.getConnectedAsmCtx(system, asmCtx))
-                    .map(listAsmCtxToConnect -> TNetworkLink.collectResourceContainer(allocation, listAsmCtxToConnect))
-                    .map(listResContToConnectTo -> TNetworkLink.getLinkingResources(resourceEnvironment,
+        NetworkLink.collectUnLinkedResourceContainer(resourceEnvironment).stream().forEach(unLinkedResCont -> {
+            NetworkLink.getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
+                    .map(asmCtx -> NetworkLink.getConnectedAsmCtx(system, asmCtx))
+                    .map(listAsmCtxToConnect -> NetworkLink.collectResourceContainer(allocation, listAsmCtxToConnect))
+                    .map(listResContToConnectTo -> NetworkLink.getLinkingResources(resourceEnvironment,
                             listResContToConnectTo))
                     .flatMap(l -> l.stream()).collect(Collectors.toList()).stream()
                     .forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
@@ -134,7 +134,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
         final String asm1Name = asm1.getEntityName().substring(0, asm1.getEntityName().indexOf("_", 0));
         final String asm2Name = asm2.getEntityName().substring(0, asm2.getEntityName().indexOf("_", 0));
 
-        TNetworkLink.LOG.debug(
+        NetworkLink.LOG.debug(
                 "isEqual?Id: " + asm1.getId() + "==" + asm2.getId() + ", Name: " + asm1Name + "==" + asm2Name + "\n");
 
         return asm1Name.contains(asm2Name);
@@ -168,7 +168,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
      */
     private static List<ResourceContainer> collectUnLinkedResourceContainer(final ResourceEnvironment env) {
         return env.getResourceContainer_ResourceEnvironment().stream()
-                .filter(container -> TNetworkLink.getLinks(env, container).isEmpty()).collect(Collectors.toList());
+                .filter(container -> NetworkLink.getLinks(env, container).isEmpty()).collect(Collectors.toList());
     }
 
     /**
@@ -182,7 +182,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
      */
     private static List<LinkingResource> getLinks(final ResourceEnvironment env, final ResourceContainer container) {
         return env.getLinkingResources__ResourceEnvironment().stream()
-                .filter(linking -> TNetworkLink.linkHasResContainer(linking, container).isPresent())
+                .filter(linking -> NetworkLink.linkHasResContainer(linking, container).isPresent())
                 .collect(Collectors.toList());
     }
 
@@ -199,7 +199,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private static Optional<ResourceContainer> linkHasResContainer(final LinkingResource link,
             final ResourceContainer container) {
         return link.getConnectedResourceContainers_LinkingResource().stream()
-                .filter(res -> TNetworkLink.isEqual(res, container)).findFirst();
+                .filter(res -> NetworkLink.isEqual(res, container)).findFirst();
     }
 
     // *****************************************************************
@@ -219,7 +219,7 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private static List<AssemblyContext> getAsmContextDeployedOnContainer(final Allocation allocation,
             final ResourceContainer container) {
         return allocation.getAllocationContexts_Allocation().stream()
-                .filter(ctx -> TNetworkLink.isEqual(ctx.getResourceContainer_AllocationContext(), container))
+                .filter(ctx -> NetworkLink.isEqual(ctx.getResourceContainer_AllocationContext(), container))
                 .map(ctx -> ctx.getAssemblyContext_AllocationContext()).collect(Collectors.toList());
     }
 
@@ -235,9 +235,9 @@ public final class TNetworkLink extends AbstractConsumerStage<TraceMetadata> {
      */
     private static List<AssemblyContext> getConnectedAsmCtx(final org.palladiosimulator.pcm.system.System system,
             final AssemblyContext queryAsm) {
-        return system.getConnectors__ComposedStructure().stream().map(connector -> TNetworkLink.tryCast(connector))
+        return system.getConnectors__ComposedStructure().stream().map(connector -> NetworkLink.tryCast(connector))
                 .filter(option -> option.isPresent()).map(option -> option.get())
-                .filter(connector -> TNetworkLink.isEqualByName(queryAsm,
+                .filter(connector -> NetworkLink.isEqualByName(queryAsm,
                         connector.getRequiringAssemblyContext_AssemblyConnector()))
                 .map(connector -> connector.getProvidingAssemblyContext_AssemblyConnector())
                 .collect(Collectors.toList());

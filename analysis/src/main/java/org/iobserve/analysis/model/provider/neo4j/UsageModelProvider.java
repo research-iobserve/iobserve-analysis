@@ -31,7 +31,10 @@ import org.palladiosimulator.pcm.usagemodel.UserData;
  * @author Alessandro Giusa
  * @author Lars Bluemke
  *
+ * @deprecated since 0.0.2 this provider was implemented to provide a convenient way to migrate from
+ *             the old file based providers.
  */
+@Deprecated
 public final class UsageModelProvider extends AbstractModelProvider<UsageModel> {
 
     /**

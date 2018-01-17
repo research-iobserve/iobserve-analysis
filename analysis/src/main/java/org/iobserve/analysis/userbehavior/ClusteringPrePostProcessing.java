@@ -23,7 +23,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.data.UserSession;
+import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.analysis.userbehavior.data.ClusteringResults;
 import org.iobserve.analysis.userbehavior.data.UserSessionAsCountsOfCalls;
 import org.iobserve.analysis.userbehavior.data.WorkloadIntensity;

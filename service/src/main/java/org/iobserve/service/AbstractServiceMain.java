@@ -26,10 +26,13 @@ import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
+import org.iobserve.analysis.ConfigurationException;
+
 /**
  * Generic service main class.
  *
- * @param <T> type of the teetime Configuration to be used
+ * @param <T>
+ *            type of the teetime Configuration to be used
  *
  * @author Reiner Jung
  *
@@ -59,13 +62,13 @@ public abstract class AbstractServiceMain<T extends Configuration> {
         } catch (final ParameterException e) {
             AbstractServiceMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
-        } catch (final IOException e) {
+        } catch (final ConfigurationException e) {
             AbstractServiceMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
 
-    private void execute(final JCommander commander, final String label) throws IOException {
+    private void execute(final JCommander commander, final String label) throws ConfigurationException {
         if (this.checkParameters(commander)) {
 
             if (this.help) {
@@ -94,8 +97,9 @@ public abstract class AbstractServiceMain<T extends Configuration> {
      *
      * @throws IOException
      *             in case the creation fails
+     * @throws ConfigurationException
      */
-    protected abstract T createConfiguration() throws IOException;
+    protected abstract T createConfiguration() throws ConfigurationException;
 
     /**
      * Check all given parameters for correct directory and files path, as well as, all other values
@@ -105,10 +109,10 @@ public abstract class AbstractServiceMain<T extends Configuration> {
      *            the command line interface
      * @return true if all parameter check out, else false
      *
-     * @throws IOException
+     * @throws ConfigurationException
      *             on error
      */
-    protected abstract boolean checkParameters(JCommander commander) throws IOException;
+    protected abstract boolean checkParameters(JCommander commander) throws ConfigurationException;
 
     private <R extends Configuration> void shutdownHook(final Execution<R> execution) {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {

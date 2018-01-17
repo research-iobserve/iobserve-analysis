@@ -15,10 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment;
 
-import teetime.framework.CompositeStage;
+import kieker.common.configuration.Configuration;
+
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.AbstractConfigurableCompositeStage;
+import org.iobserve.analysis.IDeploymentCompositeStage;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
@@ -36,7 +39,7 @@ import org.palladiosimulator.pcm.system.System;
  * @author Reiner Jung
  *
  */
-public class DeploymentCompositeStage extends CompositeStage {
+public class DeploymentCompositeStage extends AbstractConfigurableCompositeStage implements IDeploymentCompositeStage {
 
     private final DeployPCMMapper deployPCMMapper;
     private final AggregateEventStage<PCMDeployedEvent> relayDeployedEventStage;
@@ -54,9 +57,11 @@ public class DeploymentCompositeStage extends CompositeStage {
      * @param correspondence
      *            the correspondence model handler
      */
-    public DeploymentCompositeStage(final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+    public DeploymentCompositeStage(final Configuration configuration,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
             final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<System> systemModelGraphProvider, final ICorrespondence correspondence) {
+        super(configuration);
 
         this.deployPCMMapper = new DeployPCMMapper(correspondence);
         final SynthesizeAllocationEventStage synthesizeAllocationEvent = new SynthesizeAllocationEventStage(

@@ -20,15 +20,15 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.iobserve.analysis.data.UserSession;
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.SessionEndEvent;
 import org.iobserve.common.record.SessionStartEvent;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
-
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
 
 /**
  * Represents the TEntryCallSequence Transformation in the paper <i>Run-time Architecture Models for
@@ -40,7 +40,7 @@ import teetime.framework.OutputPort;
  *
  * @version 1.0
  */
-public final class TEntryCallSequence extends AbstractStage {
+public final class EntryCallSequence extends AbstractStage {
 
     /** time until a session expires. */
     private static final long USER_SESSION_EXPIRATIONTIME = 360000000000L;
@@ -56,7 +56,8 @@ public final class TEntryCallSequence extends AbstractStage {
      * Create this filter.
      *
      */
-    public TEntryCallSequence() {
+    public EntryCallSequence() {
+        // TODO make expiration time configurable
     }
 
     @Override
@@ -108,7 +109,7 @@ public final class TEntryCallSequence extends AbstractStage {
             final UserSession session = this.sessions.get(sessionId);
             final long exitTime = session.getExitTime();
 
-            final boolean isExpired = (exitTime + TEntryCallSequence.USER_SESSION_EXPIRATIONTIME) < timeNow;
+            final boolean isExpired = exitTime + EntryCallSequence.USER_SESSION_EXPIRATIONTIME < timeNow;
 
             if (isExpired) {
                 this.userSessionOutputPort.send(session);

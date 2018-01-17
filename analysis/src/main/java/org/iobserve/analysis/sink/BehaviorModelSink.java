@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.writer;
+package org.iobserve.analysis.sink;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -34,7 +34,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  * @author unknown
  *
  */
-public class BehaviorModelWriter extends AbstractModelOutputFilter {
+public class BehaviorModelSink extends AbstractModelOutputSink {
 
     private static final Logger LOGGER = LogManager.getLogger(TBehaviorModelVisualization.class);
 
@@ -50,7 +50,7 @@ public class BehaviorModelWriter extends AbstractModelOutputFilter {
      * @param signatureStrategy
      *            signature strategy
      */
-    public BehaviorModelWriter(final String baseUrl, final ISignatureCreationStrategy signatureStrategy) {
+    public BehaviorModelSink(final String baseUrl, final ISignatureCreationStrategy signatureStrategy) {
         this.objectMapper = new ObjectMapper();
         this.baseUrl = baseUrl;
     }
@@ -58,7 +58,7 @@ public class BehaviorModelWriter extends AbstractModelOutputFilter {
     @Override
     protected void execute(final BehaviorModel model) throws IOException {
         final String filename = this.baseUrl + model.getName();
-        BehaviorModelWriter.LOGGER.info("Write " + filename);
+        BehaviorModelSink.LOGGER.info("Write " + filename);
         final FileWriter fw = new FileWriter(filename);
         final BufferedWriter bw = new BufferedWriter(fw);
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);

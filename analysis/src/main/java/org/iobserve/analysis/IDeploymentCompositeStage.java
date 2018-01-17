@@ -15,10 +15,38 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
+import org.iobserve.common.record.IDeployedEvent;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+
 /**
  * @author Reiner Jung
  *
  */
 public interface IDeploymentCompositeStage {
+
+    /**
+     * Input port for deployment events.
+     *
+     * @return returns the input port
+     */
+    public InputPort<IDeployedEvent> getDeployedInputPort();
+
+    /**
+     * output port to inform about deployments.
+     *
+     * @return returns the output port
+     */
+    public OutputPort<PCMDeployedEvent> getDeployedOutputPort();
+
+    /**
+     * Output port to inform about an allocation performed by the stage.
+     *
+     * @return returns the output port
+     */
+    public OutputPort<ResourceContainer> getAllocationOutputPort();
 
 }

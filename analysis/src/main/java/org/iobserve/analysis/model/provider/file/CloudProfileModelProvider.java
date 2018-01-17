@@ -25,7 +25,10 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudprofilePackage
  *
  * @author Tobias Pöppke
  *
+ * @deprecated since 0.0.2 we should use the new neo4j generic provider
+ *             {@link org.iobserve.analysis.model.provider.neo4j.ModelProvider}
  */
+@Deprecated
 public class CloudProfileModelProvider extends AbstractModelProvider<CloudProfile> {
 
     /**

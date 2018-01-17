@@ -27,6 +27,7 @@ dependencies {
 	
 	compile project(":common")
 	compile project(":stages")
+	compile project(":analysis")
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'

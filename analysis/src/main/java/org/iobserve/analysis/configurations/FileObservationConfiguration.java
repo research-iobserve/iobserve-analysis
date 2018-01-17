@@ -13,9 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis;
+package org.iobserve.analysis.configurations;
+
+import java.io.File;
+import java.util.Collection;
+
+import kieker.common.configuration.Configuration;
 
 import org.eclipse.emf.common.util.URI;
+import org.iobserve.adaptation.IAdaptationEventListener;
+import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
@@ -26,25 +33,24 @@ import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvid
 import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
+import org.iobserve.analysis.source.FileSourceCompositeStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
- * Configuration prepared to handle multiple TCP input streams.
  *
  * @author Reiner Jung
  *
+ * @deprecated since 0.0.2 use AnalysisConfiguration
  */
-public class MultiInputObservationConfiguration extends AbstractObservationConfiguration {
-
-    private static final int CAPACITY = 1024 * 1024;
+@Deprecated
+public class FileObservationConfiguration extends AbstractObservationConfiguration {
 
     /**
-     * Construct an analysis for multiple TCP inputs.
+     * Analysis configuration constructor.
      *
-     * @param inputPort
-     *            the input port where the analysis is listening
+     * @param directories
+     *            a collection of directories containing kieker logs
      * @param correspondenceModel
      *            the correspondence model
      * @param usageModelProvider
@@ -81,10 +87,14 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            perOpterxyheadless URI
      * @param lqnsDir
      *            layered queuing networks directory
+     * @param eventListener
+     *            eventlistener of some kind
      * @param deployablesFolder
      *            folder containing deployables
+     * @throws ConfigurationException
+     *             on configuration error
      */
-    public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
+    public FileObservationConfiguration(final Collection<File> directories, final ICorrespondence correspondenceModel,
             final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
@@ -94,16 +104,29 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
             final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,
-            final URI deployablesFolder) {
+            final IAdaptationEventListener eventListener, final URI deployablesFolder) throws ConfigurationException {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
                 systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload,
                 visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, perOpteryxHeadless, lqnsDir,
-                null, deployablesFolder);
+                eventListener, deployablesFolder);
 
-        final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
-                MultiInputObservationConfiguration.CAPACITY);
-        this.connectPorts(reader.getOutputPort(), this.recordSwitch.getInputPort());
+        final Configuration configuration = new Configuration();
+
+        configuration.setStringArrayProperty(FileSourceCompositeStage.SOURCE_DIRECTORIES, this.getNames(directories));
+
+        final FileSourceCompositeStage input = new FileSourceCompositeStage(configuration);
+
+        /** connecting filters */
+        this.connectPorts(input.getOutputPort(), this.recordSwitch.getInputPort());
     }
 
+    private String[] getNames(final Collection<File> directories) {
+        final String[] names = new String[directories.size()];
+        int i = 0;
+        for (final File directory : directories) {
+            names[i++] = directory.getAbsolutePath();
+        }
+        return names;
+    }
 }

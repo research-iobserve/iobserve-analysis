@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.traces;
-
-import org.iobserve.analysis.data.UserSession;
-import org.iobserve.stages.general.data.EntryCallEvent;
+package org.iobserve.analysis.session;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.session.data.UserSession;
+import org.iobserve.stages.general.data.EntryCallEvent;
+
 /**
- * Tests whether a trace contains only operations which are considered valid trace elements.
+ * Tests whether a trace contains only operations which are considered valid trace elements. In
+ * effect it ignores invalid sessions.
  *
  * @author Reiner Jung
  *
  */
-public class TraceAcceptanceFilter extends AbstractConsumerStage<UserSession> {
+public class SessionAcceptanceFilter extends AbstractConsumerStage<UserSession> {
 
     private final OutputPort<UserSession> outputPort = this.createOutputPort();
-    private final ITraceAcceptanceMatcher matcher;
+    private final IEntryCallAcceptanceMatcher matcher;
 
     /**
      * Create an acceptance filter with an external matcher.
@@ -38,7 +39,7 @@ public class TraceAcceptanceFilter extends AbstractConsumerStage<UserSession> {
      * @param matcher
      *            a acceptance matcher
      */
-    public TraceAcceptanceFilter(final ITraceAcceptanceMatcher matcher) {
+    public SessionAcceptanceFilter(final IEntryCallAcceptanceMatcher matcher) {
         this.matcher = matcher;
     }
 

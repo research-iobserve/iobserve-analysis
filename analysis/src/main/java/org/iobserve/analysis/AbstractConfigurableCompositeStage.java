@@ -16,6 +16,7 @@
 package org.iobserve.analysis;
 
 import kieker.common.configuration.Configuration;
+
 import teetime.framework.CompositeStage;
 
 /**
@@ -24,7 +25,7 @@ import teetime.framework.CompositeStage;
  */
 public abstract class AbstractConfigurableCompositeStage extends CompositeStage {
 
-    private final Configuration configuration;
+    protected final Configuration configuration;
 
     public AbstractConfigurableCompositeStage(final kieker.common.configuration.Configuration configuration) {
         this.configuration = configuration;

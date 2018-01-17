@@ -40,7 +40,7 @@ import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
  * @author Nicolas Boltz
  * @version 1.0
  */
-public class TEntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
+public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
 
     /** Entry call trace matcher class. */
     private final IEntryCallTraceMatcher matcher;
@@ -54,7 +54,7 @@ public class TEntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
      * @param matcher
      *            matcher to test whether the entry call is relevant.
      */
-    public TEntryCallStage(final IEntryCallTraceMatcher matcher) {
+    public EntryCallStage(final IEntryCallTraceMatcher matcher) {
         this.matcher = matcher;
     }
 

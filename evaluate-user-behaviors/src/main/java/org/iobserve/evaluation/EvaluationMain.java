@@ -25,6 +25,7 @@ import com.beust.jcommander.converters.FileConverter;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
+import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 
 /**
@@ -66,24 +67,32 @@ public final class EvaluationMain extends AbstractServiceMain<EvaluationConfigur
     }
 
     @Override
-    protected EvaluationConfiguration createConfiguration() throws IOException {
-        return new EvaluationConfiguration(this.baselineModelLocation, this.testModelLocation, this.targetLocation);
+    protected EvaluationConfiguration createConfiguration() throws ConfigurationException {
+        try {
+            return new EvaluationConfiguration(this.baselineModelLocation, this.testModelLocation, this.targetLocation);
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
     @Override
-    protected boolean checkParameters(final JCommander commander) throws IOException {
-        if (!this.baselineModelLocation.canRead()) {
-            EvaluationMain.LOG.error("reading baseline failed: " + this.baselineModelLocation.getCanonicalPath());
-            commander.usage();
-            return false;
-        }
-        if (!this.testModelLocation.canRead()) {
-            EvaluationMain.LOG.error("reading test model failed: " + this.testModelLocation.getCanonicalPath());
-            commander.usage();
-            return false;
-        }
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
+        try {
+            if (!this.baselineModelLocation.canRead()) {
+                EvaluationMain.LOG.error("reading baseline failed: " + this.baselineModelLocation.getCanonicalPath());
+                commander.usage();
+                return false;
+            }
+            if (!this.testModelLocation.canRead()) {
+                EvaluationMain.LOG.error("reading test model failed: " + this.testModelLocation.getCanonicalPath());
+                commander.usage();
+                return false;
+            }
 
-        return true;
+            return true;
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
 }

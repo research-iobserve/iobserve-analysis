@@ -29,6 +29,7 @@ import com.beust.jcommander.converters.FileConverter;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
+import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.xml.sax.SAXException;
@@ -77,7 +78,7 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
     }
 
     @Override
-    protected ObservationConfiguration createConfiguration() throws IOException {
+    protected ObservationConfiguration createConfiguration() throws ConfigurationException {
         final Collection<File> inputPaths = new ArrayList<>();
         inputPaths.add(this.inputPath);
 
@@ -93,38 +94,42 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
         try {
             return new ObservationConfiguration(inputPaths, repositoryFileReader, mappingFileReader, mappedClassesFile,
                     unmappedClassesFile, racFile);
-        } catch (ParserConfigurationException | SAXException e) {
-            throw new IOException(e);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new ConfigurationException(e);
         }
     }
 
     @Override
-    protected boolean checkParameters(final JCommander commander) throws IOException {
-        if (!this.outputPath.isDirectory() || !this.outputPath.exists()) {
-            RacCreatorMain.LOG.error(
-                    "Output path " + this.outputPath.getCanonicalPath() + " does not exist or is not a directory.");
-            commander.usage();
-            return false;
-        }
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
+        try {
+            if (!this.outputPath.isDirectory() || !this.outputPath.exists()) {
+                RacCreatorMain.LOG.error(
+                        "Output path " + this.outputPath.getCanonicalPath() + " does not exist or is not a directory.");
+                commander.usage();
+                return false;
+            }
 
-        if (!this.inputPath.isDirectory() || !this.inputPath.exists()) {
-            RacCreatorMain.LOG.error(
-                    "Input path " + this.inputPath.getCanonicalPath() + " does not exist or is not a directory.");
-            commander.usage();
-            return false;
-        }
+            if (!this.inputPath.isDirectory() || !this.inputPath.exists()) {
+                RacCreatorMain.LOG.error(
+                        "Input path " + this.inputPath.getCanonicalPath() + " does not exist or is not a directory.");
+                commander.usage();
+                return false;
+            }
 
-        if (!CommandLineParameterEvaluation.isFileReadable(this.mappingFile, "Mapping file")) {
-            commander.usage();
-            return false;
-        }
+            if (!CommandLineParameterEvaluation.isFileReadable(this.mappingFile, "Mapping file")) {
+                commander.usage();
+                return false;
+            }
 
-        if (!CommandLineParameterEvaluation.isFileReadable(this.repositoryFile, "Repository file")) {
-            commander.usage();
-            return false;
-        }
+            if (!CommandLineParameterEvaluation.isFileReadable(this.repositoryFile, "Repository file")) {
+                commander.usage();
+                return false;
+            }
 
-        return true;
+            return true;
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
 }

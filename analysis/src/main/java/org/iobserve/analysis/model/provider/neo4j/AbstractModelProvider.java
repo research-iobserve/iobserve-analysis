@@ -33,7 +33,11 @@ import org.iobserve.analysis.model.ModelSaveStrategy;
  * @author Alessandro Giusa
  * @author Lars Bluemke
  * @param <T>
+ *
+ * @deprecated since 0.0.2 this provider was implemented to provide a convenient way to migrate from
+ *             the old file based providers.
  */
+@Deprecated
 public abstract class AbstractModelProvider<T extends EObject> {
 
     /** database location. */

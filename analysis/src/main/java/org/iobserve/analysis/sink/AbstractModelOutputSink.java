@@ -13,31 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.systems.jpetstore;
+package org.iobserve.analysis.sink;
 
-import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
-import org.iobserve.stages.general.data.EntryCallEvent;
+import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
+
+import teetime.framework.AbstractConsumerStage;
 
 /**
- * Matches if a given call is valid in context of the user behavior analysis for the JPetStore.
  *
- * @author Reiner Jung
+ * @author unknown
  *
  */
-public class JPetStoreTraceAcceptanceMatcher implements IEntryCallAcceptanceMatcher {
-
-    @Override
-    public boolean match(final EntryCallEvent call) {
-        return (this.matchClassSignature(call.getClassSignature())
-                && this.matchOperationSignature(call.getOperationSignature()));
-    }
-
-    private boolean matchOperationSignature(final String operationSignature) {
-        return true;
-    }
-
-    private boolean matchClassSignature(final String classSignature) {
-        return true;
-    }
+public abstract class AbstractModelOutputSink extends AbstractConsumerStage<BehaviorModel> {
 
 }

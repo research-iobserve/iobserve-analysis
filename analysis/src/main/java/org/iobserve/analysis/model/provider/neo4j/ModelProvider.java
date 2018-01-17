@@ -55,6 +55,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  *
  * @param <T>
  *            Type of the model's or submodel's root component
+ * @since 0.0.2
  */
 public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
@@ -167,14 +168,13 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
                 if (refObject instanceof EList<?>) {
                     for (final Object o : (EList<?>) component.eGet(ref)) {
-                        if (ref.isContainment() || (ModelProviderUtil.isDatatype(ref, o))) {
+                        if (ref.isContainment() || ModelProviderUtil.isDatatype(ref, o)) {
                             this.getAllContainmentsAndDatatypes((EObject) o, containmentsAndDatatypes);
                         }
                     }
 
                 } else {
-                    if ((refObject != null)
-                            && (ref.isContainment() || (ModelProviderUtil.isDatatype(ref, refObject)))) {
+                    if (refObject != null && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
                         this.getAllContainmentsAndDatatypes((EObject) refObject, containmentsAndDatatypes);
                     }
                 }
@@ -211,7 +211,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         } else if (component instanceof PrimitiveDataType) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
                     ((PrimitiveDataType) component).getType().name());
-        } else if ((component instanceof UsageModel) || (component instanceof ResourceEnvironment)) {
+        } else if (component instanceof UsageModel || component instanceof ResourceEnvironment) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                     .findNodes(Label.label(component.eClass().getName()));
             if (nodes.hasNext()) {
@@ -680,7 +680,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
             }
-        } else if ((component instanceof ResourceEnvironment) || (component instanceof UsageModel)) {
+        } else if (component instanceof ResourceEnvironment || component instanceof UsageModel) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                         .findNodes(Label.label(clazz.getSimpleName()));

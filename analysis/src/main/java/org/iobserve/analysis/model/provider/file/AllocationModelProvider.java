@@ -26,7 +26,8 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
- * @deprecated by {@link org.iobserve.analysis.modelneo4j.AllocationModelProvider}
+ * @deprecated since 0.0.2 we should use the new neo4j generic provider
+ *             {@link org.iobserve.analysis.model.provider.neo4j.ModelProvider}
  *
  */
 @Deprecated

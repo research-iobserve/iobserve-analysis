@@ -24,9 +24,9 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.CommaParameterSplitter;
 import com.beust.jcommander.converters.IntegerConverter;
 
+import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
 import org.iobserve.service.AbstractServiceMain;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -53,13 +53,11 @@ public final class PrivacyViolationDetectionServiceMain
 
     private ICorrespondence rac;
 
-    private ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
-
-    private ModelProvider<Allocation> allocationModelGraphProvider;
+    private ModelProvider<Allocation> allocationModelProvider;
 
     private ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
 
-    private ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
 
     /**
      * This is a simple main class which does not need to be instantiated.
@@ -79,14 +77,19 @@ public final class PrivacyViolationDetectionServiceMain
     }
 
     @Override
-    protected PrivacyViolationDetectionConfiguration createConfiguration() throws IOException {
-        return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs, this.rac,
-                this.resourceEnvironmentModelProvider, this.allocationModelGraphProvider, this.systemModelGraphProvider,
-                this.resourceEnvironmentModelGraphProvider, this.warningFile, this.alarmsFile);
+    protected PrivacyViolationDetectionConfiguration createConfiguration() throws ConfigurationException {
+        // TODO we need to initialize the model providers.
+        try {
+            return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs, this.rac,
+                    this.resourceEnvironmentModelProvider, this.allocationModelProvider, this.systemModelGraphProvider,
+                    this.warningFile, this.alarmsFile);
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
     @Override
-    protected boolean checkParameters(final JCommander commander) throws IOException {
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
         return true;
     }
 

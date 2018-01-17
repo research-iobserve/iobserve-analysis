@@ -19,9 +19,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.MultiInputObservationConfiguration;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
+import org.iobserve.analysis.configurations.MultiInputObservationConfiguration;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
@@ -119,14 +119,14 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
                 EOutputMode.UBM_VISUALIZATION, snapshotBuilder, perOpteryxDir, lqnsDir, deployablesFolder);
 
-        final URL url = new URL(
+        final URL containerManagementURL = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
 
-        final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(url,
+        final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(containerManagementURL,
                 systemId, resourceContainerModelGraphProvider, assemblyContextModelGraphProvider);
-        final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
+        final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(containerManagementURL,
                 systemId);
-        final UndeploymentVisualizationStage undeploymentVisualizationStage = new UndeploymentVisualizationStage(url,
+        final UndeploymentVisualizationStage undeploymentVisualizationStage = new UndeploymentVisualizationStage(containerManagementURL,
                 systemId, resourceContainerModelGraphProvider, assCtxSystemModelGraphProvider,
                 systemModelGraphProvider);
 

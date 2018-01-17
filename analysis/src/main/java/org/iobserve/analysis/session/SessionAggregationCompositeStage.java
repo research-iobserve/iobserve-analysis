@@ -13,24 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.traces;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.iobserve.analysis.AbstractConfigurableCompositeStage;
-import org.iobserve.analysis.deployment.DeployPCMMapper;
-import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.stages.general.IEntryCallTraceMatcher;
-import org.iobserve.stages.general.TEntryCallStage;
+package org.iobserve.analysis.session;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.record.flow.IFlowRecord;
+
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
 import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
 import teetime.util.ConcurrentHashMapWithDefault;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.iobserve.analysis.AbstractConfigurableCompositeStage;
+import org.iobserve.analysis.ConfigurationException;
+import org.iobserve.analysis.InstantiationFactory;
+import org.iobserve.analysis.deployment.DeployPCMMapper;
+import org.iobserve.analysis.traces.EntryCallSequence;
+import org.iobserve.common.record.ISessionEvent;
+import org.iobserve.stages.general.EntryCallStage;
+import org.iobserve.stages.general.IEntryCallTraceMatcher;
 
 /**
  *
@@ -47,25 +51,27 @@ public class SessionAggregationCompositeStage extends AbstractConfigurableCompos
     final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<>(
             EventBasedTraceFactory.INSTANCE);
 
-    private final TEntryCallSequence entryCallSequence;
+    private final EntryCallSequence entryCallSequence;
 
     private final TraceReconstructionFilter traceReconstructionFilter;
 
-    public SessionAggregationCompositeStage(final Configuration configuration) {
+    public SessionAggregationCompositeStage(final Configuration configuration) throws ConfigurationException {
         super(configuration);
 
         this.traceReconstructionFilter = new TraceReconstructionFilter(this.traceBuffer);
         final String matcherClassName = configuration.getStringProperty(SessionAggregationCompositeStage.MATCHER);
         if (matcherClassName != null) {
-            final IEntryCallTraceMatcher matcher = this.instantiate(matcherClassName);
-            final TEntryCallStage entryCall = new TEntryCallStage(matcher);
-            this.entryCallSequence = new TEntryCallSequence();
+            final IEntryCallTraceMatcher matcher = InstantiationFactory
+                    .createAndInitialize(IEntryCallTraceMatcher.class, matcherClassName, configuration);
+            final EntryCallStage entryCall = new EntryCallStage(matcher);
+            this.entryCallSequence = new EntryCallSequence();
 
             /** connect */
             this.connectPorts(this.traceReconstructionFilter.getTraceValidOutputPort(), entryCall.getInputPort());
             this.connectPorts(entryCall.getOutputPort(), this.entryCallSequence.getEntryCallInputPort());
         } else {
             SessionAggregationCompositeStage.LOGGER.error("Missing matcher class parameter.");
+            throw new ConfigurationException("Missing matcher class parameter.");
         }
     }
 

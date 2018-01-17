@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.writer;
-
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-
-import teetime.framework.AbstractConsumerStage;
+package org.iobserve.analysis;
 
 /**
+ * Empty marker interface used in the configuration to indicate whether deployment, undeployment,
+ * allocation and deallocation is required.
  *
- * @author unknown
+ * @author Reiner Jung
  *
  */
-public abstract class AbstractModelOutputFilter extends AbstractConsumerStage<BehaviorModel> {
+public class IContainerManagementCompositeStage {
 
 }

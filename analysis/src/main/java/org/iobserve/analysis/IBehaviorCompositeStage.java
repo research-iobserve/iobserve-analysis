@@ -15,9 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import kieker.common.record.flow.IFlowRecord;
-
 import teetime.framework.InputPort;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 import org.iobserve.common.record.ISessionEvent;
 
@@ -29,7 +28,7 @@ import org.iobserve.common.record.ISessionEvent;
  */
 public interface IBehaviorCompositeStage {
 
-    InputPort<IFlowRecord> getFlowInputPort();
+    InputPort<EventBasedTrace> getEventBasedTracePort();
 
     InputPort<ISessionEvent> getSessionEventInputPort();
 

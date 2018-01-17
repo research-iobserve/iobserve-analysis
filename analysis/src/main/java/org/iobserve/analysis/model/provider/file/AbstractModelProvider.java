@@ -44,6 +44,9 @@ import org.iobserve.analysis.model.ModelSaveStrategy;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  * @param <T>
+ *
+ * @deprecated since 0.0.2 we should use the new neo4j generic provider
+ *             {@link org.iobserve.analysis.model.provider.neo4j.ModelProvider}
  */
 @Deprecated
 public abstract class AbstractModelProvider<T extends EObject> {

@@ -37,7 +37,8 @@ import org.palladiosimulator.pcm.repository.RepositoryPackage;
  * @author Nicolas Boltz
  * @author Alessandro Giusa
  *
- * @deprecated by {@link org.iobserve.analysis.modelneo4j.RepositoryModelProvider}
+ * @deprecated since 0.0.2 we should use the new neo4j generic provider
+ *             {@link org.iobserve.analysis.model.provider.neo4j.ModelProvider}
  */
 @Deprecated
 public final class RepositoryModelProvider extends AbstractModelProvider<Repository> {

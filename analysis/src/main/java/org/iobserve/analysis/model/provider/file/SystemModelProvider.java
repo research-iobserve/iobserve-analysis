@@ -26,7 +26,8 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  *
- * @deprecated by {@link org.iobserve.analysis.modelneo4j.SystemModelProvider}
+ * @deprecated since 0.0.2 we should use the new neo4j generic provider
+ *             {@link org.iobserve.analysis.model.provider.neo4j.ModelProvider}
  */
 @Deprecated
 public final class SystemModelProvider extends AbstractModelProvider<System> {

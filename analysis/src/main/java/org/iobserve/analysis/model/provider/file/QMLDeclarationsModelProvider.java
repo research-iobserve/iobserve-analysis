@@ -26,7 +26,10 @@ import org.eclipse.emf.ecore.EPackage;
  *
  * @author unkown
  *
+ * @deprecated since 0.0.2 we should use the new neo4j generic provider
+ *             {@link org.iobserve.analysis.model.provider.neo4j.ModelProvider}
  */
+@Deprecated
 public class QMLDeclarationsModelProvider extends AbstractModelProvider<QMLDeclarations> {
 
     /**

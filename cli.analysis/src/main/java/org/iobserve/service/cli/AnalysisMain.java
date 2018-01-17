@@ -28,10 +28,11 @@ import com.beust.jcommander.converters.IntegerConverter;
 
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.FileObservationConfiguration;
+import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
+import org.iobserve.analysis.configurations.FileObservationConfiguration;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
 import org.iobserve.analysis.model.provider.neo4j.Graph;
@@ -156,7 +157,7 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
     }
 
     @Override
-    protected FileObservationConfiguration createConfiguration() throws IOException {
+    protected FileObservationConfiguration createConfiguration() throws ConfigurationException {
 
         /** create and run application */
         final Collection<File> monitoringDataDirectories = new ArrayList<>();
@@ -206,12 +207,12 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
                     this.visualizationServiceURL, this.aggregationType, this.outputMode, snapshotBuilder, perOpteryxUri,
                     lqnsUri, eventListener, deployablesFolder);
         } catch (final InitializationException e) {
-            throw new IOException(e);
+            throw new ConfigurationException(e);
         }
     }
 
     @Override
-    protected boolean checkParameters(final JCommander commander) throws IOException {
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
 
         if (this.snapshotPath == null || this.perOpteryxUriPath == null || this.lqnsUriPath == null
                 || this.deployablesFolderPath == null || this.interactiveMode == false) {
@@ -237,7 +238,12 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
             this.outputMode = EOutputMode.UBM_VISUALIZATION;
         }
 
-        return CommandLineParameterEvaluation.checkDirectory(this.monitoringDataDirectory, "Kieker log", commander)
-                && CommandLineParameterEvaluation.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander);
+        try {
+            return CommandLineParameterEvaluation.checkDirectory(this.monitoringDataDirectory, "Kieker log", commander)
+                    && CommandLineParameterEvaluation.checkDirectory(this.pcmModelsDirectory, "Palladio Model",
+                            commander);
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
     }
 }

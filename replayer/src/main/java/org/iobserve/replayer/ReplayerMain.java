@@ -26,6 +26,7 @@ import com.beust.jcommander.converters.IntegerConverter;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
+import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 
@@ -76,14 +77,19 @@ public final class ReplayerMain extends AbstractServiceMain<ReplayerConfiguratio
     }
 
     @Override
-    protected ReplayerConfiguration createConfiguration() throws IOException {
+    protected ReplayerConfiguration createConfiguration() throws ConfigurationException {
         this.configuration = new ReplayerConfiguration(this.dataLocation, this.hostname, this.outputPort);
         return this.configuration;
     }
 
     @Override
-    protected boolean checkParameters(final JCommander commander) throws IOException {
-        return CommandLineParameterEvaluation.checkDirectory(this.dataLocation, "Output Kieker directory", commander);
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
+        try {
+            return CommandLineParameterEvaluation.checkDirectory(this.dataLocation, "Output Kieker directory",
+                    commander);
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
 }

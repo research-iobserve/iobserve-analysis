@@ -17,6 +17,7 @@ package org.iobserve.analysis.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.beust.jcommander.JCommander;
@@ -26,6 +27,7 @@ import com.beust.jcommander.converters.IntegerConverter;
 
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
+import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
@@ -121,7 +123,7 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
     }
 
     @Override
-    protected ServiceConfiguration createConfiguration() throws IOException {
+    protected ServiceConfiguration createConfiguration() throws ConfigurationException {
         /** process parameter. */
 
         final String[] outputs = this.output.split(":");
@@ -171,17 +173,22 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
             final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
                     .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
             final String systemId = systemModel.getId();
-            // URLs for sending updates to the deployment visualization
-            final URL systemUrl = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");
-            final URL changelogUrl = new URL(systemUrl + systemId + "/changelogs");
 
-            final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                    systemUrl, changelogUrl, allocationModelGraphProvider, systemModelGraphProvider,
-                    resourceEnvironmentModelGraphProvider, usageModelGraphProvider);
             try {
+                // URLs for sending updates to the deployment visualization
+                final URL systemUrl = new URL("http://" + outputHostname + ":" + outputPort + "/v1/systems/");
+                final URL changelogUrl = new URL(systemUrl + systemId + "/changelogs");
+
+                final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
+                        systemUrl, changelogUrl, allocationModelGraphProvider, systemModelGraphProvider,
+                        resourceEnvironmentModelGraphProvider, usageModelGraphProvider);
+
                 deploymentVisualization.initialize();
-            } catch (final Exception e) {
-                AbstractServiceMain.LOG.debug("deploymentVisualization.initialize() went wrong!", e);
+            } catch (final MalformedURLException e) {
+                AbstractServiceMain.LOG.debug("URL construction for deployment visualization failed.", e);
+            } catch (final IOException e) {
+                AbstractServiceMain.LOG.debug("Deployment visualization could not connect to visualization service.",
+                        e);
             }
 
             SnapshotBuilder snapshotBuilder = null;
@@ -197,28 +204,36 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
                     lqnsUri = URI.createFileURI(this.lqnsUriPath);
                     deployablesFolder = URI.createFileURI(this.deployablesFolderPath);
                 } catch (final InitializationException e) {
-                    throw new IOException(e);
+                    throw new ConfigurationException(e);
                 }
 
             }
 
-            return new ServiceConfiguration(this.listenPort, outputHostname, outputPort, "", this.varianceOfUserGroups,
-                    this.thinkTime, this.closedWorkload, correspondenceModel, usageModelProvider,
-                    repositoryModelProvider, resourceEnvironmentModelProvider, allocationModelProvider,
-                    systemModelProvider, resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider,
-                    allocationModelGraphProvider, assemblyContextModelGraphProvider, systemModelGraphProvider,
-                    assCtxSystemModelGraphProvider, this.visualizationServiceURL, snapshotBuilder, perOpteryxUri,
-                    lqnsUri, deployablesFolder);
+            try {
+                return new ServiceConfiguration(this.listenPort, outputHostname, outputPort, "",
+                        this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
+                        usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
+                        allocationModelProvider, systemModelProvider, resourceEnvironmentModelGraphProvider,
+                        resourceContainerModelGraphProvider, allocationModelGraphProvider,
+                        assemblyContextModelGraphProvider, systemModelGraphProvider, assCtxSystemModelGraphProvider,
+                        this.visualizationServiceURL, snapshotBuilder, perOpteryxUri, lqnsUri, deployablesFolder);
+            } catch (final MalformedURLException e) {
+                throw new ConfigurationException(e);
+            }
         } else {
             return null;
         }
     }
 
     @Override
-    protected boolean checkParameters(final JCommander commander) throws IOException {
-        return CommandLineParameterEvaluation.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander)
-                && CommandLineParameterEvaluation.checkDirectory(this.pcmModelsNeo4jDirectory, "Palladio Model Neo4j",
-                        commander);
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
+        try {
+            return CommandLineParameterEvaluation.checkDirectory(this.pcmModelsDirectory, "Palladio Model", commander)
+                    && CommandLineParameterEvaluation.checkDirectory(this.pcmModelsNeo4jDirectory,
+                            "Palladio Model Neo4j", commander);
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
     }
 
 }

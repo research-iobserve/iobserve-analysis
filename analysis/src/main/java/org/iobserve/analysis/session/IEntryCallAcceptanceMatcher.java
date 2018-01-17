@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.traces;
+package org.iobserve.analysis.session;
 
 import org.iobserve.stages.general.data.EntryCallEvent;
 
@@ -24,9 +24,9 @@ import org.iobserve.stages.general.data.EntryCallEvent;
  * which then only forwards accepted calls.
  *
  * @author Reiner Jung
- *
+ * @since 0.0.2
  */
-public interface ITraceAcceptanceMatcher {
+public interface IEntryCallAcceptanceMatcher {
 
     /**
      * Match whether the call is correct of interest for the application.

@@ -15,18 +15,21 @@
  ***************************************************************************/
 package org.iobserve.analysis.model.provider.file;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EPackage;
-
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 import de.uka.ipd.sdq.pcm.designdecision.designdecisionPackage;
+
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EPackage;
 
 /**
  * Model provider to provide a {@link DecisionSpace} model.
  *
  * @author Tobias Pöppke
  *
+ * @deprecated since 0.0.2 we should use the new neo4j generic provider
+ *             {@link org.iobserve.analysis.model.provider.neo4j.ModelProvider}
  */
+@Deprecated
 public class DesignDecisionModelProvider extends AbstractModelProvider<DecisionSpace> {
 
     /**

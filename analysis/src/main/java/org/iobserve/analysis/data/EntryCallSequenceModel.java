@@ -18,6 +18,7 @@ package org.iobserve.analysis.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.analysis.userbehavior.data.WorkloadIntensity;
 
 /**

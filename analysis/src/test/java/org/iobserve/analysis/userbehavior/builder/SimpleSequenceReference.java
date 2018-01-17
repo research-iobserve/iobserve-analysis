@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.data.UserSession;
 import org.iobserve.analysis.model.correspondence.Correspondent;
 import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.analysis.model.factory.UsageModelFactory;
 import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;

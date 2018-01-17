@@ -20,38 +20,40 @@ import teetime.framework.OutputPort;
 
 import org.eclipse.emf.common.util.EList;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
 
 /**
- * TODO describe me.
+ * Update the geo location of a resource container for a given.
  *
  * @author unknown
+ * @author Reiner Jung
  *
  */
 public class GeoLocation extends AbstractConsumerStage<PCMDeployedEvent> {
 
-    private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
 
-    private final OutputPort<Boolean> outputPortSnapshot = this.createOutputPort();
+    private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
     /**
-     * Create a geolocation filter.
+     * Create a geo location filter.
      *
      * @param resourceEnvironmentModelProvider
      *            the corresponding resource environment
      */
-    public GeoLocation(final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+    public GeoLocation(final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider) {
         this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
     }
 
     @Override
     protected void execute(final PCMDeployedEvent element) throws Exception {
-        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider.getModel();
+        // TODO this might be better implemented using query functions addressing RescourceContainer
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider
+                .readRootComponent(ResourceEnvironment.class);
         final EList<ResourceContainer> resContainers = resourceEnvironment.getResourceContainer_ResourceEnvironment();
-        final Boolean makeSnapshot = false;
 
         for (final ResourceContainer resContainer : resContainers) {
             if (resContainer.getEntityName().equals(element.getService())
@@ -61,15 +63,15 @@ public class GeoLocation extends AbstractConsumerStage<PCMDeployedEvent> {
                 final int geolocation = resContainerPrivacy.getGeolocation();
                 if (geolocation != element.getCountryCode()) {
                     resContainerPrivacy.setGeolocation(element.getCountryCode());
+                    this.outputPort.send(element);
                 }
                 break;
             }
         }
-        this.outputPortSnapshot.send(makeSnapshot);
     }
 
     public OutputPort<PCMDeployedEvent> getOutputPort() {
-        return null;
+        return this.outputPort;
     }
 
 }
