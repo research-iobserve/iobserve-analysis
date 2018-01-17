@@ -23,9 +23,9 @@ import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 
 import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.neo4j.UsageModelProvider;
 
 /**
  * Distribute EntryCallSequences to both BehaviorModel generations for evaluation purposes.

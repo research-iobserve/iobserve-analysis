@@ -25,8 +25,8 @@ import com.beust.jcommander.converters.CommaParameterSplitter;
 import com.beust.jcommander.converters.IntegerConverter;
 
 import org.iobserve.analysis.ConfigurationException;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.AbstractServiceMain;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;

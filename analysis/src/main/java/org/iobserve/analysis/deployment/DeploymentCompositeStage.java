@@ -23,9 +23,9 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.AbstractConfigurableCompositeStage;
 import org.iobserve.analysis.IDeploymentCompositeStage;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.common.record.IDeployedEvent;
+import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.stages.general.AggregateEventStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -91,14 +91,17 @@ public class DeploymentCompositeStage extends AbstractConfigurableCompositeStage
                 this.relayDeployedEventStage.getInputPort(1));
     }
 
+    @Override
     public InputPort<IDeployedEvent> getDeployedInputPort() {
         return this.deployPCMMapper.getInputPort();
     }
 
+    @Override
     public OutputPort<PCMDeployedEvent> getDeployedOutputPort() {
         return this.relayDeployedEventStage.getOutputPort();
     }
 
+    @Override
     public OutputPort<ResourceContainer> getAllocationOutputPort() {
         return this.syntehticAllocation.getAllocationNotifyOutputPort();
     }

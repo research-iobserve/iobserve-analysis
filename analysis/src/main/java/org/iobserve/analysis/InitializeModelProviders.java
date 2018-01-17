@@ -18,18 +18,18 @@ package org.iobserve.analysis;
 import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.model.correspondence.CorrespondeceModelFactory;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.file.CloudProfileModelProvider;
-import org.iobserve.analysis.model.provider.file.CostModelProvider;
-import org.iobserve.analysis.model.provider.file.DesignDecisionModelProvider;
-import org.iobserve.analysis.model.provider.file.QMLDeclarationsModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.AbstractModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.model.correspondence.CorrespondeceModelFactory;
+import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.provider.file.CloudProfileModelProvider;
+import org.iobserve.model.provider.file.CostModelProvider;
+import org.iobserve.model.provider.file.DesignDecisionModelProvider;
+import org.iobserve.model.provider.file.QMLDeclarationsModelProvider;
+import org.iobserve.model.provider.neo4j.AbstractModelProvider;
+import org.iobserve.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.model.provider.neo4j.UsageModelProvider;
 
 /**
  *
@@ -190,7 +190,7 @@ public final class InitializeModelProviders {
         this.saveModelProvider(this.usageModelProvider, fileLocationURI.appendFileExtension("usagemodel"));
     }
 
-    private void saveModelProvider(final org.iobserve.analysis.model.provider.file.AbstractModelProvider<?> provider,
+    private void saveModelProvider(final org.iobserve.model.provider.file.AbstractModelProvider<?> provider,
             final URI fileLocationURI) {
         if (provider != null) {
             provider.save(fileLocationURI);

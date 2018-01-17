@@ -18,7 +18,7 @@ package org.iobserve.service.privacy.violation.filter;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.data.ProbeLocation;
 import org.iobserve.service.privacy.violation.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;

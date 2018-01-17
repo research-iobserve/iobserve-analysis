@@ -24,7 +24,6 @@ import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.analysis.service.services.CommunicationInstanceService;
 import org.iobserve.analysis.service.services.CommunicationService;
 import org.iobserve.analysis.service.services.NodeService;
@@ -32,6 +31,7 @@ import org.iobserve.analysis.service.services.NodegroupService;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.service.services.SystemService;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;

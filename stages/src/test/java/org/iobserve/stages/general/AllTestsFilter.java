@@ -20,13 +20,13 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 /**
- * Test suite that run all tests for classes in org.iobserve.analysis.filter.
+ * Test suite that run all tests for classes in org.iobserve.stages.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses({ RecordSwitchTests.class })
+@SuiteClasses({ RecordSwitchTests.class, })
 public class AllTestsFilter {
 
 }

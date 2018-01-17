@@ -22,11 +22,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.iobserve.model.correspondence.Correspondent;
+import org.iobserve.model.correspondence.CorrespondentFactory;
+import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -162,11 +162,11 @@ public class UndeploymentVisualizationStageTest {
         /*
          * StageTester.test(this.undeploymentVisualizationStage).and().send(this.inputEvents)
          * .to(this.undeploymentVisualizationStage.getInputPort()).start();
-         * 
+         *
          * final JSONArray changelogs = new JSONArray(TestHandler.getRequestBody()); final
          * JSONObject expectedServiceInstance = new
          * JSONObject(changelogs.getJSONObject(0).get("data").toString());
-         * 
+         *
          * Assert.assertThat(changelogs.getJSONObject(0).get("operation"), Is.is("DELETE"));
          * Assert.assertThat(expectedServiceInstance.getString("type"), Is.is("serviceInstance"));
          */
