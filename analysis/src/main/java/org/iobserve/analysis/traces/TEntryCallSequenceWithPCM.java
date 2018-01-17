@@ -24,8 +24,8 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.data.UserSession;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.analysis.session.data.UserSession;
+import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
 /**

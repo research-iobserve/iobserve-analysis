@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.systems.jpetstore;
 
-import org.iobserve.analysis.traces.ITraceAcceptanceMatcher;
+import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
@@ -24,7 +24,7 @@ import org.iobserve.stages.general.data.EntryCallEvent;
  * @author Reiner Jung
  *
  */
-public class JPetStoreTraceAcceptanceMatcher implements ITraceAcceptanceMatcher {
+public class JPetStoreTraceAcceptanceMatcher implements IEntryCallAcceptanceMatcher {
 
     @Override
     public boolean match(final EntryCallEvent call) {

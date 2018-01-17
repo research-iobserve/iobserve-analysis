@@ -26,9 +26,9 @@ import kieker.common.logging.LogFactory;
 
 import org.eclipse.emf.common.util.EList;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.model.provider.neo4j.SystemModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyConnectorPrivacy;

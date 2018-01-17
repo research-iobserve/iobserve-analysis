@@ -19,20 +19,20 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.MultiInputObservationConfiguration;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.neo4j.AllocationModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.SystemModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.analysis.configurations.MultiInputObservationConfiguration;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.provider.neo4j.AllocationModelProvider;
+import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.model.provider.neo4j.UsageModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -119,15 +119,16 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
                 EOutputMode.UBM_VISUALIZATION, snapshotBuilder, perOpteryxDir, lqnsDir, deployablesFolder);
 
-        final URL url = new URL(
+        final URL containerManagementURL = new URL(
                 "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
 
-        final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(url,
-                systemId, resourceContainerModelGraphProvider, assemblyContextModelGraphProvider);
-        final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(url,
-                systemId);
-        final UndeploymentVisualizationStage undeploymentVisualizationStage = new UndeploymentVisualizationStage(url,
-                systemId, resourceContainerModelGraphProvider, assCtxSystemModelGraphProvider,
+        final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(
+                containerManagementURL, systemId, resourceContainerModelGraphProvider,
+                assemblyContextModelGraphProvider);
+        final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(
+                containerManagementURL, systemId);
+        final UndeploymentVisualizationStage undeploymentVisualizationStage = new UndeploymentVisualizationStage(
+                containerManagementURL, systemId, resourceContainerModelGraphProvider, assCtxSystemModelGraphProvider,
                 systemModelGraphProvider);
 
         this.connectPorts(this.deploymentStage.getDeployedOutputPort(), deploymentVisualizationStage.getInputPort());

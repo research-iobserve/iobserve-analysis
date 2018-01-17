@@ -20,9 +20,9 @@ import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.common.record.IUndeployedEvent;
+import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;

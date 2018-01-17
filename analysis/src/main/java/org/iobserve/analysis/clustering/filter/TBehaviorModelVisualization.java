@@ -35,7 +35,7 @@ import org.iobserve.analysis.clustering.filter.models.CallInformation;
 import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
 import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCreationStrategy;
-import org.iobserve.analysis.writer.AbstractModelOutputFilter;
+import org.iobserve.analysis.sink.AbstractModelOutputSink;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -48,7 +48,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * @author Christoph Dornieden
  *
  */
-public class TBehaviorModelVisualization extends AbstractModelOutputFilter {
+public class TBehaviorModelVisualization extends AbstractModelOutputSink {
     private static final Logger LOGGER = LogManager.getLogger(TBehaviorModelVisualization.class);
     private final ISignatureCreationStrategy signatureStrategy;
     private final String applicationUrl;

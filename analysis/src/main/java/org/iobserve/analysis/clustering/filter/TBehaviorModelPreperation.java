@@ -23,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.iobserve.analysis.clustering.filter.models.BehaviorModelTable;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.data.UserSession;
+import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
 
 import teetime.framework.AbstractConsumerStage;

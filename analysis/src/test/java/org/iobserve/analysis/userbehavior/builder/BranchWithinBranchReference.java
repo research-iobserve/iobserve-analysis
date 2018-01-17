@@ -21,13 +21,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.factory.UsageModelFactory;
-import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
+import org.iobserve.model.correspondence.Correspondent;
+import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.factory.UsageModelFactory;
+import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;

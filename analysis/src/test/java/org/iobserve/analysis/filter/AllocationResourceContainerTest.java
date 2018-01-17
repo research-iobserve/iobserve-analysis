@@ -23,12 +23,12 @@ import teetime.framework.test.StageTester;
 
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.AllocationStage;
-import org.iobserve.analysis.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.analysis.test.data.ImplementationLevelData;
 import org.iobserve.analysis.test.data.ResourceEnvironmentData;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
+import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;

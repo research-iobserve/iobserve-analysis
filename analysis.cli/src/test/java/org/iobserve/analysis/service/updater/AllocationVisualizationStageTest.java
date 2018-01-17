@@ -23,7 +23,7 @@ import java.util.List;
 import teetime.framework.test.StageTester;
 
 import org.hamcrest.core.Is;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Assert;
