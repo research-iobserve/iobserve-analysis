@@ -15,22 +15,18 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import kieker.common.record.flow.IFlowRecord;
+import kieker.common.record.IMonitoringRecord;
 
-import teetime.framework.InputPort;
-
-import org.iobserve.common.record.ISessionEvent;
+import teetime.framework.OutputPort;
 
 /**
- * Generic interface for behavior analysis.
+ * Marker interface for composite stages used as source in the analysis.
  *
  * @author Reiner Jung
  *
  */
-public interface IBehaviorCompositeStage {
+public interface ISourceCompositeStage {
 
-    InputPort<IFlowRecord> getFlowInputPort();
-
-    InputPort<ISessionEvent> getSessionEventInputPort();
+    OutputPort<IMonitoringRecord> getOutputPort();
 
 }

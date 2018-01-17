@@ -34,18 +34,89 @@ public class AnalysisConfiguration extends Configuration {
     private static final Log LOG = LogFactory.getLog(AnalysisConfiguration.class);
 
     private static final String BEHAVIOR_CLUSTERING = IBehaviorCompositeStage.class.getCanonicalName();
+
+    private static final String BEHAVIOR_CLUSTERING_GRAPHICAL_SINK = AnalysisConfiguration.BEHAVIOR_CLUSTERING
+            + ".sink.visual";
+
+    private static final String DEPLOYMENT = IDeploymentCompositeStage.class.getCanonicalName();
+
+    private static final String TRACES = ITraceCompositeStage.class.getCanonicalName();
+
+    private static final String DATA_FLOW = IDataFlowCompositeStage.class.getCanonicalName();
+
+    private static final String GEO_LOCATION = IGeoLocationCompositeStage.class.getCanonicalName();
+
+    private static final String SOURCE = ISourceCompositeStage.class.getCanonicalName();
+
     protected final RecordSwitch recordSwitch;
 
-    public AnalysisConfiguration(final kieker.common.configuration.Configuration configuration) {
+    public AnalysisConfiguration(final kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException {
         this.recordSwitch = new RecordSwitch();
 
+        final String sourceClassName = configuration.getStringProperty(AnalysisConfiguration.SOURCE);
+        if (!sourceClassName.isEmpty()) {
+            final ISourceCompositeStage sourceCompositeStage = this.createAndInitialize(ISourceCompositeStage.class, sourceClassName,
+                    configuration);
+
+            this.connectPorts(sourceCompositeStage.getOutputPort(), this.recordSwitch.getInputPort());
+
+            this.deployment(configuration);
+            this.trace(configuration);
+            this.geoLocation(configuration);
+        } else {
+            AnalysisConfiguration.LOG.error("Initialization incomplete: No source stage specified.");
+            throw new ConfigurationException("Initialization incomplete: No source stage specified.");
+        }
+    }
+
+    private void deployment(final kieker.common.configuration.Configuration configuration) {
+        final String deploymentClassName = configuration.getStringProperty(AnalysisConfiguration.DEPLOYMENT);
+        if (!deploymentClassName.isEmpty()) {
+
+        }
+
+    }
+
+    private void trace(final kieker.common.configuration.Configuration configuration) {
+        final String traceClassName = configuration.getStringProperty(AnalysisConfiguration.TRACES);
+        if (!traceClassName.isEmpty()) {
+            this.behaviorClustering(configuration);
+            this.dataflow(configuration);
+        }
+    }
+
+    private void dataflow(final kieker.common.configuration.Configuration configuration) {
+        final String dataflowClassName = configuration.getStringProperty(AnalysisConfiguration.DATA_FLOW);
+        if (!dataflowClassName.isEmpty()) {
+
+        }
+    }
+
+    private void geoLocation(final kieker.common.configuration.Configuration configuration) {
+        final String geoLocationClassName = configuration.getStringProperty(AnalysisConfiguration.GEO_LOCATION);
+        if (!geoLocationClassName.isEmpty()) {
+        }
+    }
+
+    /**
+     * Create the behavioral clustering.
+     *
+     * @param configuration
+     *            analysis configuration
+     */
+    private void behaviorClustering(final kieker.common.configuration.Configuration configuration) {
         final String behaviorClustringClassName = configuration
                 .getStringProperty(AnalysisConfiguration.BEHAVIOR_CLUSTERING);
         if (!behaviorClustringClassName.isEmpty()) {
             final IBehaviorCompositeStage behavior = this.createAndInitialize(IBehaviorCompositeStage.class,
                     behaviorClustringClassName, configuration);
             this.connectPorts(this.recordSwitch.getFlowOutputPort(), behavior.getFlowInputPort());
-            this.connectPorts(this.recordSwitch.getSessionEventOutputPort() behavior.getSessionEventInputPort());
+            this.connectPorts(this.recordSwitch.getSessionEventOutputPort(), behavior.getSessionEventInputPort());
+
+            if (configuration.getBooleanProperty(AnalysisConfiguration.BEHAVIOR_CLUSTERING_GRAPHICAL_SINK)) {
+                // TODO needs visualization trigger
+            }
         }
     }
 

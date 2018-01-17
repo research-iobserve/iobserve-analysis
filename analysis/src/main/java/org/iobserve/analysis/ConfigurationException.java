@@ -15,22 +15,18 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import kieker.common.record.flow.IFlowRecord;
-
-import teetime.framework.InputPort;
-
-import org.iobserve.common.record.ISessionEvent;
-
 /**
- * Generic interface for behavior analysis.
- *
  * @author Reiner Jung
  *
  */
-public interface IBehaviorCompositeStage {
+public class ConfigurationException extends Exception {
+    /**
+    *
+    */
+    private static final long serialVersionUID = -6121223240278366389L;
 
-    InputPort<IFlowRecord> getFlowInputPort();
-
-    InputPort<ISessionEvent> getSessionEventInputPort();
+    public ConfigurationException(final String message) {
+        super(message);
+    }
 
 }
