@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.model.provider.file;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
@@ -25,39 +24,16 @@ import org.palladiosimulator.pcm.allocation.AllocationPackage;
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
- *
- * @deprecated since 0.0.2 we should use the new neo4j generic provider
- *             {@link org.iobserve.model.provider.neo4j.ModelProvider}
+ * @author Reiner Jung - refactoring & api change
  *
  */
-@Deprecated
-public final class AllocationModelProvider extends AbstractModelProvider<Allocation> {
-
-    /**
-     * Create model provider to provide {@link Allocation} model.
-     *
-     * @param uriModelInstance
-     *            uri to the model
-     */
-    public AllocationModelProvider(final URI uriModelInstance) {
-        super(uriModelInstance);
-        this.loadModel();
-    }
+public final class AllocationModelHandler extends AbstractModelHandler<Allocation> {
 
     /**
      * Create an uninitialized empty provider.
      */
-    public AllocationModelProvider() {
+    public AllocationModelHandler() {
         super();
-    }
-
-    /**
-     * Reset model.
-     */
-    @Override
-    public void resetModel() {
-        final Allocation model = this.getModel();
-        model.getAllocationContexts_Allocation().clear();
     }
 
     @Override

@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.model.provider.file;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceenvironmentcloudPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -26,36 +25,15 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  * @author Philipp Weimann
- *
- * @deprecated since 0.0.2 we should use the new neo4j generic provider
- *             {@link org.iobserve.model.provider.neo4j.ModelProvider}
+ * @author Reiner Jung - refactoring & api change
  */
-@Deprecated
-public class ResourceEnvironmentModelProvider extends AbstractModelProvider<ResourceEnvironment> {
-
-    /**
-     * Create model provider to provide {@link ResourceEnvironment} model.
-     *
-     * @param uriUsageModel
-     *            uri to the model
-     */
-    public ResourceEnvironmentModelProvider(final URI uriUsageModel) {
-        super(uriUsageModel);
-        this.loadModel();
-    }
+public class ResourceEnvironmentModelHandler extends AbstractModelHandler<ResourceEnvironment> {
 
     /**
      * Create an empty resource environment model provider.
      */
-    public ResourceEnvironmentModelProvider() {
+    public ResourceEnvironmentModelHandler() {
         super();
-    }
-
-    @Override
-    public void resetModel() {
-        final ResourceEnvironment model = this.getModel();
-        model.getResourceContainer_ResourceEnvironment().clear();
-        model.getLinkingResources__ResourceEnvironment().clear();
     }
 
     @Override

@@ -30,21 +30,17 @@ import kieker.monitoring.core.configuration.ConfigurationFactory;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.ConfigurationException;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.AllocationModelProvider;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
-import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.model.provider.neo4j.SystemModelProvider;
-import org.iobserve.model.provider.neo4j.UsageModelProvider;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
@@ -131,46 +127,44 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
         final int thinkTime = configuration.getIntProperty(AnalysisMain.BEHAVIOR_THINK_TIME, 1);
         final int varianceOfUserGroups = configuration.getIntProperty(AnalysisMain.BEHAVIOR_VARIANCE_OF_USER_GROUPS, 1);
 
-        /** process parameter. */
+        /** Configure model handling. */
         // old model providers without neo4j
-        final InitializeModelProviders modelProvider = new InitializeModelProviders(modelInitDirectory);
+        final PCMModelHandler modelProvider = new PCMModelHandler(modelInitDirectory);
 
         final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
-        final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
-        final RepositoryModelProvider repositoryModelProvider = modelProvider.getRepositoryModelProvider();
-        final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider = modelProvider
-                .getResourceEnvironmentModelProvider();
-        final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
-        final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
-        // initialize neo4j graphs
-        final GraphLoader graphLoader = new GraphLoader(modelDatabaseDirectory);
-        Graph resourceEnvironmentModelGraph = graphLoader
-                .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
-        Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
-        Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
-        Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModelProvider.getModel());
 
-        // load neo4j graphs
+        /** initialize neo4j graphs. */
+        final GraphLoader graphLoader = new GraphLoader(modelDatabaseDirectory);
+
+        Graph repositoryModelGraph = graphLoader.initializeRepositoryModelGraph(modelProvider.getRepositoryModel());
+        Graph resourceEnvironmentModelGraph = graphLoader
+                .initializeResourceEnvironmentModelGraph(modelProvider.getResourceEnvironmentModel());
+        Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(modelProvider.getAllocationModel());
+        Graph systemModelGraph = graphLoader.initializeSystemModelGraph(modelProvider.getSystemModel());
+        Graph usageModelGraph = graphLoader.initializeUsageModelGraph(modelProvider.getUsageModel());
+
+        /** load neo4j graphs. */
+        // TODO is this necessary to reload all repositories?
+        repositoryModelGraph = graphLoader.getRepositoryModelGraph();
         resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
         allocationModelGraph = graphLoader.getAllocationModelGraph();
         systemModelGraph = graphLoader.getSystemModelGraph();
         usageModelGraph = graphLoader.getUsageModelGraph();
 
-        // new graphModelProvider
-        final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
+        /** new graphModelProvider. */
+        final ModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
+        final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentModelGraph);
-        final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider = new ModelProvider<>(
+        final ModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
                 resourceEnvironmentModelGraph);
-        final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(allocationModelGraph);
-        final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider = new ModelProvider<>(
-                allocationModelGraph);
-        final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
+        final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
+        final ModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(allocationModelGraph);
+        final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider = new ModelProvider<>(
                 systemModelGraph);
-        final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider = new ModelProvider<>(systemModelGraph);
-        final ModelProvider<UsageModel> usageModelGraphProvider = new ModelProvider<>(usageModelGraph);
+        final ModelProvider<UsageModel> usageModelProvider = new ModelProvider<>(usageModelGraph);
 
         // get systemId
-        final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
+        final org.palladiosimulator.pcm.system.System systemModel = systemModelProvider
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
 
         final String systemId = systemModel.getId();
@@ -181,8 +175,8 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
                     configuration.getStringProperty(AnalysisMain.IOBSERVE_VISUALIZATION_URL));
 
             final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                    containerManagementVisualizationBaseUrl, systemId, allocationModelGraphProvider,
-                    systemModelGraphProvider, resourceEnvironmentModelGraphProvider, usageModelGraphProvider);
+                    containerManagementVisualizationBaseUrl, systemId, allocationModelProvider, systemModelProvider,
+                    resourceEnvironmentModelProvider, usageModelProvider);
 
             deploymentVisualization.initialize();
 
@@ -204,13 +198,11 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
 
             }
 
-            return new ServiceConfiguration(configuration, containerManagementVisualizationBaseUrl, "",
+            return new ServiceConfiguration(configuration, containerManagementVisualizationBaseUrl, systemId,
                     varianceOfUserGroups, thinkTime, closedWorkload, correspondenceModel, usageModelProvider,
                     repositoryModelProvider, resourceEnvironmentModelProvider, allocationModelProvider,
-                    systemModelProvider, resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider,
-                    allocationModelGraphProvider, assemblyContextModelGraphProvider, systemModelGraphProvider,
-                    assCtxSystemModelGraphProvider, behaviorVisualizationServiceURL, snapshotBuilder, perOpteryxUri,
-                    lqnsUri, deployablesFolder);
+                    systemModelProvider, resourceContainerModelProvider, assemblyContextModelProvider,
+                    behaviorVisualizationServiceURL, snapshotBuilder, perOpteryxUri, lqnsUri, deployablesFolder);
 
         } catch (final MalformedURLException e) {
             AbstractServiceMain.LOG.debug("URL construction for deployment visualization failed.", e);

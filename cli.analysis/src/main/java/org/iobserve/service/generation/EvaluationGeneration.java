@@ -25,8 +25,8 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.data.graph.GraphFactory;
+import org.iobserve.model.PCMModelHandler;
 
 /**
  * ToDo .
@@ -56,15 +56,15 @@ public class EvaluationGeneration {
                     EvaluationGeneration.clearDirectory(commandLine.getOptionValue("o"));
                     ModelGeneration.createNewModel(commandLine);
 
-                    final InitializeModelProviders modelProviers = new InitializeModelProviders(model);
+                    final PCMModelHandler modelProviders = new PCMModelHandler(model);
                     final GraphFactory graphFactory = new GraphFactory();
-                    graphFactory.buildGraph(modelProviers);
+                    graphFactory.buildGraph(modelProviders);
                 }
                 if (commandLine.hasOption("m")) {
                     EvaluationGeneration.clearDirectory(commandLine.getOptionValue("o"));
                     ModelModification.createNewModel(commandLine);
 
-                    final InitializeModelProviders modelProviers = new InitializeModelProviders(model);
+                    final PCMModelHandler modelProviers = new PCMModelHandler(model);
                     final GraphFactory graphFactory = new GraphFactory();
                     graphFactory.buildGraph(modelProviers);
                 }
