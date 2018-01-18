@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-import kieker.common.configuration.Configuration;
-
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
@@ -31,6 +29,8 @@ import org.iobserve.model.provider.neo4j.SystemModelProvider;
 import org.iobserve.model.provider.neo4j.UsageModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+
+import kieker.common.configuration.Configuration;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -86,8 +86,9 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      * @param deployablesFolder
      *            folder containing deployables
      */
-    public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
-            final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
+    public MultiInputObservationConfiguration(final Configuration configuration,
+            final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
+            final RepositoryModelProvider repositoryModelProvider,
             final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
             final AllocationModelProvider allocationModelProvider,
@@ -102,10 +103,6 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
                 systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload,
                 visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, perOpteryxHeadless, lqnsDir,
                 null, deployablesFolder);
-
-        final Configuration configuration = new Configuration();
-
-        configuration.setProperty(TCPSourceCompositeStage.SOURCE_PORT, inputPort);
 
         final TCPSourceCompositeStage reader = new TCPSourceCompositeStage(configuration);
 

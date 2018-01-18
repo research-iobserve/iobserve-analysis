@@ -54,14 +54,14 @@ public final class InitializeModelProviders {
     /**
      * Create model provider.
      *
-     * @param dirPcm
+     * @param pcmModelsDirectory
      *            directory of pcm models.
      */
-    public InitializeModelProviders(final File dirPcm) {
-        final File[] files = dirPcm.listFiles();
+    public InitializeModelProviders(final File pcmModelsDirectory) {
+
+        final File[] files = pcmModelsDirectory.listFiles();
         for (final File nextFile : files) {
             final String extension = this.getFileExtension(nextFile.getName());
-
             if ("repository".equalsIgnoreCase(extension)) {
                 this.repositoryModelProvider = new RepositoryModelProvider(nextFile);
 
@@ -98,6 +98,7 @@ public final class InitializeModelProviders {
                 final URI uri = this.getUri(nextFile);
                 this.qmlDeclarationsModelProvider = new QMLDeclarationsModelProvider(uri);
             }
+
         }
     }
 

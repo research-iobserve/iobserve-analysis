@@ -17,13 +17,13 @@ package org.iobserve.evaluation;
 
 import java.io.File;
 
+import teetime.stage.basic.AbstractTransformation;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.data.graph.GraphFactory;
 import org.iobserve.analysis.data.graph.ModelGraph;
-
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  *

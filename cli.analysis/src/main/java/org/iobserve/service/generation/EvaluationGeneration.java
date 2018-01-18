@@ -50,12 +50,13 @@ public class EvaluationGeneration {
             } else {
                 commandLine = parser.parse(EvaluationGeneration.createOptions(), args);
 
+                final File model = new File(commandLine.getOptionValue("o"));
+
                 if (commandLine.hasOption("n")) {
                     EvaluationGeneration.clearDirectory(commandLine.getOptionValue("o"));
                     ModelGeneration.createNewModel(commandLine);
 
-                    final InitializeModelProviders modelProviers = new InitializeModelProviders(
-                            new File(commandLine.getOptionValue("o")));
+                    final InitializeModelProviders modelProviers = new InitializeModelProviders(model);
                     final GraphFactory graphFactory = new GraphFactory();
                     graphFactory.buildGraph(modelProviers);
                 }
@@ -63,8 +64,7 @@ public class EvaluationGeneration {
                     EvaluationGeneration.clearDirectory(commandLine.getOptionValue("o"));
                     ModelModification.createNewModel(commandLine);
 
-                    final InitializeModelProviders modelProviers = new InitializeModelProviders(
-                            new File(commandLine.getOptionValue("o")));
+                    final InitializeModelProviders modelProviers = new InitializeModelProviders(model);
                     final GraphFactory graphFactory = new GraphFactory();
                     graphFactory.buildGraph(modelProviers);
                 }

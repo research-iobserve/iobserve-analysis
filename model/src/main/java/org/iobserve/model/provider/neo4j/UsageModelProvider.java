@@ -43,8 +43,8 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public UsageModelProvider(final File neo4jPcmModelDirectory) {
-        super(neo4jPcmModelDirectory);
+    public UsageModelProvider(final File baseDirectory) {
+        super(baseDirectory);
     }
 
     @Override
@@ -57,8 +57,7 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
         this.model = this.modelProvider.readRootComponent(UsageModel.class);
 
         if (this.model == null) {
-            AbstractModelProvider.LOG
-                    .debug("Model at " + this.neo4jPcmModelDirectory.getAbsolutePath() + " could not be loaded!");
+            AbstractModelProvider.LOG.debug("Usage odel could not be loaded!");
         }
     }
 
@@ -88,8 +87,8 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
     }
 
     @Override
-    protected Graph getModelTypeGraph(final File neo4jPcmModelDirectory) {
-        return new GraphLoader(neo4jPcmModelDirectory).getUsageModelGraph();
+    protected Graph getModelTypeGraph(final File baseDirectory) {
+        return new GraphLoader(baseDirectory).getUsageModelGraph();
     }
 
 }

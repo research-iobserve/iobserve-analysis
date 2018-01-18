@@ -17,13 +17,13 @@ package org.iobserve.planning;
 
 import java.io.File;
 
+import teetime.stage.basic.AbstractTransformation;
+
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.data.graph.GraphFactory;
 import org.iobserve.analysis.data.graph.ModelGraph;
 import org.iobserve.planning.data.PlanningData;
-
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  * This class selects a created candidate and creates all required information for further
@@ -39,8 +39,8 @@ public class CandidateProcessing extends AbstractTransformation<PlanningData, Ad
         final AdaptationData adapdationData = element.getAdaptationData();
 
         final GraphFactory factory = new GraphFactory();
-        final ModelGraph graph = factory
-                .buildGraph(new InitializeModelProviders(new File(adapdationData.getReDeploymentURI().toFileString())));
+        final File directory = new File(adapdationData.getReDeploymentURI().toFileString());
+        final ModelGraph graph = factory.buildGraph(new InitializeModelProviders(directory));
         element.getAdaptationData().setReDeploymentGraph(graph);
 
         this.outputPort.send(element.getAdaptationData());

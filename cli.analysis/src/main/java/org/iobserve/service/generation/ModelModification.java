@@ -35,7 +35,7 @@ import org.palladiosimulator.pcm.system.System;
 
 /**
  * ToDo .
- * 
+ *
  * @author unknown
  *
  */
@@ -50,9 +50,10 @@ public class ModelModification {
         final URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
         ModelModification.LOG.info("Copying models to new location.");
-        InitializeModelProviders modelProviders = new InitializeModelProviders(new File(inputModels.toFileString()));
-        final URI copyURI = ModelModification.copyRepoToOutput(outputLocation, modelProviders);
 
+        InitializeModelProviders modelProviders = new InitializeModelProviders(new File(inputModels.toFileString()));
+
+        final URI copyURI = ModelModification.copyRepoToOutput(outputLocation, modelProviders);
         modelProviders = new InitializeModelProviders(new File(copyURI.toFileString()));
 
         final Allocation allocationModel = modelProviders.getAllocationModelProvider().getModel();
@@ -98,7 +99,7 @@ public class ModelModification {
         ModelModification.LOG.info("Creating migrations");
         allocMod = new AllocationModification(allocationModel, systemModel, resourceEnvironmentModel);
         final int totalMigrations = Integer.parseInt(commandLine.getOptionValue("al"));
-        final int migrationsToPerform = totalMigrations - (terminationMigrations); // allocationMigrations
+        final int migrationsToPerform = totalMigrations - terminationMigrations; // allocationMigrations
         if (migrationsToPerform > 0) {
             ModelModification.LOG.info("Migrations to Perform: " + migrationsToPerform);
             allocMod.modifyAllocationMigrate(migrationsToPerform);

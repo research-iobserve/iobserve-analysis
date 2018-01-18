@@ -66,8 +66,9 @@ public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
         planningData.setOriginalModelDir(element);
         planningData.setLqnsDir(this.lqnsDir);
 
-        final InitializeModelProviders models = new InitializeModelProviders(
-                new File(adaptationData.getRuntimeModelURI().toFileString()));
+        final File directory = new File(adaptationData.getReDeploymentURI().toFileString());
+
+        final InitializeModelProviders models = new InitializeModelProviders(directory);
         final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER, models);
 
         final URI snapshotLocation = snapshotBuilder.createSnapshot();

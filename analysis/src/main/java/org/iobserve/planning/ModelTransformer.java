@@ -83,7 +83,9 @@ public class ModelTransformer {
     public ModelTransformer(final PlanningData planningData) {
         this.planningData = planningData;
         final String originalModelDir = planningData.getOriginalModelDir().toFileString();
-        this.originalModelProviders = new InitializeModelProviders(new File(originalModelDir));
+        final File directory = new File(originalModelDir);
+
+        this.originalModelProviders = new InitializeModelProviders(directory);
     }
 
     /**
@@ -123,6 +125,7 @@ public class ModelTransformer {
         snapshotBuilder.createSnapshot();
 
         this.planningData.setProcessedModelDir(processedModelDir);
+
         this.processedModelProviders = new InitializeModelProviders(new File(processedModelDir.toFileString()));
 
         this.allocationProvider = this.processedModelProviders.getAllocationModelProvider();
