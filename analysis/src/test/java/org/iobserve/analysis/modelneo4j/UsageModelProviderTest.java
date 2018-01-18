@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -28,7 +27,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
@@ -41,8 +39,6 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 
-import kieker.common.configuration.Configuration;
-
 /**
  * Test cases for the model provider using an usage model.
  *
@@ -50,22 +46,16 @@ import kieker.common.configuration.Configuration;
  *
  */
 public class UsageModelProviderTest implements IModelProviderTest {
-    private static final String GRAPH_DIR = "./testdb";
+    private static final File GRAPH_DIR = new File("./testdb");
 
     private Graph graph;
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
-    @BeforeClass
-    public void before() {
-        final Configuration configuration = new Configuration();
-        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, UsageModelProviderTest.GRAPH_DIR);
-        this.graph = new GraphLoader(configuration).getUsageModelGraph();
-    }
-
     @Override
     @Before
     public void clearGraph() {
+        this.graph = new GraphLoader(UsageModelProviderTest.GRAPH_DIR).getUsageModelGraph();
         new ModelProvider<>(this.graph).clearGraph();
     }
 
@@ -308,7 +298,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
      */
     @AfterClass
     public static void cleanUp() throws IOException {
-        FileUtils.deleteRecursively(new File(UsageModelProviderTest.GRAPH_DIR));
+        FileUtils.deleteRecursively(UsageModelProviderTest.GRAPH_DIR);
     }
 
 }

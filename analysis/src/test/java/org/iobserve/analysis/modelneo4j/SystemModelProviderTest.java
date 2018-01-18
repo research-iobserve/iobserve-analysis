@@ -21,7 +21,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -29,7 +28,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
@@ -37,8 +35,6 @@ import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.system.System;
-
-import kieker.common.configuration.Configuration;
 
 /**
  * Test cases for the model provider using a System model.
@@ -48,22 +44,16 @@ import kieker.common.configuration.Configuration;
  */
 public class SystemModelProviderTest implements IModelProviderTest {
 
-    private static final String GRAPH_DIR = "./testdb";
+    private static final File GRAPH_DIR = new File("./testdb");
 
     private Graph graph;
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
-    @BeforeClass
-    public void before() {
-        final Configuration configuration = new Configuration();
-        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, SystemModelProviderTest.GRAPH_DIR);
-        this.graph = new GraphLoader(configuration).getSystemModelGraph();
-    }
-
     @Override
     @Before
     public void clearGraph() {
+        this.graph = new GraphLoader(SystemModelProviderTest.GRAPH_DIR).getSystemModelGraph();
         new ModelProvider<>(this.graph).clearGraph();
     }
 
@@ -297,7 +287,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
      */
     @AfterClass
     public static void cleanUp() throws IOException {
-        FileUtils.deleteRecursively(new File(SystemModelProviderTest.GRAPH_DIR));
+        FileUtils.deleteRecursively(SystemModelProviderTest.GRAPH_DIR);
     }
 
 }

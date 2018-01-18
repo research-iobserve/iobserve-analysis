@@ -18,6 +18,7 @@ package org.iobserve.analysis;
 import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
+import org.iobserve.model.correspondence.CorrespondeceModelFactory;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.file.CloudProfileModelProvider;
 import org.iobserve.model.provider.file.CostModelProvider;
@@ -30,8 +31,6 @@ import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
 import org.iobserve.model.provider.neo4j.SystemModelProvider;
 import org.iobserve.model.provider.neo4j.UsageModelProvider;
 
-import kieker.common.configuration.Configuration;
-
 /**
  *
  * will load all model and {@link ICorrespondence} model.
@@ -40,10 +39,6 @@ import kieker.common.configuration.Configuration;
  * @author Alessandro Giusa
  */
 public final class InitializeModelProviders {
-
-    private static final String PREFIX = "org.iobserve.model";
-
-    public static final String PCM_MODEL_DIRECTORY = InitializeModelProviders.PREFIX + ".pcm.directory.init";
 
     private RepositoryModelProvider repositoryModelProvider;
     private UsageModelProvider usageModelProvider;
@@ -59,54 +54,51 @@ public final class InitializeModelProviders {
     /**
      * Create model provider.
      *
-     * @param dirPcm
+     * @param pcmModelsDirectory
      *            directory of pcm models.
      */
-    public InitializeModelProviders(final Configuration configuration) {
-
-        final File pcmModelsDirectory = new File(
-                configuration.getPathProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY));
+    public InitializeModelProviders(final File pcmModelsDirectory) {
 
         final File[] files = pcmModelsDirectory.listFiles();
         for (final File nextFile : files) {
             final String extension = this.getFileExtension(nextFile.getName());
-            /*
-             * TODO this must use the file readers and it should be more compact. if
-             * ("repository".equalsIgnoreCase(extension)) { this.repositoryModelProvider = new
-             * RepositoryModelProvider(nextFile);
-             * 
-             * } else if ("allocation".equalsIgnoreCase(extension)) { this.allocationModelProvider =
-             * new AllocationModelProvider(nextFile);
-             * 
-             * } else if ("resourceenvironment".equalsIgnoreCase(extension)) {
-             * this.resourceEnvironmentModelProvider = new
-             * ResourceEnvironmentModelProvider(nextFile);
-             * 
-             * } else if ("system".equalsIgnoreCase(extension)) { this.systemModelProvider = new
-             * SystemModelProvider(nextFile);
-             * 
-             * } else if ("usagemodel".equalsIgnoreCase(extension)) { this.usageModelProvider = new
-             * UsageModelProvider(nextFile);
-             * 
-             * } else if ("rac".equalsIgnoreCase(extension)) { final String pathMappingFile =
-             * nextFile.getAbsolutePath(); this.correspondenceModel =
-             * CorrespondeceModelFactory.INSTANCE .createCorrespondenceModel(pathMappingFile);
-             * 
-             * } else if ("cloudprofile".equalsIgnoreCase(extension)) { final URI uri =
-             * this.getUri(nextFile); this.cloudprofileModelProvider = new
-             * CloudProfileModelProvider(uri);
-             * 
-             * } else if ("cost".equalsIgnoreCase(extension)) { final URI uri =
-             * this.getUri(nextFile); this.costModelProvider = new CostModelProvider(uri);
-             * 
-             * } else if ("designdecision".equalsIgnoreCase(extension)) { final URI uri =
-             * this.getUri(nextFile); this.designDecisionModelProvider = new
-             * DesignDecisionModelProvider(uri);
-             * 
-             * } else if ("qmldeclarations".equalsIgnoreCase(extension)) { final URI uri =
-             * this.getUri(nextFile); this.qmlDeclarationsModelProvider = new
-             * QMLDeclarationsModelProvider(uri); }
-             */
+            if ("repository".equalsIgnoreCase(extension)) {
+                this.repositoryModelProvider = new RepositoryModelProvider(nextFile);
+
+            } else if ("allocation".equalsIgnoreCase(extension)) {
+                this.allocationModelProvider = new AllocationModelProvider(nextFile);
+
+            } else if ("resourceenvironment".equalsIgnoreCase(extension)) {
+                this.resourceEnvironmentModelProvider = new ResourceEnvironmentModelProvider(nextFile);
+
+            } else if ("system".equalsIgnoreCase(extension)) {
+                this.systemModelProvider = new SystemModelProvider(nextFile);
+
+            } else if ("usagemodel".equalsIgnoreCase(extension)) {
+                this.usageModelProvider = new UsageModelProvider(nextFile);
+
+            } else if ("rac".equalsIgnoreCase(extension)) {
+                final String pathMappingFile = nextFile.getAbsolutePath();
+                this.correspondenceModel = CorrespondeceModelFactory.INSTANCE
+                        .createCorrespondenceModel(pathMappingFile);
+
+            } else if ("cloudprofile".equalsIgnoreCase(extension)) {
+                final URI uri = this.getUri(nextFile);
+                this.cloudprofileModelProvider = new CloudProfileModelProvider(uri);
+
+            } else if ("cost".equalsIgnoreCase(extension)) {
+                final URI uri = this.getUri(nextFile);
+                this.costModelProvider = new CostModelProvider(uri);
+
+            } else if ("designdecision".equalsIgnoreCase(extension)) {
+                final URI uri = this.getUri(nextFile);
+                this.designDecisionModelProvider = new DesignDecisionModelProvider(uri);
+
+            } else if ("qmldeclarations".equalsIgnoreCase(extension)) {
+                final URI uri = this.getUri(nextFile);
+                this.qmlDeclarationsModelProvider = new QMLDeclarationsModelProvider(uri);
+            }
+
         }
     }
 

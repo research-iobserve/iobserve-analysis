@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.service.generation;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -31,8 +32,6 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
-
-import kieker.common.configuration.Configuration;
 
 /**
  * ToDo .
@@ -51,15 +50,11 @@ public class ModelModification {
         final URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
         ModelModification.LOG.info("Copying models to new location.");
-        final Configuration configuration = new Configuration();
-        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, inputModels.toFileString());
 
-        InitializeModelProviders modelProviders = new InitializeModelProviders(configuration);
+        InitializeModelProviders modelProviders = new InitializeModelProviders(new File(inputModels.toFileString()));
+
         final URI copyURI = ModelModification.copyRepoToOutput(outputLocation, modelProviders);
-
-        final Configuration configuration2 = new Configuration();
-        configuration2.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, copyURI.toFileString());
-        modelProviders = new InitializeModelProviders(configuration2);
+        modelProviders = new InitializeModelProviders(new File(copyURI.toFileString()));
 
         final Allocation allocationModel = modelProviders.getAllocationModelProvider().getModel();
         final ResourceEnvironment resourceEnvironmentModel = modelProviders.getResourceEnvironmentModelProvider()
@@ -104,7 +99,7 @@ public class ModelModification {
         ModelModification.LOG.info("Creating migrations");
         allocMod = new AllocationModification(allocationModel, systemModel, resourceEnvironmentModel);
         final int totalMigrations = Integer.parseInt(commandLine.getOptionValue("al"));
-        final int migrationsToPerform = totalMigrations - (terminationMigrations); // allocationMigrations
+        final int migrationsToPerform = totalMigrations - terminationMigrations; // allocationMigrations
         if (migrationsToPerform > 0) {
             ModelModification.LOG.info("Migrations to Perform: " + migrationsToPerform);
             allocMod.modifyAllocationMigrate(migrationsToPerform);

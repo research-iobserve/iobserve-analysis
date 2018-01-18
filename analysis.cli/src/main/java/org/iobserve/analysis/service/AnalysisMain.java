@@ -20,6 +20,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.converters.FileConverter;
+
+import kieker.common.configuration.Configuration;
+import kieker.monitoring.core.configuration.ConfigurationFactory;
+
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.ConfigurationException;
@@ -41,13 +48,6 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.converters.FileConverter;
-
-import kieker.common.configuration.Configuration;
-import kieker.monitoring.core.configuration.ConfigurationFactory;
 
 /**
  * Main class for starting the iObserve application.
@@ -76,6 +76,13 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
     private static final String BEHAVIOR_THINK_TIME = AnalysisMain.PREFIX + ".behavior.think.time";
 
     private static final String BEHAVIOR_VARIANCE_OF_USER_GROUPS = ".behavior.variance.of.user.groups";
+
+    // TODO these two need a better place
+    private static final String PREFIX2 = "org.iobserve.model";
+
+    public static final String PCM_MODEL_DB_DIRECTORY = AnalysisMain.PREFIX2 + ".pcm.directory.db";
+
+    public static final String PCM_MODEL_INIT_DIRECTORY = AnalysisMain.PREFIX2 + ".pcm.directory.init";
 
     @Parameter(names = "--help", help = true)
     private boolean help;
@@ -114,6 +121,10 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
         final String deployablesFolderPath = configuration.getStringProperty(AnalysisMain.DEPLOYABLES_FOLDER_PATH);
         final String behaviorVisualizationServiceURL = configuration
                 .getStringProperty(AnalysisMain.BEHAVIOR_VISUALIZATION_URL);
+        final File modelInitDirectory = new File(
+                configuration.getStringProperty(AnalysisMain.PCM_MODEL_INIT_DIRECTORY));
+        final File modelDatabaseDirectory = new File(
+                configuration.getStringProperty(AnalysisMain.PCM_MODEL_DB_DIRECTORY));
 
         // special property for a behavior filter
         final boolean closedWorkload = configuration.getBooleanProperty(AnalysisMain.BEHAVIOR_CLOSED_WORKLOAD, false);
@@ -122,7 +133,7 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
 
         /** process parameter. */
         // old model providers without neo4j
-        final InitializeModelProviders modelProvider = new InitializeModelProviders(configuration);
+        final InitializeModelProviders modelProvider = new InitializeModelProviders(modelInitDirectory);
 
         final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
         final UsageModelProvider usageModelProvider = modelProvider.getUsageModelProvider();
@@ -132,7 +143,7 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
         final AllocationModelProvider allocationModelProvider = modelProvider.getAllocationModelProvider();
         final SystemModelProvider systemModelProvider = modelProvider.getSystemModelProvider();
         // initialize neo4j graphs
-        final GraphLoader graphLoader = new GraphLoader(configuration);
+        final GraphLoader graphLoader = new GraphLoader(modelDatabaseDirectory);
         Graph resourceEnvironmentModelGraph = graphLoader
                 .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
         Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());

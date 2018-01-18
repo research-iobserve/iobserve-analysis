@@ -15,14 +15,15 @@
  ***************************************************************************/
 package org.iobserve.planning;
 
+import java.io.File;
+
+import teetime.stage.basic.AbstractTransformation;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.PlanningData;
-
-import kieker.common.configuration.Configuration;
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  * Stage for processing the PCM model before the model is used in PerOpteryx for generating
@@ -65,10 +66,9 @@ public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
         planningData.setOriginalModelDir(element);
         planningData.setLqnsDir(this.lqnsDir);
 
-        final Configuration configuration = new Configuration();
-        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY,
-                adaptationData.getReDeploymentURI().toFileString());
-        final InitializeModelProviders models = new InitializeModelProviders(configuration);
+        final File directory = new File(adaptationData.getReDeploymentURI().toFileString());
+
+        final InitializeModelProviders models = new InitializeModelProviders(directory);
         final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER, models);
 
         final URI snapshotLocation = snapshotBuilder.createSnapshot();

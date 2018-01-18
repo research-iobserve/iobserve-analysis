@@ -15,14 +15,15 @@
  ***************************************************************************/
 package org.iobserve.evaluation;
 
+import java.io.File;
+
+import teetime.stage.basic.AbstractTransformation;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.data.graph.GraphFactory;
 import org.iobserve.analysis.data.graph.ModelGraph;
-
-import kieker.common.configuration.Configuration;
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  *
@@ -41,9 +42,8 @@ public class ModelComparer extends AbstractTransformation<URI, Boolean> {
         boolean equalGraphs = false;
         if (this.adaptationData != null) {
             // TODO finish
-            final Configuration configuration = new Configuration();
-            configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, element.toFileString());
-            final InitializeModelProviders modelProviders = new InitializeModelProviders(configuration);
+            final InitializeModelProviders modelProviders = new InitializeModelProviders(
+                    new File(element.toFileString()));
             final GraphFactory graphFactory = new GraphFactory();
             final ModelGraph runtimeGraph = graphFactory.buildGraph(modelProviders);
 

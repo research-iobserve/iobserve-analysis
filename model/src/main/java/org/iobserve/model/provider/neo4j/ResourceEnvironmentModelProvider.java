@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.model.provider.neo4j;
 
+import java.io.File;
+
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
-
-import kieker.common.configuration.Configuration;
 
 /**
  * Model provider to provide {@link ResourceEnvironment} model.
@@ -41,8 +41,8 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public ResourceEnvironmentModelProvider(final Configuration configuration) {
-        super(configuration);
+    public ResourceEnvironmentModelProvider(final File baseDirectory) {
+        super(baseDirectory);
     }
 
     @Override
@@ -67,8 +67,8 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
     }
 
     @Override
-    protected Graph getModelTypeGraph(final Configuration configuration) {
-        return new GraphLoader(configuration).getResourceEnvironmentModelGraph();
+    protected Graph getModelTypeGraph(final File baseDirectory) {
+        return new GraphLoader(baseDirectory).getResourceEnvironmentModelGraph();
     }
 
 }

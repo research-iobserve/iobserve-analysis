@@ -28,8 +28,6 @@ import org.apache.log4j.Logger;
 import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.data.graph.GraphFactory;
 
-import kieker.common.configuration.Configuration;
-
 /**
  * ToDo .
  *
@@ -52,15 +50,13 @@ public class EvaluationGeneration {
             } else {
                 commandLine = parser.parse(EvaluationGeneration.createOptions(), args);
 
-                final Configuration configuration = new Configuration();
-                configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY,
-                        commandLine.getOptionValue("o"));
+                final File model = new File(commandLine.getOptionValue("o"));
 
                 if (commandLine.hasOption("n")) {
                     EvaluationGeneration.clearDirectory(commandLine.getOptionValue("o"));
                     ModelGeneration.createNewModel(commandLine);
 
-                    final InitializeModelProviders modelProviers = new InitializeModelProviders(configuration);
+                    final InitializeModelProviders modelProviers = new InitializeModelProviders(model);
                     final GraphFactory graphFactory = new GraphFactory();
                     graphFactory.buildGraph(modelProviers);
                 }
@@ -68,7 +64,7 @@ public class EvaluationGeneration {
                     EvaluationGeneration.clearDirectory(commandLine.getOptionValue("o"));
                     ModelModification.createNewModel(commandLine);
 
-                    final InitializeModelProviders modelProviers = new InitializeModelProviders(configuration);
+                    final InitializeModelProviders modelProviers = new InitializeModelProviders(model);
                     final GraphFactory graphFactory = new GraphFactory();
                     graphFactory.buildGraph(modelProviers);
                 }

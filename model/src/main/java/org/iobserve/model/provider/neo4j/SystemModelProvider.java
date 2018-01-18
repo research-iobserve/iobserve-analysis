@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.model.provider.neo4j;
 
+import java.io.File;
+
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
-
-import kieker.common.configuration.Configuration;
 
 /**
  * Model provider to provide {@link System} model.
@@ -40,8 +40,8 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public SystemModelProvider(final Configuration configuration) {
-        super(configuration);
+    public SystemModelProvider(final File baseDirectory) {
+        super(baseDirectory);
     }
 
     @Override
@@ -65,8 +65,8 @@ public final class SystemModelProvider extends AbstractModelProvider<System> {
     }
 
     @Override
-    protected Graph getModelTypeGraph(final Configuration configuration) {
-        return new GraphLoader(configuration).getSystemModelGraph();
+    protected Graph getModelTypeGraph(final File baseDirectory) {
+        return new GraphLoader(baseDirectory).getSystemModelGraph();
     }
 
 }

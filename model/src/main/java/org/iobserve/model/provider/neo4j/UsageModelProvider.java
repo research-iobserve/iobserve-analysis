@@ -15,13 +15,13 @@
  ***************************************************************************/
 package org.iobserve.model.provider.neo4j;
 
+import java.io.File;
+
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
 import org.palladiosimulator.pcm.usagemodel.UserData;
-
-import kieker.common.configuration.Configuration;
 
 /**
  * Model provider to provide a {@link UsageModel}.
@@ -43,8 +43,8 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public UsageModelProvider(final Configuration configuration) {
-        super(configuration);
+    public UsageModelProvider(final File baseDirectory) {
+        super(baseDirectory);
     }
 
     @Override
@@ -87,8 +87,8 @@ public final class UsageModelProvider extends AbstractModelProvider<UsageModel> 
     }
 
     @Override
-    protected Graph getModelTypeGraph(final Configuration configuration) {
-        return new GraphLoader(configuration).getUsageModelGraph();
+    protected Graph getModelTypeGraph(final File baseDirectory) {
+        return new GraphLoader(baseDirectory).getUsageModelGraph();
     }
 
 }

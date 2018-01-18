@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -28,7 +27,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.io.fs.FileUtils;
@@ -39,8 +37,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
-import kieker.common.configuration.Configuration;
-
 /**
  * Test cases for the model provider using an allocation model.
  *
@@ -48,22 +44,16 @@ import kieker.common.configuration.Configuration;
  *
  */
 public class AllocationModelProviderTest implements IModelProviderTest {
-    private static final String GRAPH_DIR = "./testdb";
+    private static final File GRAPH_DIR = new File("./testdb");
 
     private Graph graph;
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
-    @BeforeClass
-    public void before() {
-        final Configuration configuration = new Configuration();
-        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, AllocationModelProviderTest.GRAPH_DIR);
-        this.graph = new GraphLoader(configuration).getAllocationModelGraph();
-    }
-
     @Override
     @Before
     public void clearGraph() {
+        this.graph = new GraphLoader(AllocationModelProviderTest.GRAPH_DIR).getAllocationModelGraph();
         new ModelProvider<>(this.graph).clearGraph();
     }
 
@@ -287,7 +277,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
      */
     @AfterClass
     public static void cleanUp() throws IOException {
-        FileUtils.deleteRecursively(new File(AllocationModelProviderTest.GRAPH_DIR));
+        FileUtils.deleteRecursively(AllocationModelProviderTest.GRAPH_DIR);
     }
 
 }

@@ -18,16 +18,15 @@ package org.iobserve.model.provider.neo4j;
 import java.io.File;
 import java.io.IOException;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 import org.codehaus.plexus.util.FileUtils;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import kieker.common.configuration.Configuration;
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 
 /**
  * Used to load a {@link Graph} including each of the different PCM models.
@@ -38,10 +37,6 @@ import kieker.common.logging.LogFactory;
 public class GraphLoader {
     private static final Log LOG = LogFactory.getLog(GraphLoader.class);
 
-    private static final String PREFIX = "org.iobserve.model";
-
-    public static final String PCM_MODEL_NEO4J_DIRECTORY = GraphLoader.PREFIX + ".pcm.directory.neo4j";
-
     protected static final String VERSION_PREFIX = "_v";
 
     private static final String ALLOCATION_GRAPH_DIR = "allocationmodel";
@@ -51,11 +46,6 @@ public class GraphLoader {
     private static final String USAGE_GRAPH_DIR = "usagemodel";
 
     private final File baseDirectory;
-
-    @Deprecated
-    public GraphLoader(final Configuration configuration) {
-        this.baseDirectory = new File(configuration.getPathProperty(GraphLoader.PCM_MODEL_NEO4J_DIRECTORY));
-    }
 
     /**
      * Creates a graph loader for for Neo4j databases in the specified directory.

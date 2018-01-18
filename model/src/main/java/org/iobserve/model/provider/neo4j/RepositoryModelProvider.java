@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.model.provider.neo4j;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +29,6 @@ import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
-
-import kieker.common.configuration.Configuration;
 
 /**
  * Model provider to provide {@link Repository} model.
@@ -60,8 +59,8 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public RepositoryModelProvider(final Configuration configuration) {
-        super(configuration);
+    public RepositoryModelProvider(final File baseDirectory) {
+        super(baseDirectory);
         this.loadData();
     }
 
@@ -149,8 +148,8 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
     }
 
     @Override
-    protected Graph getModelTypeGraph(final Configuration configuration) {
-        return new GraphLoader(configuration).getRepositoryModelGraph();
+    protected Graph getModelTypeGraph(final File baseDirectory) {
+        return new GraphLoader(baseDirectory).getRepositoryModelGraph();
     }
 
 }

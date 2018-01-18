@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -28,7 +27,6 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.neo4j.io.fs.FileUtils;
 import org.palladiosimulator.pcm.repository.BasicComponent;
@@ -39,30 +37,22 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RepositoryFactory;
 
-import kieker.common.configuration.Configuration;
-
 /**
  * Test cases for the model provider using a repository model.
  *
  * @author Lars Bluemke RepositoryModelProviderTest.GRAPH_DIR
  */
 public class RepositoryModelProviderTest implements IModelProviderTest {
-    private static final String GRAPH_DIR = "./testdb";
+    private static final File GRAPH_DIR = new File("./testdb");
 
     private Graph graph;
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
-    @BeforeClass
-    public void before() {
-        final Configuration configuration = new Configuration();
-        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, RepositoryModelProviderTest.GRAPH_DIR);
-        this.graph = new GraphLoader(configuration).getRepositoryModelGraph();
-    }
-
     @Override
     @Before
     public void clearGraph() {
+        this.graph = new GraphLoader(RepositoryModelProviderTest.GRAPH_DIR).getRepositoryModelGraph();
         new ModelProvider<>(this.graph).clearGraph();
     }
 
@@ -267,7 +257,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
      */
     @AfterClass
     public static void cleanUp() throws IOException {
-        FileUtils.deleteRecursively(new File(RepositoryModelProviderTest.GRAPH_DIR));
+        FileUtils.deleteRecursively(RepositoryModelProviderTest.GRAPH_DIR);
     }
 
 }

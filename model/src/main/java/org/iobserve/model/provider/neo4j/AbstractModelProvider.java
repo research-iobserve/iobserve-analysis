@@ -15,15 +15,16 @@
  ***************************************************************************/
 package org.iobserve.model.provider.neo4j;
 
+import java.io.File;
+
+import de.uka.ipd.sdq.identifier.Identifier;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.iobserve.model.ModelSaveStrategy;
-
-import de.uka.ipd.sdq.identifier.Identifier;
-import kieker.common.configuration.Configuration;
 
 /**
  * Base class for pcm model provider. Implements common methods for loading/saving pcm model.
@@ -39,8 +40,6 @@ import kieker.common.configuration.Configuration;
 @Deprecated
 public abstract class AbstractModelProvider<T extends EObject> {
 
-    /** Configuration. */
-    protected Configuration configuration;
     /** generic model provider. */
     protected final ModelProvider<T> modelProvider;
     /** save strategy of model. */
@@ -56,9 +55,8 @@ public abstract class AbstractModelProvider<T extends EObject> {
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public AbstractModelProvider(final Configuration configuration) {
-        final Graph graph = this.getModelTypeGraph(configuration);
-        this.configuration = configuration;
+    public AbstractModelProvider(final File baseDirectory) {
+        final Graph graph = this.getModelTypeGraph(baseDirectory);
         this.modelProvider = new ModelProvider<>(graph);
         this.loadModel();
     }
@@ -165,10 +163,10 @@ public abstract class AbstractModelProvider<T extends EObject> {
     /**
      * Returns a the graph for the provider's type.
      *
-     * @param configuration
-     *            configuration containing DB root directory
+     * @param baseDirectory
+     *            DB root directory
      * @return DB Graph
      */
-    protected abstract Graph getModelTypeGraph(Configuration configuration);
+    protected abstract Graph getModelTypeGraph(final File baseDirectory);
 
 }

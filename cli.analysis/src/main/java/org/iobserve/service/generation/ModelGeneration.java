@@ -33,8 +33,6 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
-import kieker.common.configuration.Configuration;
-
 /**
  * ToDo .
  *
@@ -66,9 +64,8 @@ public class ModelGeneration {
     }
 
     private static System generateAndSaveSystem(final CommandLine commandLine, final URI outputLocation) {
-        final Configuration configuration = new Configuration();
-        configuration.setProperty(InitializeModelProviders.PCM_MODEL_DIRECTORY, outputLocation.toFileString());
-        final InitializeModelProviders modelProviders = new InitializeModelProviders(configuration);
+        final InitializeModelProviders modelProviders = new InitializeModelProviders(
+                new File(outputLocation.toFileString()));
         final SystemGeneration systemGen = new SystemGeneration(modelProviders.getRepositoryModelProvider().getModel());
         final System systemModel = systemGen.generateSystemModel(Integer.parseInt(commandLine.getOptionValue("a")));
 
