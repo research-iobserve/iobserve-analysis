@@ -45,21 +45,20 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
 public class RepositoryModelProviderTest implements IModelProviderTest {
     private static final File GRAPH_DIR = new File("./testdb");
 
-    private Graph graph;
+    private static Graph graph = new GraphLoader(RepositoryModelProviderTest.GRAPH_DIR).getRepositoryModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
     @Override
     @Before
     public void clearGraph() {
-        this.graph = new GraphLoader(RepositoryModelProviderTest.GRAPH_DIR).getRepositoryModelGraph();
-        new ModelProvider<>(this.graph).clearGraph();
+        new ModelProvider<>(RepositoryModelProviderTest.graph).clearGraph();
     }
 
     @Override
     @Test
     public void createThenCloneThenRead() {
-        final ModelProvider<Repository> modelProvider1 = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> modelProvider1 = new ModelProvider<>(RepositoryModelProviderTest.graph);
         final ModelProvider<Repository> modelProvider2;
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final Repository readModel;
@@ -79,7 +78,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenClearGraph() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
         final Repository writtenModel = new TestModelBuilder().getRepository();
 
         modelProvider.createComponent(writtenModel);
@@ -94,7 +93,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadById() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final Repository readModel;
 
@@ -107,7 +106,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadByName() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final List<Repository> readModels;
 
@@ -122,7 +121,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final List<String> readIds;
 
@@ -138,7 +137,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadRoot() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final Repository readModel;
 
@@ -151,7 +150,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
         final Repository writtenModel = new TestModelBuilder().getRepository();
         final OperationInterface writtenInterface = (OperationInterface) writtenModel.getInterfaces__Repository()
                 .get(0);
@@ -167,7 +166,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final Repository writtenModel = testModelBuilder.getRepository();
         List<EObject> readReferencingComponents;
@@ -188,7 +187,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final Repository writtenModel = testModelBuilder.getRepository();
         final Interface payInterface = testModelBuilder.getPayInterface();
@@ -217,7 +216,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenDeleteComponent() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
         final Repository writtenModel = new TestModelBuilder().getRepository();
 
         modelProvider.createComponent(writtenModel);
@@ -232,7 +231,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenDeleteComponentAndDatatypes() {
-        final ModelProvider<Repository> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<Repository> modelProvider = new ModelProvider<>(RepositoryModelProviderTest.graph);
         final Repository writtenModel = new TestModelBuilder().getRepository();
 
         modelProvider.createComponent(writtenModel);
@@ -246,7 +245,7 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
 
     @After
     public void after() {
-        this.graph.getGraphDatabaseService().shutdown();
+        RepositoryModelProviderTest.graph.getGraphDatabaseService().shutdown();
     }
 
     /**
