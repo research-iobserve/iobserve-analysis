@@ -23,7 +23,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,21 +47,20 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 public class UsageModelProviderTest implements IModelProviderTest {
     private static final File GRAPH_DIR = new File("./testdb");
 
-    private Graph graph;
+    private static Graph graph = new GraphLoader(UsageModelProviderTest.GRAPH_DIR).getUsageModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
     @Override
     @Before
     public void clearGraph() {
-        this.graph = new GraphLoader(UsageModelProviderTest.GRAPH_DIR).getUsageModelGraph();
-        new ModelProvider<>(this.graph).clearGraph();
+        new ModelProvider<>(UsageModelProviderTest.graph).clearGraph();
     }
 
     @Override
     @Test
     public void createThenCloneThenRead() {
-        final ModelProvider<UsageModel> modelProvider1 = new ModelProvider<>(this.graph);
+        final ModelProvider<UsageModel> modelProvider1 = new ModelProvider<>(UsageModelProviderTest.graph);
         final ModelProvider<UsageModel> modelProvider2;
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageModel readModel;
@@ -82,7 +80,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenClearGraph() {
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
 
         modelProvider.createComponent(writtenModel);
@@ -97,8 +95,8 @@ public class UsageModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadById() {
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(this.graph);
-        final ModelProvider<UsageScenario> modelProvider2 = new ModelProvider<>(this.graph);
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph);
+        final ModelProvider<UsageScenario> modelProvider2 = new ModelProvider<>(UsageModelProviderTest.graph);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
         final UsageScenario readScenario;
@@ -113,8 +111,8 @@ public class UsageModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadByName() {
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(this.graph);
-        final ModelProvider<UsageScenario> modelProvider2 = new ModelProvider<>(this.graph);
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph);
+        final ModelProvider<UsageScenario> modelProvider2 = new ModelProvider<>(UsageModelProviderTest.graph);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
         final List<UsageScenario> readScenarios;
@@ -133,8 +131,8 @@ public class UsageModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(this.graph);
-        final ModelProvider<UsageScenario> modelProvider2 = new ModelProvider<>(this.graph);
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph);
+        final ModelProvider<UsageScenario> modelProvider2 = new ModelProvider<>(UsageModelProviderTest.graph);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
         final List<String> readIds;
@@ -152,7 +150,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadRoot() {
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageModel readModel;
 
@@ -165,7 +163,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
         final UsageModel readModel;
@@ -180,7 +178,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final UsageModel writtenModel = testModelBuilder.getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
@@ -203,7 +201,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final UsageModel writtenModel = testModelBuilder.getUsageModel();
         final UsageModel readModel;
@@ -247,7 +245,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenDeleteComponent() {
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
 
@@ -255,12 +253,13 @@ public class UsageModelProviderTest implements IModelProviderTest {
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
-        new ModelProvider<UsageScenario>(this.graph).deleteComponent(UsageScenario.class, writtenScenario.getId());
+        new ModelProvider<UsageScenario>(UsageModelProviderTest.graph).deleteComponent(UsageScenario.class,
+                writtenScenario.getId());
 
         // Manually delete the root node (as it has no id), the double literal node (as it is not
         // contained anywhere) and the proxy nodes (as they are no containments in this graph)
-        try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            this.graph.getGraphDatabaseService().execute(
+        try (Transaction tx = UsageModelProviderTest.graph.getGraphDatabaseService().beginTx()) {
+            UsageModelProviderTest.graph.getGraphDatabaseService().execute(
                     "MATCH (m:UsageModel), (n:DoubleLiteral), (o:OperationSignature), (p:OperationProvidedRole) DELETE n, m, o, p");
             tx.success();
         }
@@ -271,7 +270,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenDeleteComponentAndDatatypes() {
-        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(this.graph);
+        final ModelProvider<UsageModel> modelProvider = new ModelProvider<>(UsageModelProviderTest.graph);
         final UsageModel writtenModel = new TestModelBuilder().getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
 
@@ -279,15 +278,10 @@ public class UsageModelProviderTest implements IModelProviderTest {
 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
-        new ModelProvider<UsageScenario>(this.graph).deleteComponentAndDatatypes(UsageScenario.class,
+        new ModelProvider<UsageScenario>(UsageModelProviderTest.graph).deleteComponentAndDatatypes(UsageScenario.class,
                 writtenScenario.getId(), true);
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
-    }
-
-    @After
-    public void after() {
-        this.graph.getGraphDatabaseService().shutdown();
     }
 
     /**
@@ -298,6 +292,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
      */
     @AfterClass
     public static void cleanUp() throws IOException {
+        UsageModelProviderTest.graph.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(UsageModelProviderTest.GRAPH_DIR);
     }
 

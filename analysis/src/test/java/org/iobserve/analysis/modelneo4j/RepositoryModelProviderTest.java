@@ -23,7 +23,6 @@ import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -243,11 +242,6 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));
     }
 
-    @After
-    public void after() {
-        RepositoryModelProviderTest.graph.getGraphDatabaseService().shutdown();
-    }
-
     /**
      * Remove database directory.
      *
@@ -256,6 +250,8 @@ public class RepositoryModelProviderTest implements IModelProviderTest {
      */
     @AfterClass
     public static void cleanUp() throws IOException {
+        RepositoryModelProviderTest.graph.getGraphDatabaseService().shutdown();
+
         FileUtils.deleteRecursively(RepositoryModelProviderTest.GRAPH_DIR);
     }
 
