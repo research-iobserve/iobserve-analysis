@@ -21,13 +21,13 @@ import teetime.framework.OutputPort;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.Privacy_EJBDeployedEvent;
 import org.iobserve.common.record.Privacy_ServletDeployedEvent;
 import org.iobserve.common.record.ServletDeployedEvent;
+import org.iobserve.model.correspondence.Correspondent;
+import org.iobserve.model.correspondence.ICorrespondence;
 
 /**
  * Maps technology dependent deploy events up to model level PCM deploy events.

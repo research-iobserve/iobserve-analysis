@@ -5,6 +5,7 @@ mainClassName='org.iobserve.service.cli.AnalysisMain'
 dependencies {
 	compile project(":analysis")
 	compile project(":analysis.cli")
+	compile project(":service")
 
 	clover 'org.openclover:clover:4.2.0'
 

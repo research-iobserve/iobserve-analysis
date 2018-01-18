@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment.data;
 
-import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.model.correspondence.Correspondent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**

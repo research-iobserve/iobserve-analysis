@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.test.data;
 
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.CorrespondentFactory;
+import org.iobserve.model.correspondence.Correspondent;
+import org.iobserve.model.correspondence.CorrespondentFactory;
 
 /**
  * @author Reiner Jung

@@ -22,9 +22,9 @@ import java.util.List;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
 import org.iobserve.analysis.userbehavior.builder.SimpleSequenceReference;
+import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
 
 /**
  * Test of the UserBehaviorTransformation.

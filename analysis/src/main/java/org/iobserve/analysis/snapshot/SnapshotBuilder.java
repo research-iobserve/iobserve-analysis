@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.analysis.model.provider.neo4j.AbstractModelProvider;
+import org.iobserve.model.provider.neo4j.AbstractModelProvider;
 
 /**
  * This class creates a copy of the current PCM runtime model. (also called Snapshot) The output
@@ -157,8 +157,8 @@ public class SnapshotBuilder extends AbstractStage {
      * @throws IOException
      *             if the model URI does not exist
      */
-    public void createModelSnapshot(
-            final org.iobserve.analysis.model.provider.file.AbstractModelProvider<?> modelProvider) throws IOException {
+    public void createModelSnapshot(final org.iobserve.model.provider.file.AbstractModelProvider<?> modelProvider)
+            throws IOException {
         if (modelProvider == null) {
             return;
         }

@@ -20,20 +20,22 @@ import java.io.IOException;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
-import teetime.framework.Execution;
+
+import org.iobserve.analysis.ConfigurationException;
+import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.service.CommandLineParameterEvaluation;
 
 /**
  * Collector main class.
  *
  * @author Reiner Jung
  */
-public final class ReplayerMain {
+public final class ReplayerMain extends AbstractServiceMain<ReplayerConfiguration> {
 
     private static final Log LOG = LogFactory.getLog(ReplayerMain.class);
 
@@ -49,6 +51,8 @@ public final class ReplayerMain {
             "--host" }, required = true, description = "Name or IP address of the host where the data is send to.")
     private String hostname;
 
+    private ReplayerConfiguration configuration;
+
     /**
      * This is a simple main class which does not need to be instantiated.
      */
@@ -63,69 +67,29 @@ public final class ReplayerMain {
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        final ReplayerMain main = new ReplayerMain();
-        final JCommander commander = new JCommander(main);
+        new ReplayerMain().run("Replayer", "replayer", args);
+    }
+
+    @Override
+    public void run(final String title, final String label, final String[] args) {
+        super.run(title, label, args);
+        ReplayerMain.LOG.info("Records send " + this.configuration.getCounter().getCount());
+    }
+
+    @Override
+    protected ReplayerConfiguration createConfiguration() throws ConfigurationException {
+        this.configuration = new ReplayerConfiguration(this.dataLocation, this.hostname, this.outputPort);
+        return this.configuration;
+    }
+
+    @Override
+    protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
         try {
-            commander.parse(args);
-            main.execute(commander);
-        } catch (final ParameterException e) {
-            ReplayerMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
+            return CommandLineParameterEvaluation.checkDirectory(this.dataLocation, "Output Kieker directory",
+                    commander);
         } catch (final IOException e) {
-            ReplayerMain.LOG.error(e.getLocalizedMessage());
-            commander.usage();
+            throw new ConfigurationException(e);
         }
     }
 
-    private void execute(final JCommander commander) throws IOException {
-        this.checkDirectory(this.dataLocation, "Output Kieker directory", commander);
-
-        ReplayerMain.LOG.debug("Receiver");
-        final ReplayerConfiguration configuration = new ReplayerConfiguration(this.dataLocation, this.hostname,
-                this.outputPort);
-
-        if (configuration.isOutputConnected()) {
-
-            final Execution<ReplayerConfiguration> analysis = new Execution<>(configuration);
-
-            Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        synchronized (analysis) {
-                            analysis.abortEventually();
-                        }
-                    } catch (final Exception e) { // NOCS
-
-                    }
-                }
-            }));
-
-            ReplayerMain.LOG.info("Running analysis");
-
-            analysis.executeBlocking();
-
-            ReplayerMain.LOG.info("Records send " + configuration.getCounter().getCount());
-
-            ReplayerMain.LOG.info("Done");
-        } else {
-            ReplayerMain.LOG.info("Cannot connect to host.");
-        }
-
-    }
-
-    private void checkDirectory(final File location, final String locationLabel, final JCommander commander)
-            throws IOException {
-        if (!location.exists()) {
-            ReplayerMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
-            commander.usage();
-            System.exit(1);
-        }
-        if (!location.isDirectory()) {
-            ReplayerMain.LOG.error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
-            commander.usage();
-            System.exit(1);
-        }
-
-    }
 }

@@ -21,11 +21,11 @@ import teetime.framework.OutputPort;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.analysis.model.correspondence.Correspondent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
+import org.iobserve.model.correspondence.Correspondent;
+import org.iobserve.model.correspondence.ICorrespondence;
 
 /**
  * Maps technology dependent undeploy events onto model level PCM undeploy events.

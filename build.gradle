@@ -41,7 +41,7 @@ subprojects {
         
     checkstyle {
         configFile = rootProject.file('iobserve-checkstyle-rules.xml')
-        configProperties = [config_loc: "${rootDir}"]
+        configDir = rootProject.file("${rootDir}")
     }
     
     tasks.withType(Checkstyle) {

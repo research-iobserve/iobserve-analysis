@@ -21,7 +21,7 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;

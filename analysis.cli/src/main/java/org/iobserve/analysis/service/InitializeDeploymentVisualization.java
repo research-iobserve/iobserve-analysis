@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.service;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +24,6 @@ import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.analysis.service.services.CommunicationInstanceService;
 import org.iobserve.analysis.service.services.CommunicationService;
 import org.iobserve.analysis.service.services.NodeService;
@@ -31,6 +31,7 @@ import org.iobserve.analysis.service.services.NodegroupService;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.service.services.SystemService;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
@@ -49,7 +50,7 @@ import util.SendHttpRequest;
  * Initializes the deployment visualization by mapping the initial palladio components to
  * visualization elements.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 public final class InitializeDeploymentVisualization {
@@ -108,10 +109,10 @@ public final class InitializeDeploymentVisualization {
      * allocation model and the resource environment model and creates corresponding visualization
      * components, e.g. nodes and services.
      *
-     * @throws Exception
+     * @throws IOException
      *             when post request fails
      */
-    public void initialize() throws Exception {
+    public void initialize() throws IOException {
         // set up the system model and take parts from it
         final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);

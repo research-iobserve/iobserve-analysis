@@ -17,11 +17,6 @@ package org.iobserve.monitoring.probe.servlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
-import kieker.monitoring.core.controller.IMonitoringController;
-import kieker.monitoring.core.controller.MonitoringController;
-import kieker.monitoring.timer.ITimeSource;
 
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
@@ -43,15 +38,7 @@ import org.iobserve.common.record.ServletUndeployedEvent;
  * @author Reiner Jung
  *
  */
-public class DeploymentContextListener implements ServletContextListener {
-
-    /** deployment id constant. */
-    private static final String DEPLOYMENT_ID = "deploymentId";
-
-    /** Kieker monitoring controller. */
-    private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
-    /** Kieker time source. */
-    private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
+public class DeploymentContextListener extends AbstractDeploymentContextListener {
 
     /**
      * initialize context listener.
@@ -60,34 +47,38 @@ public class DeploymentContextListener implements ServletContextListener {
         // nothing to be done here
     }
 
+    /**
+     * Collect data and send monitoring event.
+     *
+     * @param event
+     *            the triggering event
+     */
     @Override
-    public void contextInitialized(final ServletContextEvent event) {
-        if (this.monitoringCtrl.isMonitoringEnabled()) {
-            final ServletContext servletContext = event.getServletContext();
-            final String service = servletContext.getVirtualServerName();
-            final String context = servletContext.getServletContextName();
+    protected void triggerDeployedEvent(final ServletContextEvent event) {
+        final ServletContext servletContext = event.getServletContext();
+        final String service = servletContext.getVirtualServerName();
+        final String context = servletContext.getServletContextName();
 
-            // if (this.monitoringCtrl.isProbeActivated(signature)) {
-            final String deploymentId = servletContext.getInitParameter(DeploymentContextListener.DEPLOYMENT_ID);
-            this.monitoringCtrl.newMonitoringRecord(
-                    new ServletDeployedEvent(this.timeSource.getTime(), service, context, deploymentId));
-            // }
-        }
+        final String deploymentId = servletContext.getInitParameter(AbstractDeploymentContextListener.DEPLOYMENT_ID);
+        this.monitoringCtrl.newMonitoringRecord(
+                new ServletDeployedEvent(this.timeSource.getTime(), service, context, deploymentId));
     }
 
+    /**
+     * Collect data and send monitoring event.
+     *
+     * @param event
+     *            the triggering event
+     */
     @Override
-    public void contextDestroyed(final ServletContextEvent event) {
-        if (this.monitoringCtrl.isMonitoringEnabled()) {
-            final ServletContext servletContext = event.getServletContext();
-            final String service = servletContext.getVirtualServerName();
-            final String context = servletContext.getServletContextName();
+    protected void triggerUndeployedEvent(final ServletContextEvent event) {
+        final ServletContext servletContext = event.getServletContext();
+        final String service = servletContext.getVirtualServerName();
+        final String context = servletContext.getServletContextName();
 
-            // if (this.monitoringCtrl.isProbeActivated(signature)) {
-            final String deploymentId = servletContext.getInitParameter(DeploymentContextListener.DEPLOYMENT_ID);
-            this.monitoringCtrl.newMonitoringRecord(
-                    new ServletUndeployedEvent(this.timeSource.getTime(), service, context, deploymentId));
-            // }
-        }
+        final String deploymentId = servletContext.getInitParameter(AbstractDeploymentContextListener.DEPLOYMENT_ID);
+        this.monitoringCtrl.newMonitoringRecord(
+                new ServletUndeployedEvent(this.timeSource.getTime(), service, context, deploymentId));
     }
 
 }

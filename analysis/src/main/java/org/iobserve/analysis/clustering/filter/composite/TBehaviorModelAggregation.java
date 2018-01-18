@@ -22,8 +22,8 @@ import org.iobserve.analysis.clustering.filter.TBehaviorModelCreation;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelVisualization;
 import org.iobserve.analysis.clustering.filter.TVectorQuantizationClustering;
 import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.writer.AbstractModelOutputFilter;
-import org.iobserve.analysis.writer.BehaviorModelWriter;
+import org.iobserve.analysis.sink.AbstractModelOutputSink;
+import org.iobserve.analysis.sink.BehaviorModelSink;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -68,13 +68,13 @@ public class TBehaviorModelAggregation extends CompositeStage {
         }
 
         /** visualization integration. */
-        AbstractModelOutputFilter tIObserveUBM = null;
+        AbstractModelOutputSink tIObserveUBM = null;
         switch (configuration.getOutputMode()) {
         case UBM_VISUALIZATION:
             tIObserveUBM = new TBehaviorModelVisualization(configuration.getVisualizationUrl(),
                     configuration.getSignatureCreationStrategy());
         case FILE_OUTPUT:
-            tIObserveUBM = new BehaviorModelWriter(configuration.getVisualizationUrl(),
+            tIObserveUBM = new BehaviorModelSink(configuration.getVisualizationUrl(),
                     configuration.getSignatureCreationStrategy());
         default:
             TBehaviorModelAggregation.LOGGER.error("Unknown visualization method " + configuration.getOutputMode());

@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment.data;
 
-import org.iobserve.analysis.model.correspondence.Correspondent;
+import org.iobserve.model.correspondence.Correspondent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
@@ -30,7 +30,7 @@ public class PCMUndeployedEvent {
 
     /**
      * Create an model level undeployed event.
-     * 
+     *
      * @param service
      *            the deployed service
      * @param correspondent

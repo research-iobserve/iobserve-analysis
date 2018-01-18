@@ -23,12 +23,12 @@ import teetime.framework.test.StageTester;
 
 import org.iobserve.analysis.deployment.DeployPCMMapper;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.analysis.test.data.CorrespondenceModelData;
 import org.iobserve.analysis.test.data.ImplementationLevelData;
 import org.iobserve.analysis.test.data.ModelLevelData;
 import org.iobserve.common.record.IDeployedEvent;
+import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
