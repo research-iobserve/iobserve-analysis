@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.model.provider.file;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.SystemPackage;
@@ -25,35 +24,15 @@ import org.palladiosimulator.pcm.system.SystemPackage;
  *
  * @author Robert Heinrich
  * @author Alessandro Giusa
- *
- * @deprecated since 0.0.2 we should use the new neo4j generic provider
- *             {@link org.iobserve.model.provider.neo4j.ModelProvider}
+ * @author Reiner Jung - refactoring & api change
  */
-@Deprecated
-public final class SystemModelProvider extends AbstractModelProvider<System> {
-
-    /**
-     * Create model provider to provide {@link System} model.
-     *
-     * @param uriModelInstance
-     *            uri to model
-     */
-    public SystemModelProvider(final URI uriModelInstance) {
-        super(uriModelInstance);
-        this.loadModel();
-    }
+public final class SystemModelHandler extends AbstractModelHandler<System> {
 
     /**
      * Create an empty model provider.
      */
-    public SystemModelProvider() {
+    public SystemModelHandler() {
         super();
-    }
-
-    @Override
-    public void resetModel() {
-        final org.palladiosimulator.pcm.system.System model = this.getModel();
-        model.getAssemblyContexts__ComposedStructure().clear();
     }
 
     @Override

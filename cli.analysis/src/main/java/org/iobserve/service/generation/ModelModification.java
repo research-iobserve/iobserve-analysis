@@ -24,8 +24,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.model.PCMModelHandler;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -51,16 +51,15 @@ public class ModelModification {
 
         ModelModification.LOG.info("Copying models to new location.");
 
-        InitializeModelProviders modelProviders = new InitializeModelProviders(new File(inputModels.toFileString()));
+        PCMModelHandler modelProviders = new PCMModelHandler(new File(inputModels.toFileString()));
 
         final URI copyURI = ModelModification.copyRepoToOutput(outputLocation, modelProviders);
-        modelProviders = new InitializeModelProviders(new File(copyURI.toFileString()));
+        modelProviders = new PCMModelHandler(new File(copyURI.toFileString()));
 
-        final Allocation allocationModel = modelProviders.getAllocationModelProvider().getModel();
-        final ResourceEnvironment resourceEnvironmentModel = modelProviders.getResourceEnvironmentModelProvider()
-                .getModel();
-        final System systemModel = modelProviders.getSystemModelProvider().getModel();
-        final Repository repositoryModel = modelProviders.getRepositoryModelProvider().getModel();
+        final Allocation allocationModel = modelProviders.getAllocationModel();
+        final ResourceEnvironment resourceEnvironmentModel = modelProviders.getResourceEnvironmentModel();
+        final System systemModel = modelProviders.getSystemModel();
+        final Repository repositoryModel = modelProviders.getRepositoryModel();
 
         final ResourceEnvironmentModification resEnvMod = new ResourceEnvironmentModification(resourceEnvironmentModel);
 
@@ -110,18 +109,15 @@ public class ModelModification {
         }
         ModelModification.LOG.info("Saving models!");
 
-        modelProviders.getRepositoryModelProvider().save();
-        modelProviders.getSystemModelProvider().save();
-        modelProviders.getResourceEnvironmentModelProvider().save();
-        modelProviders.getAllocationModelProvider().save();
+        modelProviders.save(outputLocation);
 
         ModelModification.LOG.info("Modification done!");
     }
 
-    /*
-     * Copys all files to the given output location.
+    /**
+     * Copies all files to the given output location.
      */
-    private static URI copyRepoToOutput(final URI outputLocation, final InitializeModelProviders modelProviders) {
+    private static URI copyRepoToOutput(final URI outputLocation, final PCMModelHandler modelProviders) {
         SnapshotBuilder.setBaseSnapshotURI(outputLocation);
         SnapshotBuilder snapshotBuilder;
         URI snapshotURI = null;

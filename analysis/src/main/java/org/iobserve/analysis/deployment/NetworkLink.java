@@ -25,9 +25,7 @@ import kieker.common.record.flow.trace.TraceMetadata;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.model.provider.neo4j.AllocationModelProvider;
-import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.stages.general.RecordSwitch;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
@@ -36,6 +34,7 @@ import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * TNetworkLink runs asynchronous from the other filters like TAllocation, TDeployment, TEntryCall ,
@@ -57,11 +56,11 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private static final Log LOG = LogFactory.getLog(NetworkLink.class);
 
     /** reference to allocation model provider. */
-    private final AllocationModelProvider allocationModelProvider;
+    private final ModelProvider<Allocation> allocationModelProvider;
     /** reference to system model provider. */
-    private final SystemModelProvider systemModelProvider;
+    private final ModelProvider<System> systemModelProvider;
     /** reference to resource environment model provider. */
-    private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
 
     /**
      * Create new TNetworkLink filter.
@@ -73,9 +72,9 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * @param resourceEnvironmentModelProvider
      *            resource environment provider
      */
-    public NetworkLink(final AllocationModelProvider allocationModelProvider,
-            final SystemModelProvider systemModelProvider,
-            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+    public NetworkLink(final ModelProvider<Allocation> allocationModelProvider,
+            final ModelProvider<System> systemModelProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider) {
         this.allocationModelProvider = allocationModelProvider;
         this.systemModelProvider = systemModelProvider;
         this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
@@ -89,11 +88,11 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      */
     @Override
     protected void execute(final TraceMetadata event) {
-        this.resourceEnvironmentModelProvider.loadModel();
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider
+                .readRootComponent(ResourceEnvironment.class);
 
-        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider.getModel();
-        final org.palladiosimulator.pcm.system.System system = this.systemModelProvider.getModel(true);
-        final Allocation allocation = this.allocationModelProvider.getModel(true);
+        final System system = this.systemModelProvider.readOnlyRootComponent(System.class);
+        final Allocation allocation = this.allocationModelProvider.readOnlyRootComponent(Allocation.class);
         NetworkLink.collectUnLinkedResourceContainer(resourceEnvironment).stream().forEach(unLinkedResCont -> {
             NetworkLink.getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
                     .map(asmCtx -> NetworkLink.getConnectedAsmCtx(system, asmCtx))
@@ -104,8 +103,7 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
                     .forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
         });
 
-        // build the model
-        this.resourceEnvironmentModelProvider.save();
+        this.resourceEnvironmentModelProvider.updateComponent(ResourceEnvironment.class, resourceEnvironment);
     }
 
     /**

@@ -51,12 +51,7 @@ import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.evaluation.ModelComparer;
 import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.AllocationModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
-import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.model.provider.neo4j.SystemModelProvider;
-import org.iobserve.model.provider.neo4j.UsageModelProvider;
 import org.iobserve.planning.CandidateGeneration;
 import org.iobserve.planning.CandidateProcessing;
 import org.iobserve.planning.ModelOptimization;
@@ -66,7 +61,9 @@ import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.iobserve.stages.general.RecordSwitch;
 import org.iobserve.stages.source.TimeTriggerFilter;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 import weka.core.ManhattanDistance;
 
@@ -104,12 +101,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            the resource environment graph provider
      * @param allocationModelProvider
      *            the allocation model provider
-     * @param allocationModelGraphProvider
-     *            the allocation model graph provider
      * @param systemModelProvider
      *            the system model provide
-     * @param systemModelGraphProvider
-     *            the system model graph provider
      * @param varianceOfUserGroups
      *            variance of user groups, configuration for entry event filter
      * @param thinkTime
@@ -134,12 +127,10 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            folder containing deployables
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
-            final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
-            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final AllocationModelProvider allocationModelProvider,
-            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+            final ModelProvider<UsageModel> usageModelProvider, final ModelProvider<Repository> repositoryModelProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final ModelProvider<Allocation> allocationModelProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
             final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,
@@ -151,15 +142,15 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.recordSwitch = new RecordSwitch();
 
         /** allocation. */
-        this.allocation = new AllocationStage(resourceEnvironmentModelGraphProvider);
+        this.allocation = new AllocationStage(resourceEnvironmentModelProvider);
 
         /** deployment. */
-        this.deploymentStage = new DeploymentCompositeStage(configuration, resourceEnvironmentModelGraphProvider,
-                allocationModelGraphProvider, systemModelGraphProvider, correspondenceModel);
+        this.deploymentStage = new DeploymentCompositeStage(configuration, resourceEnvironmentModelProvider,
+                allocationModelProvider, systemModelProvider, correspondenceModel);
 
         /** undeployment. */
-        this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelGraphProvider,
-                allocationModelGraphProvider, systemModelGraphProvider, correspondenceModel);
+        this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
+                allocationModelProvider, systemModelProvider, correspondenceModel);
 
         /** deallocation. */
         // TODO missing

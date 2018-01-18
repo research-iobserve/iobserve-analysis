@@ -29,24 +29,22 @@ import com.beust.jcommander.converters.IntegerConverter;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.ConfigurationException;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.configurations.FileObservationConfiguration;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.AllocationModelProvider;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
-import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.model.provider.neo4j.SystemModelProvider;
-import org.iobserve.model.provider.neo4j.UsageModelProvider;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * Main class for starting the iObserve application.
@@ -163,49 +161,55 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
         final Collection<File> monitoringDataDirectories = new ArrayList<>();
         AnalysisMain.findDirectories(this.monitoringDataDirectory.listFiles(), monitoringDataDirectories);
 
-        final InitializeModelProviders modelProviderPlatform = new InitializeModelProviders(this.pcmModelsDirectory);
+        final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmModelsDirectory);
 
-        final ICorrespondence correspondenceModel = modelProviderPlatform.getCorrespondenceModel();
-        final RepositoryModelProvider repositoryModelProvider = modelProviderPlatform.getRepositoryModelProvider();
-        final UsageModelProvider usageModelProvider = modelProviderPlatform.getUsageModelProvider();
-        final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider = modelProviderPlatform
-                .getResourceEnvironmentModelProvider();
-        final AllocationModelProvider allocationModelProvider = modelProviderPlatform.getAllocationModelProvider();
-        final SystemModelProvider systemModelProvider = modelProviderPlatform.getSystemModelProvider();
+        /** load models from files. */
+        final ICorrespondence correspondenceModel = modelHandler.getCorrespondenceModel();
+        final Repository repositoryModel = modelHandler.getRepositoryModel();
+        final ResourceEnvironment resourceEnvironmentModel = modelHandler.getResourceEnvironmentModel();
+        final Allocation allocationModel = modelHandler.getAllocationModel();
+        final System systemModel = modelHandler.getSystemModel();
+        final UsageModel usageModel = modelHandler.getUsageModel();
 
-        // initialize neo4j graphs
+        /** initialize neo4j graphs. */
         final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
+        Graph repositoryModelGraph = graphLoader.initializeResourceEnvironmentModelGraph(resourceEnvironmentModel);
         Graph resourceEnvironmentModelGraph = graphLoader
-                .initializeResourceEnvironmentModelGraph(resourceEnvironmentModelProvider.getModel());
-        Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(allocationModelProvider.getModel());
-        Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModelProvider.getModel());
+                .initializeResourceEnvironmentModelGraph(resourceEnvironmentModel);
+        Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(allocationModel);
+        Graph systemModelGraph = graphLoader.initializeSystemModelGraph(systemModel);
+        Graph usageModelGraph = graphLoader.initializeUsageModelGraph(usageModel);
 
-        // load neo4j graphs
+        // TODO is this reloading really necessary?
+        /** load neo4j graphs. */
+        repositoryModelGraph = graphLoader.getRepositoryModelGraph();
         resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
         allocationModelGraph = graphLoader.getAllocationModelGraph();
         systemModelGraph = graphLoader.getSystemModelGraph();
+        usageModelGraph = graphLoader.getUsageModelGraph();
 
-        // new graphModelProvider
+        /** new graphModelProvider. */
+        final ModelProvider<Repository> repositoryModelGraphProvider = new ModelProvider<>(repositoryModelGraph);
         final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider = new ModelProvider<>(
                 resourceEnvironmentModelGraph);
         final ModelProvider<Allocation> allocationModelGraphProvider = new ModelProvider<>(allocationModelGraph);
         final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider = new ModelProvider<>(
                 systemModelGraph);
+        final ModelProvider<UsageModel> usageModelGraphProvider = new ModelProvider<>(usageModelGraph);
 
         SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(this.snapshotPath));
         try {
-            final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelProviderPlatform);
+            final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelHandler);
             final URI perOpteryxUri = URI.createFileURI(this.perOpteryxUriPath);
             final URI lqnsUri = URI.createFileURI(this.lqnsUriPath);
             final URI deployablesFolder = URI.createFileURI(this.deployablesFolderPath);
             final CLIEventListener eventListener = new CLIEventListener(this.interactiveMode);
 
-            return new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel, usageModelProvider,
-                    repositoryModelProvider, resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider,
-                    allocationModelProvider, allocationModelGraphProvider, systemModelProvider,
-                    systemModelGraphProvider, this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
-                    this.visualizationServiceURL, this.aggregationType, this.outputMode, snapshotBuilder, perOpteryxUri,
-                    lqnsUri, eventListener, deployablesFolder);
+            return new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel,
+                    usageModelGraphProvider, repositoryModelGraphProvider, resourceEnvironmentModelGraphProvider,
+                    allocationModelGraphProvider, systemModelGraphProvider, this.varianceOfUserGroups, this.thinkTime,
+                    this.closedWorkload, this.visualizationServiceURL, this.aggregationType, this.outputMode,
+                    snapshotBuilder, perOpteryxUri, lqnsUri, eventListener, deployablesFolder);
         } catch (final InitializationException e) {
             throw new ConfigurationException(e);
         }

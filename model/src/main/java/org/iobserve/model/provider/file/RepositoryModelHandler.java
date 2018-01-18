@@ -18,7 +18,6 @@ package org.iobserve.model.provider.file;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Interface;
@@ -36,12 +35,9 @@ import org.palladiosimulator.pcm.repository.RepositoryPackage;
  * @author Robert Heinrich
  * @author Nicolas Boltz
  * @author Alessandro Giusa
- *
- * @deprecated since 0.0.2 we should use the new neo4j generic provider
- *             {@link org.iobserve.model.provider.neo4j.ModelProvider}
+ * @author Reiner Jung - refactoring & api change
  */
-@Deprecated
-public final class RepositoryModelProvider extends AbstractModelProvider<Repository> {
+public final class RepositoryModelHandler extends AbstractModelHandler<Repository> {
 
     /** map of operation interfaces mapped by id. */
     private Map<String, OperationInterface> operationInterfaceMap;
@@ -54,31 +50,22 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
 
     /**
      * Create model provider to provide {@link Repository} model.
-     *
-     * @param uriRepositoryModel
-     *            uri to the model
      */
-    public RepositoryModelProvider(final URI uriRepositoryModel) {
-        super(uriRepositoryModel);
-        this.loadData();
-    }
-
-    @Override
-    public void resetModel() {
-        // nothing to do
+    public RepositoryModelHandler() {
+        super();
     }
 
     /**
      * Loading and initializing the maps for data access.
      */
-    private void loadData() {
+    public void loadData(final Repository model) {
         this.opInfToProvInfMap = new HashMap<>();
         this.opProvidedRoleMap = new HashMap<>();
         this.operationInterfaceMap = new HashMap<>();
         this.operationSignatureMap = new HashMap<>();
 
         // loading OperationProvidedRoles and OperationInterfaces in dedicated maps
-        for (final RepositoryComponent nextRepoCmp : this.getModel().getComponents__Repository()) {
+        for (final RepositoryComponent nextRepoCmp : model.getComponents__Repository()) {
             if (nextRepoCmp instanceof BasicComponent) {
                 final BasicComponent basicCmp = (BasicComponent) nextRepoCmp;
 
@@ -94,7 +81,7 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
         }
 
         // loading OperationInterfaces and OperationSignatures in dedicated maps
-        for (final Interface nextInterface : this.getModel().getInterfaces__Repository()) {
+        for (final Interface nextInterface : model.getInterfaces__Repository()) {
             if (nextInterface instanceof OperationInterface) {
                 final OperationInterface opInf = (OperationInterface) nextInterface;
                 this.operationInterfaceMap.put(opInf.getId(), opInf);

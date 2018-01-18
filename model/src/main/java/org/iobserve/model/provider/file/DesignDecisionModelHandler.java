@@ -15,40 +15,29 @@
  ***************************************************************************/
 package org.iobserve.model.provider.file;
 
-import org.eclipse.emf.common.util.URI;
+import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+import de.uka.ipd.sdq.pcm.designdecision.designdecisionPackage;
+
 import org.eclipse.emf.ecore.EPackage;
-import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
-import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudprofilePackage;
 
 /**
- * Model provider to provide a {@link CloudProfile} model.
+ * Model provider to provide a {@link DecisionSpace} model.
  *
  * @author Tobias Pöppke
- *
- * @deprecated since 0.0.2 we should use the new neo4j generic provider
- *             {@link org.iobserve.model.provider.neo4j.ModelProvider}
+ * @author Reiner Jung - refactoring & api change
  */
-@Deprecated
-public class CloudProfileModelProvider extends AbstractModelProvider<CloudProfile> {
+public class DesignDecisionModelHandler extends AbstractModelHandler<DecisionSpace> {
 
     /**
      * Create a new provider with the given model file.
-     *
-     * @param theUriModelInstance
-     *            path to the model file
      */
-    public CloudProfileModelProvider(final URI theUriModelInstance) {
-        super(theUriModelInstance);
+    public DesignDecisionModelHandler() {
+        super();
     }
 
     @Override
     protected EPackage getPackage() {
-        return CloudprofilePackage.eINSTANCE;
-    }
-
-    @Override
-    public void resetModel() {
-        this.getModel().getCloudProviders().clear();
+        return designdecisionPackage.eINSTANCE;
     }
 
 }
