@@ -1,3 +1,7 @@
+# lbl only for testing
+/lib/**
+/peropteryx-working-dir/**
+
 **/bin/**
 **/build/**
 *.checkstyle

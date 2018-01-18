@@ -19,14 +19,14 @@ import java.io.File;
 
 /**
  * A class for testing.
- * 
+ *
  * @author LarsBlumke
  *
  */
 public class Test {
 
     public static void main(final String[] args) throws Exception {
-        final File workingDir = new File("/Users/LarsBlumke/Desktop/peropteryx-working-dir");
+        final File workingDir = new File("../peropteryx-working-dir");
 
         new PerOpteryxHeadless().launchPeropteryx(workingDir.getName());
 
