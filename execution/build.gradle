@@ -1,7 +1,7 @@
 apply plugin: 'application'
 apply plugin: 'java'
 
-mainClassName = 'org.iobserve.analysis.service.AnalysisMain'
+mainClassName = 'org.iobserve.analysis.service.ExecutionMain'
 
 if (version.isEmpty()) {
 	System.err.println("version not set")
@@ -11,7 +11,7 @@ if (group.isEmpty()) {
 }
 
 dependencies {
-    compile project(":analysis")
+    compile project(":execution")
 	compile project(":service")
 
 	clover 'org.openclover:clover:4.2.0'
@@ -53,6 +53,6 @@ install {
     repositories.mavenInstaller {
         pom.version = version
         pom.groupId = 'org.iobserve'
-        pom.artifactId = 'service.analysis'
+        pom.artifactId = 'service.execution'
     }
 }
