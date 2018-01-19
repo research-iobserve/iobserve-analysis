@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 import org.iobserve.analysis.clustering.filter.models.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.data.UserSession;
+import org.iobserve.analysis.session.data.UserSession;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;

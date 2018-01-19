@@ -21,7 +21,7 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.model.PCMModelHandler;
 
 /**
  * This class contains a model for privacy analysis purposes.
@@ -34,7 +34,7 @@ public class ModelGraph {
 
     private final Set<DeploymentNode> servers;
     private final Set<ComponentNode> components;
-    private final InitializeModelProviders pcmModels;
+    private final PCMModelHandler pcmModels;
 
     /**
      * Create a model graph.
@@ -47,7 +47,7 @@ public class ModelGraph {
      *            all PCM models TODO only use those models which are really necessary
      */
     public ModelGraph(final Collection<DeploymentNode> servers, final Collection<ComponentNode> components,
-            final InitializeModelProviders pcmModels) {
+            final PCMModelHandler pcmModels) {
         this.servers = new HashSet<>(servers);
         this.components = new HashSet<>(components);
         this.pcmModels = pcmModels;
@@ -80,7 +80,7 @@ public class ModelGraph {
     /**
      * @return the pcmModels
      */
-    public InitializeModelProviders getPcmModels() {
+    public PCMModelHandler getPcmModels() {
         return this.pcmModels;
     }
 

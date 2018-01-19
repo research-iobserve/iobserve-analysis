@@ -15,15 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis.service;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.analysis.service.services.CommunicationInstanceService;
 import org.iobserve.analysis.service.services.CommunicationService;
 import org.iobserve.analysis.service.services.NodeService;
@@ -31,6 +29,7 @@ import org.iobserve.analysis.service.services.NodegroupService;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.service.services.SystemService;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
@@ -42,6 +41,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
 import util.Changelog;
 import util.SendHttpRequest;
 
@@ -49,7 +50,7 @@ import util.SendHttpRequest;
  * Initializes the deployment visualization by mapping the initial palladio components to
  * visualization elements.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 public final class InitializeDeploymentVisualization {
@@ -76,10 +77,10 @@ public final class InitializeDeploymentVisualization {
     /**
      * constructor.
      *
-     * @param systemUrl
-     *            Url to send requests for creating a system
-     * @param changelogUrl
-     *            Url to send requests for changelogs
+     * @param visualizationBaseUrl
+     *            Url used for the visualization
+     * @param systemId
+     *            system id
      * @param allocationModelGraphProvider
      *            provider for allocation model
      * @param systemModelGraphProvider
@@ -88,15 +89,16 @@ public final class InitializeDeploymentVisualization {
      *            provider for resource environment model
      * @param usageModelGraphProvider
      *            provider for usage model
+     * @throws MalformedURLException
      */
 
-    public InitializeDeploymentVisualization(final URL systemUrl, final URL changelogUrl,
+    public InitializeDeploymentVisualization(final URL visualizationBaseUrl, final String systemId,
             final ModelProvider<Allocation> allocationModelGraphProvider,
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final ModelProvider<UsageModel> usageModelGraphProvider) {
-        this.systemUrl = systemUrl;
-        this.changelogUrl = changelogUrl;
+            final ModelProvider<UsageModel> usageModelGraphProvider) throws MalformedURLException {
+        this.systemUrl = new URL(visualizationBaseUrl + "/v1/systems/");
+        this.changelogUrl = new URL(this.systemUrl + systemId + "/changelogs");
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
@@ -108,10 +110,10 @@ public final class InitializeDeploymentVisualization {
      * allocation model and the resource environment model and creates corresponding visualization
      * components, e.g. nodes and services.
      *
-     * @throws Exception
+     * @throws IOException
      *             when post request fails
      */
-    public void initialize() throws Exception {
+    public void initialize() throws IOException {
         // set up the system model and take parts from it
         final org.palladiosimulator.pcm.system.System systemModel = this.systemModelGraphProvider
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
@@ -280,7 +282,7 @@ public final class InitializeDeploymentVisualization {
             resourceTargetId = allocationContext.getResourceContainer_AllocationContext().getId();
         }
 
-        if (resourceSourceId != null && resourceTargetId != null) {
+        if ((resourceSourceId != null) && (resourceTargetId != null)) {
             for (int l = 0; l < linkingResources.size(); l++) {
                 final LinkingResource linkingResource = linkingResources.get(l);
                 if (linkingResource instanceof LinkingResourceImpl) {

@@ -23,9 +23,9 @@ import java.util.Optional;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
 import org.iobserve.common.record.IAllocationEvent;
+import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;

@@ -20,9 +20,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.analysis.model.provider.neo4j.Graph;
-import org.iobserve.analysis.model.provider.neo4j.GraphLoader;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.Graph;
+import org.iobserve.model.provider.neo4j.GraphLoader;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -46,7 +46,8 @@ import org.palladiosimulator.pcm.resourcetype.ResourcetypeFactory;
  */
 public class ResourceEnvironmentModelProviderTest implements IModelProviderTest {
     private static final File GRAPH_DIR = new File("./testdb");
-    private static final Graph GRAPH = new GraphLoader(ResourceEnvironmentModelProviderTest.GRAPH_DIR)
+
+    private static Graph graph = new GraphLoader(ResourceEnvironmentModelProviderTest.GRAPH_DIR)
             .getResourceEnvironmentModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
@@ -54,14 +55,14 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Override
     @Before
     public void clearGraph() {
-        new ModelProvider<>(ResourceEnvironmentModelProviderTest.GRAPH).clearGraph();
+        new ModelProvider<>(ResourceEnvironmentModelProviderTest.graph).clearGraph();
     }
 
     @Override
     @Test
     public void createThenCloneThenRead() {
         final ModelProvider<ResourceEnvironment> modelProvider1 = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final ModelProvider<ResourceEnvironment> modelProvider2;
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final ResourceEnvironment readModel;
@@ -82,7 +83,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenClearGraph() {
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
 
         modelProvider.createComponent(writtenModel);
@@ -98,9 +99,9 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadById() {
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final ModelProvider<ResourceContainer> modelProvider2 = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final ResourceContainer writtenContainer = writtenModel.getResourceContainer_ResourceEnvironment().get(0);
         final ResourceContainer readContainer;
@@ -117,7 +118,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadByName() {
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final List<ResourceEnvironment> readModels;
 
@@ -135,9 +136,9 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadByType() {
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final ModelProvider<ResourceContainer> modelProvider2 = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final List<ResourceContainer> writtenContainers = writtenModel.getResourceContainer_ResourceEnvironment();
         final List<String> readIds;
@@ -166,7 +167,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadRoot() {
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final ResourceEnvironment readModel;
 
@@ -180,7 +181,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadContaining() {
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final ResourceContainer writtenContainer = writtenModel.getResourceContainer_ResourceEnvironment().get(0);
         final ResourceEnvironment readModel;
@@ -196,7 +197,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadReferencing() {
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
         List<EObject> readReferencingComponents;
@@ -219,7 +220,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenUpdateThenReadUpdated() {
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
         final ResourceContainer orderServer = testModelBuilder.getOrderServer();
@@ -272,7 +273,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenDeleteComponent() {
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
 
         modelProvider.createComponent(writtenModel);
@@ -280,19 +281,19 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
         for (final LinkingResource lr : writtenModel.getLinkingResources__ResourceEnvironment()) {
-            new ModelProvider<LinkingResource>(ResourceEnvironmentModelProviderTest.GRAPH)
+            new ModelProvider<LinkingResource>(ResourceEnvironmentModelProviderTest.graph)
                     .deleteComponent(LinkingResource.class, lr.getId());
         }
 
         for (final ResourceContainer rc : writtenModel.getResourceContainer_ResourceEnvironment()) {
-            new ModelProvider<ResourceContainer>(ResourceEnvironmentModelProviderTest.GRAPH)
+            new ModelProvider<ResourceContainer>(ResourceEnvironmentModelProviderTest.graph)
                     .deleteComponent(ResourceContainer.class, rc.getId());
         }
 
         // Manually delete the root node (as it has no id) and the resource type nodes (as they are
         // no containments anywhere)
-        try (Transaction tx = ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
-            ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().execute(
+        try (Transaction tx = ResourceEnvironmentModelProviderTest.graph.getGraphDatabaseService().beginTx()) {
+            ResourceEnvironmentModelProviderTest.graph.getGraphDatabaseService().execute(
                     "MATCH (m:ResourceEnvironment), (n:ProcessingResourceType), (o:CommunicationLinkResourceType) DELETE n, m, o");
             tx.success();
         }
@@ -304,7 +305,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenDeleteComponentAndDatatypes() {
         final ModelProvider<ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.GRAPH);
+                ResourceEnvironmentModelProviderTest.graph);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
 
         modelProvider.createComponent(writtenModel);
@@ -312,12 +313,12 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
         for (final LinkingResource lr : writtenModel.getLinkingResources__ResourceEnvironment()) {
-            new ModelProvider<LinkingResource>(ResourceEnvironmentModelProviderTest.GRAPH)
+            new ModelProvider<LinkingResource>(ResourceEnvironmentModelProviderTest.graph)
                     .deleteComponentAndDatatypes(LinkingResource.class, lr.getId(), true);
         }
 
         for (final ResourceContainer rc : writtenModel.getResourceContainer_ResourceEnvironment()) {
-            new ModelProvider<ResourceContainer>(ResourceEnvironmentModelProviderTest.GRAPH)
+            new ModelProvider<ResourceContainer>(ResourceEnvironmentModelProviderTest.graph)
                     .deleteComponentAndDatatypes(ResourceContainer.class, rc.getId(), true);
         }
 
@@ -332,7 +333,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
      */
     @AfterClass
     public static void cleanUp() throws IOException {
-        ResourceEnvironmentModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
+        ResourceEnvironmentModelProviderTest.graph.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(ResourceEnvironmentModelProviderTest.GRAPH_DIR);
     }
 

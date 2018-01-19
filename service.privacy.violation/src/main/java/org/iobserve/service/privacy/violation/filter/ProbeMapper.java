@@ -18,7 +18,7 @@ package org.iobserve.service.privacy.violation.filter;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
+import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.service.privacy.violation.data.ProbeLocation;
 
 /**

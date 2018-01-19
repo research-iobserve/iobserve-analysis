@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.adaptation.data;
 
-import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.model.PCMModelHandler;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -30,11 +30,12 @@ import org.palladiosimulator.pcm.system.System;
  * {@link AssemblyContextActionFactory} and {@link ResourceContainerActionFactory} directly.
  *
  * @author Philipp Weimann
+ * @author Reiner Jung - fix naming and api change
  */
 public class ActionFactory {
 
-    private static InitializeModelProviders runtimeModels;
-    private static InitializeModelProviders redeploymentModels;
+    private static PCMModelHandler runtimeModelHandler;
+    private static PCMModelHandler redeploymentModelHandler;
 
     /*
      * ////////// HELPERS //////////
@@ -87,19 +88,19 @@ public class ActionFactory {
         return resContainer;
     }
 
-    public static InitializeModelProviders getRuntimeModels() {
-        return ActionFactory.runtimeModels;
+    public static PCMModelHandler getRuntimeModels() {
+        return ActionFactory.runtimeModelHandler;
     }
 
-    public static void setRuntimeModels(final InitializeModelProviders runtimeModels) {
-        ActionFactory.runtimeModels = runtimeModels;
+    public static void setRuntimeModels(final PCMModelHandler runtimeModels) {
+        ActionFactory.runtimeModelHandler = runtimeModels;
     }
 
-    public static InitializeModelProviders getRedeploymentModels() {
-        return ActionFactory.redeploymentModels;
+    public static PCMModelHandler getRedeploymentModels() {
+        return ActionFactory.redeploymentModelHandler;
     }
 
-    public static void setRedeploymentModels(final InitializeModelProviders redeploymentModels) {
-        ActionFactory.redeploymentModels = redeploymentModels;
+    public static void setRedeploymentModels(final PCMModelHandler redeploymentModels) {
+        ActionFactory.redeploymentModelHandler = redeploymentModels;
     }
 }

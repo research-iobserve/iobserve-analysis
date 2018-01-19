@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.traces;
 
-import org.iobserve.analysis.data.UserSession;
+import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
 
 import teetime.framework.AbstractConsumerStage;

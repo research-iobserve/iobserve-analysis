@@ -23,9 +23,9 @@ import teetime.framework.OutputPort;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.analysis.model.factory.AllocationModelFactory;
-import org.iobserve.analysis.model.factory.SystemModelFactory;
-import org.iobserve.analysis.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.factory.AllocationModelFactory;
+import org.iobserve.model.factory.SystemModelFactory;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 

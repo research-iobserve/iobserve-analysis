@@ -23,9 +23,10 @@ import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 
 import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.model.correspondence.ICorrespondence;
-import org.iobserve.analysis.model.provider.neo4j.RepositoryModelProvider;
-import org.iobserve.analysis.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.palladiosimulator.pcm.repository.Repository;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * Distribute EntryCallSequences to both BehaviorModel generations for evaluation purposes.
@@ -58,9 +59,9 @@ public class BehaviorModelComparison extends CompositeStage {
      */
 
     public BehaviorModelComparison(final BehaviorModelConfiguration configuration,
-            final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
-            final RepositoryModelProvider repositoryModelProvider, final int varianceOfUserGroups, final int thinkTime,
-            final boolean closedWorkload) {
+            final ICorrespondence correspondenceModel, final ModelProvider<UsageModel> usageModelProvider,
+            final ModelProvider<Repository> repositoryModelProvider, final int varianceOfUserGroups,
+            final int thinkTime, final boolean closedWorkload) {
 
         // cdor userbehavior
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
@@ -70,6 +71,7 @@ public class BehaviorModelComparison extends CompositeStage {
 
         this.connectPorts(this.distributor.getNewOutputPort(), tBehaviorModel.getInputPort());
 
+        // TODO make both options available. use different composite stages for it.
         // iobserve user behavior
         // final TEntryEventSequence tEntryEventSequence = new
         // TEntryEventSequence(correspondenceModel, usageModelProvider,
