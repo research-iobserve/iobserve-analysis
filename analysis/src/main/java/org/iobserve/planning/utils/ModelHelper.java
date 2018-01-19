@@ -25,12 +25,11 @@ import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
 import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.factory.CostModelFactory;
 import org.iobserve.model.factory.ResourceEnvironmentCloudFactory;
-import org.iobserve.model.provider.file.CloudProfileModelProvider;
-import org.iobserve.model.provider.file.CostModelProvider;
-import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.model.provider.file.CostModelHandler;
+import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProfile;
@@ -233,29 +232,30 @@ public final class ModelHelper {
      * profile, this method creates one resource container representing an instance of this specific
      * vm type. The model is saved after the creation of containers is completed.
      *
-     * @param modelProviders
+     * @param writeURI
+     *            location where all files are stored
+     * @param modelHandler
      *            the model providers with an initialized resource environment, cost model and cloud
      *            profile
      */
-    public static void fillResourceEnvironmentFromCloudProfile(final InitializeModelProviders modelProviders) {
-        final ResourceEnvironmentModelProvider resourceProvider = modelProviders.getResourceEnvironmentModelProvider();
-        final CloudProfileModelProvider cloudProfileProvider = modelProviders.getCloudProfileModelProvider();
-        final CostModelProvider costProvider = modelProviders.getCostModelProvider();
+    public static void fillResourceEnvironmentFromCloudProfile(final org.eclipse.emf.common.util.URI writeURI,
+            final PCMModelHandler modelHandler) {
+        final ResourceEnvironment environment = modelHandler.getResourceEnvironmentModel();
+        final CloudProfile cloudProfileModel = modelHandler.getCloudProfileModel();
+        final CostRepository costRepositoryModel = modelHandler.getCostModel();
 
-        final ResourceEnvironment environment = resourceProvider.getModel();
-        final CostRepository costRepository = costProvider.getModel();
-
-        for (final CloudProvider provider : cloudProfileProvider.getModel().getCloudProviders()) {
+        for (final CloudProvider provider : cloudProfileModel.getCloudProviders()) {
             for (final CloudResourceType cloudResource : provider.getCloudResources()) {
                 if (cloudResource instanceof VMType) {
                     final VMType cloudVM = (VMType) cloudResource;
-                    ModelHelper.createResourceContainerFromVMType(environment, costRepository, cloudVM,
+                    ModelHelper.createResourceContainerFromVMType(environment, costRepositoryModel, cloudVM,
                             cloudVM.getName());
                 }
             }
         }
-        resourceProvider.save();
-        costProvider.save();
+        new ResourceEnvironmentModelHandler()
+                .save(writeURI.appendFileExtension(PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX), environment);
+        new CostModelHandler().save(writeURI.appendFileExtension(PCMModelHandler.COST_SUFFIX), costRepositoryModel);
     }
 
     /**
@@ -300,7 +300,7 @@ public final class ModelHelper {
      *            the hostname to convert
      * @return the new cloud container or null in case of a problem
      */
-    public static ResourceContainerCloud getResourceContainerFromHostname(final InitializeModelProviders modelProviders,
+    public static ResourceContainerCloud getResourceContainerFromHostname(final PCMModelHandler modelProviders,
             final String hostname) {
         final String[] nameParts = hostname.split("_");
 
@@ -314,12 +314,11 @@ public final class ModelHelper {
             final String location = nameParts[3];
             final String instanceType = nameParts[4];
 
-            vmType = ModelHelper.getVMType(modelProviders.getCloudProfileModelProvider(), providerName, location,
-                    instanceType);
+            vmType = ModelHelper.getVMType(modelProviders.getCloudProfileModel(), providerName, location, instanceType);
 
             if (vmType != null) {
-                final ResourceEnvironment environment = modelProviders.getResourceEnvironmentModelProvider().getModel();
-                final CostRepository costRepository = modelProviders.getCostModelProvider().getModel();
+                final ResourceEnvironment environment = modelProviders.getResourceEnvironmentModel();
+                final CostRepository costRepository = modelProviders.getCostModel();
 
                 final ResourceContainerCloud cloudContainer = ModelHelper.createResourceContainerFromVMType(environment,
                         costRepository, vmType, hostname);
@@ -330,11 +329,9 @@ public final class ModelHelper {
         return null;
     }
 
-    private static VMType getVMType(final CloudProfileModelProvider cloudProfileProvider,
-            final String cloudProviderName, final String location, final String instanceType) {
-        final CloudProfile profile = cloudProfileProvider.getModel();
-
-        final CloudProvider cloudProvider = profile.getCloudProviders().stream()
+    private static VMType getVMType(final CloudProfile cloudProfileModel, final String cloudProviderName,
+            final String location, final String instanceType) {
+        final CloudProvider cloudProvider = cloudProfileModel.getCloudProviders().stream()
                 .filter(provider -> provider.getName().equals(cloudProviderName)).findFirst().orElse(null);
 
         if (cloudProvider != null) {

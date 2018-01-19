@@ -44,20 +44,21 @@ import org.palladiosimulator.pcm.system.System;
 public class SystemModelProviderTest implements IModelProviderTest {
 
     private static final File GRAPH_DIR = new File("./testdb");
-    private static final Graph GRAPH = new GraphLoader(SystemModelProviderTest.GRAPH_DIR).getSystemModelGraph();
+
+    private static final Graph graph = new GraphLoader(SystemModelProviderTest.GRAPH_DIR).getSystemModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 
     @Override
     @Before
     public void clearGraph() {
-        new ModelProvider<>(SystemModelProviderTest.GRAPH).clearGraph();
+        new ModelProvider<>(SystemModelProviderTest.graph).clearGraph();
     }
 
     @Override
     @Test
     public void createThenCloneThenRead() {
-        final ModelProvider<System> modelProvider1 = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final ModelProvider<System> modelProvider1 = new ModelProvider<>(SystemModelProviderTest.graph);
         final ModelProvider<System> modelProvider2;
         final System writtenModel = new TestModelBuilder().getSystem();
         final System readModel;
@@ -77,7 +78,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenClearGraph() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.graph);
         final System writtenModel = new TestModelBuilder().getSystem();
 
         modelProvider.createComponent(writtenModel);
@@ -92,7 +93,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadById() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.graph);
         final System writtenModel = new TestModelBuilder().getSystem();
         final System readModel;
 
@@ -105,7 +106,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadByName() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.graph);
         final System writtenModel = new TestModelBuilder().getSystem();
         final List<System> readModels;
 
@@ -120,7 +121,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadByType() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.graph);
         final System writtenModel = new TestModelBuilder().getSystem();
         final List<String> readIds;
 
@@ -136,7 +137,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadRoot() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.graph);
         final System writtenModel = new TestModelBuilder().getSystem();
         final System readModel;
 
@@ -149,7 +150,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadContaining() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.graph);
         final System writtenModel = new TestModelBuilder().getSystem();
         final System readModel;
         final AssemblyContext ac = writtenModel.getAssemblyContexts__ComposedStructure().get(0);
@@ -163,7 +164,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenReadReferencing() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final System writtenModel = testModelBuilder.getSystem();
         final List<EObject> expectedReferencingComponents = new LinkedList<>();
@@ -188,7 +189,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenUpdateThenReadUpdated() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final System writtenModel = testModelBuilder.getSystem();
         System readModel;
@@ -237,7 +238,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenDeleteComponent() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.graph);
         final System writtenModel = new TestModelBuilder().getSystem();
 
         modelProvider.createComponent(writtenModel);
@@ -247,8 +248,8 @@ public class SystemModelProviderTest implements IModelProviderTest {
         modelProvider.deleteComponent(System.class, writtenModel.getId());
 
         // Manually delete the proxy nodes from the repository model
-        try (Transaction tx = SystemModelProviderTest.GRAPH.getGraphDatabaseService().beginTx()) {
-            SystemModelProviderTest.GRAPH.getGraphDatabaseService()
+        try (Transaction tx = SystemModelProviderTest.graph.getGraphDatabaseService().beginTx()) {
+            SystemModelProviderTest.graph.getGraphDatabaseService()
                     .execute("MATCH (n:OperationProvidedRole), (m:OperationRequiredRole) DELETE n, m");
             tx.success();
         }
@@ -259,7 +260,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
     @Override
     @Test
     public void createThenDeleteComponentAndDatatypes() {
-        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.GRAPH);
+        final ModelProvider<System> modelProvider = new ModelProvider<>(SystemModelProviderTest.graph);
         final System writtenModel = new TestModelBuilder().getSystem();
 
         modelProvider.createComponent(writtenModel);
@@ -279,7 +280,7 @@ public class SystemModelProviderTest implements IModelProviderTest {
      */
     @AfterClass
     public static void cleanUp() throws IOException {
-        SystemModelProviderTest.GRAPH.getGraphDatabaseService().shutdown();
+        SystemModelProviderTest.graph.getGraphDatabaseService().shutdown();
         FileUtils.deleteRecursively(SystemModelProviderTest.GRAPH_DIR);
     }
 

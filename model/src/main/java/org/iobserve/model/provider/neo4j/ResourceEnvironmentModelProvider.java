@@ -41,8 +41,8 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public ResourceEnvironmentModelProvider(final File neo4jPcmModelDirectory) {
-        super(neo4jPcmModelDirectory);
+    public ResourceEnvironmentModelProvider(final File baseDirectory) {
+        super(baseDirectory);
     }
 
     @Override
@@ -50,8 +50,7 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
         this.model = this.modelProvider.readRootComponent(ResourceEnvironment.class);
 
         if (this.model == null) {
-            AbstractModelProvider.LOG
-                    .debug("Model at " + this.neo4jPcmModelDirectory.getAbsolutePath() + "could not be loaded!");
+            AbstractModelProvider.LOG.debug("Resource environment could not be loaded!");
         }
     }
 
@@ -68,8 +67,8 @@ public final class ResourceEnvironmentModelProvider extends AbstractModelProvide
     }
 
     @Override
-    protected Graph getModelTypeGraph(final File neo4jPcmModelDirectory) {
-        return new GraphLoader(neo4jPcmModelDirectory).getResourceEnvironmentModelGraph();
+    protected Graph getModelTypeGraph(final File baseDirectory) {
+        return new GraphLoader(baseDirectory).getResourceEnvironmentModelGraph();
     }
 
 }

@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.InitializeModelProviders;
+import org.iobserve.model.PCMModelHandler;
 import org.iobserve.planning.ModelTransformer;
 import org.iobserve.planning.data.PlanningData;
 import org.iobserve.planning.environment.PalladioEclipseEnvironment;
@@ -132,8 +132,9 @@ public final class PlanningMain {
             }
         } else {
             PlanningMain.LOG.info("Creating ResourceEnvironment...");
-            final InitializeModelProviders modelProviders = new InitializeModelProviders(new File(workingDir));
-            ModelHelper.fillResourceEnvironmentFromCloudProfile(modelProviders);
+            final PCMModelHandler modelHandler = new PCMModelHandler(new File(workingDir));
+            ModelHelper.fillResourceEnvironmentFromCloudProfile(
+                    org.eclipse.emf.common.util.URI.createFileURI(workingDir), modelHandler);
             PlanningMain.LOG.info("ResourceEnvironment successfully created.");
         }
     }

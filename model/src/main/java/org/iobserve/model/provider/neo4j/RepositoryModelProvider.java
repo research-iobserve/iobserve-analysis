@@ -59,8 +59,8 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public RepositoryModelProvider(final File neo4jPcmModelDirectory) {
-        super(neo4jPcmModelDirectory);
+    public RepositoryModelProvider(final File baseDirectory) {
+        super(baseDirectory);
         this.loadData();
     }
 
@@ -112,8 +112,7 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
         this.model = this.modelProvider.readRootComponent(Repository.class);
 
         if (this.model == null) {
-            AbstractModelProvider.LOG
-                    .debug("Model at " + this.neo4jPcmModelDirectory.getAbsolutePath() + " could not be loaded!");
+            AbstractModelProvider.LOG.debug("Repository model could not be loaded!");
         }
     }
 
@@ -149,8 +148,8 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
     }
 
     @Override
-    protected Graph getModelTypeGraph(final File neo4jPcmModelDirectory) {
-        return new GraphLoader(neo4jPcmModelDirectory).getRepositoryModelGraph();
+    protected Graph getModelTypeGraph(final File baseDirectory) {
+        return new GraphLoader(baseDirectory).getRepositoryModelGraph();
     }
 
 }

@@ -18,38 +18,26 @@ package org.iobserve.model.provider.file;
 import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarations;
 import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarationsPackage;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 
 /**
  * TODO add description.
  *
  * @author unkown
- *
- * @deprecated since 0.0.2 we should use the new neo4j generic provider
- *             {@link org.iobserve.model.provider.neo4j.ModelProvider}
+ * @author Reiner Jung - refactoring & api change
  */
-@Deprecated
-public class QMLDeclarationsModelProvider extends AbstractModelProvider<QMLDeclarations> {
+public class QMLDeclarationsModelHandler extends AbstractModelHandler<QMLDeclarations> {
 
     /**
      * Create a QML declaration model provider.
-     *
-     * @param theUriModelInstance
-     *            reference to the model
      */
-    public QMLDeclarationsModelProvider(final URI theUriModelInstance) {
-        super(theUriModelInstance);
+    public QMLDeclarationsModelHandler() {
+        super();
     }
 
     @Override
     protected EPackage getPackage() {
         return QMLDeclarationsPackage.eINSTANCE;
-    }
-
-    @Override
-    public void resetModel() {
-        this.getModel().getQmlDeclarations().clear();
     }
 
 }

@@ -40,8 +40,6 @@ import org.iobserve.model.ModelSaveStrategy;
 @Deprecated
 public abstract class AbstractModelProvider<T extends EObject> {
 
-    /** database location. */
-    protected File neo4jPcmModelDirectory;
     /** generic model provider. */
     protected final ModelProvider<T> modelProvider;
     /** save strategy of model. */
@@ -57,9 +55,8 @@ public abstract class AbstractModelProvider<T extends EObject> {
      * @param neo4jPcmModelDirectory
      *            DB root directory
      */
-    public AbstractModelProvider(final File neo4jPcmModelDirectory) {
-        final Graph graph = this.getModelTypeGraph(neo4jPcmModelDirectory);
-        this.neo4jPcmModelDirectory = neo4jPcmModelDirectory;
+    public AbstractModelProvider(final File baseDirectory) {
+        final Graph graph = this.getModelTypeGraph(baseDirectory);
         this.modelProvider = new ModelProvider<>(graph);
         this.loadModel();
     }
@@ -166,10 +163,10 @@ public abstract class AbstractModelProvider<T extends EObject> {
     /**
      * Returns a the graph for the provider's type.
      *
-     * @param neo4jPcmModelDirectory
+     * @param baseDirectory
      *            DB root directory
      * @return DB Graph
      */
-    protected abstract Graph getModelTypeGraph(File neo4jPcmModelDirectory);
+    protected abstract Graph getModelTypeGraph(final File baseDirectory);
 
 }

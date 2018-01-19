@@ -17,18 +17,7 @@ package org.iobserve.analysis.service;
 
 import java.io.File;
 import java.io.IOException;
-
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.ParameterException;
-import com.beust.jcommander.converters.FileConverter;
-import com.beust.jcommander.converters.IntegerConverter;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
+import java.net.URL;
 
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
@@ -48,6 +37,17 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.OperationInterface;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
+import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
+
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
 
 /**
  * Main class for starting the iObserve application. This class is mainly meant as an example of the
@@ -172,7 +172,7 @@ public final class AnalysisMainNeo4j {
 
                 /** Neo4j database ************************************************************/
                 // Create a graph loader to receive the different neo4j graphs for each model
-                final GraphLoader graphLoader = new GraphLoader(this.pcmModelsNeo4jDirectory);
+                final GraphLoader graphLoader = new GraphLoader(configuration);
 
                 // If you use the database for the very first time the graphs will be empty. You can
                 // initialize the graph with a model from an old provider. Note: The initialization
@@ -245,14 +245,13 @@ public final class AnalysisMainNeo4j {
                     deployablesFolder = URI.createFileURI(this.deployablesFolderPath);
                 }
 
-                final Configuration configuration = new ServiceConfiguration(this.listenPort, outputHostname,
-                        outputPort, "", this.varianceOfUserGroups, this.thinkTime, this.closedWorkload,
-                        correspondenceModel, usageModelProvider, repositoryModelProvider,
-                        resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider,
-                        resourceEnvironmentModelGraphProvider, resourceContainerModelGraphProvider,
-                        allocationModelGraphProvider, assemblyContextModelGraphProvider, systemModelGraphProvider,
-                        assCtxSystemModelGraphProvider, this.visualizationServiceURL, snapshotBuilder, perOpteryxUri,
-                        lqnsUri, deployablesFolder);
+                final Configuration configuration = new ServiceConfiguration(this.listenPort, new URL(""), "",
+                        this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
+                        usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
+                        allocationModelProvider, systemModelProvider, resourceEnvironmentModelGraphProvider,
+                        resourceContainerModelGraphProvider, allocationModelGraphProvider,
+                        assemblyContextModelGraphProvider, systemModelGraphProvider, assCtxSystemModelGraphProvider,
+                        this.visualizationServiceURL, snapshotBuilder, perOpteryxUri, lqnsUri, deployablesFolder);
 
                 AnalysisMainNeo4j.LOG.info("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);

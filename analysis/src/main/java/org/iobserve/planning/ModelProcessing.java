@@ -21,8 +21,8 @@ import teetime.stage.basic.AbstractTransformation;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.model.PCMModelHandler;
 import org.iobserve.planning.data.PlanningData;
 
 /**
@@ -66,8 +66,9 @@ public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
         planningData.setOriginalModelDir(element);
         planningData.setLqnsDir(this.lqnsDir);
 
-        final InitializeModelProviders models = new InitializeModelProviders(
-                new File(adaptationData.getRuntimeModelURI().toFileString()));
+        final File directory = new File(adaptationData.getReDeploymentURI().toFileString());
+
+        final PCMModelHandler models = new PCMModelHandler(directory);
         final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER, models);
 
         final URI snapshotLocation = snapshotBuilder.createSnapshot();

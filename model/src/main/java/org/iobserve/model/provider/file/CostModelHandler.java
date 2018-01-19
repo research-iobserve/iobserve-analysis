@@ -18,38 +18,25 @@ package org.iobserve.model.provider.file;
 import de.uka.ipd.sdq.pcm.cost.CostRepository;
 import de.uka.ipd.sdq.pcm.cost.costPackage;
 
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 
 /**
  * Model provider to provide a {@link CostRepository} model.
  *
  * @author Tobias Pöppke
- *
- * @deprecated since 0.0.2 we should use the new neo4j generic provider
- *             {@link org.iobserve.model.provider.neo4j.ModelProvider}
+ * @author Reiner Jung - refactoring & api change
  */
-@Deprecated
-public class CostModelProvider extends AbstractModelProvider<CostRepository> {
+public class CostModelHandler extends AbstractModelHandler<CostRepository> {
 
     /**
      * Create a new provider with the given model file.
-     *
-     * @param theUriModelInstance
-     *            path to the model file
      */
-    public CostModelProvider(final URI theUriModelInstance) {
-        super(theUriModelInstance);
+    public CostModelHandler() {
     }
 
     @Override
     protected EPackage getPackage() {
         return costPackage.eINSTANCE;
-    }
-
-    @Override
-    public void resetModel() {
-        this.getModel().getCost().clear();
     }
 
 }

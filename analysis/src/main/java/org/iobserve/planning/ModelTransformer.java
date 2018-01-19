@@ -26,14 +26,13 @@ import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.factory.DesignDecisionModelFactory;
-import org.iobserve.model.provider.file.CloudProfileModelProvider;
-import org.iobserve.model.provider.file.CostModelProvider;
-import org.iobserve.model.provider.file.DesignDecisionModelProvider;
-import org.iobserve.model.provider.neo4j.AllocationModelProvider;
-import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
+import org.iobserve.model.provider.file.AllocationModelHandler;
+import org.iobserve.model.provider.file.CostModelHandler;
+import org.iobserve.model.provider.file.DesignDecisionModelHandler;
+import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
 import org.iobserve.planning.data.AllocationGroup;
 import org.iobserve.planning.data.AllocationGroupsContainer;
 import org.iobserve.planning.data.PlanningData;
@@ -62,16 +61,18 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 public class ModelTransformer {
 
     private final PlanningData planningData;
-    private final InitializeModelProviders originalModelProviders;
-    private InitializeModelProviders processedModelProviders;
+    private final PCMModelHandler originalModelHandler;
+    private PCMModelHandler processedModelHandler;
 
     private AllocationGroupsContainer originalAllocationGroups;
+    private Allocation allocationModel;
+    private CloudProfile cloudProfileModel;
+    private CostRepository costModel;
+    private ResourceEnvironment resourceEnvironmentModel;
+    private DecisionSpace decisionModel;
+    private DecisionSpace decisionSpace;
 
-    private AllocationModelProvider allocationProvider;
-    private CostModelProvider costProvider;
-    private ResourceEnvironmentModelProvider resourceProvider;
-    private CloudProfileModelProvider cloudProfileProvider;
-    private DesignDecisionModelProvider decisionProvider;
+    private URI processedModelDir;
 
     /**
      * Constructs a new model transformer with the given planning data and updates the planning data
@@ -83,7 +84,9 @@ public class ModelTransformer {
     public ModelTransformer(final PlanningData planningData) {
         this.planningData = planningData;
         final String originalModelDir = planningData.getOriginalModelDir().toFileString();
-        this.originalModelProviders = new InitializeModelProviders(new File(originalModelDir));
+        final File directory = new File(originalModelDir);
+
+        this.originalModelHandler = new PCMModelHandler(directory);
     }
 
     /**
@@ -113,76 +116,78 @@ public class ModelTransformer {
     }
 
     private void initModelTransformation() throws IOException, InitializationException {
-        final URI processedModelDir = this.planningData.getOriginalModelDir()
+        this.processedModelDir = this.planningData.getOriginalModelDir()
                 .appendSegment(ModelProcessing.PROCESSED_MODEL_FOLDER);
 
         SnapshotBuilder.setBaseSnapshotURI(this.planningData.getOriginalModelDir());
 
         final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER,
-                this.originalModelProviders);
+                this.originalModelHandler);
         snapshotBuilder.createSnapshot();
 
-        this.planningData.setProcessedModelDir(processedModelDir);
-        this.processedModelProviders = new InitializeModelProviders(new File(processedModelDir.toFileString()));
+        this.planningData.setProcessedModelDir(this.processedModelDir);
 
-        this.allocationProvider = this.processedModelProviders.getAllocationModelProvider();
-        this.cloudProfileProvider = this.processedModelProviders.getCloudProfileModelProvider();
-        this.costProvider = this.processedModelProviders.getCostModelProvider();
-        this.resourceProvider = this.processedModelProviders.getResourceEnvironmentModelProvider();
-        this.decisionProvider = this.processedModelProviders.getDesignDecisionModelProvider();
+        this.processedModelHandler = new PCMModelHandler(new File(this.processedModelDir.toFileString()));
 
-        DecisionSpace decisionSpace = this.processedModelProviders.getDesignDecisionModelProvider().getModel();
+        this.allocationModel = this.processedModelHandler.getAllocationModel();
+        this.cloudProfileModel = this.processedModelHandler.getCloudProfileModel();
+        this.costModel = this.processedModelHandler.getCostModel();
+        this.resourceEnvironmentModel = this.processedModelHandler.getResourceEnvironmentModel();
+        this.decisionModel = this.processedModelHandler.getDesignDecisionModel();
+        this.decisionSpace = this.processedModelHandler.getDesignDecisionModel();
 
-        if (decisionSpace == null) {
-            decisionSpace = DesignDecisionModelFactory.createDecisionSpace("processedDecision");
-            this.processedModelProviders.getDesignDecisionModelProvider().setModel(decisionSpace);
+        if (this.decisionSpace == null) {
+            this.decisionSpace = DesignDecisionModelFactory.createDecisionSpace("processedDecision");
         }
 
-        final Allocation originalAllocation = this.originalModelProviders.getAllocationModelProvider().getModel();
+        final Allocation originalAllocation = this.originalModelHandler.getAllocationModel();
 
         this.originalAllocationGroups = new AllocationGroupsContainer(originalAllocation);
     }
 
     private void clearUnneededElements() {
         this.clearCloudResourcesFromResourceEnv();
-        this.clearAllocationContexts();
     }
 
     private void rebuildEnvironment() {
         for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
             final AllocationContext representingContext = allocationGroup.getRepresentingContext();
 
-            this.createResourcesAndReplicationDegrees(this.decisionProvider.getModel(), allocationGroup);
+            this.createResourcesAndReplicationDegrees(this.decisionModel, allocationGroup);
 
-            this.allocationProvider.getModel().getAllocationContexts_Allocation().add(representingContext);
+            this.allocationModel.getAllocationContexts_Allocation().add(representingContext);
         }
 
         for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
             final String allocationDegreeName = String.format("%s_AllocationDegree", allocationGroup.getName());
 
-            DesignDecisionModelFactory.createAllocationDegree(this.decisionProvider.getModel(), allocationDegreeName,
+            DesignDecisionModelFactory.createAllocationDegree(this.decisionModel, allocationDegreeName,
                     allocationGroup.getRepresentingContext(),
-                    this.resourceProvider.getModel().getResourceContainer_ResourceEnvironment());
+                    this.resourceEnvironmentModel.getResourceContainer_ResourceEnvironment());
         }
 
-        ModelHelper.addAllAllocationsToReplicationDegrees(this.allocationProvider.getModel(),
-                this.decisionProvider.getModel());
+        ModelHelper.addAllAllocationsToReplicationDegrees(this.allocationModel, this.decisionModel);
 
         this.saveModels();
     }
 
     private void saveModels() {
-        this.decisionProvider.save();
-        this.allocationProvider.save();
-        this.costProvider.save();
-        this.resourceProvider.save();
+        new DesignDecisionModelHandler().save(
+                this.processedModelDir.appendFileExtension(PCMModelHandler.DESIGN_DECISION_SUFFIX), this.decisionModel);
+        new AllocationModelHandler().save(this.processedModelDir.appendFileExtension(PCMModelHandler.ALLOCATION_SUFFIX),
+                this.allocationModel);
+        new CostModelHandler().save(this.processedModelDir.appendFileExtension(PCMModelHandler.COST_SUFFIX),
+                this.costModel);
+        new ResourceEnvironmentModelHandler().save(
+                this.processedModelDir.appendFileExtension(PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX),
+                this.resourceEnvironmentModel);
     }
 
     private void createResourcesAndReplicationDegrees(final DecisionSpace decisionSpace,
             final AllocationGroup allocationGroup) {
-        final CloudProfile profile = this.cloudProfileProvider.getModel();
-        final ResourceEnvironment environment = this.resourceProvider.getModel();
-        final CostRepository costs = this.costProvider.getModel();
+        final CloudProfile profile = this.cloudProfileModel;
+        final ResourceEnvironment environment = this.resourceEnvironmentModel;
+        final CostRepository costs = this.costModel;
 
         // Get resource container that represents the instances this allocation
         // group is currently deployed on
@@ -241,12 +246,8 @@ public class ModelTransformer {
         return EcoreUtil.equals(cloudVM, representingContainer.getInstanceType());
     }
 
-    private void clearAllocationContexts() {
-        this.allocationProvider.resetModel();
-    }
-
     private void clearCloudResourcesFromResourceEnv() {
-        final ResourceEnvironment environment = this.resourceProvider.getModel();
+        final ResourceEnvironment environment = this.resourceEnvironmentModel;
 
         final List<ResourceContainer> resourceContainers = environment.getResourceContainer_ResourceEnvironment();
         for (final Iterator<ResourceContainer> iter = resourceContainers.iterator(); iter.hasNext();) {

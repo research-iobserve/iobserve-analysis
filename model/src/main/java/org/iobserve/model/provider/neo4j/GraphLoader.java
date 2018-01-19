@@ -18,15 +18,15 @@ package org.iobserve.model.provider.neo4j;
 import java.io.File;
 import java.io.IOException;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 import org.codehaus.plexus.util.FileUtils;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 
 /**
  * Used to load a {@link Graph} including each of the different PCM models.

@@ -37,11 +37,11 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
     /**
      * Create model provider to provide {@link Allocation} model.
      *
-     * @param neo4jPcmModelDirectory
+     * @param baseDirectory
      *            DB root directory
      */
-    public AllocationModelProvider(final File neo4jPcmModelDirectory) {
-        super(neo4jPcmModelDirectory);
+    public AllocationModelProvider(final File baseDirectory) {
+        super(baseDirectory);
     }
 
     @Override
@@ -49,8 +49,7 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
         this.model = this.modelProvider.readRootComponent(Allocation.class);
 
         if (this.model == null) {
-            AbstractModelProvider.LOG
-                    .debug("Model at " + this.neo4jPcmModelDirectory.getAbsolutePath() + " could not be loaded!");
+            AbstractModelProvider.LOG.debug("Allocation model could not be loaded!");
         }
     }
 
@@ -69,7 +68,7 @@ public final class AllocationModelProvider extends AbstractModelProvider<Allocat
     }
 
     @Override
-    protected Graph getModelTypeGraph(final File neo4jPcmModelDirectory) {
-        return new GraphLoader(neo4jPcmModelDirectory).getAllocationModelGraph();
+    protected Graph getModelTypeGraph(final File baseDirectory) {
+        return new GraphLoader(baseDirectory).getAllocationModelGraph();
     }
 }

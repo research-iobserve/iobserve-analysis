@@ -25,10 +25,7 @@ import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
 import org.eclipse.emf.common.util.EList;
-import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.model.provider.neo4j.AllocationModelProvider;
-import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.model.PCMModelHandler;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyConnectorPrivacy;
@@ -48,7 +45,7 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPri
 public class GraphFactory {
     private static final Log LOG = LogFactory.getLog(GraphFactory.class);
 
-    private InitializeModelProviders modelProvider;
+    private PCMModelHandler modelProvider;
 
     private Map<String, AssemblyContext> assemblyContexts;
     private Map<String, DataPrivacyLvl> assemblyContextPrivacyLvl;
@@ -66,20 +63,20 @@ public class GraphFactory {
     /**
      * Build a graph based on the given model provides.
      *
-     * @param modelProviders
+     * @param modelHandler
      *            object containing all model providers
      * @return returns the model graph for this
      * @throws Exception
      *             on error
      */
-    public ModelGraph buildGraph(final InitializeModelProviders modelProviders) throws Exception {
-        this.init(modelProviders);
+    public ModelGraph buildGraph(final PCMModelHandler modelHandler) throws Exception {
+        this.init(modelHandler);
 
-        this.extractAssemblyContexts(this.modelProvider.getSystemModelProvider());
-        this.extractAssemblyConnectors(this.modelProvider.getSystemModelProvider());
-        this.extractResourceContainers(this.modelProvider.getResourceEnvironmentModelProvider());
+        this.extractAssemblyContexts(this.modelProvider.getSystemModel());
+        this.extractAssemblyConnectors(this.modelProvider.getSystemModel());
+        this.extractResourceContainers(this.modelProvider.getResourceEnvironmentModel());
         this.adaptPrivacyLvl();
-        this.extractAllocations(this.modelProvider.getAllocationModelProvider());
+        this.extractAllocations(this.modelProvider.getAllocationModel());
 
         return this.createModelGraph();
     }
@@ -87,7 +84,7 @@ public class GraphFactory {
     /*
      * Prepare all data structures.
      */
-    private void init(final InitializeModelProviders modelProvider) {
+    private void init(final PCMModelHandler modelProvider) {
         this.modelProvider = modelProvider;
 
         this.assemblyContexts = new HashMap<>();
@@ -101,8 +98,7 @@ public class GraphFactory {
     /*
      * Extract Information Helpers
      */
-    private void extractAssemblyContexts(final SystemModelProvider sysModelProv) {
-        final org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
+    private void extractAssemblyContexts(final org.palladiosimulator.pcm.system.System sysModel) {
         final EList<AssemblyContext> newAssemblyContexts = sysModel.getAssemblyContexts__ComposedStructure();
         final Set<String> acs = new HashSet<>();
 
@@ -114,8 +110,7 @@ public class GraphFactory {
         GraphFactory.LOG.info("Individual Assembly Contexts found in System Model: " + acs.size());
     }
 
-    private void extractAssemblyConnectors(final SystemModelProvider sysModelProv) {
-        final org.palladiosimulator.pcm.system.System sysModel = sysModelProv.getModel();
+    private void extractAssemblyConnectors(final org.palladiosimulator.pcm.system.System sysModel) {
         final EList<Connector> newConnectors = sysModel.getConnectors__ComposedStructure();
 
         for (final Connector connector : newConnectors) {
@@ -172,8 +167,7 @@ public class GraphFactory {
         this.assemblyContextPrivacyLvl.put(assemblyContextID, currentDataLevelPrivacy);
     }
 
-    private void extractResourceContainers(final ResourceEnvironmentModelProvider resEnvModelProv) {
-        final ResourceEnvironment resEnvModel = resEnvModelProv.getModel();
+    private void extractResourceContainers(final ResourceEnvironment resEnvModel) {
         final EList<ResourceContainer> newResourceContainers = resEnvModel.getResourceContainer_ResourceEnvironment();
         for (final ResourceContainer resourceContainer : newResourceContainers) {
             if (resourceContainer instanceof ResourceContainerPrivacy) {
@@ -185,9 +179,8 @@ public class GraphFactory {
         }
     }
 
-    private void extractAllocations(final AllocationModelProvider allocationModelProv) {
-        final Allocation allocation = allocationModelProv.getModel();
-        final EList<AllocationContext> allocationContexts = allocation.getAllocationContexts_Allocation();
+    private void extractAllocations(final Allocation allocationModel) {
+        final EList<AllocationContext> allocationContexts = allocationModel.getAllocationContexts_Allocation();
 
         for (final AllocationContext allocationContext : allocationContexts) {
             final ResourceContainer resContainer = allocationContext.getResourceContainer_AllocationContext();
