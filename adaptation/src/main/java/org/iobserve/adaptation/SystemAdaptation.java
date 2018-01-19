@@ -32,7 +32,7 @@ public class SystemAdaptation extends AbstractLinearComposition<AdaptationData, 
 
     /**
      * This class encapsulates the major system adaption filter stage.
-     * 
+     *
      * @param comparer
      *            computes action which need to be done for migration/adaption
      * @param planner
@@ -40,12 +40,10 @@ public class SystemAdaptation extends AbstractLinearComposition<AdaptationData, 
      * @param executer
      *            executes the ordered actions
      */
-    public SystemAdaptation(final AdaptationCalculation comparer, final AdaptationPlanning planner,
-            final AdaptationExecution executer) {
-        super(comparer.getInputPort(), executer.getOutputPort());
+    public SystemAdaptation(final AdaptationCalculation comparer, final AdaptationPlanning planner) {
+        super(comparer.getInputPort(), planner.getOutputPort());
 
         this.connectPorts(comparer.getOutputPort(), planner.getInputPort());
-        this.connectPorts(planner.getOutputPort(), executer.getInputPort());
     }
 
 }

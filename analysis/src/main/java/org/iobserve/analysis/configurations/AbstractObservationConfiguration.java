@@ -15,14 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-import teetime.framework.Configuration;
-
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.AdaptationCalculation;
 import org.iobserve.adaptation.AdaptationExecution;
 import org.iobserve.adaptation.AdaptationPlanning;
 import org.iobserve.adaptation.IAdaptationEventListener;
-import org.iobserve.adaptation.SystemAdaptation;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
@@ -56,6 +53,7 @@ import org.iobserve.planning.CandidateGeneration;
 import org.iobserve.planning.CandidateProcessing;
 import org.iobserve.planning.ModelOptimization;
 import org.iobserve.planning.ModelProcessing;
+import org.iobserve.planning.systemadaptation.SystemAdaptation;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.iobserve.stages.general.RecordSwitch;
@@ -65,6 +63,7 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
+import teetime.framework.Configuration;
 import weka.core.ManhattanDistance;
 
 /**
@@ -243,7 +242,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(traceOperationCleanupFilter.getOutputPort(), collectUserSessions.getUserSessionInputPort());
         this.connectPorts(collectUserSessions.getOutputPort(), tBehaviorModelComparison.getInputPort());
 
-        if (snapshotBuilder != null && perOpteryxHeadless != null && lqnsDir != null && deployablesFolder != null) {
+        if ((snapshotBuilder != null) && (perOpteryxHeadless != null) && (lqnsDir != null)
+                && (deployablesFolder != null)) {
             // create filters for snapshot planning, evaluation and adaptation
             final CandidateGeneration candidateGenerator = new CandidateGeneration(
                     new ModelProcessing(perOpteryxHeadless, lqnsDir), new ModelOptimization(),
@@ -251,7 +251,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             // There is an AdaptionEventListener class, but in the previous implementation null was
             // used instead.
             final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(),
-                    new AdaptationPlanning(), new AdaptationExecution(eventListener, deployablesFolder));
+                    new AdaptationPlanning());
+            final AdaptationExecution adaptationExecution = new AdaptationExecution(eventListener, deployablesFolder);
             final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
 
             // Path Snapshot => Planning
@@ -260,6 +261,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             this.connectPorts(snapshotBuilder.getEvaluationOutputPort(), systemEvaluator.getInputPort());
             // Path Planning => Adaptation
             this.connectPorts(candidateGenerator.getOutputPort(), systemAdaptor.getInputPort());
+            // Path Adaptation => Execution
+            this.connectPorts(systemAdaptor.getOutputPort(), adaptationExecution.getInputPort());
         }
     }
 

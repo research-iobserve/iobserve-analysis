@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.execution;
+package org.iobserve.execution.actionscripts;
 
 import org.iobserve.adaptation.data.AdaptationData;
+import org.iobserve.execution.utils.ModelHelper;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
-import org.iobserve.planning.utils.ModelHelper;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 
 /**

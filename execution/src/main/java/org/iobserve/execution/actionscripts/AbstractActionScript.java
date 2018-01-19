@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.execution;
+package org.iobserve.execution.actionscripts;
 
 import java.io.File;
 import java.io.IOException;

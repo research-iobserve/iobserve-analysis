@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.iobserve.adaptation.IAdaptationEventListener;
-import org.iobserve.adaptation.execution.AbstractActionScript;
+import org.iobserve.execution.IAdaptationEventListener;
+import org.iobserve.execution.actionscripts.AbstractActionScript;
 
 /**
  * ToDo .
@@ -37,7 +37,7 @@ public class CLIEventListener implements IAdaptationEventListener {
 
     /**
      * Create an CLIEventListener
-     * 
+     *
      * @param interactiveMode
      *            allows to set the listener into interactive mode
      */
