@@ -15,13 +15,14 @@
  ***************************************************************************/
 package org.iobserve.service;
 
-import java.io.IOException;
+import java.io.File;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
+import kieker.monitoring.core.configuration.ConfigurationFactory;
 
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
@@ -58,7 +59,14 @@ public abstract class AbstractServiceMain<T extends Configuration> {
         final JCommander commander = new JCommander(this);
         try {
             commander.parse(args);
-            this.execute(commander, label);
+            final kieker.common.configuration.Configuration configuration;
+            if (this.getConfigurationFile() != null) {
+                configuration = ConfigurationFactory
+                        .createConfigurationFromFile(this.getConfigurationFile().getAbsolutePath());
+            } else {
+                configuration = null;
+            }
+            this.execute(configuration, commander, label);
         } catch (final ParameterException e) {
             AbstractServiceMain.LOG.error(e.getLocalizedMessage());
             commander.usage();
@@ -68,38 +76,79 @@ public abstract class AbstractServiceMain<T extends Configuration> {
         }
     }
 
-    private void execute(final JCommander commander, final String label) throws ConfigurationException {
+    private void execute(final kieker.common.configuration.Configuration configuration, final JCommander commander,
+            final String label) throws ConfigurationException {
         if (this.checkParameters(commander)) {
-
             if (this.help) {
                 commander.usage();
                 System.exit(1);
             } else {
-                final Execution<T> execution = new Execution<>(this.createConfiguration());
+                if (this.checkConfiguration(configuration, commander)) {
+                    final Execution<T> execution = new Execution<>(this.createConfiguration(configuration));
 
-                this.shutdownHook(execution);
+                    this.shutdownHook(execution);
 
-                AbstractServiceMain.LOG.debug("Running " + label);
+                    AbstractServiceMain.LOG.debug("Running " + label);
 
-                execution.executeBlocking();
+                    execution.executeBlocking();
+                    this.shutdownService();
 
-                AbstractServiceMain.LOG.debug("Done");
+                    AbstractServiceMain.LOG.debug("Done");
+                }
             }
         } else {
             AbstractServiceMain.LOG.error("Configuration Error");
         }
     }
 
+    private <R extends Configuration> void shutdownHook(final Execution<R> execution) {
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    synchronized (execution) {
+                        execution.abortEventually();
+                        AbstractServiceMain.this.shutdownService();
+                    }
+                } catch (final Exception e) { // NOCS
+
+                }
+            }
+        }));
+
+    }
+
     /**
-     * Create and initialize configuration for a service.
+     * Method returning the configuration file handle.
      *
+     * @return returns a file handle in case a configuration file is used, else null
+     */
+    protected abstract File getConfigurationFile();
+
+    /**
+     * Check a given configuration for validity.
+     *
+     * @param configuration
+     *            the configuration object with all configuration parameter. Can be null.
+     * @param commander
+     *            JCommander used to generate usage information.
+     * @return true if the configuration is valid.
+     */
+    protected abstract boolean checkConfiguration(kieker.common.configuration.Configuration configuration,
+            JCommander commander);
+
+    /**
+     * Create and initialize teetime configuration for a service.
+     *
+     * @param configuration
+     *            kieker configuration object, can be null if now configuration
      * @return return the newly created service
      *
-     * @throws IOException
-     *             in case the creation fails
      * @throws ConfigurationException
+     *             in case the creation fails
      */
-    protected abstract T createConfiguration() throws ConfigurationException;
+    protected abstract T createConfiguration(kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException;
 
     /**
      * Check all given parameters for correct directory and files path, as well as, all other values
@@ -114,19 +163,9 @@ public abstract class AbstractServiceMain<T extends Configuration> {
      */
     protected abstract boolean checkParameters(JCommander commander) throws ConfigurationException;
 
-    private <R extends Configuration> void shutdownHook(final Execution<R> execution) {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    synchronized (execution) {
-                        execution.abortEventually();
-                    }
-                } catch (final Exception e) { // NOCS
+    /**
+     * Shutdown hook to run cleanup features of the application.
+     */
+    protected abstract void shutdownService();
 
-                }
-            }
-        }));
-
-    }
 }
