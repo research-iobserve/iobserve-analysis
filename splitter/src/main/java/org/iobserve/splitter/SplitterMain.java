@@ -22,6 +22,8 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.common.configuration.Configuration;
+
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
@@ -62,7 +64,8 @@ public final class SplitterMain extends AbstractServiceMain<SimpleSplitterConfig
     }
 
     @Override
-    protected SimpleSplitterConfiguration createConfiguration() throws ConfigurationException {
+    protected SimpleSplitterConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
         try {
             return new SimpleSplitterConfiguration(this.sourceLocation, this.targetLocation, this.hostnames);
         } catch (final IOException e) {
@@ -78,6 +81,21 @@ public final class SplitterMain extends AbstractServiceMain<SimpleSplitterConfig
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return null;
+    }
+
+    @Override
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
+        return true;
+    }
+
+    @Override
+    protected void shutdownService() {
+
     }
 
 }

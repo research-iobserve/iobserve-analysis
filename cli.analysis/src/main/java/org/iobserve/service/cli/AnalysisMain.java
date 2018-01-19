@@ -26,6 +26,8 @@ import com.beust.jcommander.converters.BooleanConverter;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
+import kieker.common.configuration.Configuration;
+
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.ConfigurationException;
@@ -155,7 +157,8 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
     }
 
     @Override
-    protected FileObservationConfiguration createConfiguration() throws ConfigurationException {
+    protected FileObservationConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
 
         /** create and run application */
         final Collection<File> monitoringDataDirectories = new ArrayList<>();
@@ -249,5 +252,20 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
+    }
+
+    @Override
+    protected void shutdownService() {
+        // TODO serialize PCM models.
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return null;
+    }
+
+    @Override
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
+        return true;
     }
 }

@@ -22,6 +22,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.common.configuration.Configuration;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
@@ -67,7 +68,8 @@ public final class EvaluationMain extends AbstractServiceMain<EvaluationConfigur
     }
 
     @Override
-    protected EvaluationConfiguration createConfiguration() throws ConfigurationException {
+    protected EvaluationConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
         try {
             return new EvaluationConfiguration(this.baselineModelLocation, this.testModelLocation, this.targetLocation);
         } catch (final IOException e) {
@@ -93,6 +95,21 @@ public final class EvaluationMain extends AbstractServiceMain<EvaluationConfigur
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return null;
+    }
+
+    @Override
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
+        return true;
+    }
+
+    @Override
+    protected void shutdownService() {
+
     }
 
 }
