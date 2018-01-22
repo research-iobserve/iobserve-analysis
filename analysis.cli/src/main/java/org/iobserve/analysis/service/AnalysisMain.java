@@ -20,12 +20,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.converters.FileConverter;
-
-import kieker.common.configuration.Configuration;
-
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.ConfigurationException;
@@ -44,6 +38,12 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.converters.FileConverter;
+
+import kieker.common.configuration.Configuration;
 
 /**
  * Main class for starting the iObserve application.
@@ -153,7 +153,7 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
                     commander)
                     && CommandLineParameterEvaluation.checkDirectory(this.modelDatabaseDirectory,
                             "PCM database directory", commander)
-                    && this.containerManagementVisualizationBaseUrl != null;
+                    && (this.containerManagementVisualizationBaseUrl != null);
         } catch (final IOException e) {
             return false;
         }
@@ -237,8 +237,7 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
                     this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
                     usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                     allocationModelProvider, systemModelProvider, resourceContainerModelProvider,
-                    assemblyContextModelProvider, this.behaviorVisualizationServiceURL, snapshotBuilder, perOpteryxUri,
-                    lqnsUri, deployablesFolder);
+                    assemblyContextModelProvider, this.behaviorVisualizationServiceURL, snapshotBuilder);
 
         } catch (final MalformedURLException e) {
             AbstractServiceMain.LOG.debug("URL construction for deployment visualization failed.", e);

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.cli;
+package org.iobserve.execution;
 
 import java.util.List;
 import java.util.Scanner;
@@ -21,8 +21,7 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.iobserve.adaptation.IAdaptationEventListener;
-import org.iobserve.adaptation.execution.AbstractActionScript;
+import org.iobserve.execution.actionscripts.AbstractActionScript;
 
 /**
  * ToDo .
@@ -37,7 +36,7 @@ public class CLIEventListener implements IAdaptationEventListener {
 
     /**
      * Create an CLIEventListener
-     * 
+     *
      * @param interactiveMode
      *            allows to set the listener into interactive mode
      */

@@ -1,2 +1,2 @@
-include "analysis", "stages", "common", "monitoring", "model", "service", "analysis.cli", "cli.analysis", "collector", "splitter", "test.setup", "rac.creator", "replayer", "evaluate-user-behaviors", "planning.systemadaptation", "planning.cloudprofile", "service.privacy.violation"
+include "analysis", "stages", "common", "monitoring", "adaptationdata", "planning", "adaptation", "execution", "model", "service", "analysis.cli", "cli.analysis", "collector", "splitter", "test.setup", "rac.creator", "replayer", "evaluate-user-behaviors", "planning.systemadaptation", "planning.cloudprofile", "service.privacy.violation"
 

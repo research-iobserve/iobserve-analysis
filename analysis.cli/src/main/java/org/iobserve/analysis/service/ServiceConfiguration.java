@@ -20,7 +20,6 @@ import java.net.URL;
 
 import kieker.common.configuration.Configuration;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.configurations.MultiInputObservationConfiguration;
@@ -97,12 +96,11 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
             final IModelProvider<ResourceContainer> resourceContainerModelProvider,
             final IModelProvider<AssemblyContext> assemblyContextModelProvider, final String visualizationServiceURL,
-            final SnapshotBuilder snapshotBuilder, final URI perOpteryxDir, final URI lqnsDir,
-            final URI deployablesFolder) throws MalformedURLException {
+            final SnapshotBuilder snapshotBuilder) throws MalformedURLException {
         super(configuration, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
-                EOutputMode.UBM_VISUALIZATION, snapshotBuilder, perOpteryxDir, lqnsDir, deployablesFolder);
+                EOutputMode.UBM_VISUALIZATION, snapshotBuilder);
 
         final URL containerManagementURL = new URL(visualizationBaseUrl, "/v1/systems/" + systemId + "/changelogs");
 
