@@ -23,6 +23,12 @@ import org.iobserve.planning.ModelProcessing;
 
 import teetime.framework.Configuration;
 
+/**
+ * Configuration for the stages of the planning service.
+ *
+ * @author Lars Bluemke
+ *
+ */
 public class PlanningConfiguration extends Configuration {
 
     public PlanningConfiguration(final URI perOpteryxHeadless, final URI lqnsDir) {

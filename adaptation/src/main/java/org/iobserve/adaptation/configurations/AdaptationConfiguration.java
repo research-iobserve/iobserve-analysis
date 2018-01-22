@@ -21,6 +21,12 @@ import org.iobserve.adaptation.SystemAdaptation;
 
 import teetime.framework.Configuration;
 
+/**
+ * Configuration for the stages of the adaptation service.
+ *
+ * @author Lars Bluemke
+ *
+ */
 public class AdaptationConfiguration extends Configuration {
 
     public AdaptationConfiguration() {

@@ -23,6 +23,12 @@ import org.iobserve.execution.IAdaptationEventListener;
 
 import teetime.framework.Configuration;
 
+/**
+ * Configuration for the stages of the execution service.
+ *
+ * @author Lars Bluemke
+ *
+ */
 public class ExecutionConfiguration extends Configuration {
 
     public ExecutionConfiguration(final IAdaptationEventListener eventListener, final URI deployablesFolder) {
