@@ -23,6 +23,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
+import kieker.common.configuration.Configuration;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
@@ -77,7 +78,8 @@ public final class ReplayerMain extends AbstractServiceMain<ReplayerConfiguratio
     }
 
     @Override
-    protected ReplayerConfiguration createConfiguration() throws ConfigurationException {
+    protected ReplayerConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
         this.configuration = new ReplayerConfiguration(this.dataLocation, this.hostname, this.outputPort);
         return this.configuration;
     }
@@ -90,6 +92,21 @@ public final class ReplayerMain extends AbstractServiceMain<ReplayerConfiguratio
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return null;
+    }
+
+    @Override
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
+        return true;
+    }
+
+    @Override
+    protected void shutdownService() {
+
     }
 
 }

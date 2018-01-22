@@ -372,7 +372,7 @@ public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implem
                     final Long code = SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes
                             .containsKey(queryParameterSplit[1])
                                     ? SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding.codes
-                                            .get(queryParameterSplit[1])
+                                            .get(queryParameterSplit[1]).longValue()
                                     : -100L;
 
                     callInformations.add(new CallInformation(queryParameterSplit[0], code));

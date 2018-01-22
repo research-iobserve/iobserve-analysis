@@ -17,6 +17,8 @@ package org.iobserve.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import com.beust.jcommander.JCommander;
 
@@ -66,7 +68,7 @@ public class CommandLineParameterEvaluation {
     }
 
     /**
-     * Check whther a specified file is readable.
+     * Check whether a specified file is readable.
      *
      * @param file
      *            the file handle
@@ -91,5 +93,24 @@ public class CommandLineParameterEvaluation {
         }
 
         return true;
+    }
+
+    /**
+     * Create an URL from a given string.
+     *
+     * @param urlString
+     *            the url string
+     * @param label
+     *            label used to indicate which string
+     * @return returns an URL or null on error
+     */
+    public static URL createURL(final String urlString, final String label) {
+        try {
+            return new URL(urlString);
+        } catch (final MalformedURLException e) {
+            CommandLineParameterEvaluation.LOG.error(label + " Malformend URL " + urlString);
+            return null;
+        }
+
     }
 }

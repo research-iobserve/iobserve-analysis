@@ -26,6 +26,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
+import kieker.common.configuration.Configuration;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 
@@ -78,7 +79,8 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
     }
 
     @Override
-    protected ObservationConfiguration createConfiguration() throws ConfigurationException {
+    protected ObservationConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
         final Collection<File> inputPaths = new ArrayList<>();
         inputPaths.add(this.inputPath);
 
@@ -130,6 +132,21 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return null;
+    }
+
+    @Override
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
+        return true;
+    }
+
+    @Override
+    protected void shutdownService() {
+
     }
 
 }

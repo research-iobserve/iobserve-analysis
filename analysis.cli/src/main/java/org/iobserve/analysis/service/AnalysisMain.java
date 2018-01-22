@@ -43,7 +43,6 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
-import kieker.monitoring.core.configuration.ConfigurationFactory;
 
 /**
  * Main class for starting the iObserve application.
@@ -87,6 +86,28 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
             "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
     private File configurationFile;
 
+    private String snapshotPath;
+
+    private String perOpteryxUriPath;
+
+    private String lqnsUriPath;
+
+    private String deployablesFolderPath;
+
+    private String behaviorVisualizationServiceURL;
+
+    private File modelInitDirectory;
+
+    private File modelDatabaseDirectory;
+
+    private boolean closedWorkload;
+
+    private int thinkTime;
+
+    private int varianceOfUserGroups;
+
+    private URL containerManagementVisualizationBaseUrl;
+
     /**
      * Default constructor.
      */
@@ -105,36 +126,50 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
     }
 
     @Override
-    protected ServiceConfiguration createConfiguration() throws ConfigurationException {
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
         /** process configuration parameter. */
-        final Configuration configuration = ConfigurationFactory
-                .createConfigurationFromFile(this.configurationFile.getAbsolutePath());
 
         // TODO move all properties to their respective filters
-        final String snapshotPath = configuration.getStringProperty(AnalysisMain.SNAPSHOT_PATH);
-        final String perOpteryxUriPath = configuration.getStringProperty(AnalysisMain.PER_OPTERYX_URI_PATH);
-        final String lqnsUriPath = configuration.getStringProperty(AnalysisMain.LQNS_URI_PATH);
-        final String deployablesFolderPath = configuration.getStringProperty(AnalysisMain.DEPLOYABLES_FOLDER_PATH);
-        final String behaviorVisualizationServiceURL = configuration
-                .getStringProperty(AnalysisMain.BEHAVIOR_VISUALIZATION_URL);
-        final File modelInitDirectory = new File(
-                configuration.getStringProperty(AnalysisMain.PCM_MODEL_INIT_DIRECTORY));
-        final File modelDatabaseDirectory = new File(
-                configuration.getStringProperty(AnalysisMain.PCM_MODEL_DB_DIRECTORY));
+        this.snapshotPath = configuration.getStringProperty(AnalysisMain.SNAPSHOT_PATH);
+        this.perOpteryxUriPath = configuration.getStringProperty(AnalysisMain.PER_OPTERYX_URI_PATH);
+        this.lqnsUriPath = configuration.getStringProperty(AnalysisMain.LQNS_URI_PATH);
+        this.deployablesFolderPath = configuration.getStringProperty(AnalysisMain.DEPLOYABLES_FOLDER_PATH);
+        this.behaviorVisualizationServiceURL = configuration.getStringProperty(AnalysisMain.BEHAVIOR_VISUALIZATION_URL);
+        this.modelInitDirectory = new File(configuration.getStringProperty(AnalysisMain.PCM_MODEL_INIT_DIRECTORY));
+        this.modelDatabaseDirectory = new File(configuration.getStringProperty(AnalysisMain.PCM_MODEL_DB_DIRECTORY));
 
         // special property for a behavior filter
-        final boolean closedWorkload = configuration.getBooleanProperty(AnalysisMain.BEHAVIOR_CLOSED_WORKLOAD, false);
-        final int thinkTime = configuration.getIntProperty(AnalysisMain.BEHAVIOR_THINK_TIME, 1);
-        final int varianceOfUserGroups = configuration.getIntProperty(AnalysisMain.BEHAVIOR_VARIANCE_OF_USER_GROUPS, 1);
+        this.closedWorkload = configuration.getBooleanProperty(AnalysisMain.BEHAVIOR_CLOSED_WORKLOAD, false);
+        this.thinkTime = configuration.getIntProperty(AnalysisMain.BEHAVIOR_THINK_TIME, 1);
+        this.varianceOfUserGroups = configuration.getIntProperty(AnalysisMain.BEHAVIOR_VARIANCE_OF_USER_GROUPS, 1);
+
+        this.containerManagementVisualizationBaseUrl = CommandLineParameterEvaluation.createURL(
+                "Management visualization URL",
+                configuration.getStringProperty(AnalysisMain.IOBSERVE_VISUALIZATION_URL));
+
+        try {
+            return CommandLineParameterEvaluation.checkDirectory(this.modelInitDirectory, "PCM startup model",
+                    commander)
+                    && CommandLineParameterEvaluation.checkDirectory(this.modelDatabaseDirectory,
+                            "PCM database directory", commander)
+                    && (this.containerManagementVisualizationBaseUrl != null);
+        } catch (final IOException e) {
+            return false;
+        }
+    }
+
+    @Override
+    protected ServiceConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
 
         /** Configure model handling. */
         // old model providers without neo4j
-        final PCMModelHandler modelProvider = new PCMModelHandler(modelInitDirectory);
+        final PCMModelHandler modelProvider = new PCMModelHandler(this.modelInitDirectory);
 
         final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
 
         /** initialize neo4j graphs. */
-        final GraphLoader graphLoader = new GraphLoader(modelDatabaseDirectory);
+        final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
         Graph repositoryModelGraph = graphLoader.initializeRepositoryModelGraph(modelProvider.getRepositoryModel());
         Graph resourceEnvironmentModelGraph = graphLoader
@@ -171,38 +206,37 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
 
         try {
             /** URLs for sending updates to the deployment visualization. */
-            final URL containerManagementVisualizationBaseUrl = new URL(
-                    configuration.getStringProperty(AnalysisMain.IOBSERVE_VISUALIZATION_URL));
 
             final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                    containerManagementVisualizationBaseUrl, systemId, allocationModelProvider, systemModelProvider,
-                    resourceEnvironmentModelProvider, usageModelProvider);
+                    this.containerManagementVisualizationBaseUrl, systemId, allocationModelProvider,
+                    systemModelProvider, resourceEnvironmentModelProvider, usageModelProvider);
 
             deploymentVisualization.initialize();
 
+            /** snapshot setup. */
             SnapshotBuilder snapshotBuilder = null;
             URI perOpteryxUri = null;
             URI lqnsUri = null;
             URI deployablesFolder = null;
-            if (!snapshotPath.isEmpty() && !perOpteryxUriPath.isEmpty() && !lqnsUriPath.isEmpty()
-                    && !deployablesFolderPath.isEmpty()) {
-                SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(snapshotPath));
+            if (!this.snapshotPath.isEmpty() && !this.perOpteryxUriPath.isEmpty() && !this.lqnsUriPath.isEmpty()
+                    && !this.deployablesFolderPath.isEmpty()) {
+                SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(this.snapshotPath));
                 try {
                     snapshotBuilder = new SnapshotBuilder("Runtime", modelProvider);
-                    perOpteryxUri = URI.createFileURI(perOpteryxUriPath);
-                    lqnsUri = URI.createFileURI(lqnsUriPath);
-                    deployablesFolder = URI.createFileURI(deployablesFolderPath);
+                    perOpteryxUri = URI.createFileURI(this.perOpteryxUriPath);
+                    lqnsUri = URI.createFileURI(this.lqnsUriPath);
+                    deployablesFolder = URI.createFileURI(this.deployablesFolderPath);
                 } catch (final InitializationException e) {
                     throw new ConfigurationException(e);
                 }
 
             }
 
-            return new ServiceConfiguration(configuration, containerManagementVisualizationBaseUrl, systemId,
-                    varianceOfUserGroups, thinkTime, closedWorkload, correspondenceModel, usageModelProvider,
-                    repositoryModelProvider, resourceEnvironmentModelProvider, allocationModelProvider,
-                    systemModelProvider, resourceContainerModelProvider, assemblyContextModelProvider,
-                    behaviorVisualizationServiceURL, snapshotBuilder);
+            return new ServiceConfiguration(configuration, this.containerManagementVisualizationBaseUrl, systemId,
+                    this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
+                    usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
+                    allocationModelProvider, systemModelProvider, resourceContainerModelProvider,
+                    assemblyContextModelProvider, this.behaviorVisualizationServiceURL, snapshotBuilder);
 
         } catch (final MalformedURLException e) {
             AbstractServiceMain.LOG.debug("URL construction for deployment visualization failed.", e);
@@ -220,6 +254,16 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
+    }
+
+    @Override
+    protected void shutdownService() {
+
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return this.configurationFile;
     }
 
 }

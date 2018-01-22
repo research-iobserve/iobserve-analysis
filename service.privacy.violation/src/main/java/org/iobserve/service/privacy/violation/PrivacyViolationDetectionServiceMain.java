@@ -22,14 +22,21 @@ import java.util.List;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.CommaParameterSplitter;
+import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
+import kieker.common.configuration.Configuration;
+
 import org.iobserve.analysis.ConfigurationException;
-import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.provider.neo4j.Graph;
+import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.service.CommandLineParameterEvaluation;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * Collector main class.
@@ -47,17 +54,15 @@ public final class PrivacyViolationDetectionServiceMain
             "--control" }, required = true, description = "Control hosts and ports.", splitter = CommaParameterSplitter.class, converter = HostPortConverter.class)
     private List<ConnectionData> outputs;
 
+    @Parameter(names = { "-p",
+            "--pcm" }, required = true, description = "PCM model directory.", converter = FileConverter.class)
+    private File pcmDirectory;
+
     private File warningFile;
 
     private File alarmsFile;
 
-    private ICorrespondence rac;
-
-    private ModelProvider<Allocation> allocationModelProvider;
-
-    private ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
-
-    private ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
+    private File modelDatabaseDirectory;
 
     /**
      * This is a simple main class which does not need to be instantiated.
@@ -77,12 +82,28 @@ public final class PrivacyViolationDetectionServiceMain
     }
 
     @Override
-    protected PrivacyViolationDetectionConfiguration createConfiguration() throws ConfigurationException {
-        // TODO we need to initialize the model providers.
+    protected PrivacyViolationDetectionConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
+        /** load models. */
+        final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
+        final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
+
+        final Graph allocationModelGraph = graphLoader
+                .initializeAllocationModelGraph(modelHandler.getAllocationModel());
+
+        final Graph resourceEnvironmentGraph = graphLoader
+                .initializeResourceEnvironmentModelGraph(modelHandler.getResourceEnvironmentModel());
+        final Graph systemGraph = graphLoader.initializeSystemModelGraph(modelHandler.getSystemModel());
+
+        final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
+        final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
+                resourceEnvironmentGraph);
+        final ModelProvider<System> systemModelProvider = new ModelProvider<>(systemGraph);
+
         try {
-            return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs, this.rac,
-                    this.resourceEnvironmentModelProvider, this.allocationModelProvider, this.systemModelGraphProvider,
-                    this.warningFile, this.alarmsFile);
+            return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs,
+                    modelHandler.getCorrespondenceModel(), resourceEnvironmentModelProvider, allocationModelProvider,
+                    systemModelProvider, this.warningFile, this.alarmsFile);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
@@ -90,6 +111,25 @@ public final class PrivacyViolationDetectionServiceMain
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
+        try {
+            return CommandLineParameterEvaluation.checkDirectory(this.pcmDirectory, "PCM model directory", commander);
+        } catch (final IOException e) {
+            throw new ConfigurationException(e);
+        }
+    }
+
+    @Override
+    protected void shutdownService() {
+
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return null;
+    }
+
+    @Override
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
         return true;
     }
 
