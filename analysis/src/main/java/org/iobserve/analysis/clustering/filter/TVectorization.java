@@ -37,7 +37,7 @@ public class TVectorization extends AbstractConsumerStage<BehaviorModelTable> {
 	      List<Double> currentDistanceVector = iteratorVectors.next();
 	      
 	      double structureDistance = this.structureMetric.getDistance(table.getTransitions(), newTable.getTransitions());
-	      double parameterDistance = this.parameterMetric.getDistance(table.getSignatureMap(), newTable.getSignatureMap());
+	      double parameterDistance = this.parameterMetric.getDistance(table.getSignatures(), newTable.getSignatures());
 	      
 	      newDistanceVector.add(structureDistance);
 	      newDistanceVector.add(parameterDistance);

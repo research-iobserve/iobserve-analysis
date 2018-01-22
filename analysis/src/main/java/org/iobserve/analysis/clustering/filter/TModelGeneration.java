@@ -32,7 +32,7 @@ public class TModelGeneration extends AbstractStage<BehaviorModelTable[],List<Li
     private void generateModel(List<Integer> group, BehaviorModel model) {
       // Generate EntryCallNodes
       BehaviorModelTable table = this.tables[group.get(0)];
-      String[] signatures = table.getSignatures(); // TODO: add this to table class
+      String[] signatures = table.getInverseSignatures(); // TODO: add this to table class
       EntryCallNode[] nodes = new EntryCallNode[signatures.length];
       
       for (int i = 0; i < signatures.length; i++) {
@@ -44,10 +44,10 @@ public class TModelGeneration extends AbstractStage<BehaviorModelTable[],List<Li
       int[][] edges = new int[signatures.length][signatures.length];
       
       model = new BehaviorModel();
-      for (Integer i: group) {
-        table = this.tables[i];
+      for (Integer index: group) {
+        table = this.tables[index];
         
-        int[][] transitions = table.getTransitions();
+        Integer[][] transitions = table.getTransitions();
         for (int i = 0; i < signatures.length; i++) {
           for (int j = 0; j < signatures.length; j++) {
             edges[i][j] += transitions[i][j];
@@ -61,8 +61,6 @@ public class TModelGeneration extends AbstractStage<BehaviorModelTable[],List<Li
           model.addEdge(edge);
         }
       }
-      
-      return model;
     }
     
     public OutputPort<BehaviorModel[]> getOutputPort() {
