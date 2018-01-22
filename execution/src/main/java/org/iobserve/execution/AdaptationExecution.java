@@ -13,17 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation;
+package org.iobserve.execution;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.adaptation.execution.AbstractActionScript;
-import org.iobserve.adaptation.execution.ActionScriptFactory;
 import org.iobserve.evaluation.SystemEvaluation;
+import org.iobserve.execution.actionscripts.AbstractActionScript;
+import org.iobserve.execution.actionscripts.ActionScriptFactory;
 import org.iobserve.planning.systemadaptation.Action;
 
 import teetime.stage.basic.AbstractTransformation;
@@ -35,6 +37,8 @@ import teetime.stage.basic.AbstractTransformation;
  * @author Tobias Pöppke
  */
 public class AdaptationExecution extends AbstractTransformation<AdaptationData, AdaptationData> {
+
+    protected static final Logger LOG = LogManager.getLogger(AdaptationExecution.class);
 
     private final IAdaptationEventListener listener;
 
@@ -59,7 +63,7 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
     @Override
     protected void execute(final AdaptationData element) throws Exception {
 
-        SystemAdaptation.LOG.info("Executing adaptation");
+        AdaptationExecution.LOG.info("Executing adaptation");
 
         element.setDeployablesFolderURI(this.deployablesFolderURI);
 
