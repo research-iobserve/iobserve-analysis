@@ -18,9 +18,6 @@ package org.iobserve.analysis.service;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import kieker.common.configuration.Configuration;
-
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.configurations.MultiInputObservationConfiguration;
@@ -37,6 +34,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+
+import kieker.common.configuration.Configuration;
 
 /**
  * @author Reiner Jung
@@ -97,12 +96,11 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final ModelProvider<Allocation> allocationModelProvider, final ModelProvider<System> systemModelProvider,
             final ModelProvider<ResourceContainer> resourceContainerModelProvider,
             final ModelProvider<AssemblyContext> assemblyContextModelProvider, final String visualizationServiceURL,
-            final SnapshotBuilder snapshotBuilder, final URI perOpteryxDir, final URI lqnsDir,
-            final URI deployablesFolder) throws MalformedURLException {
+            final SnapshotBuilder snapshotBuilder) throws MalformedURLException {
         super(configuration, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
-                EOutputMode.UBM_VISUALIZATION, snapshotBuilder, perOpteryxDir, lqnsDir, deployablesFolder);
+                EOutputMode.UBM_VISUALIZATION, snapshotBuilder);
 
         final URL containerManagementURL = new URL(visualizationBaseUrl, "/v1/systems/" + systemId + "/changelogs");
 
