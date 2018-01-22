@@ -33,7 +33,6 @@ import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeployedEvent;
-import org.iobserve.common.record.ServletTraceHelper;
 
 /**
  * The record switch filter is used to scan the event stream and send events based on their type to
@@ -94,8 +93,6 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             this.allocationOutputPort.send((IAllocationEvent) element);
         } else if (element instanceof IDeallocationEvent) {
             this.deallocationOutputPort.send((IDeallocationEvent) element);
-        } else if (element instanceof ServletTraceHelper) { // NOCS
-            // TODO this is later used to improve trace information
         } else if (element instanceof IFlowRecord) {
             this.flowOutputPort.send((IFlowRecord) element);
             if (element instanceof TraceMetadata) {

@@ -40,7 +40,6 @@ import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.ServerGeoLocation;
 import org.iobserve.common.record.ServletDeployedEvent;
-import org.iobserve.common.record.ServletTraceHelper;
 import org.iobserve.common.record.ServletUndeployedEvent;
 import org.iobserve.common.record.SessionEndEvent;
 import org.iobserve.common.record.SessionStartEvent;
@@ -66,7 +65,6 @@ public class RecordSwitchTests {
     private static final String ADDRESS = "192.168.1.2";
     private static final short COUNTRY_CODE = 49;
     private static final String URL = "http://" + RecordSwitchTests.HOSTNAME + "/" + RecordSwitchTests.CONTEXT;
-    private static final int PORT = 8080;
     private static final int ORDER_INDEX = 0;
     private static final String OPERATION_SIGNATURE = "a.b.c.d.Class.runTest()";
     private static final String CLASS_SIGNATURE = "a.b.c.d.Class";
@@ -89,7 +87,6 @@ public class RecordSwitchTests {
     private final List<IUndeployedEvent> undeploymentRecords = new ArrayList<>();
     private final List<IAllocationEvent> allocationRecords = new ArrayList<>();
     private final List<IDeallocationEvent> deallocationRecords = new ArrayList<>();
-    private final List<ServletTraceHelper> servletTraceHelperRecords = new ArrayList<>();
     private final List<IFlowRecord> flowRecords = new ArrayList<>();
     private final List<TraceMetadata> traceMetadataRecords = new ArrayList<>();
     private final List<KiekerMetadataRecord> kiekerMetadataRecords = new ArrayList<>();
@@ -126,13 +123,10 @@ public class RecordSwitchTests {
         this.sessionEventRecords.add(sessionStartEvent);
 
         /** start trace. */
-        this.traceMetadataRecords.add(new TraceMetadata(RecordSwitchTests.TRACE_ID, RecordSwitchTests.THREAD_ID,
-                RecordSwitchTests.SESSION_ID, RecordSwitchTests.HOSTNAME, 0, -1));
-        this.flowRecords.addAll(this.traceMetadataRecords);
-
-        /** servlet helper record. */
-        this.servletTraceHelperRecords.add(new ServletTraceHelper(RecordSwitchTests.TRACE_ID,
-                RecordSwitchTests.HOSTNAME, RecordSwitchTests.PORT, RecordSwitchTests.URL));
+        final TraceMetadata traceMetadata = new TraceMetadata(RecordSwitchTests.TRACE_ID, RecordSwitchTests.THREAD_ID,
+                RecordSwitchTests.SESSION_ID, RecordSwitchTests.HOSTNAME, 0, -1);
+        this.traceMetadataRecords.add(traceMetadata);
+        this.flowRecords.add(traceMetadata);
 
         /** flow record. */
         this.flowRecords
@@ -171,7 +165,6 @@ public class RecordSwitchTests {
 
         this.inputRecords.add(sessionStartEvent);
 
-        this.inputRecords.addAll(this.servletTraceHelperRecords);
         this.inputRecords.addAll(this.flowRecords);
 
         this.inputRecords.add(sessionEndEvent);
@@ -220,10 +213,14 @@ public class RecordSwitchTests {
     public void checkDeploymentDetection() {
         final RecordSwitch recordSwitch = new RecordSwitch();
 
+        final List<IDeployedEvent> localDeploymentRecords = new ArrayList<>();
+
         StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(this.deploymentRecords).from(recordSwitch.getDeployedOutputPort()).start();
+                .receive(localDeploymentRecords).from(recordSwitch.getDeployedOutputPort()).start();
 
         Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertEquals("Wrong number of deployments", this.deploymentRecords.size(),
+                localDeploymentRecords.size());
     }
 
     /**
@@ -233,10 +230,14 @@ public class RecordSwitchTests {
     public void checkSesionEventDetection() {
         final RecordSwitch recordSwitch = new RecordSwitch();
 
+        final List<ISessionEvent> localSessionEventRecords = new ArrayList<>();
+
         StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(this.sessionEventRecords).from(recordSwitch.getSessionEventOutputPort()).start();
+                .receive(localSessionEventRecords).from(recordSwitch.getSessionEventOutputPort()).start();
 
         Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertEquals("Wrong number of session events", this.sessionEventRecords.size(),
+                localSessionEventRecords.size());
     }
 
     /**
@@ -246,10 +247,14 @@ public class RecordSwitchTests {
     public void checkUndeploymentDetection() {
         final RecordSwitch recordSwitch = new RecordSwitch();
 
+        final List<IUndeployedEvent> localUndeploymentRecords = new ArrayList<>();
+
         StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(this.undeploymentRecords).from(recordSwitch.getUndeployedOutputPort()).start();
+                .receive(localUndeploymentRecords).from(recordSwitch.getUndeployedOutputPort()).start();
 
         Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertEquals("Wrong number of undeployments", this.undeploymentRecords.size(),
+                localUndeploymentRecords.size());
     }
 
     /**
@@ -259,10 +264,14 @@ public class RecordSwitchTests {
     public void checkAllocationDetection() {
         final RecordSwitch recordSwitch = new RecordSwitch();
 
+        final List<IAllocationEvent> localAllocationRecords = new ArrayList<>();
+
         StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(this.allocationRecords).from(recordSwitch.getAllocationOutputPort()).start();
+                .receive(localAllocationRecords).from(recordSwitch.getAllocationOutputPort()).start();
 
         Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertEquals("Wrong number of allocations", this.allocationRecords.size(),
+                localAllocationRecords.size());
     }
 
     /**
@@ -272,10 +281,14 @@ public class RecordSwitchTests {
     public void checkDeallocationDetection() {
         final RecordSwitch recordSwitch = new RecordSwitch();
 
+        final List<IDeallocationEvent> localDeallocationRecords = new ArrayList<>();
+
         StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(this.deallocationRecords).from(recordSwitch.getDeallocationOutputPort()).start();
+                .receive(localDeallocationRecords).from(recordSwitch.getDeallocationOutputPort()).start();
 
         Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertEquals("Wrong number of deallocations", this.deallocationRecords.size(),
+                localDeallocationRecords.size());
     }
 
     /**
@@ -285,10 +298,14 @@ public class RecordSwitchTests {
     public void checkFlowRecordsDetection() {
         final RecordSwitch recordSwitch = new RecordSwitch();
 
+        final List<IFlowRecord> localFlowRecords = new ArrayList<>();
+
         StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(this.flowRecords).from(recordSwitch.getFlowOutputPort()).start();
+                .receive(localFlowRecords).from(recordSwitch.getFlowOutputPort()).start();
 
         Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertEquals("Mismatch in flow events.", this.flowRecords.size() + this.geolocationRecords.size(),
+                localFlowRecords.size());
     }
 
     /**
@@ -298,10 +315,14 @@ public class RecordSwitchTests {
     public void checkTraceMetadataDetection() {
         final RecordSwitch recordSwitch = new RecordSwitch();
 
+        final List<TraceMetadata> localTraceMetadataRecords = new ArrayList<>();
+
         StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(this.traceMetadataRecords).from(recordSwitch.getTraceMetadataOutputPort()).start();
+                .receive(localTraceMetadataRecords).from(recordSwitch.getTraceMetadataOutputPort()).start();
 
         Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertEquals("Wrong number of trace metadata", this.traceMetadataRecords.size(),
+                localTraceMetadataRecords.size());
     }
 
     /**
@@ -309,18 +330,44 @@ public class RecordSwitchTests {
      * KiekerMetadataRecord and record count.
      */
     @Test
-    public void checkKiekerMetadataIgnored() {
+    public void checkKiekerMetadataAndOtherRecordsIgnored() {
         final RecordSwitch recordSwitch = new RecordSwitch();
-        // TODO how to test a package drop?
-    }
 
-    /**
-     * Check whether all other records are ignored.
-     */
-    @Test
-    public void checkOtherRecordsIgnored() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
-        // TODO how to test a package drop?
+        final List<IDeallocationEvent> localDeallocationRecords = new ArrayList<>();
+        final List<IAllocationEvent> localAllocationRecords = new ArrayList<>();
+        final List<IDeployedEvent> localDeploymentRecords = new ArrayList<>();
+        final List<IUndeployedEvent> localUndeploymentRecords = new ArrayList<>();
+        final List<IFlowRecord> localFlowRecords = new ArrayList<>();
+        final List<ISessionEvent> localSessionEventRecords = new ArrayList<>();
+        final List<TraceMetadata> localTraceMetadataRecords = new ArrayList<>();
+
+        StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
+                .receive(localDeallocationRecords).from(recordSwitch.getDeallocationOutputPort()).and()
+                .receive(localAllocationRecords).from(recordSwitch.getAllocationOutputPort()).and()
+                .receive(localDeploymentRecords).from(recordSwitch.getDeployedOutputPort()).and()
+                .receive(localUndeploymentRecords).from(recordSwitch.getUndeployedOutputPort()).and()
+                .receive(localFlowRecords).from(recordSwitch.getFlowOutputPort()).and()
+                .receive(localSessionEventRecords).from(recordSwitch.getSessionEventOutputPort()).and()
+                .receive(localTraceMetadataRecords).from(recordSwitch.getTraceMetadataOutputPort()).start();
+        /** Got all records. */
+        Assert.assertEquals("Number of records did not match", recordSwitch.getRecordCount(), this.inputRecords.size());
+        /** Test completeness of output. */
+
+        Assert.assertEquals("Wrong number of deallocations", this.deallocationRecords.size(),
+                localDeallocationRecords.size());
+        Assert.assertEquals("Wrong number of allocations", this.allocationRecords.size(),
+                localAllocationRecords.size());
+        Assert.assertEquals("Wrong number of deployments", this.deploymentRecords.size(),
+                localDeploymentRecords.size());
+        Assert.assertEquals("Wrong number of undeployments", this.undeploymentRecords.size(),
+                localUndeploymentRecords.size());
+        Assert.assertEquals("Wrong number of flow records", this.flowRecords.size() + this.geolocationRecords.size(),
+                localFlowRecords.size());
+        Assert.assertEquals("Wrong number of session events", this.sessionEventRecords.size(),
+                localSessionEventRecords.size());
+        Assert.assertEquals("Wrong number of trace metadata", this.traceMetadataRecords.size(),
+                localTraceMetadataRecords.size());
+
     }
 
 }

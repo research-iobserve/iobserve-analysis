@@ -48,13 +48,21 @@ public class SessionAggregationCompositeStage extends AbstractConfigurableCompos
     private static final String PREFIX = SessionAggregationCompositeStage.class.getCanonicalName();
     private static final String MATCHER = SessionAggregationCompositeStage.PREFIX + ".matcher";
 
-    final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<>(
+    private final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<>(
             EventBasedTraceFactory.INSTANCE);
 
     private final EntryCallSequence entryCallSequence;
 
     private final TraceReconstructionFilter traceReconstructionFilter;
 
+    /**
+     * Create a session aggregation stage.
+     *
+     * @param configuration
+     *            configuration parameters
+     * @throws ConfigurationException
+     *             on configuration error
+     */
     public SessionAggregationCompositeStage(final Configuration configuration) throws ConfigurationException {
         super(configuration);
 

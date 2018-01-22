@@ -70,8 +70,8 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
      *            the model mapping model elements to code
      * @param usageModelProvider
      *            provider for the usage model
-     * @param repositoryModelProvider
-     *            provider for the repository model
+     * @param repositoryLookupModel
+     *            repository lookup model provider
      * @param varianceOfUserGroups
      *            variance of user groups for the behavior detection
      * @param thinkTime
@@ -80,8 +80,9 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
      *            type of workload
      */
     public TEntryEventSequence(final ICorrespondence correspondenceModel,
-            final ModelProvider<UsageModel> usageModelProvider, final RepositoryLookupModelProvider repositoryLookupModel,
-            final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload) {
+            final ModelProvider<UsageModel> usageModelProvider,
+            final RepositoryLookupModelProvider repositoryLookupModel, final int varianceOfUserGroups,
+            final int thinkTime, final boolean closedWorkload) {
         this.correspondenceModel = correspondenceModel;
         this.usageModelProvider = usageModelProvider;
         this.repositoryLookupModel = repositoryLookupModel;

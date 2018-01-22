@@ -48,32 +48,34 @@ public class DeploymentCompositeStage extends AbstractConfigurableCompositeStage
     /**
      * Create a composite stage for deployment handling.
      *
-     * @param resourceEnvironmentModelGraphProvider
+     * @param configuration
+     *            configuration parameters
+     * @param resourceEnvironmentModelProvider
      *            model provider for the resource environment
-     * @param allocationModelGraphProvider
+     * @param allocationModelProvider
      *            model provider for the allocation model (deployment model)
-     * @param systemModelGraphProvider
+     * @param systemModelProvider
      *            model provider for the system model
      * @param correspondence
      *            the correspondence model handler
      */
     public DeploymentCompositeStage(final Configuration configuration,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<System> systemModelGraphProvider, final ICorrespondence correspondence) {
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
+            final ICorrespondence correspondence) {
         super(configuration);
 
         this.deployPCMMapper = new DeployPCMMapper(correspondence);
         final SynthesizeAllocationEventStage synthesizeAllocationEvent = new SynthesizeAllocationEventStage(
-                resourceEnvironmentModelGraphProvider);
+                resourceEnvironmentModelProvider);
 
-        final DeploymentModelUpdater deployment = new DeploymentModelUpdater(allocationModelGraphProvider,
-                systemModelGraphProvider);
+        final DeploymentModelUpdater deployment = new DeploymentModelUpdater(allocationModelProvider,
+                systemModelProvider);
 
-        this.syntehticAllocation = new AllocationStage(resourceEnvironmentModelGraphProvider);
+        this.syntehticAllocation = new AllocationStage(resourceEnvironmentModelProvider);
         final AllocationFinishedStage allocationFinished = new AllocationFinishedStage();
-        final DeploymentModelUpdater deploymentAfterAllocation = new DeploymentModelUpdater(
-                allocationModelGraphProvider, systemModelGraphProvider);
+        final DeploymentModelUpdater deploymentAfterAllocation = new DeploymentModelUpdater(allocationModelProvider,
+                systemModelProvider);
 
         this.relayDeployedEventStage = new AggregateEventStage<>(2);
 

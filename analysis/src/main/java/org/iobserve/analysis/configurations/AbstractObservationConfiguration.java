@@ -97,8 +97,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            the repository model provider
      * @param resourceEnvironmentModelProvider
      *            the resource environment provider
-     * @param resourceEnvironmentModelGraphProvider
-     *            the resource environment graph provider
      * @param allocationModelProvider
      *            the allocation model provider
      * @param systemModelProvider

@@ -42,8 +42,8 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
     /**
      * Construct an analysis for multiple TCP inputs.
      *
-     * @param inputPort
-     *            the input port where the analysis is listening
+     * @param configuration
+     *            configuration object handling configuration file parameters
      * @param correspondenceModel
      *            the correspondence model
      * @param usageModelProvider
@@ -52,16 +52,10 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            the repository model provider
      * @param resourceEnvironmentModelProvider
      *            the resource environment provider
-     * @param resourceEnvironmentModelGraphProvider
-     *            the resource environment graph provider
      * @param allocationModelProvider
      *            the allocation model provider
-     * @param allocationModelGraphProvider
-     *            the allocation model graph provider
      * @param systemModelProvider
      *            the system model provider
-     * @param systemModelGraphProvider
-     *            the system model graph provider
      * @param varianceOfUserGroups
      *            variance of user groups, configuration for entry event filter
      * @param thinkTime

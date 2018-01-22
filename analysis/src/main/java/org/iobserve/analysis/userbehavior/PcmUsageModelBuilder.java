@@ -75,20 +75,20 @@ public class PcmUsageModelBuilder {
      *            states whether a closed or an open workload is requested
      * @param thinkTime
      *            states the think time of a closed workload
-     * @param repositoryModelProvider
-     *            repository model provider
+     * @param repositoryLookupModelProvider
+     *            repository lookup model provider
      * @param correspondenceModel
      *            used to map calls to call elements of the usage model
      */
     public PcmUsageModelBuilder(final List<BranchModel> loopBranchModels, final boolean isClosedWorkloadRequested,
-            final double thinkTime, final RepositoryLookupModelProvider repositoryLookupModel,
+            final double thinkTime, final RepositoryLookupModelProvider repositoryLookupModelProvider,
             final ICorrespondence correspondenceModel) {
         this.loopBranchModels = loopBranchModels;
         this.isClosedWorkloadRequested = isClosedWorkloadRequested;
         this.thinkTime = thinkTime;
         this.branchScenarioBehavioursOfUserGroups = new ArrayList<>();
         this.correspondenceModel = correspondenceModel;
-        this.repositoryLookupModel = repositoryLookupModel;
+        this.repositoryLookupModel = repositoryLookupModelProvider;
     }
 
     /**
