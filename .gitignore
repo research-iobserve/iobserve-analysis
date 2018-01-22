@@ -138,3 +138,4 @@ $RECYCLE.BIN/
 
 # End of https://www.gitignore.io/api/eclipse,linux,windows
 /.gradle/
+/bin/
