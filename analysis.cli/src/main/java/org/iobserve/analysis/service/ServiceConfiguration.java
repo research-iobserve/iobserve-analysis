@@ -18,6 +18,8 @@ package org.iobserve.analysis.service;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import kieker.common.configuration.Configuration;
+
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.configurations.MultiInputObservationConfiguration;
@@ -26,7 +28,7 @@ import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -34,8 +36,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import kieker.common.configuration.Configuration;
 
 /**
  * @author Reiner Jung
@@ -46,8 +46,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
     /**
      * Setup service configuration.
      *
-     * @param inputPort
-     *            analysis input port, default is 9876
+     * @param configuration
+     *            configuration object containing all parameters for all filters
      * @param visualizationBaseUrl
      *            base URL of the visualization service
      * @param systemId
@@ -90,12 +90,12 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      */
     public ServiceConfiguration(final Configuration configuration, final URL visualizationBaseUrl,
             final String systemId, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
-            final ICorrespondence correspondenceModel, final ModelProvider<UsageModel> usageModelProvider,
-            final ModelProvider<Repository> repositoryModelProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final ModelProvider<Allocation> allocationModelProvider, final ModelProvider<System> systemModelProvider,
-            final ModelProvider<ResourceContainer> resourceContainerModelProvider,
-            final ModelProvider<AssemblyContext> assemblyContextModelProvider, final String visualizationServiceURL,
+            final ICorrespondence correspondenceModel, final IModelProvider<UsageModel> usageModelProvider,
+            final IModelProvider<Repository> repositoryModelProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
+            final IModelProvider<ResourceContainer> resourceContainerModelProvider,
+            final IModelProvider<AssemblyContext> assemblyContextModelProvider, final String visualizationServiceURL,
             final SnapshotBuilder snapshotBuilder) throws MalformedURLException {
         super(configuration, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,

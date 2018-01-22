@@ -24,7 +24,11 @@ import kieker.common.logging.LogFactory;
 
 import org.iobserve.analysis.userbehavior.builder.SimpleSequenceReference;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
+import org.iobserve.model.provider.neo4j.Graph;
+import org.iobserve.model.provider.neo4j.GraphLoader;
+import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.palladiosimulator.pcm.repository.Repository;
 
 /**
  * Test of the UserBehaviorTransformation.
@@ -59,7 +63,7 @@ public final class UserBehaviorTransformationTest {
     }
 
     /**
-     * Test branch within a loop.
+     * TODO this test is dysfunctional as models are missing Test branch within a loop.
      *
      * @throws IOException
      *             when reading and writing files.
@@ -68,7 +72,11 @@ public final class UserBehaviorTransformationTest {
     public void testBranchWithinLoop() throws IOException {
 
         final ICorrespondence correspondenceModel = null; // TODO load that model
-        final RepositoryModelProvider repositoryModelProvider = null; // TODO load that model
+        final GraphLoader graphLoader = new GraphLoader(null); // TODO fix location
+        final Graph graph = graphLoader.createRepositoryModelGraph();
+        final ModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(graph);
+        final RepositoryLookupModelProvider repositoryLookupModel = new RepositoryLookupModelProvider(
+                repositoryModelProvider.readRootComponent(Repository.class));
 
         final int numberOfIterations = 500;
         final int stepSize = 1;
@@ -81,12 +89,12 @@ public final class UserBehaviorTransformationTest {
             final boolean isClosedWorkload = UserBehaviorTransformationTest.CLOSED_WORKLOAD;
 
             final ReferenceElements referenceElements = SimpleSequenceReference.getModel(
-                    UserBehaviorTransformationTest.REFERENCE_USAGE_MODEL, repositoryModelProvider, correspondenceModel,
+                    UserBehaviorTransformationTest.REFERENCE_USAGE_MODEL, repositoryLookupModel, correspondenceModel,
                     thinkTime, isClosedWorkload);
 
             final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(
                     referenceElements.getEntryCallSequenceModel(), numberOfUserGroups, varianceOfUserGroups,
-                    isClosedWorkload, thinkTime, repositoryModelProvider, correspondenceModel);
+                    isClosedWorkload, thinkTime, repositoryLookupModel, correspondenceModel);
 
             behaviorModeling.modelUserBehavior();
 

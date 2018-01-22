@@ -28,6 +28,7 @@ import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
@@ -164,39 +165,39 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
 
         /** Configure model handling. */
         // old model providers without neo4j
-        final PCMModelHandler modelProvider = new PCMModelHandler(this.modelInitDirectory);
+        final PCMModelHandler modelFileHandler = new PCMModelHandler(this.modelInitDirectory);
 
-        final ICorrespondence correspondenceModel = modelProvider.getCorrespondenceModel();
+        final ICorrespondence correspondenceModel = modelFileHandler.getCorrespondenceModel();
 
         /** initialize neo4j graphs. */
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
-        Graph repositoryModelGraph = graphLoader.initializeRepositoryModelGraph(modelProvider.getRepositoryModel());
+        Graph repositoryModelGraph = graphLoader.initializeRepositoryModelGraph(modelFileHandler.getRepositoryModel());
         Graph resourceEnvironmentModelGraph = graphLoader
-                .initializeResourceEnvironmentModelGraph(modelProvider.getResourceEnvironmentModel());
-        Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(modelProvider.getAllocationModel());
-        Graph systemModelGraph = graphLoader.initializeSystemModelGraph(modelProvider.getSystemModel());
-        Graph usageModelGraph = graphLoader.initializeUsageModelGraph(modelProvider.getUsageModel());
+                .initializeResourceEnvironmentModelGraph(modelFileHandler.getResourceEnvironmentModel());
+        Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(modelFileHandler.getAllocationModel());
+        Graph systemModelGraph = graphLoader.initializeSystemModelGraph(modelFileHandler.getSystemModel());
+        Graph usageModelGraph = graphLoader.initializeUsageModelGraph(modelFileHandler.getUsageModel());
 
         /** load neo4j graphs. */
         // TODO is this necessary to reload all repositories?
-        repositoryModelGraph = graphLoader.getRepositoryModelGraph();
-        resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
-        allocationModelGraph = graphLoader.getAllocationModelGraph();
-        systemModelGraph = graphLoader.getSystemModelGraph();
-        usageModelGraph = graphLoader.getUsageModelGraph();
+        repositoryModelGraph = graphLoader.createRepositoryModelGraph();
+        resourceEnvironmentModelGraph = graphLoader.createResourceEnvironmentModelGraph();
+        allocationModelGraph = graphLoader.createAllocationModelGraph();
+        systemModelGraph = graphLoader.createSystemModelGraph();
+        usageModelGraph = graphLoader.createUsageModelGraph();
 
         /** new graphModelProvider. */
-        final ModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
-        final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
+        final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
+        final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentModelGraph);
-        final ModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
+        final IModelProvider<ResourceContainer> resourceContainerModelProvider = new ModelProvider<>(
                 resourceEnvironmentModelGraph);
-        final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
-        final ModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(allocationModelGraph);
-        final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider = new ModelProvider<>(
+        final IModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
+        final IModelProvider<AssemblyContext> assemblyContextModelProvider = new ModelProvider<>(allocationModelGraph);
+        final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider = new ModelProvider<>(
                 systemModelGraph);
-        final ModelProvider<UsageModel> usageModelProvider = new ModelProvider<>(usageModelGraph);
+        final IModelProvider<UsageModel> usageModelProvider = new ModelProvider<>(usageModelGraph);
 
         // get systemId
         final org.palladiosimulator.pcm.system.System systemModel = systemModelProvider
@@ -222,7 +223,7 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
                     && !this.deployablesFolderPath.isEmpty()) {
                 SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(this.snapshotPath));
                 try {
-                    snapshotBuilder = new SnapshotBuilder("Runtime", modelProvider);
+                    snapshotBuilder = new SnapshotBuilder("Runtime", modelFileHandler);
                     perOpteryxUri = URI.createFileURI(this.perOpteryxUriPath);
                     lqnsUri = URI.createFileURI(this.lqnsUriPath);
                     deployablesFolder = URI.createFileURI(this.deployablesFolderPath);

@@ -41,7 +41,7 @@ public class InstantiationFactory {
      *
      * @param c
      *            This class defines the expected result of the method call.
-     * @param classname
+     * @param className
      *            The name of the class to be created.
      * @param configuration
      *            The configuration which will be used to initialize the class in question.

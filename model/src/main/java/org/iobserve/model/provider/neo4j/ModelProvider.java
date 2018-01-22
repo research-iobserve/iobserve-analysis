@@ -305,6 +305,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Id of component to be read
      * @return The read component
      */
+    @Override
     @SuppressWarnings("unchecked")
     public T readOnlyComponentById(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
@@ -346,6 +347,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            EntityName of the component(s) to be read
      * @return List of the read component(s)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List<T> readOnlyComponentByName(final Class<T> clazz, final String entityName) {
         final Label label = Label.label(clazz.getSimpleName());
@@ -542,6 +544,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Data type of the root component
      * @return The read component
      */
+    @Override
     @SuppressWarnings("unchecked")
     public T readOnlyRootComponent(final Class<T> clazz) {
         EObject component = null;
@@ -638,6 +641,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Id of the referenced component
      * @return The referencing components
      */
+    @Override
     public List<EObject> readOnlyReferencingComponentsById(final Class<?> clazz, final String id) {
         final List<EObject> referencingComponents = new LinkedList<>();
         final Label label = Label.label(clazz.getSimpleName());

@@ -21,7 +21,7 @@ import java.util.List;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
@@ -44,15 +44,9 @@ public class UserBehaviorTransformation {
     private final boolean isClosedWorkload;
     private final double thinkTime;
     private final ICorrespondence correspondenceModel;
-    // Response times of the individual process steps
-    private long responseTimeOfUserGroupExtraction = 0;
-    private long responseTimeOfBranchExtraction = 0;
-    private long responseTimeOfLoopExtraction = 0;
-    private long responseTimeOfPcmModelling = 0;
-    private long overallResponseTime = 0;
 
     private UsageModel pcmUsageModel;
-    private final RepositoryModelProvider repositoryModelProvider;
+    private final RepositoryLookupModelProvider repositoryLookupModel;
 
     /**
      *
@@ -68,7 +62,7 @@ public class UserBehaviorTransformation {
      *            states whether a closed or open workload specification is requested by the user
      * @param thinkTime
      *            states the think time of a closed workload specification
-     * @param repositoryModelProvider
+     * @param repositoryLookupModel
      *            repository model provider
      * @param correspondenceModel
      *            necessary for the creation of a PCM usage model
@@ -76,14 +70,14 @@ public class UserBehaviorTransformation {
     public UserBehaviorTransformation(final EntryCallSequenceModel inputEntryCallSequenceModel,
             final int numberOfUserGroupsFromInputUsageModel, final int varianceOfUserGroups,
             final boolean isClosedWorkload, final double thinkTime,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel) {
+            final RepositoryLookupModelProvider repositoryLookupModel, final ICorrespondence correspondenceModel) {
         this.inputEntryCallSequenceModel = inputEntryCallSequenceModel;
         this.numberOfUserGroupsFromInputUsageModel = numberOfUserGroupsFromInputUsageModel;
         this.varianceOfUserGroups = varianceOfUserGroups;
         this.isClosedWorkload = isClosedWorkload;
         this.thinkTime = thinkTime;
         this.correspondenceModel = correspondenceModel;
-        this.repositoryModelProvider = repositoryModelProvider;
+        this.repositoryLookupModel = repositoryLookupModel;
     }
 
     /**
@@ -104,11 +98,6 @@ public class UserBehaviorTransformation {
             return;
         }
 
-        final long timeBeforeOverall = System.currentTimeMillis();
-        final long timeAfterOverall;
-        long timeBefore;
-        long timeAfter;
-
         /**
          * 1. The extraction of user groups. It clusters the entry call sequence model to detect
          * different user groups within the user sessions. The result is a separate entry call
@@ -116,7 +105,6 @@ public class UserBehaviorTransformation {
          * the user sessions that are assigned to the user group - the likelihood of its user group
          * - the parameters for the workload intensity of its user group
          */
-        timeBefore = System.currentTimeMillis();
         final UserGroupExtraction extractionOfUserGroups = new UserGroupExtraction(this.inputEntryCallSequenceModel,
                 this.numberOfUserGroupsFromInputUsageModel, this.varianceOfUserGroups, this.isClosedWorkload);
         extractionOfUserGroups.extractUserGroups();
@@ -124,8 +112,6 @@ public class UserBehaviorTransformation {
         // each user group
         final List<EntryCallSequenceModel> entryCallSequenceModels = extractionOfUserGroups
                 .getEntryCallSequenceModelsOfUserGroups();
-        timeAfter = System.currentTimeMillis();
-        this.responseTimeOfUserGroupExtraction = timeAfter - timeBefore;
 
         /**
          * 2. The aggregation of the call sequences. It aggregates each call sequence model that is
@@ -134,12 +120,9 @@ public class UserBehaviorTransformation {
          * alternative sequences in form of branches. It detects branches and the branch
          * likelihoods. The result is one BranchModel for each user group.
          */
-        timeBefore = System.currentTimeMillis();
         final BranchExtraction branchExtraction = new BranchExtraction(entryCallSequenceModels);
         branchExtraction.createCallBranchModels();
         final List<BranchModel> branchModels = branchExtraction.getBranchOperationModels();
-        timeAfter = System.currentTimeMillis();
-        this.responseTimeOfBranchExtraction = timeAfter - timeBefore;
 
         /**
          * 3. The detection of iterated behavior. It detects iterated behavior within the created
@@ -148,12 +131,9 @@ public class UserBehaviorTransformation {
          * the count of each loop. The result is one LoopBranchModel for each user group that
          * additionally contains loops for iterated entryCalls.
          */
-        timeBefore = System.currentTimeMillis();
         final LoopExtraction loopDetection = new LoopExtraction(branchModels);
         loopDetection.createCallLoopBranchModels();
         final List<BranchModel> loopBranchModels = loopDetection.getloopBranchModels();
-        timeAfter = System.currentTimeMillis();
-        this.responseTimeOfLoopExtraction = timeAfter - timeBefore;
 
         /**
          * 4. Modeling of the usage behavior. It creates a PCM usage model corresponding to the
@@ -161,15 +141,10 @@ public class UserBehaviorTransformation {
          * the usage model. It contains loops and branches corresponding to the LoopBranchModels.
          * The resulting PCM usage model can be retrieved via the getter method.
          */
-        timeBefore = System.currentTimeMillis();
         final PcmUsageModelBuilder pcmUsageModelBuilder = new PcmUsageModelBuilder(loopBranchModels,
-                this.isClosedWorkload, this.thinkTime, this.repositoryModelProvider, this.correspondenceModel);
+                this.isClosedWorkload, this.thinkTime, this.repositoryLookupModel, this.correspondenceModel);
         this.pcmUsageModel = pcmUsageModelBuilder.createUsageModel();
-        timeAfter = System.currentTimeMillis();
-        this.responseTimeOfPcmModelling = timeAfter - timeBefore;
 
-        timeAfterOverall = System.currentTimeMillis();
-        this.overallResponseTime = timeAfterOverall - timeBeforeOverall;
     }
 
     /**
@@ -181,26 +156,6 @@ public class UserBehaviorTransformation {
      */
     public UsageModel getPcmUsageModel() {
         return this.pcmUsageModel;
-    }
-
-    public long getResponseTimeOfUserGroupExtraction() {
-        return this.responseTimeOfUserGroupExtraction;
-    }
-
-    public long getResponseTimeOfBranchExtraction() {
-        return this.responseTimeOfBranchExtraction;
-    }
-
-    public long getResponseTimeOfLoopExtraction() {
-        return this.responseTimeOfLoopExtraction;
-    }
-
-    public long getResponseTimeOfPcmModelling() {
-        return this.responseTimeOfPcmModelling;
-    }
-
-    public long getOverallResponseTime() {
-        return this.overallResponseTime;
     }
 
 }

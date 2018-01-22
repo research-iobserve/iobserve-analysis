@@ -27,7 +27,7 @@ import teetime.framework.AbstractConsumerStage;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
@@ -48,8 +48,8 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
 
     private final URL outputURL;
     private final String systemId;
-    private final ModelProvider<ResourceContainer> resourceContainerModelProvider;
-    private final ModelProvider<AssemblyContext> allocationModelProvider;
+    private final IModelProvider<ResourceContainer> resourceContainerModelProvider;
+    private final IModelProvider<AssemblyContext> allocationModelProvider;
 
     /**
      * Output visualization configuration.
@@ -65,8 +65,8 @@ public class DeploymentVisualizationStage extends AbstractConsumerStage<PCMDeplo
      *            model provider for the allocation model
      */
     public DeploymentVisualizationStage(final URL outputURL, final String systemId,
-            final ModelProvider<ResourceContainer> resourceContainerModelProvider,
-            final ModelProvider<AssemblyContext> allocationModelProvider) {
+            final IModelProvider<ResourceContainer> resourceContainerModelProvider,
+            final IModelProvider<AssemblyContext> allocationModelProvider) {
         this.outputURL = outputURL;
         this.systemId = systemId;
         this.resourceContainerModelProvider = resourceContainerModelProvider;

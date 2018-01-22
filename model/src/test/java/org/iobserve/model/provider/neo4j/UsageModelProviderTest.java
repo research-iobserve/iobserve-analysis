@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.modelneo4j;
+package org.iobserve.model.provider.neo4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +47,7 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 public class UsageModelProviderTest implements IModelProviderTest {
     private static final File GRAPH_DIR = new File("./testdb");
 
-    private static Graph graph = new GraphLoader(UsageModelProviderTest.GRAPH_DIR).getUsageModelGraph();
+    private static Graph graph = new GraphLoader(UsageModelProviderTest.GRAPH_DIR).createUsageModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 

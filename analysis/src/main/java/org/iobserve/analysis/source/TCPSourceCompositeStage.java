@@ -39,8 +39,16 @@ public class TCPSourceCompositeStage extends AbstractConfigurableCompositeStage 
     private static final String CAPACITY = TCPSourceCompositeStage.PREFIX + ".capacity";
     private static final int DEFAULT_CAPACITY = 1024 * 1024;
 
-    final MultipleConnectionTcpReaderStage reader;
+    private final MultipleConnectionTcpReaderStage reader;
 
+    /**
+     * Create a composite reader stage.
+     *
+     * @param configuration
+     *            configuration parameters
+     */
+    // TODO externalize parameters, all parameters shall be parsed in the central configuration
+    // object
     public TCPSourceCompositeStage(final Configuration configuration) {
         super(configuration);
         final int inputPort = configuration.getIntProperty(TCPSourceCompositeStage.SOURCE_PORT,

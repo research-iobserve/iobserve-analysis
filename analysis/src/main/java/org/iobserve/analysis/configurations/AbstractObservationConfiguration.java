@@ -41,7 +41,9 @@ import org.iobserve.analysis.traces.EntryCallSequence;
 import org.iobserve.analysis.traces.TraceOperationCleanupFilter;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+
+import org.iobserve.model.provider.neo4j.IModelProvider;
+
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.iobserve.stages.general.RecordSwitch;
@@ -84,8 +86,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            the repository model provider
      * @param resourceEnvironmentModelProvider
      *            the resource environment provider
-     * @param resourceEnvironmentModelGraphProvider
-     *            the resource environment graph provider
      * @param allocationModelProvider
      *            the allocation model provider
      * @param systemModelProvider
@@ -114,10 +114,11 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            folder containing deployables
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
-            final ModelProvider<UsageModel> usageModelProvider, final ModelProvider<Repository> repositoryModelProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final ModelProvider<Allocation> allocationModelProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
+            final IModelProvider<UsageModel> usageModelProvider,
+            final IModelProvider<Repository> repositoryModelProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
             final SnapshotBuilder snapshotBuilder) {

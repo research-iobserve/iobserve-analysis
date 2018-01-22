@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.modelneo4j;
+package org.iobserve.model.provider.neo4j;
 
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Before;

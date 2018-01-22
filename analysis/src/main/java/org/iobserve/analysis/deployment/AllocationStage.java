@@ -25,7 +25,7 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -42,7 +42,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 public final class AllocationStage extends AbstractConsumerStage<IAllocationEvent> {
 
     /** reference to {@link ResourceEnvironment} provider. */
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     /** Relay allocation event. */
     private final OutputPort<IAllocationEvent> allocationOutputPort = this.createOutputPort();
@@ -56,7 +56,7 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
      * @param resourceEnvironmentModelGraphProvider
      *            the resource environment model
      */
-    public AllocationStage(final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
+    public AllocationStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
 

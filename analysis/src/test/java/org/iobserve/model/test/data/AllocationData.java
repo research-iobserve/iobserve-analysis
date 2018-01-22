@@ -13,25 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.test.data;
+package org.iobserve.model.test.data;
 
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.core.composition.CompositionFactory;
+import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.allocation.AllocationFactory;
 
 /**
  * @author Reiner Jung
  *
  */
-public class AssemblyContextData {
-    public static final String ASSEMBLY_CONTEXT_NAME = CorrespondenceModelData.PCM_ENTITY_NAME + "_"
-            + ImplementationLevelData.SERVICE;
-    public static final AssemblyContext ASSEMBLY_CONTEXT = AssemblyContextData.createAssemblyContext();
+public class AllocationData {
+    public static final Allocation ALLOCATION = AllocationData.createAllocation();
 
-    private static AssemblyContext createAssemblyContext() {
-        final AssemblyContext assemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
-        assemblyContext.setEntityName(AssemblyContextData.ASSEMBLY_CONTEXT_NAME);
-        assemblyContext.setId("_assemblycontext_test_id");
-
-        return assemblyContext;
+    private static Allocation createAllocation() {
+        return AllocationFactory.eINSTANCE.createAllocation();
     }
 }

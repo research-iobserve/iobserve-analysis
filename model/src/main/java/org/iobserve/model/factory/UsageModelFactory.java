@@ -16,7 +16,7 @@
 package org.iobserve.model.factory;
 
 import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.repository.OperationInterface;
@@ -223,16 +223,16 @@ public final class UsageModelFactory {
     /**
      * Create an EntryLevelSystemCall with the given operation signature.
      *
-     * @param repositoryModelProvider
-     *            provider for a repository model
+     * @param repositoryLookupModel
+     *            provides a lookup model for the repository
      * @param operationID
      *            operation id of the EntryLevelSystemCall
      * @return null, if the creation failed, the instance if not.
      */
-    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryModelProvider repositoryModelProvider,
+    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryLookupModelProvider repositoryLookupModel,
             final String operationID) {
 
-        final OperationSignature opSig = repositoryModelProvider.getOperationSignature(operationID);
+        final OperationSignature opSig = repositoryLookupModel.getOperationSignature(operationID);
         final EntryLevelSystemCall eSysCall;
 
         if (opSig != null) {
@@ -241,7 +241,7 @@ public final class UsageModelFactory {
             eSysCall.setOperationSignature__EntryLevelSystemCall(opSig);
 
             final OperationInterface opInf = opSig.getInterface__OperationSignature();
-            final OperationProvidedRole providedRole = repositoryModelProvider.getOperationProvidedRole(opInf);
+            final OperationProvidedRole providedRole = repositoryLookupModel.getOperationProvidedRole(opInf);
             eSysCall.setProvidedRole_EntryLevelSystemCall(providedRole);
         } else {
             eSysCall = null;
@@ -252,15 +252,15 @@ public final class UsageModelFactory {
     /**
      * Create an EntryLevelSystemCall with the given correspondent.
      *
-     * @param repositoryModelProvider
-     *            provider for a repository model
+     * @param repositoryLookupModel
+     *            provides a lookup model for the repository
      * @param correspondent
      *            correspondent containing operation signature
      * @return null, if the creation failed, the instance if not.
      */
-    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryModelProvider repositoryModelProvider,
+    public static EntryLevelSystemCall createEntryLevelSystemCall(final RepositoryLookupModelProvider repositoryLookupModel,
             final Correspondent correspondent) {
-        return UsageModelFactory.createEntryLevelSystemCall(repositoryModelProvider, correspondent.getPcmOperationId());
+        return UsageModelFactory.createEntryLevelSystemCall(repositoryLookupModel, correspondent.getPcmOperationId());
     }
 
     /**

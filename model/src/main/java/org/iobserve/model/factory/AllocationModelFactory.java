@@ -68,7 +68,7 @@ public final class AllocationModelFactory {
      *            container
      * @param assemblyContext
      *            assembly context.
-     * 
+     *
      * @return true in case such allocation context exists.
      */
     public static boolean isAllocationPresent(final Allocation allocationModel,
