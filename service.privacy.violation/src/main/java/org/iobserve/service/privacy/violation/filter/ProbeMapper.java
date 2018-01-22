@@ -19,15 +19,15 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.service.privacy.violation.data.ProbeLocation;
+import org.iobserve.service.privacy.violation.data.IProbeManagement;
 
 /**
- * Translate model level probe control events to code level events.
+ * Translate model level {@link IProbeManagement} events to code level events.
  *
  * @author Reiner Jung
  *
  */
-public class ProbeMapper extends AbstractConsumerStage<ProbeLocation> {
+public class ProbeMapper extends AbstractConsumerStage<IProbeManagement> {
 
     private final OutputPort<String> outputPort = this.createOutputPort();
     private final ICorrespondence rac;
@@ -43,7 +43,7 @@ public class ProbeMapper extends AbstractConsumerStage<ProbeLocation> {
     }
 
     @Override
-    protected void execute(final ProbeLocation element) throws Exception {
+    protected void execute(final IProbeManagement element) throws Exception {
         // TODO Auto-generated method stub
 
     }

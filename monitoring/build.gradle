@@ -12,7 +12,7 @@ dependencies {
 	clover 'org.openclover:clover:4.2.0'
 
 	compile project(":common")
-	compile 'net.kieker-monitoring:kieker:1.13'
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
 	compile 'javax.interceptor:javax.interceptor-api:1.2'
 	compile 'javax.servlet:javax.servlet-api:3.1.0'
 	

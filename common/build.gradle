@@ -6,7 +6,7 @@ dependencies {
 	clover 'org.openclover:clover:4.2.0'
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
-	compile 'net.kieker-monitoring:kieker:1.13'
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
 }
 
 sourceSets {
