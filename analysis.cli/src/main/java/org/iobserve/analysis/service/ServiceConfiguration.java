@@ -47,8 +47,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
     /**
      * Setup service configuration.
      *
-     * @param inputPort
-     *            analysis input port, default is 9876
+     * @param configuration
+     *            configuration object containing all parameters for all filters
      * @param visualizationBaseUrl
      *            base URL of the visualization service
      * @param systemId

@@ -91,6 +91,7 @@ public final class InitializeDeploymentVisualization {
      * @param usageModelGraphProvider
      *            provider for usage model
      * @throws MalformedURLException
+     *             in case the specified url does not work
      */
 
     public InitializeDeploymentVisualization(final URL visualizationBaseUrl, final String systemId,
