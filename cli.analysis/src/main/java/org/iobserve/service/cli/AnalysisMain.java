@@ -20,12 +20,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.converters.BooleanConverter;
-import com.beust.jcommander.converters.FileConverter;
-import com.beust.jcommander.converters.IntegerConverter;
-
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.ConfigurationException;
@@ -45,6 +39,12 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.converters.BooleanConverter;
+import com.beust.jcommander.converters.FileConverter;
+import com.beust.jcommander.converters.IntegerConverter;
 
 /**
  * Main class for starting the iObserve application.
@@ -200,16 +200,12 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
         SnapshotBuilder.setBaseSnapshotURI(URI.createFileURI(this.snapshotPath));
         try {
             final SnapshotBuilder snapshotBuilder = new SnapshotBuilder("Runtime", modelHandler);
-            final URI perOpteryxUri = URI.createFileURI(this.perOpteryxUriPath);
-            final URI lqnsUri = URI.createFileURI(this.lqnsUriPath);
-            final URI deployablesFolder = URI.createFileURI(this.deployablesFolderPath);
-            final CLIEventListener eventListener = new CLIEventListener(this.interactiveMode);
 
             return new FileObservationConfiguration(monitoringDataDirectories, correspondenceModel,
                     usageModelGraphProvider, repositoryModelGraphProvider, resourceEnvironmentModelGraphProvider,
                     allocationModelGraphProvider, systemModelGraphProvider, this.varianceOfUserGroups, this.thinkTime,
                     this.closedWorkload, this.visualizationServiceURL, this.aggregationType, this.outputMode,
-                    snapshotBuilder, perOpteryxUri, lqnsUri, eventListener, deployablesFolder);
+                    snapshotBuilder);
         } catch (final InitializationException e) {
             throw new ConfigurationException(e);
         }
@@ -218,8 +214,8 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
 
-        if (this.snapshotPath == null || this.perOpteryxUriPath == null || this.lqnsUriPath == null
-                || this.deployablesFolderPath == null || this.interactiveMode == false) {
+        if ((this.snapshotPath == null) || (this.perOpteryxUriPath == null) || (this.lqnsUriPath == null)
+                || (this.deployablesFolderPath == null) || (this.interactiveMode == false)) {
             AbstractServiceMain.LOG.error("Missing required parameter for cli.");
             commander.usage();
             return false;
