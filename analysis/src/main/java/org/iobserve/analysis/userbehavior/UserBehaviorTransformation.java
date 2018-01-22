@@ -21,7 +21,7 @@ import java.util.List;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
@@ -52,7 +52,7 @@ public class UserBehaviorTransformation {
     private long overallResponseTime = 0;
 
     private UsageModel pcmUsageModel;
-    private final RepositoryModelProvider repositoryModelProvider;
+    private final RepositoryLookupModelProvider repositoryLookupModel;
 
     /**
      *
@@ -68,22 +68,22 @@ public class UserBehaviorTransformation {
      *            states whether a closed or open workload specification is requested by the user
      * @param thinkTime
      *            states the think time of a closed workload specification
-     * @param repositoryModelProvider
+     * @param repositoryLookupModel
      *            repository model provider
      * @param correspondenceModel
      *            necessary for the creation of a PCM usage model
      */
     public UserBehaviorTransformation(final EntryCallSequenceModel inputEntryCallSequenceModel,
             final int numberOfUserGroupsFromInputUsageModel, final int varianceOfUserGroups,
-            final boolean isClosedWorkload, final double thinkTime,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel) {
+            final boolean isClosedWorkload, final double thinkTime, final RepositoryLookupModelProvider repositoryLookupModel,
+            final ICorrespondence correspondenceModel) {
         this.inputEntryCallSequenceModel = inputEntryCallSequenceModel;
         this.numberOfUserGroupsFromInputUsageModel = numberOfUserGroupsFromInputUsageModel;
         this.varianceOfUserGroups = varianceOfUserGroups;
         this.isClosedWorkload = isClosedWorkload;
         this.thinkTime = thinkTime;
         this.correspondenceModel = correspondenceModel;
-        this.repositoryModelProvider = repositoryModelProvider;
+        this.repositoryLookupModel = repositoryLookupModel;
     }
 
     /**
@@ -163,7 +163,7 @@ public class UserBehaviorTransformation {
          */
         timeBefore = System.currentTimeMillis();
         final PcmUsageModelBuilder pcmUsageModelBuilder = new PcmUsageModelBuilder(loopBranchModels,
-                this.isClosedWorkload, this.thinkTime, this.repositoryModelProvider, this.correspondenceModel);
+                this.isClosedWorkload, this.thinkTime, this.repositoryLookupModel, this.correspondenceModel);
         this.pcmUsageModel = pcmUsageModelBuilder.createUsageModel();
         timeAfter = System.currentTimeMillis();
         this.responseTimeOfPcmModelling = timeAfter - timeBefore;

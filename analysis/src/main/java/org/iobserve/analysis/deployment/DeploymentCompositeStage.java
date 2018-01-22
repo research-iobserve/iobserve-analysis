@@ -25,7 +25,7 @@ import org.iobserve.analysis.IDeploymentCompositeStage;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.stages.general.AggregateEventStage;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -58,9 +58,9 @@ public class DeploymentCompositeStage extends AbstractConfigurableCompositeStage
      *            the correspondence model handler
      */
     public DeploymentCompositeStage(final Configuration configuration,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final ModelProvider<Allocation> allocationModelGraphProvider,
-            final ModelProvider<System> systemModelGraphProvider, final ICorrespondence correspondence) {
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+            final IModelProvider<Allocation> allocationModelGraphProvider,
+            final IModelProvider<System> systemModelGraphProvider, final ICorrespondence correspondence) {
         super(configuration);
 
         this.deployPCMMapper = new DeployPCMMapper(correspondence);

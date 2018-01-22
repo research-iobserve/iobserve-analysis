@@ -185,11 +185,11 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
 
         // TODO is this reloading really necessary?
         /** load neo4j graphs. */
-        repositoryModelGraph = graphLoader.getRepositoryModelGraph();
-        resourceEnvironmentModelGraph = graphLoader.getResourceEnvironmentModelGraph();
-        allocationModelGraph = graphLoader.getAllocationModelGraph();
-        systemModelGraph = graphLoader.getSystemModelGraph();
-        usageModelGraph = graphLoader.getUsageModelGraph();
+        repositoryModelGraph = graphLoader.createRepositoryModelGraph();
+        resourceEnvironmentModelGraph = graphLoader.createResourceEnvironmentModelGraph();
+        allocationModelGraph = graphLoader.createAllocationModelGraph();
+        systemModelGraph = graphLoader.createSystemModelGraph();
+        usageModelGraph = graphLoader.createUsageModelGraph();
 
         /** new graphModelProvider. */
         final ModelProvider<Repository> repositoryModelGraphProvider = new ModelProvider<>(repositoryModelGraph);

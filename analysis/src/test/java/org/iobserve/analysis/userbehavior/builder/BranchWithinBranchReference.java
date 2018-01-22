@@ -27,7 +27,7 @@ import org.iobserve.analysis.userbehavior.TestHelper;
 import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.factory.UsageModelFactory;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
@@ -62,7 +62,7 @@ public final class BranchWithinBranchReference {
      *            file name of the reference model to store its result
      * @param usageModelBuilder
      *            usage model builder
-     * @param repositoryModelProvider
+     * @param repositoryLookupModel
      *            repository model provider
      * @param correspondenceModel
      *            correspondence model
@@ -72,7 +72,7 @@ public final class BranchWithinBranchReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final UsageModelFactory usageModelBuilder, final RepositoryModelProvider repositoryModelProvider,
+            final UsageModelFactory usageModelBuilder, final RepositoryLookupModelProvider repositoryLookupModel,
             final ICorrespondence correspondenceModel) throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
@@ -97,7 +97,7 @@ public final class BranchWithinBranchReference {
                 numberOfTransitionsOfExteriorBranch, numberOfTransitionsOfInteriorBranches, entryCallSequenceModel);
 
         final UsageModel usageModel = BranchWithinBranchReference.createTheReferenceModel(usageModelBuilder,
-                repositoryModelProvider, correspondenceModel, numberOfTransitionsOfExteriorBranch,
+                repositoryLookupModel, correspondenceModel, numberOfTransitionsOfExteriorBranch,
                 numberOfTransitionsOfInteriorBranches, numberOfConcurrentUsers, branchTransitionCounter,
                 listOfbranchTransitionCounterInterior);
 
@@ -185,6 +185,7 @@ public final class BranchWithinBranchReference {
      * Creates the reference model.
      *
      * @param usageModelBuilder
+     * @param repositoryLookupModel
      * @param correspondenceModel
      * @param numberOfTransitionsOfExteriorBranch
      * @param numberOfTransitionsOfInteriorBranches
@@ -194,7 +195,7 @@ public final class BranchWithinBranchReference {
      * @return
      */
     private static UsageModel createTheReferenceModel(final UsageModelFactory usageModelBuilder,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel,
+            final RepositoryLookupModelProvider repositoryLookupModel, final ICorrespondence correspondenceModel,
             final int numberOfTransitionsOfExteriorBranch, final int numberOfTransitionsOfInteriorBranches,
             final int numberOfConcurrentUsers, final List<Integer> branchTransitionCounter,
             final List<List<Integer>> listOfbranchTransitionCounterInterior) {
@@ -235,7 +236,7 @@ public final class BranchWithinBranchReference {
             }
             if (optionCorrespondent.isPresent()) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                        .createEntryLevelSystemCall(repositoryModelProvider, optionCorrespondent.get());
+                        .createEntryLevelSystemCall(repositoryLookupModel, optionCorrespondent.get());
                 UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
                 UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
@@ -283,7 +284,7 @@ public final class BranchWithinBranchReference {
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
                     final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                            .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                            .createEntryLevelSystemCall(repositoryLookupModel, correspondent);
                     UsageModelFactory.addUserAction(branchTransitionBehaviourInterior, entryLevelSystemCall);
                     UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                     lastAction = entryLevelSystemCall;

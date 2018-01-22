@@ -21,7 +21,7 @@ import javax.json.Json;
 import javax.json.JsonObject;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
@@ -89,7 +89,7 @@ public class ServiceInstanceService {
 
     public JsonObject deleteServiceInstance(final AssemblyContext assemblyContext, final String systemId,
             final String nodeId,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
+            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
         this.serviceInstanceId = "si" + assemblyContext.getId();
         // check whether this serviceInstance is referenced by communicationInstances
         final List<EObject> maybeAssemblyConnectors = systemModelGraphProvider

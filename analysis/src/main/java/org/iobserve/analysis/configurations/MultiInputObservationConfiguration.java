@@ -23,7 +23,7 @@ import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.analysis.source.TCPSourceCompositeStage;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -84,11 +84,11 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            folder containing deployables
      */
     public MultiInputObservationConfiguration(final Configuration configuration,
-            final ICorrespondence correspondenceModel, final ModelProvider<UsageModel> usageModelProvider,
-            final ModelProvider<Repository> repositoryModelProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final ModelProvider<Allocation> allocationModelProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
+            final ICorrespondence correspondenceModel, final IModelProvider<UsageModel> usageModelProvider,
+            final IModelProvider<Repository> repositoryModelProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
             final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,

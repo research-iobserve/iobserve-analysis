@@ -24,7 +24,7 @@ import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
@@ -59,8 +59,8 @@ public class BehaviorModelComparison extends CompositeStage {
      */
 
     public BehaviorModelComparison(final BehaviorModelConfiguration configuration,
-            final ICorrespondence correspondenceModel, final ModelProvider<UsageModel> usageModelProvider,
-            final ModelProvider<Repository> repositoryModelProvider, final int varianceOfUserGroups,
+            final ICorrespondence correspondenceModel, final IModelProvider<UsageModel> usageModelProvider,
+            final IModelProvider<Repository> repositoryModelProvider, final int varianceOfUserGroups,
             final int thinkTime, final boolean closedWorkload) {
 
         // cdor userbehavior

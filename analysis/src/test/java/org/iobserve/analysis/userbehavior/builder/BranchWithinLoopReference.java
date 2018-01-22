@@ -30,7 +30,7 @@ import org.iobserve.analysis.userbehavior.TestHelper;
 import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.factory.UsageModelFactory;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
@@ -67,7 +67,7 @@ public final class BranchWithinLoopReference {
      *
      * @param referenceUsageModelFileName
      *            reference usage model file name
-     * @param repositoryModelProvider
+     * @param repositoryLookupModel
      *            repository model builder
      * @param correspondenceModel
      *            correspondence model
@@ -77,7 +77,7 @@ public final class BranchWithinLoopReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            final RepositoryLookupModelProvider repositoryLookupModel, final ICorrespondence correspondenceModel)
             throws IOException {
 
         // The number of model element parameters are created randomly. The number of user sessions
@@ -121,18 +121,18 @@ public final class BranchWithinLoopReference {
 
         // The branch transition 1 is created
         final BranchTransition branchTransition1 = BranchWithinLoopReference.createBranchTransition(2,
-                repositoryModelProvider, branch, correspondenceModel);
+                repositoryLookupModel, branch, correspondenceModel);
 
         // The branch transition 2 is created
         final BranchTransition branchTransition2 = BranchWithinLoopReference.createBranchTransition(3,
-                repositoryModelProvider, branch, correspondenceModel);
+                repositoryLookupModel, branch, correspondenceModel);
 
         final Optional<Correspondent> optionCorrespondent = correspondenceModel.getCorrespondent(
                 ReferenceUsageModelBuilder.CLASS_SIGNATURE[4], ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
         if (optionCorrespondent.isPresent()) {
             final Correspondent correspondent = optionCorrespondent.get();
             final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                    .createEntryLevelSystemCall(repositoryLookupModel, correspondent);
             UsageModelFactory.addUserAction(loopScenarioBehaviour, entryLevelSystemCall);
             UsageModelFactory.connect(branch, entryLevelSystemCall);
             UsageModelFactory.connect(entryLevelSystemCall, loopStop);
@@ -266,7 +266,7 @@ public final class BranchWithinLoopReference {
      *
      * @param callId
      *            id of the operation class and operation signature
-     * @param repositoryModelProvider
+     * @param repositoryLookupModel
      *            usage model builder
      * @param branch
      *            pcm branch element
@@ -276,8 +276,8 @@ public final class BranchWithinLoopReference {
      * @return returns the created branch transition or null on error
      */
     private static BranchTransition createBranchTransition(final int callId,
-            final RepositoryModelProvider repositoryModelProvider,
-            final org.palladiosimulator.pcm.usagemodel.Branch branch, final ICorrespondence correspondenceModel) {
+            final RepositoryLookupModelProvider repositoryLookupModel, final org.palladiosimulator.pcm.usagemodel.Branch branch,
+            final ICorrespondence correspondenceModel) {
         final BranchTransition branchTransition = UsageModelFactory.createBranchTransition(branch);
         final ScenarioBehaviour branchTransitionBehaviour = branchTransition.getBranchedBehaviour_BranchTransition();
 
@@ -293,7 +293,7 @@ public final class BranchWithinLoopReference {
         if (optionCorrespondent.isPresent()) {
             final Correspondent correspondent = optionCorrespondent.get();
             final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                    .createEntryLevelSystemCall(repositoryLookupModel, correspondent);
             UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
             UsageModelFactory.connect(start, entryLevelSystemCall);
             UsageModelFactory.connect(entryLevelSystemCall, stop);

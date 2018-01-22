@@ -25,7 +25,7 @@ import kieker.common.record.flow.trace.TraceMetadata;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.stages.general.RecordSwitch;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
@@ -56,11 +56,11 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
     private static final Log LOG = LogFactory.getLog(NetworkLink.class);
 
     /** reference to allocation model provider. */
-    private final ModelProvider<Allocation> allocationModelProvider;
+    private final IModelProvider<Allocation> allocationModelProvider;
     /** reference to system model provider. */
-    private final ModelProvider<System> systemModelProvider;
+    private final IModelProvider<System> systemModelProvider;
     /** reference to resource environment model provider. */
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
+    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
 
     /**
      * Create new TNetworkLink filter.
@@ -72,9 +72,9 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * @param resourceEnvironmentModelProvider
      *            resource environment provider
      */
-    public NetworkLink(final ModelProvider<Allocation> allocationModelProvider,
-            final ModelProvider<System> systemModelProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider) {
+    public NetworkLink(final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<System> systemModelProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider) {
         this.allocationModelProvider = allocationModelProvider;
         this.systemModelProvider = systemModelProvider;
         this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;

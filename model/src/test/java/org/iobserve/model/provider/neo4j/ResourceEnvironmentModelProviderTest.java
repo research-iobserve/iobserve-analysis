@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.modelneo4j;
+package org.iobserve.model.provider.neo4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     private static final File GRAPH_DIR = new File("./testdb");
 
     private static Graph graph = new GraphLoader(ResourceEnvironmentModelProviderTest.GRAPH_DIR)
-            .getResourceEnvironmentModelGraph();
+            .createResourceEnvironmentModelGraph();
 
     private final Neo4jEqualityHelper equalityHelper = new Neo4jEqualityHelper();
 

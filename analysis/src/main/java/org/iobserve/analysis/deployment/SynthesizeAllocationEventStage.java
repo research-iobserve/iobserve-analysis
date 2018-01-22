@@ -22,7 +22,7 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -45,7 +45,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDeployedEvent> {
 
     /** reference to resource environment model provider. */
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     private final OutputPort<IAllocationEvent> allocationOutputPort = this.createOutputPort();
     private final OutputPort<PCMDeployedEvent> deployedOutputPort = this.createOutputPort();
@@ -58,7 +58,7 @@ public class SynthesizeAllocationEventStage extends AbstractConsumerStage<PCMDep
      *            the resource environment which is tested for a proper allocation
      */
     public SynthesizeAllocationEventStage(
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
     }
 

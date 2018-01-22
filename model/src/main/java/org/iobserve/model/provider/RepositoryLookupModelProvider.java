@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2015 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.model.provider.neo4j;
+package org.iobserve.model.provider;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.emf.ecore.EPackage;
 import org.palladiosimulator.pcm.repository.BasicComponent;
 import org.palladiosimulator.pcm.repository.Interface;
 import org.palladiosimulator.pcm.repository.OperationInterface;
@@ -28,21 +26,12 @@ import org.palladiosimulator.pcm.repository.OperationSignature;
 import org.palladiosimulator.pcm.repository.ProvidedRole;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
-import org.palladiosimulator.pcm.repository.RepositoryPackage;
 
 /**
- * Model provider to provide {@link Repository} model.
+ * @author Reiner Jung
  *
- * @author Robert Heinrich
- * @author Nicolas Boltz
- * @author Alessandro Giusa
- * @author Lars Bluemke
- *
- * @deprecated since 0.0.2 this provider was implemented to provide a convenient way to migrate from
- *             the old file based providers.
  */
-@Deprecated
-public final class RepositoryModelProvider extends AbstractModelProvider<Repository> {
+public class RepositoryLookupModelProvider {
 
     /** map of operation interfaces mapped by id. */
     private Map<String, OperationInterface> operationInterfaceMap;
@@ -52,34 +41,24 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
     private Map<String, String> opInfToProvInfMap;
     /** map of operation provided roles mapped by id. */
     private Map<String, OperationProvidedRole> opProvidedRoleMap;
+    private final Repository repositoryModel;
 
-    /**
-     * Create model provider to provide {@link Repository} model.
-     *
-     * @param neo4jPcmModelDirectory
-     *            DB root directory
-     */
-    public RepositoryModelProvider(final File baseDirectory) {
-        super(baseDirectory);
-        this.loadData();
-    }
-
-    @Override
-    public void resetModel() {
-        // nothing to do
+    public RepositoryLookupModelProvider(final Repository repositoryModel) {
+        this.repositoryModel = repositoryModel;
+        this.InitializeLookupMaps();
     }
 
     /**
-     * Loading and initializing the maps for data access.
+     * Initializing the maps for data access.
      */
-    private void loadData() {
+    private void InitializeLookupMaps() {
         this.opInfToProvInfMap = new HashMap<>();
         this.opProvidedRoleMap = new HashMap<>();
         this.operationInterfaceMap = new HashMap<>();
         this.operationSignatureMap = new HashMap<>();
 
         // loading OperationProvidedRoles and OperationInterfaces in dedicated maps
-        for (final RepositoryComponent nextRepoCmp : this.getModel().getComponents__Repository()) {
+        for (final RepositoryComponent nextRepoCmp : this.repositoryModel.getComponents__Repository()) {
             if (nextRepoCmp instanceof BasicComponent) {
                 final BasicComponent basicCmp = (BasicComponent) nextRepoCmp;
 
@@ -95,7 +74,7 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
         }
 
         // loading OperationInterfaces and OperationSignatures in dedicated maps
-        for (final Interface nextInterface : this.getModel().getInterfaces__Repository()) {
+        for (final Interface nextInterface : this.repositoryModel.getInterfaces__Repository()) {
             if (nextInterface instanceof OperationInterface) {
                 final OperationInterface opInf = (OperationInterface) nextInterface;
                 this.operationInterfaceMap.put(opInf.getId(), opInf);
@@ -105,20 +84,6 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
                 }
             }
         }
-    }
-
-    @Override
-    public void loadModel() {
-        this.model = this.modelProvider.readRootComponent(Repository.class);
-
-        if (this.model == null) {
-            AbstractModelProvider.LOG.debug("Repository model could not be loaded!");
-        }
-    }
-
-    @Override
-    protected EPackage getPackage() {
-        return RepositoryPackage.eINSTANCE;
     }
 
     /**
@@ -145,11 +110,6 @@ public final class RepositoryModelProvider extends AbstractModelProvider<Reposit
     public OperationProvidedRole getOperationProvidedRole(final OperationInterface operationInterface) {
         final String provRoleId = this.opInfToProvInfMap.get(operationInterface.getId());
         return this.opProvidedRoleMap.get(provRoleId);
-    }
-
-    @Override
-    protected Graph getModelTypeGraph(final File baseDirectory) {
-        return new GraphLoader(baseDirectory).getRepositoryModelGraph();
     }
 
 }

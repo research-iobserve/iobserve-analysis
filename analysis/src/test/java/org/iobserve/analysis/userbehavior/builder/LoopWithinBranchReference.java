@@ -27,7 +27,7 @@ import org.iobserve.analysis.userbehavior.TestHelper;
 import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.factory.UsageModelFactory;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
@@ -65,8 +65,8 @@ public final class LoopWithinBranchReference {
      *
      * @param referenceUsageModelFileName
      *            file name of the reference model to store its result
-     * @param repositoryModelProvider
-     *            repository model provider
+     * @param repositoryLookupModel
+     *            repository lookup model
      * @param correspondenceModel
      *            correspondence model
      *
@@ -75,7 +75,7 @@ public final class LoopWithinBranchReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            final RepositoryLookupModelProvider repositoryLookupModel, final ICorrespondence correspondenceModel)
             throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
@@ -100,7 +100,7 @@ public final class LoopWithinBranchReference {
 
         // lastAction = start;
 
-        final Branch branch = LoopWithinBranchReference.createBranch(repositoryModelProvider, scenarioBehaviour,
+        final Branch branch = LoopWithinBranchReference.createBranch(repositoryLookupModel, scenarioBehaviour,
                 correspondenceModel, numberOfBranchTransitions, lengthOfBranchSequence, countOfLoop);
 
         // According to the reference usage model user sessions are created that exactly represent
@@ -203,13 +203,14 @@ public final class LoopWithinBranchReference {
      * Creates a branch and branch transitions according to the random countOfBranchTransitions.
      *
      * @param scenarioBehaviour
+     * @param repositoryLookupModel
      * @param correspondenceModel
      * @param numberOfBranchTransitions
      * @param lengthOfBranchSequence
      * @param countOfLoop
      * @return
      */
-    private static Branch createBranch(final RepositoryModelProvider repositoryModelProvider,
+    private static Branch createBranch(final RepositoryLookupModelProvider repositoryLookupModel,
             final ScenarioBehaviour scenarioBehaviour, final ICorrespondence correspondenceModel,
             final int numberOfBranchTransitions, final int lengthOfBranchSequence, final int countOfLoop) {
         final Start start = UsageModelFactory.createAddStartAction("", scenarioBehaviour);
@@ -239,7 +240,7 @@ public final class LoopWithinBranchReference {
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
                     final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                            .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                            .createEntryLevelSystemCall(repositoryLookupModel, correspondent);
                     UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
                     UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                     lastAction = entryLevelSystemCall;
@@ -255,7 +256,7 @@ public final class LoopWithinBranchReference {
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
                     final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                            .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                            .createEntryLevelSystemCall(repositoryLookupModel, correspondent);
                     UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
                     UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                     lastAction = entryLevelSystemCall;
@@ -298,7 +299,7 @@ public final class LoopWithinBranchReference {
             if (optionCorrespondent.isPresent()) {
                 final Correspondent correspondent = optionCorrespondent.get();
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                        .createEntryLevelSystemCall(repositoryLookupModel, correspondent);
                 UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
                 UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;

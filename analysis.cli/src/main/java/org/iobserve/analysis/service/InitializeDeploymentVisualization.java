@@ -21,6 +21,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.service.services.CommunicationInstanceService;
 import org.iobserve.analysis.service.services.CommunicationService;
@@ -29,7 +32,7 @@ import org.iobserve.analysis.service.services.NodegroupService;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.service.services.SystemService;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
@@ -41,8 +44,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import util.Changelog;
 import util.SendHttpRequest;
 
@@ -56,9 +57,9 @@ import util.SendHttpRequest;
 public final class InitializeDeploymentVisualization {
 
     /** model provider for palladio models. */
-    private final ModelProvider<Allocation> allocationModelGraphProvider;
-    private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final IModelProvider<Allocation> allocationModelGraphProvider;
+    private final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
+    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     /** services for visualization elements. */
     private final SystemService systemService = new SystemService();
@@ -93,10 +94,10 @@ public final class InitializeDeploymentVisualization {
      */
 
     public InitializeDeploymentVisualization(final URL visualizationBaseUrl, final String systemId,
-            final ModelProvider<Allocation> allocationModelGraphProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final ModelProvider<UsageModel> usageModelGraphProvider) throws MalformedURLException {
+            final IModelProvider<Allocation> allocationModelGraphProvider,
+            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+            final IModelProvider<UsageModel> usageModelGraphProvider) throws MalformedURLException {
         this.systemUrl = new URL(visualizationBaseUrl + "/v1/systems/");
         this.changelogUrl = new URL(this.systemUrl + systemId + "/changelogs");
         this.allocationModelGraphProvider = allocationModelGraphProvider;
@@ -282,7 +283,7 @@ public final class InitializeDeploymentVisualization {
             resourceTargetId = allocationContext.getResourceContainer_AllocationContext().getId();
         }
 
-        if ((resourceSourceId != null) && (resourceTargetId != null)) {
+        if (resourceSourceId != null && resourceTargetId != null) {
             for (int l = 0; l < linkingResources.size(); l++) {
                 final LinkingResource linkingResource = linkingResources.get(l);
                 if (linkingResource instanceof LinkingResourceImpl) {
