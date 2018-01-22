@@ -18,10 +18,6 @@ package org.iobserve.analysis.configurations;
 import java.io.File;
 import java.util.Collection;
 
-import kieker.common.configuration.Configuration;
-
-import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaptation.IAdaptationEventListener;
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
@@ -33,6 +29,8 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+
+import kieker.common.configuration.Configuration;
 
 /**
  *
@@ -92,12 +90,10 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
-            final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,
-            final IAdaptationEventListener eventListener, final URI deployablesFolder) throws ConfigurationException {
+            final SnapshotBuilder snapshotBuilder) throws ConfigurationException {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, perOpteryxHeadless, lqnsDir,
-                eventListener, deployablesFolder);
+                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder);
 
         final Configuration configuration = new Configuration();
 

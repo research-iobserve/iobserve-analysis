@@ -15,11 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaptation.AdaptationCalculation;
-import org.iobserve.adaptation.AdaptationExecution;
-import org.iobserve.adaptation.AdaptationPlanning;
-import org.iobserve.adaptation.IAdaptationEventListener;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
@@ -45,15 +40,8 @@ import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceSignatureCleanupRew
 import org.iobserve.analysis.traces.EntryCallSequence;
 import org.iobserve.analysis.traces.TraceOperationCleanupFilter;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
-import org.iobserve.evaluation.ModelComparer;
-import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.planning.CandidateGeneration;
-import org.iobserve.planning.CandidateProcessing;
-import org.iobserve.planning.ModelOptimization;
-import org.iobserve.planning.ModelProcessing;
-import org.iobserve.planning.systemadaptation.SystemAdaptation;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.iobserve.stages.general.RecordSwitch;
@@ -132,8 +120,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
-            final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,
-            final IAdaptationEventListener eventListener, final URI deployablesFolder) {
+            final SnapshotBuilder snapshotBuilder) {
 
         final kieker.common.configuration.Configuration configuration = new kieker.common.configuration.Configuration();
 
@@ -242,28 +229,14 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(traceOperationCleanupFilter.getOutputPort(), collectUserSessions.getUserSessionInputPort());
         this.connectPorts(collectUserSessions.getOutputPort(), tBehaviorModelComparison.getInputPort());
 
-        if ((snapshotBuilder != null) && (perOpteryxHeadless != null) && (lqnsDir != null)
-                && (deployablesFolder != null)) {
-            // create filters for snapshot planning, evaluation and adaptation
-            final CandidateGeneration candidateGenerator = new CandidateGeneration(
-                    new ModelProcessing(perOpteryxHeadless, lqnsDir), new ModelOptimization(),
-                    new CandidateProcessing());
-            // There is an AdaptionEventListener class, but in the previous implementation null was
-            // used instead.
-            final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(),
-                    new AdaptationPlanning());
-            final AdaptationExecution adaptationExecution = new AdaptationExecution(eventListener, deployablesFolder);
-            final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
+        // TODO for lbl: Implement a way to pass data to the following stages
+        // Path Snapshot => Planning
+        // this.connectPorts(snapshotBuilder.getOutputPort(),
+        // candidateGenerator.getInputPort());
+        // Path Snapshot => Evaluation
+        // this.connectPorts(snapshotBuilder.getEvaluationOutputPort(),
+        // systemEvaluator.getInputPort());
 
-            // Path Snapshot => Planning
-            this.connectPorts(snapshotBuilder.getOutputPort(), candidateGenerator.getInputPort());
-            // Path Snapshot => Evaluation
-            this.connectPorts(snapshotBuilder.getEvaluationOutputPort(), systemEvaluator.getInputPort());
-            // Path Planning => Adaptation
-            this.connectPorts(candidateGenerator.getOutputPort(), systemAdaptor.getInputPort());
-            // Path Adaptation => Execution
-            this.connectPorts(systemAdaptor.getOutputPort(), adaptationExecution.getInputPort());
-        }
     }
 
     public RecordSwitch getRecordSwitch() {
