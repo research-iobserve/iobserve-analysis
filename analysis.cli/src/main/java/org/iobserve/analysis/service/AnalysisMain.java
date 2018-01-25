@@ -24,6 +24,7 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.analysis.toggle.FeatureToggle;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.Graph;
@@ -73,6 +74,23 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
 
     private static final String BEHAVIOR_VARIANCE_OF_USER_GROUPS = ".behavior.variance.of.user.groups";
 
+    // toggles
+    private static final String DEPLOYMENT_TOGGLE_PATH = AnalysisMain.PREFIX + ".deploymentToggle";
+
+    private static final String UNDEPLOYMENT_TOGGLE_PATH = AnalysisMain.PREFIX + ".undeploymentToggle";
+
+    private static final String ALLOCOCATION_TOGGLE_PATH = AnalysisMain.PREFIX + ".allocationToggle";
+
+    private static final String DEALLOCOCATION_TOGGLE_PATH = AnalysisMain.PREFIX + ".deallocationToggle";
+
+    private static final String BEHAVIOUR_TOGGLE_PATH = AnalysisMain.PREFIX + ".behaviourToggle";
+
+    private static final String DATAFLOW_TOGGLE_PATH = AnalysisMain.PREFIX + ".dataflowToggle";
+
+    private static final String GEOLOCATION_TOGGLE_PATH = AnalysisMain.PREFIX + ".geolocationToggle";
+
+    private static final String SINKS_TOGGLE_PATH = AnalysisMain.PREFIX + ".sinkToggle";
+
     // TODO these two need a better place
     private static final String PREFIX2 = "org.iobserve.model";
 
@@ -108,6 +126,9 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
     private int varianceOfUserGroups;
 
     private URL containerManagementVisualizationBaseUrl;
+
+    // toggle
+    private FeatureToggle featureToggle;
 
     /**
      * Default constructor.
@@ -147,6 +168,16 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
         this.containerManagementVisualizationBaseUrl = CommandLineParameterEvaluation.createURL(
                 "Management visualization URL",
                 configuration.getStringProperty(AnalysisMain.IOBSERVE_VISUALIZATION_URL));
+
+        // toggles. Property = true, if feature is enabled.
+        this.featureToggle = new FeatureToggle(configuration.getBooleanProperty(AnalysisMain.DEPLOYMENT_TOGGLE_PATH),
+                configuration.getBooleanProperty(AnalysisMain.UNDEPLOYMENT_TOGGLE_PATH),
+                configuration.getBooleanProperty(AnalysisMain.ALLOCOCATION_TOGGLE_PATH),
+                configuration.getBooleanProperty(AnalysisMain.DEALLOCOCATION_TOGGLE_PATH),
+                configuration.getBooleanProperty(AnalysisMain.BEHAVIOUR_TOGGLE_PATH),
+                configuration.getBooleanProperty(AnalysisMain.DATAFLOW_TOGGLE_PATH),
+                configuration.getBooleanProperty(AnalysisMain.GEOLOCATION_TOGGLE_PATH),
+                configuration.getBooleanProperty(AnalysisMain.SINKS_TOGGLE_PATH));
 
         try {
             return CommandLineParameterEvaluation.checkDirectory(this.modelInitDirectory, "PCM startup model",
@@ -237,7 +268,8 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
                     this.varianceOfUserGroups, this.thinkTime, this.closedWorkload, correspondenceModel,
                     usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                     allocationModelProvider, systemModelProvider, resourceContainerModelProvider,
-                    assemblyContextModelProvider, this.behaviorVisualizationServiceURL, snapshotBuilder);
+                    assemblyContextModelProvider, this.behaviorVisualizationServiceURL, snapshotBuilder,
+                    this.featureToggle);
 
         } catch (final MalformedURLException e) {
             AbstractServiceMain.LOG.debug("URL construction for deployment visualization failed.", e);

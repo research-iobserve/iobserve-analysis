@@ -19,6 +19,7 @@ import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.analysis.source.TCPSourceCompositeStage;
+import org.iobserve.analysis.toggle.FeatureToggle;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -69,6 +70,7 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            output mode
      * @param snapshotBuilder
      *            snapshotbuilder
+     * @param featureToggle
      * @param perOpteryxHeadless
      *            perOpterxyheadless URI
      * @param lqnsDir
@@ -84,10 +86,10 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
             final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
-            final SnapshotBuilder snapshotBuilder) {
+            final SnapshotBuilder snapshotBuilder, final FeatureToggle featureToggle) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder);
+                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, featureToggle);
 
         final TCPSourceCompositeStage reader = new TCPSourceCompositeStage(configuration);
 

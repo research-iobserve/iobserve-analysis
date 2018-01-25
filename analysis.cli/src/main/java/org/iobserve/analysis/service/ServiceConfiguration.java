@@ -18,8 +18,6 @@ package org.iobserve.analysis.service;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import kieker.common.configuration.Configuration;
-
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.configurations.MultiInputObservationConfiguration;
@@ -27,6 +25,7 @@ import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.analysis.toggle.FeatureToggle;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -36,6 +35,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+
+import kieker.common.configuration.Configuration;
 
 /**
  * @author Reiner Jung
@@ -78,6 +79,7 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      *            url to the visualization service
      * @param snapshotBuilder
      *            snapshot builder
+     * @param featureToggle
      * @param perOpteryxDir
      *            directory to the peropteryx executable
      * @param lqnsDir
@@ -96,11 +98,11 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
             final IModelProvider<ResourceContainer> resourceContainerModelProvider,
             final IModelProvider<AssemblyContext> assemblyContextModelProvider, final String visualizationServiceURL,
-            final SnapshotBuilder snapshotBuilder) throws MalformedURLException {
+            final SnapshotBuilder snapshotBuilder, final FeatureToggle featureToggle) throws MalformedURLException {
         super(configuration, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
-                EOutputMode.UBM_VISUALIZATION, snapshotBuilder);
+                EOutputMode.UBM_VISUALIZATION, snapshotBuilder, featureToggle);
 
         final URL containerManagementURL = new URL(visualizationBaseUrl, "/v1/systems/" + systemId + "/changelogs");
 
