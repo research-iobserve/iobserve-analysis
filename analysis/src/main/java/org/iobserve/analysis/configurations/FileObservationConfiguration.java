@@ -93,7 +93,7 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
             final SnapshotBuilder snapshotBuilder) throws ConfigurationException {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder);
+                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, null);
 
         final Configuration configuration = new Configuration();
 

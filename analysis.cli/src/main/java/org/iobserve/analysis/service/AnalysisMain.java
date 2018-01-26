@@ -75,21 +75,21 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
     private static final String BEHAVIOR_VARIANCE_OF_USER_GROUPS = ".behavior.variance.of.user.groups";
 
     // toggles
-    private static final String DEPLOYMENT_TOGGLE_PATH = AnalysisMain.PREFIX + ".deploymentToggle";
+    private static final String DEPLOYMENT_TOGGLE_PATH = AnalysisMain.PREFIX + ".deployment.toggle";
 
-    private static final String UNDEPLOYMENT_TOGGLE_PATH = AnalysisMain.PREFIX + ".undeploymentToggle";
+    private static final String UNDEPLOYMENT_TOGGLE_PATH = AnalysisMain.PREFIX + ".undeployment.toggle";
 
-    private static final String ALLOCOCATION_TOGGLE_PATH = AnalysisMain.PREFIX + ".allocationToggle";
+    private static final String ALLOCOCATION_TOGGLE_PATH = AnalysisMain.PREFIX + ".allocation.toggle";
 
-    private static final String DEALLOCOCATION_TOGGLE_PATH = AnalysisMain.PREFIX + ".deallocationToggle";
+    private static final String DEALLOCOCATION_TOGGLE_PATH = AnalysisMain.PREFIX + ".deallocation.toggle";
 
-    private static final String BEHAVIOUR_TOGGLE_PATH = AnalysisMain.PREFIX + ".behaviourToggle";
+    private static final String BEHAVIOUR_TOGGLE_PATH = AnalysisMain.PREFIX + ".behaviour.toggle";
 
-    private static final String DATAFLOW_TOGGLE_PATH = AnalysisMain.PREFIX + ".dataflowToggle";
+    private static final String DATAFLOW_TOGGLE_PATH = AnalysisMain.PREFIX + ".dataflow.toggle";
 
-    private static final String GEOLOCATION_TOGGLE_PATH = AnalysisMain.PREFIX + ".geolocationToggle";
+    private static final String GEOLOCATION_TOGGLE_PATH = AnalysisMain.PREFIX + ".geolocation.toggle";
 
-    private static final String SINKS_TOGGLE_PATH = AnalysisMain.PREFIX + ".sinkToggle";
+    private static final String SINKS_TOGGLE_PATH = AnalysisMain.PREFIX + ".sink.toggle";
 
     // TODO these two need a better place
     private static final String PREFIX2 = "org.iobserve.model";
@@ -170,14 +170,15 @@ public final class AnalysisMain extends AbstractServiceMain<ServiceConfiguration
                 configuration.getStringProperty(AnalysisMain.IOBSERVE_VISUALIZATION_URL));
 
         // toggles. Property = true, if feature is enabled.
-        this.featureToggle = new FeatureToggle(configuration.getBooleanProperty(AnalysisMain.DEPLOYMENT_TOGGLE_PATH),
-                configuration.getBooleanProperty(AnalysisMain.UNDEPLOYMENT_TOGGLE_PATH),
-                configuration.getBooleanProperty(AnalysisMain.ALLOCOCATION_TOGGLE_PATH),
-                configuration.getBooleanProperty(AnalysisMain.DEALLOCOCATION_TOGGLE_PATH),
-                configuration.getBooleanProperty(AnalysisMain.BEHAVIOUR_TOGGLE_PATH),
-                configuration.getBooleanProperty(AnalysisMain.DATAFLOW_TOGGLE_PATH),
-                configuration.getBooleanProperty(AnalysisMain.GEOLOCATION_TOGGLE_PATH),
-                configuration.getBooleanProperty(AnalysisMain.SINKS_TOGGLE_PATH));
+        this.featureToggle = new FeatureToggle(
+                configuration.getBooleanProperty(AnalysisMain.DEPLOYMENT_TOGGLE_PATH, true),
+                configuration.getBooleanProperty(AnalysisMain.UNDEPLOYMENT_TOGGLE_PATH, true),
+                configuration.getBooleanProperty(AnalysisMain.ALLOCOCATION_TOGGLE_PATH, true),
+                configuration.getBooleanProperty(AnalysisMain.DEALLOCOCATION_TOGGLE_PATH, true),
+                configuration.getBooleanProperty(AnalysisMain.BEHAVIOUR_TOGGLE_PATH, true),
+                configuration.getBooleanProperty(AnalysisMain.DATAFLOW_TOGGLE_PATH, true),
+                configuration.getBooleanProperty(AnalysisMain.GEOLOCATION_TOGGLE_PATH, true),
+                configuration.getBooleanProperty(AnalysisMain.SINKS_TOGGLE_PATH, true));
 
         try {
             return CommandLineParameterEvaluation.checkDirectory(this.modelInitDirectory, "PCM startup model",

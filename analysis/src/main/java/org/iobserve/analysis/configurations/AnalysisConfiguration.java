@@ -17,16 +17,6 @@ package org.iobserve.analysis.configurations;
 
 import java.io.File;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
-import teetime.framework.Configuration;
-import teetime.framework.OutputPort;
-import teetime.stage.basic.distributor.Distributor;
-import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
-import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.IBehaviorCompositeStage;
 import org.iobserve.analysis.IContainerManagementCompositeStage;
@@ -41,6 +31,7 @@ import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.analysis.toggle.FeatureToggle;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -49,6 +40,15 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+
+import kieker.common.logging.Log;
+import kieker.common.logging.LogFactory;
+import teetime.framework.Configuration;
+import teetime.framework.OutputPort;
+import teetime.stage.basic.distributor.Distributor;
+import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
+import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 /**
  * This is a generic configuration for all analyses.
@@ -90,6 +90,8 @@ public class AnalysisConfiguration extends Configuration {
     private static final String DELIMETER = ",";
     private static final String PATH_DELIMETER = File.pathSeparator;
 
+    private final FeatureToggle featureToggle;
+
     private final RecordSwitch recordSwitch;
 
     private AllocationStage allocationStage;
@@ -117,8 +119,10 @@ public class AnalysisConfiguration extends Configuration {
     public AnalysisConfiguration(final kieker.common.configuration.Configuration configuration,
             final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final ModelProvider<Allocation> allocationModelProvider, final ModelProvider<System> systemModelProvider,
-            final ICorrespondence correspondenceModelProvider) throws ConfigurationException {
+            final ICorrespondence correspondenceModelProvider, final FeatureToggle featureToggle)
+            throws ConfigurationException {
         this.recordSwitch = new RecordSwitch();
+        this.featureToggle = featureToggle;
 
         /** Source stage. */
         final String sourceClassName = configuration.getStringProperty(AnalysisConfiguration.SOURCE);
@@ -153,28 +157,41 @@ public class AnalysisConfiguration extends Configuration {
             final ModelProvider<Allocation> allocationModelProvider, final ModelProvider<System> systemModelProvider,
             final ICorrespondence correspondenceModelProvider) {
         if (configuration.getBooleanProperty(AnalysisConfiguration.CONTAINER_MANAGEMENT, false)) {
+
+            // Initiate stages and connect their ports according to toggle settings.
             /** allocation. */
-            this.allocationStage = new AllocationStage(resourceEnvironmentModelProvider);
+            if (this.featureToggle.getAllocationToggle()) {
+                this.allocationStage = new AllocationStage(resourceEnvironmentModelProvider);
+                /** connect ports. */
+                this.connectPorts(this.recordSwitch.getAllocationOutputPort(), this.allocationStage.getInputPort());
+            }
 
             /** deployment. */
-            this.deploymentStage = new DeploymentCompositeStage(configuration, resourceEnvironmentModelProvider,
-                    allocationModelProvider, systemModelProvider, correspondenceModelProvider);
+            if (this.featureToggle.getDeploymentToggle()) {
+                this.deploymentStage = new DeploymentCompositeStage(configuration, resourceEnvironmentModelProvider,
+                        allocationModelProvider, systemModelProvider, correspondenceModelProvider);
+                /** connect ports. */
+                this.connectPorts(this.recordSwitch.getDeployedOutputPort(),
+                        this.deploymentStage.getDeployedInputPort());
+            }
 
             /** undeployment. */
-            this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
-                    allocationModelProvider, systemModelProvider, correspondenceModelProvider);
+            if (this.featureToggle.getUndeploymentToggle()) {
+                this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
+                        allocationModelProvider, systemModelProvider, correspondenceModelProvider);
+                /** connect ports. */
+                this.connectPorts(this.recordSwitch.getUndeployedOutputPort(),
+                        this.undeploymentStage.getUndeployedInputPort());
+            }
 
             /** deallocation. */
-            // this.deallocationStage = new DeallocationStage(resourceEnvironmentModelProvider);
-            // TODO missing
-
-            /** connect ports. */
-            this.connectPorts(this.recordSwitch.getAllocationOutputPort(), this.allocationStage.getInputPort());
-            // this.connectPorts(this.recordSwitch.getDeallocationOutputPort(),
-            // this.deallocationStage.getInputPort(targetPort));
-            this.connectPorts(this.recordSwitch.getDeployedOutputPort(), this.deploymentStage.getDeployedInputPort());
-            this.connectPorts(this.recordSwitch.getUndeployedOutputPort(),
-                    this.undeploymentStage.getUndeployedInputPort());
+            if (this.featureToggle.getDeallocationToggle()) {
+                // this.deallocationStage = new DeallocationStage(resourceEnvironmentModelProvider);
+                // TODO missing
+                /** connect ports. */
+                // this.connectPorts(this.recordSwitch.getDeallocationOutputPort(),
+                // this.deallocationStage.getInputPort(targetPort));
+            }
 
             /** dependent features. */
             this.createContainerManagementSink(configuration);
@@ -317,5 +334,4 @@ public class AnalysisConfiguration extends Configuration {
     public RecordSwitch getRecordSwitch() {
         return this.recordSwitch;
     }
-
 }

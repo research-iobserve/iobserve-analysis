@@ -37,20 +37,19 @@ public class FeatureToggle {
      * allocation, deallocation, behaviour, dataflow, geolocation and sink. In that order. Set
      * parameter true, if feature is supposed to be enabled.
      *
-     * @param c
-     * @param b
      *
      */
-    public FeatureToggle(final boolean deploy, final boolean undeploy, final boolean alloc, final boolean dealloc,
-            final boolean behav, final boolean datafl, final boolean geoloc, final boolean sinks) {
-        this.deploymentToggle = deploy;
-        this.setUndeploymentToggle(undeploy);
-        this.allocationToggle = alloc;
-        this.setDeallocationToggle(dealloc);
-        this.behaviourToggle = behav;
-        this.dataFlowToggle = datafl;
-        this.geolocationToggle = geoloc;
-        this.SinksToggle = sinks;
+    public FeatureToggle(final boolean deploymentToggle, final boolean undeploymentToggle,
+            final boolean allocationToggle, final boolean deallocationToggle, final boolean behaviourToggle,
+            final boolean dataflowToggle, final boolean geolocationToggle, final boolean sinksToggle) {
+        this.deploymentToggle = deploymentToggle;
+        this.undeploymentToggle = undeploymentToggle;
+        this.allocationToggle = allocationToggle;
+        this.deallocationToggle = deallocationToggle;
+        this.behaviourToggle = behaviourToggle;
+        this.dataFlowToggle = dataflowToggle;
+        this.geolocationToggle = geolocationToggle;
+        this.SinksToggle = sinksToggle;
     }
 
     // Deployment.
