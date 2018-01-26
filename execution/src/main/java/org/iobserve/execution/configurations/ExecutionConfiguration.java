@@ -20,6 +20,8 @@ import org.iobserve.evaluation.ModelComparer;
 import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.execution.AdaptationExecution;
 import org.iobserve.execution.IAdaptationEventListener;
+import org.iobserve.execution.ModelSink;
+import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 
 import teetime.framework.Configuration;
 
@@ -39,5 +41,11 @@ public class ExecutionConfiguration extends Configuration {
             final AdaptationExecution adaptationExecution = new AdaptationExecution(eventListener, deployablesFolder);
             final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
         }
+
+        // Debugging
+        final SingleConnectionTcpReaderStage modelReader = new SingleConnectionTcpReaderStage(12345, 20480);
+        final ModelSink modelSink = new ModelSink();
+
+        this.connectPorts(modelReader.getOutputPort(), modelSink.getInputPort());
     }
 }

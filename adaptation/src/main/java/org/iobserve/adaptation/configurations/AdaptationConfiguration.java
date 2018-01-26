@@ -17,7 +17,9 @@ package org.iobserve.adaptation.configurations;
 
 import org.iobserve.adaptation.AdaptationCalculation;
 import org.iobserve.adaptation.AdaptationPlanning;
+import org.iobserve.adaptation.ModelProducer;
 import org.iobserve.adaptation.SystemAdaptation;
+import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
 
 import teetime.framework.Configuration;
 
@@ -36,6 +38,12 @@ public class AdaptationConfiguration extends Configuration {
         // TODO for lbl: Implement a way to pass data to the following stages
         // Path Adaptation => Execution
         // this.connectPorts(systemAdaptor.getOutputPort(), adaptationExecution.getInputPort());
+
+        // Debugging
+        final ModelProducer modelProducer = new ModelProducer();
+        final SingleConnectionTcpWriterStage modelWriter = new SingleConnectionTcpWriterStage("localhost", 12345);
+
+        this.connectPorts(modelProducer.getOutputPort(), modelWriter.getInputPort());
     }
 
 }
