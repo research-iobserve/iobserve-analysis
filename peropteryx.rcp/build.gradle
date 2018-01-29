@@ -1,0 +1,46 @@
+def runtimeDeps = [
+'org.eclipse.osgi',
+'org.eclipse.update.configurator',
+'org.eclipse.equinox.ds',
+'org.eclipse.equinox.registry',
+'org.eclipse.core.commands',
+'javax.annotation',
+'javax.inject',
+'org.eclipse.core.jobs',
+'org.eclipse.equinox.preferences',
+'org.eclipse.core.contenttype',
+'org.eclipse.equinox.util',
+'org.eclipse.osgi.services'
+]
+
+dependencies {
+	compile project(":analysis")
+	
+	compile "eclipse-deps:com.ibm.icu:+"
+	compile "eclipse-deps:org.eclipse.osgi:+"
+	compile "eclipse-deps:org.eclipse.equinox.app:+"
+	compile "eclipse-deps:org.eclipse.equinox.common:+"
+	compile "eclipse-deps:org.eclipse.core.runtime:+"
+	
+	// dependencies for peropteryx
+	compile "eclipse-deps:org.eclipse.core.resources:+"
+	compile "eclipse-deps:org.eclipse.debug.core:+"
+	
+
+	testCompile "junit:junit:${VER_JUNIT}"
+
+	runtime 'com.diffplug.osgi:com.diffplug.osgi.extension.sun.misc:0.0.0'
+	runtimeDeps.each {
+		runtime "eclipse-deps:${it}:+"
+	}
+}
+jar.manifest.attributes('Bundle-SymbolicName': project.name + ';singleton:=true')
+
+//////////////////////
+// Run headless app //
+//////////////////////
+def codegenSetup = tasks.getByPath(':codegenSetup')
+def thisLaunch = codegenSetup.launchTask(project, 'thisLaunch')
+thisLaunch.args = ['-consoleLog', '-application', applicationName, 'file', 'test']
+
+

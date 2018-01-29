@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <extension
+         id="application"
+         point="org.eclipse.core.runtime.applications">
+      <application
+            cardinality="singleton-global"
+            thread="main"
+            visible="true">
+         <run
+               class="org.iobserve.planning.peropteryx.rcp.PerOpteryxHeadless">
+         </run>
+      </application>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="peropteryx.rcp.application"
+            name="peropteryx.rcp">
+         <property
+               name="appName"
+               value="peropteryx.rcp">
+         </property>
+      </product>
+   </extension>
+
+</plugin>

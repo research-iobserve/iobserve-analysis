@@ -1,0 +1,74 @@
+import com.diffplug.gradle.pde.*
+import com.diffplug.gradle.p2.*
+import com.diffplug.gradle.FileMisc
+import com.diffplug.gradle.ZipMisc
+import com.diffplug.common.swt.os.SwtPlatform
+
+////////////////////////////////////////////////
+// Build our application into a P2 repository //
+////////////////////////////////////////////////
+
+def P2_DIR = 'build/p2'
+
+task buildP2(type: PdeBuildTask, dependsOn: ':target.maven:bundles') {
+	// set the base platform
+	base(rootProject.file('target.p2/build/p2asmaven/p2runnable/eclipse-deps'))
+	// configure where the plugins will come from
+	addPluginPath(rootProject.file('target.maven/build'))
+	addPluginPath(rootProject.file('target.p2/build/p2asmaven/p2runnable/eclipse-deps'))
+	// and where they will go
+	destination(P2_DIR)
+	// specify that this is a product build
+	product {
+		id projectId
+		version rootProject.version
+		productPluginDir rootProject.file(pluginProjectDirectory)
+		productFileWithinPlugin productFileName
+		explicitVersionPolicy({
+			//it.resolve('com.google.guava', '17.0.0', '18.0.0').with('17.0.0', '18.0.0')
+		})
+	}
+	// set the build properties to be appropriate for p2
+	props['p2.build.repo'] = 'file://' + project.file(P2_DIR).absolutePath
+	props['p2.gathering'] =	'true'
+	props['skipDirector'] =	'true'
+	props['runPackager'] = 'false'
+	props['groupConfigurations'] = 'true'
+
+	// p2.compress doesn't work, dunno why
+	doLast {
+		def compressXml = { name ->
+			File xml = project.file(P2_DIR + "/${name}.xml")
+			File jar = project.file(P2_DIR + "/${name}.jar")
+			ZipMisc.zip(xml, "${name}.xml", jar)
+			xml.delete()
+		}
+		compressXml('artifacts')
+		compressXml('content')
+	}
+}
+
+P2Model model = new P2Model()
+model.addRepo(project.file(P2_DIR))
+model.addIU(uid)
+
+def createTask(SwtPlatform platform, P2Model model) {
+	def assembleTask = project.task('assemble.' + platform)
+	assembleTask.doLast {
+		def dest = project.file('build/' + platform + (platform.os == 'macosx' ? '.app' : ''))
+		FileMisc.cleanDir(dest)
+		P2Model.DirectorApp director = model.directorApp(dest, 'RcpDemo')
+		director.roaming()
+		director.platform(platform)
+		director.installFeatures()
+		director.runUsingBootstrapper(project)
+	}
+	return assembleTask
+}
+def assembleAll = project.task('assemble.all')
+for (SwtPlatform platform : SwtPlatform.getAll()) {
+	def assemble = createTask(platform, model)
+	assembleAll.dependsOn(assemble)
+	assemble.dependsOn(buildP2)
+}
+
