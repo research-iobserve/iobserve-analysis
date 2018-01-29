@@ -1,2 +1,11 @@
 include "analysis", "stages", "common", "monitoring", "adaptationdata", "planning", "adaptation", "execution", "model", "service", "analysis.cli", "cli.analysis", "collector", "splitter", "test.setup", "rac.creator", "replayer", "evaluate-user-behaviors", "planning.systemadaptation", "planning.cloudprofile", "service.privacy.violation"
 
+// simple demo app
+include 'peropteryx.rcp'
+
+// the targetplatform we're compiling against
+include 'target.p2'
+include 'target.maven'
+
+// the directory where we build the final shipped application
+include 'deploy'

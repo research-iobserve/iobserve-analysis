@@ -22,10 +22,24 @@ buildscript {
         mavenCentral()
         mavenLocal()
         jcenter()
+        
+        // make it easy to test a snapshot version of goomph
+		maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+		// grab dependencies from the gradle plugin portal
+		maven { url 'https://plugins.gradle.org/m2/' }
     }
     
+    // make sure we don't cache stale snapshot versions
+	configurations.all {
+		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
     dependencies {
         classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
+        
+        // a bunch of eclipse stuff
+		classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
+		// creates a targetplatform
+		classpath "org.standardout:bnd-platform:${VER_BND_PLATFORM}"
     }
 }
 
@@ -126,3 +140,130 @@ $reportCollection
 	}
 }
 
+///////////
+// MAVEN //
+///////////
+repositories {
+	mavenCentral()
+}
+subprojects {
+	repositories {
+		mavenCentral()
+		// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
+		if (project.version.endsWith('SNAPSHOT')) {
+			maven {
+				url 'https://oss.sonatype.org/content/repositories/snapshots/'
+			}
+		}
+		// local eclipse maven (created by Goomph)
+		maven {
+			url rootProject.file('target.p2/build/p2asmaven/maven')
+		}
+	}
+}
+
+/////////////
+// PLUGINS //
+/////////////
+// tasks to clean and jar all of the plugins
+Closure IS_PLUGIN = { it.name.startsWith('peropteryx') }
+configure(subprojects.findAll(IS_PLUGIN)) {
+	// we need the maven repo from p2
+	evaluationDependsOn(':target.p2')
+
+	def PROJECT_NAME = it.name
+
+	//////////
+	// JAVA //
+	//////////
+	apply plugin: 'java'
+	sourceSets {
+		main { java {
+			srcDir 'src'
+		} }
+		test { java {
+			srcDir 'test'
+		} }
+	}
+	sourceCompatibility = VER_JAVA
+	targetCompatibility = VER_JAVA
+
+	// add SWT and the appropriate platform-native SWT for building and testing
+	dependencies {
+		compile "eclipse-deps:org.eclipse.swt:+"
+		compile "eclipse-deps:org.eclipse.swt.${com.diffplug.common.swt.os.SwtPlatform.getNative()}:+"
+	}
+
+	//////////
+	// OSGI //
+	//////////
+	// create the manifest
+	apply plugin: 'com.diffplug.gradle.osgi.bndmanifest'
+	osgiBndManifest {
+		copyTo 'META-INF/MANIFEST.MF'
+	}
+	// configure the OSGi bundle
+	jar.manifest.attributes(
+		'-exportcontents': 'peropteryx.*',
+		'-removeheaders': 'Bnd-LastModified,Bundle-Name,Created-By,Tool,Private-Package,Require-Capability',
+		'Import-Package': '!javax.annotation.*,*',
+		'Bundle-SymbolicName': project.name,
+		'Bundle-RequiredExecutionEnvironment': 'JavaSE-1.8',
+		'Require-Capability': 'osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"',
+		'Bundle-Vendor': 'iObserve',
+		'Bundle-License': "http://www.apache.org/licenses/LICENSE-2.0"
+	)
+
+	//////////////////////
+	// ECLIPSE PROJECTS //
+	//////////////////////
+	apply plugin: 'eclipse'
+	// remove the build folder
+	apply plugin: 'com.diffplug.gradle.eclipse.excludebuildfolder'
+	// improve the project deps
+	apply plugin: 'com.diffplug.gradle.eclipse.projectdeps'
+	// handle build.properties correctly
+	apply plugin: 'com.diffplug.gradle.eclipse.buildproperties'
+
+	eclipse {
+		project {
+			natures 'org.eclipse.pde.PluginNature'
+			natures 'org.eclipse.jdt.core.javanature'
+
+			buildCommand 'org.eclipse.jdt.core.javabuilder'
+			buildCommand 'org.eclipse.pde.ManifestBuilder'
+			buildCommand 'org.eclipse.pde.SchemaBuilder'
+		}
+		classpath {
+			downloadSources true
+			downloadJavadoc true
+		}
+		jdt {
+			sourceCompatibility VER_JAVA
+			targetCompatibility VER_JAVA
+		}
+	}
+	// always create "fresh" projects
+	tasks.eclipse.dependsOn(cleanEclipse)
+}
+
+/////////////////////////////////////////////////////////
+// Root eclipse project for tinkering with build files //
+/////////////////////////////////////////////////////////
+apply plugin: 'com.diffplug.gradle.eclipse.resourcefilters'
+eclipseResourceFilters {
+	exclude().folders().name('com.diffplug.*')
+}
+
+
+/////////////////////////////
+// Setup a headless launch //
+/////////////////////////////
+apply plugin: 'com.diffplug.gradle.equinoxlaunch'
+equinoxLaunch {
+	codegenSetup {
+		source.addProject(project(':peropteryx.rcp'))
+		source.addMaven('com.google.guava:guava:17.0')
+		source.addMaven('com.google.guava:guava:18.0')
+	}
+}
