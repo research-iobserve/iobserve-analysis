@@ -211,7 +211,8 @@ configure(subprojects.findAll(IS_PLUGIN)) {
 		'Bundle-RequiredExecutionEnvironment': 'JavaSE-1.8',
 		'Require-Capability': 'osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"',
 		'Bundle-Vendor': 'iObserve',
-		'Bundle-License': "http://www.apache.org/licenses/LICENSE-2.0"
+		'Bundle-License': "http://www.apache.org/licenses/LICENSE-2.0",
+		'Export-Package': 'org.iobserve.planning.peropteryx.rcp'
 	)
 
 	//////////////////////
