@@ -18,10 +18,10 @@ package org.iobserve.analysis.clustering;
 import java.util.Optional;
 import java.util.Random;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.iobserve.analysis.userbehavior.data.ClusteringMetrics;
 import org.iobserve.analysis.userbehavior.data.ClusteringResults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import weka.clusterers.XMeans;
 import weka.core.Instances;
@@ -34,7 +34,7 @@ import weka.core.NormalizableDistance;
  *
  */
 public class XMeansClustering implements IVectorQuantizationClustering {
-    private static final Logger LOGGER = LogManager.getLogger(XMeansClustering.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMeansClustering.class);
 
     private final int minClusters;
     private final int maxClusters;
@@ -52,8 +52,8 @@ public class XMeansClustering implements IVectorQuantizationClustering {
      */
     public XMeansClustering(final int expectedUserGroups, final int variance,
             final NormalizableDistance distanceMetric) {
-        this.minClusters = (expectedUserGroups - variance) < 2 ? 1 : expectedUserGroups - variance;
-        this.maxClusters = (expectedUserGroups + variance) < 2 ? 2 : expectedUserGroups + variance;
+        this.minClusters = expectedUserGroups - variance < 2 ? 1 : expectedUserGroups - variance;
+        this.maxClusters = expectedUserGroups + variance < 2 ? 2 : expectedUserGroups + variance;
         this.distanceMetric = distanceMetric;
     }
 

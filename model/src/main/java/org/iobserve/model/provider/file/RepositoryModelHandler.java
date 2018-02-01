@@ -57,7 +57,12 @@ public final class RepositoryModelHandler extends AbstractModelHandler<Repositor
 
     /**
      * Loading and initializing the maps for data access.
+     *
+     * @param model
+     *            repository model
+     * @deprecated this functionality now resides in {@link RepositoryLookupModelProvier}
      */
+    @Deprecated
     public void loadData(final Repository model) {
         this.opInfToProvInfMap = new HashMap<>();
         this.opProvidedRoleMap = new HashMap<>();

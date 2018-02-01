@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
 import org.iobserve.analysis.userbehavior.data.Branch;
 import org.iobserve.analysis.userbehavior.data.BranchElement;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
@@ -47,6 +44,8 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class creates a PCM usage model from the passed LoopBranchModels. For each user group its
@@ -65,7 +64,7 @@ public class PcmUsageModelBuilder {
     private final List<Map<Integer, ScenarioBehaviour>> branchScenarioBehavioursOfUserGroups;
     private final ICorrespondence correspondenceModel;
     private final RepositoryLookupModelProvider repositoryLookupModel;
-    private static final Log LOG = LogFactory.getLog(PcmUsageModelBuilder.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PcmUsageModelBuilder.class);
 
     /**
      *
@@ -206,8 +205,8 @@ public class PcmUsageModelBuilder {
                         .getCorrespondent(branchElement.getClassSignature(), operationSplit[operationSplit.length - 1]);
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                    PcmUsageModelBuilder.LOG.debug("Usage: Found Correspondent: " + correspondent.getPcmEntityName()
-                            + " " + correspondent.getPcmOperationName());
+                    PcmUsageModelBuilder.LOGGER.debug("Usage: Found Correspondent: {}",
+                            correspondent.getPcmEntityName() + " " + correspondent.getPcmOperationName());
                     eSysCall = UsageModelFactory.createEntryLevelSystemCall(this.repositoryLookupModel, correspondent);
                 }
                 if (eSysCall != null) {

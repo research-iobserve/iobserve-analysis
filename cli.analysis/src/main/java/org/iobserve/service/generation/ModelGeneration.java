@@ -19,8 +19,6 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.model.PCMModelHandler;
@@ -31,6 +29,8 @@ import org.iobserve.model.provider.file.SystemModelHandler;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ToDo .
@@ -40,27 +40,27 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class ModelGeneration {
 
-    private static final Logger LOG = LogManager.getLogger(ModelGeneration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelGeneration.class);
 
     public static void createNewModel(final CommandLine commandLine) throws InitializationException, IOException {
-        ModelGeneration.LOG.info("Creating new model!");
+        ModelGeneration.LOGGER.info("Creating new model!");
 
         final URI repoLocation = URI.createFileURI(commandLine.getOptionValue("i"));
         final URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
-        ModelGeneration.LOG.info("Copying repository model to new location.");
+        ModelGeneration.LOGGER.info("Copying repository model to new location.");
         final RepositoryModelHandler repoModelProvider = new RepositoryModelHandler();
         repoModelProvider.load(repoLocation);
         ModelGeneration.copyRepoToOutput(outputLocation, repoModelProvider);
 
-        ModelGeneration.LOG.info("Generating system model.");
+        ModelGeneration.LOGGER.info("Generating system model.");
         final System systemModel = ModelGeneration.generateAndSaveSystem(commandLine, outputLocation);
-        ModelGeneration.LOG.info("Generating resource environment model.");
+        ModelGeneration.LOGGER.info("Generating resource environment model.");
         final ResourceEnvironment resEnvModel = ModelGeneration.generateAndSaveResourceEnvironment(commandLine,
                 outputLocation, systemModel.getEntityName());
-        ModelGeneration.LOG.info("Generating allocation model.");
+        ModelGeneration.LOGGER.info("Generating allocation model.");
         ModelGeneration.generateAndSaveAllocation(outputLocation, systemModel, resEnvModel);
-        ModelGeneration.LOG.info("Generating done!");
+        ModelGeneration.LOGGER.info("Generating done!");
     }
 
     private static System generateAndSaveSystem(final CommandLine commandLine, final URI outputLocation) {

@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.splitter;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 
 import teetime.framework.AbstractConsumerStage;
@@ -28,6 +26,8 @@ import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ITraceHelper;
 import org.iobserve.common.record.IUndeployedEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This filter removes iObserve records from a record stream to support ExplorViz reader.
@@ -35,8 +35,8 @@ import org.iobserve.common.record.IUndeployedEvent;
  * @author Reiner Jung
  *
  */
-public class Filter extends AbstractConsumerStage<IMonitoringRecord> {
-    private static final Log LOG = LogFactory.getLog(AbstractConsumerStage.class);
+public class StripIObserveSpecificEventsFilter extends AbstractConsumerStage<IMonitoringRecord> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumerStage.class);
     private final OutputPort<IMonitoringRecord> outputPort = this.createOutputPort();
 
     @Override
@@ -44,7 +44,7 @@ public class Filter extends AbstractConsumerStage<IMonitoringRecord> {
         if (element instanceof IDeployedEvent || element instanceof IUndeployedEvent || element instanceof ITraceHelper
                 || element instanceof IAllocationEvent || element instanceof IDeallocationEvent
                 || element instanceof GeoLocation) {
-            Filter.LOG.debug("Got iobserve record " + element);
+            StripIObserveSpecificEventsFilter.LOGGER.debug("Got iobserve record {}.", element);
         } else {
             this.outputPort.send(element);
         }
