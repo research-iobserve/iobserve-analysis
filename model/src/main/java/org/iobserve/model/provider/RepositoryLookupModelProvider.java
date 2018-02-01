@@ -43,15 +43,21 @@ public class RepositoryLookupModelProvider {
     private Map<String, OperationProvidedRole> opProvidedRoleMap;
     private final Repository repositoryModel;
 
+    /**
+     * Create a repository lookup model provider for the given repository model.
+     * 
+     * @param repositoryModel
+     *            the repository model
+     */
     public RepositoryLookupModelProvider(final Repository repositoryModel) {
         this.repositoryModel = repositoryModel;
-        this.InitializeLookupMaps();
+        this.initializeLookupMaps();
     }
 
     /**
      * Initializing the maps for data access.
      */
-    private void InitializeLookupMaps() {
+    private void initializeLookupMaps() {
         this.opInfToProvInfMap = new HashMap<>();
         this.opProvidedRoleMap = new HashMap<>();
         this.operationInterfaceMap = new HashMap<>();

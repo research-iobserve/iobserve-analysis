@@ -26,10 +26,9 @@ import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.service.services.NodeService;
 import org.iobserve.analysis.service.services.NodegroupService;
+import org.iobserve.analysis.service.util.Changelog;
+import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-
-import util.Changelog;
-import util.SendHttpRequest;
 
 /**
  * This stage is triggered by an analysis allocation update (resource container added) and updates

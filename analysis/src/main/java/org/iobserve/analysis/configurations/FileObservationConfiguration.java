@@ -18,6 +18,8 @@ package org.iobserve.analysis.configurations;
 import java.io.File;
 import java.util.Collection;
 
+import kieker.common.configuration.Configuration;
+
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
@@ -29,8 +31,6 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import kieker.common.configuration.Configuration;
 
 /**
  *
@@ -72,14 +72,6 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      *            output mode
      * @param snapshotBuilder
      *            snapshotbuilder
-     * @param perOpteryxHeadless
-     *            perOpterxyheadless URI
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param eventListener
-     *            eventlistener of some kind
-     * @param deployablesFolder
-     *            folder containing deployables
      * @throws ConfigurationException
      *             on configuration error
      */

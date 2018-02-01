@@ -166,7 +166,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getRemoteAddr() {
-        return "1.2.3.4";
+        return "1.2.3.4"; // NOPMD this is just mocking code
     }
 
     @Override
@@ -221,7 +221,7 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getLocalAddr() {
-        return "127.1.1.1";
+        return "127.1.1.1"; // NOPMD this is just mocking code
     }
 
     @Override
