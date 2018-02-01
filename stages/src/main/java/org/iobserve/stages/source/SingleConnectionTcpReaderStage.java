@@ -15,84 +15,101 @@
  ***************************************************************************/
 package org.iobserve.stages.source;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.File;
+import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.emf.ecore.EObject;
 
 import teetime.framework.AbstractProducerStage;
 
 /**
- * Reader for PCM models passed between the different iObserve services via TCP.
+ * Reader for PCM model files passed between the different iObserve services via TCP.
  *
  * @author Lars Bluemke
  *
  */
-public class SingleConnectionTcpReaderStage extends AbstractProducerStage<EObject> {
+public class SingleConnectionTcpReaderStage extends AbstractProducerStage<File> {
+    public static final String ENCODING = "UTF-8";
+
     private static final Logger LOG = LogManager.getLogger(SingleConnectionTcpReaderStage.class);
+    private static final int BUFFER_SIZE = 1024;
 
     private final int inputPort;
-    private final ByteBuffer buffer;
+    private final File inputDirectory;
 
     /**
      * Creates a new instance of this class.
      *
      * @param inputPort
      *            The port number
-     * @param bufferSize
-     *            The size of the buffer used for receiving the models
+     * @param inputDirectory
+     *            The directory where the incoming files are stored
      */
-    public SingleConnectionTcpReaderStage(final int inputPort, final int bufferSize) {
+    public SingleConnectionTcpReaderStage(final int inputPort, final File inputDirectory) {
         this.inputPort = inputPort;
-        this.buffer = ByteBuffer.allocate(SingleConnectionTcpWriterStage.HEADER_BYTES + bufferSize);
-
+        this.inputDirectory = inputDirectory;
     }
 
     @Override
     protected void execute() throws Exception {
+        // Set up a server socket to receive data
+        final ServerSocketChannel serverSocket = ServerSocketChannel.open();
+        serverSocket.socket().bind(new InetSocketAddress(this.inputPort));
+
         while (this.isActive()) {
-            final SocketChannel socketChannel = this.createServerSocketChannel(this.inputPort);
+            SingleConnectionTcpReaderStage.LOG.debug("Listening at port " + this.inputPort);
 
-            if (socketChannel != null) {
-                SingleConnectionTcpReaderStage.LOG
-                        .debug("Connection from " + socketChannel.getRemoteAddress().toString());
-                socketChannel.configureBlocking(false);
+            final SocketChannel socketChannel = serverSocket.accept();
+            final ByteBuffer buffer = ByteBuffer.allocate(SingleConnectionTcpReaderStage.BUFFER_SIZE);
 
-                // Read header
-                // while (socketChannel.read(this.buffer) <=
-                // SingleConnectionTcpWriterStage.HEADER_BYTES) {
-                // this.buffer.flip();
-                // final int size = this.buffer.getInt();
-                // final int version = this.buffer.getInt();
-                // }
+            SingleConnectionTcpReaderStage.LOG.debug("Connection from " + socketChannel.getRemoteAddress().toString());
 
-                // Read body
-                final ObjectInputStream ois = new ObjectInputStream(socketChannel.socket().getInputStream());
+            // Read file name length
+            socketChannel.read(buffer);
 
-                final Object object = ois.readObject();
+            buffer.flip();
 
-                if (object instanceof EObject) {
-                    this.getOutputPort().send((EObject) object);
+            final int nameLength = buffer.getInt();
+            final byte[] nameBytes = new byte[nameLength];
+
+            // Read file name
+            for (int i = 0; i < nameLength; i++) {
+                // All data read from buffer (if nameLength > FILE_BUFFER_SIZE-4)
+                if (!buffer.hasRemaining()) {
+                    buffer.clear();
+                    socketChannel.read(buffer);
+                    buffer.flip();
                 }
+
+                nameBytes[i] = buffer.get();
             }
+
+            final String filename = new String(nameBytes, SingleConnectionTcpReaderStage.ENCODING);
+            SingleConnectionTcpReaderStage.LOG.debug("Received filename=" + filename);
+
+            buffer.compact();
+
+            // Create file channel for model file
+            final File modelFile = new File(this.inputDirectory, filename);
+            final RandomAccessFile modelAccessFile = new RandomAccessFile(modelFile, "rw");
+            final FileChannel fileChannel = modelAccessFile.getChannel();
+
+            // Write bytes from socket channel to file channel
+            while (socketChannel.read(buffer) > 0) {
+                buffer.flip();
+                fileChannel.write(buffer);
+                buffer.compact();
+            }
+
+            SingleConnectionTcpReaderStage.LOG.debug("File received, closing channel.");
+            modelAccessFile.close();
             socketChannel.close();
         }
-    }
-
-    private SocketChannel createServerSocketChannel(final int port) throws IOException {
-        ServerSocketChannel serverSocket = null;
-        SocketChannel socketChannel = null;
-
-        serverSocket = ServerSocketChannel.open();
-        serverSocket.socket().bind(new InetSocketAddress(port));
-        socketChannel = serverSocket.accept();
-
-        return socketChannel;
     }
 }

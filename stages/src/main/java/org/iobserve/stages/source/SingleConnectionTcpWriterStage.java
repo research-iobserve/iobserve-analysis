@@ -15,31 +15,30 @@
  ***************************************************************************/
 package org.iobserve.stages.source;
 
-import java.io.ObjectOutputStream;
+import java.io.File;
+import java.io.RandomAccessFile;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.eclipse.emf.ecore.EObject;
 
 import teetime.framework.AbstractConsumerStage;
 
 /**
- * Writer for PCM models passed between the different iObserve services via TCP.
+ * Writer for PCM model files passed between the different iObserve services via TCP.
  *
  * @author Lars Bluemke
  *
  */
-public class SingleConnectionTcpWriterStage extends AbstractConsumerStage<EObject> {
-    public static final int HEADER_BYTES = 8;
-
+public class SingleConnectionTcpWriterStage extends AbstractConsumerStage<File> {
     private static final Logger LOG = LogManager.getLogger(SingleConnectionTcpWriterStage.class);
+    private static final int FILE_BUFFER_SIZE = 1024;
 
     private final String hostname;
     private final int inputPort;
-    private final ByteBuffer buffer;
 
     /**
      * Creates a new instance of this class.
@@ -53,29 +52,40 @@ public class SingleConnectionTcpWriterStage extends AbstractConsumerStage<EObjec
     public SingleConnectionTcpWriterStage(final String hostname, final int inputPort) {
         this.hostname = hostname;
         this.inputPort = inputPort;
-        this.buffer = ByteBuffer.allocate(SingleConnectionTcpWriterStage.HEADER_BYTES);
-
     }
 
     @Override
-    protected void execute(final EObject model) throws Exception {
+    protected void execute(final File modelFile) throws Exception {
+        // Connect to reader
         final SocketChannel socketChannel = SocketChannel.open();
         socketChannel.connect(new InetSocketAddress(this.hostname, this.inputPort));
 
-        // Write header
-        // int size = model.;
-        // int version;
-        // this.buffer.putInt(value);
-        // this.buffer.putInt(value);
-        // socketChannel.write(buffer);
+        // Send file name length + file name
+        final String filename = modelFile.getName();
+        final byte[] nameBytes = filename.getBytes(SingleConnectionTcpReaderStage.ENCODING);
+        final int nameLength = nameBytes.length;
+        final ByteBuffer nameBuffer = ByteBuffer.allocate(Integer.BYTES + nameLength);
+        nameBuffer.putInt(nameLength);
+        nameBuffer.put(nameBytes);
+        nameBuffer.flip();
+        socketChannel.write(nameBuffer);
 
-        // Write body
-        final ObjectOutputStream oos = new ObjectOutputStream(socketChannel.socket().getOutputStream());
-        oos.writeObject(model);
-        oos.close();
+        // Create file channel for model file
+        final RandomAccessFile modelAccessFile = new RandomAccessFile(modelFile, "r");
+        final FileChannel fileChannel = modelAccessFile.getChannel();
+        final ByteBuffer fileBuffer = ByteBuffer.allocate(SingleConnectionTcpWriterStage.FILE_BUFFER_SIZE);
+
+        // Write bytes from file channel to socket channel
+        while (fileChannel.read(fileBuffer) > 0) {
+            fileBuffer.flip();
+            socketChannel.write(fileBuffer);
+            fileBuffer.compact();
+        }
+
+        SingleConnectionTcpWriterStage.LOG.debug("File sent, closing channel.");
 
         socketChannel.close();
-
+        modelAccessFile.close();
     }
 
 }
