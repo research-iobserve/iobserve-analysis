@@ -25,6 +25,7 @@ dependencies {
 	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
 	
 	compile project(":common")
+	compile project(":model")
 	compile project(":planning.systemadaptation")
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
