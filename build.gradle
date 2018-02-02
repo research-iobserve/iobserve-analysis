@@ -12,7 +12,7 @@ if (project.properties['api.baseline'] == null || project.properties['api.baseli
 	System.err.println("Add the property api.baseline=path to the repository")
 	System.err.println("Use / for path separation")
 	System.err.println("The repository can be found at git@github.com:research-iobserve/iobserve-repository.git")
-} else {
+} else {	
 	println "iObserve API baseline repository is at: " + project.properties['api.baseline']
 }
 
@@ -33,27 +33,29 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'eclipse'
-    apply plugin: 'checkstyle'
     apply plugin: 'pmd'
     apply plugin: 'com.bmuschko.clover'
     
     version = '0.0.2-SNAPSHOT'
     group = 'org.iobserve'
         
-    checkstyle {
-        configFile = rootProject.file('iobserve-checkstyle-rules.xml')
-        configDir = rootProject.file("${rootDir}")
-    }
         
     tasks.withType(Checkstyle) {
 	    reports {
 	        xml.enabled true
 	    }
 	}
+
+configure(subprojects.findAll {}) {
+		apply plugin: 'checkstyle'
+    	checkstyle {
+        	configFile = rootProject.file('tools.configurations/iobserve-checkstyle-rules.xml')
+    	}
+ }   
     
-    pmd {
-    	ignoreFailures = true
-    }
+   		 pmd {
+    		ignoreFailures = true
+    	}
     
     ext {
         appName = "org.iobserve"
