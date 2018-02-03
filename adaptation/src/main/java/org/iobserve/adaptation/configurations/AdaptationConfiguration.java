@@ -15,11 +15,13 @@
  ***************************************************************************/
 package org.iobserve.adaptation.configurations;
 
+import java.io.File;
+
 import org.iobserve.adaptation.AdaptationCalculation;
 import org.iobserve.adaptation.AdaptationPlanning;
-import org.iobserve.adaptation.ModelProducer;
 import org.iobserve.adaptation.SystemAdaptation;
-import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
+import org.iobserve.adaptation.cli.ModelFileSink;
+import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 
 import teetime.framework.Configuration;
 
@@ -40,10 +42,12 @@ public class AdaptationConfiguration extends Configuration {
         // this.connectPorts(systemAdaptor.getOutputPort(), adaptationExecution.getInputPort());
 
         // Debugging
-        final ModelProducer modelProducer = new ModelProducer();
-        final SingleConnectionTcpWriterStage modelWriter = new SingleConnectionTcpWriterStage("localhost", 12345);
+        final SingleConnectionTcpReaderStage modelReader = new SingleConnectionTcpReaderStage(12346,
+                new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/working-dir-adaptation"));
 
-        this.connectPorts(modelProducer.getOutputPort(), modelWriter.getInputPort());
+        final ModelFileSink modelProducerSink = new ModelFileSink();
+
+        this.connectPorts(modelReader.getOutputPort(), modelProducerSink.getInputPort());
     }
 
 }

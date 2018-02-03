@@ -15,15 +15,11 @@
  ***************************************************************************/
 package org.iobserve.execution.configurations;
 
-import java.io.File;
-
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.evaluation.ModelComparer;
 import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.execution.AdaptationExecution;
 import org.iobserve.execution.IAdaptationEventListener;
-import org.iobserve.execution.ModelProducerSink;
-import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 
 import teetime.framework.Configuration;
 
@@ -44,12 +40,5 @@ public class ExecutionConfiguration extends Configuration {
             final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
         }
 
-        // Debugging
-        final SingleConnectionTcpReaderStage modelReader = new SingleConnectionTcpReaderStage(12345,
-                new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/working-dir-output"));
-
-        final ModelProducerSink modelProducerSink = new ModelProducerSink();
-
-        this.connectPorts(modelReader.getOutputPort(), modelProducerSink.getInputPort());
     }
 }

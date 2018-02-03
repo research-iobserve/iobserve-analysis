@@ -30,6 +30,13 @@ import teetime.stage.basic.merger.Merger;
 import teetime.stage.basic.merger.strategy.NonBlockingFiniteRoundRobinStrategy;
 import teetime.stage.io.Directory2FilesFilter;
 
+/**
+ * Reads the PCM model files from a directory passed to this stages' input port and passes them to
+ * its output port. Only files with PCM model file extension are passed.
+ *
+ * @author Lars Bluemke
+ *
+ */
 public class ModelDir2ModelFilesStage extends CompositeStage {
 
     private static final Logger LOG = LoggerFactory.getLogger(ModelDir2ModelFilesStage.class);
@@ -38,6 +45,9 @@ public class ModelDir2ModelFilesStage extends CompositeStage {
     private final FileExtensionSwitch fileExtensionSwitch;
     private final Merger<File> merger;
 
+    /**
+     * Creates a new instance of this class.
+     */
     public ModelDir2ModelFilesStage() {
 
         this.directory2FilesFilter = new Directory2FilesFilter(new Comparator<File>() {

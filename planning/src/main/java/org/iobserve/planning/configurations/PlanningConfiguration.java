@@ -43,7 +43,7 @@ public class PlanningConfiguration extends Configuration {
 
     /**
      * Creates a new instance of this class.
-     * 
+     *
      * @param planningInputPort
      *            Port where planning service receives new records via TCP
      * @param modelDirectory
@@ -63,12 +63,14 @@ public class PlanningConfiguration extends Configuration {
         this.tcpReader = new SingleConnectionTcpReaderStage(planningInputPort, modelDirectory);
         this.modelFilesCollector = new ModelFiles2ModelDirCollectorStage();
 
-        if ((perOpteryxHeadless != null) && (lqnsDir != null)) {
-            this.modelPreProcessor = new ModelProcessing(perOpteryxHeadless, lqnsDir);
-        } else {
-            throw new IllegalArgumentException(
-                    "Failed to initialize ModelProcessing. Path to PerOpteryx or LQN solver must not be null!");
-        }
+        // TODO: Only removed for debugging
+        // if ((perOpteryxHeadless != null) && (lqnsDir != null)) {
+        this.modelPreProcessor = new ModelProcessing(perOpteryxHeadless, lqnsDir);
+        // } else {
+        // throw new IllegalArgumentException(
+        // "Failed to initialize ModelProcessing. Path to PerOpteryx or LQN solver must not be
+        // null!");
+        // }
 
         this.modelOptimizer = new ModelOptimization();
         this.modelDir2ModelFiles = new ModelDir2ModelFilesStage();
