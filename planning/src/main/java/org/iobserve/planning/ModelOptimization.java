@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.planning;
 
+import java.io.File;
+
 import org.iobserve.planning.data.PlanningData;
 
 import teetime.stage.basic.AbstractTransformation;
@@ -24,28 +26,30 @@ import teetime.stage.basic.AbstractTransformation;
  *
  * @author Philipp Weimann
  */
-public class ModelOptimization extends AbstractTransformation<PlanningData, PlanningData> {
+public class ModelOptimization extends AbstractTransformation<PlanningData, File> {
 
     private static final int EXEC_SUCCESS = 0;
 
     @Override
     protected void execute(final PlanningData planningData) throws Exception {
-        CandidateGeneration.LOG.info("Model Optimizing");
 
-        final int result = 2; // exec.startModelGeneration();
+        // final int result = 2; // exec.startModelGeneration();
+        //
+        // if (result != ModelOptimization.EXEC_SUCCESS) {
+        // // adaptationData.setReDeploymentURI(URI.createFileURI(
+        // //
+        // "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\processedModel\\PerOpteryx_results\\costOptimalModel"));
+        // throw new RuntimeException("PerOpteryx exited with error code " + result);
+        // // String uriString =
+        // // "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\Test";
+        //
+        // // adaptationData.setReDeploymentURI(URI.createFileURI(uriString));
+        // }
 
-        if (result != ModelOptimization.EXEC_SUCCESS) {
-            // adaptationData.setReDeploymentURI(URI.createFileURI(
-            // "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\processedModel\\PerOpteryx_results\\costOptimalModel"));
-            throw new RuntimeException("PerOpteryx exited with error code " + result);
-            // String uriString =
-            // "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\Test";
-
-            // adaptationData.setReDeploymentURI(URI.createFileURI(uriString));
-        }
+        // TODO: Execute PerOpteryx here
 
         // dead code.. what was the purpose?
-        // this.outputPort.send(planningData);
+        this.outputPort.send(new File(planningData.getProcessedModelDir().toFileString()));
     }
 
 }

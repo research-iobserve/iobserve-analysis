@@ -41,19 +41,19 @@ public class SingleConnectionTcpReaderStage extends AbstractProducerStage<File> 
     private static final int BUFFER_SIZE = 1024;
 
     private final int inputPort;
-    private final File inputDirectory;
+    private final File modelDirectory;
 
     /**
      * Creates a new instance of this class.
      *
      * @param inputPort
      *            The port number
-     * @param inputDirectory
+     * @param modelDirectory
      *            The directory where the incoming files are stored
      */
-    public SingleConnectionTcpReaderStage(final int inputPort, final File inputDirectory) {
+    public SingleConnectionTcpReaderStage(final int inputPort, final File modelDirectory) {
         this.inputPort = inputPort;
-        this.inputDirectory = inputDirectory;
+        this.modelDirectory = modelDirectory;
     }
 
     @Override
@@ -96,7 +96,7 @@ public class SingleConnectionTcpReaderStage extends AbstractProducerStage<File> 
             buffer.compact();
 
             // Create file channel for model file
-            final File modelFile = new File(this.inputDirectory, filename);
+            final File modelFile = new File(this.modelDirectory, filename);
             final RandomAccessFile modelAccessFile = new RandomAccessFile(modelFile, "rw");
             final FileChannel fileChannel = modelAccessFile.getChannel();
 

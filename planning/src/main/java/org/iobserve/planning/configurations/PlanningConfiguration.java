@@ -15,11 +15,14 @@
  ***************************************************************************/
 package org.iobserve.planning.configurations;
 
-import org.eclipse.emf.common.util.URI;
-import org.iobserve.planning.CandidateGeneration;
-import org.iobserve.planning.CandidateProcessing;
+import java.io.File;
+
 import org.iobserve.planning.ModelOptimization;
 import org.iobserve.planning.ModelProcessing;
+import org.iobserve.stages.model.ModelDir2ModelFilesStage;
+import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
+import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
+import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
 
 import teetime.framework.Configuration;
 
@@ -31,17 +34,50 @@ import teetime.framework.Configuration;
  */
 public class PlanningConfiguration extends Configuration {
 
-    public PlanningConfiguration(final URI perOpteryxHeadless, final URI lqnsDir) {
+    private final SingleConnectionTcpReaderStage tcpReader;
+    private final ModelFiles2ModelDirCollectorStage modelFilesCollector;
+    private final ModelProcessing modelPreProcessor;
+    private final ModelOptimization modelOptimizer;
+    private final ModelDir2ModelFilesStage modelDir2ModelFiles;
+    private final SingleConnectionTcpWriterStage tcpWriter;
+
+    /**
+     * Creates a new instance of this class.
+     * 
+     * @param planningInputPort
+     *            Port where planning service receives new records via TCP
+     * @param modelDirectory
+     *            Directory where models are stored
+     * @param perOpteryxHeadless
+     *            PerOpteryx executable
+     * @param lqnsDir
+     *            LQN solver executable
+     * @param adaptationHostname
+     *            Host name of adaptation service
+     * @param adaptationInputPort
+     *            Input port of adaptation service
+     */
+    public PlanningConfiguration(final int planningInputPort, final File modelDirectory, final File perOpteryxHeadless,
+            final File lqnsDir, final String adaptationHostname, final int adaptationInputPort) {
+
+        this.tcpReader = new SingleConnectionTcpReaderStage(planningInputPort, modelDirectory);
+        this.modelFilesCollector = new ModelFiles2ModelDirCollectorStage();
 
         if ((perOpteryxHeadless != null) && (lqnsDir != null)) {
-            // create filters for snapshot planning, evaluation and adaptation
-            final CandidateGeneration candidateGenerator = new CandidateGeneration(
-                    new ModelProcessing(perOpteryxHeadless, lqnsDir), new ModelOptimization(),
-                    new CandidateProcessing());
+            this.modelPreProcessor = new ModelProcessing(perOpteryxHeadless, lqnsDir);
+        } else {
+            throw new IllegalArgumentException(
+                    "Failed to initialize ModelProcessing. Path to PerOpteryx or LQN solver must not be null!");
         }
 
-        // TODO for lbl: Implement a way to pass data to the following stages
-        // Path Planning => Adaptation
-        // this.connectPorts(candidateGenerator.getOutputPort(), systemAdaptor.getInputPort());
+        this.modelOptimizer = new ModelOptimization();
+        this.modelDir2ModelFiles = new ModelDir2ModelFilesStage();
+        this.tcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname, adaptationInputPort);
+
+        this.connectPorts(this.tcpReader.getOutputPort(), this.modelFilesCollector.getInputPort());
+        this.connectPorts(this.modelFilesCollector.getOutputPort(), this.modelPreProcessor.getInputPort());
+        this.connectPorts(this.modelPreProcessor.getOutputPort(), this.modelOptimizer.getInputPort());
+        this.connectPorts(this.modelOptimizer.getOutputPort(), this.modelDir2ModelFiles.getInputPort());
+        this.connectPorts(this.modelDir2ModelFiles.getOutputPort(), this.tcpWriter.getInputPort());
     }
 }

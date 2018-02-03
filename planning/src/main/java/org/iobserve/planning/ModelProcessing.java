@@ -17,13 +17,13 @@ package org.iobserve.planning;
 
 import java.io.File;
 
-import teetime.stage.basic.AbstractTransformation;
-
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.planning.data.PlanningData;
+
+import teetime.stage.basic.AbstractTransformation;
 
 /**
  * Stage for processing the PCM model before the model is used in PerOpteryx for generating
@@ -33,11 +33,11 @@ import org.iobserve.planning.data.PlanningData;
  * @author Tobias Pöppke
  *
  */
-public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
+public class ModelProcessing extends AbstractTransformation<File, PlanningData> {
     public static final String PROCESSED_MODEL_FOLDER = "processedModel";
 
-    private final URI perOpteryxDir;
-    private final URI lqnsDir;
+    private final File perOpteryxDir;
+    private final File lqnsDir;
 
     /**
      * Creates a new model processing stage and fills the planning data with the given location of
@@ -48,23 +48,21 @@ public class ModelProcessing extends AbstractTransformation<URI, PlanningData> {
      * @param lqnsDir
      *            directory for layered queuing networks
      */
-    public ModelProcessing(final URI perOpteryxDir, final URI lqnsDir) {
+    public ModelProcessing(final File perOpteryxDir, final File lqnsDir) {
         this.perOpteryxDir = perOpteryxDir;
         this.lqnsDir = lqnsDir;
     }
 
     @Override
-    protected void execute(final URI element) throws Exception {
-        CandidateGeneration.LOG.info("Model Processing");
-
+    protected void execute(final File modelDirectory) throws Exception {
         final PlanningData planningData = new PlanningData();
 
         final AdaptationData adaptationData = new AdaptationData();
-        adaptationData.setRuntimeModelURI(element);
+        adaptationData.setRuntimeModelURI(URI.createFileURI(modelDirectory.getAbsolutePath()));
         planningData.setAdaptationData(adaptationData);
-        planningData.setPerOpteryxDir(this.perOpteryxDir);
-        planningData.setOriginalModelDir(element);
-        planningData.setLqnsDir(this.lqnsDir);
+        planningData.setPerOpteryxDir(URI.createFileURI(this.perOpteryxDir.getAbsolutePath()));
+        planningData.setOriginalModelDir(URI.createFileURI(modelDirectory.getAbsolutePath()));
+        planningData.setLqnsDir(URI.createFileURI(this.lqnsDir.getAbsolutePath()));
 
         final File directory = new File(adaptationData.getReDeploymentURI().toFileString());
 
