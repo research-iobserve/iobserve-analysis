@@ -17,51 +17,72 @@ package org.iobserve.stages.model;
 
 import java.io.File;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.gradle.internal.impldep.org.apache.commons.io.FilenameUtils;
+import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 
 import teetime.stage.basic.AbstractFilter;
 
+/**
+ * Collects all incoming PCM model files until there is at least one file of each type. Then passes
+ * the parent directory to its output port. Note: This stage is intended to be used after
+ * {@link SingleConnectionTcpReaderStage} and therefore assumes that all incoming files are in the
+ * same parent directory.
+ *
+ * @author Lars Bluemke
+ *
+ */
 public class ModelFiles2ModelDirCollectorStage extends AbstractFilter<File> {
+    private static final Logger LOG = LogManager.getLogger(ModelFiles2ModelDirCollectorStage.class);
 
     private boolean receivedAllocationModel = false;
-    private boolean receivedCloudProfileModel = false;
-    private boolean receivedCostModel = false;
-    private boolean receivedDesignDecisionModel = false;
-    private boolean receivedQmlDeclarationsModel = false;
-    private boolean receivedRepositoryModel = false;
-    private boolean receivedResourceEnvironmentModel = false;
-    private boolean receivedSystemModel = false;
-    private boolean receivedUsageModel = false;
+    private final boolean receivedCloudProfileModel = false;
+    private final boolean receivedCostModel = false;
+    private final boolean receivedDesignDecisionModel = false;
+    private final boolean receivedQmlDeclarationsModel = false;
+    private final boolean receivedRepositoryModel = false;
+    private final boolean receivedResourceEnvironmentModel = false;
+    private final boolean receivedSystemModel = false;
+    private final boolean receivedUsageModel = false;
 
     @Override
     protected void execute(final File modelFile) throws Exception {
+        ModelFiles2ModelDirCollectorStage.LOG.debug("Received model file " + modelFile);
 
         final String modelFileExtension = FilenameUtils.getExtension(modelFile.getName());
 
         if (modelFileExtension.equals("allocation")) {
             this.receivedAllocationModel = true;
-        } else if (modelFileExtension.equals("cloudprofile")) {
-            this.receivedCloudProfileModel = true;
-        } else if (modelFileExtension.equals("cost")) {
-            this.receivedCostModel = true;
-        } else if (modelFileExtension.equals("designdecision")) {
-            this.receivedDesignDecisionModel = true;
-        } else if (modelFileExtension.equals("qmldeclarations")) {
-            this.receivedQmlDeclarationsModel = true;
-        } else if (modelFileExtension.equals("repository")) {
-            this.receivedRepositoryModel = true;
-        } else if (modelFileExtension.equals("resourceenvironment")) {
-            this.receivedResourceEnvironmentModel = true;
-        } else if (modelFileExtension.equals("system")) {
-            this.receivedSystemModel = true;
-        } else if (modelFileExtension.equals("usagemodel")) {
-            this.receivedUsageModel = true;
         }
+        // else if (modelFileExtension.equals("cloudprofile")) {
+        // this.receivedCloudProfileModel = true;
+        // } else if (modelFileExtension.equals("cost")) {
+        // this.receivedCostModel = true;
+        // } else if (modelFileExtension.equals("designdecision")) {
+        // this.receivedDesignDecisionModel = true;
+        // } else if (modelFileExtension.equals("qmldeclarations")) {
+        // this.receivedQmlDeclarationsModel = true;
+        // } else if (modelFileExtension.equals("repository")) {
+        // this.receivedRepositoryModel = true;
+        // } else if (modelFileExtension.equals("resourceenvironment")) {
+        // this.receivedResourceEnvironmentModel = true;
+        // } else if (modelFileExtension.equals("system")) {
+        // this.receivedSystemModel = true;
+        // } else if (modelFileExtension.equals("usagemodel")) {
+        // this.receivedUsageModel = true;
+        // }
 
         // If all files have been received, send the containing directory
-        if (this.receivedAllocationModel && this.receivedCloudProfileModel && this.receivedCostModel
-                && this.receivedDesignDecisionModel && this.receivedQmlDeclarationsModel && this.receivedRepositoryModel
-                && this.receivedResourceEnvironmentModel && this.receivedSystemModel && this.receivedUsageModel) {
+        if (this.receivedAllocationModel /*
+                                          * && this.receivedCloudProfileModel &&
+                                          * this.receivedCostModel &&
+                                          * this.receivedDesignDecisionModel &&
+                                          * this.receivedQmlDeclarationsModel &&
+                                          * this.receivedRepositoryModel &&
+                                          * this.receivedResourceEnvironmentModel &&
+                                          * this.receivedSystemModel && this.receivedUsageModel
+                                          */) {
             this.outputPort.send(modelFile.getParentFile());
         }
     }

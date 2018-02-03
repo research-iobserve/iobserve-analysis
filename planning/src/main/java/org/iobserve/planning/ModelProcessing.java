@@ -17,10 +17,10 @@ package org.iobserve.planning;
 
 import java.io.File;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.model.PCMModelHandler;
 import org.iobserve.planning.data.PlanningData;
 
 import teetime.stage.basic.AbstractTransformation;
@@ -34,6 +34,7 @@ import teetime.stage.basic.AbstractTransformation;
  *
  */
 public class ModelProcessing extends AbstractTransformation<File, PlanningData> {
+    public static final Logger LOG = LogManager.getLogger(ModelProcessing.class);
     public static final String PROCESSED_MODEL_FOLDER = "processedModel";
 
     private final File perOpteryxDir;
@@ -55,6 +56,8 @@ public class ModelProcessing extends AbstractTransformation<File, PlanningData> 
 
     @Override
     protected void execute(final File modelDirectory) throws Exception {
+        ModelProcessing.LOG.debug("Received model directory " + modelDirectory);
+
         final PlanningData planningData = new PlanningData();
 
         final AdaptationData adaptationData = new AdaptationData();
@@ -64,16 +67,16 @@ public class ModelProcessing extends AbstractTransformation<File, PlanningData> 
         planningData.setOriginalModelDir(URI.createFileURI(modelDirectory.getAbsolutePath()));
         planningData.setLqnsDir(URI.createFileURI(this.lqnsDir.getAbsolutePath()));
 
-        final File directory = new File(adaptationData.getReDeploymentURI().toFileString());
-
-        final PCMModelHandler models = new PCMModelHandler(directory);
-        final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER, models);
-
-        final URI snapshotLocation = snapshotBuilder.createSnapshot();
-        planningData.setProcessedModelDir(snapshotLocation);
-
-        final ModelTransformer modelTransformer = new ModelTransformer(planningData);
-        modelTransformer.transformModel();
+        // TODO: I modified some parameters for debugging, fix this!
+        // final PCMModelHandler models = new PCMModelHandler(modelDirectory);
+        // final SnapshotBuilder snapshotBuilder = new
+        // SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER, models);
+        //
+        // final URI snapshotLocation = snapshotBuilder.createSnapshot();
+        planningData.setProcessedModelDir(URI.createFileURI(modelDirectory.getAbsolutePath()));
+        //
+        // final ModelTransformer modelTransformer = new ModelTransformer(planningData);
+        // modelTransformer.transformModel();
 
         this.outputPort.send(planningData);
     }
