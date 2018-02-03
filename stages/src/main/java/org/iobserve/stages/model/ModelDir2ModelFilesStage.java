@@ -19,8 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -32,7 +32,7 @@ import teetime.stage.io.Directory2FilesFilter;
 
 public class ModelDir2ModelFilesStage extends CompositeStage {
 
-    private static final Logger LOG = LogManager.getLogger(ModelDir2ModelFilesStage.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModelDir2ModelFilesStage.class);
 
     private final Directory2FilesFilter directory2FilesFilter;
     private final FileExtensionSwitch fileExtensionSwitch;

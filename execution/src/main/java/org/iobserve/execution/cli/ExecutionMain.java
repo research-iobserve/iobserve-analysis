@@ -15,9 +15,9 @@
  ***************************************************************************/
 package org.iobserve.execution.cli;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.iobserve.execution.configurations.ExecutionConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
@@ -30,7 +30,7 @@ import teetime.framework.Execution;
  */
 public class ExecutionMain {
 
-    private static final Logger LOG = LogManager.getLogger(ExecutionMain.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ExecutionMain.class);
 
     public static void main(final String[] args) {
         new ExecutionMain().run();

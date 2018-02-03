@@ -23,8 +23,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import teetime.framework.AbstractProducerStage;
 
@@ -37,7 +37,7 @@ import teetime.framework.AbstractProducerStage;
 public class SingleConnectionTcpReaderStage extends AbstractProducerStage<File> {
     public static final String ENCODING = "UTF-8";
 
-    private static final Logger LOG = LogManager.getLogger(SingleConnectionTcpReaderStage.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SingleConnectionTcpReaderStage.class);
     private static final int BUFFER_SIZE = 1024;
 
     private final int inputPort;

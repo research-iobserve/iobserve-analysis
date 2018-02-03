@@ -25,8 +25,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
@@ -35,6 +33,8 @@ import org.iobserve.planning.ModelTransformer;
 import org.iobserve.planning.data.PlanningData;
 import org.iobserve.planning.environment.PalladioEclipseEnvironment;
 import org.iobserve.planning.utils.ModelHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main class for executing the planning phase outside of the pipeline and for creating cloud
@@ -44,7 +44,7 @@ import org.iobserve.planning.utils.ModelHelper;
  *
  */
 public final class PlanningMain {
-    private static final Logger LOG = LogManager.getLogger(PlanningMain.class);
+    private static final Logger LOG = LoggerFactory.getLogger(PlanningMain.class);
 
     public static final String INPUT_WORKING_DIR_OPTION = "working-dir";
     public static final String INPUT_WORKING_DIR_OPTION_SHORT = "w";

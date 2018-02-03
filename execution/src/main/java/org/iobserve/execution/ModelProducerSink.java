@@ -17,14 +17,14 @@ package org.iobserve.execution;
 
 import java.io.File;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.iobserve.model.PCMModelHandler;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -35,7 +35,7 @@ import teetime.framework.AbstractConsumerStage;
  *
  */
 public class ModelProducerSink extends AbstractConsumerStage<File> {
-    private static final Logger LOG = LogManager.getLogger(ModelProducerSink.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModelProducerSink.class);
     private static final File PCM_MODELS_DIRECTORY = new File(
             "/Users/LarsBlumke/Documents/CAU/Masterarbeit/working-dir-output");
 

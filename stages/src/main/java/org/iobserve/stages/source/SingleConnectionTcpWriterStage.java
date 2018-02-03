@@ -22,8 +22,8 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -34,7 +34,7 @@ import teetime.framework.AbstractConsumerStage;
  *
  */
 public class SingleConnectionTcpWriterStage extends AbstractConsumerStage<File> {
-    private static final Logger LOG = LogManager.getLogger(SingleConnectionTcpWriterStage.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SingleConnectionTcpWriterStage.class);
     private static final int FILE_BUFFER_SIZE = 1024;
 
     private final String hostname;
