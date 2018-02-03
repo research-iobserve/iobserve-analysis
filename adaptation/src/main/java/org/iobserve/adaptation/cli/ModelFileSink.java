@@ -37,7 +37,7 @@ import teetime.framework.AbstractConsumerStage;
 public class ModelFileSink extends AbstractConsumerStage<File> {
     private static final Logger LOG = LoggerFactory.getLogger(ModelFileSink.class);
     private static final File PCM_MODELS_DIRECTORY = new File(
-            "/Users/LarsBlumke/Documents/CAU/Masterarbeit/working-dir-output");
+            "/Users/LarsBlumke/Documents/CAU/Masterarbeit/working-dir-adaptation");
 
     @Override
     protected void execute(final File modelFile) throws Exception {
