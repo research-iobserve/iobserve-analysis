@@ -18,13 +18,13 @@ package org.iobserve.evaluation;
 import java.io.File;
 import java.io.IOException;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 
 import org.iobserve.evaluation.filter.BehaviorModelJSONReader;
 import org.iobserve.evaluation.filter.ComparisonOutputStage;
 import org.iobserve.evaluation.filter.ModelComparisonStage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Analysis configuration for the data collector.
@@ -33,7 +33,7 @@ import org.iobserve.evaluation.filter.ModelComparisonStage;
  *
  */
 public class EvaluationConfiguration extends Configuration {
-    private static final Log LOG = LogFactory.getLog(EvaluationConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EvaluationConfiguration.class);
 
     /**
      * Configure evaluation analysis to compare a observed model with a reference model.
@@ -51,9 +51,9 @@ public class EvaluationConfiguration extends Configuration {
     public EvaluationConfiguration(final File referenceModelFile, final File testModelFile, final File resultFile)
             throws IOException {
 
-        EvaluationConfiguration.LOG.debug("Baseline " + referenceModelFile.getAbsolutePath());
-        EvaluationConfiguration.LOG.debug("Test model " + testModelFile.getAbsolutePath());
-        EvaluationConfiguration.LOG.debug("Results in " + resultFile.getAbsolutePath());
+        EvaluationConfiguration.LOGGER.debug("Baseline {}", referenceModelFile.getAbsolutePath());
+        EvaluationConfiguration.LOGGER.debug("Test model {}", testModelFile.getAbsolutePath());
+        EvaluationConfiguration.LOGGER.debug("Results in {}", resultFile.getAbsolutePath());
 
         final BehaviorModelJSONReader referenceModelReader = new BehaviorModelJSONReader(referenceModelFile);
         final BehaviorModelJSONReader testModelReader = new BehaviorModelJSONReader(testModelFile);

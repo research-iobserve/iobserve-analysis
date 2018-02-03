@@ -37,10 +37,17 @@ import org.iobserve.analysis.ITraceCompositeStage;
  * @author Reiner Jung
  *
  */
-public class TraceReconstructionCompositeStage extends AbstractConfigurableCompositeStage implements ITraceCompositeStage {
+public class TraceReconstructionCompositeStage extends AbstractConfigurableCompositeStage
+        implements ITraceCompositeStage {
 
     private final TraceReconstructionFilter traceReconstructionFilter;
 
+    /**
+     * Create a trace reconstruction composite stage.
+     *
+     * @param configuration
+     *            configuration object
+     */
     public TraceReconstructionCompositeStage(final Configuration configuration) {
         super(configuration);
         final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<>(

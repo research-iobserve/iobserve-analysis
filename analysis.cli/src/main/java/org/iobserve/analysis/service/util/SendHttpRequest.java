@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package util;
+package org.iobserve.analysis.service.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,8 +27,8 @@ import javax.json.JsonObject;
 import javax.json.JsonString;
 import javax.json.JsonWriter;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This helper class actually sends data to the deployment visualization.
@@ -39,7 +39,7 @@ import kieker.common.logging.LogFactory;
 public final class SendHttpRequest {
 
     private static final String USER_AGENT = "iObserve/0.0.2";
-    private static final Log LOG = LogFactory.getLog(SendHttpRequest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SendHttpRequest.class);
 
     private SendHttpRequest() {
 
@@ -81,20 +81,20 @@ public final class SendHttpRequest {
         if (type.getString() == "system") {
             jsonWriter.write(modelData);
 
-            SendHttpRequest.LOG.debug("Sending 'POST' request to URL : " + systemUrl);
-            SendHttpRequest.LOG.debug("Post parameters : " + modelData);
+            SendHttpRequest.LOGGER.debug("Sending 'POST' request to URL : {}", systemUrl);
+            SendHttpRequest.LOGGER.debug("Post parameters : {}", modelData);
 
         } else {
             jsonWriter.writeArray(dataArray); // work in progress
 
-            SendHttpRequest.LOG.debug("Sending 'POST' request to URL : " + changelogUrl);
-            SendHttpRequest.LOG.debug("Post parameters : " + dataArray);
+            SendHttpRequest.LOGGER.debug("Sending 'POST' request to URL : {}", changelogUrl);
+            SendHttpRequest.LOGGER.debug("Post parameters : {}", dataArray);
         }
 
         jsonWriter.close();
 
         final int responseCode = connection.getResponseCode();
-        SendHttpRequest.LOG.debug("Response Code : " + responseCode);
+        SendHttpRequest.LOGGER.debug("Response Code : {}", responseCode);
 
         if (responseCode != 204) {
             final BufferedReader err = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
@@ -106,7 +106,7 @@ public final class SendHttpRequest {
             }
             err.close();
 
-            SendHttpRequest.LOG.error("error:" + error);
+            SendHttpRequest.LOGGER.error("error:", error);
         }
 
         final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -119,7 +119,7 @@ public final class SendHttpRequest {
         in.close();
 
         // print result
-        SendHttpRequest.LOG.debug(response.toString());
+        SendHttpRequest.LOGGER.debug(response.toString());
 
     }
 
@@ -151,9 +151,9 @@ public final class SendHttpRequest {
         jsonWriter.close();
 
         final int responseCode = connection.getResponseCode();
-        SendHttpRequest.LOG.debug("Sending 'POST' request to URL : " + changelogUrl);
-        SendHttpRequest.LOG.debug("Post parameters : " + dataArray);
-        SendHttpRequest.LOG.debug("Response Code : " + responseCode);
+        SendHttpRequest.LOGGER.debug("Sending 'POST' request to URL : {}", changelogUrl);
+        SendHttpRequest.LOGGER.debug("Post parameters : {}", dataArray);
+        SendHttpRequest.LOGGER.debug("Response Code : {}", responseCode);
 
         final BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         String inputLine;
@@ -165,7 +165,7 @@ public final class SendHttpRequest {
         in.close();
 
         // print result
-        SendHttpRequest.LOG.info(response.toString());
+        SendHttpRequest.LOGGER.info(response.toString());
 
     }
 

@@ -25,8 +25,6 @@ import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
 import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
 import teetime.util.ConcurrentHashMapWithDefault;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.iobserve.analysis.AbstractConfigurableCompositeStage;
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.InstantiationFactory;
@@ -35,6 +33,8 @@ import org.iobserve.analysis.traces.EntryCallSequence;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -43,7 +43,7 @@ import org.iobserve.stages.general.IEntryCallTraceMatcher;
  */
 public class SessionAggregationCompositeStage extends AbstractConfigurableCompositeStage {
 
-    private static final Logger LOGGER = LogManager.getLogger(DeployPCMMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeployPCMMapper.class);
 
     private static final String PREFIX = SessionAggregationCompositeStage.class.getCanonicalName();
     private static final String MATCHER = SessionAggregationCompositeStage.PREFIX + ".matcher";

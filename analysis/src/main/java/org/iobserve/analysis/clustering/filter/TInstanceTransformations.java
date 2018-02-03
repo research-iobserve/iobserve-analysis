@@ -16,12 +16,13 @@
 
 package org.iobserve.analysis.clustering.filter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.iobserve.analysis.clustering.filter.models.BehaviorModelTable;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.clustering.filter.models.BehaviorModelTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import weka.core.Instances;
 
 /**
@@ -33,7 +34,7 @@ import weka.core.Instances;
  */
 
 public class TInstanceTransformations extends AbstractConsumerStage<BehaviorModelTable> {
-    private static final Logger LOGGER = LogManager.getLogger(TInstanceTransformations.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TInstanceTransformations.class);
 
     private Instances instances;
     private final OutputPort<Instances> outputPort = this.createOutputPort();

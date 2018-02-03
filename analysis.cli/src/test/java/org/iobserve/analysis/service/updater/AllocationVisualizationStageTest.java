@@ -23,6 +23,7 @@ import java.util.List;
 import teetime.framework.test.StageTester;
 
 import org.hamcrest.core.Is;
+import org.iobserve.analysis.service.util.TestHandler;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,8 +36,6 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
-
-import util.TestHandler;
 
 /**
  * Tests for {@link AllocationVisualizationStage}.

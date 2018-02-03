@@ -48,6 +48,7 @@ subprojects {
     apply plugin: 'maven'
     apply plugin: 'eclipse'
     apply plugin: 'checkstyle'
+    apply plugin: 'pmd'
     apply plugin: 'com.bmuschko.clover'
     
     version = '0.0.2-SNAPSHOT'
@@ -57,12 +58,16 @@ subprojects {
         configFile = rootProject.file('iobserve-checkstyle-rules.xml')
         configDir = rootProject.file("${rootDir}")
     }
-    
+        
     tasks.withType(Checkstyle) {
 	    reports {
 	        xml.enabled true
 	    }
 	}
+    
+    pmd {
+    	ignoreFailures = true
+    }
     
     ext {
         appName = "org.iobserve"
@@ -114,12 +119,24 @@ task reports {
 			folder = new File ("$projectDir/" + s.name + "/build/reports/tests")
 			if (folder.exists()) {
 				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/tests/test/index.html\">JUnit tests</a></li>\n"
-
 			}
 			
 			folder = new File ("$projectDir/" + s.name + "/build/reports/clover")
 			if (folder.exists()) {
 				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/clover/html/index.html\">Test coverage</a></li>\n"
+			}
+			
+			folder = new File ("$projectDir/" + s.name + "/build/reports/pmd")
+			if (folder.exists()) {
+				def mainFile = new File ("$projectDir/" + s.name + "/build/reports/pmd/main.html")
+				def testFile = new File ("$projectDir/" + s.name + "/build/reports/pmd/test.html")
+				
+				if (mainFile.exists()) {
+					reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/pmd/main.html\">PMD main</a></li>\n"
+				}
+				if (testFile.exists()) {
+					reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/pmd/test.html\">PMD test</a></li>\n"
+				}
 			}
 
 			reportCollection += "\t\t</ul>\n"
