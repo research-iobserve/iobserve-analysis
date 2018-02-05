@@ -159,12 +159,10 @@ public class Neo4jEqualityHelper extends EqualityHelper {
                 // Ignore derived features.
                 //
                 final EStructuralFeature feature = eClass.getEStructuralFeature(i);
-                if (!feature.isDerived()) {
-                    if (!this.haveEqualFeature(eObject1, eObject2, feature)) {
-                        this.remove(eObject1);
-                        this.remove(eObject2);
-                        return false;
-                    }
+                if (!feature.isDerived() && !this.haveEqualFeature(eObject1, eObject2, feature)) {
+                    this.remove(eObject1);
+                    this.remove(eObject2);
+                    return false;
                 }
             }
         }

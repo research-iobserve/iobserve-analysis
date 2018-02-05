@@ -25,12 +25,11 @@ import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
+import org.iobserve.analysis.service.util.Changelog;
+import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-
-import util.Changelog;
-import util.SendHttpRequest;
 
 /**
  * This stage is triggered by an analysis undeployment update.

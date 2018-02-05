@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -36,16 +34,18 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RequiredRole;
 import org.palladiosimulator.pcm.system.System;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ToDo .
- * 
+ *
  * @author unknown
  *
  */
 public class SystemModification {
 
-    private static final Logger LOG = LogManager.getLogger(ModelGeneration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelGeneration.class);
 
     private final Repository repositoryModel;
     private final RepositoryComponent[] repositoryComponents;
@@ -72,7 +72,7 @@ public class SystemModification {
      * Calculates all duplicated Repositories.
      */
     private void initDuplicateRepo(final RepositoryComponent[] comps) {
-        SystemModification.LOG.info("Calculating euql Repository Components ...");
+        SystemModification.LOGGER.info("Calculating euql Repository Components ...");
 
         final HashMap<String, RepositoryComponent> existingInterfaceSig = new HashMap<>();
 
@@ -98,8 +98,8 @@ public class SystemModification {
             }
         }
 
-        SystemModification.LOG.info(String.format("Duplicate Interfacestructures found:\t%d",
-                this.duplicateRepositoryComponents.keySet().size()));
+        SystemModification.LOGGER.info("Duplicate Interfacestructures found:\t {}",
+                this.duplicateRepositoryComponents.keySet().size());
     }
 
     public List<AssemblyContext> modifySystemDeallocations(final int deallocations) {
@@ -113,10 +113,10 @@ public class SystemModification {
             }
         }
 
-        for (int i = 0; (i < deallocations) && (assemblyContexts.size() > 0); i++) {
+        for (int i = 0; i < deallocations && assemblyContexts.size() > 0; i++) {
             final int randomIndex = ThreadLocalRandom.current().nextInt(assemblyContexts.size());
             final AssemblyContext assemblyContext = assemblyContexts.remove(randomIndex);
-            SystemModification.LOG.info("REMOVING: \tAssemblyContext: \t" + assemblyContext.getId());
+            SystemModification.LOGGER.info("REMOVING: \tAssemblyContext: \t{}", assemblyContext.getId());
 
             for (final AssemblyConnector assemblyConnector : assemblyConnectors) {
 
@@ -186,7 +186,7 @@ public class SystemModification {
 
                 // Find non-self replacement
                 RepositoryComponent newRepoComp = null;
-                for (int j = 0; (newRepoComp != null) && (j < (equalComponents.size() * 10)); j++) {
+                for (int j = 0; newRepoComp != null && j < equalComponents.size() * 10; j++) {
                     final int randomIndex = ThreadLocalRandom.current().nextInt(equalComponents.size());
                     final RepositoryComponent candidate = equalComponents.get(randomIndex);
                     if (!assemblyContext.getEncapsulatedComponent__AssemblyContext().getId()

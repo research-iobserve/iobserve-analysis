@@ -9,6 +9,9 @@
   This ruleset checks my code for bad stuff
   </description>
 
+<!-- exclude generated code -->
+	<exclude-pattern>.*/src/gen/.*</exclude-pattern>
+
   <!-- We'll use the entire 'strings' ruleset -->
   <rule ref="rulesets/java/strings.xml"/>
 

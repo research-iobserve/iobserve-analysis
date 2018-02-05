@@ -17,9 +17,6 @@ package org.iobserve.analysis.traces;
 
 import java.io.IOException;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -29,6 +26,8 @@ import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents the TEntryEventSequence Transformation in the paper <i>Run-time Architecture Models
@@ -61,7 +60,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
     private final OutputPort<Boolean> outputPortSnapshot;
     private final RepositoryLookupModelProvider repositoryLookupModel;
 
-    private static final Log LOG = LogFactory.getLog(TEntryEventSequence.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TEntryEventSequence.class);
 
     /**
      * Create a entry event sequence filter.
@@ -100,7 +99,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
         // Resets the current usage model
         final UsageModel model = this.usageModelProvider.readRootComponent(UsageModel.class);
         int numberOfUserGroups = model.getUsageScenario_UsageModel().size();
-        TEntryEventSequence.LOG.debug("EntryEventSequence found: numberOfUserGroups before: " + numberOfUserGroups);
+        TEntryEventSequence.LOGGER.debug("EntryEventSequence found: numberOfUserGroups before: {}", numberOfUserGroups);
 
         // Executes the user behavior modeling procedure
         final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(entryCallSequenceModel,
@@ -117,7 +116,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
             model.getUserData_UsageModel().addAll(newModel.getUserData_UsageModel());
 
             numberOfUserGroups = model.getUsageScenario_UsageModel().size();
-            TEntryEventSequence.LOG.debug("Model changed: numberOfUserGroups after: " + numberOfUserGroups);
+            TEntryEventSequence.LOGGER.debug("Model changed: numberOfUserGroups after: {}", numberOfUserGroups);
 
         } catch (final IOException e) {
             e.printStackTrace();

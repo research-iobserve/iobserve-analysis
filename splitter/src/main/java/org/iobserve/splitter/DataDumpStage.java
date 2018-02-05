@@ -16,14 +16,16 @@
 package org.iobserve.splitter;
 
 import kieker.common.configuration.Configuration;
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.writer.filesystem.AsciiFileWriter;
+
 import teetime.framework.AbstractConsumerStage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sync all incoming records with a Kieker writer to a text file log.
@@ -39,7 +41,7 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
 
     private long count = 0;
 
-    private static final Log LOG = LogFactory.getLog(DataDumpStage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataDumpStage.class);
 
     /**
      * Configure and setup the Kieker writer.
@@ -64,7 +66,7 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
         configuration.setProperty(AsciiFileWriter.CONFIG_PATH, dataLocation);
         configuration.setProperty(AsciiFileWriter.CONFIG_SHOULD_COMPRESS, "false");
 
-        DataDumpStage.LOG.info("Configuration complete");
+        DataDumpStage.LOGGER.info("Configuration complete");
 
         this.ctrl = MonitoringController.createInstance(configuration);
     }
@@ -73,8 +75,8 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
     protected void execute(final IMonitoringRecord record) {
         this.count++;
         this.ctrl.newMonitoringRecord(record);
-        if ((this.count % 1000) == 0) {
-            DataDumpStage.LOG.debug("Saved " + this.count + " records");
+        if (this.count % 1000 == 0) {
+            DataDumpStage.LOGGER.debug("Saved {} records.", this.count);
         }
     }
 

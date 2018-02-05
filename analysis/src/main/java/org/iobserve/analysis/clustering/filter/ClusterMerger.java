@@ -18,13 +18,14 @@ package org.iobserve.analysis.clustering.filter;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.net4j.util.collection.Pair;
-import org.iobserve.analysis.clustering.XMeansClustering;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.eclipse.net4j.util.collection.Pair;
+import org.iobserve.analysis.clustering.XMeansClustering;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import weka.core.FastVector;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -38,7 +39,7 @@ import weka.core.Instances;
  */
 public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<Instance, Double>>>> {
     private final OutputPort<Instances> outputPort = this.createOutputPort();
-    private static final Log LOG = LogFactory.getLog(ClusterMerger.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClusterMerger.class);
 
     /*
      * (non-Javadoc)
@@ -83,7 +84,7 @@ public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<
             for (int a = 0; a < instance.numAttributes(); a++) {
                 logString += instances.attribute(a).name() + " : " + instance.value(a);
             }
-            ClusterMerger.LOG.info(logString);
+            ClusterMerger.LOGGER.info(logString);
         }
     }
 }

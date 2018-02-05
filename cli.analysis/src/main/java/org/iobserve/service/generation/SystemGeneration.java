@@ -23,10 +23,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
-import org.gradle.internal.impldep.com.esotericsoftware.minlog.Log;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyConnectorPrivacy;
 import org.palladiosimulator.pcm.compositionprivacy.CompositionPrivacyFactory;
 import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
@@ -41,6 +38,8 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
 import org.palladiosimulator.pcm.repository.RequiredRole;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.system.impl.SystemFactoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ToDo .
@@ -50,7 +49,7 @@ import org.palladiosimulator.pcm.system.impl.SystemFactoryImpl;
  */
 public class SystemGeneration {
 
-    private static final Logger LOG = LogManager.getLogger(SystemGeneration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SystemGeneration.class);
 
     private static final CompositionPrivacyFactory COMPOSITION_PRIVACY_FACTORY = CompositionPrivacyFactory.eINSTANCE;
 
@@ -189,7 +188,7 @@ public class SystemGeneration {
             final AssemblyContext newAC = this.generateNewAC(namePrefix);
             newACs.add(newAC);
 
-            SystemGeneration.LOG.info("CREATING: \tAssemblyContext: \t" + newAC.getId());
+            SystemGeneration.LOGGER.info("CREATING: \tAssemblyContext: \t {}", newAC.getId());
         }
 
         this.finalizeModelGeneration();
@@ -258,8 +257,8 @@ public class SystemGeneration {
         }
 
         final int unconnectedAssemblyContextCount = this.unconnectedAssemblyContextes.size();
-        SystemGeneration.LOG.info(String.format("There are \t%d\t unconnected AssemblyContexts, deleting and retrying!",
-                unconnectedAssemblyContextCount));
+        SystemGeneration.LOGGER.info("There are \t{}\t unconnected AssemblyContexts, deleting and retrying!",
+                unconnectedAssemblyContextCount);
         if (unconnectedAssemblyContextCount > 0) {
             for (final AssemblyContext ac : this.unconnectedAssemblyContextes) {
                 this.removeAssemblyContext(ac);
@@ -468,7 +467,8 @@ public class SystemGeneration {
         }
 
         if (!removed) {
-            Log.error("Something went wrong during the removal of AssemblyContext: " + assemblyContext.getId());
+            SystemGeneration.LOGGER.error("Something went wrong during the removal of AssemblyContext: {}",
+                    assemblyContext.getId());
         }
     }
 
