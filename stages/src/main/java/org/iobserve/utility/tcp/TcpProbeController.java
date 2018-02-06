@@ -44,30 +44,14 @@ public class TcpProbeController {
      */
     private final Map<String, SingleSocketTcpWriter> knownAddresses = new HashMap<>();
 
-    public boolean activateMonitoredPattern(final String hostname, final int port, final String pattern) {
-        try {
-            this.sendTcpCommand(hostname, port, new ActivationEvent(pattern));
-        } catch (final RemoteControlFailedException e) {
-            if (TcpProbeController.LOGGER.isInfoEnabled()) {
-                TcpProbeController.LOGGER.info("Could not activate pattern: " + pattern + " on host: " + hostname + ":"
-                        + port + " reason: " + e.getMessage());
-            }
-            return false;
-        }
-        return true;
+    public void activateMonitoredPattern(final String hostname, final int port, final String pattern)
+            throws RemoteControlFailedException {
+        this.sendTcpCommand(hostname, port, new ActivationEvent(pattern));
     }
 
-    public boolean deactivateMonitoredPattern(final String hostname, final int port, final String pattern) {
-        try {
-            this.sendTcpCommand(hostname, port, new DeactivationEvent(pattern));
-        } catch (final RemoteControlFailedException e) {
-            if (TcpProbeController.LOGGER.isInfoEnabled()) {
-                TcpProbeController.LOGGER.info("Could not deactivate pattern: " + pattern + " on host: " + hostname
-                        + ":" + port + " reason: " + e.getMessage());
-            }
-            return false;
-        }
-        return true;
+    public void deactivateMonitoredPattern(final String hostname, final int port, final String pattern)
+            throws RemoteControlFailedException {
+        this.sendTcpCommand(hostname, port, new DeactivationEvent(pattern));
     }
 
     private void sendTcpCommand(final String hostname, final int port, final IMonitoringRecord monitoringRecord)
@@ -109,12 +93,16 @@ public class TcpProbeController {
         } catch (final ConnectionTimeoutException | IOException e) {
             // runtime exception is thrown after timeout
             if (TcpProbeController.LOGGER.isErrorEnabled()) {
-                TcpProbeController.LOGGER.error("Could not create TCP connections to" + hostname + " on port " + port,
+                TcpProbeController.LOGGER.error("Could not create TCP connections to " + hostname + " on port " + port,
                         e);
             }
-            throw new RemoteControlFailedException("Could not create TCP connections to" + hostname + " on port " + port
-                    + ", writer was not created ");
+            throw new RemoteControlFailedException("Could not create TCP connections to " + hostname + " on port "
+                    + port + ", writer was not created ");
         }
         return tcpWriter;
+    }
+
+    public boolean isKnownHost(final String hostname, final int port) {
+        return this.knownAddresses.keySet().contains(hostname + ":" + port);
     }
 }
