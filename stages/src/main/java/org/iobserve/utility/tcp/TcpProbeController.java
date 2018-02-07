@@ -23,9 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kieker.common.configuration.Configuration;
-import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.remotecontrol.ActivationEvent;
 import kieker.common.record.remotecontrol.DeactivationEvent;
+import kieker.common.record.remotecontrol.IRemoteControlEvent;
 import kieker.monitoring.writer.tcp.ConnectionTimeoutException;
 import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
 
@@ -38,29 +38,52 @@ import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
  */
 public class TcpProbeController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TcpProbeController.class);
-    private static final int connTimeoutInMs = 100;
+    private static final int CONN_TIMEOUT_IN_MS = 100;
     /**
      * Saves already established connections, the key pattern is "hostname:port".
      */
     private final Map<String, SingleSocketTcpWriter> knownAddresses = new HashMap<>();
 
+    /**
+     * Activates monitoring of a method (pattern) on one monitored application via TCP.
+     *
+     * @param hostname
+     *            Address of the monitored application.
+     * @param port
+     *            Port of the TCP controller.
+     * @param pattern
+     *            The pattern of the method that should be monitored.
+     * @throws RemoteControlFailedException
+     *             if the connection can not be established within a set timeout.
+     */
     public void activateMonitoredPattern(final String hostname, final int port, final String pattern)
             throws RemoteControlFailedException {
         this.sendTcpCommand(hostname, port, new ActivationEvent(pattern));
     }
 
+    /**
+     * Deactivates monitoring of a method (pattern) on one monitored application via TCP.
+     *
+     * @param hostname
+     *            Address of the monitored application.
+     * @param port
+     *            Port of the TCP controller.
+     * @param pattern
+     *            The pattern of the method that should no longer be monitored.
+     * @throws RemoteControlFailedException
+     *             if the connection can not be established within a set timeout.
+     */
     public void deactivateMonitoredPattern(final String hostname, final int port, final String pattern)
             throws RemoteControlFailedException {
         this.sendTcpCommand(hostname, port, new DeactivationEvent(pattern));
     }
 
-    private void sendTcpCommand(final String hostname, final int port, final IMonitoringRecord monitoringRecord)
+    private void sendTcpCommand(final String hostname, final int port, final IRemoteControlEvent monitoringRecord)
             throws RemoteControlFailedException {
-        // TODO replace with IREMOTE ...
         final String writerKey = hostname + ":" + port;
         final SingleSocketTcpWriter tcpWriter;
 
-        if (!this.knownAddresses.containsKey(writerKey)) {
+        if (!this.isKnownHost(hostname, port)) {
             this.createNewTcpWriter(hostname, port);
         }
 
@@ -82,7 +105,8 @@ public class TcpProbeController {
 
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_HOSTNAME, hostname);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_PORT, port);
-        configuration.setProperty(SingleSocketTcpWriter.CONFIG_CONN_TIMEOUT_IN_MS, TcpProbeController.connTimeoutInMs);
+        configuration.setProperty(SingleSocketTcpWriter.CONFIG_CONN_TIMEOUT_IN_MS,
+                TcpProbeController.CONN_TIMEOUT_IN_MS);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_FLUSH, true);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, 65535);
         final SingleSocketTcpWriter tcpWriter;
@@ -102,6 +126,15 @@ public class TcpProbeController {
         return tcpWriter;
     }
 
+    /**
+     * Checks if a host is known. The searched pattern is hostname:port.
+     *
+     * @param hostname
+     *            e.g. the IP of the host.
+     * @param port
+     *            the used port of the TCP connections
+     * @return true, if the connections to the host was already established.
+     */
     public boolean isKnownHost(final String hostname, final int port) {
         return this.knownAddresses.keySet().contains(hostname + ":" + port);
     }

@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.stages.general;
 
-import org.iobserve.utility.tcp.TcpProbeControllerTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -27,7 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses({ RecordSwitchTests.class, TcpProbeControllerTest.class })
+@SuiteClasses({ RecordSwitchTests.class, })
 public class AllTestsFilter {
 
 }

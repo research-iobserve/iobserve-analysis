@@ -39,7 +39,7 @@ public class TcpProbeControllerTest {
     private static TcpProbeController tcpProbeController;
     private static SingleSocketRecordReader tcpReader;
     private static final int BUFFER_SIZE = 65535;
-    private static Log LOGGER = LogFactory.getLog(TcpProbeControllerTest.class);
+    private static final Log LOG = LogFactory.getLog(TcpProbeControllerTest.class);
     private static TestListener listener;
 
     private static int port = 9753;
@@ -52,23 +52,39 @@ public class TcpProbeControllerTest {
         super();
     }
 
+    /**
+     * Initiates all necessary things like the ProbeController and the TestListener for Receiving
+     * other things.
+     */
     @BeforeClass
     public static void init() {
         TcpProbeControllerTest.tcpProbeController = new TcpProbeController();
         TcpProbeControllerTest.listener = new TestListener();
         TcpProbeControllerTest.tcpReader = new SingleSocketRecordReader(TcpProbeControllerTest.port,
-                TcpProbeControllerTest.BUFFER_SIZE, TcpProbeControllerTest.LOGGER, TcpProbeControllerTest.listener);
+                TcpProbeControllerTest.BUFFER_SIZE, TcpProbeControllerTest.LOG, TcpProbeControllerTest.listener);
         new Thread(TcpProbeControllerTest.tcpReader).start();
     }
 
+    /**
+     * An exception should be thrown if we want to connect to an unknown host.
+     *
+     * @throws RemoteControlFailedException
+     *             the expected exception.
+     */
     @Test(expected = RemoteControlFailedException.class)
-    public void TestUnknownHostFailure() throws RemoteControlFailedException {
+    public void testUnknownHostFailure() throws RemoteControlFailedException {
         TcpProbeControllerTest.tcpProbeController.activateMonitoredPattern("90.090.90.90", TcpProbeControllerTest.port,
                 TcpProbeControllerTest.pattern);
     }
 
+    /**
+     * Send (de-)activation commands and check if the listener could process them.
+     *
+     * @throws RemoteControlFailedException
+     *             if the test fails due to bad connections.
+     */
     @Test(timeout = 30000)
-    public void TestDeAndActivatePattern() throws RemoteControlFailedException {
+    public void testDeAndActivatePattern() throws RemoteControlFailedException {
         final String hostname = "127.0.0.1";
         final Map<String, Boolean> state = TcpProbeControllerTest.listener.getState();
         Assert.assertFalse(
@@ -93,11 +109,20 @@ public class TcpProbeControllerTest {
 
     }
 
+    /**
+     * Terminate the thread that runs the TCP Reader.
+     */
     @AfterClass
     public static void terminate() {
         TcpProbeControllerTest.tcpReader.terminate();
     }
 
+    /**
+     * Saves the received pattern and if they are active (true).
+     *
+     * @author Marc Adolf
+     *
+     */
     static class TestListener implements IRecordReceivedListener {
         private final Map<String, Boolean> state = new HashMap<>();
 
