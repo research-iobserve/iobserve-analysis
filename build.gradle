@@ -66,7 +66,7 @@ subprojects {
 	}
     
     pmd {
-    	ignoreFailures = true
+	ignoreFailures = true
     }
     
     ext {
@@ -91,9 +91,21 @@ subprojects {
 		maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
 		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
 		maven {url "https://mvnrepository.com/artifact/org.antlr/antlr-runtime"}
+		maven {url "https://mvnrepository.com/artifact/org.gradle/gradle-tooling-api" }
 		maven {url project.properties['api.baseline']}
+
+		// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
+		if (project.version.endsWith('SNAPSHOT')) {
+			maven {
+				url 'https://oss.sonatype.org/content/repositories/snapshots/'
+			}
+		}
+		// local eclipse maven (created by Goomph)
+		maven {
+			url rootProject.file('target.p2/build/p2asmaven/maven')
+		}
     }
-    
+
     eclipse {
 	    classpath {
 	       downloadSources=true
@@ -157,27 +169,6 @@ $reportCollection
 	}
 }
 
-///////////
-// MAVEN //
-///////////
-repositories {
-	mavenCentral()
-}
-subprojects {
-	repositories {
-		mavenCentral()
-		// SNAPSHOT versions are free to rely on other SNAPSHOT libraries
-		if (project.version.endsWith('SNAPSHOT')) {
-			maven {
-				url 'https://oss.sonatype.org/content/repositories/snapshots/'
-			}
-		}
-		// local eclipse maven (created by Goomph)
-		maven {
-			url rootProject.file('target.p2/build/p2asmaven/maven')
-		}
-	}
-}
 
 /////////////
 // PLUGINS //
