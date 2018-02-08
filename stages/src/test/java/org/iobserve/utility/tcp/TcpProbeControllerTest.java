@@ -74,7 +74,7 @@ public class TcpProbeControllerTest {
     @Test(expected = RemoteControlFailedException.class)
     public void testUnknownHostFailure() throws RemoteControlFailedException {
         TcpProbeControllerTest.tcpProbeController.activateMonitoredPattern("90.090.90.90", TcpProbeControllerTest.port,
-                TcpProbeControllerTest.pattern);
+                "test.host", TcpProbeControllerTest.pattern);
     }
 
     /**
@@ -85,22 +85,23 @@ public class TcpProbeControllerTest {
      */
     @Test(timeout = 30000)
     public void testDeAndActivatePattern() throws RemoteControlFailedException {
-        final String hostname = "127.0.0.1";
+        final String ip = "127.0.0.1";
+        final String hostname = "test.host";
+
         final Map<String, Boolean> state = TcpProbeControllerTest.listener.getState();
-        Assert.assertFalse(
-                TcpProbeControllerTest.tcpProbeController.isKnownHost(hostname, TcpProbeControllerTest.port));
+        Assert.assertFalse(TcpProbeControllerTest.tcpProbeController.isKnownHost(ip, TcpProbeControllerTest.port));
         Assert.assertFalse(state.containsKey(TcpProbeControllerTest.pattern));
 
-        TcpProbeControllerTest.tcpProbeController.activateMonitoredPattern(hostname, TcpProbeControllerTest.port,
+        TcpProbeControllerTest.tcpProbeController.activateMonitoredPattern(ip, TcpProbeControllerTest.port, hostname,
                 TcpProbeControllerTest.pattern);
 
-        Assert.assertTrue(TcpProbeControllerTest.tcpProbeController.isKnownHost(hostname, TcpProbeControllerTest.port));
+        Assert.assertTrue(TcpProbeControllerTest.tcpProbeController.isKnownHost(ip, TcpProbeControllerTest.port));
         // wait for the other thread
         while (!state.containsKey(TcpProbeControllerTest.pattern)) {
             Thread.yield();
         }
         Assert.assertTrue(state.get(TcpProbeControllerTest.pattern));
-        TcpProbeControllerTest.tcpProbeController.deactivateMonitoredPattern(hostname, TcpProbeControllerTest.port,
+        TcpProbeControllerTest.tcpProbeController.deactivateMonitoredPattern(ip, TcpProbeControllerTest.port, hostname,
                 TcpProbeControllerTest.pattern);
         while (state.get(TcpProbeControllerTest.pattern)) {
             Thread.yield();

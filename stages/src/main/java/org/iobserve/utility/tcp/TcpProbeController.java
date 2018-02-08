@@ -40,14 +40,14 @@ public class TcpProbeController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TcpProbeController.class);
     private static final int CONN_TIMEOUT_IN_MS = 100;
     /**
-     * Saves already established connections, the key pattern is "hostname:port".
+     * Saves already established connections, the key pattern is "ip:port".
      */
-    private final Map<String, SingleSocketTcpWriter> knownAddresses = new HashMap<>();
+    private final Map<String, TcpControlConnection> knownAddresses = new HashMap<>();
 
     /**
      * Activates monitoring of a method (pattern) on one monitored application via TCP.
      *
-     * @param hostname
+     * @param ip
      *            Address of the monitored application.
      * @param port
      *            Port of the TCP controller.
@@ -56,15 +56,15 @@ public class TcpProbeController {
      * @throws RemoteControlFailedException
      *             if the connection can not be established within a set timeout.
      */
-    public void activateMonitoredPattern(final String hostname, final int port, final String pattern)
+    public void activateMonitoredPattern(final String ip, final int port, final String hostname, final String pattern)
             throws RemoteControlFailedException {
-        this.sendTcpCommand(hostname, port, new ActivationEvent(pattern));
+        this.sendTcpCommand(ip, port, hostname, new ActivationEvent(pattern));
     }
 
     /**
      * Deactivates monitoring of a method (pattern) on one monitored application via TCP.
      *
-     * @param hostname
+     * @param ip
      *            Address of the monitored application.
      * @param port
      *            Port of the TCP controller.
@@ -73,29 +73,34 @@ public class TcpProbeController {
      * @throws RemoteControlFailedException
      *             if the connection can not be established within a set timeout.
      */
-    public void deactivateMonitoredPattern(final String hostname, final int port, final String pattern)
+    public void deactivateMonitoredPattern(final String ip, final int port, final String hostname, final String pattern)
             throws RemoteControlFailedException {
-        this.sendTcpCommand(hostname, port, new DeactivationEvent(pattern));
+        this.sendTcpCommand(ip, port, hostname, new DeactivationEvent(pattern));
     }
 
-    private void sendTcpCommand(final String hostname, final int port, final IRemoteControlEvent monitoringRecord)
-            throws RemoteControlFailedException {
-        final String writerKey = hostname + ":" + port;
-        final SingleSocketTcpWriter tcpWriter;
+    private void sendTcpCommand(final String ip, final int port, final String hostname,
+            final IRemoteControlEvent monitoringRecord) throws RemoteControlFailedException {
+        final String writerKey = ip + ":" + port;
+        SingleSocketTcpWriter tcpWriter;
 
-        if (!this.isKnownHost(hostname, port)) {
-            this.createNewTcpWriter(hostname, port);
+        TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
+
+        // if host was never used or an other module was there before, create a new connection
+        if ((currentConnection == null) || (currentConnection.getHostname() != hostname)) {
+            currentConnection = new TcpControlConnection(ip, port, hostname, this.createNewTcpWriter(ip, port));
+            this.knownAddresses.put(writerKey, currentConnection);
         }
-
-        tcpWriter = this.knownAddresses.get(writerKey);
+        tcpWriter = currentConnection.getTcpWriter();
 
         if (tcpWriter == null) {
             throw new RemoteControlFailedException("TCP Writer was not found");
         }
+        // currently we have no means to check if the write process was successful or the channel is
+        // still active
         tcpWriter.writeMonitoringRecord(monitoringRecord);
         if (TcpProbeController.LOGGER.isDebugEnabled()) {
-            TcpProbeController.LOGGER.debug(
-                    "Send record " + monitoringRecord.getClass().getName() + " to " + hostname + " on port: " + port);
+            TcpProbeController.LOGGER
+                    .debug("Send record " + monitoringRecord.getClass().getName() + " to " + ip + " on port: " + port);
         }
     }
 
@@ -113,11 +118,10 @@ public class TcpProbeController {
         try {
             tcpWriter = new SingleSocketTcpWriter(configuration);
             tcpWriter.onStarting();
-            this.knownAddresses.put(hostname + ":" + port, tcpWriter);
         } catch (final ConnectionTimeoutException | IOException e) {
             // runtime exception is thrown after timeout
-            if (TcpProbeController.LOGGER.isErrorEnabled()) {
-                TcpProbeController.LOGGER.error("Could not create TCP connections to " + hostname + " on port " + port,
+            if (TcpProbeController.LOGGER.isDebugEnabled()) {
+                TcpProbeController.LOGGER.debug("Could not create TCP connections to " + hostname + " on port " + port,
                         e);
             }
             throw new RemoteControlFailedException("Could not create TCP connections to " + hostname + " on port "
@@ -127,15 +131,15 @@ public class TcpProbeController {
     }
 
     /**
-     * Checks if a host is known. The searched pattern is hostname:port.
+     * Checks if a host is known. The searched pattern is ip:port.
      *
-     * @param hostname
-     *            e.g. the IP of the host.
+     * @param ip
+     *            the IP of the host.
      * @param port
      *            the used port of the TCP connections
      * @return true, if the connections to the host was already established.
      */
-    public boolean isKnownHost(final String hostname, final int port) {
-        return this.knownAddresses.keySet().contains(hostname + ":" + port);
+    public boolean isKnownHost(final String ip, final int port) {
+        return this.knownAddresses.keySet().contains(ip + ":" + port);
     }
 }
