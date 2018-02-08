@@ -22,17 +22,35 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
+ * Interface for container management events.
+ *
  * @author Reiner Jung
  *
  */
 public interface IContainerManagementSinksStage {
 
+    /**
+     *
+     * @return returns the allocation input port
+     */
     InputPort<ResourceContainer> getAllocationInputPort();
 
+    /**
+     *
+     * @return returns the deallocation input port
+     */
     InputPort<ResourceContainer> getDeallocationInputPort();
 
+    /**
+     *
+     * @return returns the deployed input port
+     */
     InputPort<PCMDeployedEvent> getDeployedInputPort();
 
+    /**
+     *
+     * @return returns the undeployed input port
+     */
     InputPort<PCMUndeployedEvent> getUndeployedInputPort();
 
 }

@@ -92,7 +92,7 @@ public class LoopBranchModelCreator {
                 branchSequenceSizeWithoutExitElement = branchSequenceSizeWithoutExitElement - 1;
             }
 
-            if ((branchSequence != null) && (branchSequenceSizeWithoutExitElement > 0)) {
+            if (branchSequence != null && branchSequenceSizeWithoutExitElement > 0) {
                 for (int indexOfElementInElementList = 0; indexOfElementInElementList < branchSequenceSizeWithoutExitElement; indexOfElementInElementList++) {
 
                     // If the sequence element is a branch element, it is checked for loops within
@@ -109,11 +109,10 @@ public class LoopBranchModelCreator {
                     // Checks subSequences of the sequence for equality
                     // Starting with the max longest sub sequence
                     // If a loop is detected it is memorized
-                    for (int i = 0; i < ((branchSequenceSizeWithoutExitElement - indexOfElementInElementList)
-                            / 2); i++) {
+                    for (int i = 0; i < (branchSequenceSizeWithoutExitElement - indexOfElementInElementList) / 2; i++) {
 
-                        final int elementsToCheck = ((branchSequenceSizeWithoutExitElement
-                                - indexOfElementInElementList) / 2) - i;
+                        final int elementsToCheck = (branchSequenceSizeWithoutExitElement - indexOfElementInElementList)
+                                / 2 - i;
 
                         boolean isALoop = true;
                         final LoopElement loopElement = new LoopElement();
@@ -145,7 +144,7 @@ public class LoopBranchModelCreator {
 
                             loopElement.setStartIndexInBranchSequence(indexOfElementInElementList);
                             loopElement.setEndIndexInBranchSequence(
-                                    (indexOfElementInElementList + elementsToCheck + elementsToCheck) - 1);
+                                    indexOfElementInElementList + elementsToCheck + elementsToCheck - 1);
 
                             // Determines the number of loops for each loop
                             this.determineLoopCount(loopElement, branchSequence);
@@ -185,21 +184,18 @@ public class LoopBranchModelCreator {
             final ISequenceElement sequenceElement2) {
         if (!sequenceElement1.getClass().equals(sequenceElement2.getClass())) {
             return false;
+        } else if (sequenceElement1.getClass().equals(CallElement.class)
+                && sequenceElement2.getClass().equals(CallElement.class)
+                && !sequenceElement1.getClassSignature().equals(sequenceElement2.getClassSignature())
+                || !sequenceElement1.getOperationSignature().equals(sequenceElement2.getOperationSignature())) {
+            return false;
+        } else if (sequenceElement1.getClass().equals(BranchElement.class) // NOCS
+                && sequenceElement2.getClass().equals(BranchElement.class)
+                && !this.doBranchElementsMatch((BranchElement) sequenceElement1, (BranchElement) sequenceElement2)) {
+            return false;
+        } else {
+            return true;
         }
-        if (sequenceElement1.getClass().equals(CallElement.class)
-                && sequenceElement2.getClass().equals(CallElement.class)) {
-            if ((!sequenceElement1.getClassSignature().equals(sequenceElement2.getClassSignature()))
-                    || (!sequenceElement1.getOperationSignature().equals(sequenceElement2.getOperationSignature()))) {
-                return false;
-            }
-        }
-        if (sequenceElement1.getClass().equals(BranchElement.class)
-                && sequenceElement2.getClass().equals(BranchElement.class)) {
-            if (!this.doBranchElementsMatch((BranchElement) sequenceElement1, (BranchElement) sequenceElement2)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     /**
@@ -259,9 +255,9 @@ public class LoopBranchModelCreator {
             }
             if (branchElementOfSequence1.getClass().equals(CallElement.class)
                     && branchElementOfSequence2.getClass().equals(CallElement.class)) {
-                if (!(branchElementOfSequence1.getClassSignature().equals(branchElementOfSequence2.getClassSignature()))
-                        || !(branchElementOfSequence1.getOperationSignature()
-                                .equals(branchElementOfSequence2.getOperationSignature()))) {
+                if (!branchElementOfSequence1.getClassSignature().equals(branchElementOfSequence2.getClassSignature())
+                        || !branchElementOfSequence1.getOperationSignature()
+                                .equals(branchElementOfSequence2.getOperationSignature())) {
                     return false;
                 }
             } else if (branchElementOfSequence1.getClass().equals(LoopElement.class)
@@ -312,7 +308,7 @@ public class LoopBranchModelCreator {
         int countOfRemovedElementsFromLoopsBefore = 0;
         for (final LoopElement loopElement : loopElements) {
             for (int i = 0; i < loopElement.getNumberOfReplacedElements(); i++) {
-                final int indexToRemove = (loopElement.getStartIndexInBranchSequence() + 1)
+                final int indexToRemove = loopElement.getStartIndexInBranchSequence() + 1
                         - countOfRemovedElementsFromLoopsBefore;
                 branchSequence.remove(indexToRemove);
             }
@@ -337,18 +333,17 @@ public class LoopBranchModelCreator {
                 final LoopElement loopElement2 = loopElements.get(j);
 
                 // Checks if there is an overlap between two loops
-                if (((loopElement1.getStartIndexInBranchSequence() >= loopElement2.getStartIndexInBranchSequence())
-                        && (loopElement1.getStartIndexInBranchSequence() <= loopElement2.getEndIndexInBranchSequence()))
-                        || ((loopElement1.getEndIndexInBranchSequence() >= loopElement2.getStartIndexInBranchSequence())
-                                && (loopElement1.getEndIndexInBranchSequence() <= loopElement2
-                                        .getEndIndexInBranchSequence()))
-                        || ((loopElement2.getStartIndexInBranchSequence() >= loopElement1
-                                .getStartIndexInBranchSequence())
-                                && (loopElement2.getStartIndexInBranchSequence() <= loopElement1
-                                        .getEndIndexInBranchSequence()))
-                        || ((loopElement2.getEndIndexInBranchSequence() >= loopElement1.getStartIndexInBranchSequence())
-                                && (loopElement2.getEndIndexInBranchSequence() <= loopElement1
-                                        .getEndIndexInBranchSequence()))) {
+                if (loopElement1.getStartIndexInBranchSequence() >= loopElement2.getStartIndexInBranchSequence()
+                        && loopElement1.getStartIndexInBranchSequence() <= loopElement2.getEndIndexInBranchSequence()
+                        || loopElement1.getEndIndexInBranchSequence() >= loopElement2.getStartIndexInBranchSequence()
+                                && loopElement1.getEndIndexInBranchSequence() <= loopElement2
+                                        .getEndIndexInBranchSequence()
+                        || loopElement2.getStartIndexInBranchSequence() >= loopElement1.getStartIndexInBranchSequence()
+                                && loopElement2.getStartIndexInBranchSequence() <= loopElement1
+                                        .getEndIndexInBranchSequence()
+                        || loopElement2.getEndIndexInBranchSequence() >= loopElement1.getStartIndexInBranchSequence()
+                                && loopElement2.getEndIndexInBranchSequence() <= loopElement1
+                                        .getEndIndexInBranchSequence()) {
 
                     // Returns the removed loop
                     final boolean loop1Weaker = this.removeTheWeakerLoop(loopElements, loopElement1, loopElement2, i,
@@ -411,8 +406,8 @@ public class LoopBranchModelCreator {
      */
     private void determineLoopCount(final LoopElement loopElement, final List<ISequenceElement> branchSequence) {
         int loopCount = 2;
-        for (int i = loopElement.getEndIndexInBranchSequence(); (i
-                + loopElement.getLoopSequence().size()) < branchSequence
+        for (int i = loopElement.getEndIndexInBranchSequence(); i
+                + loopElement.getLoopSequence().size() < branchSequence
                         .size(); i = i + loopElement.getLoopSequence().size()) {
             boolean isAdditionalLoop = true;
             for (int j = 0; j < loopElement.getLoopSequence().size(); j++) {
@@ -444,6 +439,6 @@ public class LoopBranchModelCreator {
         loopElement.setLoopCount(loopCount);
         loopElement.setNumberOfReplacedElements(loopCount * loopElement.getLoopSequence().size());
         loopElement.setEndIndexInBranchSequence(
-                (loopElement.getStartIndexInBranchSequence() + loopElement.getNumberOfReplacedElements()) - 1);
+                loopElement.getStartIndexInBranchSequence() + loopElement.getNumberOfReplacedElements() - 1);
     }
 }

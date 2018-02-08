@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
+import kieker.common.configuration.Configuration;
+
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
@@ -25,8 +27,6 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import kieker.common.configuration.Configuration;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -69,12 +69,6 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            output mode
      * @param snapshotBuilder
      *            snapshotbuilder
-     * @param perOpteryxHeadless
-     *            perOpterxyheadless URI
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param deployablesFolder
-     *            folder containing deployables
      */
     public MultiInputObservationConfiguration(final Configuration configuration,
             final ICorrespondence correspondenceModel, final IModelProvider<UsageModel> usageModelProvider,

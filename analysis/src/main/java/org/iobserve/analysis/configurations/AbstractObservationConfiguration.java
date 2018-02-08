@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
+import teetime.framework.Configuration;
+
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
@@ -41,9 +43,7 @@ import org.iobserve.analysis.traces.EntryCallSequence;
 import org.iobserve.analysis.traces.TraceOperationCleanupFilter;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.model.correspondence.ICorrespondence;
-
 import org.iobserve.model.provider.neo4j.IModelProvider;
-
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.iobserve.stages.general.RecordSwitch;
@@ -53,7 +53,6 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
-import teetime.framework.Configuration;
 import weka.core.ManhattanDistance;
 
 /**
@@ -104,14 +103,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            output mode
      * @param snapshotBuilder
      *            snapshotbuilder
-     * @param perOpteryxHeadless
-     *            perOpterxyheadless URI
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param eventListener
-     *            eventlistener of some kind
-     * @param deployablesFolder
-     *            folder containing deployables
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final IModelProvider<UsageModel> usageModelProvider,

@@ -32,8 +32,6 @@ import java.util.Map;
 import java.util.Set;
 
 import kieker.common.exception.RecordInstantiationException;
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.factory.CachedRecordFactoryCatalog;
@@ -53,7 +51,6 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
     private static final int INT_BYTES = AbstractMonitoringRecord.TYPE_SIZE_INT;
     private static final int LONG_BYTES = AbstractMonitoringRecord.TYPE_SIZE_LONG;
     private static final Charset ENCODING = StandardCharsets.UTF_8;
-    private static final Log LOG = LogFactory.getLog(MultipleConnectionTcpReaderStage.class);
 
     private final CachedRecordFactoryCatalog recordFactories = CachedRecordFactoryCatalog.getInstance();
 
@@ -88,8 +85,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
             while (this.isActive()) {
                 final SocketChannel socketChannel = serverSocket.accept();
                 if (socketChannel != null) {
-                    MultipleConnectionTcpReaderStage.LOG
-                            .debug("Connection from " + socketChannel.getRemoteAddress().toString());
+                    this.logger.debug("Connection from {}.", socketChannel.getRemoteAddress().toString());
                     // add socketChannel to list of channels
                     socketChannel.configureBlocking(false);
                     final SelectionKey key = socketChannel.register(readSelector, SelectionKey.OP_READ);
@@ -140,7 +136,7 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
         this.processBuffer(connection);
 
         if (endOfStreamReached) {
-            MultipleConnectionTcpReaderStage.LOG.debug("Socket closed: " + socketChannel.getRemoteAddress().toString());
+            this.logger.debug("Socket closed: " + socketChannel.getRemoteAddress().toString());
             key.attach(null);
             key.cancel();
             key.channel().close();

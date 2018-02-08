@@ -20,8 +20,6 @@ import java.util.Map;
 
 import de.uka.ipd.sdq.identifier.Identifier;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -31,6 +29,8 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for pcm model handler. Implements common methods for loading/saving pcm model.
@@ -46,7 +46,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
  */
 public abstract class AbstractModelHandler<T extends EObject> {
 
-    private static final Logger LOG = LogManager.getLogger(AbstractModelHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractModelHandler.class);
 
     /**
      * Create an abstract model handler.
@@ -100,6 +100,7 @@ public abstract class AbstractModelHandler<T extends EObject> {
      *
      * @param readModelURI
      *            the uri from which the model is read
+     * @return returns the loaded model
      */
     @SuppressWarnings("unchecked")
     public T load(final URI readModelURI) {
@@ -125,7 +126,7 @@ public abstract class AbstractModelHandler<T extends EObject> {
         }
 
         if (model == null) {
-            AbstractModelHandler.LOG.debug("Model at " + readModelURI.toString() + "could not be loaded!\n");
+            AbstractModelHandler.LOGGER.debug("Model at {} could not be loaded!", readModelURI.toString());
         }
 
         return model;

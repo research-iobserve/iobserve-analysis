@@ -24,10 +24,11 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import com.beust.jcommander.converters.FileConverter;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main class for starting the iObserve application.
@@ -36,7 +37,7 @@ import teetime.framework.Execution;
  */
 public final class AnalysisMain {
 
-    private static final Log LOG = LogFactory.getLog(AnalysisMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisMain.class);
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Directory containing monitoring data.", converter = FileConverter.class)
@@ -59,7 +60,7 @@ public final class AnalysisMain {
             commander.parse(args);
             main.execute(commander);
         } catch (final ParameterException e) {
-            AnalysisMain.LOG.error(e.getLocalizedMessage());
+            AnalysisMain.LOGGER.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
@@ -73,18 +74,18 @@ public final class AnalysisMain {
                 final Configuration configuration = new ObservationConfiguration(monitoringDataDirectories,
                         this.outputLocation);
 
-                AnalysisMain.LOG.info("Analysis configuration");
+                AnalysisMain.LOGGER.info("Analysis configuration");
                 final Execution<Configuration> analysis = new Execution<>(configuration);
-                AnalysisMain.LOG.info("Analysis start");
+                AnalysisMain.LOGGER.info("Analysis start");
                 analysis.executeBlocking();
-                AnalysisMain.LOG.info("Anaylsis complete");
+                AnalysisMain.LOGGER.info("Anaylsis complete");
             } else {
-                AnalysisMain.LOG.error(
-                        "CLI error: Input path " + this.monitoringDataDirectory.getName() + " is not a directory.");
+                AnalysisMain.LOGGER.error("CLI error: Input path {} is not a directory.",
+                        this.monitoringDataDirectory.getName());
                 commander.usage();
             }
         } else {
-            AnalysisMain.LOG.error("CLI error: Output path " + this.outputLocation.getName() + " is not a directory.");
+            AnalysisMain.LOGGER.error("CLI error: Output path {} is not a directory.", this.outputLocation.getName());
             commander.usage();
         }
 

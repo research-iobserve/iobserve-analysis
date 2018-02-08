@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package util;
+package org.iobserve.analysis.service.util;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -21,7 +21,7 @@ import javax.json.JsonObject;
 /**
  * helper class for creating changelogs for deployment visualization.
  *
- * @author jweg
+ * @author Josefine Wegert
  *
  */
 public final class Changelog {

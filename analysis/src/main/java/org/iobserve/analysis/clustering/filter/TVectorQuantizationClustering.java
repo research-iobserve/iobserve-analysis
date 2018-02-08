@@ -17,13 +17,14 @@ package org.iobserve.analysis.clustering.filter;
 
 import java.util.Optional;
 
-import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
-import org.iobserve.analysis.userbehavior.data.ClusteringResults;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
+import org.iobserve.analysis.userbehavior.data.ClusteringResults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -34,7 +35,7 @@ import weka.core.Instances;
  */
 
 public class TVectorQuantizationClustering extends AbstractConsumerStage<Instances> {
-    private static final Log LOG = LogFactory.getLog(TVectorQuantizationClustering.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TVectorQuantizationClustering.class);
     private final IVectorQuantizationClustering clustering;
     private final OutputPort<Instances> outputPort = this.createOutputPort();
 
@@ -69,7 +70,7 @@ public class TVectorQuantizationClustering extends AbstractConsumerStage<Instanc
             for (int a = 0; a < instance.numAttributes(); a++) {
                 logString += centroids.attribute(a).name() + " : " + instance.value(a);
             }
-            TVectorQuantizationClustering.LOG.info(logString);
+            TVectorQuantizationClustering.LOGGER.info(logString);
         }
     }
 

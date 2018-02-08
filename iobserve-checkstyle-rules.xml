@@ -140,6 +140,9 @@
       <property name="allowEmptyConstructors" value="true"/>
       <property name="allowEmptyMethods" value="true"/>
     </module>
+    <module name="ImportControl">
+    	<property name="file" value="import-control.xml"/>
+    </module>
     <module name="RedundantImport"/>
     <module name="AvoidNestedBlocks"/>
     <module name="EmptyBlock"/>
