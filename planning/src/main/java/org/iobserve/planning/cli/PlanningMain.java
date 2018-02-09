@@ -29,8 +29,6 @@ import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationExce
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.model.PCMModelHandler;
-import org.iobserve.planning.ModelTransformer;
-import org.iobserve.planning.data.PlanningData;
 import org.iobserve.planning.environment.PalladioEclipseEnvironment;
 import org.iobserve.planning.utils.ModelHelper;
 import org.slf4j.Logger;
@@ -104,14 +102,15 @@ public final class PlanningMain {
             final AdaptationData adaptationData = new AdaptationData();
             adaptationData.setRuntimeModelURI(modelURI);
 
-            final PlanningData planningData = new PlanningData();
-            planningData.setAdaptationData(adaptationData);
-            planningData.setOriginalModelDir(modelURI);
-            planningData.setPerOpteryxDir(perOpteryxURI);
-
-            // Process model
-            final ModelTransformer transformer = new ModelTransformer(planningData);
-            transformer.transformModel();
+            // TODO: removed by lbl during refactoring of planning
+            // final PlanningData planningData = new PlanningData();
+            // planningData.setAdaptationData(adaptationData);
+            // planningData.setOriginalModelDir(modelURI);
+            // planningData.setPerOpteryxDir(perOpteryxURI);
+            //
+            // // Process model
+            // final ModelTransformer transformer = new ModelTransformer(planningData);
+            // transformer.transformModel();
 
             // Execute PerOpteryx
             final int result = 0;

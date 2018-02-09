@@ -62,17 +62,17 @@ public class PlanningConfiguration extends Configuration {
 
         this.tcpReader = new SingleConnectionTcpReaderStage(planningInputPort, modelDirectory);
         this.modelFilesCollector = new ModelFiles2ModelDirCollectorStage();
+        this.modelPreProcessor = new ModelProcessing();
 
         // TODO: Only removed for debugging
         // if ((perOpteryxHeadless != null) && (lqnsDir != null)) {
-        this.modelPreProcessor = new ModelProcessing(perOpteryxHeadless, lqnsDir);
+        this.modelOptimizer = new ModelOptimization(perOpteryxHeadless, lqnsDir);
         // } else {
         // throw new IllegalArgumentException(
         // "Failed to initialize ModelProcessing. Path to PerOpteryx or LQN solver must not be
         // null!");
         // }
 
-        this.modelOptimizer = new ModelOptimization();
         this.modelDir2ModelFiles = new ModelDir2ModelFilesStage();
         this.tcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname, adaptationInputPort);
 
