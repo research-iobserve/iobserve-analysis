@@ -18,14 +18,14 @@ package org.iobserve.analysis.deployment;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.ServletUndeployedEvent;
 import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.ICorrespondence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Maps technology dependent undeploy events onto model level PCM undeploy events.
@@ -35,7 +35,7 @@ import org.iobserve.model.correspondence.ICorrespondence;
  */
 public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
 
-    private static final Logger LOGGER = LogManager.getLogger(UndeployPCMMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UndeployPCMMapper.class);
 
     private final ICorrespondence correspondence;
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
@@ -72,7 +72,7 @@ public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
         if (this.correspondence.getCorrespondent(context) != null) {
             this.outputPort.send(new PCMUndeployedEvent(service, correspondent));
         } else {
-            UndeployPCMMapper.LOGGER.info("No correspondent found for " + service + ".");
+            UndeployPCMMapper.LOGGER.info("No correspondent found for {}.", service);
         }
     }
 
@@ -84,7 +84,7 @@ public class UndeployPCMMapper extends AbstractConsumerStage<IUndeployedEvent> {
         if (this.correspondence.getCorrespondent(context) != null) {
             this.outputPort.send(new PCMUndeployedEvent(service, correspondent));
         } else {
-            UndeployPCMMapper.LOGGER.info("No correspondent found for " + service + ".");
+            UndeployPCMMapper.LOGGER.info("No correspondent found for {}.", service);
         }
     }
 

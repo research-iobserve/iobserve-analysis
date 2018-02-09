@@ -42,7 +42,7 @@ public class AlarmSink extends AbstractFileSink<Alarms> {
     protected void execute(final Alarms element) throws Exception {
         AbstractFileSink.LOGGER.debug("Alarms");
         for (final String alarms : element.getAlarms()) {
-            AbstractFileSink.LOGGER.debug("\t" + alarms);
+            AbstractFileSink.LOGGER.debug("\t {}", alarms);
             this.output.println(alarms);
         }
     }

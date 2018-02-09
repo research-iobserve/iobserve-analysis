@@ -59,7 +59,7 @@ public final class SimpleBranchReference {
      *
      * @param referenceModelFileName
      *            file name of the reference model to store its result
-     * @param repositoryModelProvider
+     * @param repositoryLookupModelProvider
      *            repository model provider
      * @param correspondenceModel
      *            correspondence model

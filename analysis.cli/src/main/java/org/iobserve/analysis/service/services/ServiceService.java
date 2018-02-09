@@ -18,9 +18,8 @@ package org.iobserve.analysis.service.services;
 import javax.json.Json;
 import javax.json.JsonObject;
 
+import org.iobserve.analysis.service.util.Changelog;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-
-import util.Changelog;
 
 /**
  * This class prepares data such that the visualization element service is created. It has to be

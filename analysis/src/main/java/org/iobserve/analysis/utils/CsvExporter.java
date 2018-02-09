@@ -20,8 +20,8 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -29,7 +29,7 @@ import kieker.common.logging.LogFactory;
  *
  */
 public class CsvExporter {
-    private static final Log LOG = LogFactory.getLog(CsvExporter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CsvExporter.class);
 
     private final String filePath;
     private final StringBuilder fileContent;
@@ -84,7 +84,7 @@ public class CsvExporter {
             pw.write(this.fileContent.toString());
             pw.close();
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
-            CsvExporter.LOG.error("Could not create file " + this.filePath, e);
+            CsvExporter.LOGGER.error(String.format("Could not create file %s", this.filePath), e);
         }
 
     }

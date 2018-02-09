@@ -15,8 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.composite;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
+
 import org.iobserve.analysis.clustering.ExpectationMaximizationClustering;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelCreation;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelVisualization;
@@ -24,9 +25,9 @@ import org.iobserve.analysis.clustering.filter.TVectorQuantizationClustering;
 import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
 import org.iobserve.analysis.sink.AbstractModelOutputSink;
 import org.iobserve.analysis.sink.BehaviorModelSink;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import teetime.framework.CompositeStage;
-import teetime.framework.InputPort;
 import weka.core.Instances;
 
 /**
@@ -35,7 +36,7 @@ import weka.core.Instances;
  * @author Reiner Jung
  */
 public class TBehaviorModelAggregation extends CompositeStage {
-    private static final Logger LOGGER = LogManager.getLogger(TBehaviorModelAggregation.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TBehaviorModelAggregation.class);
     private TVectorQuantizationClustering tClustering;
     private final TBehaviorModelCreation tBehaviorModelCreation;
 
@@ -63,7 +64,7 @@ public class TBehaviorModelAggregation extends CompositeStage {
             this.connectPorts(this.emClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
             break;
         default:
-            TBehaviorModelAggregation.LOGGER.error("Unknown clustering method " + configuration.getAggregationType());
+            TBehaviorModelAggregation.LOGGER.error("Unknown clustering method {}.", configuration.getAggregationType());
             break;
         }
 
@@ -77,7 +78,7 @@ public class TBehaviorModelAggregation extends CompositeStage {
             tIObserveUBM = new BehaviorModelSink(configuration.getVisualizationUrl(),
                     configuration.getSignatureCreationStrategy());
         default:
-            TBehaviorModelAggregation.LOGGER.error("Unknown visualization method " + configuration.getOutputMode());
+            TBehaviorModelAggregation.LOGGER.error("Unknown visualization method {}.", configuration.getOutputMode());
         }
 
         this.connectPorts(this.tBehaviorModelCreation.getOutputPort(), tIObserveUBM.getInputPort());

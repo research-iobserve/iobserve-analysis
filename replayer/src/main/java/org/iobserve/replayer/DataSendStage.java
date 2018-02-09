@@ -16,14 +16,16 @@
 package org.iobserve.replayer;
 
 import kieker.common.configuration.Configuration;
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
+
 import teetime.framework.AbstractConsumerStage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Send data via TCP.
@@ -39,7 +41,7 @@ public class DataSendStage extends AbstractConsumerStage<IMonitoringRecord> {
 
     private long count = 0;
 
-    private static final Log LOG = LogFactory.getLog(DataSendStage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataSendStage.class);
 
     /**
      * Configure and setup the Kieker writer.
@@ -59,7 +61,7 @@ public class DataSendStage extends AbstractConsumerStage<IMonitoringRecord> {
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_HOSTNAME, hostname);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_PORT, port);
 
-        DataSendStage.LOG.info("Configuration complete");
+        DataSendStage.LOGGER.debug("Configuration complete.");
 
         this.ctrl = MonitoringController.createInstance(configuration);
     }
@@ -68,8 +70,8 @@ public class DataSendStage extends AbstractConsumerStage<IMonitoringRecord> {
     protected void execute(final IMonitoringRecord record) {
         this.count++;
         this.ctrl.newMonitoringRecord(record);
-        if ((this.count % 1000) == 0) {
-            DataSendStage.LOG.info("Saved " + this.count + " records");
+        if (this.count % 1000 == 0) {
+            DataSendStage.LOGGER.info("Saved {} records", this.count);
         }
     }
 
