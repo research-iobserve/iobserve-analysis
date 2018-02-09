@@ -51,6 +51,8 @@ public class TcpProbeController {
      *            Address of the monitored application.
      * @param port
      *            Port of the TCP controller.
+     * @param hostname
+     *            The name of the component which is using this IP and port.
      * @param pattern
      *            The pattern of the method that should be monitored.
      * @throws RemoteControlFailedException
@@ -68,6 +70,8 @@ public class TcpProbeController {
      *            Address of the monitored application.
      * @param port
      *            Port of the TCP controller.
+     * @param hostname
+     *            The name of the component which is using this IP and port.
      * @param pattern
      *            The pattern of the method that should no longer be monitored.
      * @throws RemoteControlFailedException
