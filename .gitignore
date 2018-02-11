@@ -30,7 +30,6 @@ teetime.log
 **/**.xtendbin
 *.zip
 /build/
-!gradle.properties
 repos/
 *.log
 rac.creator/mapped.txt
@@ -40,6 +39,10 @@ test.setup/kieker*tgz
 *.csv
 *.xlsx
 !/analysis/src/main/java/log4j2.properties
+
+# For building peropteryx.rcp with gradle
+!gradle.properties
+!peropteryx.rcp/build.properties
 
 
 # Created by https://www.gitignore.io/api/eclipse,linux,windows
