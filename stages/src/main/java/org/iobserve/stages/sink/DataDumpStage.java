@@ -21,6 +21,8 @@ import kieker.monitoring.core.configuration.ConfigurationFactory;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.writer.filesystem.AsciiFileWriter;
+import kieker.monitoring.writer.filesystem.BinaryFileWriter;
+import kieker.monitoring.writer.filesystem.NoneCompressionFilter;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -35,7 +37,8 @@ import org.slf4j.LoggerFactory;
  */
 public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
 
-    private static final String WRITER_NAME = AsciiFileWriter.class.getCanonicalName();
+    private static final String ASCII_WRITER_NAME = AsciiFileWriter.class.getCanonicalName();
+    private static final String BINARY_WRITER_NAME = BinaryFileWriter.class.getCanonicalName();
 
     private final IMonitoringController ctrl;
 
@@ -48,11 +51,24 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
      *
      * @param dataLocation
      *            data location
+     * @param hostname
+     *            host name where the monitoring is running on
+     * @param type
+     *            type of serialization
      */
-    public DataDumpStage(final String dataLocation) {
+    public DataDumpStage(final String dataLocation, final String hostname, final ESerializationType type) {
         final Configuration configuration = ConfigurationFactory.createDefaultConfiguration();
         configuration.setProperty(ConfigurationFactory.CONTROLLER_NAME, "iObserve-Experiments");
-        configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, DataDumpStage.WRITER_NAME);
+        switch (type) {
+        case ASCII:
+            configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, DataDumpStage.ASCII_WRITER_NAME);
+            break;
+        case BINARY:
+            configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, DataDumpStage.BINARY_WRITER_NAME);
+            break;
+        }
+
+        configuration.setProperty("kieker.monitoring.hostname", hostname);
 
         configuration.setProperty(AsciiFileWriter.CONFIG_CHARSET_NAME, "UTF-8");
         configuration.setProperty(AsciiFileWriter.CONFIG_FLUSH, "true");
@@ -60,7 +76,7 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
         configuration.setProperty(AsciiFileWriter.CONFIG_MAXLOGFILES, "-1");
         configuration.setProperty(AsciiFileWriter.CONFIG_MAXLOGSIZE, "-1");
         configuration.setProperty(AsciiFileWriter.CONFIG_PATH, dataLocation);
-        configuration.setProperty(AsciiFileWriter.CONFIG_SHOULD_COMPRESS, "false");
+        configuration.setProperty(AsciiFileWriter.CONFIG_COMPRESSION_FILTER, NoneCompressionFilter.class.getName());
 
         DataDumpStage.LOGGER.debug("Configuration complete.");
 
