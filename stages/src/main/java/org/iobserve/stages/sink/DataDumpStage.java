@@ -16,14 +16,18 @@
 package org.iobserve.stages.sink;
 
 import kieker.common.configuration.Configuration;
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.writer.filesystem.AsciiFileWriter;
+import kieker.monitoring.writer.filesystem.BinaryFileWriter;
+import kieker.monitoring.writer.filesystem.NoneCompressionFilter;
+
 import teetime.framework.AbstractConsumerStage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sync all incoming records with a Kieker writer to a text file log.
@@ -33,24 +37,38 @@ import teetime.framework.AbstractConsumerStage;
  */
 public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
 
-    private static final String WRITER_NAME = AsciiFileWriter.class.getCanonicalName();
+    private static final String ASCII_WRITER_NAME = AsciiFileWriter.class.getCanonicalName();
+    private static final String BINARY_WRITER_NAME = BinaryFileWriter.class.getCanonicalName();
 
     private final IMonitoringController ctrl;
 
     private long count = 0;
 
-    private static final Log LOG = LogFactory.getLog(DataDumpStage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataDumpStage.class);
 
     /**
      * Configure and setup the Kieker writer.
      *
      * @param dataLocation
      *            data location
+     * @param hostname
+     *            host name where the monitoring is running on
+     * @param type
+     *            type of serialization
      */
-    public DataDumpStage(final String dataLocation) {
+    public DataDumpStage(final String dataLocation, final String hostname, final ESerializationType type) {
         final Configuration configuration = ConfigurationFactory.createDefaultConfiguration();
         configuration.setProperty(ConfigurationFactory.CONTROLLER_NAME, "iObserve-Experiments");
-        configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, DataDumpStage.WRITER_NAME);
+        switch (type) {
+        case ASCII:
+            configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, DataDumpStage.ASCII_WRITER_NAME);
+            break;
+        case BINARY:
+            configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, DataDumpStage.BINARY_WRITER_NAME);
+            break;
+        }
+
+        configuration.setProperty("kieker.monitoring.hostname", hostname);
 
         configuration.setProperty(AsciiFileWriter.CONFIG_CHARSET_NAME, "UTF-8");
         configuration.setProperty(AsciiFileWriter.CONFIG_FLUSH, "true");
@@ -58,9 +76,9 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
         configuration.setProperty(AsciiFileWriter.CONFIG_MAXLOGFILES, "-1");
         configuration.setProperty(AsciiFileWriter.CONFIG_MAXLOGSIZE, "-1");
         configuration.setProperty(AsciiFileWriter.CONFIG_PATH, dataLocation);
-        configuration.setProperty(AsciiFileWriter.CONFIG_SHOULD_COMPRESS, "false");
+        configuration.setProperty(AsciiFileWriter.CONFIG_COMPRESSION_FILTER, NoneCompressionFilter.class.getName());
 
-        DataDumpStage.LOG.debug("Configuration complete");
+        DataDumpStage.LOGGER.debug("Configuration complete.");
 
         this.ctrl = MonitoringController.createInstance(configuration);
     }
@@ -69,8 +87,8 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
     protected void execute(final IMonitoringRecord record) {
         this.count++;
         this.ctrl.newMonitoringRecord(record);
-        if ((this.count % 1000) == 0) {
-            DataDumpStage.LOG.debug("Saved " + this.count + " records");
+        if (this.count % 1000 == 0) {
+            DataDumpStage.LOGGER.debug("Saved {} records.", this.count);
         }
     }
 

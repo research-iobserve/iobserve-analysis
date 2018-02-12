@@ -22,14 +22,14 @@ import java.util.Optional;
 
 import javax.xml.bind.JAXB;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
 import org.iobserve.analysis.protocom.PcmEntity;
 import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
 import org.iobserve.analysis.protocom.PcmMapping;
 import org.iobserve.analysis.protocom.PcmOperationSignature;
 import org.iobserve.model.utils.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of {@link ICorrespondence}.
@@ -41,7 +41,7 @@ import org.iobserve.model.utils.StringUtils;
  */
 class CorrespondenceModelImpl implements ICorrespondence {
 
-    private static final Logger LOGGER = LogManager.getLogger(CorrespondenceModelImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CorrespondenceModelImpl.class);
 
     /** cache for already mapped correspondences. */
     private final Map<String, Correspondent> cachedCorrespondents = new HashMap<>();
@@ -280,7 +280,7 @@ class CorrespondenceModelImpl implements ICorrespondence {
         for (final String nextMappingKey : this.mapping.keySet()) {
             CorrespondenceModelImpl.LOGGER.debug(nextMappingKey);
             final PcmEntityCorrespondent correspondent = this.mapping.get(nextMappingKey);
-            CorrespondenceModelImpl.LOGGER.debug(correspondent);
+            CorrespondenceModelImpl.LOGGER.debug(correspondent.toString());
         }
     }
 }

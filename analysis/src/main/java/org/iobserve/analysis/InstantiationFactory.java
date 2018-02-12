@@ -17,13 +17,13 @@ package org.iobserve.analysis;
 
 import java.lang.reflect.InvocationTargetException;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.Configuration;
 
 import org.iobserve.analysis.configurations.AnalysisConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Supports the automatic instantiation of classes specified in the configuration.
@@ -33,7 +33,7 @@ import org.iobserve.analysis.configurations.AnalysisConfiguration;
  */
 public class InstantiationFactory {
 
-    private static final Log LOG = LogFactory.getLog(AnalysisConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisConfiguration.class);
 
     /**
      * This is a helper method trying to find, create and initialize the given class, using its
@@ -60,19 +60,20 @@ public class InstantiationFactory {
             if (c.isAssignableFrom(clazz)) {
                 createdClass = (C) InstantiationFactory.instantiate(clazz, className, configuration);
             } else {
-                InstantiationFactory.LOG
-                        .error("Class '" + className + "' has to implement '" + c.getSimpleName() + "'");
+                InstantiationFactory.LOGGER.error("Class '{}' has to implement '{}'.", className, c.getSimpleName());
             }
         } catch (final ClassNotFoundException e) {
-            InstantiationFactory.LOG.error(c.getSimpleName() + ": Class '" + className + "' not found", e);
+            InstantiationFactory.LOGGER.error("{}: Class '{}' not found: {}", c.getSimpleName(), className,
+                    e.getLocalizedMessage());
         } catch (final NoSuchMethodException e) {
-            InstantiationFactory.LOG.error(c.getSimpleName() + ": Class '" + className
-                    + "' has to implement a (public) constructor that accepts a single Configuration", e);
+            InstantiationFactory.LOGGER.error(
+                    "{}: Class '{}' has to implement a (public) constructor that accepts a single Configuration",
+                    c.getSimpleName(), className, e.getLocalizedMessage());
         } catch (final Exception e) { // NOPMD NOCS (IllegalCatchCheck)
             // SecurityException, IllegalAccessException, IllegalArgumentException,
             // InstantiationException, InvocationTargetException
-            InstantiationFactory.LOG.error(c.getSimpleName() + ": Failed to load class for name '" + className + "'",
-                    e);
+            InstantiationFactory.LOGGER.error("{}: Failed to load class for name '{}'", c.getSimpleName(), className,
+                    e.getLocalizedMessage());
         }
         return createdClass;
     }

@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import kieker.common.configuration.Configuration;
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 
 import teetime.framework.OutputPort;
@@ -32,6 +30,8 @@ import org.iobserve.analysis.AbstractConfigurableCompositeStage;
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.configurations.AnalysisConfiguration;
 import org.iobserve.stages.source.Dir2RecordsFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Reiner Jung
@@ -42,7 +42,7 @@ public class FileSourceCompositeStage extends AbstractConfigurableCompositeStage
     public static final String SOURCE_DIRECTORIES = FileSourceCompositeStage.class.getCanonicalName()
             + ".source.directories";
 
-    private static final Log LOG = LogFactory.getLog(AnalysisConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisConfiguration.class);
 
     private static final String DELIMETER = ";";
 
@@ -71,7 +71,7 @@ public class FileSourceCompositeStage extends AbstractConfigurableCompositeStage
         }
 
         if (directories.size() == 0) {
-            FileSourceCompositeStage.LOG.error("No valid directory found.");
+            FileSourceCompositeStage.LOGGER.error("No valid directory found.");
             throw new ConfigurationException("No valid directory found.");
         }
 

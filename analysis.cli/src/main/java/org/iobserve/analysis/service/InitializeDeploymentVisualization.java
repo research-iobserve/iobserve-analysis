@@ -21,9 +21,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.service.services.CommunicationInstanceService;
 import org.iobserve.analysis.service.services.CommunicationService;
@@ -32,6 +29,8 @@ import org.iobserve.analysis.service.services.NodegroupService;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.service.services.SystemService;
+import org.iobserve.analysis.service.util.Changelog;
+import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
@@ -43,9 +42,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import util.Changelog;
-import util.SendHttpRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Initializes the deployment visualization by mapping the initial palladio components to
@@ -73,7 +71,7 @@ public final class InitializeDeploymentVisualization {
     private final URL changelogUrl;
     private final URL systemUrl;
 
-    private static final Log LOG = LogFactory.getLog(AnalysisMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisMain.class);
 
     /**
      * constructor.
@@ -197,7 +195,7 @@ public final class InitializeDeploymentVisualization {
                         this.systemUrl, this.changelogUrl);
 
             } else {
-                InitializeDeploymentVisualization.LOG.debug("no AssemblyConnector: connector.getEntityName()");
+                InitializeDeploymentVisualization.LOGGER.debug("no AssemblyConnector: connector.getEntityName()");
             }
 
         }
@@ -294,10 +292,9 @@ public final class InitializeDeploymentVisualization {
                     for (int k = 0; k < connectedResourceConts.size(); k++) {
                         connectedResourceContsIds.add(connectedResourceConts.get(k).getId());
                     }
-                    if (connectedResourceContsIds.contains(resourceSourceId)) {
-                        if (connectedResourceContsIds.contains(resourceTargetId)) {
-                            technology = linkingResource.getEntityName();
-                        }
+                    if (connectedResourceContsIds.contains(resourceSourceId)
+                            && connectedResourceContsIds.contains(resourceTargetId)) {
+                        technology = linkingResource.getEntityName();
                     }
                 }
             }

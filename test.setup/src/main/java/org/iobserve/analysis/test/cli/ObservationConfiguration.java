@@ -18,18 +18,21 @@ package org.iobserve.analysis.test.cli;
 import java.io.File;
 import java.util.Collection;
 
-import org.iobserve.stages.sink.DataDumpStage;
-import org.iobserve.stages.source.Dir2RecordsFilter;
-
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
+
+import org.iobserve.stages.sink.DataDumpStage;
+import org.iobserve.stages.sink.ESerializationType;
+import org.iobserve.stages.source.Dir2RecordsFilter;
 
 /**
  * @author Reiner Jung
  *
  */
 public class ObservationConfiguration extends Configuration {
+
+    private static final String TEST_HOSTNAME = "test-host";
 
     /**
      * Create a configuration with a ASCII file reader.
@@ -46,7 +49,8 @@ public class ObservationConfiguration extends Configuration {
         final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
         final RecordTypeFilter filter = new RecordTypeFilter();
 
-        final DataDumpStage dumpStage = new DataDumpStage(dataLocation.getAbsolutePath());
+        final DataDumpStage dumpStage = new DataDumpStage(dataLocation.getAbsolutePath(),
+                ObservationConfiguration.TEST_HOSTNAME, ESerializationType.ASCII);
 
         /** connections. */
         this.connectPorts(files.getOutputPort(), reader.getInputPort());
