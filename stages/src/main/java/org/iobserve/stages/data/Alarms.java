@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.service.privacy.violation.data;
+package org.iobserve.stages.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,10 +22,21 @@ import java.util.List;
  * @author Reiner Jung
  *
  */
-public class Warnings {
-    private final List<String> warnings = new ArrayList<>();
+public class Alarms implements IErrorMessages {
+    private List<String> alarms = new ArrayList<>();
 
-    public final List<String> getWarnings() {
-        return this.warnings;
+    @Override
+    public final List<String> getMessages() {
+        return this.alarms;
+    }
+
+    @Override
+    public void setMessages(final List<String> messages) {
+        this.alarms = messages;
+    }
+
+    @Override
+    public void addMessage(final String message) {
+        this.alarms.add(message);
     }
 }

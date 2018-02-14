@@ -15,15 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-import java.io.File;
-
-import teetime.framework.Configuration;
-import teetime.framework.OutputPort;
-import teetime.stage.basic.distributor.Distributor;
-import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
-import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.IBehaviorCompositeStage;
 import org.iobserve.analysis.IContainerManagementCompositeStage;
@@ -48,6 +39,13 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import teetime.framework.Configuration;
+import teetime.framework.OutputPort;
+import teetime.stage.basic.distributor.Distributor;
+import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
+import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 /**
  * This is a generic configuration for all analyses.
@@ -87,7 +85,6 @@ public class AnalysisConfiguration extends Configuration {
             + ".sink";
 
     private static final String DELIMETER = ",";
-    private static final String PATH_DELIMETER = File.pathSeparator;
 
     private final RecordSwitch recordSwitch;
 

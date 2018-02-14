@@ -18,7 +18,7 @@ package org.iobserve.service.privacy.violation.filter;
 import java.io.File;
 import java.io.IOException;
 
-import org.iobserve.service.privacy.violation.data.Alarms;
+import org.iobserve.stages.data.Alarms;
 
 /**
  * @author Reiner Jung
@@ -41,7 +41,7 @@ public class AlarmSink extends AbstractFileSink<Alarms> {
     @Override
     protected void execute(final Alarms element) throws Exception {
         AbstractFileSink.LOGGER.debug("Alarms");
-        for (final String alarms : element.getAlarms()) {
+        for (final String alarms : element.getMessages()) {
             AbstractFileSink.LOGGER.debug("\t {}", alarms);
             this.output.println(alarms);
         }
