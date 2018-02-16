@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.utility.tcp;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +28,6 @@ import kieker.common.configuration.Configuration;
 import kieker.common.record.remotecontrol.ActivationEvent;
 import kieker.common.record.remotecontrol.DeactivationEvent;
 import kieker.common.record.remotecontrol.IRemoteControlEvent;
-import kieker.monitoring.writer.tcp.ConnectionTimeoutException;
 import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
 
 /**
@@ -150,7 +148,7 @@ public class TcpProbeController {
         try {
             tcpWriter = new SingleSocketTcpWriter(configuration);
             tcpWriter.onStarting();
-        } catch (final ConnectionTimeoutException | IOException e) {
+        } catch (final Exception e) {
             // runtime exception is thrown after timeout
             if (TcpProbeController.LOGGER.isDebugEnabled()) {
                 TcpProbeController.LOGGER.debug("Could not create TCP connections to " + hostname + " on port " + port,

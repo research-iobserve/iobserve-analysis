@@ -15,23 +15,28 @@
  ***************************************************************************/
 package org.iobserve.stages.tcp;
 
+import org.iobserve.stages.data.Alarms;
+import org.iobserve.stages.data.IErrorMessages;
 import org.iobserve.utility.tcp.RemoteControlFailedException;
 import org.iobserve.utility.tcp.TcpProbeController;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 /**
+ * Receives {@link AbstractTcpControlEvent control events}, processes them and in case of error
+ * sends the error message to an error sink.
+ *
  * @author Marc Adolf
  *
  */
 public class ProbeControlFilter extends AbstractConsumerStage<AbstractTcpControlEvent> {
-    // TODO data type for transmitting information what should be activated and what deactivated
-    // TODO add Probecontroller (maybe make Probecontroller singleton?)
     private final TcpProbeController probeController;
+    private final OutputPort<IErrorMessages> outputPort = this.createOutputPort();
 
     /**
-     * Iniatews the filter with a new {@link TcpProbeController}.
+     * Initiates the filter with a new {@link TcpProbeController}.
      */
     public ProbeControlFilter() {
         this.probeController = new TcpProbeController();
@@ -39,12 +44,18 @@ public class ProbeControlFilter extends AbstractConsumerStage<AbstractTcpControl
 
     @Override
     protected void execute(final AbstractTcpControlEvent event) {
-        // TODO error handling
         try {
             this.probeController.controlProbe(event);
         } catch (final RemoteControlFailedException e) {
-            // TODO Auto-generated catch block
+            final String alarmMessage = "could not send probe control event " + e.getMessage();
+            final Alarms alarms = new Alarms();
+            alarms.addMessage(alarmMessage);
+            this.outputPort.send(alarms);
         }
+    }
+
+    public OutputPort<IErrorMessages> getOutputPort() {
+        return this.outputPort;
     }
 
 }
