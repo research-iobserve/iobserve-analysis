@@ -1,5 +1,7 @@
 apply plugin: 'java'
 
+def confDir = "${project.rootDir}/tools_configurations"
+
 repositories {
     mavenCentral()
     mavenLocal()
@@ -48,10 +50,11 @@ subprojects {
 	}
 
     checkstyle {
-       	configFile = rootProject.file('tools.configurations/iobserve-checkstyle-rules.xml')
+    	configFile = file("$confDir/iobserve-checkstyle-rules.xml")
+    	configDir = file("$confDir")	
     }  
     
-   	 pmd {
+   	pmd {
     	ignoreFailures = true
     }
     
