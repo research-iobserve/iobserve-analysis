@@ -19,15 +19,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.common.record.flow.trace.TraceMetadata;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.model.provider.neo4j.AllocationModelProvider;
-import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.model.provider.neo4j.SystemModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.stages.general.RecordSwitch;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
@@ -36,6 +32,9 @@ import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TNetworkLink runs asynchronous from the other filters like TAllocation, TDeployment, TEntryCall ,
@@ -54,14 +53,14 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  */
 public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
-    private static final Log LOG = LogFactory.getLog(NetworkLink.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NetworkLink.class);
 
     /** reference to allocation model provider. */
-    private final AllocationModelProvider allocationModelProvider;
+    private final IModelProvider<Allocation> allocationModelProvider;
     /** reference to system model provider. */
-    private final SystemModelProvider systemModelProvider;
+    private final IModelProvider<System> systemModelProvider;
     /** reference to resource environment model provider. */
-    private final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider;
+    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
 
     /**
      * Create new TNetworkLink filter.
@@ -73,9 +72,9 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      * @param resourceEnvironmentModelProvider
      *            resource environment provider
      */
-    public NetworkLink(final AllocationModelProvider allocationModelProvider,
-            final SystemModelProvider systemModelProvider,
-            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider) {
+    public NetworkLink(final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<System> systemModelProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider) {
         this.allocationModelProvider = allocationModelProvider;
         this.systemModelProvider = systemModelProvider;
         this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
@@ -89,11 +88,11 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
      */
     @Override
     protected void execute(final TraceMetadata event) {
-        this.resourceEnvironmentModelProvider.loadModel();
+        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider
+                .readRootComponent(ResourceEnvironment.class);
 
-        final ResourceEnvironment resourceEnvironment = this.resourceEnvironmentModelProvider.getModel();
-        final org.palladiosimulator.pcm.system.System system = this.systemModelProvider.getModel(true);
-        final Allocation allocation = this.allocationModelProvider.getModel(true);
+        final System system = this.systemModelProvider.readOnlyRootComponent(System.class);
+        final Allocation allocation = this.allocationModelProvider.readOnlyRootComponent(Allocation.class);
         NetworkLink.collectUnLinkedResourceContainer(resourceEnvironment).stream().forEach(unLinkedResCont -> {
             NetworkLink.getAsmContextDeployedOnContainer(allocation, unLinkedResCont).stream()
                     .map(asmCtx -> NetworkLink.getConnectedAsmCtx(system, asmCtx))
@@ -104,8 +103,7 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
                     .forEach(link -> link.getConnectedResourceContainers_LinkingResource().add(unLinkedResCont));
         });
 
-        // build the model
-        this.resourceEnvironmentModelProvider.save();
+        this.resourceEnvironmentModelProvider.updateComponent(ResourceEnvironment.class, resourceEnvironment);
     }
 
     /**
@@ -134,8 +132,8 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
         final String asm1Name = asm1.getEntityName().substring(0, asm1.getEntityName().indexOf("_", 0));
         final String asm2Name = asm2.getEntityName().substring(0, asm2.getEntityName().indexOf("_", 0));
 
-        NetworkLink.LOG.debug(
-                "isEqual?Id: " + asm1.getId() + "==" + asm2.getId() + ", Name: " + asm1Name + "==" + asm2Name + "\n");
+        NetworkLink.LOGGER.debug("isEqual?Id: {} == {}, Name: {} == {}", asm1.getId(), asm2.getId(), asm1Name,
+                asm2Name);
 
         return asm1Name.contains(asm2Name);
     }

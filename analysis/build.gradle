@@ -21,19 +21,22 @@ dependencies {
 	compile gradleApi()
 	
 	clover 'org.openclover:clover:4.2.0'
-	
-	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
-	
+		
+	// project dependencies
 	compile project(":common")
 	compile project(":stages")
 	compile project(":model")
 	compile project(":planning.systemadaptation")
 
+    compile 'org.slf4j:slf4j-simple:1.7.25'
+
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
+
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
 	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
-	compile 'net.kieker-monitoring:kieker:1.13'
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
     
 	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
 	compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'

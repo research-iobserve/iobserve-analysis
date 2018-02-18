@@ -3,6 +3,7 @@ apply plugin: 'application'
 mainClassName='org.iobserve.service.cli.AnalysisMain'
 
 dependencies {
+	compile project(":adaptationdata")
 	compile project(":analysis")
 	compile project(":analysis.cli")
 	compile project(":service")

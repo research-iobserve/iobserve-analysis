@@ -21,14 +21,13 @@ import java.net.InetSocketAddress;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStageTest;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStageTest;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStageTest;
+import org.iobserve.analysis.service.util.TestHandler;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import com.sun.net.httpserver.HttpServer;
-
-import util.TestHandler;
 
 /**
  * Test suite that runs all tests for classes in org.iobserve.analysis.service.updater.

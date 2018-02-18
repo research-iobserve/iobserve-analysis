@@ -18,7 +18,8 @@ package org.iobserve.analysis.service;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.eclipse.emf.common.util.URI;
+import kieker.common.configuration.Configuration;
+
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.configurations.MultiInputObservationConfiguration;
@@ -27,16 +28,14 @@ import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.AllocationModelProvider;
-import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
-import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.model.provider.neo4j.SystemModelProvider;
-import org.iobserve.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * @author Reiner Jung
@@ -47,12 +46,10 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
     /**
      * Setup service configuration.
      *
-     * @param inputPort
-     *            analysis input port, default is 9876
-     * @param outputHostname
-     *            visualization hostname
-     * @param outputPort
-     *            port to be used for the visualization host
+     * @param configuration
+     *            configuration object containing all parameters for all filters
+     * @param visualizationBaseUrl
+     *            base URL of the visualization service
      * @param systemId
      *            system id to be used for the visualization
      * @param varianceOfUserGroups
@@ -69,67 +66,45 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      *            provider for the repository model
      * @param resourceEnvironmentModelProvider
      *            provider for the resource model
-     * @param resourceEnvironmentModelGraphProvider
-     *            graph provider for the resource model
      * @param allocationModelProvider
      *            provider for the allocation model
-     * @param allocationModelGraphProvider
-     *            graph provider for the allocation model
      * @param systemModelProvider
      *            provider for the system model
-     * @param systemModelGraphProvider
-     *            graph provider for the system model
-     * @param resourceContainerModelGraphProvider
+     * @param resourceContainerModelProvider
      *            graph provider for the resource container model
-     * @param assemblyContextModelGraphProvider
+     * @param assemblyContextModelProvider
      *            graph provider for the assembly context model
-     * @param assCtxSystemModelGraphProvider
-     *            graph provider for the assembly context system model
      * @param visualizationServiceURL
      *            url to the visualization service
      * @param snapshotBuilder
      *            snapshot builder
-     * @param perOpteryxDir
-     *            directory to the peropteryx executable
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param deployablesFolder
-     *            folder were deployable elements are stored
      *
      * @throws MalformedURLException
      *             if any passed URL in the configuration is broken.
      */
-    public ServiceConfiguration(final int inputPort, final String outputHostname, final String outputPort,
+    public ServiceConfiguration(final Configuration configuration, final URL visualizationBaseUrl,
             final String systemId, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
-            final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
-            final RepositoryModelProvider repositoryModelProvider,
-            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final AllocationModelProvider allocationModelProvider, final SystemModelProvider systemModelProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
-            final ModelProvider<Allocation> allocationModelGraphProvider,
-            final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final ModelProvider<AssemblyContext> assCtxSystemModelGraphProvider, final String visualizationServiceURL,
-            final SnapshotBuilder snapshotBuilder, final URI perOpteryxDir, final URI lqnsDir,
-            final URI deployablesFolder) throws MalformedURLException {
-        super(inputPort, correspondenceModel, usageModelProvider, repositoryModelProvider,
-                resourceEnvironmentModelProvider, resourceEnvironmentModelGraphProvider, allocationModelProvider,
-                allocationModelGraphProvider, systemModelProvider, systemModelGraphProvider, varianceOfUserGroups,
+            final ICorrespondence correspondenceModel, final IModelProvider<UsageModel> usageModelProvider,
+            final IModelProvider<Repository> repositoryModelProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
+            final IModelProvider<ResourceContainer> resourceContainerModelProvider,
+            final IModelProvider<AssemblyContext> assemblyContextModelProvider, final String visualizationServiceURL,
+            final SnapshotBuilder snapshotBuilder) throws MalformedURLException {
+        super(configuration, correspondenceModel, usageModelProvider, repositoryModelProvider,
+                resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
-                EOutputMode.UBM_VISUALIZATION, snapshotBuilder, perOpteryxDir, lqnsDir, deployablesFolder);
+                EOutputMode.UBM_VISUALIZATION, snapshotBuilder);
 
-        final URL containerManagementURL = new URL(
-                "http://" + outputHostname + ":" + outputPort + "/v1/systems/" + systemId + "/changelogs");
+        final URL containerManagementURL = new URL(visualizationBaseUrl, "/v1/systems/" + systemId + "/changelogs");
 
         final DeploymentVisualizationStage deploymentVisualizationStage = new DeploymentVisualizationStage(
-                containerManagementURL, systemId, resourceContainerModelGraphProvider,
-                assemblyContextModelGraphProvider);
+                containerManagementURL, systemId, resourceContainerModelProvider, assemblyContextModelProvider);
         final AllocationVisualizationStage allocationVisualizationStage = new AllocationVisualizationStage(
                 containerManagementURL, systemId);
         final UndeploymentVisualizationStage undeploymentVisualizationStage = new UndeploymentVisualizationStage(
-                containerManagementURL, systemId, resourceContainerModelGraphProvider, assCtxSystemModelGraphProvider,
-                systemModelGraphProvider);
+                containerManagementURL, systemId, resourceContainerModelProvider, assemblyContextModelProvider,
+                systemModelProvider);
 
         this.connectPorts(this.deploymentStage.getDeployedOutputPort(), deploymentVisualizationStage.getInputPort());
         this.connectPorts(this.deploymentStage.getAllocationOutputPort(), allocationVisualizationStage.getInputPort());

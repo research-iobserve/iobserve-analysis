@@ -25,7 +25,7 @@ import org.iobserve.analysis.userbehavior.TestHelper;
 import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.factory.UsageModelFactory;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
@@ -61,7 +61,7 @@ public final class OverlappingIterationReference {
      *
      * @param referenceUsageModelFileName
      *            file name of the reference model to store its result
-     * @param repositoryModelProvider
+     * @param repositoryLookupModelProvider
      *            repository model provider
      * @param correspondenceModel
      *            correspondence model
@@ -71,7 +71,7 @@ public final class OverlappingIterationReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            final RepositoryLookupModelProvider repositoryLookupModelProvider, final ICorrespondence correspondenceModel)
             throws IOException {
 
         // Creates a random number of user sessions and random model element parameters. The user
@@ -118,27 +118,27 @@ public final class OverlappingIterationReference {
             final Stop loopStop = UsageModelFactory.createStop("");
             UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
 
-            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
+            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryLookupModelProvider,
                     correspondenceModel, 0, loopStart, scenarioBehaviour);
-            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
+            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryLookupModelProvider,
                     correspondenceModel, 2, lastAction, scenarioBehaviour);
 
             UsageModelFactory.connect(lastAction, loopStop);
 
-            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
+            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryLookupModelProvider,
                     correspondenceModel, 3, loop, scenarioBehaviour);
-            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
+            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryLookupModelProvider,
                     correspondenceModel, 2, lastAction, scenarioBehaviour);
-            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
+            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryLookupModelProvider,
                     correspondenceModel, 3, lastAction, scenarioBehaviour);
 
             UsageModelFactory.connect(lastAction, stop);
         } else {
-            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
+            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryLookupModelProvider,
                     correspondenceModel, 0, start, scenarioBehaviour);
-            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
+            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryLookupModelProvider,
                     correspondenceModel, 2, lastAction, scenarioBehaviour);
-            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
+            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryLookupModelProvider,
                     correspondenceModel, 0, lastAction, scenarioBehaviour);
 
             UsageModelFactory.connect(lastAction, loop);
@@ -151,9 +151,9 @@ public final class OverlappingIterationReference {
             UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), loopStop);
             lastAction = loopStart;
 
-            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
+            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryLookupModelProvider,
                     correspondenceModel, 2, lastAction, scenarioBehaviour);
-            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryModelProvider,
+            lastAction = OverlappingIterationReference.createEntryLevelSystemCall(repositoryLookupModelProvider,
                     correspondenceModel, 3, lastAction, scenarioBehaviour);
 
             UsageModelFactory.connect(lastAction, loopStop);
@@ -273,7 +273,7 @@ public final class OverlappingIterationReference {
     /**
      * Create and link a user action into a sequence.
      *
-     * @param repositoryModelProvider
+     * @param repositoryLookupModelProvider
      *            repository model provider
      * @param correspondenceModel
      *            correspondence model
@@ -288,15 +288,15 @@ public final class OverlappingIterationReference {
      *
      * @return return this call
      */
-    private static AbstractUserAction createEntryLevelSystemCall(final RepositoryModelProvider repositoryModelProvider,
-            final ICorrespondence correspondenceModel, final int index, final AbstractUserAction lastAction,
-            final ScenarioBehaviour scenarioBehaviour) {
+    private static AbstractUserAction createEntryLevelSystemCall(
+            final RepositoryLookupModelProvider repositoryLookupModelProvider, final ICorrespondence correspondenceModel,
+            final int index, final AbstractUserAction lastAction, final ScenarioBehaviour scenarioBehaviour) {
         final Optional<Correspondent> correspondent = correspondenceModel.getCorrespondent(
                 ReferenceUsageModelBuilder.CLASS_SIGNATURE[index],
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[index]);
         if (correspondent.isPresent()) {
             final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+                    .createEntryLevelSystemCall(repositoryLookupModelProvider, correspondent.get());
             UsageModelFactory.addUserAction(scenarioBehaviour, entryLevelSystemCall);
             UsageModelFactory.connect(lastAction, entryLevelSystemCall);
 

@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.model.factory.AllocationModelFactory;
 import org.iobserve.model.factory.SystemModelFactory;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 
@@ -46,9 +46,9 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
     private static final Logger LOGGER = LogManager.getLogger(DeployPCMMapper.class);
 
     /** reference to allocation model provider. */
-    private final ModelProvider<Allocation> allocationModelGraphProvider;
+    private final IModelProvider<Allocation> allocationModelGraphProvider;
     /** reference to system model provider. */
-    private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
+    private final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
 
     private final OutputPort<PCMDeployedEvent> deployedNotifyOutputPort = this.createOutputPort();
 
@@ -61,8 +61,8 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      * @param systemModelGraphProvider
      *            system model provider
      */
-    public DeploymentModelUpdater(final ModelProvider<Allocation> allocationModelGraphProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
+    public DeploymentModelUpdater(final IModelProvider<Allocation> allocationModelGraphProvider,
+            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
     }
@@ -127,7 +127,7 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
      * @return created assembly context
      */
     private AssemblyContext createAndAddAssemblyContext(
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider, final String name) {
+            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider, final String name) {
         final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
         final AssemblyContext assemblyContext = SystemModelFactory.createAssemblyContextsIfAbsent(systemModel, name);

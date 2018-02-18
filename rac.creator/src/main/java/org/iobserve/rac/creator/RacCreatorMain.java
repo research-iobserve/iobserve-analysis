@@ -26,12 +26,13 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
+import kieker.common.configuration.Configuration;
 
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -45,7 +46,8 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
     private static final String RAC_FILENAME = "mapping.rac";
     private static final String MAPPED_CLASSES_FILENAME = "mapped.txt";
     private static final String UNMAPPED_CLASSES_FILENAME = "unmapped.txt";
-    private static final Log LOG = LogFactory.getLog(RacCreatorMain.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RacCreatorMain.class);
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Input direcory.", converter = FileConverter.class)
@@ -78,7 +80,8 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
     }
 
     @Override
-    protected ObservationConfiguration createConfiguration() throws ConfigurationException {
+    protected ObservationConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
         final Collection<File> inputPaths = new ArrayList<>();
         inputPaths.add(this.inputPath);
 
@@ -103,15 +106,15 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
         try {
             if (!this.outputPath.isDirectory() || !this.outputPath.exists()) {
-                RacCreatorMain.LOG.error(
-                        "Output path " + this.outputPath.getCanonicalPath() + " does not exist or is not a directory.");
+                RacCreatorMain.LOGGER.error("Output path {} does not exist or is not a directory.",
+                        this.outputPath.getCanonicalPath());
                 commander.usage();
                 return false;
             }
 
             if (!this.inputPath.isDirectory() || !this.inputPath.exists()) {
-                RacCreatorMain.LOG.error(
-                        "Input path " + this.inputPath.getCanonicalPath() + " does not exist or is not a directory.");
+                RacCreatorMain.LOGGER.error("Input path {} does not exist or is not a directory.",
+                        this.inputPath.getCanonicalPath());
                 commander.usage();
                 return false;
             }
@@ -130,6 +133,21 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return null;
+    }
+
+    @Override
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
+        return true;
+    }
+
+    @Override
+    protected void shutdownService() {
+
     }
 
 }

@@ -17,11 +17,13 @@ package org.iobserve.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import com.beust.jcommander.JCommander;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Collection of command line parameter evaluation functions.
@@ -31,7 +33,7 @@ import kieker.common.logging.LogFactory;
  */
 public class CommandLineParameterEvaluation {
 
-    private static final Log LOG = LogFactory.getLog(CommandLineParameterEvaluation.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandLineParameterEvaluation.class);
 
     /**
      * Check whether the given handle refers to an existing directory.
@@ -50,14 +52,14 @@ public class CommandLineParameterEvaluation {
     public static boolean checkDirectory(final File location, final String locationLabel, final JCommander commander)
             throws IOException {
         if (!location.exists()) {
-            CommandLineParameterEvaluation.LOG
-                    .error(locationLabel + " path " + location.getCanonicalPath() + " does not exist.");
+            CommandLineParameterEvaluation.LOGGER.error("{} path {} does not exist.", locationLabel,
+                    location.getCanonicalPath());
             commander.usage();
             return false;
         }
         if (!location.isDirectory()) {
-            CommandLineParameterEvaluation.LOG
-                    .error(locationLabel + " path " + location.getCanonicalPath() + " is not a directory.");
+            CommandLineParameterEvaluation.LOGGER.error("{} path {} is not a directory.", locationLabel,
+                    location.getCanonicalPath());
             commander.usage();
             return false;
         }
@@ -66,7 +68,7 @@ public class CommandLineParameterEvaluation {
     }
 
     /**
-     * Check whther a specified file is readable.
+     * Check whether a specified file is readable.
      *
      * @param file
      *            the file handle
@@ -78,18 +80,37 @@ public class CommandLineParameterEvaluation {
      */
     public static boolean isFileReadable(final File file, final String label) throws IOException {
         if (!file.exists()) {
-            CommandLineParameterEvaluation.LOG.error(label + " " + file.getCanonicalPath() + " does not exist.");
+            CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " does not exist.");
             return false;
         }
         if (!file.isFile()) {
-            CommandLineParameterEvaluation.LOG.error(label + " " + file.getCanonicalPath() + " is not a file.");
+            CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " is not a file.");
             return false;
         }
         if (!file.canRead()) {
-            CommandLineParameterEvaluation.LOG.error(label + " " + file.getCanonicalPath() + " cannot be read.");
+            CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " cannot be read.");
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Create an URL from a given string.
+     *
+     * @param urlString
+     *            the url string
+     * @param label
+     *            label used to indicate which string
+     * @return returns an URL or null on error
+     */
+    public static URL createURL(final String urlString, final String label) {
+        try {
+            return new URL(urlString);
+        } catch (final MalformedURLException e) {
+            CommandLineParameterEvaluation.LOGGER.error(label + " Malformend URL " + urlString);
+            return null;
+        }
+
     }
 }

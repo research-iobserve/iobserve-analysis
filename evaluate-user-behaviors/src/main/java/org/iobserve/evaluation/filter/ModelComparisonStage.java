@@ -53,13 +53,19 @@ public class ModelComparisonStage extends AbstractStage {
      */
     @Override
     protected void execute() throws Exception {
+        /**
+         * We cannot user else if here, as (a) there could be an input at each input port, (b) there
+         * could be a model at testModel but not at the referenceModel input, in an if-then-else
+         * style, the test model would not be received until we have a reference model, which
+         * unnecessarily would imply a sequence between both ports.
+         */
         if (this.referenceModel == null) {
             this.referenceModel = this.referenceModelInputPort.receive();
         }
         if (this.testModel == null) {
             this.testModel = this.testModelInputPort.receive();
         }
-
+        /** We still have to check both, as there could be nothing a both ports. */
         if (this.referenceModel != null && this.testModel != null) {
             final ComparisonResult result = new ComparisonResult();
 
@@ -124,6 +130,7 @@ public class ModelComparisonStage extends AbstractStage {
             }
             result.setAdditionalEdgeCount(additionalEdgeCount);
 
+            /** Forget models after processing to be able to process the next elements. */
             this.referenceModel = null;
             this.testModel = null;
 

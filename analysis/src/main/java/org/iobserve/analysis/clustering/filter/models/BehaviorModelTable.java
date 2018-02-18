@@ -24,11 +24,11 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.iobserve.analysis.clustering.SingleOrNoneCollector;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -44,7 +44,7 @@ import weka.core.Instances;
 
 public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
-    private static final Logger LOGGER = LogManager.getLogger(BehaviorModelTable.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelTable.class);
 
     private final Map<String, Pair<Integer, AggregatedCallInformation[]>> signatures;
     private final String[] inverseSignatures;
@@ -86,7 +86,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         // verify input
         final int length = signatures.size();
 
-        if ((length == reverseSignatures.length) && (length == transitions.length)) {
+        if (length == reverseSignatures.length && length == transitions.length) {
 
             for (final Integer[] transition : transitions) {
                 if (length != transition.length) {
@@ -188,7 +188,7 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
         for (int i = 0; i < clearedTransitions.length; i++) {
             for (int j = 0; j < clearedTransitions.length; j++) {
-                clearedTransitions[i][j] = (this.transitions[i][j] == AbstractBehaviorModelTable.EMPTY_TRANSITION)
+                clearedTransitions[i][j] = this.transitions[i][j] == AbstractBehaviorModelTable.EMPTY_TRANSITION
                         && keepEmptyTransitions ? AbstractBehaviorModelTable.EMPTY_TRANSITION : 0;
 
             }

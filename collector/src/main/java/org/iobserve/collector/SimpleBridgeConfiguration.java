@@ -15,9 +15,13 @@
  ***************************************************************************/
 package org.iobserve.collector;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import teetime.framework.Configuration;
 
 import org.iobserve.stages.sink.DataDumpStage;
+import org.iobserve.stages.sink.ESerializationType;
 import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 
 /**
@@ -41,7 +45,14 @@ public class SimpleBridgeConfiguration extends Configuration {
     public SimpleBridgeConfiguration(final String dataLocation, final int inputPort) {
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort, 1024);
 
-        this.consumer = new DataDumpStage(dataLocation);
+        String hostname;
+        try {
+            hostname = InetAddress.getLocalHost().getHostName();
+        } catch (final UnknownHostException e) {
+            hostname = "cannot determine host name.";
+        }
+
+        this.consumer = new DataDumpStage(dataLocation, hostname, ESerializationType.ASCII);
 
         this.connectPorts(reader.getOutputPort(), this.consumer.getInputPort());
     }

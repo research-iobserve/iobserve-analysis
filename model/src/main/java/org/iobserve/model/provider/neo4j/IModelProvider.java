@@ -122,4 +122,51 @@ public interface IModelProvider<T extends EObject> {
      */
     void deleteComponentAndDatatypes(Class<T> clazz, String id, boolean forceDelete);
 
+    /**
+     * Reads the pcm models root components Allocation, Repository, ResourceEnvironment, System or
+     * UsageModel without locking the graph for other providers.
+     *
+     * @param clazz
+     *            Data type of the root component
+     * @return The read component
+     */
+    public T readOnlyRootComponent(final Class<T> clazz);
+
+    /**
+     * Reads a specified component from the provider's graph without locking it for other providers.
+     *
+     * @param clazz
+     *            Data type of component to be read
+     * @param id
+     *            Id of component to be read
+     * @return The read component
+     */
+    public T readOnlyComponentById(final Class<T> clazz, final String id);
+
+    /**
+     * Reads components referencing to the specified component from the provider's graph without
+     * locking it for other providers.
+     *
+     * @param clazz
+     *            Data type of the referenced component
+     * @param id
+     *            Id of the referenced component
+     * @return The referencing components
+     */
+    public List<EObject> readOnlyReferencingComponentsById(final Class<?> clazz, final String id);
+
+    /**
+     * Reads components from the provider's graph by their entityName without locking it for other
+     * providers. Note that not all components in the PCM models have an entityName and that an
+     * entityName doesn't need to be unique. If multiple components of the specified type have the
+     * specified name, the returned list contains all of them.
+     *
+     * @param clazz
+     *            Data type of component(s) to be read
+     * @param entityName
+     *            EntityName of the component(s) to be read
+     * @return List of the read component(s)
+     */
+    public List<T> readOnlyComponentByName(final Class<T> clazz, final String entityName);
+
 }

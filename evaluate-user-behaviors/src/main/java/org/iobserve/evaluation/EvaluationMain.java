@@ -22,11 +22,12 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
+import kieker.common.configuration.Configuration;
 
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Collector main class.
@@ -35,7 +36,7 @@ import org.iobserve.service.AbstractServiceMain;
  */
 public final class EvaluationMain extends AbstractServiceMain<EvaluationConfiguration> {
 
-    private static final Log LOG = LogFactory.getLog(EvaluationMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EvaluationMain.class);
 
     @Parameter(names = { "-b",
             "--baseline-model" }, required = true, description = "Baseline model file.", converter = FileConverter.class)
@@ -67,7 +68,8 @@ public final class EvaluationMain extends AbstractServiceMain<EvaluationConfigur
     }
 
     @Override
-    protected EvaluationConfiguration createConfiguration() throws ConfigurationException {
+    protected EvaluationConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
         try {
             return new EvaluationConfiguration(this.baselineModelLocation, this.testModelLocation, this.targetLocation);
         } catch (final IOException e) {
@@ -79,12 +81,13 @@ public final class EvaluationMain extends AbstractServiceMain<EvaluationConfigur
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
         try {
             if (!this.baselineModelLocation.canRead()) {
-                EvaluationMain.LOG.error("reading baseline failed: " + this.baselineModelLocation.getCanonicalPath());
+                EvaluationMain.LOGGER.error("reading baseline failed: {}",
+                        this.baselineModelLocation.getCanonicalPath());
                 commander.usage();
                 return false;
             }
             if (!this.testModelLocation.canRead()) {
-                EvaluationMain.LOG.error("reading test model failed: " + this.testModelLocation.getCanonicalPath());
+                EvaluationMain.LOGGER.error("reading test model failed: {}", this.testModelLocation.getCanonicalPath());
                 commander.usage();
                 return false;
             }
@@ -93,6 +96,21 @@ public final class EvaluationMain extends AbstractServiceMain<EvaluationConfigur
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return null;
+    }
+
+    @Override
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
+        return true;
+    }
+
+    @Override
+    protected void shutdownService() {
+
     }
 
 }

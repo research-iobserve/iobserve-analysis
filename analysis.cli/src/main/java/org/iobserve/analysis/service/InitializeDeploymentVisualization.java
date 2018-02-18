@@ -16,12 +16,10 @@
 package org.iobserve.analysis.service;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.analysis.service.services.CommunicationInstanceService;
@@ -31,7 +29,9 @@ import org.iobserve.analysis.service.services.NodegroupService;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
 import org.iobserve.analysis.service.services.ServiceService;
 import org.iobserve.analysis.service.services.SystemService;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.analysis.service.util.Changelog;
+import org.iobserve.analysis.service.util.SendHttpRequest;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
@@ -42,9 +42,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import util.Changelog;
-import util.SendHttpRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Initializes the deployment visualization by mapping the initial palladio components to
@@ -56,9 +55,9 @@ import util.SendHttpRequest;
 public final class InitializeDeploymentVisualization {
 
     /** model provider for palladio models. */
-    private final ModelProvider<Allocation> allocationModelGraphProvider;
-    private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final IModelProvider<Allocation> allocationModelGraphProvider;
+    private final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
+    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     /** services for visualization elements. */
     private final SystemService systemService = new SystemService();
@@ -72,15 +71,15 @@ public final class InitializeDeploymentVisualization {
     private final URL changelogUrl;
     private final URL systemUrl;
 
-    private static final Log LOG = LogFactory.getLog(AnalysisMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisMain.class);
 
     /**
      * constructor.
      *
-     * @param systemUrl
-     *            Url to send requests for creating a system
-     * @param changelogUrl
-     *            Url to send requests for changelogs
+     * @param visualizationBaseUrl
+     *            Url used for the visualization
+     * @param systemId
+     *            system id
      * @param allocationModelGraphProvider
      *            provider for allocation model
      * @param systemModelGraphProvider
@@ -89,15 +88,17 @@ public final class InitializeDeploymentVisualization {
      *            provider for resource environment model
      * @param usageModelGraphProvider
      *            provider for usage model
+     * @throws MalformedURLException
+     *             in case the specified url does not work
      */
 
-    public InitializeDeploymentVisualization(final URL systemUrl, final URL changelogUrl,
-            final ModelProvider<Allocation> allocationModelGraphProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final ModelProvider<UsageModel> usageModelGraphProvider) {
-        this.systemUrl = systemUrl;
-        this.changelogUrl = changelogUrl;
+    public InitializeDeploymentVisualization(final URL visualizationBaseUrl, final String systemId,
+            final IModelProvider<Allocation> allocationModelGraphProvider,
+            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
+            final IModelProvider<UsageModel> usageModelGraphProvider) throws MalformedURLException {
+        this.systemUrl = new URL(visualizationBaseUrl + "/v1/systems/");
+        this.changelogUrl = new URL(this.systemUrl + systemId + "/changelogs");
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
@@ -194,7 +195,7 @@ public final class InitializeDeploymentVisualization {
                         this.systemUrl, this.changelogUrl);
 
             } else {
-                InitializeDeploymentVisualization.LOG.debug("no AssemblyConnector: connector.getEntityName()");
+                InitializeDeploymentVisualization.LOGGER.debug("no AssemblyConnector: connector.getEntityName()");
             }
 
         }
@@ -291,10 +292,9 @@ public final class InitializeDeploymentVisualization {
                     for (int k = 0; k < connectedResourceConts.size(); k++) {
                         connectedResourceContsIds.add(connectedResourceConts.get(k).getId());
                     }
-                    if (connectedResourceContsIds.contains(resourceSourceId)) {
-                        if (connectedResourceContsIds.contains(resourceTargetId)) {
-                            technology = linkingResource.getEntityName();
-                        }
+                    if (connectedResourceContsIds.contains(resourceSourceId)
+                            && connectedResourceContsIds.contains(resourceTargetId)) {
+                        technology = linkingResource.getEntityName();
                     }
                 }
             }

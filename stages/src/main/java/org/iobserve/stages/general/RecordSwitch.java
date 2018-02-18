@@ -26,14 +26,13 @@ import kieker.common.record.misc.KiekerMetadataRecord;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeployedEvent;
-import org.iobserve.common.record.ServletTraceHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The record switch filter is used to scan the event stream and send events based on their type to
@@ -45,7 +44,7 @@ import org.iobserve.common.record.ServletTraceHelper;
  */
 public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 
-    private static final Logger LOGGER = LogManager.getLogger(RecordSwitch.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RecordSwitch.class);
 
     private static final int LOOP_COUNT = 1000;
 
@@ -82,7 +81,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     protected void execute(final IMonitoringRecord element) {
         this.recordCount++;
         if (this.recordCount % RecordSwitch.LOOP_COUNT == 0) {
-            RecordSwitch.LOGGER.debug("Records processed " + this.recordCount);
+            RecordSwitch.LOGGER.debug("Records processed {}.", this.recordCount);
         }
         if (element instanceof IDeployedEvent) {
             this.deployedOutputPort.send((IDeployedEvent) element);
@@ -94,8 +93,6 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             this.allocationOutputPort.send((IAllocationEvent) element);
         } else if (element instanceof IDeallocationEvent) {
             this.deallocationOutputPort.send((IDeallocationEvent) element);
-        } else if (element instanceof ServletTraceHelper) { // NOCS
-            // TODO this is later used to improve trace information
         } else if (element instanceof IFlowRecord) {
             this.flowOutputPort.send((IFlowRecord) element);
             if (element instanceof TraceMetadata) {
@@ -103,23 +100,27 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
             }
         } else if (element instanceof KiekerMetadataRecord) {
             final KiekerMetadataRecord metadata = (KiekerMetadataRecord) element;
-            RecordSwitch.LOGGER.info("Kieker Metadata\n" + "\ncontroller name   " + metadata.getControllerName()
-                    + "\nexperiment id     " + metadata.getExperimentId() + "\nhostname          "
-                    + metadata.getHostname() + "\nlogging timestamp " + metadata.getLoggingTimestamp()
-                    + "\nnumber of records " + metadata.getNumberOfRecords() + "\nsize              "
-                    + metadata.getSize() + "\ntime offset       " + metadata.getTimeOffset() + "\nunit              "
-                    + metadata.getTimeUnit() + "\nversion           " + metadata.getVersion());
+            RecordSwitch.LOGGER.info("Kieker Metadata");
+            RecordSwitch.LOGGER.info("controller name   {}", metadata.getControllerName());
+            RecordSwitch.LOGGER.info("experiment id     {}", metadata.getExperimentId());
+            RecordSwitch.LOGGER.info("hostname          {}", metadata.getHostname());
+            RecordSwitch.LOGGER.info("logging timestamp {}", metadata.getLoggingTimestamp());
+            RecordSwitch.LOGGER.info("number of records {}", metadata.getNumberOfRecords());
+            RecordSwitch.LOGGER.info("size              {}", metadata.getSize());
+            RecordSwitch.LOGGER.info("time offset       {}", metadata.getTimeOffset());
+            RecordSwitch.LOGGER.info("unit              {}", metadata.getTimeUnit());
+            RecordSwitch.LOGGER.info("version           {}", metadata.getVersion());
         } else {
             final String className = element.getClass().getCanonicalName();
             Integer hits = this.unknownRecords.get(className);
             if (hits == null) {
-                RecordSwitch.LOGGER.error("Configuration error: New unknown event type " + className);
+                RecordSwitch.LOGGER.error("Configuration error: New unknown event type {}.", className);
                 this.unknownRecords.put(className, Integer.valueOf(1));
             } else {
                 hits++;
                 this.unknownRecords.put(className, hits);
                 if (hits % RecordSwitch.LOOP_COUNT == 0) {
-                    RecordSwitch.LOGGER.error("Event occurances " + hits + " of unknown eventtype " + className);
+                    RecordSwitch.LOGGER.error("Event occurances {} of unknown eventtype {}.", hits, className);
                 }
             }
         }
@@ -127,7 +128,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
 
     @Override
     public void onTerminating() {
-        RecordSwitch.LOGGER.info("Records processed in total " + this.recordCount);
+        RecordSwitch.LOGGER.info("Records processed in total {}.", this.recordCount);
         super.onTerminating();
     }
 

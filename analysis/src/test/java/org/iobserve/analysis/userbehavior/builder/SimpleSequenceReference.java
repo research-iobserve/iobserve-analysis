@@ -29,7 +29,7 @@ import org.iobserve.analysis.userbehavior.TestHelper;
 import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.factory.UsageModelFactory;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
@@ -64,8 +64,8 @@ public final class SimpleSequenceReference {
      *
      * @param referenceUsageModelFileName
      *            file name of the reference model to store its result
-     * @param repositoryModelProvider
-     *            repository model provider
+     * @param repositoryLookupModel
+     *            repository lookup model
      * @param correspondenceModel
      *            correspondence model
      * @param thinkTime
@@ -78,7 +78,7 @@ public final class SimpleSequenceReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel,
+            final RepositoryLookupModelProvider repositoryLookupModel, final ICorrespondence correspondenceModel,
             final int thinkTime, final boolean isClosedWorkload) throws IOException {
 
         // Creates a random number of user sessions and random model element parameters. The user
@@ -113,7 +113,7 @@ public final class SimpleSequenceReference {
             }
             if (correspondent.isPresent()) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+                        .createEntryLevelSystemCall(repositoryLookupModel, correspondent.get());
                 UsageModelFactory.addUserAction(scenarioBehaviour, entryLevelSystemCall);
                 UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;

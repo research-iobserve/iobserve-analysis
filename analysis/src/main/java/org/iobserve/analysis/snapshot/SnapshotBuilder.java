@@ -18,7 +18,6 @@ package org.iobserve.analysis.snapshot;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.CopyOption;
-import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 import teetime.framework.AbstractStage;
@@ -29,8 +28,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.InitializeModelProviders;
-import org.iobserve.model.provider.neo4j.AbstractModelProvider;
+import org.iobserve.model.PCMModelHandler;
 
 /**
  * This class creates a copy of the current PCM runtime model. (also called Snapshot) The output
@@ -50,7 +48,7 @@ public class SnapshotBuilder extends AbstractStage {
     private static boolean evaluationMode;
 
     private final URI snapshotURI;
-    private final InitializeModelProviders modelProviders;
+    private final PCMModelHandler modelHandler;
 
     private final OutputPort<URI> outputPort = super.createOutputPort();
     private final OutputPort<URI> evaluationOutputPort = super.createOutputPort();
@@ -60,13 +58,12 @@ public class SnapshotBuilder extends AbstractStage {
      *
      * @param subURI
      *            where the snapshot will be saved to
-     * @param modelProviders
+     * @param modelHandler
      *            the source pcm models
      * @throws InitializationException
      *             when no snapshot location was specified
      */
-    public SnapshotBuilder(final String subURI, final InitializeModelProviders modelProviders)
-            throws InitializationException {
+    public SnapshotBuilder(final String subURI, final PCMModelHandler modelHandler) throws InitializationException {
         super();
 
         if (SnapshotBuilder.baseSnapshotLocation == null) {
@@ -76,7 +73,7 @@ public class SnapshotBuilder extends AbstractStage {
 
         SnapshotBuilder.createSnapshot = false;
         this.snapshotURI = SnapshotBuilder.baseSnapshotLocation.appendSegment(subURI);
-        this.modelProviders = modelProviders;
+        this.modelHandler = modelHandler;
 
         final String fileString = this.snapshotURI.toFileString();
         final File baseFolder = new File(fileString);
@@ -119,63 +116,9 @@ public class SnapshotBuilder extends AbstractStage {
     public URI createSnapshot() throws IOException {
         SnapshotBuilder.LOG.info("Creating Snapshot: \t" + this.snapshotURI.toFileString());
 
-        this.createModelSnapshot(this.modelProviders.getAllocationModelProvider());
-        this.createModelSnapshot(this.modelProviders.getRepositoryModelProvider());
-        this.createModelSnapshot(this.modelProviders.getResourceEnvironmentModelProvider());
-        this.createModelSnapshot(this.modelProviders.getSystemModelProvider());
-        this.createModelSnapshot(this.modelProviders.getUsageModelProvider());
-        this.createModelSnapshot(this.modelProviders.getCloudProfileModelProvider());
-        this.createModelSnapshot(this.modelProviders.getCostModelProvider());
-        this.createModelSnapshot(this.modelProviders.getDesignDecisionModelProvider());
-        this.createModelSnapshot(this.modelProviders.getQMLDeclarationsModelProvider());
-        // this.createModelSnapshot(modelProviders.getCorrespondenceModel());
+        this.modelHandler.save(this.snapshotURI);
+
         return this.snapshotURI;
-    }
-
-    /**
-     * Creates the actual snapshot. New API.
-     *
-     * @param modelProvider
-     *            the model for the snapshot
-     * @throws IOException
-     *             if the model URI does not exist
-     */
-    private void createModelSnapshot(final AbstractModelProvider<?> modelProvider) {
-        if (modelProvider == null) {
-            return;
-        }
-
-        modelProvider.save();
-        // TODO make snapshot
-    }
-
-    /**
-     * Creates the actual snapshot. Old API.
-     *
-     * @param modelProvider
-     *            the model for the snapshot
-     * @throws IOException
-     *             if the model URI does not exist
-     */
-    public void createModelSnapshot(final org.iobserve.model.provider.file.AbstractModelProvider<?> modelProvider)
-            throws IOException {
-        if (modelProvider == null) {
-            return;
-        }
-
-        modelProvider.save();
-
-        final URI modelURI = modelProvider.getModelUri();
-
-        final File modelFile = new File(modelURI.toFileString());
-        if (!modelFile.exists()) {
-            throw new IOException("The given file URI did not point to a file");
-        }
-        final String fileName = modelFile.getName();
-        final String targetFileLocation = this.snapshotURI.toFileString() + File.separator + fileName;
-        final File modelFileCopy = new File(targetFileLocation);
-
-        Files.copy(modelFile.toPath(), modelFileCopy.toPath(), SnapshotBuilder.copyOptions);
     }
 
     /**

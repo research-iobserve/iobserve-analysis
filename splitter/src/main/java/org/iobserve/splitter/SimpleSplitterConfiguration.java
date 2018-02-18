@@ -20,13 +20,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
 
+import org.iobserve.stages.sink.DataDumpStage;
+import org.iobserve.stages.sink.ESerializationType;
 import org.iobserve.stages.source.Dir2RecordsFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Analysis configuration for the data collector.
@@ -40,8 +42,8 @@ public class SimpleSplitterConfiguration extends Configuration {
     private final Dir2RecordsFilter reader;
     private final DataDumpStage[] consumer;
     private final Splitter splitter;
-    private final Filter filter;
-    private static final Log LOG = LogFactory.getLog(SimpleSplitterConfiguration.class);
+    private final StripIObserveSpecificEventsFilter filter;
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSplitterConfiguration.class);
 
     /**
      * Configure analysis.
@@ -58,7 +60,7 @@ public class SimpleSplitterConfiguration extends Configuration {
     public SimpleSplitterConfiguration(final File dataLocation, final File outputLocation, final String[] hostnames)
             throws IOException {
 
-        SimpleSplitterConfiguration.LOG.debug("Read from " + dataLocation);
+        SimpleSplitterConfiguration.LOGGER.debug("Read from {}", dataLocation);
 
         final Collection<File> directories = new ArrayList<>();
 
@@ -67,14 +69,15 @@ public class SimpleSplitterConfiguration extends Configuration {
         this.files = new InitialElementProducer<>(directories);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
 
-        this.filter = new Filter();
+        this.filter = new StripIObserveSpecificEventsFilter();
 
         this.splitter = new Splitter(hostnames);
 
         this.consumer = new DataDumpStage[hostnames.length];
 
         for (int i = 0; i < hostnames.length; i++) {
-            this.consumer[i] = new DataDumpStage(outputLocation.getCanonicalPath(), hostnames[i]);
+            this.consumer[i] = new DataDumpStage(outputLocation.getCanonicalPath(), hostnames[i],
+                    ESerializationType.ASCII);
             this.connectPorts(this.splitter.getAllOutputPorts().get(i), this.consumer[i].getInputPort());
         }
         this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());

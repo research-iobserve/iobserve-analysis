@@ -20,22 +20,17 @@ import java.util.Collection;
 
 import kieker.common.configuration.Configuration;
 
-import org.eclipse.emf.common.util.URI;
-import org.iobserve.adaptation.IAdaptationEventListener;
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.analysis.source.FileSourceCompositeStage;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.AllocationModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
-import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.model.provider.neo4j.SystemModelProvider;
-import org.iobserve.model.provider.neo4j.UsageModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  *
@@ -58,16 +53,10 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      * @param repositoryModelProvider
      *            the repository model provider
      * @param resourceEnvironmentModelProvider
-     *            the resource environment provider
-     * @param resourceEnvironmentModelGraphProvider
      *            the resource environment graph provider
      * @param allocationModelProvider
-     *            the allocation model provider
-     * @param allocationModelGraphProvider
      *            the allocation model graph provider
      * @param systemModelProvider
-     *            the system model provider
-     * @param systemModelGraphProvider
      *            the system model graph provider
      * @param varianceOfUserGroups
      *            variance of user groups, configuration for entry event filter
@@ -83,33 +72,20 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      *            output mode
      * @param snapshotBuilder
      *            snapshotbuilder
-     * @param perOpteryxHeadless
-     *            perOpterxyheadless URI
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param eventListener
-     *            eventlistener of some kind
-     * @param deployablesFolder
-     *            folder containing deployables
      * @throws ConfigurationException
      *             on configuration error
      */
     public FileObservationConfiguration(final Collection<File> directories, final ICorrespondence correspondenceModel,
-            final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
-            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final AllocationModelProvider allocationModelProvider,
-            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+            final ModelProvider<UsageModel> usageModelProvider, final ModelProvider<Repository> repositoryModelProvider,
+            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final ModelProvider<Allocation> allocationModelProvider,
+            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
-            final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,
-            final IAdaptationEventListener eventListener, final URI deployablesFolder) throws ConfigurationException {
+            final SnapshotBuilder snapshotBuilder) throws ConfigurationException {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
-                systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, perOpteryxHeadless, lqnsDir,
-                eventListener, deployablesFolder);
+                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
+                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder);
 
         final Configuration configuration = new Configuration();
 

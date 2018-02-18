@@ -25,7 +25,7 @@ import org.iobserve.analysis.userbehavior.TestHelper;
 import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.factory.UsageModelFactory;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
@@ -60,7 +60,7 @@ public final class SimpleLoopReference {
      *
      * @param referenceUsageModelFileName
      *            reference usage model file name
-     * @param repositoryModelProvider
+     * @param repositoryLookupModelProvider
      *            repository model provider
      * @param correspondenceModel
      *            correspondence model
@@ -70,7 +70,7 @@ public final class SimpleLoopReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceUsageModelFileName,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            final RepositoryLookupModelProvider repositoryLookupModelProvider, final ICorrespondence correspondenceModel)
             throws IOException {
         // Create a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
@@ -120,7 +120,7 @@ public final class SimpleLoopReference {
             if (optionCorrespondent.isPresent()) {
                 final Correspondent correspondent = optionCorrespondent.get();
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent);
+                        .createEntryLevelSystemCall(repositoryLookupModelProvider, correspondent);
                 UsageModelFactory.addUserAction(loop.getBodyBehaviour_Loop(), entryLevelSystemCall);
                 UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
