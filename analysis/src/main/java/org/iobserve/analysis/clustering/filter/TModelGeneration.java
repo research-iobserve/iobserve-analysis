@@ -9,22 +9,39 @@ import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
 import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 
 import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
-
-public class TModelGeneration extends AbstractStage<BehaviorModelTable[],List<List<Integer>>> {
+//<BehaviorModelTable[],List<List<Integer>>>
+public class TModelGeneration extends AbstractStage {
     private final OutputPort<BehaviorModel[]> outputPort = this.createOutputPort();
+    private final InputPort<BehaviorModelTable[]> inputTables = this.createInputPort(BehaviorModelTable[].class);
+    private final InputPort<List<List<Integer>>> inputGroups = this.createInputPort();
     
     private BehaviorModelTable[] tables;
+    private List<List<Integer>> groups;
     
+    //final BehaviorModelTable[] tables, final List<List<Integer>> groups
     @Override
-    protected void execute(final BehaviorModelTable[] tables, final List<List<Integer>> groups) {
-      BehaviorModel[] models = new BehaviorModel[groups.length()];
+    protected void execute() {
+        if (this.tables == null) {
+        	this.tables = inputTables.receive();
+        }
+        
+        if (this.groups == null) {
+            this.groups = inputGroups.receive();
+        }
+    	
+        if (this.tables == null || this.groups == null) {
+            return;
+        }
+    	
+      BehaviorModel[] models = new BehaviorModel[groups.size()];
       
       Iterator<List<Integer>> iteratorGroup = groups.iterator();
       for (int i = 0; i < models.length; i++) {
         generateModel(iteratorGroup.next(), models[i]);
       }
-      
+  
       this.outputPort.send(models);
     }
     
