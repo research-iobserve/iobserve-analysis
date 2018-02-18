@@ -21,9 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
 import org.iobserve.analysis.userbehavior.data.Branch;
 import org.iobserve.analysis.userbehavior.data.BranchElement;
 import org.iobserve.analysis.userbehavior.data.BranchModel;
@@ -35,7 +32,7 @@ import org.iobserve.analysis.userbehavior.data.LoopElement;
 import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.factory.UsageModelFactory;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.palladiosimulator.pcm.core.CoreFactory;
 import org.palladiosimulator.pcm.core.PCMRandomVariable;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
@@ -47,6 +44,8 @@ import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class creates a PCM usage model from the passed LoopBranchModels. For each user group its
@@ -63,9 +62,9 @@ public class PcmUsageModelBuilder {
     private final boolean isClosedWorkloadRequested;
     private final double thinkTime;
     private final List<Map<Integer, ScenarioBehaviour>> branchScenarioBehavioursOfUserGroups;
-    private final RepositoryModelProvider repositoryModelProvider;
     private final ICorrespondence correspondenceModel;
-    private static final Log LOG = LogFactory.getLog(PcmUsageModelBuilder.class);
+    private final RepositoryLookupModelProvider repositoryLookupModel;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PcmUsageModelBuilder.class);
 
     /**
      *
@@ -75,20 +74,20 @@ public class PcmUsageModelBuilder {
      *            states whether a closed or an open workload is requested
      * @param thinkTime
      *            states the think time of a closed workload
-     * @param repositoryModelProvider
-     *            repository model provider
+     * @param repositoryLookupModelProvider
+     *            repository lookup model provider
      * @param correspondenceModel
      *            used to map calls to call elements of the usage model
      */
     public PcmUsageModelBuilder(final List<BranchModel> loopBranchModels, final boolean isClosedWorkloadRequested,
-            final double thinkTime, final RepositoryModelProvider repositoryModelProvider,
+            final double thinkTime, final RepositoryLookupModelProvider repositoryLookupModelProvider,
             final ICorrespondence correspondenceModel) {
         this.loopBranchModels = loopBranchModels;
         this.isClosedWorkloadRequested = isClosedWorkloadRequested;
         this.thinkTime = thinkTime;
         this.branchScenarioBehavioursOfUserGroups = new ArrayList<>();
         this.correspondenceModel = correspondenceModel;
-        this.repositoryModelProvider = repositoryModelProvider;
+        this.repositoryLookupModel = repositoryLookupModelProvider;
     }
 
     /**
@@ -206,10 +205,9 @@ public class PcmUsageModelBuilder {
                         .getCorrespondent(branchElement.getClassSignature(), operationSplit[operationSplit.length - 1]);
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                    PcmUsageModelBuilder.LOG.debug("Usage: Found Correspondent: " + correspondent.getPcmEntityName()
-                            + " " + correspondent.getPcmOperationName());
-                    eSysCall = UsageModelFactory.createEntryLevelSystemCall(this.repositoryModelProvider,
-                            correspondent);
+                    PcmUsageModelBuilder.LOGGER.debug("Usage: Found Correspondent: {}",
+                            correspondent.getPcmEntityName() + " " + correspondent.getPcmOperationName());
+                    eSysCall = UsageModelFactory.createEntryLevelSystemCall(this.repositoryLookupModel, correspondent);
                 }
                 if (eSysCall != null) {
                     if (isLastElementACall) {

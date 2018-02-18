@@ -23,7 +23,7 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.model.factory.AllocationModelFactory;
 import org.iobserve.model.factory.SystemModelFactory;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -42,9 +42,9 @@ import org.palladiosimulator.pcm.system.System;
 public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUndeployedEvent> {
 
     /** reference to allocation model provider. */
-    private final ModelProvider<Allocation> allocationModelGraphProvider;
+    private final IModelProvider<Allocation> allocationModelGraphProvider;
     /** reference to system model provider. */
-    private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
+    private final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
 
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
@@ -57,8 +57,8 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      * @param systemModelGraphProvider
      *            system model access
      */
-    public UndeploymentModelUpdater(final ModelProvider<Allocation> allocationModelGraphProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
+    public UndeploymentModelUpdater(final IModelProvider<Allocation> allocationModelGraphProvider,
+            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
     }

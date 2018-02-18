@@ -30,8 +30,6 @@ import javax.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationFailedEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
@@ -44,6 +42,8 @@ import kieker.monitoring.timer.ITimeSource;
 
 import org.iobserve.common.record.ExtendedAfterOperationEvent;
 import org.iobserve.monitoring.probe.models.CallInformation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * For each incoming request via {@link #doFilter(ServletRequest, ServletResponse, FilterChain)},
@@ -102,7 +102,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
     private final Pattern removeActionOfIndexPattern = Pattern.compile("\\.action\\(");
     private final Pattern removeActionOfOperationPattern = Pattern.compile("action\\.");
 
-    private static final Log LOG = LogFactory.getLog(SessionAndTraceRegistrationFilterForJPetstore.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionAndTraceRegistrationFilterForJPetstore.class);
 
     @Override
     public void init(final FilterConfig config) throws ServletException {
@@ -203,7 +203,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                 } else {
                     // pattern = "\\w*\\.actions\\."
                     if (this.isActionPattern.matcher(trimmedPath).matches()) {
-                        SessionAndTraceRegistrationFilterForJPetstore.LOG.debug("ACTION");
+                        SessionAndTraceRegistrationFilterForJPetstore.LOGGER.debug("ACTION");
                         // pattern ="jpetstore\\.actions\\."
                         operationSignature = trimmedPath + "()";
                         // pattern = "\\.action\\("
@@ -212,11 +212,11 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
 
                         // pattern "\\w*\\.images\\."
                     } else if (this.isImagePattern.matcher(trimmedPath).matches()) {
-                        SessionAndTraceRegistrationFilterForJPetstore.LOG.debug("IMAGE");
+                        SessionAndTraceRegistrationFilterForJPetstore.LOGGER.debug("IMAGE");
                         operationSignature = trimmedPath;
 
                     } else {
-                        SessionAndTraceRegistrationFilterForJPetstore.LOG.debug("ELSE");
+                        SessionAndTraceRegistrationFilterForJPetstore.LOGGER.debug("ELSE");
                         operationSignature = trimmedPath + "()";
 
                     }
@@ -248,7 +248,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                 return;
             }
             componentSignature = this.pathStrucPattern.matcher(operationSignature).replaceAll("");
-            SessionAndTraceRegistrationFilterForJPetstore.LOG.info(operationSignature);
+            SessionAndTraceRegistrationFilterForJPetstore.LOGGER.info(operationSignature);
 
             final long traceId = trace.getTraceId();
 

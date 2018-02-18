@@ -23,12 +23,13 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
+import kieker.common.configuration.Configuration;
 
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Collector main class.
@@ -37,7 +38,7 @@ import org.iobserve.service.CommandLineParameterEvaluation;
  */
 public final class ReplayerMain extends AbstractServiceMain<ReplayerConfiguration> {
 
-    private static final Log LOG = LogFactory.getLog(ReplayerMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReplayerMain.class);
 
     @Parameter(names = { "-i",
             "--input" }, required = true, description = "Input data directory.", converter = FileConverter.class)
@@ -73,11 +74,12 @@ public final class ReplayerMain extends AbstractServiceMain<ReplayerConfiguratio
     @Override
     public void run(final String title, final String label, final String[] args) {
         super.run(title, label, args);
-        ReplayerMain.LOG.info("Records send " + this.configuration.getCounter().getCount());
+        ReplayerMain.LOGGER.info("Records send {}", this.configuration.getCounter().getCount());
     }
 
     @Override
-    protected ReplayerConfiguration createConfiguration() throws ConfigurationException {
+    protected ReplayerConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
         this.configuration = new ReplayerConfiguration(this.dataLocation, this.hostname, this.outputPort);
         return this.configuration;
     }
@@ -90,6 +92,21 @@ public final class ReplayerMain extends AbstractServiceMain<ReplayerConfiguratio
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return null;
+    }
+
+    @Override
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
+        return true;
+    }
+
+    @Override
+    protected void shutdownService() {
+
     }
 
 }

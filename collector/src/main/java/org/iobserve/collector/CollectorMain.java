@@ -23,6 +23,8 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
+import kieker.common.configuration.Configuration;
+
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
@@ -59,7 +61,8 @@ public final class CollectorMain extends AbstractServiceMain<SimpleBridgeConfigu
     }
 
     @Override
-    protected SimpleBridgeConfiguration createConfiguration() throws ConfigurationException {
+    protected SimpleBridgeConfiguration createConfiguration(final Configuration configuration)
+            throws ConfigurationException {
         try {
             return new SimpleBridgeConfiguration(this.dataLocation.getCanonicalPath(), this.inputPort);
         } catch (final IOException e) {
@@ -75,6 +78,21 @@ public final class CollectorMain extends AbstractServiceMain<SimpleBridgeConfigu
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
+    }
+
+    @Override
+    protected File getConfigurationFile() {
+        return null;
+    }
+
+    @Override
+    protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
+        return true;
+    }
+
+    @Override
+    protected void shutdownService() {
+
     }
 
 }

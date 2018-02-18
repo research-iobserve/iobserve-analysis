@@ -27,7 +27,7 @@ dependencies {
 	compile project(":common")
 	compile project(":stages")
 	compile project(":analysis")
-	compile project(":planning.systemadaptation")
+	compile project(":model")
 	compile project(":service")
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'

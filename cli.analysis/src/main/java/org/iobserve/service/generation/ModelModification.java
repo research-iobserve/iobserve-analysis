@@ -20,107 +20,104 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.analysis.InitializeModelProviders;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.model.PCMModelHandler;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * ToDo .
- * 
+ *
  * @author unknown
  *
  */
 public class ModelModification {
 
-    private static final Logger LOG = LogManager.getLogger(ModelModification.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelModification.class);
 
     public static void createNewModel(final CommandLine commandLine) throws InitializationException, IOException {
-        ModelModification.LOG.info("Modifying model!");
+        ModelModification.LOGGER.info("Modifying model!");
 
         final URI inputModels = URI.createFileURI(commandLine.getOptionValue("i"));
         final URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
-        ModelModification.LOG.info("Copying models to new location.");
-        InitializeModelProviders modelProviders = new InitializeModelProviders(new File(inputModels.toFileString()));
+        ModelModification.LOGGER.info("Copying models to new location.");
+
+        PCMModelHandler modelProviders = new PCMModelHandler(new File(inputModels.toFileString()));
+
         final URI copyURI = ModelModification.copyRepoToOutput(outputLocation, modelProviders);
+        modelProviders = new PCMModelHandler(new File(copyURI.toFileString()));
 
-        modelProviders = new InitializeModelProviders(new File(copyURI.toFileString()));
-
-        final Allocation allocationModel = modelProviders.getAllocationModelProvider().getModel();
-        final ResourceEnvironment resourceEnvironmentModel = modelProviders.getResourceEnvironmentModelProvider()
-                .getModel();
-        final System systemModel = modelProviders.getSystemModelProvider().getModel();
-        final Repository repositoryModel = modelProviders.getRepositoryModelProvider().getModel();
+        final Allocation allocationModel = modelProviders.getAllocationModel();
+        final ResourceEnvironment resourceEnvironmentModel = modelProviders.getResourceEnvironmentModel();
+        final System systemModel = modelProviders.getSystemModel();
+        final Repository repositoryModel = modelProviders.getRepositoryModel();
 
         final ResourceEnvironmentModification resEnvMod = new ResourceEnvironmentModification(resourceEnvironmentModel);
 
-        ModelModification.LOG.info("Terminating Server");
+        ModelModification.LOGGER.info("Terminating Server");
         final List<ResourceContainer> terminatedResourceContainers = resEnvMod
                 .modifyResEnvTerminate(Integer.parseInt(commandLine.getOptionValue("ac")));
 
-        ModelModification.LOG.info("Acquiring Server");
+        ModelModification.LOGGER.info("Acquiring Server");
         resEnvMod.modifyResEnvAcquire(Integer.parseInt(commandLine.getOptionValue("ac")));
 
-        ModelModification.LOG.info("Fixing Allocation after terminating");
+        ModelModification.LOGGER.info("Fixing Allocation after terminating");
         AllocationModification allocMod = new AllocationModification(allocationModel, systemModel,
                 resourceEnvironmentModel);
         final int terminationMigrations = allocMod.modifyAllocationFixTerminations(terminatedResourceContainers);
 
-        ModelModification.LOG.info("Deallocating Components");
+        ModelModification.LOGGER.info("Deallocating Components");
         final SystemModification sysMod = new SystemModification(systemModel, repositoryModel);
         final List<AssemblyContext> deallocatedACs = sysMod
                 .modifySystemDeallocations(Integer.parseInt(commandLine.getOptionValue("de")));
 
-        ModelModification.LOG.info("Fixing Allocation after deallocating");
+        ModelModification.LOGGER.info("Fixing Allocation after deallocating");
         allocMod = new AllocationModification(allocationModel, systemModel, resourceEnvironmentModel);
         allocMod.modifyAllocationFixDeallocations(deallocatedACs);
 
         // LOG.info("Exchanging Components");
         // sysMod.modifySystem_ChangeComp(Integer.parseInt(commandLine.getOptionValue("cr")));
 
-        ModelModification.LOG.info("Allocating new Components");
+        ModelModification.LOGGER.info("Allocating new Components");
         final List<AssemblyContext> allocatedACs = sysMod
                 .modifySystemAllocate(Integer.parseInt(commandLine.getOptionValue("al")));
 
-        ModelModification.LOG.info("Creating Allocation for new components");
+        ModelModification.LOGGER.info("Creating Allocation for new components");
         allocMod = new AllocationModification(allocationModel, systemModel, resourceEnvironmentModel);
         allocMod.modifyAllocationFixAllocations(allocatedACs);
 
-        ModelModification.LOG.info("Creating migrations");
+        ModelModification.LOGGER.info("Creating migrations");
         allocMod = new AllocationModification(allocationModel, systemModel, resourceEnvironmentModel);
         final int totalMigrations = Integer.parseInt(commandLine.getOptionValue("al"));
-        final int migrationsToPerform = totalMigrations - (terminationMigrations); // allocationMigrations
+        final int migrationsToPerform = totalMigrations - terminationMigrations; // allocationMigrations
         if (migrationsToPerform > 0) {
-            ModelModification.LOG.info("Migrations to Perform: " + migrationsToPerform);
+            ModelModification.LOGGER.info("Migrations to Perform: {}", migrationsToPerform);
             allocMod.modifyAllocationMigrate(migrationsToPerform);
         } else {
-            ModelModification.LOG
+            ModelModification.LOGGER
                     .info(String.format("All migrations (%d) are already perfomed by Server-Termination (%d)!",
                             totalMigrations, migrationsToPerform));
         }
-        ModelModification.LOG.info("Saving models!");
+        ModelModification.LOGGER.info("Saving models!");
 
-        modelProviders.getRepositoryModelProvider().save();
-        modelProviders.getSystemModelProvider().save();
-        modelProviders.getResourceEnvironmentModelProvider().save();
-        modelProviders.getAllocationModelProvider().save();
+        modelProviders.save(outputLocation);
 
-        ModelModification.LOG.info("Modification done!");
+        ModelModification.LOGGER.info("Modification done!");
     }
 
-    /*
-     * Copys all files to the given output location.
+    /**
+     * Copies all files to the given output location.
      */
-    private static URI copyRepoToOutput(final URI outputLocation, final InitializeModelProviders modelProviders) {
+    private static URI copyRepoToOutput(final URI outputLocation, final PCMModelHandler modelProviders) {
         SnapshotBuilder.setBaseSnapshotURI(outputLocation);
         SnapshotBuilder snapshotBuilder;
         URI snapshotURI = null;

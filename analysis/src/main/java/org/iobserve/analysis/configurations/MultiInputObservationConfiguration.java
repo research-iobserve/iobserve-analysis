@@ -17,20 +17,16 @@ package org.iobserve.analysis.configurations;
 
 import kieker.common.configuration.Configuration;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.analysis.source.TCPSourceCompositeStage;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.AllocationModelProvider;
-import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
-import org.iobserve.model.provider.neo4j.ResourceEnvironmentModelProvider;
-import org.iobserve.model.provider.neo4j.SystemModelProvider;
-import org.iobserve.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -45,8 +41,8 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
     /**
      * Construct an analysis for multiple TCP inputs.
      *
-     * @param inputPort
-     *            the input port where the analysis is listening
+     * @param configuration
+     *            configuration object handling configuration file parameters
      * @param correspondenceModel
      *            the correspondence model
      * @param usageModelProvider
@@ -55,16 +51,10 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            the repository model provider
      * @param resourceEnvironmentModelProvider
      *            the resource environment provider
-     * @param resourceEnvironmentModelGraphProvider
-     *            the resource environment graph provider
      * @param allocationModelProvider
      *            the allocation model provider
-     * @param allocationModelGraphProvider
-     *            the allocation model graph provider
      * @param systemModelProvider
      *            the system model provider
-     * @param systemModelGraphProvider
-     *            the system model graph provider
      * @param varianceOfUserGroups
      *            variance of user groups, configuration for entry event filter
      * @param thinkTime
@@ -79,33 +69,19 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            output mode
      * @param snapshotBuilder
      *            snapshotbuilder
-     * @param perOpteryxHeadless
-     *            perOpterxyheadless URI
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param deployablesFolder
-     *            folder containing deployables
      */
-    public MultiInputObservationConfiguration(final int inputPort, final ICorrespondence correspondenceModel,
-            final UsageModelProvider usageModelProvider, final RepositoryModelProvider repositoryModelProvider,
-            final ResourceEnvironmentModelProvider resourceEnvironmentModelProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final AllocationModelProvider allocationModelProvider,
-            final ModelProvider<Allocation> allocationModelGraphProvider, final SystemModelProvider systemModelProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
+    public MultiInputObservationConfiguration(final Configuration configuration,
+            final ICorrespondence correspondenceModel, final IModelProvider<UsageModel> usageModelProvider,
+            final IModelProvider<Repository> repositoryModelProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Allocation> allocationModelProvider,
+            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
-            final SnapshotBuilder snapshotBuilder, final URI perOpteryxHeadless, final URI lqnsDir,
-            final URI deployablesFolder) {
+            final SnapshotBuilder snapshotBuilder) {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
-                resourceEnvironmentModelGraphProvider, allocationModelProvider, allocationModelGraphProvider,
-                systemModelProvider, systemModelGraphProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, perOpteryxHeadless, lqnsDir,
-                null, deployablesFolder);
-
-        final Configuration configuration = new Configuration();
-
-        configuration.setProperty(TCPSourceCompositeStage.SOURCE_PORT, inputPort);
+                allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
+                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder);
 
         final TCPSourceCompositeStage reader = new TCPSourceCompositeStage(configuration);
 

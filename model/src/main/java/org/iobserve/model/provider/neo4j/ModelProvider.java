@@ -25,8 +25,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAttribute;
@@ -46,6 +44,8 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides methods to access the pcm models stored in a neo4j graph database. Enables partial
@@ -59,6 +59,8 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  */
 public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelProvider.class);
+
     protected static final String EMF_URI = "emfUri";
     private static final String ENTITY_NAME = "entityName";
     private static final String ID = "id";
@@ -71,7 +73,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     private static final String VISITED = "visited";
 
     private final Graph graph;
-    private final Logger logger;
 
     /**
      * Creates a new model provider.
@@ -81,7 +82,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      */
     public ModelProvider(final Graph graph) {
         this.graph = graph;
-        this.logger = LogManager.getLogger(this);
     }
 
     /**
@@ -123,7 +123,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         } else if (clazz.equals(UsageModel.class)) {
             return graphLoader.cloneNewUsageModelGraphVersion();
         } else {
-            this.logger.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
+            ModelProvider.LOGGER.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
                     + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
             return null;
         }
@@ -305,6 +305,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Id of component to be read
      * @return The read component
      */
+    @Override
     @SuppressWarnings("unchecked")
     public T readOnlyComponentById(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
@@ -346,6 +347,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            EntityName of the component(s) to be read
      * @return List of the read component(s)
      */
+    @Override
     @SuppressWarnings("unchecked")
     public List<T> readOnlyComponentByName(final Class<T> clazz, final String entityName) {
         final Label label = Label.label(clazz.getSimpleName());
@@ -542,6 +544,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Data type of the root component
      * @return The read component
      */
+    @Override
     @SuppressWarnings("unchecked")
     public T readOnlyRootComponent(final Class<T> clazz) {
         EObject component = null;
@@ -558,8 +561,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 }
             } else {
-                this.logger.warn("Passed type of readRootComponent(final Class<T> clazz)"
-                        + " has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
+                ModelProvider.LOGGER.warn(
+                        "Passed type of readRootComponent(final Class<T> clazz) has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
             }
 
             tx.success();
@@ -638,6 +641,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Id of the referenced component
      * @return The referencing components
      */
+    @Override
     public List<EObject> readOnlyReferencingComponentsById(final Class<?> clazz, final String id) {
         final List<EObject> referencingComponents = new LinkedList<>();
         final Label label = Label.label(clazz.getSimpleName());
@@ -692,7 +696,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 tx.success();
             }
         } else {
-            this.logger.warn("Updated component needs to have an id or be of type Allocation, Repository, "
+            ModelProvider.LOGGER.warn("Updated component needs to have an id or be of type Allocation, Repository, "
                     + "ResourceEnvironment, System or UsageModel");
         }
 

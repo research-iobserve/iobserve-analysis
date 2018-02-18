@@ -17,18 +17,17 @@ package org.iobserve.analysis.traces;
 
 import java.io.IOException;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.userbehavior.UserBehaviorTransformation;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
-import org.iobserve.model.provider.neo4j.UsageModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
+import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents the TEntryEventSequence Transformation in the paper <i>Run-time Architecture Models
@@ -48,7 +47,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
     /** reference to the correspondence model. */
     private final ICorrespondence correspondenceModel;
     /** usage model provider. */
-    private final UsageModelProvider usageModelProvider;
+    private final ModelProvider<UsageModel> usageModelProvider;
 
     private final int varianceOfUserGroups;
 
@@ -56,13 +55,12 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 
     private final boolean closedWorkload;
 
-    private final RepositoryModelProvider repositoryModelProvider;
-
     private final OutputPort<UsageModel> outputPort;
 
     private final OutputPort<Boolean> outputPortSnapshot;
+    private final RepositoryLookupModelProvider repositoryLookupModel;
 
-    private static final Log LOG = LogFactory.getLog(TEntryEventSequence.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TEntryEventSequence.class);
 
     /**
      * Create a entry event sequence filter.
@@ -71,8 +69,8 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
      *            the model mapping model elements to code
      * @param usageModelProvider
      *            provider for the usage model
-     * @param repositoryModelProvider
-     *            provider for the repository model
+     * @param repositoryLookupModel
+     *            repository lookup model provider
      * @param varianceOfUserGroups
      *            variance of user groups for the behavior detection
      * @param thinkTime
@@ -80,12 +78,13 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
      * @param closedWorkload
      *            type of workload
      */
-    public TEntryEventSequence(final ICorrespondence correspondenceModel, final UsageModelProvider usageModelProvider,
-            final RepositoryModelProvider repositoryModelProvider, final int varianceOfUserGroups, final int thinkTime,
-            final boolean closedWorkload) {
+    public TEntryEventSequence(final ICorrespondence correspondenceModel,
+            final ModelProvider<UsageModel> usageModelProvider,
+            final RepositoryLookupModelProvider repositoryLookupModel, final int varianceOfUserGroups,
+            final int thinkTime, final boolean closedWorkload) {
         this.correspondenceModel = correspondenceModel;
         this.usageModelProvider = usageModelProvider;
-        this.repositoryModelProvider = repositoryModelProvider;
+        this.repositoryLookupModel = repositoryLookupModel;
 
         this.varianceOfUserGroups = varianceOfUserGroups;
         this.thinkTime = thinkTime;
@@ -98,28 +97,34 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
     @Override
     protected void execute(final EntryCallSequenceModel entryCallSequenceModel) {
         // Resets the current usage model
-        this.usageModelProvider.loadModel();
-        int numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-        TEntryEventSequence.LOG.debug("EntryEventSequence found: numberOfUserGroups before: " + numberOfUserGroups);
+        final UsageModel model = this.usageModelProvider.readRootComponent(UsageModel.class);
+        int numberOfUserGroups = model.getUsageScenario_UsageModel().size();
+        TEntryEventSequence.LOGGER.debug("EntryEventSequence found: numberOfUserGroups before: {}", numberOfUserGroups);
 
         // Executes the user behavior modeling procedure
         final UserBehaviorTransformation behaviorModeling = new UserBehaviorTransformation(entryCallSequenceModel,
                 numberOfUserGroups, this.varianceOfUserGroups, this.closedWorkload, this.thinkTime,
-                this.repositoryModelProvider, this.correspondenceModel);
+                this.repositoryLookupModel, this.correspondenceModel);
         try {
             behaviorModeling.modelUserBehavior();
-            this.usageModelProvider.resetModel();
-            this.usageModelProvider.updateModel(behaviorModeling.getPcmUsageModel());
+            model.getUsageScenario_UsageModel().clear();
+            model.getUserData_UsageModel().clear();
 
-            numberOfUserGroups = this.usageModelProvider.getModel().getUsageScenario_UsageModel().size();
-            TEntryEventSequence.LOG.debug("Model changed: numberOfUserGroups after: " + numberOfUserGroups);
+            final UsageModel newModel = behaviorModeling.getPcmUsageModel();
+
+            model.getUsageScenario_UsageModel().addAll(newModel.getUsageScenario_UsageModel());
+            model.getUserData_UsageModel().addAll(newModel.getUserData_UsageModel());
+
+            numberOfUserGroups = model.getUsageScenario_UsageModel().size();
+            TEntryEventSequence.LOGGER.debug("Model changed: numberOfUserGroups after: {}", numberOfUserGroups);
 
         } catch (final IOException e) {
             e.printStackTrace();
         }
 
         // Sets the new usage model within iObserve
-        this.usageModelProvider.save();
+        this.usageModelProvider.clearGraph();
+        this.usageModelProvider.createComponent(model);
 
         this.outputPort.send(behaviorModeling.getPcmUsageModel());
         this.outputPortSnapshot.send(false);

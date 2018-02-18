@@ -21,14 +21,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
-import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import teetime.framework.AbstractConsumerStage;
+
+import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
+import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
+import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 
 /**
  * Transform the behavior.
@@ -38,13 +38,13 @@ import teetime.framework.AbstractConsumerStage;
  */
 
 public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
-    // TODO extract predefined string and convert them to settings
-    private final String systemId = "behaviormodelsystem";
-    private final String changelogUrl = "http://localhost:8080/v1/systems/" + this.systemId + "/changelogs";
-    private final String resetUrl = "http://localhost:8080/v1/systems/createBehavior";
-    private final String behaviorModelGroupID = "Behavior-Model-Group";
+    private final String systemId;
+    private final String changelogUrl;
+    private final String resetUrl;
+    private final String behaviorModelGroupId; // = "Behavior-Model-Group";
 
     private final ObjectMapper objectMapper;
+    private final String visualizationHost;
 
     /**
      * enum.
@@ -55,8 +55,23 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
 
     /**
      * constructor.
+     *
+     * @param visualizationHost
+     *            host where the visualization info is send to
+     * @param port
+     *            port for the visualizationHost
+     * @param systemId
+     *            system id
+     * @param behaviorModelGroupId
+     *            group id for the behavior model
      */
-    public TIObserveUIServer() {
+    public TIObserveUIServer(final String visualizationHost, final String port, final String systemId,
+            final String behaviorModelGroupId) {
+        this.visualizationHost = visualizationHost;
+        this.systemId = systemId;
+        this.changelogUrl = "http://" + visualizationHost + ":" + port + "/v1/systems/" + this.systemId + "/changelogs";
+        this.resetUrl = "http://" + visualizationHost + ":" + port + "/v1/systems/createBehavior";
+        this.behaviorModelGroupId = behaviorModelGroupId;
         this.objectMapper = new ObjectMapper();
         this.resetSystem();
     }
@@ -200,9 +215,9 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
         // behaviorModelAsNode.put(changelogSequence,0)
         // behaviorModelAsNode.put(lastUpdate,new Date().getTime());
         behaviorModelAsNode.put("name", "behaviorModel");
-        behaviorModelAsNode.put("nodeGroupId", this.behaviorModelGroupID);
+        behaviorModelAsNode.put("nodeGroupId", this.behaviorModelGroupId);
         behaviorModelAsNode.put("hostname", "");
-        behaviorModelAsNode.put("ip", "127.0.0.1");
+        behaviorModelAsNode.put("ip", this.visualizationHost);
 
         final ObjectNode changelog = this.getChangelog(ChangelogType.CREATE);
         changelog.put("data", behaviorModelAsNode);
@@ -256,7 +271,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
         final ObjectNode group = this.objectMapper.createObjectNode();
         group.put("systemId", this.systemId);
         group.put("type", "nodeGroup");
-        group.put("id", this.behaviorModelGroupID);
+        group.put("id", this.behaviorModelGroupId);
         // behaviorModelAsNode.put(revisionNumber,0);
         // behaviorModelAsNode.put(changelogSequence,0)
         // behaviorModelAsNode.put(lastUpdate,new Date().getTime());

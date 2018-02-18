@@ -17,8 +17,8 @@ package org.iobserve.model.provider.neo4j;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Can be used to synchronize access to a graph database to prevent scenarios where two threads read
@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class ModelProviderSynchronizer {
 
-    private static final Logger LOGGER = LogManager.getLogger(ModelProviderSynchronizer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelProviderSynchronizer.class);
     private static ConcurrentHashMap<Graph, ModelProvider<?>> locks = new ConcurrentHashMap<>();
 
     /**
@@ -44,8 +44,8 @@ public class ModelProviderSynchronizer {
         final Graph graph = modelProvider.getGraph();
 
         synchronized (graph) {
-            while ((ModelProviderSynchronizer.locks.get(graph) != null)
-                    && (ModelProviderSynchronizer.locks.get(graph) != modelProvider)) {
+            while (ModelProviderSynchronizer.locks.get(graph) != null
+                    && ModelProviderSynchronizer.locks.get(graph) != modelProvider) {
                 try {
                     graph.wait();
                 } catch (final InterruptedException e) {

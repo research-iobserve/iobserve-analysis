@@ -36,10 +36,9 @@ import org.iobserve.analysis.protocom.PcmEntity;
 import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
 import org.iobserve.analysis.protocom.PcmMapping;
 import org.iobserve.analysis.protocom.PcmOperationSignature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 
 /**************************************************************************************************
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Important!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -58,7 +57,7 @@ import kieker.common.logging.LogFactory;
  *
  *************************************************************************************************/
 public class RacCreator {
-    private static final Log LOG = LogFactory.getLog(RacCreator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(RacCreator.class);
 
     private static final String RAC_FILENAME = "mapping.rac";
     private static final String MAPPED_CLASSES_FILE = "mapped.txt";
@@ -225,7 +224,7 @@ public class RacCreator {
             mapping.setEntities(new ArrayList<>(entityMapping.values()));
             JAXB.marshal(mapping, this.outputPath.getCanonicalPath() + File.separator + filename);
         } catch (final IOException e) {
-            RacCreator.LOG.error("Error creating RAC " + e.getLocalizedMessage());
+            RacCreator.LOGGER.error("Error creating RAC {}.", e.getLocalizedMessage());
         }
     }
 
@@ -265,7 +264,7 @@ public class RacCreator {
             }
             writer.close();
         } catch (final IOException e) {
-            RacCreator.LOG.error("Error creating " + label + " file " + e.getLocalizedMessage());
+            RacCreator.LOGGER.error("Error creating {} file {}.", label, e.getLocalizedMessage());
         }
     }
 
@@ -356,9 +355,9 @@ public class RacCreator {
                 method.setVisibilityModifier("public");
             } else if (token.contentEquals("transient")) {
                 continue;
-            } else if ((i >= 1) && (method.getReturnType() == null)) {
+            } else if (i >= 1 && method.getReturnType() == null) {
                 method.setReturnType(token);
-            } else if ((i >= 2) && (method.getName() == null)) {
+            } else if (i >= 2 && method.getName() == null) {
                 try {
                     String methodSig = token.substring(0, token.indexOf('('));
 
@@ -379,8 +378,8 @@ public class RacCreator {
         final String parameters = correspondentSignature.substring(firstIndex + 1, lastIndex);
         method.setParameters(parameters.replaceAll("\\s+", ""));
 
-        if ((method.getVisibilityModifier() != null) && (method.getName() != null) && (method.getReturnType() != null)
-                && (method.getParameters() != null)) {
+        if (method.getVisibilityModifier() != null && method.getName() != null && method.getReturnType() != null
+                && method.getParameters() != null) {
             return method;
         } else {
             return null;
@@ -406,8 +405,7 @@ public class RacCreator {
 
         for (final PcmOperationSignature sig : entity.getOperationSigs()) {
             for (final PcmCorrespondentMethod met : correspondent.getMethods()) {
-                if ((sig.getName().compareTo(met.getName()) == 0)
-                        && (sig.getSeffName().compareTo(met.getName()) == 0)) {
+                if (sig.getName().compareTo(met.getName()) == 0 && sig.getSeffName().compareTo(met.getName()) == 0) {
                     final String correspondentPath = correspondent.getPackageName() + "." + correspondent.getUnitName();
                     final String signature = met.getVisibilityModifier() + " " + met.getReturnType() + " "
                             + correspondentPath + "." + met.getName() + "(" + met.getParameters() + ")" + ";"

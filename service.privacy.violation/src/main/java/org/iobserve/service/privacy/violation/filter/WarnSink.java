@@ -42,7 +42,7 @@ public class WarnSink extends AbstractFileSink<Warnings> {
     protected void execute(final Warnings element) throws Exception {
         AbstractFileSink.LOGGER.debug("Alarms");
         for (final String warning : element.getWarnings()) {
-            AbstractFileSink.LOGGER.debug("\t" + warning);
+            AbstractFileSink.LOGGER.debug("\t {}", warning);
             this.output.println(warning);
         }
     }

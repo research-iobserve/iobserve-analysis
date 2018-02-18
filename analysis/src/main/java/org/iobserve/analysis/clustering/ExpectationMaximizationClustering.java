@@ -20,9 +20,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.net4j.util.collection.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import weka.clusterers.EM;
 import weka.core.Instance;
@@ -33,7 +33,7 @@ import weka.core.Instances;
  *
  */
 public class ExpectationMaximizationClustering implements IDensitityClustering {
-    private static final Logger LOGGER = LogManager.getLogger(ExpectationMaximizationClustering.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExpectationMaximizationClustering.class);
 
     /*
      * (non-Javadoc)
@@ -65,7 +65,7 @@ public class ExpectationMaximizationClustering implements IDensitityClustering {
 
             }
         } catch (final Exception e) {
-            ExpectationMaximizationClustering.LOGGER.error(e);
+            ExpectationMaximizationClustering.LOGGER.error("Clustering failed.", e);
         }
         return resultMap;
     }

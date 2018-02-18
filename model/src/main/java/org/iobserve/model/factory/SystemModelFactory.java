@@ -17,7 +17,9 @@ package org.iobserve.model.factory;
 
 import java.util.Optional;
 
-import org.iobserve.model.provider.neo4j.AbstractModelProvider;
+import de.uka.ipd.sdq.identifier.Identifier;
+
+import org.eclipse.emf.common.util.EList;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.system.System;
@@ -73,8 +75,24 @@ public final class SystemModelFactory {
      *         found.
      */
     public static AssemblyContext getAssemblyContext(final System system, final String id) {
-        return (AssemblyContext) AbstractModelProvider.getIdentifiableComponent(id,
+        return (AssemblyContext) SystemModelFactory.getIdentifiableComponent(id,
                 system.getAssemblyContexts__ComposedStructure());
+    }
+
+    /**
+     * @param id
+     *            id
+     * @param list
+     *            where to search
+     * @return identifier or null if no identifier with the given id could be found.
+     */
+    public static Identifier getIdentifiableComponent(final String id, final EList<? extends Identifier> list) {
+        for (final Identifier next : list) {
+            if (next.getId().equals(id)) {
+                return next;
+            }
+        }
+        return null;
     }
 
     /**

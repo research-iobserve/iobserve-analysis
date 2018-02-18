@@ -24,9 +24,8 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Used to load a {@link Graph} including each of the different PCM models.
@@ -35,7 +34,7 @@ import kieker.common.logging.LogFactory;
  *
  */
 public class GraphLoader {
-    private static final Log LOG = LogFactory.getLog(GraphLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphLoader.class);
 
     protected static final String VERSION_PREFIX = "_v";
 
@@ -79,7 +78,7 @@ public class GraphLoader {
             try {
                 FileUtils.copyDirectory(currentGraphDir, newGraphDir);
             } catch (final IOException e) {
-                GraphLoader.LOG.error("Could not copy old graph version.");
+                GraphLoader.LOGGER.error("Could not copy old graph version.");
             }
         }
 
@@ -143,7 +142,7 @@ public class GraphLoader {
      *            Name of root directory for a certain graph type
      * @return The model graph
      */
-    private Graph getModelGraphVersion(final String graphTypeDirName) {
+    private Graph createModelGraphVersion(final String graphTypeDirName) {
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
         int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
 
@@ -160,8 +159,8 @@ public class GraphLoader {
      *
      * @return The allocation model graph
      */
-    public Graph getAllocationModelGraph() {
-        return this.getModelGraphVersion(GraphLoader.ALLOCATION_GRAPH_DIR);
+    public Graph createAllocationModelGraph() {
+        return this.createModelGraphVersion(GraphLoader.ALLOCATION_GRAPH_DIR);
     }
 
     /**
@@ -170,8 +169,8 @@ public class GraphLoader {
      *
      * @return The repository model graph
      */
-    public Graph getRepositoryModelGraph() {
-        return this.getModelGraphVersion(GraphLoader.REPOSITORY_GRAPH_DIR);
+    public Graph createRepositoryModelGraph() {
+        return this.createModelGraphVersion(GraphLoader.REPOSITORY_GRAPH_DIR);
     }
 
     /**
@@ -180,8 +179,8 @@ public class GraphLoader {
      *
      * @return The resourceEnvironment model graph
      */
-    public Graph getResourceEnvironmentModelGraph() {
-        return this.getModelGraphVersion(GraphLoader.RESOURCEENVIRONMENT_GRAPH_DIR);
+    public Graph createResourceEnvironmentModelGraph() {
+        return this.createModelGraphVersion(GraphLoader.RESOURCEENVIRONMENT_GRAPH_DIR);
     }
 
     /**
@@ -190,8 +189,8 @@ public class GraphLoader {
      *
      * @return The system model graph
      */
-    public Graph getSystemModelGraph() {
-        return this.getModelGraphVersion(GraphLoader.SYSTEM_GRAPH_DIR);
+    public Graph createSystemModelGraph() {
+        return this.createModelGraphVersion(GraphLoader.SYSTEM_GRAPH_DIR);
     }
 
     /**
@@ -200,8 +199,8 @@ public class GraphLoader {
      *
      * @return The usage model graph
      */
-    public Graph getUsageModelGraph() {
-        return this.getModelGraphVersion(GraphLoader.USAGE_GRAPH_DIR);
+    public Graph createUsageModelGraph() {
+        return this.createModelGraphVersion(GraphLoader.USAGE_GRAPH_DIR);
     }
 
     /**
@@ -213,7 +212,7 @@ public class GraphLoader {
      * @return The allocation model graph
      */
     public Graph initializeAllocationModelGraph(final Allocation allocationModel) {
-        final Graph graph = this.getAllocationModelGraph();
+        final Graph graph = this.createAllocationModelGraph();
         final ModelProvider<Allocation> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(allocationModel);
@@ -231,7 +230,7 @@ public class GraphLoader {
      * @return The repository model graph
      */
     public Graph initializeRepositoryModelGraph(final Repository repositoryModel) {
-        final Graph graph = this.getRepositoryModelGraph();
+        final Graph graph = this.createRepositoryModelGraph();
         final ModelProvider<Repository> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(repositoryModel);
@@ -249,7 +248,7 @@ public class GraphLoader {
      * @return The resource environment model graph
      */
     public Graph initializeResourceEnvironmentModelGraph(final ResourceEnvironment resourceEnvironmentModel) {
-        final Graph graph = this.getResourceEnvironmentModelGraph();
+        final Graph graph = this.createResourceEnvironmentModelGraph();
         final ModelProvider<ResourceEnvironment> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(resourceEnvironmentModel);
@@ -267,7 +266,7 @@ public class GraphLoader {
      * @return The system model graph
      */
     public Graph initializeSystemModelGraph(final System systemModel) {
-        final Graph graph = this.getSystemModelGraph();
+        final Graph graph = this.createSystemModelGraph();
         final ModelProvider<System> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(systemModel);
@@ -285,7 +284,7 @@ public class GraphLoader {
      * @return The usage model graph
      */
     public Graph initializeUsageModelGraph(final UsageModel usageModel) {
-        final Graph graph = this.getUsageModelGraph();
+        final Graph graph = this.createUsageModelGraph();
         final ModelProvider<UsageModel> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(usageModel);

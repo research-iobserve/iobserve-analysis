@@ -162,11 +162,11 @@ public class ModelProviderUtil {
      * @return The first label
      */
     public static Label getFirstLabel(final Iterable<Label> labels) {
-        for (final Label l : labels) {
-            return l;
+        if (labels.iterator().hasNext()) {
+            return labels.iterator().next();
+        } else {
+            return null;
         }
-
-        return null;
     }
 
     /**
@@ -212,8 +212,8 @@ public class ModelProviderUtil {
      * @return True, if the referenced object is the referencer's data type, false otherwise
      */
     public static boolean isDatatype(final EReference ref, final Object refObj) {
-        return (refObj instanceof DataType) && !(ref.getName().equals("parentType_CompositeDataType")
-                || (ref.getName().equals("compositeDataType_InnerDeclaration")));
+        return refObj instanceof DataType && !(ref.getName().equals("parentType_CompositeDataType")
+                || ref.getName().equals("compositeDataType_InnerDeclaration"));
     }
 
     /**

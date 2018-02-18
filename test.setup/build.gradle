@@ -4,6 +4,7 @@ mainClassName='org.iobserve.analysis.test.cli.AnalysisMain'
 
 dependencies {
 	compile project(":analysis")
+	compile project(":stages")
 
 	clover 'org.openclover:clover:4.2.0'
 

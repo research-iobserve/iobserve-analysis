@@ -27,7 +27,7 @@ import org.iobserve.analysis.userbehavior.TestHelper;
 import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.factory.UsageModelFactory;
-import org.iobserve.model.provider.neo4j.RepositoryModelProvider;
+import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
@@ -59,7 +59,7 @@ public final class SimpleBranchReference {
      *
      * @param referenceModelFileName
      *            file name of the reference model to store its result
-     * @param repositoryModelProvider
+     * @param repositoryLookupModelProvider
      *            repository model provider
      * @param correspondenceModel
      *            correspondence model
@@ -69,7 +69,7 @@ public final class SimpleBranchReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceModelFileName,
-            final RepositoryModelProvider repositoryModelProvider, final ICorrespondence correspondenceModel)
+            final RepositoryLookupModelProvider repositoryLookupModelProvider, final ICorrespondence correspondenceModel)
             throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
@@ -121,7 +121,7 @@ public final class SimpleBranchReference {
             }
             if (correspondent.isPresent()) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+                        .createEntryLevelSystemCall(repositoryLookupModelProvider, correspondent.get());
                 UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
                 UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
@@ -135,7 +135,7 @@ public final class SimpleBranchReference {
             }
             if (correspondent.isPresent()) {
                 final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                        .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+                        .createEntryLevelSystemCall(repositoryLookupModelProvider, correspondent.get());
                 UsageModelFactory.addUserAction(branchTransitionBehaviour, entryLevelSystemCall);
                 UsageModelFactory.connect(lastAction, entryLevelSystemCall);
                 lastAction = entryLevelSystemCall;
@@ -147,7 +147,7 @@ public final class SimpleBranchReference {
                 ReferenceUsageModelBuilder.OPERATION_SIGNATURE[2]);
         if (correspondent.isPresent()) {
             final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
-                    .createEntryLevelSystemCall(repositoryModelProvider, correspondent.get());
+                    .createEntryLevelSystemCall(repositoryLookupModelProvider, correspondent.get());
             UsageModelFactory.addUserAction(scenarioBehaviour, entryLevelSystemCall);
             UsageModelFactory.connect(branch, entryLevelSystemCall);
             lastAction = entryLevelSystemCall;

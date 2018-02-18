@@ -25,12 +25,11 @@ import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.service.services.ServiceInstanceService;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.analysis.service.util.Changelog;
+import org.iobserve.analysis.service.util.SendHttpRequest;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-
-import util.Changelog;
-import util.SendHttpRequest;
 
 /**
  * This stage is triggered by an analysis undeployment update.
@@ -45,9 +44,9 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
 
     private final URL outputURL;
     private final String systemId;
-    private final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider;
-    private final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider;
-    private final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
+    private final IModelProvider<ResourceContainer> resourceContainerModelGraphProvider;
+    private final IModelProvider<AssemblyContext> assemblyContextModelGraphProvider;
+    private final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
 
     /**
      * Output visualization configuration.
@@ -66,9 +65,9 @@ public class UndeploymentVisualizationStage extends AbstractConsumerStage<PCMUnd
      *            provider for system model
      */
     public UndeploymentVisualizationStage(final URL outputURL, final String systemId,
-            final ModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
-            final ModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
-            final ModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
+            final IModelProvider<ResourceContainer> resourceContainerModelGraphProvider,
+            final IModelProvider<AssemblyContext> assemblyContextModelGraphProvider,
+            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
         this.outputURL = outputURL;
         this.systemId = systemId;
         this.resourceContainerModelGraphProvider = resourceContainerModelGraphProvider;
