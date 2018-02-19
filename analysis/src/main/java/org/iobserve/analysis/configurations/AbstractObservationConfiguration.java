@@ -104,14 +104,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      * @param snapshotBuilder
      *            snapshotbuilder
      * @param featureToggle
-     * @param perOpteryxHeadless
-     *            perOpterxyheadless URI
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param eventListener
-     *            eventlistener of some kind
-     * @param deployablesFolder
-     *            folder containing deployables
+     *            feature toggle
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final IModelProvider<UsageModel> usageModelProvider,

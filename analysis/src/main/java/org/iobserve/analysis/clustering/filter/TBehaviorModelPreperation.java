@@ -19,15 +19,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.clustering.filter.models.BehaviorModelTable;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Prepares EntryCallSequenceModels for Clustering.
@@ -37,7 +37,7 @@ import teetime.framework.OutputPort;
  */
 
 public final class TBehaviorModelPreperation extends AbstractConsumerStage<Object> {
-    private static final Logger LOGGER = LogManager.getLogger(TBehaviorModelPreperation.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TBehaviorModelPreperation.class);
     private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
 
     private BehaviorModelTable behaviorModelTable = null;
@@ -97,7 +97,7 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
 
                     final boolean isAllowed = modelTable.isAllowedSignature(eventCall);
 
-                    if ((lastCall != null) && isAllowed) {
+                    if (lastCall != null && isAllowed) {
                         modelTable.addTransition(lastCall, eventCall);
                         modelTable.addInformation(eventCall);
 

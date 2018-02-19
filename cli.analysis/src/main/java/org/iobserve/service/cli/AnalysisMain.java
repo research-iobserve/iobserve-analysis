@@ -219,7 +219,7 @@ public final class AnalysisMain extends AbstractServiceMain<FileObservationConfi
 
         if ((this.snapshotPath == null) || (this.perOpteryxUriPath == null) || (this.lqnsUriPath == null)
                 || (this.deployablesFolderPath == null) || (this.interactiveMode == false)) {
-            AbstractServiceMain.LOG.error("Missing required parameter for cli.");
+            AbstractServiceMain.LOGGER.error("Missing required parameter for cli.");
             commander.usage();
             return false;
         }

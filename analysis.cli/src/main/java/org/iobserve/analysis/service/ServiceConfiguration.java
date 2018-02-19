@@ -80,12 +80,7 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      * @param snapshotBuilder
      *            snapshot builder
      * @param featureToggle
-     * @param perOpteryxDir
-     *            directory to the peropteryx executable
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param deployablesFolder
-     *            folder were deployable elements are stored
+     *            feature toggle
      *
      * @throws MalformedURLException
      *             if any passed URL in the configuration is broken.

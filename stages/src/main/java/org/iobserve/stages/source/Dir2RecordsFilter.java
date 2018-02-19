@@ -19,11 +19,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.util.filesystem.BinaryCompressionMethod;
 import kieker.common.util.filesystem.FSUtil;
+
 import teetime.framework.AbstractStage;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -35,6 +34,9 @@ import teetime.stage.className.ClassNameRegistryRepository;
 import teetime.stage.io.Directory2FilesFilter;
 import teetime.stage.io.filesystem.format.binary.file.BinaryFile2RecordFilter;
 import teetime.stage.io.filesystem.format.text.file.DatFile2RecordFilter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Note: This is a temporary measure, the real filter is available in teetime/kieker. */
 /**
@@ -48,7 +50,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
     private final Merger<IMonitoringRecord> recordMerger;
 
     private ClassNameRegistryRepository classNameRegistryRepository;
-    private static final Log LOG = LogFactory.getLog(Dir2RecordsFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Dir2RecordsFilter.class);
 
     /**
      * Default constructor using a new instance of {@link ClassNameRegistryRepository}.
@@ -78,7 +80,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
                 try {
                     return o1.getCanonicalFile().compareTo(o2.getCanonicalFile());
                 } catch (final IOException e) {
-                    Dir2RecordsFilter.LOG.error("Exception while getting canonical file name", e);
+                    Dir2RecordsFilter.LOGGER.error("Exception while getting canonical file name", e);
                     return 0;
                 }
             }

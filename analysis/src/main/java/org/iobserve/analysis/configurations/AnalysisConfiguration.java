@@ -40,9 +40,9 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
 import teetime.framework.OutputPort;
 import teetime.stage.basic.distributor.Distributor;
@@ -60,7 +60,7 @@ import teetime.stage.trace.traceReconstruction.EventBasedTrace;
  */
 public class AnalysisConfiguration extends Configuration {
 
-    private static final Log LOG = LogFactory.getLog(AnalysisConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisConfiguration.class);
 
     /** Set the used behavior aggregation and clustering stage class name. STRING */
     public static final String BEHAVIOR_CLUSTERING = IBehaviorCompositeStage.class.getCanonicalName();
@@ -137,7 +137,7 @@ public class AnalysisConfiguration extends Configuration {
             this.trace(configuration);
             this.geoLocation(configuration);
         } else {
-            AnalysisConfiguration.LOG.error("Initialization incomplete: No source stage specified.");
+            AnalysisConfiguration.LOGGER.error("Initialization incomplete: No source stage specified.");
             throw new ConfigurationException("Initialization incomplete: No source stage specified.");
         }
     }
@@ -255,7 +255,7 @@ public class AnalysisConfiguration extends Configuration {
                         containerManagementSinksStage.getUndeployedInputPort());
             }
         } else {
-            AnalysisConfiguration.LOG.warn(
+            AnalysisConfiguration.LOGGER.warn(
                     "No container management sinks specified. Therefore, deployment and allocation changes will not be communicated.");
         }
     }
@@ -301,6 +301,7 @@ public class AnalysisConfiguration extends Configuration {
         if (configuration.getBooleanProperty(AnalysisConfiguration.DATA_FLOW, false)) {
             /** connect ports. */
             // this.connectPorts(eventBasedTraceOutputPort, targetPort);
+            AnalysisConfiguration.LOGGER.warn("Configuration for dataflow analysis missing.");
         }
     }
 
@@ -322,12 +323,14 @@ public class AnalysisConfiguration extends Configuration {
 
             if (configuration.getBooleanProperty(AnalysisConfiguration.BEHAVIOR_CLUSTERING_SINK)) {
                 // TODO needs visualization trigger
+                AnalysisConfiguration.LOGGER.warn("Configuration for behavior sink missing.");
             }
         }
     }
 
     private void geoLocation(final kieker.common.configuration.Configuration configuration) {
         if (configuration.getBooleanProperty(AnalysisConfiguration.GEO_LOCATION, false)) {
+            AnalysisConfiguration.LOGGER.warn("Configuration for geolocation.");
         }
     }
 

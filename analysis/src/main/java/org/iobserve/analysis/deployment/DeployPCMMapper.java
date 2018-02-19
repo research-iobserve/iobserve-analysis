@@ -18,8 +18,6 @@ package org.iobserve.analysis.deployment;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.EJBDeployedEvent;
 import org.iobserve.common.record.IDeployedEvent;
@@ -28,6 +26,8 @@ import org.iobserve.common.record.Privacy_ServletDeployedEvent;
 import org.iobserve.common.record.ServletDeployedEvent;
 import org.iobserve.model.correspondence.Correspondent;
 import org.iobserve.model.correspondence.ICorrespondence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Maps technology dependent deploy events up to model level PCM deploy events.
@@ -37,7 +37,7 @@ import org.iobserve.model.correspondence.ICorrespondence;
  */
 public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
 
-    private static final Logger LOGGER = LogManager.getLogger(DeployPCMMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeployPCMMapper.class);
 
     private final ICorrespondence correspondence;
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
@@ -89,7 +89,7 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
                 this.outputPort.send(new PCMDeployedEvent(service, correspondent, url, (short) 0));
             }
         } else {
-            DeployPCMMapper.LOGGER.warn("No correspondent found for " + service + ".");
+            DeployPCMMapper.LOGGER.warn("No correspondent found for {}.", service);
         }
     }
 
@@ -110,7 +110,7 @@ public class DeployPCMMapper extends AbstractConsumerStage<IDeployedEvent> {
                 this.outputPort.send(new PCMDeployedEvent(service, correspondent, url, (short) 0));
             }
         } else {
-            DeployPCMMapper.LOGGER.info("No correspondent found for " + service + ".");
+            DeployPCMMapper.LOGGER.info("No correspondent found for {}.", service);
         }
     }
 

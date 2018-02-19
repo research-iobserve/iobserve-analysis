@@ -71,12 +71,7 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      * @param snapshotBuilder
      *            snapshotbuilder
      * @param featureToggle
-     * @param perOpteryxHeadless
-     *            perOpterxyheadless URI
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param deployablesFolder
-     *            folder containing deployables
+     *            feature toggle
      */
     public MultiInputObservationConfiguration(final Configuration configuration,
             final ICorrespondence correspondenceModel, final IModelProvider<UsageModel> usageModelProvider,

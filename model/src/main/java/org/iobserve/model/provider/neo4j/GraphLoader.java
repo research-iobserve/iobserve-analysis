@@ -18,15 +18,14 @@ package org.iobserve.model.provider.neo4j;
 import java.io.File;
 import java.io.IOException;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
 import org.codehaus.plexus.util.FileUtils;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Used to load a {@link Graph} including each of the different PCM models.
@@ -35,7 +34,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  *
  */
 public class GraphLoader {
-    private static final Log LOG = LogFactory.getLog(GraphLoader.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphLoader.class);
 
     protected static final String VERSION_PREFIX = "_v";
 
@@ -79,7 +78,7 @@ public class GraphLoader {
             try {
                 FileUtils.copyDirectory(currentGraphDir, newGraphDir);
             } catch (final IOException e) {
-                GraphLoader.LOG.error("Could not copy old graph version.");
+                GraphLoader.LOGGER.error("Could not copy old graph version.");
             }
         }
 

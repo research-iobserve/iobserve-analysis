@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.common.record.flow.trace.TraceMetadata;
 
 import teetime.framework.AbstractConsumerStage;
@@ -35,6 +33,8 @@ import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TNetworkLink runs asynchronous from the other filters like TAllocation, TDeployment, TEntryCall ,
@@ -53,7 +53,7 @@ import org.palladiosimulator.pcm.system.System;
  */
 public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
 
-    private static final Log LOG = LogFactory.getLog(NetworkLink.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NetworkLink.class);
 
     /** reference to allocation model provider. */
     private final IModelProvider<Allocation> allocationModelProvider;
@@ -132,8 +132,8 @@ public final class NetworkLink extends AbstractConsumerStage<TraceMetadata> {
         final String asm1Name = asm1.getEntityName().substring(0, asm1.getEntityName().indexOf("_", 0));
         final String asm2Name = asm2.getEntityName().substring(0, asm2.getEntityName().indexOf("_", 0));
 
-        NetworkLink.LOG.debug(
-                "isEqual?Id: " + asm1.getId() + "==" + asm2.getId() + ", Name: " + asm1Name + "==" + asm2Name + "\n");
+        NetworkLink.LOGGER.debug("isEqual?Id: {} == {}, Name: {} == {}", asm1.getId(), asm2.getId(), asm1Name,
+                asm2Name);
 
         return asm1Name.contains(asm2Name);
     }

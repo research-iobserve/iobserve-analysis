@@ -28,19 +28,19 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
 import org.iobserve.analysis.clustering.filter.models.CallInformation;
 import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
 import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.sink.AbstractModelOutputSink;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Transform the behavior.
@@ -49,7 +49,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  *
  */
 public class TBehaviorModelVisualization extends AbstractModelOutputSink {
-    private static final Logger LOGGER = LogManager.getLogger(TBehaviorModelVisualization.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TBehaviorModelVisualization.class);
     private final ISignatureCreationStrategy signatureStrategy;
     private final String applicationUrl;
     private final Map<String, JsonNode> nodeMap;
