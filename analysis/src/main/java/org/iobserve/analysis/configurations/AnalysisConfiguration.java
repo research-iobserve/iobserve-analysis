@@ -16,30 +16,33 @@
 package org.iobserve.analysis.configurations;
 
 import java.io.File;
+import teetime.framework.Configuration;
+import teetime.framework.OutputPort;
+import teetime.stage.basic.distributor.Distributor;
+import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
+import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.IBehaviorCompositeStage;
-import org.iobserve.analysis.IContainerManagementCompositeStage;
 import org.iobserve.analysis.IContainerManagementSinksStage;
-import org.iobserve.analysis.IDataFlowCompositeStage;
-import org.iobserve.analysis.IGeoLocationCompositeStage;
 import org.iobserve.analysis.ISourceCompositeStage;
-import org.iobserve.analysis.ITraceCompositeStage;
 import org.iobserve.analysis.InstantiationFactory;
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.analysis.toggle.FeatureToggle;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.stages.general.RecordSwitch;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +52,6 @@ import teetime.stage.basic.distributor.Distributor;
 import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
 import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-
 /**
  * This is a generic configuration for all analyses.
  *
@@ -62,35 +64,7 @@ public class AnalysisConfiguration extends Configuration {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisConfiguration.class);
 
-    /** Set the used behavior aggregation and clustering stage class name. STRING */
-    public static final String BEHAVIOR_CLUSTERING = IBehaviorCompositeStage.class.getCanonicalName();
-
-    /** Set whether a behavior visualization sink shall be created. STRING ARRAY. */
-    public static final String BEHAVIOR_CLUSTERING_SINK = AnalysisConfiguration.BEHAVIOR_CLUSTERING + ".sink.visual";
-
-    /** Set whether container management shall be activated. BOOLEAN */
-    public static final String CONTAINER_MANAGEMENT = IContainerManagementCompositeStage.class.getCanonicalName();
-
-    /** Set whether trace reconstruction should be activated. BOOLEAN */
-    public static final String TRACES = ITraceCompositeStage.class.getCanonicalName();
-
-    /** Set whether data flow analysis should be activated. BOOLEAN */
-    public static final String DATA_FLOW = IDataFlowCompositeStage.class.getCanonicalName();
-
-    /** Set whether separate geo location events should be processed. BOOLEAN */
-    public static final String GEO_LOCATION = IGeoLocationCompositeStage.class.getCanonicalName();
-
-    /** Set the preferred source. STRING */
-    public static final String SOURCE = ISourceCompositeStage.class.getCanonicalName();
-
-    /** Set whether container management visualization sinks shall be created. STRING ARRAY */
-    public static final String CONTAINER_MANAGEMENT_SINK = IContainerManagementCompositeStage.class.getCanonicalName()
-            + ".sink";
-
     private static final String DELIMETER = ",";
-    private static final String PATH_DELIMETER = File.pathSeparator;
-
-    private final FeatureToggle featureToggle;
 
     private final RecordSwitch recordSwitch;
 
@@ -105,27 +79,29 @@ public class AnalysisConfiguration extends Configuration {
      *
      * @param configuration
      *            the configuration parameter
+     * @param repositoryModelProvider
      * @param resourceEnvironmentModelProvider
      *            provider for an environment model
      * @param allocationModelProvider
      *            provider for the allocation model
      * @param systemModelProvider
      *            provider for the system model
+     * @param usageModelProvider
      * @param correspondenceModelProvider
      *            provider for the correspondence model
      * @throws ConfigurationException
      *             if the configuration faisl
      */
     public AnalysisConfiguration(final kieker.common.configuration.Configuration configuration,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final ModelProvider<Allocation> allocationModelProvider, final ModelProvider<System> systemModelProvider,
-            final ICorrespondence correspondenceModelProvider, final FeatureToggle featureToggle)
+            final IModelProvider<Repository> repositoryModelProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
+            final IModelProvider<UsageModel> usageModelProvider, final ICorrespondence correspondenceModelProvider)
             throws ConfigurationException {
         this.recordSwitch = new RecordSwitch();
-        this.featureToggle = featureToggle;
 
         /** Source stage. */
-        final String sourceClassName = configuration.getStringProperty(AnalysisConfiguration.SOURCE);
+        final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
         if (!sourceClassName.isEmpty()) {
             final ISourceCompositeStage sourceCompositeStage = InstantiationFactory
                     .createAndInitialize(ISourceCompositeStage.class, sourceClassName, configuration);
@@ -134,7 +110,7 @@ public class AnalysisConfiguration extends Configuration {
 
             this.containerManagement(configuration, resourceEnvironmentModelProvider, allocationModelProvider,
                     systemModelProvider, correspondenceModelProvider);
-            this.trace(configuration);
+            this.traceProcessing(configuration);
             this.geoLocation(configuration);
         } else {
             AnalysisConfiguration.LOGGER.error("Initialization incomplete: No source stage specified.");
@@ -153,45 +129,36 @@ public class AnalysisConfiguration extends Configuration {
      * @param correspondenceModelProvider
      */
     private void containerManagement(final kieker.common.configuration.Configuration configuration,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final ModelProvider<Allocation> allocationModelProvider, final ModelProvider<System> systemModelProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
             final ICorrespondence correspondenceModelProvider) {
-        if (configuration.getBooleanProperty(AnalysisConfiguration.CONTAINER_MANAGEMENT, false)) {
+        if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT, false)) {
 
             // Initiate stages and connect their ports according to toggle settings.
             /** allocation. */
-            if (this.featureToggle.getAllocationToggle()) {
-                this.allocationStage = new AllocationStage(resourceEnvironmentModelProvider);
-                /** connect ports. */
-                this.connectPorts(this.recordSwitch.getAllocationOutputPort(), this.allocationStage.getInputPort());
-            }
+            this.allocationStage = new AllocationStage(resourceEnvironmentModelProvider);
+            /** connect ports. */
+            this.connectPorts(this.recordSwitch.getAllocationOutputPort(), this.allocationStage.getInputPort());
 
             /** deployment. */
-            if (this.featureToggle.getDeploymentToggle()) {
-                this.deploymentStage = new DeploymentCompositeStage(configuration, resourceEnvironmentModelProvider,
-                        allocationModelProvider, systemModelProvider, correspondenceModelProvider);
-                /** connect ports. */
-                this.connectPorts(this.recordSwitch.getDeployedOutputPort(),
-                        this.deploymentStage.getDeployedInputPort());
-            }
+            this.deploymentStage = new DeploymentCompositeStage(configuration, resourceEnvironmentModelProvider,
+                    allocationModelProvider, systemModelProvider, correspondenceModelProvider);
+            /** connect ports. */
+            this.connectPorts(this.recordSwitch.getDeployedOutputPort(), this.deploymentStage.getDeployedInputPort());
 
             /** undeployment. */
-            if (this.featureToggle.getUndeploymentToggle()) {
-                this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
-                        allocationModelProvider, systemModelProvider, correspondenceModelProvider);
-                /** connect ports. */
-                this.connectPorts(this.recordSwitch.getUndeployedOutputPort(),
-                        this.undeploymentStage.getUndeployedInputPort());
-            }
+            this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
+                    allocationModelProvider, systemModelProvider, correspondenceModelProvider);
+            /** connect ports. */
+            this.connectPorts(this.recordSwitch.getUndeployedOutputPort(),
+                    this.undeploymentStage.getUndeployedInputPort());
 
             /** deallocation. */
-            if (this.featureToggle.getDeallocationToggle()) {
-                // this.deallocationStage = new DeallocationStage(resourceEnvironmentModelProvider);
-                // TODO missing
-                /** connect ports. */
-                // this.connectPorts(this.recordSwitch.getDeallocationOutputPort(),
-                // this.deallocationStage.getInputPort(targetPort));
-            }
+            // this.deallocationStage = new DeallocationStage(resourceEnvironmentModelProvider);
+            // TODO missing
+            /** connect ports. */
+            // this.connectPorts(this.recordSwitch.getDeallocationOutputPort(),
+            // this.deallocationStage.getInputPort(targetPort));
 
             /** dependent features. */
             this.createContainerManagementSink(configuration);
@@ -206,8 +173,8 @@ public class AnalysisConfiguration extends Configuration {
      *            configuration object
      */
     private void createContainerManagementSink(final kieker.common.configuration.Configuration configuration) {
-        final String[] containerManagementSinks = configuration.getStringArrayProperty(
-                AnalysisConfiguration.CONTAINER_MANAGEMENT_SINK, AnalysisConfiguration.DELIMETER);
+        final String[] containerManagementSinks = configuration
+                .getStringArrayProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_SINK, AnalysisConfiguration.DELIMETER);
         if (containerManagementSinks.length == 1) {
             final IContainerManagementSinksStage containerManagementSinksStage = InstantiationFactory
                     .createAndInitialize(IContainerManagementSinksStage.class, containerManagementSinks[0],
@@ -239,6 +206,7 @@ public class AnalysisConfiguration extends Configuration {
             // allocationDistributor.getInputPort());
             this.connectPorts(this.deploymentStage.getDeployedOutputPort(), deploymentDistributor.getInputPort());
             this.connectPorts(this.undeploymentStage.getUndeployedOutputPort(), undeploymentDistributor.getInputPort());
+
             /** Create and connect sinks. */
             for (final String containerManagementSink : containerManagementSinks) {
                 final IContainerManagementSinksStage containerManagementSinksStage = InstantiationFactory
@@ -266,8 +234,8 @@ public class AnalysisConfiguration extends Configuration {
      * @param configuration
      *            filter configurations
      */
-    private void trace(final kieker.common.configuration.Configuration configuration) {
-        if (configuration.getBooleanProperty(AnalysisConfiguration.TRACES, false)) {
+    private void traceProcessing(final kieker.common.configuration.Configuration configuration) {
+        if (configuration.getBooleanProperty(ConfigurationKeys.TRACES, false)) {
             final TraceReconstructionCompositeStage traceReconstructionStage = new TraceReconstructionCompositeStage(
                     configuration);
 
@@ -280,8 +248,8 @@ public class AnalysisConfiguration extends Configuration {
             this.connectPorts(this.recordSwitch.getFlowOutputPort(), traceReconstructionStage.getInputPort());
 
             /** Include distributor to support tow simultaneous sinks. */
-            if (configuration.getBooleanProperty(AnalysisConfiguration.DATA_FLOW, false)
-                    && !configuration.getStringProperty(AnalysisConfiguration.BEHAVIOR_CLUSTERING).isEmpty()) {
+            if (configuration.getBooleanProperty(ConfigurationKeys.DATA_FLOW, false)
+                    && !configuration.getStringProperty(ConfigurationKeys.BEHAVIOR_CLUSTERING).isEmpty()) {
                 final IDistributorStrategy strategy = new CopyByReferenceStrategy();
                 final Distributor<EventBasedTrace> distributor = new Distributor<>(strategy);
                 this.connectPorts(traceReconstructionStage.getTraceValidOutputPort(), distributor.getInputPort());
@@ -296,9 +264,15 @@ public class AnalysisConfiguration extends Configuration {
         }
     }
 
+    /**
+     * Create data flow processing setup.
+     *
+     * @param configuration
+     * @param eventBasedTraceOutputPort
+     */
     private void dataflow(final kieker.common.configuration.Configuration configuration,
             final OutputPort<EventBasedTrace> eventBasedTraceOutputPort) {
-        if (configuration.getBooleanProperty(AnalysisConfiguration.DATA_FLOW, false)) {
+        if (configuration.getBooleanProperty(ConfigurationKeys.DATA_FLOW, false)) {
             /** connect ports. */
             // this.connectPorts(eventBasedTraceOutputPort, targetPort);
             AnalysisConfiguration.LOGGER.warn("Configuration for dataflow analysis missing.");
@@ -314,14 +288,14 @@ public class AnalysisConfiguration extends Configuration {
     private void behaviorClustering(final kieker.common.configuration.Configuration configuration,
             final OutputPort<EventBasedTrace> eventBasedTraceOutputPort) {
         final String behaviorClustringClassName = configuration
-                .getStringProperty(AnalysisConfiguration.BEHAVIOR_CLUSTERING);
+                .getStringProperty(ConfigurationKeys.BEHAVIOR_CLUSTERING);
         if (!behaviorClustringClassName.isEmpty()) {
             final IBehaviorCompositeStage behavior = InstantiationFactory
                     .createAndInitialize(IBehaviorCompositeStage.class, behaviorClustringClassName, configuration);
             this.connectPorts(eventBasedTraceOutputPort, behavior.getEventBasedTracePort());
             this.connectPorts(this.recordSwitch.getSessionEventOutputPort(), behavior.getSessionEventInputPort());
 
-            if (configuration.getBooleanProperty(AnalysisConfiguration.BEHAVIOR_CLUSTERING_SINK)) {
+            if (configuration.getBooleanProperty(ConfigurationKeys.BEHAVIOR_CLUSTERING_SINK)) {
                 // TODO needs visualization trigger
                 AnalysisConfiguration.LOGGER.warn("Configuration for behavior sink missing.");
             }
@@ -329,7 +303,7 @@ public class AnalysisConfiguration extends Configuration {
     }
 
     private void geoLocation(final kieker.common.configuration.Configuration configuration) {
-        if (configuration.getBooleanProperty(AnalysisConfiguration.GEO_LOCATION, false)) {
+        if (configuration.getBooleanProperty(ConfigurationKeys.GEO_LOCATION, false)) {
             AnalysisConfiguration.LOGGER.warn("Configuration for geolocation.");
         }
     }

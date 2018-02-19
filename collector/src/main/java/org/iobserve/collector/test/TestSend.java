@@ -20,6 +20,7 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
+import kieker.monitoring.core.configuration.ConfigurationKeys;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
@@ -53,15 +54,15 @@ public final class TestSend {
     public static void main(final String[] args) {
         TestSend.LOGGER.debug("Sender");
         final Configuration configuration = ConfigurationFactory.createDefaultConfiguration();
-        configuration.setProperty(ConfigurationFactory.CONTROLLER_NAME, "Kieker-Test");
-        configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, TestSend.WRITER_NAME);
+        configuration.setProperty(ConfigurationKeys.CONTROLLER_NAME, "Kieker-Test");
+        configuration.setProperty(ConfigurationKeys.WRITER_CLASSNAME, TestSend.WRITER_NAME);
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_HOSTNAME, "localhost");
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_PORT, "9876");
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, "1024");
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_FLUSH, "true");
 
         // add ignored values
-        configuration.setProperty(ConfigurationFactory.PREFIX + "test", "true");
+        configuration.setProperty(ConfigurationKeys.PREFIX + "test", "true");
         configuration.setProperty(TestSend.WRITER_NAME + ".test", "true");
 
         TestSend.LOGGER.debug("Configuration complete");

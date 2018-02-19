@@ -17,6 +17,7 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
+import kieker.common.exception.RecordInstantiationException;
 import org.iobserve.common.record.ContainerEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
@@ -92,8 +93,9 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
+	 * @throws RecordInstantiationException 
 	 */
-	public ContainerDeallocationEvent(final IValueDeserializer deserializer) {
+	public ContainerDeallocationEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
 	}
 	

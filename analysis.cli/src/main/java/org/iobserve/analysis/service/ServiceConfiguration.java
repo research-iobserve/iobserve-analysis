@@ -18,6 +18,8 @@ package org.iobserve.analysis.service;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import kieker.common.configuration.Configuration;
+
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.configurations.MultiInputObservationConfiguration;
@@ -35,8 +37,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import kieker.common.configuration.Configuration;
 
 /**
  * @author Reiner Jung

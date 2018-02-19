@@ -17,6 +17,7 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
+import kieker.common.exception.RecordInstantiationException;
 import org.iobserve.common.record.EJBUndeployedEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
@@ -119,8 +120,9 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
+	 * @throws RecordInstantiationException 
 	 */
-	public Privacy_EJBUndeployedEvent(final IValueDeserializer deserializer) {
+	public Privacy_EJBUndeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
 		this.countryCode = deserializer.getShort();
 	}

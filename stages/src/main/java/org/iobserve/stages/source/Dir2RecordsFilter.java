@@ -96,8 +96,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
         this.recordMerger = new Merger<>();
 
         // store ports due to readability reasons
-        final OutputPort<File> normalFileOutputPort = fileExtensionSwitch
-                .addFileExtension(FSUtil.NORMAL_FILE_EXTENSION);
+        final OutputPort<File> normalFileOutputPort = fileExtensionSwitch.addFileExtension(FSUtil.DAT_FILE_EXTENSION);
         final OutputPort<File> binFileOutputPort = fileExtensionSwitch
                 .addFileExtension(BinaryCompressionMethod.NONE.getFileExtension());
 

@@ -189,17 +189,17 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 varianceOfUserGroups, new ManhattanDistance());
 
         final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
-        if (featureToggle.getBehaviourToggle()) {
-            behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
-            behaviorModelConfiguration.setVisualizationUrl(visualizationServiceURL);
-            behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
-            behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
-            behaviorModelConfiguration.setSignatureCreationStrategy(signatureStrategy);
-            behaviorModelConfiguration.setClustering(behaviorModelClustering);
-            behaviorModelConfiguration.setAggregationType(aggregationType);
-            behaviorModelConfiguration.setOutputMode(outputMode);
-            // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
-        }
+
+        // FEATURE BEHAVIOR
+        behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
+        behaviorModelConfiguration.setVisualizationUrl(visualizationServiceURL);
+        behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
+        behaviorModelConfiguration.setRepresentativeStrategy(new JPetstoreStrategy());
+        behaviorModelConfiguration.setSignatureCreationStrategy(signatureStrategy);
+        behaviorModelConfiguration.setClustering(behaviorModelClustering);
+        behaviorModelConfiguration.setAggregationType(aggregationType);
+        behaviorModelConfiguration.setOutputMode(outputMode);
+        // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
 
         final BehaviorModelComparison tBehaviorModelComparison = new BehaviorModelComparison(behaviorModelConfiguration,
                 correspondenceModel, usageModelProvider, repositoryModelProvider, varianceOfUserGroups, thinkTime,
@@ -237,9 +237,10 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(entryCallSequence.getUserSessionOutputPort(), traceAcceptanceFilter.getInputPort());
         this.connectPorts(traceAcceptanceFilter.getOutputPort(), traceOperationCleanupFilter.getInputPort());
         this.connectPorts(traceOperationCleanupFilter.getOutputPort(), collectUserSessions.getUserSessionInputPort());
-        if (featureToggle.getBehaviourToggle()) {
-            this.connectPorts(collectUserSessions.getOutputPort(), tBehaviorModelComparison.getInputPort());
-        }
+
+        // FEATURE BEHAVIOR
+        this.connectPorts(collectUserSessions.getOutputPort(), tBehaviorModelComparison.getInputPort());
+
         // TODO for lbl: Implement a way to pass data to the following stages
         // Path Snapshot => Planning
         // this.connectPorts(snapshotBuilder.getOutputPort(),

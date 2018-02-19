@@ -18,6 +18,7 @@ package org.iobserve.replayer;
 import kieker.common.configuration.Configuration;
 import kieker.common.record.IMonitoringRecord;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
+import kieker.monitoring.core.configuration.ConfigurationKeys;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
@@ -53,8 +54,8 @@ public class DataSendStage extends AbstractConsumerStage<IMonitoringRecord> {
      */
     public DataSendStage(final String hostname, final int port) {
         final Configuration configuration = ConfigurationFactory.createDefaultConfiguration();
-        configuration.setProperty(ConfigurationFactory.CONTROLLER_NAME, "iObserve-Experiments");
-        configuration.setProperty(ConfigurationFactory.WRITER_CLASSNAME, DataSendStage.WRITER_NAME);
+        configuration.setProperty(ConfigurationKeys.CONTROLLER_NAME, "iObserve-Experiments");
+        configuration.setProperty(ConfigurationKeys.WRITER_CLASSNAME, DataSendStage.WRITER_NAME);
 
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_FLUSH, "true");
         configuration.setProperty(SingleSocketTcpWriter.CONFIG_BUFFERSIZE, "25000");

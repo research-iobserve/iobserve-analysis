@@ -22,12 +22,13 @@ package org.iobserve.analysis.toggle;
  * @author Daniel Lucas
  *
  */
+@Deprecated
 public class FeatureToggle {
     private boolean deploymentToggle;
     private boolean undeploymentToggle;
     private boolean allocationToggle;
     private boolean deallocationToggle;
-    private boolean behaviourToggle;
+    private String behaviourToggle;
     private boolean dataFlowToggle;
     private boolean geolocationToggle;
     private boolean SinksToggle;
@@ -40,7 +41,7 @@ public class FeatureToggle {
      *
      */
     public FeatureToggle(final boolean deploymentToggle, final boolean undeploymentToggle,
-            final boolean allocationToggle, final boolean deallocationToggle, final boolean behaviourToggle,
+            final boolean allocationToggle, final boolean deallocationToggle, final String behaviourToggle,
             final boolean dataflowToggle, final boolean geolocationToggle, final boolean sinksToggle) {
         this.deploymentToggle = deploymentToggle;
         this.undeploymentToggle = undeploymentToggle;
@@ -88,11 +89,11 @@ public class FeatureToggle {
     }
 
     // Behaviour.
-    public boolean getBehaviourToggle() {
+    public String getBehaviourToggle() {
         return this.behaviourToggle;
     }
 
-    public void setBehaviourToggle(final boolean behaviourToggle) {
+    public void setBehaviourToggle(final String behaviourToggle) {
         this.behaviourToggle = behaviourToggle;
     }
 

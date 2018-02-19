@@ -16,6 +16,7 @@
 package org.iobserve.common.record;
 
 
+import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
@@ -70,8 +71,9 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
+	 * @throws RecordInstantiationException 
 	 */
-	public ContainerEvent(final IValueDeserializer deserializer) {
+	public ContainerEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		this.url = deserializer.getString();
 	}
 	

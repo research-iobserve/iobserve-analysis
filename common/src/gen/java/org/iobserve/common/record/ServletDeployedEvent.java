@@ -17,6 +17,7 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
+import kieker.common.exception.RecordInstantiationException;
 import org.iobserve.common.record.ServletDescriptor;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
@@ -107,8 +108,9 @@ public class ServletDeployedEvent extends ServletDescriptor implements IDeployed
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
+	 * @throws RecordInstantiationException 
 	 */
-	public ServletDeployedEvent(final IValueDeserializer deserializer) {
+	public ServletDeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
 	}
 	
