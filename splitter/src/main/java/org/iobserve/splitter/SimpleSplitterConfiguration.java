@@ -24,6 +24,8 @@ import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
 
+import org.iobserve.stages.sink.DataDumpStage;
+import org.iobserve.stages.sink.ESerializationType;
 import org.iobserve.stages.source.Dir2RecordsFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +76,8 @@ public class SimpleSplitterConfiguration extends Configuration {
         this.consumer = new DataDumpStage[hostnames.length];
 
         for (int i = 0; i < hostnames.length; i++) {
-            this.consumer[i] = new DataDumpStage(outputLocation.getCanonicalPath(), hostnames[i]);
+            this.consumer[i] = new DataDumpStage(outputLocation.getCanonicalPath(), hostnames[i],
+                    ESerializationType.ASCII);
             this.connectPorts(this.splitter.getAllOutputPorts().get(i), this.consumer[i].getInputPort());
         }
         this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
