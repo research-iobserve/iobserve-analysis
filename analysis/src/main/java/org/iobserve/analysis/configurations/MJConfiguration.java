@@ -18,21 +18,21 @@ package org.iobserve.analysis.configurations;
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.IBehaviorCompositeStage;
 import org.iobserve.analysis.ISourceCompositeStage;
-import org.iobserve.analysis.ITraceCompositeStage;
 import org.iobserve.analysis.InstantiationFactory;
+import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
+import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
+import org.iobserve.analysis.session.SessionAcceptanceFilter;
+import org.iobserve.analysis.traces.EntryCallSequence;
+import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
+import org.iobserve.analysis.traces.TraceOperationCleanupFilter;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
-import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.stages.general.EntryCallStage;
+import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.iobserve.stages.general.RecordSwitch;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.system.System;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import teetime.framework.Configuration;
-import teetime.framework.OutputPort;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 public class MJConfiguration extends Configuration {
 
@@ -44,11 +44,23 @@ public class MJConfiguration extends Configuration {
     /** Set whether a behavior visualization sink shall be created. STRING ARRAY. */
     public static final String BEHAVIOR_CLUSTERING_SINK = MJConfiguration.BEHAVIOR_CLUSTERING + ".sink.visual";
 
-    /** Set whether trace reconstruction should be activated. BOOLEAN */
-    public static final String TRACES = ITraceCompositeStage.class.getCanonicalName();
-
     /** Set the preferred source. STRING */
     public static final String SOURCE = ISourceCompositeStage.class.getCanonicalName();
+
+    /** Set trace matcher required for EntryCallStage. STRING */
+    public static final String TRACE_MATCHER = IEntryCallTraceMatcher.class.getCanonicalName();
+
+    /** Set acceptance matcher required for SessionAcceptanceFilter. STRING */
+    public static final String ENTRY_CALL_ACCEPTANCE_MATCHER = IEntryCallAcceptanceMatcher.class.getCanonicalName();
+
+    /** Set cleanup rewriter eequired for TraceOperationCleanupFilter. STRING */
+    public static final String CLEANUP_REWRITER = ITraceSignatureCleanupRewriter.class.getCanonicalName();
+
+    /**
+     * Set entry call filter rules factory required for TSessionOperationsFilter.
+     * STRING
+     */
+    public static final String ENTRY_CALL_FILTER_RULES_FACTORY = IModelGenerationFilterFactory.class.getCanonicalName();
 
     private final RecordSwitch recordSwitch;
 
@@ -68,10 +80,8 @@ public class MJConfiguration extends Configuration {
      * @throws ConfigurationException
      *             if the configuration faisl
      */
-    public MJConfiguration(final kieker.common.configuration.Configuration configuration,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final ModelProvider<Allocation> allocationModelProvider, final ModelProvider<System> systemModelProvider,
-            final ICorrespondence correspondenceModelProvider) throws ConfigurationException {
+    public MJConfiguration(final kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException {
         this.recordSwitch = new RecordSwitch();
 
         /** Source stage. */
@@ -95,42 +105,53 @@ public class MJConfiguration extends Configuration {
      * @param configuration
      *            filter configurations
      */
-    private void trace(final kieker.common.configuration.Configuration configuration) {
-        if (configuration.getBooleanProperty(MJConfiguration.TRACES, false)) {
-            final TraceReconstructionCompositeStage traceReconstructionStage = new TraceReconstructionCompositeStage(
-                    configuration);
+    private void trace(final kieker.common.configuration.Configuration configuration) throws ConfigurationException {
+        final TraceReconstructionCompositeStage traceReconstructionStage = new TraceReconstructionCompositeStage(
+                configuration);
 
-            final OutputPort<EventBasedTrace> behaviorClusteringEventBasedTracePort = traceReconstructionStage
-                    .getTraceValidOutputPort();
-
-            /** Connect ports. */
-            this.connectPorts(this.recordSwitch.getFlowOutputPort(), traceReconstructionStage.getInputPort());
-
-            /** Initialize depending features. */
-            this.behaviorClustering(configuration, behaviorClusteringEventBasedTracePort);
+        /** Create EntryCallStage */
+        final String traceMatcherClassName = configuration.getStringProperty(MJConfiguration.TRACE_MATCHER);
+        if (traceMatcherClassName.isEmpty()) {
+            MJConfiguration.LOGGER.error("Initialization incomplete: No trace matcher specified.");
+            throw new ConfigurationException("Initialization incomplete: No trace matcher specified.");
         }
-    }
+        final IEntryCallTraceMatcher traceMatcher = InstantiationFactory
+                .createAndInitialize(IEntryCallTraceMatcher.class, traceMatcherClassName, configuration);
+        final EntryCallStage entryCallStage = new EntryCallStage(traceMatcher);
 
-    /**
-     * Create the behavioral clustering.
-     *
-     * @param configuration
-     *            analysis configuration
-     */
-    private void behaviorClustering(final kieker.common.configuration.Configuration configuration,
-            final OutputPort<EventBasedTrace> eventBasedTraceOutputPort) {
-        final String behaviorClustringClassName = configuration.getStringProperty(MJConfiguration.BEHAVIOR_CLUSTERING);
-        if (!behaviorClustringClassName.isEmpty()) {
-            final IBehaviorCompositeStage behavior = InstantiationFactory
-                    .createAndInitialize(IBehaviorCompositeStage.class, behaviorClustringClassName, configuration);
-            this.connectPorts(eventBasedTraceOutputPort, behavior.getEventBasedTracePort());
-            this.connectPorts(this.recordSwitch.getSessionEventOutputPort(), behavior.getSessionEventInputPort());
+        /** Create EntryCallSequence */
+        final EntryCallSequence entryCallSequence = new EntryCallSequence();
 
-            if (configuration.getBooleanProperty(MJConfiguration.BEHAVIOR_CLUSTERING_SINK)) {
-                // TODO needs visualization trigger
-                MJConfiguration.LOGGER.warn("Configuration for behavior sink missing.");
-            }
+        /** Create SessionAcceptancecFilter */
+        final String entryCallMatcherClassName = configuration
+                .getStringProperty(MJConfiguration.ENTRY_CALL_ACCEPTANCE_MATCHER);
+        if (entryCallMatcherClassName.isEmpty()) {
+            MJConfiguration.LOGGER.error("Initialization incomplete: No entry call acceptance matcher specified.");
+            throw new ConfigurationException("Initialization incomplete: No entry call acceptance matcher specified.");
         }
+        final IEntryCallAcceptanceMatcher entryCallMatcher = InstantiationFactory
+                .createAndInitialize(IEntryCallAcceptanceMatcher.class, entryCallMatcherClassName, configuration);
+        final SessionAcceptanceFilter sessionAcceptanceFilter = new SessionAcceptanceFilter(entryCallMatcher);
+
+        /** Create TraceOperationsCleanupFilter */
+        final String cleanupRewriterClassName = configuration.getStringProperty(MJConfiguration.CLEANUP_REWRITER);
+        if (cleanupRewriterClassName.isEmpty()) {
+            MJConfiguration.LOGGER.error("Initialization incomplete: No signature cleanup rewriter specified.");
+            throw new ConfigurationException("Initialization incomplete: No signature cleanup rewriter specified.");
+        }
+        final ITraceSignatureCleanupRewriter cleanupRewriter = InstantiationFactory
+                .createAndInitialize(ITraceSignatureCleanupRewriter.class, cleanupRewriterClassName, configuration);
+        final TraceOperationCleanupFilter traceOperationCleanupFilter = new TraceOperationCleanupFilter(
+                cleanupRewriter);
+
+        /** Connect ports. */
+        this.connectPorts(this.recordSwitch.getFlowOutputPort(), traceReconstructionStage.getInputPort());
+        this.connectPorts(traceReconstructionStage.getTraceValidOutputPort(), entryCallStage.getInputPort());
+        this.connectPorts(this.recordSwitch.getSessionEventOutputPort(), entryCallSequence.getSessionEventInputPort());
+        this.connectPorts(entryCallStage.getOutputPort(), entryCallSequence.getEntryCallInputPort());
+        this.connectPorts(entryCallSequence.getUserSessionOutputPort(), sessionAcceptanceFilter.getInputPort());
+        this.connectPorts(sessionAcceptanceFilter.getOutputPort(), traceOperationCleanupFilter.getInputPort());
+
     }
 
     public RecordSwitch getRecordSwitch() {
