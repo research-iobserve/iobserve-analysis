@@ -15,8 +15,42 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.composite;
 
+import org.iobserve.analysis.clustering.filter.IParameterMetricStrategy;
+import org.iobserve.analysis.clustering.filter.IStructureMetricStrategy;
+import org.iobserve.analysis.clustering.filter.TGroupingStage;
+import org.iobserve.analysis.clustering.filter.TModelGeneration;
+import org.iobserve.analysis.clustering.filter.TSessionToModel;
+import org.iobserve.analysis.clustering.filter.TVectorization;
+import org.iobserve.analysis.session.data.UserSession;
+
 import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
 
 public class TSimilarityMatching extends CompositeStage {
+    private final InputPort<UserSession> sessionInputPort;
+    private final InputPort<Long> timerInputPort;
 
+    public TSimilarityMatching(final IStructureMetricStrategy structureMetric,
+            final IParameterMetricStrategy parameterMetric, final double similarityRadius) {
+        /** Create individual stages */
+        final TSessionToModel sessionToModel = new TSessionToModel();
+        final TVectorization vectorization = new TVectorization(structureMetric, parameterMetric);
+        final TGroupingStage groupingStage = new TGroupingStage(similarityRadius);
+        final TModelGeneration modelGeneration = new TModelGeneration();
+
+        /** Connect ports */
+        this.sessionInputPort = sessionToModel.getInputPort();
+        this.timerInputPort = vectorization.getTimerInputPort();
+        this.connectPorts(sessionToModel.getOutputPort(), vectorization.getModelInputPort());
+        this.connectPorts(vectorization.getOutputPort(), groupingStage.getInputPort());
+        // this.connectPorts(groupingStage.getOutputPort(), modelGeneration.get);
+    }
+
+    public InputPort<UserSession> getSessionInputPort() {
+        return this.sessionInputPort;
+    }
+
+    public InputPort<UserSession> getTimerInputPort() {
+        return this.timerInputPort;
+    }
 }

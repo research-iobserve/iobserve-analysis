@@ -7,7 +7,7 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-public class TSimilarityMatching extends AbstractConsumerStage<List<List<Double>>> {
+public class TGroupingStage extends AbstractConsumerStage<List<List<Double>>> {
     private final OutputPort<List<List<Integer>>> outputPort = this.createOutputPort();
     
     private double similarityRadius;
@@ -16,7 +16,7 @@ public class TSimilarityMatching extends AbstractConsumerStage<List<List<Double>
     
     private List<List<Double>> vectors;
     
-    public TSimilarityMatching(double similarityRadius) {
+    public TGroupingStage(double similarityRadius) {
       super();
       
       // TODO: check arg validity (non-negative)
