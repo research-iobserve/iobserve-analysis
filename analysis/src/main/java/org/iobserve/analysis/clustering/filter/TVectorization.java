@@ -13,7 +13,8 @@ import teetime.framework.OutputPort;
 public class TVectorization extends AbstractStage {
     private final InputPort<BehaviorModel> modelInputPort = super.createInputPort();
     private final InputPort<Long> timerInputPort = super.createInputPort();
-    private final OutputPort<Double[][]> outputPort = this.createOutputPort();
+    private final OutputPort<Double[][]> vectorsOutputPort = this.createOutputPort();
+    private final OutputPort<BehaviorModel[]> modelsOutputPort = this.createOutputPort();
 
     private final IStructureMetricStrategy structureMetric;
     private final IParameterMetricStrategy parameterMetric;
@@ -39,14 +40,21 @@ public class TVectorization extends AbstractStage {
         }
 
         if (timestamp != null) {
+            /** Convert vectors from List<List<Double>> to Double[][] */
             final Double[][] vectorArray = new Double[this.distanceVectors.size()][];
             int i = 0;
             for (final List<Double> v : this.distanceVectors) {
                 vectorArray[++i] = v.toArray(new Double[v.size()]);
             }
 
-            this.outputPort.send(vectorArray);
+            /** Convert models from list to array */
+            final BehaviorModel[] modelsArray = this.models.toArray(new BehaviorModel[this.models.size()]);
 
+            /** Send both */
+            this.vectorsOutputPort.send(vectorArray);
+            this.modelsOutputPort.send(modelsArray);
+
+            /** Clear state to prepare for arrival of new sessions */
             this.clearModels();
         }
     }
@@ -89,7 +97,11 @@ public class TVectorization extends AbstractStage {
         return this.timerInputPort;
     }
 
-    public OutputPort<Double[][]> getOutputPort() {
-        return this.outputPort;
+    public OutputPort<Double[][]> getVectorsOutputPort() {
+        return this.vectorsOutputPort;
+    }
+
+    public OutputPort<BehaviorModel[]> getModelsOutputPort() {
+        return this.modelsOutputPort;
     }
 }

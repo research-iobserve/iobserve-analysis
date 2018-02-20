@@ -7,7 +7,7 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
-    private final OutputPort<List<List<Integer>>> outputPort = this.createOutputPort();
+    private final OutputPort<Integer[][]> outputPort = this.createOutputPort();
 
     private final double similarityRadius;
 
@@ -38,7 +38,14 @@ public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
             }
         }
 
-        this.outputPort.send(this.groups);
+        /** Convert List<List<Integer>> to Integer[][] for sending */
+        final Integer[][] aGroups = new Integer[this.groups.size()][];
+        int i = 0;
+        for (final List<Integer> g : this.groups) {
+            aGroups[++i] = g.toArray(new Integer[g.size()]);
+        }
+
+        this.outputPort.send(aGroups);
     }
 
     private List<Integer> findGroup(final Double[] vector) {
@@ -71,7 +78,7 @@ public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
         return true;
     }
 
-    public OutputPort<List<List<Integer>>> getOutputPort() {
+    public OutputPort<Integer[][]> getOutputPort() {
         return this.outputPort;
     }
 }
