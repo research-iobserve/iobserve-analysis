@@ -15,12 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment;
 
-import kieker.common.configuration.Configuration;
-
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
-
-import org.iobserve.analysis.AbstractConfigurableCompositeStage;
 import org.iobserve.analysis.IDeploymentCompositeStage;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.IDeployedEvent;
@@ -32,6 +26,10 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
 /**
  * Composite stage for deployment. This stage automatically creates an allocation (in PCM creates a
  * resource container) for the deployment in case the deployment target does not exists.
@@ -39,7 +37,7 @@ import org.palladiosimulator.pcm.system.System;
  * @author Reiner Jung
  *
  */
-public class DeploymentCompositeStage extends AbstractConfigurableCompositeStage implements IDeploymentCompositeStage {
+public class DeploymentCompositeStage extends CompositeStage implements IDeploymentCompositeStage {
 
     private final DeployPCMMapper deployPCMMapper;
     private final AggregateEventStage<PCMDeployedEvent> relayDeployedEventStage;
@@ -59,11 +57,9 @@ public class DeploymentCompositeStage extends AbstractConfigurableCompositeStage
      * @param correspondence
      *            the correspondence model handler
      */
-    public DeploymentCompositeStage(final Configuration configuration,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+    public DeploymentCompositeStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
             final ICorrespondence correspondence) {
-        super(configuration);
 
         this.deployPCMMapper = new DeployPCMMapper(correspondence);
         final SynthesizeAllocationEventStage synthesizeAllocationEvent = new SynthesizeAllocationEventStage(

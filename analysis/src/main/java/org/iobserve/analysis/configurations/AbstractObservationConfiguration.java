@@ -128,7 +128,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
 
         /** deployment. */
         if (featureToggle.getDeploymentToggle()) {
-            this.deploymentStage = new DeploymentCompositeStage(configuration, resourceEnvironmentModelProvider,
+            this.deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
                     allocationModelProvider, systemModelProvider, correspondenceModel);
         }
 
