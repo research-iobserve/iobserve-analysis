@@ -30,16 +30,104 @@ import org.slf4j.LoggerFactory;
  *
  * @author Reiner Jung
  *
+ * @since 0.0.2
+ *
  */
-public class InstantiationFactory {
+public class InstantiationFactory { // NOPMD
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisConfiguration.class);
+
+    /**
+     * Create a class based on a set of parameters and a signature description.
+     *
+     * @param implementedInterface
+     *            This class or interface defines the expected type to be adhered by the requested
+     *            classname
+     * @param className
+     *            The name of the class to be created.
+     * @param parameters
+     *            parameter for the constructor
+     *
+     * @return A new and initializes class instance if everything went well.
+     *
+     * @param <C>
+     *            The type of the returned class.
+     */
+    public static <C> C create(final Class<C> implementedInterface, final String className,
+            final Class<?>[] parameterTypes, final Object... parameters) throws ConfigurationException {
+        try {
+            final Class<?> clazz = Class.forName(className);
+            if (implementedInterface.isAssignableFrom(clazz)) {
+                return InstantiationFactory.instantiateClass(implementedInterface, clazz, parameterTypes, parameters);
+            } else {
+                InstantiationFactory.LOGGER.error(
+                        "Class '" + className + "' has to implement '" + implementedInterface.getSimpleName() + "'");
+                throw new ConfigurationException("Requested class does not match interface.");
+            }
+        } catch (final ClassNotFoundException e) {
+            InstantiationFactory.LOGGER
+                    .error(implementedInterface.getSimpleName() + ": Class '" + className + "' not found", e);
+            throw new ConfigurationException(e);
+        }
+    }
+
+    /**
+     * Instantiate a class implementing the given interface.
+     *
+     * @param implementedInterface
+     *            a class or interface defining the implementation interface
+     * @param clazz
+     *            the type to be instantiated
+     * @param parameterTypes
+     *            the signature for the constructor
+     * @param parameters
+     *            the matching parameter values for the constructor
+     * @return returns an initialized instance of clazz
+     *
+     * @throws ConfigurationException
+     *             in case the class could not be instantiated
+     */
+    @SuppressWarnings("unchecked")
+    private static <C> C instantiateClass(final Class<C> implementedInterface, final Class<?> clazz, // NOPMD
+            final Class<?>[] parameterTypes, final Object... parameters) throws ConfigurationException { // NOPMD
+        // complexity necessary to check all types of errors
+        try {
+            return (C) clazz.getConstructor(parameterTypes).newInstance(parameters);
+        } catch (final InstantiationException e) {
+            InstantiationFactory.LOGGER.error("{}: Class '{}' cannot be instantiated (abstract class): {}",
+                    implementedInterface.getSimpleName(), clazz.getName(), e.getLocalizedMessage());
+            throw new ConfigurationException(e);
+        } catch (final IllegalAccessException | SecurityException e) {
+            InstantiationFactory.LOGGER.error("{}: Access to class '{}' denied: {}",
+                    implementedInterface.getSimpleName(), clazz.getName(), e.getLocalizedMessage());
+            throw new ConfigurationException(e);
+        } catch (final IllegalArgumentException e) {
+            InstantiationFactory.LOGGER.error(
+                    "{}: Constructor signature of class '{}' does not match given parameters: {}",
+                    implementedInterface.getSimpleName(), clazz.getName(), e.getLocalizedMessage());
+            throw new ConfigurationException(e);
+        } catch (final InvocationTargetException e) {
+            InstantiationFactory.LOGGER.error("{}: Constructor of class '{}' failed to initialite instance: {}",
+                    implementedInterface.getSimpleName(), clazz.getName(), e.getLocalizedMessage());
+            throw new ConfigurationException(e);
+        } catch (final NoSuchMethodException e) {
+            final StringBuilder parameterTypeNames = new StringBuilder();
+            for (final Object parameter : parameters) {
+                parameterTypeNames.append(", ");
+                parameterTypeNames.append(parameter.getClass().getName());
+            }
+            InstantiationFactory.LOGGER.error(
+                    "{}: Class '{}' has to implement a (public) constructor that accepts the signature {}.",
+                    implementedInterface.getSimpleName(), clazz.getName(), parameterTypeNames.toString(), e);
+            throw new ConfigurationException(e);
+        }
+    }
 
     /**
      * This is a helper method trying to find, create and initialize the given class, using its
      * public constructor which accepts a single {@link Configuration}.
      *
-     * @param c
+     * @param implementedInterface
      *            This class defines the expected result of the method call.
      * @param className
      *            The name of the class to be created.
@@ -51,47 +139,32 @@ public class InstantiationFactory {
      * @param <C>
      *            The type of the returned class.
      */
-    @SuppressWarnings("unchecked")
-    public static <C> C createAndInitialize(final Class<C> c, final String className,
-            final kieker.common.configuration.Configuration configuration) {
-        C createdClass = null; // NOPMD (null)
+    public static <C> C createWithConfiguration(final Class<C> implementedInterface, final String className,
+            final kieker.common.configuration.Configuration configuration) throws ConfigurationException {
         try {
             final Class<?> clazz = Class.forName(className);
-            if (c.isAssignableFrom(clazz)) {
-                createdClass = (C) InstantiationFactory.instantiate(clazz, className, configuration);
+            if (implementedInterface.isAssignableFrom(clazz)) {
+                // Choose the appropriate configuration to pass.
+                final kieker.common.configuration.Configuration configurationToPass;
+                if (clazz.isAnnotationPresent(ReceiveUnfilteredConfiguration.class)) {
+                    configurationToPass = configuration.flatten();
+                } else {
+                    configurationToPass = configuration.getPropertiesStartingWith(className);
+                }
+
+                final Class<?>[] parameterTypes = { kieker.common.configuration.Configuration.class };
+                return InstantiationFactory.instantiateClass(implementedInterface, clazz, parameterTypes,
+                        configurationToPass);
             } else {
-                InstantiationFactory.LOGGER.error("Class '{}' has to implement '{}'.", className, c.getSimpleName());
+                InstantiationFactory.LOGGER.error("Class '{}' has to implement '{}'.", className,
+                        implementedInterface.getSimpleName());
+                throw new ConfigurationException("Requested class does not match interface.");
             }
         } catch (final ClassNotFoundException e) {
-            InstantiationFactory.LOGGER.error("{}: Class '{}' not found: {}", c.getSimpleName(), className,
-                    e.getLocalizedMessage());
-        } catch (final NoSuchMethodException e) {
-            InstantiationFactory.LOGGER.error(
-                    "{}: Class '{}' has to implement a (public) constructor that accepts a single Configuration",
-                    c.getSimpleName(), className, e.getLocalizedMessage());
-        } catch (final Exception e) { // NOPMD NOCS (IllegalCatchCheck)
-            // SecurityException, IllegalAccessException, IllegalArgumentException,
-            // InstantiationException, InvocationTargetException
-            InstantiationFactory.LOGGER.error("{}: Failed to load class for name '{}'", c.getSimpleName(), className,
-                    e.getLocalizedMessage());
+            InstantiationFactory.LOGGER.error("{}: Class '{}' not found: {}", implementedInterface.getSimpleName(),
+                    className, e.getLocalizedMessage());
+            throw new ConfigurationException(e);
         }
-        return createdClass;
-    }
-
-    private static <C> C instantiate(final Class<C> clazz, final String className,
-            final kieker.common.configuration.Configuration configuration)
-            throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
-            NoSuchMethodException, SecurityException {
-
-        // Choose the appropriate configuration to pass
-        final kieker.common.configuration.Configuration configurationToPass;
-        if (clazz.isAnnotationPresent(ReceiveUnfilteredConfiguration.class)) {
-            configurationToPass = configuration.flatten();
-        } else {
-            configurationToPass = configuration.getPropertiesStartingWith(className);
-        }
-
-        return clazz.getConstructor(Configuration.class).newInstance(configurationToPass);
     }
 
 }

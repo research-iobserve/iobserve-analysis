@@ -70,7 +70,7 @@ public class SessionAggregationCompositeStage extends AbstractConfigurableCompos
         final String matcherClassName = configuration.getStringProperty(SessionAggregationCompositeStage.MATCHER);
         if (matcherClassName != null) {
             final IEntryCallTraceMatcher matcher = InstantiationFactory
-                    .createAndInitialize(IEntryCallTraceMatcher.class, matcherClassName, configuration);
+                    .createWithConfiguration(IEntryCallTraceMatcher.class, matcherClassName, configuration);
             final EntryCallStage entryCall = new EntryCallStage(matcher);
             this.entryCallSequence = new EntryCallSequence();
 
