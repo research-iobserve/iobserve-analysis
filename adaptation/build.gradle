@@ -23,6 +23,10 @@ dependencies {
     compile 'org.glassfish:javax.json:1.0.4'
     compile group: 'commons-io', name: 'commons-io', version: '2.5'
     compile group: 'org.json', name: 'json', version: '20170516'
+    
+    compile 'org.drools:drools-compiler:7.6.0.Final'
+    compile 'org.drools:drools-core:7.6.0.Final'
+
 
     // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
     testCompile group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
