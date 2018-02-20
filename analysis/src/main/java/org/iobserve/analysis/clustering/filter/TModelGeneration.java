@@ -53,4 +53,12 @@ public class TModelGeneration extends AbstractStage {
     public OutputPort<BehaviorModel[]> getOutputPort() {
         return this.outputPort;
     }
+
+    public InputPort<BehaviorModel[]> getModelsInputPort() {
+        return this.modelsInputPort;
+    }
+
+    public InputPort<Integer[][]> getGroupsInputPort() {
+        return this.groupsInputPort;
+    }
 }

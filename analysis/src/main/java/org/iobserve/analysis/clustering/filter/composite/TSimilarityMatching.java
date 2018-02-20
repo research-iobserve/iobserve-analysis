@@ -15,35 +15,42 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.composite;
 
+import org.iobserve.analysis.clustering.filter.IModelGenerationStrategy;
 import org.iobserve.analysis.clustering.filter.IParameterMetricStrategy;
 import org.iobserve.analysis.clustering.filter.IStructureMetricStrategy;
 import org.iobserve.analysis.clustering.filter.TGroupingStage;
 import org.iobserve.analysis.clustering.filter.TModelGeneration;
 import org.iobserve.analysis.clustering.filter.TSessionToModel;
 import org.iobserve.analysis.clustering.filter.TVectorization;
+import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 
 public class TSimilarityMatching extends CompositeStage {
     private final InputPort<UserSession> sessionInputPort;
     private final InputPort<Long> timerInputPort;
+    private final OutputPort<BehaviorModel[]> outputPort;
 
     public TSimilarityMatching(final IStructureMetricStrategy structureMetric,
-            final IParameterMetricStrategy parameterMetric, final double similarityRadius) {
+            final IParameterMetricStrategy parameterMetric, final IModelGenerationStrategy modelGenerationStrategy,
+            final double similarityRadius) {
         /** Create individual stages */
         final TSessionToModel sessionToModel = new TSessionToModel();
         final TVectorization vectorization = new TVectorization(structureMetric, parameterMetric);
         final TGroupingStage groupingStage = new TGroupingStage(similarityRadius);
-        final TModelGeneration modelGeneration = new TModelGeneration();
+        final TModelGeneration modelGeneration = new TModelGeneration(modelGenerationStrategy);
 
         /** Connect ports */
         this.sessionInputPort = sessionToModel.getInputPort();
         this.timerInputPort = vectorization.getTimerInputPort();
         this.connectPorts(sessionToModel.getOutputPort(), vectorization.getModelInputPort());
-        this.connectPorts(vectorization.getOutputPort(), groupingStage.getInputPort());
-        // this.connectPorts(groupingStage.getOutputPort(), modelGeneration.get);
+        this.connectPorts(vectorization.getVectorsOutputPort(), groupingStage.getInputPort());
+        this.connectPorts(groupingStage.getOutputPort(), modelGeneration.getGroupsInputPort());
+        this.connectPorts(vectorization.getModelsOutputPort(), modelGeneration.getModelsInputPort());
+        this.outputPort = modelGeneration.getOutputPort();
     }
 
     public InputPort<UserSession> getSessionInputPort() {
@@ -52,5 +59,9 @@ public class TSimilarityMatching extends CompositeStage {
 
     public InputPort<Long> getTimerInputPort() {
         return this.timerInputPort;
+    }
+
+    public OutputPort<BehaviorModel[]> getOutputPort() {
+        return this.outputPort;
     }
 }
