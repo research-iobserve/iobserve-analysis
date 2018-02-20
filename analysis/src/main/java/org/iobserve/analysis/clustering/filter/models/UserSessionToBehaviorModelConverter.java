@@ -30,22 +30,22 @@ public class UserSessionToBehaviorModelConverter {
         final Iterator<EntryCallEvent> iterator = entryCalls.iterator();
 
         // Assume list has at least one element
-        EntryCallEvent lastEvent = iterator.next();
-        EntryCallEvent currentEvent;
+        EntryCallNode lastNode = UserSessionToBehaviorModelConverter.addOrExtendNode(model,
+                (PayloadAwareEntryCallEvent) iterator.next());
+        EntryCallNode currentNode;
 
-        UserSessionToBehaviorModelConverter.addOrExtendNode(model, (PayloadAwareEntryCallEvent) lastEvent);
         while (iterator.hasNext()) {
-            currentEvent = iterator.next();
-            UserSessionToBehaviorModelConverter.addOrExtendNode(model, (PayloadAwareEntryCallEvent) currentEvent);
-            // quatsch, umdenken
-            model.addEdge(new EntryCallEdge(lastEvent, currentEvent));
-            lastEvent = currentEvent;
+            currentNode = UserSessionToBehaviorModelConverter.addOrExtendNode(model,
+                    (PayloadAwareEntryCallEvent) iterator.next());
+
+            model.addEdge(new EntryCallEdge(lastNode, currentNode));
+            lastNode = currentNode;
         }
 
         return model;
     }
 
-    private static void addOrExtendNode(final BehaviorModel model, final PayloadAwareEntryCallEvent event) {
+    private static EntryCallNode addOrExtendNode(final BehaviorModel model, final PayloadAwareEntryCallEvent event) {
         final String signature = event.getOperationSignature();
         final EntryCallNode node = model.findNode(signature).orElse(new EntryCallNode(signature));
 
@@ -57,5 +57,6 @@ public class UserSessionToBehaviorModelConverter {
         }
 
         model.addNode(node);
+        return node;
     }
 }
