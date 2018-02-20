@@ -1,87 +1,77 @@
 package org.iobserve.analysis.clustering.filter;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-public class TGroupingStage extends AbstractConsumerStage<List<List<Double>>> {
+public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
     private final OutputPort<List<List<Integer>>> outputPort = this.createOutputPort();
-    
-    private double similarityRadius;
-    
-    private List<List<Integer>> groups = new ArrayList<List<Integer>>();
-    
-    private List<List<Double>> vectors;
-    
-    public TGroupingStage(double similarityRadius) {
-      super();
-      
-      // TODO: check arg validity (non-negative)
-      this.similarityRadius = similarityRadius;
+
+    private final double similarityRadius;
+
+    private final List<List<Integer>> groups = new ArrayList<>();
+
+    private Double[][] vectors;
+
+    public TGroupingStage(final double similarityRadius) {
+        super();
+
+        // TODO: check arg validity (non-negative)
+        this.similarityRadius = similarityRadius;
     }
-    
+
     @Override
-    protected void execute(final List<List<Double>> vectors) {
-      this.vectors = vectors;
-      
-      int index = 0;
-      Iterator<List<Double>> iterator = vectors.iterator();
-      List<Double> vector;
-      
-      while (iterator.hasNext()) {
-        vector = iterator.next();
-        List<Integer> group = findGroup(vector);
-        
-        if (group == null) {
-          List<Integer> newGroup = new ArrayList<Integer>();
-          newGroup.add(index);
-          this.groups.add(newGroup);
-        } else {
-          group.add(index);
+    protected void execute(final Double[][] vectors) {
+        this.vectors = vectors;
+
+        for (int i = 0; i < vectors.length; i++) {
+            final List<Integer> group = this.findGroup(vectors[i]);
+
+            if (group == null) {
+                final List<Integer> newGroup = new ArrayList<>();
+                newGroup.add(i);
+                this.groups.add(newGroup);
+            } else {
+                group.add(i);
+            }
         }
-        
-        index++;
-      }
-      
-      this.outputPort.send(this.groups);
+
+        this.outputPort.send(this.groups);
     }
-    
-    private List<Integer> findGroup(List<Double> vector) {
-      // TODO: randomize
-      for (List<Integer> group: this.groups) {
-        boolean match = true;
-        for (Integer index: group) {
-          if (!match(vector, this.vectors.get(index))) {
-            match = false;
-            break;
-          }
+
+    private List<Integer> findGroup(final Double[] vector) {
+        /** First matching group found is selected */
+        for (final List<Integer> group : this.groups) {
+            boolean matchAll = true;
+            for (final Integer index : group) {
+                if (!this.match(vector, this.vectors[index])) {
+                    matchAll = false;
+                    break;
+                }
+            }
+
+            if (matchAll) {
+                return group;
+            }
         }
-        
-        if (match) {
-          return group;
-        }
-      }
-      
-      return null;
+
+        return null;
     }
-    
-    private boolean match(List<Double> a, List<Double> b) {
-      Iterator<Double> iteratorA = a.iterator();
-      Iterator<Double> iteratorB = b.iterator();
-      
-      while (iteratorA.hasNext()) {
-        if (Math.abs(iteratorA.next() - iteratorB.next()) >= this.similarityRadius) {
-          return false;
+
+    private boolean match(final Double[] a, final Double[] b) {
+        /** a and b should always have same length */
+        for (int i = 0; i < a.length; i++) {
+            if (Math.abs(a[i] - b[i]) >= this.similarityRadius) {
+                return false;
+            }
         }
-      }
-      
-      return true;
+
+        return true;
     }
-    
+
     public OutputPort<List<List<Integer>>> getOutputPort() {
-      return this.outputPort;
+        return this.outputPort;
     }
-  }
+}

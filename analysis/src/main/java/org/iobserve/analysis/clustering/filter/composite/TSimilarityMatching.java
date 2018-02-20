@@ -50,7 +50,7 @@ public class TSimilarityMatching extends CompositeStage {
         return this.sessionInputPort;
     }
 
-    public InputPort<UserSession> getTimerInputPort() {
+    public InputPort<Long> getTimerInputPort() {
         return this.timerInputPort;
     }
 }
