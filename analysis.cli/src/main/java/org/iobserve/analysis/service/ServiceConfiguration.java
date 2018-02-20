@@ -27,6 +27,7 @@ import org.iobserve.analysis.service.updater.AllocationVisualizationStage;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStage;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStage;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.analysis.toggle.FeatureToggle;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -78,6 +79,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      *            url to the visualization service
      * @param snapshotBuilder
      *            snapshot builder
+     * @param featureToggle
+     *            feature toggle
      *
      * @throws MalformedURLException
      *             if any passed URL in the configuration is broken.
@@ -90,11 +93,11 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
             final IModelProvider<ResourceContainer> resourceContainerModelProvider,
             final IModelProvider<AssemblyContext> assemblyContextModelProvider, final String visualizationServiceURL,
-            final SnapshotBuilder snapshotBuilder) throws MalformedURLException {
+            final SnapshotBuilder snapshotBuilder, final FeatureToggle featureToggle) throws MalformedURLException {
         super(configuration, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,
-                EOutputMode.UBM_VISUALIZATION, snapshotBuilder);
+                EOutputMode.UBM_VISUALIZATION, snapshotBuilder, featureToggle);
 
         final URL containerManagementURL = new URL(visualizationBaseUrl, "/v1/systems/" + systemId + "/changelogs");
 
