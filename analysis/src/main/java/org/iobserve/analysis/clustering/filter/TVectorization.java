@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
+import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;

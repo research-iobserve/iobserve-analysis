@@ -1,8 +1,7 @@
 package org.iobserve.analysis.clustering.filter;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
-import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
+import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
+import org.iobserve.analysis.clustering.behaviormodels.EntryCallEdge;
 
 public class UnionModelGenerationStrategy implements IModelGenerationStrategy {
 
@@ -12,10 +11,7 @@ public class UnionModelGenerationStrategy implements IModelGenerationStrategy {
 
         /** Magic happens here */
         for (final BehaviorModel model : models) {
-            for (final EntryCallNode node : model.getNodes()) {
-                newModel.addNode(node);
-            }
-
+            /** Adding edges will also add nodes of edges */
             for (final EntryCallEdge edge : model.getEdges()) {
                 newModel.addEdge(edge);
             }

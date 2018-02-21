@@ -1,6 +1,6 @@
 package org.iobserve.analysis.clustering.filter;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
+import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;

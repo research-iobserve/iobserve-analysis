@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.clustering.filter.models;
+package org.iobserve.analysis.clustering.behaviormodels;
 
 import java.util.Iterator;
 import java.util.List;
@@ -30,14 +30,14 @@ public class UserSessionToBehaviorModelConverter {
         final Iterator<EntryCallEvent> iterator = entryCalls.iterator();
 
         // Assume list has at least one element
-        EntryCallNode lastNode = UserSessionToBehaviorModelConverter.addOrExtendNode(model,
-                (PayloadAwareEntryCallEvent) iterator.next());
+        EntryCallNode lastNode = UserSessionToBehaviorModelConverter
+                .createNode((PayloadAwareEntryCallEvent) iterator.next());
         EntryCallNode currentNode;
 
         while (iterator.hasNext()) {
-            currentNode = UserSessionToBehaviorModelConverter.addOrExtendNode(model,
-                    (PayloadAwareEntryCallEvent) iterator.next());
+            currentNode = UserSessionToBehaviorModelConverter.createNode((PayloadAwareEntryCallEvent) iterator.next());
 
+            /** addEdge will automatically add nodes to model as well */
             model.addEdge(new EntryCallEdge(lastNode, currentNode));
             lastNode = currentNode;
         }
@@ -45,18 +45,16 @@ public class UserSessionToBehaviorModelConverter {
         return model;
     }
 
-    private static EntryCallNode addOrExtendNode(final BehaviorModel model, final PayloadAwareEntryCallEvent event) {
+    private static EntryCallNode createNode(final PayloadAwareEntryCallEvent event) {
         final String signature = event.getOperationSignature();
-        final EntryCallNode node = model.findNode(signature).orElse(new EntryCallNode(signature));
+        final EntryCallNode node = new EntryCallNode(signature);
 
         final String[] parameters = event.getParameters();
         final String[] values = event.getValues();
         for (int i = 0; i < parameters.length; i++) {
-            // TODO: Adapt or rewrite BehaviorModel, CallInformation
             node.mergeInformation(new CallInformation(parameters[i], values[i]));
         }
 
-        model.addNode(node);
         return node;
     }
 }

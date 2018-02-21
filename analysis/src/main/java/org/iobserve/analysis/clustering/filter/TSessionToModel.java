@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.UserSessionToBehaviorModelConverter;
+import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
+import org.iobserve.analysis.clustering.behaviormodels.UserSessionToBehaviorModelConverter;
 import org.iobserve.analysis.session.data.UserSession;
 
 import teetime.framework.AbstractConsumerStage;

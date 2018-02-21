@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.composite;
 
+import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
 import org.iobserve.analysis.clustering.filter.IModelGenerationStrategy;
 import org.iobserve.analysis.clustering.filter.IParameterMetricStrategy;
 import org.iobserve.analysis.clustering.filter.IStructureMetricStrategy;
@@ -22,7 +23,6 @@ import org.iobserve.analysis.clustering.filter.TGroupingStage;
 import org.iobserve.analysis.clustering.filter.TModelGeneration;
 import org.iobserve.analysis.clustering.filter.TSessionToModel;
 import org.iobserve.analysis.clustering.filter.TVectorization;
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
 
 import teetime.framework.CompositeStage;

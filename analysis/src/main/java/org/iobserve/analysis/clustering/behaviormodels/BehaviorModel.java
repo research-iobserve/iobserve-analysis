@@ -86,7 +86,7 @@ public class BehaviorModel {
      * @return input node if no node with the same signature is added, merged node
      *         else
      */
-    private EntryCallNode addNode(final EntryCallNode node) {
+    public EntryCallNode addNode(final EntryCallNode node) {
         final String key = node.toString();
         final EntryCallNode matchingNode = this.nodes.get(key);
 
