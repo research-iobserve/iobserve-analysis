@@ -19,6 +19,7 @@ import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.IBehaviorCompositeStage;
 import org.iobserve.analysis.ISourceCompositeStage;
 import org.iobserve.analysis.InstantiationFactory;
+import org.iobserve.analysis.clustering.filter.TSessionOperationsFilter;
 import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.analysis.session.SessionAcceptanceFilter;
@@ -29,6 +30,7 @@ import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.iobserve.stages.general.RecordSwitch;
+import org.iobserve.stages.source.TimeTriggerFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +63,9 @@ public class MJConfiguration extends Configuration {
      * STRING
      */
     public static final String ENTRY_CALL_FILTER_RULES_FACTORY = IModelGenerationFilterFactory.class.getCanonicalName();
+
+    /** Set time interval required for TimeTriggerFilter. LONG */
+    public static final String TRIGGER_INTERVAL = "triggerInterval";
 
     private final RecordSwitch recordSwitch;
 
@@ -144,6 +149,31 @@ public class MJConfiguration extends Configuration {
         final TraceOperationCleanupFilter traceOperationCleanupFilter = new TraceOperationCleanupFilter(
                 cleanupRewriter);
 
+        /** Create UserSessionOperationsFilter */
+        final String entryCallFilterFactoryClassName = configuration
+                .getStringProperty(MJConfiguration.ENTRY_CALL_FILTER_RULES_FACTORY);
+        if (entryCallFilterFactoryClassName.isEmpty()) {
+            MJConfiguration.LOGGER.error("Initialization incomplete: No entry call filter rules factory specified.");
+            throw new ConfigurationException(
+                    "Initialization incomplete: No entry call filter rules factory specified.");
+        }
+        final IModelGenerationFilterFactory filterRulesFactory = InstantiationFactory.createAndInitialize(
+                IModelGenerationFilterFactory.class, entryCallFilterFactoryClassName, configuration);
+        final TSessionOperationsFilter sessionOperationsFilter = new TSessionOperationsFilter(
+                filterRulesFactory.createFilter());
+
+        /**
+         * Create Clock. Default value of -1 was selected because the method
+         * getLongProperty states it will return "null" if no value was specified, but
+         * long is a primitive type ...
+         */
+        final Long triggerInterval = configuration.getLongProperty(MJConfiguration.TRIGGER_INTERVAL, -1);
+        if (triggerInterval < 0) {
+            MJConfiguration.LOGGER.error("Initialization incomplete: No time trigger interval specified.");
+            throw new ConfigurationException("Initialization incomplete: No time trigger interval specified.");
+        }
+        final TimeTriggerFilter sessionCollectionTimer = new TimeTriggerFilter(triggerInterval);
+
         /** Connect ports. */
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), traceReconstructionStage.getInputPort());
         this.connectPorts(traceReconstructionStage.getTraceValidOutputPort(), entryCallStage.getInputPort());
@@ -151,7 +181,7 @@ public class MJConfiguration extends Configuration {
         this.connectPorts(entryCallStage.getOutputPort(), entryCallSequence.getEntryCallInputPort());
         this.connectPorts(entryCallSequence.getUserSessionOutputPort(), sessionAcceptanceFilter.getInputPort());
         this.connectPorts(sessionAcceptanceFilter.getOutputPort(), traceOperationCleanupFilter.getInputPort());
-
+        this.connectPorts(traceOperationCleanupFilter.getOutputPort(), sessionOperationsFilter.getInputPort());
     }
 
     public RecordSwitch getRecordSwitch() {
