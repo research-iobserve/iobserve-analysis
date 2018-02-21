@@ -16,6 +16,7 @@
 package org.iobserve.common.record;
 
 
+import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -28,7 +29,7 @@ public final class ExtendedBeforeOperationEventFactory implements IRecordFactory
 	
 	
 	@Override
-	public ExtendedBeforeOperationEvent create(final IValueDeserializer deserializer) {
+	public ExtendedBeforeOperationEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new ExtendedBeforeOperationEvent(deserializer);
 	}
 	

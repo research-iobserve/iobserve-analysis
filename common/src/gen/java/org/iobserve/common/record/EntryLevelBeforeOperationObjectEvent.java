@@ -17,6 +17,7 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
+import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.flow.trace.operation.object.BeforeOperationObjectEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
@@ -145,8 +146,9 @@ public class EntryLevelBeforeOperationObjectEvent extends BeforeOperationObjectE
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
+	 * @throws RecordInstantiationException 
 	 */
-	public EntryLevelBeforeOperationObjectEvent(final IValueDeserializer deserializer) {
+	public EntryLevelBeforeOperationObjectEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
 		// load array sizes
 		int _parameters_size0 = deserializer.getInt();

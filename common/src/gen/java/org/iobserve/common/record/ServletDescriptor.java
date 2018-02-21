@@ -16,6 +16,7 @@
 package org.iobserve.common.record;
 
 
+import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.flow.AbstractEvent;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -84,8 +85,9 @@ public abstract class ServletDescriptor extends AbstractEvent  {
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
+	 * @throws RecordInstantiationException 
 	 */
-	public ServletDescriptor(final IValueDeserializer deserializer) {
+	public ServletDescriptor(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
 		this.service = deserializer.getString();
 		this.context = deserializer.getString();

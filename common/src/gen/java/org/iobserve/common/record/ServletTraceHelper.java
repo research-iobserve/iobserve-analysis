@@ -17,6 +17,7 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
+import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
@@ -128,8 +129,9 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
+	 * @throws RecordInstantiationException 
 	 */
-	public ServletTraceHelper(final IValueDeserializer deserializer) {
+	public ServletTraceHelper(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		this.traceId = deserializer.getLong();
 		this.host = deserializer.getString();
 		this.port = deserializer.getInt();
