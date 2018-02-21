@@ -1,26 +1,10 @@
-/***************************************************************************
- * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ***************************************************************************/
-package org.iobserve.planning.peropteryx.rcp;
+package org.iobserve.peropteryx.rcp;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -56,7 +40,6 @@ import de.uka.ipd.sdq.simulation.AbstractSimulationConfig;
  *
  */
 public final class PerOpteryxLaunchConfigurationBuilder {
-    private static final Logger LOG = Logger.getLogger(PerOpteryxLaunchConfigurationBuilder.class);
 
     public static final String DSE_LAUNCH_TYPE_ID = "de.uka.ipd.sdq.dsexplore.launchDSE";
     public static final String DEFAULT_LAUNCH_CONFIG_NAME = "iobserve-peropteryx";
@@ -90,7 +73,6 @@ public final class PerOpteryxLaunchConfigurationBuilder {
         // }
 
         final IPath filePath = ModelFileHelper.getModelFilePath(modelDir, fileExtension);
-        PerOpteryxLaunchConfigurationBuilder.LOG.info(String.format("Retrieved model file with path %s", filePath));
         return filePath;
     }
 
@@ -133,7 +115,6 @@ public final class PerOpteryxLaunchConfigurationBuilder {
 
         final ILaunchConfiguration launchConfig = workingCopy.doSave();
 
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("Using launch configuration with attributes: " + attr.toString());
 
         return launchConfig;
     }
@@ -197,7 +178,6 @@ public final class PerOpteryxLaunchConfigurationBuilder {
 
     private static void setLQNSDefaultOptions(final Map<String, Object> attr, final String projectModelDir,
             final String sourceModelDir) {
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("sourceModelDir: " + sourceModelDir);
         (new File(sourceModelDir + "/lqns_out")).mkdirs();
         (new File(sourceModelDir + "/line_out")).mkdirs();
         attr.put(MessageStrings.SOLVER, MessageStrings.LQNS_SOLVER);
@@ -340,34 +320,27 @@ public final class PerOpteryxLaunchConfigurationBuilder {
     private static void setDefaultConfigFiles(final String modelDir, final Map<String, Object> attr) {
         // Standard PCM settings
         final IPath allocationFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "allocation");
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("Allocation file: " + allocationFile);
         attr.put(ConstantsContainer.ALLOCATION_FILE, allocationFile.toString());
 
         final IPath outputFolder = new Path("platform:/resource/output");
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("Output folder: " + outputFolder);
         attr.put(ConstantsContainer.CLIENTOUT_PATH, outputFolder.toString());
 
         final IPath repositoryFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "repository");
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("Repository file: " + repositoryFile);
         attr.put(ConstantsContainer.REPOSITORY_FILE, repositoryFile.toString());
 
         final IPath resourceEnvFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir,
                 "resourceenvironment");
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("Resourceenvironment file: " + resourceEnvFile);
         attr.put(ConstantsContainer.RESOURCEENVIRONMENT_FILE, resourceEnvFile.toString());
 
         final IPath systemFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "system");
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("System file: " + systemFile);
         attr.put(ConstantsContainer.SYSTEM_FILE, systemFile.toString());
 
         // Has to be only the name because PerOpteryx will create a project with
         // this name
         final IPath tempFolder = new Path("platform:/resource/temporary");
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("Temp folder: " + tempFolder);
         attr.put(ConstantsContainer.TEMPORARY_DATA_LOCATION, tempFolder.toString());
 
         final IPath usageFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "usagemodel");
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("Usage file: " + usageFile);
         attr.put(ConstantsContainer.USAGE_FILE, usageFile.toString());
 
         attr.put(ConstantsContainer.ACCURACY_QUALITY_ANNOTATION_FILE,
@@ -379,15 +352,12 @@ public final class PerOpteryxLaunchConfigurationBuilder {
 
         // PerOpteryx specific settings
         final IPath costFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "cost");
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("Cost file: " + costFile);
         attr.put(DSEConstantsContainer.COST_FILE, costFile.toString());
 
         final IPath decisionFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "designdecision");
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("Designdecision file: " + decisionFile);
         attr.put(DSEConstantsContainer.DESIGN_DECISION_FILE, decisionFile.toString());
 
         final IPath qmlFile = PerOpteryxLaunchConfigurationBuilder.getModelFilePath(modelDir, "qmldeclarations");
-        PerOpteryxLaunchConfigurationBuilder.LOG.info("QMLDeclarations file: " + qmlFile);
         attr.put(DSEConstantsContainer.QML_DEFINITION_FILE, qmlFile.toString());
     }
 }

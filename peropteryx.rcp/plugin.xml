@@ -5,12 +5,9 @@
    <extension
          id="application"
          point="org.eclipse.core.runtime.applications">
-      <application
-            cardinality="singleton-global"
-            thread="main"
-            visible="true">
+      <application>
          <run
-               class="org.iobserve.planning.peropteryx.rcp.PerOpteryxHeadless">
+               class="org.iobserve.peropteryx.rcp.Application">
          </run>
       </application>
    </extension>
@@ -19,10 +16,10 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="peropteryx.rcp.application"
-            name="peropteryx.rcp">
+            name="peropteryx">
          <property
                name="appName"
-               value="peropteryx.rcp">
+               value="peropteryx">
          </property>
       </product>
    </extension>

@@ -1,19 +1,4 @@
-/***************************************************************************
- * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ***************************************************************************/
-package org.iobserve.planning.peropteryx.rcp;
+package org.iobserve.peropteryx.rcp;
 
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
@@ -22,7 +7,6 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -43,14 +27,10 @@ import org.eclipse.equinox.app.IApplicationContext;
 import de.uka.ipd.sdq.dsexplore.launch.DSELaunch;
 
 /**
- * This class controls all aspects of the application's execution.
- *
- * @author Tobias Pöppke
- * @author Philipp Weimann
- * @author Lars Bluemke (gradle integration)
+ * This class controls all aspects of the application's execution
  */
-public class PerOpteryxHeadless implements IApplication {
-    private static final Logger LOG = Logger.getLogger(PerOpteryxHeadless.class);
+public class Application implements IApplication {
+
 
     public static final String INPUT_WORKING_DIR_OPTION = "working-dir";
     public static final String INPUT_WORKING_DIR_OPTION_SHORT = "w";
@@ -69,14 +49,13 @@ public class PerOpteryxHeadless implements IApplication {
 
         final CommandLineParser parser = new BasicParser();
         try {
-            final CommandLine commandLine = parser.parse(PerOpteryxHeadless.createOptions(), args);
-            final String workingDir = commandLine.getOptionValue(PerOpteryxHeadless.INPUT_WORKING_DIR_OPTION);
-            PerOpteryxHeadless.LOG.info("Working dir: " + workingDir);
+            final CommandLine commandLine = parser.parse(Application.createOptions(), args);
+            final String workingDir = commandLine.getOptionValue(Application.INPUT_WORKING_DIR_OPTION);
 
             this.launchPeropteryx(workingDir);
         } catch (final ParseException exp) {
             final HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("peropteryx-headless", PerOpteryxHeadless.createOptions());
+            formatter.printHelp("peropteryx-headless", Application.createOptions());
             return -1;
         }
 
@@ -86,7 +65,6 @@ public class PerOpteryxHeadless implements IApplication {
     }
 
     private void launchPeropteryx(final String workingDir) throws CoreException {
-        PerOpteryxHeadless.LOG.info("Configuring PerOpteryx run...");
         final DSELaunch launch = new DSELaunch();
 
         this.configureInternalWorkspace(workingDir);
@@ -100,13 +78,11 @@ public class PerOpteryxHeadless implements IApplication {
 
         DebugPlugin.getDefault().getLaunchManager().addLaunch(currentLaunch);
 
-        PerOpteryxHeadless.LOG.info("Launching PerOpteryx...");
         launch.launch(launchConfig, ILaunchManager.RUN_MODE, currentLaunch, new NullProgressMonitor());
     }
 
     private void configureInternalWorkspace(final String modelDir) throws CoreException {
         this.workspaceRoot = ResourcesPlugin.getWorkspace().getRoot();
-        PerOpteryxHeadless.LOG.info("Workspace root: " + this.workspaceRoot.getLocation());
         this.project = this.workspaceRoot.getProject(PerOpteryxLaunchConfigurationBuilder.DEFAULT_PROJECT_NAME);
 
         if (this.project.exists()) {
@@ -141,12 +117,12 @@ public class PerOpteryxHeadless implements IApplication {
     private static Options createOptions() {
         final Options options = new Options();
 
-        final Option workDirOption = new Option(PerOpteryxHeadless.INPUT_WORKING_DIR_OPTION_SHORT,
-                PerOpteryxHeadless.INPUT_WORKING_DIR_OPTION, true,
+        final Option workDirOption = new Option(Application.INPUT_WORKING_DIR_OPTION_SHORT,
+                Application.INPUT_WORKING_DIR_OPTION, true,
                 "Working directory containing the model files. Note that the files may be changed in the process.");
         workDirOption.setRequired(true);
 
-        final Option productOption = new Option(PerOpteryxHeadless.INPUT_PRODUCT_OPTION, true,
+        final Option productOption = new Option(Application.INPUT_PRODUCT_OPTION, true,
                 "Eclipse product description");
 
         final Option helpOption = new Option("h", "help", false, "Show usage information");

@@ -1,54 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="peropteryx.rcp" uid="peropteryx.rcp.product" id="peropteryx.rcp.product" application="peropteryx.rcp.application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
+<product name="peropteryx" uid="peropteryx" id="peropteryx.rcp.product" application="peropteryx.rcp.application" useFeatures="false" includeLaunchers="true">
+
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
+      <programArgs>-consoleLog
+      </programArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
 
    <windowImages/>
 
-   <launcher name="peropteryx-headless">
+
+   <launcher>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
 
+
    <vm>
    </vm>
 
+
    <plugins>
-      <plugin id="ch.ethz.iks.r_osgi.remote"/>
       <plugin id="com.google.guava"/>
       <plugin id="com.google.inject"/>
-      <plugin id="com.google.inject.multibindings" fragment="true"/>
       <plugin id="com.ibm.icu"/>
-      <plugin id="de.uka.ipd.sdq.codegen.simucontroller"/>
-      <plugin id="de.uka.ipd.sdq.codegen.simudatavisualisation.datatypes"/>
       <plugin id="de.uka.ipd.sdq.dialogs"/>
       <plugin id="de.uka.ipd.sdq.dsexplore"/>
-      <plugin id="de.uka.ipd.sdq.dsexplore.analysis.cost"/>
-      <plugin id="de.uka.ipd.sdq.dsexplore.analysis.lqn"/>
-      <plugin id="de.uka.ipd.sdq.dsexplore.analysis.reliability"/>
-      <plugin id="de.uka.ipd.sdq.dsexplore.analysis.simucom"/>
       <plugin id="de.uka.ipd.sdq.dsexplore.bayesnets"/>
       <plugin id="de.uka.ipd.sdq.dsexplore.qml"/>
       <plugin id="de.uka.ipd.sdq.dsexplore.qml.handling"/>
       <plugin id="de.uka.ipd.sdq.errorhandling"/>
       <plugin id="de.uka.ipd.sdq.featureconfig"/>
-      <plugin id="de.uka.ipd.sdq.featureconfig.edit"/>
-      <plugin id="de.uka.ipd.sdq.featureinstance.editor"/>
       <plugin id="de.uka.ipd.sdq.featuremodel"/>
-      <plugin id="de.uka.ipd.sdq.featuremodel.edit"/>
       <plugin id="de.uka.ipd.sdq.identifier"/>
       <plugin id="de.uka.ipd.sdq.identifier.edit"/>
-      <plugin id="de.uka.ipd.sdq.pcm.codegen.m2m"/>
-      <plugin id="de.uka.ipd.sdq.pcm.codegen.simucom"/>
       <plugin id="de.uka.ipd.sdq.pcm.cost"/>
       <plugin id="de.uka.ipd.sdq.pcm.designdecision"/>
       <plugin id="de.uka.ipd.sdq.pcm.stochasticexpressions"/>
@@ -57,12 +50,9 @@
       <plugin id="de.uka.ipd.sdq.probfunction.math"/>
       <plugin id="de.uka.ipd.sdq.scheduler"/>
       <plugin id="de.uka.ipd.sdq.sensorframework"/>
-      <plugin id="de.uka.ipd.sdq.sensorframework.adapter"/>
-      <plugin id="de.uka.ipd.sdq.sensorframework.dialogs"/>
       <plugin id="de.uka.ipd.sdq.sensorframework.storage"/>
       <plugin id="de.uka.ipd.sdq.simucomframework"/>
       <plugin id="de.uka.ipd.sdq.simucomframework.simucomstatus"/>
-      <plugin id="de.uka.ipd.sdq.simucomframework.simulationdock"/>
       <plugin id="de.uka.ipd.sdq.simucomframework.variables"/>
       <plugin id="de.uka.ipd.sdq.simulation"/>
       <plugin id="de.uka.ipd.sdq.simulation.abstractsimengine"/>
@@ -79,36 +69,22 @@
       <plugin id="de.uka.ipd.sdq.workflow.mdsd"/>
       <plugin id="de.uka.ipd.sdq.workflow.ui"/>
       <plugin id="de.uka.ipd.sdq.workflow.workbench"/>
+      <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
-      <plugin id="javax.servlet"/>
       <plugin id="javax.xml"/>
       <plugin id="lpg.runtime.java"/>
-      <plugin id="org.antlr.runtime" version="3.2.0.v201101311130"/>
-      <plugin id="org.apache.ant"/>
-      <plugin id="org.apache.batik.css" version="1.7.0.v201011041433"/>
-      <plugin id="org.apache.batik.dom"/>
-      <plugin id="org.apache.batik.ext.awt"/>
-      <plugin id="org.apache.batik.svggen"/>
-      <plugin id="org.apache.batik.util" version="1.7.0.v201011041433"/>
-      <plugin id="org.apache.batik.util.gui" version="1.7.0.v200903091627"/>
-      <plugin id="org.apache.batik.xml"/>
+      <plugin id="org.antlr.runtime"/>
+      <plugin id="org.apache.batik.css"/>
+      <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.commons.cli"/>
       <plugin id="org.apache.commons.codec"/>
       <plugin id="org.apache.commons.collections15"/>
       <plugin id="org.apache.commons.jxpath"/>
       <plugin id="org.apache.commons.lang"/>
-      <plugin id="org.apache.commons.logging"/>
-      <plugin id="org.apache.commons.logging.fragment" fragment="true"/>
       <plugin id="org.apache.commons.math"/>
+      <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>
-      <plugin id="org.apache.felix.gogo.shell"/>
       <plugin id="org.apache.log4j"/>
-      <plugin id="org.apache.lucene.analysis"/>
-      <plugin id="org.apache.lucene.core"/>
-      <plugin id="org.eclipse.ant.core"/>
-      <plugin id="org.eclipse.ant.launching"/>
-      <plugin id="org.eclipse.ant.ui"/>
-      <plugin id="org.eclipse.compare"/>
       <plugin id="org.eclipse.compare.core"/>
       <plugin id="org.eclipse.core.commands"/>
       <plugin id="org.eclipse.core.contenttype"/>
@@ -117,16 +93,11 @@
       <plugin id="org.eclipse.core.databinding.observable"/>
       <plugin id="org.eclipse.core.databinding.property"/>
       <plugin id="org.eclipse.core.expressions"/>
-      <plugin id="org.eclipse.core.externaltools"/>
       <plugin id="org.eclipse.core.filebuffers"/>
       <plugin id="org.eclipse.core.filesystem"/>
-      <plugin id="org.eclipse.core.filesystem.linux.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.core.filesystem.win32.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.macosx" fragment="true"/>
       <plugin id="org.eclipse.core.jobs"/>
-      <plugin id="org.eclipse.core.net"/>
-      <plugin id="org.eclipse.core.net.linux.x86_64" fragment="true"/>
       <plugin id="org.eclipse.core.resources"/>
-      <plugin id="org.eclipse.core.resources.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.debug.core"/>
@@ -137,6 +108,7 @@
       <plugin id="org.eclipse.e4.core.di"/>
       <plugin id="org.eclipse.e4.core.di.annotations"/>
       <plugin id="org.eclipse.e4.core.di.extensions"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.supplier"/>
       <plugin id="org.eclipse.e4.core.services"/>
       <plugin id="org.eclipse.e4.emf.xpath"/>
       <plugin id="org.eclipse.e4.ui.bindings"/>
@@ -146,82 +118,46 @@
       <plugin id="org.eclipse.e4.ui.di"/>
       <plugin id="org.eclipse.e4.ui.model.workbench"/>
       <plugin id="org.eclipse.e4.ui.services"/>
-      <plugin id="org.eclipse.e4.ui.swt.gtk" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.widgets"/>
       <plugin id="org.eclipse.e4.ui.workbench"/>
       <plugin id="org.eclipse.e4.ui.workbench.addons.swt"/>
       <plugin id="org.eclipse.e4.ui.workbench.renderers.swt"/>
+      <plugin id="org.eclipse.e4.ui.workbench.renderers.swt.cocoa" fragment="true"/>
       <plugin id="org.eclipse.e4.ui.workbench.swt"/>
       <plugin id="org.eclipse.e4.ui.workbench3"/>
       <plugin id="org.eclipse.emf"/>
-      <plugin id="org.eclipse.emf.ant"/>
       <plugin id="org.eclipse.emf.cdo"/>
       <plugin id="org.eclipse.emf.cdo.common"/>
-      <plugin id="org.eclipse.emf.cdo.ecore.retrofit" fragment="true"/>
       <plugin id="org.eclipse.emf.codegen"/>
       <plugin id="org.eclipse.emf.codegen.ecore"/>
-      <plugin id="org.eclipse.emf.codegen.ecore.ui"/>
       <plugin id="org.eclipse.emf.common"/>
       <plugin id="org.eclipse.emf.common.ui"/>
-      <plugin id="org.eclipse.emf.converter"/>
       <plugin id="org.eclipse.emf.databinding"/>
-      <plugin id="org.eclipse.emf.databinding.edit"/>
       <plugin id="org.eclipse.emf.ecore"/>
       <plugin id="org.eclipse.emf.ecore.change"/>
       <plugin id="org.eclipse.emf.ecore.edit"/>
-      <plugin id="org.eclipse.emf.ecore.editor"/>
       <plugin id="org.eclipse.emf.ecore.xmi"/>
       <plugin id="org.eclipse.emf.edit"/>
       <plugin id="org.eclipse.emf.edit.ui"/>
-      <plugin id="org.eclipse.emf.importer"/>
-      <plugin id="org.eclipse.emf.mapping.ecore2xml"/>
       <plugin id="org.eclipse.emf.mwe.core"/>
       <plugin id="org.eclipse.emf.mwe.utils"/>
-      <plugin id="org.eclipse.emf.mwe2.lib"/>
       <plugin id="org.eclipse.emf.mwe2.runtime"/>
       <plugin id="org.eclipse.emf.query"/>
-      <plugin id="org.eclipse.emf.query.ocl"/>
       <plugin id="org.eclipse.emf.transaction"/>
       <plugin id="org.eclipse.emf.validation"/>
       <plugin id="org.eclipse.emf.workspace"/>
       <plugin id="org.eclipse.equinox.app"/>
       <plugin id="org.eclipse.equinox.bidi"/>
       <plugin id="org.eclipse.equinox.common"/>
-      <plugin id="org.eclipse.equinox.console"/>
-      <plugin id="org.eclipse.equinox.ds"/>
-      <plugin id="org.eclipse.equinox.event"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin"/>
-      <plugin id="org.eclipse.equinox.frameworkadmin.equinox"/>
-      <plugin id="org.eclipse.equinox.http.jetty"/>
-      <plugin id="org.eclipse.equinox.http.servlet"/>
-      <plugin id="org.eclipse.equinox.p2.artifact.repository"/>
       <plugin id="org.eclipse.equinox.p2.core"/>
-      <plugin id="org.eclipse.equinox.p2.director"/>
-      <plugin id="org.eclipse.equinox.p2.director.app"/>
       <plugin id="org.eclipse.equinox.p2.engine"/>
-      <plugin id="org.eclipse.equinox.p2.garbagecollector"/>
-      <plugin id="org.eclipse.equinox.p2.jarprocessor"/>
       <plugin id="org.eclipse.equinox.p2.metadata"/>
       <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
-      <plugin id="org.eclipse.equinox.p2.operations"/>
-      <plugin id="org.eclipse.equinox.p2.publisher"/>
-      <plugin id="org.eclipse.equinox.p2.publisher.eclipse"/>
       <plugin id="org.eclipse.equinox.p2.repository"/>
-      <plugin id="org.eclipse.equinox.p2.repository.tools"/>
-      <plugin id="org.eclipse.equinox.p2.touchpoint.eclipse"/>
-      <plugin id="org.eclipse.equinox.p2.ui"/>
-      <plugin id="org.eclipse.equinox.p2.updatesite"/>
       <plugin id="org.eclipse.equinox.preferences"/>
-      <plugin id="org.eclipse.equinox.region"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.security"/>
-      <plugin id="org.eclipse.equinox.security.ui"/>
-      <plugin id="org.eclipse.equinox.security.win32.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator"/>
-      <plugin id="org.eclipse.equinox.simpleconfigurator.manipulator"/>
-      <plugin id="org.eclipse.equinox.transforms.hook"/>
-      <plugin id="org.eclipse.equinox.util"/>
-      <plugin id="org.eclipse.equinox.weaving.hook"/>
+      <plugin id="org.eclipse.equinox.security.macosx" fragment="true"/>
       <plugin id="org.eclipse.gef"/>
       <plugin id="org.eclipse.gmf.runtime.common.core"/>
       <plugin id="org.eclipse.gmf.runtime.common.ui"/>
@@ -240,31 +176,13 @@
       <plugin id="org.eclipse.gmf.runtime.gef.ui"/>
       <plugin id="org.eclipse.gmf.runtime.notation"/>
       <plugin id="org.eclipse.help"/>
-      <plugin id="org.eclipse.help.base"/>
-      <plugin id="org.eclipse.help.ui"/>
-      <plugin id="org.eclipse.jdt"/>
       <plugin id="org.eclipse.jdt.compiler.apt" fragment="true"/>
       <plugin id="org.eclipse.jdt.compiler.tool" fragment="true"/>
       <plugin id="org.eclipse.jdt.core"/>
-      <plugin id="org.eclipse.jdt.core.manipulation"/>
-      <plugin id="org.eclipse.jdt.debug"/>
-      <plugin id="org.eclipse.jdt.debug.ui"/>
-      <plugin id="org.eclipse.jdt.junit"/>
-      <plugin id="org.eclipse.jdt.junit.core"/>
-      <plugin id="org.eclipse.jdt.junit.runtime"/>
       <plugin id="org.eclipse.jdt.launching"/>
-      <plugin id="org.eclipse.jdt.ui"/>
-      <plugin id="org.eclipse.jetty.http"/>
-      <plugin id="org.eclipse.jetty.io"/>
-      <plugin id="org.eclipse.jetty.security"/>
-      <plugin id="org.eclipse.jetty.server"/>
-      <plugin id="org.eclipse.jetty.servlet"/>
-      <plugin id="org.eclipse.jetty.util"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
       <plugin id="org.eclipse.jface.text"/>
-      <plugin id="org.eclipse.ltk.core.refactoring"/>
-      <plugin id="org.eclipse.ltk.ui.refactoring"/>
       <plugin id="org.eclipse.m2m.qvt.oml"/>
       <plugin id="org.eclipse.m2m.qvt.oml.common"/>
       <plugin id="org.eclipse.m2m.qvt.oml.cst.parser"/>
@@ -282,11 +200,6 @@
       <plugin id="org.eclipse.osgi.compatibility.state" fragment="true"/>
       <plugin id="org.eclipse.osgi.services"/>
       <plugin id="org.eclipse.osgi.util"/>
-      <plugin id="org.eclipse.pde.build"/>
-      <plugin id="org.eclipse.pde.core"/>
-      <plugin id="org.eclipse.pde.launching"/>
-      <plugin id="org.eclipse.pde.ui"/>
-      <plugin id="org.eclipse.search"/>
       <plugin id="org.eclipse.sirius"/>
       <plugin id="org.eclipse.sirius.common"/>
       <plugin id="org.eclipse.sirius.common.ui"/>
@@ -300,75 +213,39 @@
       <plugin id="org.eclipse.sirius.ext.swt"/>
       <plugin id="org.eclipse.sirius.ui"/>
       <plugin id="org.eclipse.swt"/>
-      <plugin id="org.eclipse.swt.gtk.linux.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86_64" fragment="true"/>
+      <plugin id="org.eclipse.swt.cocoa.macosx.x86_64" fragment="true"/>
       <plugin id="org.eclipse.team.core"/>
-      <plugin id="org.eclipse.team.ui"/>
       <plugin id="org.eclipse.text"/>
       <plugin id="org.eclipse.ui"/>
-      <plugin id="org.eclipse.ui.cheatsheets"/>
+      <plugin id="org.eclipse.ui.cocoa" fragment="true"/>
       <plugin id="org.eclipse.ui.console"/>
       <plugin id="org.eclipse.ui.editors"/>
-      <plugin id="org.eclipse.ui.externaltools"/>
       <plugin id="org.eclipse.ui.forms"/>
       <plugin id="org.eclipse.ui.ide"/>
-      <plugin id="org.eclipse.ui.intro"/>
       <plugin id="org.eclipse.ui.navigator"/>
-      <plugin id="org.eclipse.ui.navigator.resources"/>
-      <plugin id="org.eclipse.ui.trace"/>
       <plugin id="org.eclipse.ui.views"/>
-      <plugin id="org.eclipse.ui.views.log"/>
       <plugin id="org.eclipse.ui.views.properties.tabbed"/>
-      <plugin id="org.eclipse.ui.win32" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
-      <plugin id="org.eclipse.uml2.codegen.ecore"/>
       <plugin id="org.eclipse.uml2.common"/>
       <plugin id="org.eclipse.uml2.common.edit"/>
-      <plugin id="org.eclipse.uml2.types"/>
-      <plugin id="org.eclipse.uml2.uml"/>
-      <plugin id="org.eclipse.uml2.uml.ecore.importer"/>
-      <plugin id="org.eclipse.update.configurator"/>
-      <plugin id="org.eclipse.wst.jsdt.nashorn.extension" fragment="true"/>
       <plugin id="org.eclipse.xpand"/>
       <plugin id="org.eclipse.xtend"/>
-      <plugin id="org.eclipse.xtend.core"/>
       <plugin id="org.eclipse.xtend.lib"/>
       <plugin id="org.eclipse.xtend.lib.macro"/>
-      <plugin id="org.eclipse.xtend.standalone"/>
       <plugin id="org.eclipse.xtend.typesystem.emf"/>
       <plugin id="org.eclipse.xtext"/>
-      <plugin id="org.eclipse.xtext.builder"/>
-      <plugin id="org.eclipse.xtext.builder.standalone"/>
-      <plugin id="org.eclipse.xtext.common.types"/>
-      <plugin id="org.eclipse.xtext.common.types.edit"/>
-      <plugin id="org.eclipse.xtext.common.types.ui"/>
       <plugin id="org.eclipse.xtext.ecore"/>
       <plugin id="org.eclipse.xtext.generator"/>
-      <plugin id="org.eclipse.xtext.ide"/>
-      <plugin id="org.eclipse.xtext.junit4"/>
       <plugin id="org.eclipse.xtext.logging" fragment="true"/>
-      <plugin id="org.eclipse.xtext.smap"/>
-      <plugin id="org.eclipse.xtext.ui"/>
-      <plugin id="org.eclipse.xtext.ui.codetemplates"/>
-      <plugin id="org.eclipse.xtext.ui.codetemplates.ui"/>
-      <plugin id="org.eclipse.xtext.ui.shared"/>
       <plugin id="org.eclipse.xtext.util"/>
-      <plugin id="org.eclipse.xtext.xbase"/>
-      <plugin id="org.eclipse.xtext.xbase.ide"/>
-      <plugin id="org.eclipse.xtext.xbase.junit"/>
       <plugin id="org.eclipse.xtext.xbase.lib"/>
-      <plugin id="org.eclipse.xtext.xbase.ui"/>
       <plugin id="org.eclipse.xtext.xtext.generator"/>
-      <plugin id="org.freejava.javasourceattacher" fragment="true"/>
       <plugin id="org.hamcrest.core"/>
-      <plugin id="org.jfree.jfreechart"/>
       <plugin id="org.jscience"/>
-      <plugin id="org.junit"/>
       <plugin id="org.modelversioning.emfprofile"/>
       <plugin id="org.modelversioning.emfprofile.project"/>
       <plugin id="org.modelversioning.emfprofile.registry"/>
-      <plugin id="org.objectweb.asm"/>
       <plugin id="org.opt4j"/>
       <plugin id="org.palladiosimulator.analyzer.accuracy"/>
       <plugin id="org.palladiosimulator.analyzer.completions"/>
@@ -378,56 +255,29 @@
       <plugin id="org.palladiosimulator.commons"/>
       <plugin id="org.palladiosimulator.editors.commons.dialogs"/>
       <plugin id="org.palladiosimulator.edp2"/>
-      <plugin id="org.palladiosimulator.edp2.batchexport"/>
       <plugin id="org.palladiosimulator.edp2.dao"/>
-      <plugin id="org.palladiosimulator.edp2.datastream"/>
-      <plugin id="org.palladiosimulator.edp2.edit"/>
-      <plugin id="org.palladiosimulator.edp2.repository.local"/>
-      <plugin id="org.palladiosimulator.edp2.ui"/>
       <plugin id="org.palladiosimulator.edp2.util"/>
-      <plugin id="org.palladiosimulator.edp2.visualization"/>
-      <plugin id="org.palladiosimulator.edp2.visualization.jfreechart"/>
       <plugin id="org.palladiosimulator.mdsdprofiles.api"/>
       <plugin id="org.palladiosimulator.measurementframework"/>
       <plugin id="org.palladiosimulator.metricspec"/>
-      <plugin id="org.palladiosimulator.metricspec.edit"/>
       <plugin id="org.palladiosimulator.pcm"/>
-      <plugin id="org.palladiosimulator.pcm.cloud"/>
       <plugin id="org.palladiosimulator.pcm.edit"/>
       <plugin id="org.palladiosimulator.pcm.edp2.measuringpoint"/>
-      <plugin id="org.palladiosimulator.pcm.privacy"/>
-      <plugin id="org.palladiosimulator.pcm.resources"/>
       <plugin id="org.palladiosimulator.pcm.ui"/>
       <plugin id="org.palladiosimulator.probeframework"/>
       <plugin id="org.palladiosimulator.recorderframework"/>
-      <plugin id="org.palladiosimulator.recorderframework.edp2"/>
-      <plugin id="org.palladiosimulator.recorderframework.sensorframework"/>
       <plugin id="org.palladiosimulator.reliability"/>
-      <plugin id="org.palladiosimulator.reliability.markov"/>
-      <plugin id="org.palladiosimulator.reliability.sensitivity"/>
       <plugin id="org.palladiosimulator.solver"/>
       <plugin id="org.palladiosimulator.solver.context"/>
       <plugin id="org.palladiosimulator.solver.lqn"/>
-      <plugin id="org.palladiosimulator.solver.reliability"/>
       <plugin id="org.palladiosimulator.solver.spa"/>
       <plugin id="org.palladiosimulator.solver.spa.basicsolver"/>
       <plugin id="org.palladiosimulator.solver.spa.resourcemodel"/>
-      <plugin id="org.sat4j.core"/>
-      <plugin id="org.sat4j.pb"/>
-      <plugin id="org.slf4j.api"/>
-      <plugin id="org.slf4j.impl.log4j12" fragment="true"/>
       <plugin id="org.tukaani.xz"/>
       <plugin id="org.w3c.css.sac"/>
-      <plugin id="org.w3c.dom.events"/>
-      <plugin id="org.w3c.dom.smil"/>
-      <plugin id="org.w3c.dom.svg"/>
-      <plugin id="peropteryx.plugin"/>
+      <plugin id="peropteryx.rcp"/>
    </plugins>
 
-   <configurations>
-      <property name="model-working-dir" value="/working_dir" />
-      <property name="peropteryx-executable" value="peropteryx-headless" />
-   </configurations>
 
    <preferencesInfo>
       <targetfile overwrite="false"/>

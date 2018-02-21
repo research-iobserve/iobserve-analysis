@@ -1,27 +1,214 @@
 def runtimeDeps = [
-'org.eclipse.osgi',
-'org.eclipse.update.configurator',
-'org.eclipse.equinox.ds',
-'org.eclipse.equinox.registry',
-'org.eclipse.core.commands',
-'javax.annotation',
-'javax.inject',
-'org.eclipse.core.jobs',
-'org.eclipse.equinox.preferences',
-'org.eclipse.core.contenttype',
-'org.eclipse.equinox.util',
-'org.eclipse.osgi.services'
+'de.uka.ipd.sdq.dialogs',
+'de.uka.ipd.sdq.dsexplore',
+'de.uka.ipd.sdq.dsexplore.bayesnets',
+'de.uka.ipd.sdq.dsexplore.qml',
+'de.uka.ipd.sdq.dsexplore.qml.handling',
+'de.uka.ipd.sdq.errorhandling',
+'de.uka.ipd.sdq.featureconfig',
+'de.uka.ipd.sdq.featuremodel',
+'de.uka.ipd.sdq.identifier',
+'de.uka.ipd.sdq.identifier.edit',
+'de.uka.ipd.sdq.pcm.cost',
+'de.uka.ipd.sdq.pcm.designdecision',
+'de.uka.ipd.sdq.pcm.stochasticexpressions',
+'de.uka.ipd.sdq.probfunction',
+'de.uka.ipd.sdq.probfunction.edit',
+'de.uka.ipd.sdq.probfunction.math',
+'de.uka.ipd.sdq.scheduler',
+'de.uka.ipd.sdq.sensorframework',
+'de.uka.ipd.sdq.sensorframework.storage',
+'de.uka.ipd.sdq.simucomframework',
+'de.uka.ipd.sdq.simucomframework.simucomstatus',
+'de.uka.ipd.sdq.simucomframework.variables',
+'de.uka.ipd.sdq.simulation',
+'de.uka.ipd.sdq.simulation.abstractsimengine',
+'de.uka.ipd.sdq.statistics',
+'de.uka.ipd.sdq.stoex',
+'de.uka.ipd.sdq.stoex.analyser',
+'de.uka.ipd.sdq.stoex.edit',
+'de.uka.ipd.sdq.tcfmoop',
+'de.uka.ipd.sdq.units',
+'de.uka.ipd.sdq.units.edit',
+'de.uka.ipd.sdq.workflow',
+'de.uka.ipd.sdq.workflow.launchconfig',
+'de.uka.ipd.sdq.workflow.logging.console',
+'de.uka.ipd.sdq.workflow.mdsd',
+'de.uka.ipd.sdq.workflow.ui',
+'de.uka.ipd.sdq.workflow.workbench',
+'lpg.runtime.java',
+'org.antlr.runtime',
+'org.apache.commons.collections15',
+'org.apache.commons.lang',
+'org.apache.commons.math',
+'org.apache.log4j',
+'org.eclipse.draw2d',
+'org.eclipse.e4.core.di.extensions.supplier',
+'org.eclipse.emf',
+'org.eclipse.emf.codegen',
+'org.eclipse.emf.codegen.ecore',
+'org.eclipse.emf.common.ui',
+'org.eclipse.emf.databinding',
+'org.eclipse.emf.ecore.edit',
+'org.eclipse.emf.edit',
+'org.eclipse.emf.edit.ui',
+'org.eclipse.emf.mwe.utils',
+'org.eclipse.emf.query',
+'org.eclipse.emf.transaction',
+'org.eclipse.emf.validation',
+'org.eclipse.emf.workspace',
+'org.eclipse.gef',
+'org.eclipse.gmf.runtime.common.core',
+'org.eclipse.gmf.runtime.common.ui',
+'org.eclipse.gmf.runtime.common.ui.action',
+'org.eclipse.gmf.runtime.common.ui.services',
+'org.eclipse.gmf.runtime.common.ui.services.action',
+'org.eclipse.gmf.runtime.diagram.core',
+'org.eclipse.gmf.runtime.diagram.ui',
+'org.eclipse.gmf.runtime.draw2d.ui',
+'org.eclipse.gmf.runtime.draw2d.ui.render',
+'org.eclipse.gmf.runtime.emf.clipboard.core',
+'org.eclipse.gmf.runtime.emf.commands.core',
+'org.eclipse.gmf.runtime.emf.core',
+'org.eclipse.gmf.runtime.emf.type.core',
+'org.eclipse.gmf.runtime.emf.ui',
+'org.eclipse.gmf.runtime.gef.ui',
+'org.eclipse.gmf.runtime.notation',
+'org.eclipse.jdt.compiler.apt',
+'org.eclipse.jdt.compiler.tool',
+//'org.eclipse.jdt.core',
+'org.eclipse.jdt.launching',
+'org.eclipse.m2m.qvt.oml',
+'org.eclipse.m2m.qvt.oml.common',
+'org.eclipse.m2m.qvt.oml.cst.parser',
+'org.eclipse.m2m.qvt.oml.ecore.imperativeocl',
+'org.eclipse.m2m.qvt.oml.emf.util',
+'org.eclipse.m2m.qvt.oml.ocl',
+'org.eclipse.m2m.qvt.oml.project',
+'org.eclipse.m2m.qvt.oml.runtime',
+'org.eclipse.sirius',
+'org.eclipse.sirius.common',
+'org.eclipse.sirius.common.ui',
+'org.eclipse.sirius.ecore.extender',
+'org.eclipse.sirius.ext.base',
+'org.eclipse.sirius.ext.e3.ui',
+'org.eclipse.sirius.ext.emf',
+'org.eclipse.sirius.ext.emf.tx',
+'org.eclipse.sirius.ext.emf.ui',
+'org.eclipse.sirius.ext.jface',
+'org.eclipse.sirius.ext.swt',
+'org.eclipse.sirius.ui',
+'org.eclipse.uml2.common',
+'org.eclipse.uml2.common.edit',
+//'org.eclipse.uml2.types',
+'org.eclipse.xpand',
+'org.eclipse.xtend',
+'org.eclipse.xtend.lib',
+'org.eclipse.xtend.lib.macro',
+'org.eclipse.xtend.typesystem.emf',
+'org.eclipse.xtext',
+'org.eclipse.xtext.ecore',
+'org.eclipse.xtext.generator',
+'org.eclipse.xtext.logging',
+'org.eclipse.xtext.util',
+'org.eclipse.xtext.xbase.lib',
+'org.eclipse.xtext.xtext.generator',
+'org.hamcrest.core',
+//'org.jfree.jfreechart',
+'org.jscience',
+//'org.junit',
+'org.modelversioning.emfprofile',
+'org.modelversioning.emfprofile.project',
+'org.modelversioning.emfprofile.registry',
+'org.opt4j',
+'org.palladiosimulator.analyzer.accuracy',
+'org.palladiosimulator.analyzer.completions',
+'org.palladiosimulator.analyzer.quality',
+'org.palladiosimulator.analyzer.resultdecorator',
+'org.palladiosimulator.analyzer.workflow',
+'org.palladiosimulator.commons',
+'org.palladiosimulator.editors.commons.dialogs',
+'org.palladiosimulator.edp2',
+'org.palladiosimulator.edp2.dao',
+'org.palladiosimulator.edp2.util',
+'org.palladiosimulator.mdsdprofiles.api',
+'org.palladiosimulator.measurementframework',
+'org.palladiosimulator.metricspec',
+'org.palladiosimulator.pcm',
+'org.palladiosimulator.pcm.edit',
+'org.palladiosimulator.pcm.edp2.measuringpoint',
+'org.palladiosimulator.pcm.ui',
+'org.palladiosimulator.probeframework',
+'org.palladiosimulator.recorderframework',
+'org.palladiosimulator.reliability',
+'org.palladiosimulator.solver',
+'org.palladiosimulator.solver.context',
+'org.palladiosimulator.solver.lqn',
+'org.palladiosimulator.solver.spa',
+'org.palladiosimulator.solver.spa.basicsolver',
+'org.palladiosimulator.solver.spa.resourcemodel'
 ]
 
 dependencies {
-	compile project(":analysis")
+
+	// analysis	
+	//compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
+	// compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.11.+'
+	//compile 'org.eclipse.emf:org.eclipse.emf.common:2.11.+'
+	compile 'org.eclipse.emf:org.eclipse.emf.mwe.core:1.3.20+'
+	compile 'org.eclipse.uml2:org.eclipse.uml2.types:2.0.0+'
+	//compile 'org.eclipse.platform:org.eclipse.equinox.common:3.8.0+'
+		
+	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
+	compile 'org.apache.logging.log4j:log4j-core:2.6.2'
+	
+	compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
+	
+	compile 'extra:org.palladiosimulator.pcm:4.0.2+'
+	compile 'extra:org.palladiosimulator.pcm.resources:4.0.0+'
+	compile 'extra:org.palladiosimulator.pcm.privacy:4.0.2.2017-05-31'
+	compile 'extra:org.palladiosimulator.pcm.cloud:1.0.0+'
+	compile 'extra:org.palladiosimulator.analyzer.workflow:1.0.0+'
+	compile 'extra:org.palladiosimulator.analyzer.completions:1.0.0+'
+	compile 'extra:org.palladiosimulator.analyzer.resultdecorator:1.0.0+'
+	compile 'extra:org.palladiosimulator.analyzer.quality:1.0.0+'
+	compile 'extra:org.palladiosimulator.solver:3.0.0+'
+	compile 'extra:org.palladiosimulator.solver.context:2.0.0+'
+	
+	compile 'extra:de.uka.ipd.sdq.stoex:2.2.0+'
+	compile 'extra:de.uka.ipd.sdq.units:2.1.0.201511050934'
+	compile 'extra:de.uka.ipd.sdq.probfunction:2.1.0+'
+	compile 'extra:de.uka.ipd.sdq.probfunction.math:2.0.2+'
+	compile 'extra:de.uka.ipd.sdq.pcm.cost:1.0.0+'
+	compile 'extra:de.uka.ipd.sdq.pcm.designdecision:1.3.0+'
+	compile 'extra:de.uka.ipd.sdq.featuremodel:2.1.0+'
+	compile 'extra:de.uka.ipd.sdq.tcfmoop:1.0.0+'
+	compile 'extra:de.uka.ipd.sdq.dsexplore.qml:1.0.0+'
+	compile 'extra:de.uka.ipd.sdq.workflow.launchconfig:2.1.0+'
+	compile 'extra:de.uka.ipd.sdq.workflow:2.1.1+'
+	compile 'extra:de.uka.ipd.sdq.workflow.mdsd:2.1.1+'
+	compile 'extra:de.uka.ipd.sdq.errorhandling:1.0.0+'
+	
+	compile 'extra:org.eclipse.emf.cdo:4.5.0.v20160607-1254'
+	compile 'extra:org.eclipse.emf.cdo.common:4.5.0.v20160301-1326'
+	compile 'extra:org.eclipse.net4j:4.5.0.v20160607-1254'
+	compile 'extra:org.eclipse.net4j.util:3.6.0.v20160607-1254'
+	compile 'extra:org.eclipse.ocl:3.6.0.v20160523-1914'
+	compile 'extra:org.eclipse.ocl.common:1.4.0.v20160521-2033'
+	compile 'extra:org.eclipse.ocl.ecore:3.6.0.v20160523-1914'
+
+	// analysis end
+
 	
 	compile "eclipse-deps:org.eclipse.osgi:+"
 	compile "eclipse-deps:org.eclipse.core.jobs:+"
 	compile "eclipse-deps:org.eclipse.core.runtime:+"
 	compile "eclipse-deps:org.eclipse.core.resources:+"
 	compile "eclipse-deps:org.eclipse.debug.core:+"
+	compile "eclipse-deps:org.eclipse.emf.common:+"
+	compile "eclipse-deps:org.eclipse.emf.ecore:+"
 	compile "eclipse-deps:org.eclipse.equinox.app:+"	
+	compile "eclipse-deps:org.eclipse.equinox.common:+"
 	
 	compile 'extra:de.uka.ipd.sdq.dsexplore:1.3.0.201709290946'
 	compile 'extra:de.uka.ipd.sdq.dsexplore.analysis.cost:1.0.0.201709290946'
@@ -43,12 +230,19 @@ dependencies {
 
 	runtime 'com.diffplug.osgi:com.diffplug.osgi.extension.sun.misc:0.0.0'
 	
-	//runtimeDeps.each {
-	//	runtime "eclipse-deps:${it}:+"
-	//}
-}
-jar.manifest.attributes('Bundle-SymbolicName': project.name + ';singleton:=true')
 
+	runtime 'eclipse-deps:org.eclipse.emf.ecore.xmi:+'
+	runtime 'eclipse-deps:org.eclipse.jdt.core:+'
+	
+				
+	runtimeDeps.each {
+		runtime "extra:${it}:+"
+	}
+}
+
+
+
+jar.manifest.attributes('Bundle-SymbolicName': project.name + ';singleton:=true')
 
 //////////////////////
 // Run headless app //
