@@ -122,7 +122,7 @@ public class MJConfiguration extends Configuration {
         /** Create EntryCallSequence */
         final EntryCallSequence entryCallSequence = new EntryCallSequence();
 
-        /** Create SessionAcceptancecFilter */
+        /** Create SessionAcceptanceFilter */
         final String entryCallMatcherClassName = configuration
                 .getStringProperty(MJConfiguration.ENTRY_CALL_ACCEPTANCE_MATCHER);
         if (entryCallMatcherClassName.isEmpty()) {
