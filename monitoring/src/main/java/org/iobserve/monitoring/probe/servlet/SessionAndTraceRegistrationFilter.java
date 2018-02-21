@@ -137,7 +137,8 @@ public class SessionAndTraceRegistrationFilter implements Filter, IMonitoringPro
                 }
             } else {
                 method = "POST";
-                path = request.getServletContext().getContextPath().replace('/', '.').substring(1);
+
+                path = ""; // TODO this is not sufficient, but for now we have to use it
                 sessionId = "<no session>";
                 query = "";
             }
@@ -215,7 +216,7 @@ public class SessionAndTraceRegistrationFilter implements Filter, IMonitoringPro
     protected String registerSessionInformation(final ServletRequest request) {
         String sessionId = TraceMetadata.NO_SESSION_ID;
 
-        if ((request == null) || !(request instanceof HttpServletRequest)) {
+        if (request == null || !(request instanceof HttpServletRequest)) {
             return sessionId;
         }
 

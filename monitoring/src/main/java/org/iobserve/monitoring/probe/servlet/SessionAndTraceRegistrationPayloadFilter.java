@@ -154,7 +154,7 @@ public class SessionAndTraceRegistrationPayloadFilter implements Filter, IMonito
                     }
                 }
 
-                final String componentSignature = request.getServletContext().getContextPath();
+                final String componentSignature = requestPath;
 
                 TraceMetadata trace = SessionAndTraceRegistrationPayloadFilter.TRACEREGISTRY.getTrace();
                 final boolean newTrace = trace == null;

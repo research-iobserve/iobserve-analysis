@@ -163,7 +163,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
                 }
             } else {
                 method = "POST";
-                path = request.getServletContext().getContextPath().replace('/', '.').substring(1);
+                path = ""; // TODO this is not sufficient, but for now we have to use it
                 sessionId = "<no session>";
                 query = "";
             }
