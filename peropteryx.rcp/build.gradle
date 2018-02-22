@@ -354,10 +354,10 @@ dependencies {
 	
 	// runtime dependencies added by "add required" after the previous deps have been added manually
 	runtime 'extra:org.apache.felix.scr:2.0.10.v20170501-2007'
-	runtime 'extra:
-	wrc.dom.svg
-	w3c.dom.smil
-	w3c.dom.events
+	//runtime 'extra:
+	//wrc.dom.svg
+	//w3c.dom.smil
+	//w3c.dom.events
 
 	additionalRuntimeDeps.each {
 		runtime "extra:${it}:+"
