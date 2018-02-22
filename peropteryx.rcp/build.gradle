@@ -149,6 +149,107 @@ def runtimeDeps = [
 'org.palladiosimulator.solver.spa.resourcemodel'
 ]
 
+def additionalRuntimeDeps = [
+'ch.ethz.iks.r_osgi.remote',
+'de.mdelab.sdm.interpreter.core',
+'de.mdelab.sdm.interpreter.core.eclipse',
+'de.uka.ipd.sdq.featureconfig.edit',
+'de.uka.ipd.sdq.featureinstance.editor',
+'de.uka.ipd.sdq.featuremodel.edit',
+'de.uka.ipd.sdq.pcm.codegen.simucom',
+'de.uka.ipd.sdq.simucomframework.simulationdock',
+'org.apache.ant',
+'org.apache.batik.dom',
+'org.apache.batik.ext.awt',
+'org.apache.batik.svggen',
+'org.apache.batik.util.gui',
+'org.apache.batik.xml',
+'org.eclipse.ant.core',
+'org.eclipse.ant.launching',
+'org.eclipse.ant.ui',
+'org.eclipse.compare',
+'org.eclipse.core.externaltools',
+'org.eclipse.emf.databinding.edit',
+'org.eclipse.emf.query.ocl',
+'org.eclipse.equinox.event',
+'org.eclipse.equinox.frameworkadmin',
+'org.eclipse.equinox.frameworkadmin.equinox',
+'org.eclipse.equinox.p2.artifact.repository',
+'org.eclipse.equinox.p2.director',
+'org.eclipse.equinox.p2.director.app',
+'org.eclipse.equinox.p2.garbagecollector',
+'org.eclipse.equinox.p2.jarprocessor',
+'org.eclipse.equinox.p2.operations',
+'org.eclipse.equinox.p2.operations',
+'org.eclipse.equinox.p2.publisher.eclipse',
+'org.eclipse.equinox.p2.repository.tools',
+'org.eclipse.equinox.p2.touchpoint.eclipse',
+'org.eclipse.equinox.p2.ui',
+'org.eclipse.equinox.p2.updatesite',
+'org.eclipse.equinox.security.ui',
+'org.eclipse.equinox.simpleconfigurator',
+'org.eclipse.equinox.simpleconfigurator.manipulator',
+'org.eclipse.jdt.core.manipulation',
+'org.eclipse.jdt.debug.ui',
+'org.eclipse.jdt.junit',
+'org.eclipse.jdt.junit.core',
+'org.eclipse.jdt.junit.runtime',
+'org.eclipse.jdt.ui',
+'org.eclipse.ltk.core.refactoring',
+'org.eclipse.ltk.ui.refactoring',
+'org.eclipse.pde.build',
+'org.eclipse.pde.launching',
+'org.eclipse.pde.ui',
+'org.eclipse.search',
+'org.eclipse.team.ui',
+'org.eclipse.ui.cheatsheets',
+'org.eclipse.ui.externaltools',
+'org.eclipse.ui.intro',
+'org.eclipse.ui.navigator.resources',
+'org.eclipse.ui.trace',
+'org.eclipse.ui.views.log',
+'org.eclipse.update.configurator',
+'org.eclipse.wst.common.core',
+'org.eclipse.wst.server.discovery',
+'org.eclipse.xtend.core',
+'org.eclipse.xtend.standalone',
+'org.eclipse.xtext.builder.standalone',
+'org.eclipse.xtext.common.types',
+'org.eclipse.xtext.junit4',
+'org.eclipse.xtext.smap',
+'org.eclipse.xtext.ui.testing',
+'org.eclipse.xtext.xbase',
+'org.eclipse.xtext.xbase.junit',
+'org.modelversioning.emfprofile.edit',
+'org.objectweb.asm',
+'org.palladiosimulator.edp2.batchexport',
+'org.palladiosimulator.edp2.datastream',
+'org.palladiosimulator.edp2.edit',
+'org.palladiosimulator.edp2.repository.local',
+'org.palladiosimulator.edp2.ui',
+'org.palladiosimulator.edp2.visualization',
+'org.palladiosimulator.edp2.visualization.jfreechart',
+'org.palladiosimulator.metricspec.edit',
+'org.palladiosimulator.monitorrepository',
+'org.palladiosimulator.recorderframework.edp2',
+'org.palladiosimulator.servicelevelobjective',
+'org.palladiosimulator.servicelevelobjective.edp2',
+'org.palladiosimulator.simulizar.edp2.measuringpoint',
+'org.palladiosimulator.simulizar.reconfiguration.qvto',
+'org.palladiosimulator.simulizar.reconfigurationrule',
+'org.palladiosimulator.simulizar.runtimemeasurement',
+'org.palladiosimulator.simulizar.ui',
+'org.sat4j.core',
+'org.sat4j.pb',
+'org.scaledl.usageevolution',
+'org.storydriven.core',
+'org.storydriven.storydiagrams',
+'org.storydriven.storydiagrams.expressions',
+'org.storydriven.storydiagrams.interpreter.core',
+'org.storydriven.storydiagrams.interpreter.eclipse',
+'tools.descartes.dlim.generator'
+]
+
 dependencies {
 
 	// analysis	
@@ -226,18 +327,43 @@ dependencies {
 	compile 'extra:org.palladiosimulator.recorderframework.edp2:2.0.2.201603031355'
 	compile 'extra:org.palladiosimulator.reliability:3.1.0.201511051309'
 
+	
 	testCompile "junit:junit:${VER_JUNIT}"
 
 	runtime 'com.diffplug.osgi:com.diffplug.osgi.extension.sun.misc:0.0.0'
 	
-
+	
 	runtime 'eclipse-deps:org.eclipse.emf.ecore.xmi:+'
 	runtime 'eclipse-deps:org.eclipse.jdt.core:+'
 	
-				
 	runtimeDeps.each {
 		runtime "extra:${it}:+"
 	}
+
+	// additional runtime deps (not added automatically by "add required")
+	runtime 'extra:org.antlr.runtime:3.2.0.v201101311130'
+	runtime 'extra:org.eclipse.equinox.ds:1.5.0.v20170307-1429'
+	
+	runtime 'extra:de.uka.ipd.sdq.codegen.simucontroller:4.1.0.201709290901'
+	runtime 'extra:org.eclipse.pde.core:3.11.100.v20170517-0724'
+	runtime 'extra:org.eclipse.wst.server.core:1.10.0.v201705172051'
+	runtime 'extra:org.palladiosimulator.simulizar:2.1.0.201709282222'
+	runtime 'extra:org.palladiosimulator.simulizar.action:1.0.0.201709282222'
+	runtime 'extra:org.palladiosimulator.simulizar.action.edit:1.0.0.201709282222'
+	runtime 'extra:org.palladiosimulator.simulizar.reconfiguration.storydiagram:1.0.0.201709282222'
+	
+	// runtime dependencies added by "add required" after the previous deps have been added manually
+	runtime 'extra:org.apache.felix.scr:2.0.10.v20170501-2007'
+	runtime 'extra:
+	wrc.dom.svg
+	w3c.dom.smil
+	w3c.dom.events
+
+	additionalRuntimeDeps.each {
+		runtime "extra:${it}:+"
+	}	
+				
+
 }
 
 
