@@ -1,0 +1,18 @@
+package org.iobserve.adaptation.drools
+
+rule "Create acquire action"
+when
+    $nodeA : RedeploymentDeploymentNode()
+    not RuntimeDeploymentNode( resourceContainerID == $nodeA.getResourceContainerID )
+then
+    insert( new AcquireAction($nodeA) );
+end
+
+
+rule "Create terminate action"
+when
+    $nodeA : RuntimeDeploymentNode()
+    not RedeploymentDeploymentNode( resourceContainerID == $nodeA.getResourceContainerID )
+then
+    insert( new TerminateAction($nodeA) );
+end

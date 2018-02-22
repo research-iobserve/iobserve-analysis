@@ -1,0 +1,41 @@
+package org.iobserve.adaptation.drools
+
+
+rule "Create allocation action"
+when
+    $nodeA : RedeploymentComponentNode()
+    not RuntimeComponentNode( assemblyContextID == $nodeA.getAssemblyContextID )
+then
+    insert( new AllocationAction($nodeA) );
+end
+
+
+rule "Create deallocation action"
+when
+    $nodeA : RuntimeComponentNode()
+    not RedeploymentComponentNode( assemblyContextID == $nodeA.getAssemblyContextID )
+then
+    insert( new DeallocationAction($nodeA) );
+end
+
+
+rule "Create migration action"
+when
+    $nodeA : RuntimeComponentNode()
+    RedeploymentComponentNode( 
+    		assemblyContextID 					== $nodeA.getAssemblyContextID, 
+    		hostServer.getResourceContainerID() 	!= $nodeA.getHostServer().getResourceContainerID() )
+then
+    insert( new MigrationAction($nodeA) );
+end
+
+
+rule "Create change repository action"
+when
+    $nodeA : RuntimeComponentNode()
+    RedeploymentComponentNode( 
+    		assemblyContextID 					== $nodeA.getAssemblyContextID, 
+    		repositoryComponentID 				!= $nodeA.getRepositoryComponentID() )
+then
+    insert( new MigrationAction($nodeA) );
+end
