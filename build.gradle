@@ -37,7 +37,7 @@ subprojects {
     apply plugin: 'eclipse'
     apply plugin: 'pmd'
     apply plugin: 'com.bmuschko.clover'
-	apply plugin: 'checkstyle'
+	//apply plugin: 'checkstyle'
     
     version = '0.0.2-SNAPSHOT'
     group = 'org.iobserve'
@@ -49,10 +49,10 @@ subprojects {
 	    }
 	}
 
-    checkstyle {
+    /*checkstyle {
     	configFile = file("$confDir/iobserve-checkstyle-rules.xml")
     	configDir = file("$confDir")	
-    }  
+    }  */
     
    	pmd {
     	ignoreFailures = true
