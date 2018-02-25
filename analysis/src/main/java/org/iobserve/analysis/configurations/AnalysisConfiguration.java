@@ -15,19 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-import org.iobserve.analysis.ConfigurationException;
-import org.iobserve.analysis.IBehaviorCompositeStage;
-import org.iobserve.analysis.IContainerManagementSinksStage;
-import org.iobserve.analysis.ISourceCompositeStage;
-import org.iobserve.analysis.InstantiationFactory;
-
-import teetime.framework.Configuration;
-import teetime.framework.OutputPort;
-import teetime.stage.basic.distributor.Distributor;
-import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
-import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
