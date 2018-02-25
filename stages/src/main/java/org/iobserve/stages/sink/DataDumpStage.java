@@ -17,14 +17,8 @@ package org.iobserve.stages.sink;
 
 import kieker.common.configuration.Configuration;
 import kieker.common.record.IMonitoringRecord;
-import kieker.monitoring.core.configuration.ConfigurationFactory;
-import kieker.monitoring.core.configuration.ConfigurationKeys;
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
-import kieker.monitoring.writer.filesystem.AbstractFileWriter;
-import kieker.monitoring.writer.filesystem.AsciiFileWriter;
-import kieker.monitoring.writer.filesystem.BinaryFileWriter;
-import kieker.monitoring.writer.filesystem.compression.NoneCompressionFilter;
 
 import teetime.framework.AbstractConsumerStage;
 
@@ -38,9 +32,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
-
-    private static final String ASCII_WRITER_NAME = AsciiFileWriter.class.getCanonicalName();
-    private static final String BINARY_WRITER_NAME = BinaryFileWriter.class.getCanonicalName();
 
     private final IMonitoringController ctrl;
 
@@ -58,28 +49,7 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
      * @param type
      *            type of serialization
      */
-    public DataDumpStage(final String dataLocation, final String hostname, final ESerializationType type) {
-        final Configuration configuration = ConfigurationFactory.createDefaultConfiguration();
-        configuration.setProperty(ConfigurationKeys.CONTROLLER_NAME, "iObserve-Experiments");
-        switch (type) {
-        case ASCII:
-            configuration.setProperty(ConfigurationKeys.WRITER_CLASSNAME, DataDumpStage.ASCII_WRITER_NAME);
-            break;
-        case BINARY:
-            configuration.setProperty(ConfigurationKeys.WRITER_CLASSNAME, DataDumpStage.BINARY_WRITER_NAME);
-            break;
-        }
-
-        configuration.setProperty("kieker.monitoring.hostname", hostname);
-
-        configuration.setProperty(AbstractFileWriter.CONFIG_CHARSET_NAME, "UTF-8");
-        configuration.setProperty(AbstractFileWriter.CONFIG_FLUSH, "true");
-        configuration.setProperty(AbstractFileWriter.CONFIG_MAXENTRIESINFILE, "25000");
-        configuration.setProperty(AbstractFileWriter.CONFIG_MAXLOGFILES, "-1");
-        configuration.setProperty(AbstractFileWriter.CONFIG_MAXLOGSIZE, "-1");
-        configuration.setProperty(AbstractFileWriter.CONFIG_PATH, dataLocation);
-        configuration.setProperty(AbstractFileWriter.CONFIG_COMPRESSION_FILTER, NoneCompressionFilter.class.getName());
-
+    public DataDumpStage(final Configuration configuration) {
         DataDumpStage.LOGGER.debug("Configuration complete.");
 
         this.ctrl = MonitoringController.createInstance(configuration);

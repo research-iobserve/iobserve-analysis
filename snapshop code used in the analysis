@@ -1,0 +1,6 @@
+this.snapshotPath = configuration.getStringProperty(ConfigurationKeys.SNAPSHOT_PATH);
+        this.perOpteryxUriPath = configuration.getStringProperty(ConfigurationKeys.PER_OPTERYX_URI_PATH);
+        this.lqnsUriPath = configuration.getStringProperty(ConfigurationKeys.LQNS_URI_PATH);
+        this.deployablesFolderPath = configuration.getStringProperty(ConfigurationKeys.DEPLOYABLES_FOLDER_PATH);
+       
+

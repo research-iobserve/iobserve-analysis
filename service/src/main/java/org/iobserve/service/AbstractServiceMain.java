@@ -25,7 +25,7 @@ import kieker.monitoring.core.configuration.ConfigurationFactory;
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
-import org.iobserve.analysis.ConfigurationException;
+import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

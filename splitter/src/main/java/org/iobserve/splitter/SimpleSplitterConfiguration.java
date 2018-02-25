@@ -20,12 +20,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import kieker.monitoring.core.configuration.ConfigurationKeys;
+import kieker.monitoring.writer.filesystem.FileWriter;
+
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
 
 import org.iobserve.stages.sink.DataDumpStage;
-import org.iobserve.stages.sink.ESerializationType;
 import org.iobserve.stages.source.Dir2RecordsFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,13 +78,24 @@ public class SimpleSplitterConfiguration extends Configuration {
         this.consumer = new DataDumpStage[hostnames.length];
 
         for (int i = 0; i < hostnames.length; i++) {
-            this.consumer[i] = new DataDumpStage(outputLocation.getCanonicalPath(), hostnames[i],
-                    ESerializationType.ASCII);
+            this.consumer[i] = new DataDumpStage(
+                    this.createConfiguration(outputLocation.getCanonicalPath(), hostnames[i]));
             this.connectPorts(this.splitter.getAllOutputPorts().get(i), this.consumer[i].getInputPort());
         }
         this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
         this.connectPorts(this.reader.getOutputPort(), this.filter.getInputPort());
         this.connectPorts(this.filter.getOutputPort(), this.splitter.getInputPort());
+    }
+
+    private kieker.common.configuration.Configuration createConfiguration(final String canonicalPath,
+            final String hostname) {
+        final kieker.common.configuration.Configuration configuration = new kieker.common.configuration.Configuration();
+
+        configuration.setProperty(ConfigurationKeys.WRITER_CLASSNAME, FileWriter.class.getName());
+        configuration.setProperty(FileWriter.CONFIG_PATH, canonicalPath);
+        configuration.setProperty(ConfigurationKeys.HOST_NAME, hostname);
+
+        return configuration;
     }
 
 }

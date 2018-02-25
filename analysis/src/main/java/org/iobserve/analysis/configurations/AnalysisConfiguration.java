@@ -20,14 +20,27 @@ import org.iobserve.analysis.IBehaviorCompositeStage;
 import org.iobserve.analysis.IContainerManagementSinksStage;
 import org.iobserve.analysis.ISourceCompositeStage;
 import org.iobserve.analysis.InstantiationFactory;
+
+import teetime.framework.Configuration;
+import teetime.framework.OutputPort;
+import teetime.stage.basic.distributor.Distributor;
+import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
+import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.analysis.feature.IBehaviorCompositeStage;
+import org.iobserve.analysis.feature.IContainerManagementSinksStage;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.service.InstantiationFactory;
+import org.iobserve.service.source.ISourceCompositeStage;
+import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.RecordSwitch;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -97,7 +110,7 @@ public class AnalysisConfiguration extends Configuration {
         final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
         if (!sourceClassName.isEmpty()) {
             final ISourceCompositeStage sourceCompositeStage = InstantiationFactory
-                    .createAndInitialize(ISourceCompositeStage.class, sourceClassName, configuration);
+                    .createWithConfiguration(ISourceCompositeStage.class, sourceClassName, configuration);
 
             this.connectPorts(sourceCompositeStage.getOutputPort(), this.recordSwitch.getInputPort());
 
@@ -120,11 +133,13 @@ public class AnalysisConfiguration extends Configuration {
      * @param allocationModelProvider
      * @param systemModelProvider
      * @param correspondenceModelProvider
+     * @throws ConfigurationException
+     *             when configuration fails
      */
     private void containerManagement(final kieker.common.configuration.Configuration configuration,
             final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
-            final ICorrespondence correspondenceModelProvider) {
+            final ICorrespondence correspondenceModelProvider) throws ConfigurationException {
         if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT, false)) {
 
             // Initiate stages and connect their ports according to toggle settings.
@@ -164,13 +179,16 @@ public class AnalysisConfiguration extends Configuration {
      *
      * @param configuration
      *            configuration object
+     * @throws ConfigurationException
+     *             when configuration fails
      */
-    private void createContainerManagementSink(final kieker.common.configuration.Configuration configuration) {
+    private void createContainerManagementSink(final kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException {
         final String[] containerManagementSinks = configuration
                 .getStringArrayProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_SINK, AnalysisConfiguration.DELIMETER);
         if (containerManagementSinks.length == 1) {
             final IContainerManagementSinksStage containerManagementSinksStage = InstantiationFactory
-                    .createAndInitialize(IContainerManagementSinksStage.class, containerManagementSinks[0],
+                    .createWithConfiguration(IContainerManagementSinksStage.class, containerManagementSinks[0],
                             configuration);
             /** connect ports. */
             this.connectPorts(this.allocationStage.getAllocationNotifyOutputPort(),
@@ -203,7 +221,7 @@ public class AnalysisConfiguration extends Configuration {
             /** Create and connect sinks. */
             for (final String containerManagementSink : containerManagementSinks) {
                 final IContainerManagementSinksStage containerManagementSinksStage = InstantiationFactory
-                        .createAndInitialize(IContainerManagementSinksStage.class, containerManagementSink,
+                        .createWithConfiguration(IContainerManagementSinksStage.class, containerManagementSink,
                                 configuration);
                 /** connect ports. */
                 this.connectPorts(allocationDistributor.getNewOutputPort(),
@@ -226,8 +244,11 @@ public class AnalysisConfiguration extends Configuration {
      *
      * @param configuration
      *            filter configurations
+     * @throws ConfigurationException
+     *             when configuration fails
      */
-    private void traceProcessing(final kieker.common.configuration.Configuration configuration) {
+    private void traceProcessing(final kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException {
         if (configuration.getBooleanProperty(ConfigurationKeys.TRACES, false)) {
             final TraceReconstructionCompositeStage traceReconstructionStage = new TraceReconstructionCompositeStage(
                     configuration);
@@ -277,14 +298,16 @@ public class AnalysisConfiguration extends Configuration {
      *
      * @param configuration
      *            analysis configuration
+     * @throws ConfigurationException
+     *             when filter configuration fails
      */
     private void behaviorClustering(final kieker.common.configuration.Configuration configuration,
-            final OutputPort<EventBasedTrace> eventBasedTraceOutputPort) {
+            final OutputPort<EventBasedTrace> eventBasedTraceOutputPort) throws ConfigurationException {
         final String behaviorClustringClassName = configuration
                 .getStringProperty(ConfigurationKeys.BEHAVIOR_CLUSTERING);
         if (!behaviorClustringClassName.isEmpty()) {
             final IBehaviorCompositeStage behavior = InstantiationFactory
-                    .createAndInitialize(IBehaviorCompositeStage.class, behaviorClustringClassName, configuration);
+                    .createWithConfiguration(IBehaviorCompositeStage.class, behaviorClustringClassName, configuration);
             this.connectPorts(eventBasedTraceOutputPort, behavior.getEventBasedTracePort());
             this.connectPorts(this.recordSwitch.getSessionEventOutputPort(), behavior.getSessionEventInputPort());
 

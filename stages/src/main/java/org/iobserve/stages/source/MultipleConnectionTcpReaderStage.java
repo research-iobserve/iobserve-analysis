@@ -217,7 +217,8 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
                     final IMonitoringRecord record = recordFactory.create(connection.getValueDeserializer());
                     record.setLoggingTimestamp(loggingTimestamp);
 
-                    final IMonitoringRecord rewrittenRecord = this.recordRewrite(connection, record);
+                    final IMonitoringRecord rewrittenRecord = record; // this.recordRewrite(connection,
+                                                                      // record);
                     if (rewrittenRecord != null) {
                         this.outputPort.send(rewrittenRecord);
                     }
@@ -233,6 +234,9 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
     /**
      * Trace data records use unique ids for their respective host. However, in a multi read stage
      * these ids may be used on different hosts. Therefore, they have to be mapped.
+     *
+     * TODO fails in case of records appearing out of order, i.e., a ITraceRecord appearing before a
+     * TraceMetadata record.
      *
      * @param record
      * @return
@@ -252,8 +256,12 @@ public class MultipleConnectionTcpReaderStage extends AbstractProducerStage<IMon
             this.traceId++;
             return traceMetadata;
         } else if (record instanceof ITraceRecord) {
-            final TraceMetadata metaData = this.metadatamap.get(this.getIP(connection.getChannel().getRemoteAddress()))
-                    .get(((ITraceRecord) record).getTraceId());
+            final SocketAddress remoteAddress = connection.getChannel().getRemoteAddress();
+            final String ip = this.getIP(remoteAddress);
+            final long inputTraceId = ((ITraceRecord) record).getTraceId();
+            final Map<Long, TraceMetadata> map = this.metadatamap.get(ip);
+
+            final TraceMetadata metaData = map.get(inputTraceId);
             ((ITraceRecord) record).setTraceId(metaData.getTraceId());
             return record;
         } else if (record instanceof KiekerMetadataRecord) {
