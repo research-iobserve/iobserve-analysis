@@ -1,7 +1,9 @@
 include "common", "monitoring", "model", "stages", "service", 
-	"adaptationdata", "planning", "adaptation", "execution", "analysis",
-	"collector", "splitter", "rac.creator", "replayer", 
+	"analysis",
+	"planning", "planning.systemadaptation", "planning.cloudprofile",
+	"adaptationdata", "adaptation",
+	"execution",
+	"collector", "splitter", "rac.creator", "replayer",
 	"evaluate-user-behaviors",
-	"planning.systemadaptation", "planning.cloudprofile",
 	"service.privacy.violation"
 
