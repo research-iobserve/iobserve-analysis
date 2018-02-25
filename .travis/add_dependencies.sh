@@ -12,7 +12,8 @@ clone_and_add_path() {
   echo "Repo at "$path
   cd $old_path
   file_entry="api.baseline="$path
-  echo $file_entry >"gradle.properties"
+  echo $file_entry > "gradle.properties"
+  echo "gradle.properties.template" >> "gradle.properties"
   echo "added/overwrote file 'gradle.properties' and added repo path" 	
 }
 
