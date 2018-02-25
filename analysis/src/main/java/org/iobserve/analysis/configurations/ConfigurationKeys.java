@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-import org.iobserve.analysis.IGeoLocationCompositeStage;
+import org.iobserve.analysis.feature.IGeoLocationCompositeStage;
 
 /**
  *
