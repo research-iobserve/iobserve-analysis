@@ -15,7 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment;
 
-import kieker.common.configuration.Configuration;
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.feature.IDeploymentCompositeStage;
@@ -27,10 +29,6 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
-
-import teetime.framework.CompositeStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
 
 /**
  * Composite stage for deployment. This stage automatically creates an allocation (in PCM creates a
