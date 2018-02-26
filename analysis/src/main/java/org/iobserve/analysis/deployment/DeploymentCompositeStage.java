@@ -17,10 +17,6 @@ package org.iobserve.analysis.deployment;
 
 import kieker.common.configuration.Configuration;
 
-import teetime.framework.CompositeStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
-
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.feature.IDeploymentCompositeStage;
 import org.iobserve.common.record.IDeployedEvent;
@@ -31,6 +27,10 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
 
 /**
  * Composite stage for deployment. This stage automatically creates an allocation (in PCM creates a
@@ -59,8 +59,7 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
      * @param correspondence
      *            the correspondence model handler
      */
-    public DeploymentCompositeStage(final Configuration configuration,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+    public DeploymentCompositeStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
             final ICorrespondence correspondence) {
         this.deployPCMMapper = new DeployPCMMapper(correspondence);

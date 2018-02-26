@@ -10,6 +10,8 @@ if (group.isEmpty()) {
 
 dependencies {
 	clover 'org.openclover:clover:4.2.0'
+	
+	compile 'org.slf4j:slf4j-simple:1.7.25'
 
 	compile project(":common")
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
