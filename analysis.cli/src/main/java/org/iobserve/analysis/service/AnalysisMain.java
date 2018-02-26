@@ -20,12 +20,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.converters.FileConverter;
-
-import kieker.common.configuration.Configuration;
-
 import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.configurations.AnalysisConfiguration;
 import org.iobserve.analysis.configurations.ConfigurationKeys;
@@ -41,6 +35,12 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.Parameter;
+import com.beust.jcommander.converters.FileConverter;
+
+import kieker.common.configuration.Configuration;
 
 /**
  * Main class for starting the iObserve application.
@@ -89,15 +89,15 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
                 configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_DB_DIRECTORY));
 
         this.containerManagementVisualizationBaseUrl = CommandLineParameterEvaluation.createURL(
-                "Management visualization URL",
-                configuration.getStringProperty(ConfigurationKeys.IOBSERVE_VISUALIZATION_URL));
+                configuration.getStringProperty(ConfigurationKeys.IOBSERVE_VISUALIZATION_URL),
+                "Management visualization URL");
 
         try {
             return CommandLineParameterEvaluation.checkDirectory(this.modelInitDirectory, "PCM startup model",
                     commander)
                     && CommandLineParameterEvaluation.checkDirectory(this.modelDatabaseDirectory,
                             "PCM database directory", commander)
-                    && this.containerManagementVisualizationBaseUrl != null;
+                    && (this.containerManagementVisualizationBaseUrl != null);
         } catch (final IOException e) {
             return false;
         }

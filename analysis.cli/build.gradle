@@ -1,5 +1,18 @@
 apply plugin: 'application'
 apply plugin: 'java'
+// shadow
+apply plugin: 'com.github.johnrengelman.shadow'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+    }
+}
+shadowJar {
+  zip64 true
+}
 
 mainClassName = 'org.iobserve.analysis.service.AnalysisMain'
 
@@ -33,6 +46,7 @@ dependencies {
     testCompile 'org.powermock:powermock-core:1.6.1'
     testCompile 'org.powermock:powermock-module-junit4:1.6.1'
     testCompile 'org.powermock:powermock-api-mockito:1.6.1'
+    
 }
 
 clover {
