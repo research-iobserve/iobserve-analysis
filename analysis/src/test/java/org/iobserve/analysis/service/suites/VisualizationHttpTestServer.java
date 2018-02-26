@@ -16,14 +16,18 @@
 package org.iobserve.analysis.service.suites;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
 
 public class VisualizationHttpTestServer extends NanoHTTPD {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(VisualizationHttpTestServer.class);
 
     private static final int VISUALIZATION_PORT = 9090;
     private static final String URL = "/v1/systems/test_systemId/changelogs";
@@ -31,22 +35,31 @@ public class VisualizationHttpTestServer extends NanoHTTPD {
 
     public VisualizationHttpTestServer() throws IOException {
         super(VisualizationHttpTestServer.VISUALIZATION_PORT);
-        this.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
+        VisualizationHttpTestServer.LOGGER.info("Initialization http server");
+        this.start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
+        VisualizationHttpTestServer.LOGGER.info("HTTP after start.");
+        VisualizationHttpTestServer.response = "";
     }
 
     @Override
     public Response serve(final IHTTPSession session) {
+        VisualizationHttpTestServer.LOGGER.info("http - response [" + session.getUri() + "]");
         if (session.getUri().equals(VisualizationHttpTestServer.URL)) {
-            final InputStream is = session.getInputStream();
+            if (session.getMethod() == Method.POST) {
+                try {
+                    final Map<String, String> data = new HashMap<>();
+                    session.parseBody(data);
+                    VisualizationHttpTestServer.response = data.get("postData");
 
-            try {
-                VisualizationHttpTestServer.response = IOUtils.toString(is, "UTF-8");
-                final String response = "Changelog received";
-
-                final String mimeType = "text/plain";
-                return NanoHTTPD.newFixedLengthResponse(Status.OK, mimeType, response);
-            } catch (final IOException e) {
-                return NanoHTTPD.newFixedLengthResponse("FAILED");
+                    final String mimeType = "text/plain";
+                    return NanoHTTPD.newFixedLengthResponse(Status.OK, mimeType, VisualizationHttpTestServer.response);
+                } catch (IOException | ResponseException e) {
+                    VisualizationHttpTestServer.LOGGER.error(e.getLocalizedMessage());
+                    VisualizationHttpTestServer.LOGGER.error(e.getStackTrace().toString());
+                    return NanoHTTPD.newFixedLengthResponse("FAILED");
+                }
+            } else {
+                return NanoHTTPD.newFixedLengthResponse("get");
             }
         } else {
             return NanoHTTPD.newFixedLengthResponse("FAILED");

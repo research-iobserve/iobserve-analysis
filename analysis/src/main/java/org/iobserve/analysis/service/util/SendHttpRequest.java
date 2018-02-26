@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class SendHttpRequest {
 
-    private static final String USER_AGENT = "iObserve/0.0.2";
+    private static final String USER_AGENT = "iObserve/0.0.3";
     private static final Logger LOGGER = LoggerFactory.getLogger(SendHttpRequest.class);
 
     private SendHttpRequest() {
@@ -135,7 +135,6 @@ public final class SendHttpRequest {
      */
     public static void post(final JsonArray dataArray, final URL changelogUrl) throws IOException {
         final HttpURLConnection connection = (HttpURLConnection) changelogUrl.openConnection();
-
         // add request header
         connection.setRequestMethod("POST");
         connection.setRequestProperty("content-type", "application/json; charset=utf-8");
@@ -148,6 +147,7 @@ public final class SendHttpRequest {
         final JsonWriter jsonWriter = Json.createWriter(connection.getOutputStream());
 
         jsonWriter.writeArray(dataArray);
+
         jsonWriter.close();
 
         final int responseCode = connection.getResponseCode();
