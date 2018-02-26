@@ -1,10 +1,28 @@
-apply plugin: 'java'
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        jcenter()
+        
+        // make it easy to test a snapshot version of goomph
+		maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+		// grab dependencies from the gradle plugin portal
+		maven { url 'https://plugins.gradle.org/m2/' }
+    }
 
-def confDir = "${project.rootDir}/tools_configurations"
+	// make sure we don't cache stale snapshot versions
+	configurations.all {
+		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+    }
 
-repositories {
-    mavenCentral()
-    mavenLocal()
+    dependencies {
+        classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
+                
+        // a bunch of eclipse stuff
+		classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
+		// creates a targetplatform
+		classpath "org.standardout:bnd-platform:${VER_BND_PLATFORM}"
+    }
 }
 
 // checking the presence of an Eclipse API baseline repositorsy
@@ -18,65 +36,99 @@ if (project.properties['api.baseline'] == null || project.properties['api.baseli
 	println "iObserve API baseline repository is at: " + project.properties['api.baseline']
 }
 
-buildscript { 
-		
-    repositories {
-        mavenCentral()
-        mavenLocal()
-        jcenter()
-        
-        // make it easy to test a snapshot version of goomph
-		maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
-		// grab dependencies from the gradle plugin portal
-		maven { url 'https://plugins.gradle.org/m2/' }
-    }
-    
-    // make sure we don't cache stale snapshot versions
-	configurations.all {
-		resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-    }
-    dependencies {
-        classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
-        
-        // a bunch of eclipse stuff
-		classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
-		// creates a targetplatform
-		classpath "org.standardout:bnd-platform:${VER_BND_PLATFORM}"
-    }
+apply plugin: 'eclipse'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'com.bmuschko.clover'
+
+def confDir = "${project.rootDir}/tools_configurations"
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+
+clover {
+	report {
+		html = true
+	}
 }
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven'
-    apply plugin: 'eclipse'
-    apply plugin: 'pmd'
-    apply plugin: 'com.bmuschko.clover'
-	apply plugin: 'checkstyle'
+	apply plugin: 'java'
+	apply plugin: 'maven'
+	apply plugin: 'eclipse'
+	apply plugin: 'com.bmuschko.clover'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
     
-    version = '0.0.2-SNAPSHOT'
+    version = '0.0.3-SNAPSHOT'
     group = 'org.iobserve'
         
-        
-    tasks.withType(Checkstyle) {
+
+    clover {
+        report {
+           html=true
+        }
+    }
+
+    // --- quality assurance plugins ---
+
+    apply plugin: 'pmd'
+    
+    pmd {
+    	// the used PMD version should be the same version as the PMD Eclipse plugin (https://marketplace.eclipse.org/content/eclipse-pmd) uses
+    	// toolVersion = pmdAndCpdVersion
+        ignoreFailures = true
+
+        // Clear the rule set first. Otherwise we would have a lot of additional rules in our rule set.
+        // ruleSets = []
+        // ruleSetFiles = files(resolveRelativeToParent(dirConfig, 'pmdrules.xml'))
+    }
+
+    // check.dependsOn(':cpdCheck')
+
+    apply plugin: 'checkstyle'
+    checkstyle {
+        ignoreFailures = true
+        showViolations = false
+    	configFile = file("$confDir/iobserve-checkstyle-rules.xml")
+    	configDir = file("$confDir")	
+    }
+
+    // apply plugin: 'findbugs'
+    // findbugs {	
+    //    toolVersion = fbVersion
+    //    ignoreFailures = true
+    //    effort = "max"
+    //    reportLevel = "low"
+
+    //    excludeFilter = resolveRelativeToParent(dirConfig, 'fb-filter.xml')
+    //}
+
+    tasks.withType(Pmd) {
+        reports {
+            xml.enabled = true
+            html.enabled = false
+        }
+    }
+
+	tasks.withType(Checkstyle) {
 	    reports {
 	        xml.enabled true
 	    }
 	}
 
-    checkstyle {
-    	configFile = file("$confDir/iobserve-checkstyle-rules.xml")
-    	configDir = file("$confDir")	
-    }  
-    
-   	pmd {
-    	ignoreFailures = true
+    tasks.withType(FindBugs) {
+        reports {
+            xml.enabled = true
+            html.enabled = false
+        }
     }
-    
-    ext {
-        appName = "org.iobserve"
-    }
-    sourceCompatibility = 1.8
-    
+
     repositories {
 		mavenLocal()
 		mavenCentral()
@@ -109,6 +161,10 @@ subprojects {
 		}
     }
 
+    ext {
+        appName = "org.iobserve"
+    }
+    
     eclipse {
 	    classpath {
 	       downloadSources=true

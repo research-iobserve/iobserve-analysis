@@ -1,4 +1,11 @@
-include "analysis", "stages", "common", "monitoring", "adaptationdata", "planning", "adaptation", "execution", "model", "service", "analysis.cli", "collector", "splitter", "test.setup", "rac.creator", "replayer", "evaluate-user-behaviors", "planning.systemadaptation", "planning.cloudprofile", "service.privacy.violation"
+include "common", "monitoring", "model", "stages", "service", 
+	"analysis",
+	"planning", "planning.systemadaptation", "planning.cloudprofile",
+	"adaptationdata", "adaptation",
+	"execution",
+	"collector", "splitter", "rac.creator", "replayer",
+	"evaluate-user-behaviors",
+	"service.privacy.violation"
 
 // Peropteryx integration with goomph
 include "peropteryx.rcp", "target.p2", "target.maven", "deploy"
