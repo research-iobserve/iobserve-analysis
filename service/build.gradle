@@ -27,12 +27,11 @@ dependencies {
 	
 	compile project(":common")
 	compile project(":stages")
-	compile project(":analysis")
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
 	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
-	compile 'net.kieker-monitoring:kieker:1.13'
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
     
 	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
 	compile 'org.apache.logging.log4j:log4j-core:2.6.2'

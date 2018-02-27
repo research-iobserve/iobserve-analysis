@@ -1,3 +1,8 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = 'org.iobserve.analysis.service.AnalysisMain'
+
 project.ext {
     aspectjVersion = '1.8.4'
 }
@@ -5,6 +10,7 @@ project.ext {
 buildscript {
     repositories {
         maven {url "https://maven.eveoh.nl/content/repositories/releases"}
+        maven {url "https://mvnrepository.com/artifact/org.nanohttpd/nanohttpd" }
     }
 
     dependencies {
@@ -21,14 +27,22 @@ dependencies {
 	compile gradleApi()
 	
 	clover 'org.openclover:clover:4.2.0'
-		
+	
 	// project dependencies
 	compile project(":common")
 	compile project(":stages")
 	compile project(":model")
+	compile project(":service")
 	compile project(":planning.systemadaptation")
+	compile project(":adaptationdata")
 
-    compile 'org.slf4j:slf4j-simple:1.7.25'
+	compile 'javax.json:javax.json-api:1.0'
+	compile 'commons-io:commons-io:2.5'
+	compile group: 'org.glassfish', name: 'javax.json', version: '1.1.2'
+	compile group: 'org.json', name: 'json', version: '20180130'
+
+    compile 'org.slf4j:slf4j-api:1.7.25'
+    //runtime 'org.slf4j:slf4j-log4j12:1.7.25'
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
@@ -93,8 +107,12 @@ dependencies {
 	compile 'extra:lpg.runtime.java:2.0.17.v201004271640'	
 
 	compile 'org.neo4j:neo4j:3.2.0'
+	
+	compile group: 'org.nanohttpd', name: 'nanohttpd', version: '2.3.0'
 
 	testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+	testCompile 'javax.json:javax.json-api:1.0'
+
 	testCompile 'org.powermock:powermock-core:1.6.1',
             'org.powermock:powermock-module-junit4:1.6.1',
             'org.powermock:powermock-api-mockito:1.6.1'
@@ -114,7 +132,10 @@ sourceSets {
 				srcDir 'src/gen/java'
 				srcDir 'src/gen/java-factory'
 	    	}
-	}    
+	    	resources {
+	    		srcDir 'src/main/resources'
+	    	}
+	}
 }
 
 clover {

@@ -16,6 +16,7 @@
 package org.iobserve.common.record;
 
 
+import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -28,7 +29,7 @@ public final class SessionStartEventFactory implements IRecordFactory<SessionSta
 	
 	
 	@Override
-	public SessionStartEvent create(final IValueDeserializer deserializer) {
+	public SessionStartEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new SessionStartEvent(deserializer);
 	}
 	

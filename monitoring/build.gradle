@@ -10,11 +10,14 @@ if (group.isEmpty()) {
 
 dependencies {
 	clover 'org.openclover:clover:4.2.0'
+	
+	compile 'org.slf4j:slf4j-simple:1.7.25'
 
 	compile project(":common")
-	compile 'net.kieker-monitoring:kieker:1.13'
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
 	compile 'javax.interceptor:javax.interceptor-api:1.2'
 	compile 'javax.servlet:javax.servlet-api:3.1.0'
+	compile 'org.slf4j:slf4j-log4j12:1.7.25'
 	
     compile 'junit:junit:4.12'
 	

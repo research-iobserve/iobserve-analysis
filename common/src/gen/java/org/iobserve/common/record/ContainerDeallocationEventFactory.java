@@ -16,6 +16,7 @@
 package org.iobserve.common.record;
 
 
+import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -28,7 +29,7 @@ public final class ContainerDeallocationEventFactory implements IRecordFactory<C
 	
 	
 	@Override
-	public ContainerDeallocationEvent create(final IValueDeserializer deserializer) {
+	public ContainerDeallocationEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new ContainerDeallocationEvent(deserializer);
 	}
 	
