@@ -39,7 +39,6 @@ import fi.iki.elonen.NanoHTTPD;
         UndeploymentVisualizationStageTest.class })
 public class AllTestsUpdater {
     /** handler for http requests. */
-    @SuppressWarnings("unused")
     private static NanoHTTPD server; // NOCS initialized in setUpClass
 
     public static NanoHTTPD getServer() {
@@ -58,6 +57,9 @@ public class AllTestsUpdater {
         AllTestsUpdater.server = new VisualizationHttpTestServer();
     }
 
+    /**
+     * Shuts down the server at the end of the test suite.
+     */
     @AfterClass
     public static void cleanUpClass() {
         AllTestsUpdater.server.stop();

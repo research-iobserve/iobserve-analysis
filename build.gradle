@@ -58,6 +58,10 @@ subprojects {
         report {
            html=true
         }
+        compiler {
+           debug = true
+    }
+
     }
 
     // --- quality assurance plugins ---

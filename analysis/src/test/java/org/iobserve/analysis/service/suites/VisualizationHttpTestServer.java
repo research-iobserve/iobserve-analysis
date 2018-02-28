@@ -42,7 +42,7 @@ public class VisualizationHttpTestServer extends NanoHTTPD {
     public VisualizationHttpTestServer() throws IOException {
         super(VisualizationHttpTestServer.VISUALIZATION_PORT);
         VisualizationHttpTestServer.LOGGER.info("Initialization http server");
-        this.start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
+        this.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
         VisualizationHttpTestServer.LOGGER.info("HTTP after start.");
         VisualizationHttpTestServer.response = "";
     }
