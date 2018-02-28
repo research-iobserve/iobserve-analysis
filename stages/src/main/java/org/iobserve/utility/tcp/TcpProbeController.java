@@ -15,10 +15,12 @@
  ***************************************************************************/
 package org.iobserve.utility.tcp;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
+import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
+import org.iobserve.utility.tcp.events.TcpDeactivationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +28,6 @@ import kieker.common.configuration.Configuration;
 import kieker.common.record.remotecontrol.ActivationEvent;
 import kieker.common.record.remotecontrol.DeactivationEvent;
 import kieker.common.record.remotecontrol.IRemoteControlEvent;
-import kieker.monitoring.writer.tcp.ConnectionTimeoutException;
 import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
 
 /**
@@ -43,6 +44,31 @@ public class TcpProbeController {
      * Saves already established connections, the key pattern is "ip:port".
      */
     private final Map<String, TcpControlConnection> knownAddresses = new HashMap<>();
+
+    /**
+     * Convenience method for {@link AbstractControlEvent control events}.
+     *
+     * @param event
+     *            The event that contains the information for remote control
+     * @throws RemoteControlFailedException
+     *             if the connection can not be established within a set timeout.
+     */
+    public void controlProbe(final AbstractTcpControlEvent event) throws RemoteControlFailedException {
+        final String ip = event.getIp();
+        final int port = event.getPort();
+        final String hostname = event.getHostname();
+        final String pattern = event.getPattern();
+        if (event instanceof TcpActivationControlEvent) {
+            this.activateMonitoredPattern(ip, port, hostname, pattern);
+        } else if (event instanceof TcpDeactivationEvent) {
+            this.deactivateMonitoredPattern(ip, port, hostname, pattern);
+        } else {
+            if (TcpProbeController.LOGGER.isErrorEnabled()) {
+                TcpProbeController.LOGGER.error("Received Unknown TCP control event: " + event.getClass().getName());
+            }
+        }
+
+    }
 
     /**
      * Activates monitoring of a method (pattern) on one monitored application via TCP.
@@ -122,7 +148,7 @@ public class TcpProbeController {
         try {
             tcpWriter = new SingleSocketTcpWriter(configuration);
             tcpWriter.onStarting();
-        } catch (final ConnectionTimeoutException | IOException e) {
+        } catch (final Exception e) {
             // runtime exception is thrown after timeout
             if (TcpProbeController.LOGGER.isDebugEnabled()) {
                 TcpProbeController.LOGGER.debug("Could not create TCP connections to " + hostname + " on port " + port,

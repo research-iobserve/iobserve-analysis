@@ -20,6 +20,7 @@ import java.io.IOException;
 import org.iobserve.analysis.service.updater.AllocationVisualizationStageTest;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStageTest;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStageTest;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -38,8 +39,11 @@ import fi.iki.elonen.NanoHTTPD;
         UndeploymentVisualizationStageTest.class })
 public class AllTestsUpdater {
     /** handler for http requests. */
-    @SuppressWarnings("unused")
     private static NanoHTTPD server; // NOCS initialized in setUpClass
+
+    public static NanoHTTPD getServer() {
+        return AllTestsUpdater.server;
+    }
 
     /**
      * Sets up the server to test the methods that require a http connection.
@@ -52,4 +56,13 @@ public class AllTestsUpdater {
         /** test server */
         AllTestsUpdater.server = new VisualizationHttpTestServer();
     }
+
+    /**
+     * Shuts down the server at the end of the test suite.
+     */
+    @AfterClass
+    public static void cleanUpClass() {
+        AllTestsUpdater.server.stop();
+    }
+
 }

@@ -25,6 +25,12 @@ import org.slf4j.LoggerFactory;
 import fi.iki.elonen.NanoHTTPD;
 import fi.iki.elonen.NanoHTTPD.Response.Status;
 
+/**
+ * .
+ *
+ * @author Josefine Wegert
+ *
+ */
 public class VisualizationHttpTestServer extends NanoHTTPD {
 
     private static Logger LOGGER = LoggerFactory.getLogger(VisualizationHttpTestServer.class);
@@ -36,7 +42,7 @@ public class VisualizationHttpTestServer extends NanoHTTPD {
     public VisualizationHttpTestServer() throws IOException {
         super(VisualizationHttpTestServer.VISUALIZATION_PORT);
         VisualizationHttpTestServer.LOGGER.info("Initialization http server");
-        this.start(NanoHTTPD.SOCKET_READ_TIMEOUT, true);
+        this.start(NanoHTTPD.SOCKET_READ_TIMEOUT, false);
         VisualizationHttpTestServer.LOGGER.info("HTTP after start.");
         VisualizationHttpTestServer.response = "";
     }

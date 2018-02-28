@@ -160,6 +160,10 @@ artifacts {
     //archives javadocJar
 }
 
+test {
+	exclude '**/org/iobserve/analysis/service/updater/*AllocationVisualizationStageTest.class'
+}
+
 install {
     repositories.mavenInstaller {
         pom.version = version
