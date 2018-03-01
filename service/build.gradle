@@ -18,7 +18,6 @@ dependencies {
 	compile project(":stages")
 
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
-	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
    	
 	compile 'junit:junit:4.12'

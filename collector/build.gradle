@@ -5,10 +5,10 @@ mainClassName='org.iobserve.collector.CollectorMain'
 
 dependencies {
 	clover 'org.openclover:clover:4.2.0'
+	
 	compile project(":service")
-
 	compile project(":analysis")
-	compile "com.beust:jcommander:1.60"
+
 	testCompile "junit:junit:4.12"
 }
 
