@@ -18,18 +18,18 @@ package org.iobserve.replayer;
 import java.io.File;
 import java.io.IOException;
 
+import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.service.CommandLineParameterEvaluation;
+import org.iobserve.stages.general.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 import com.beust.jcommander.converters.IntegerConverter;
 
 import kieker.common.configuration.Configuration;
-
-import org.iobserve.service.AbstractServiceMain;
-import org.iobserve.service.CommandLineParameterEvaluation;
-import org.iobserve.stages.general.ConfigurationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Collector main class.
@@ -74,7 +74,9 @@ public final class ReplayerMain extends AbstractServiceMain<ReplayerConfiguratio
     @Override
     public void run(final String title, final String label, final String[] args) {
         super.run(title, label, args);
-        ReplayerMain.LOGGER.info("Records send {}", this.configuration.getCounter().getCount());
+        if (this.configuration != null) {
+            ReplayerMain.LOGGER.info("Records send {}", this.configuration.getCounter().getCount());
+        }
     }
 
     @Override

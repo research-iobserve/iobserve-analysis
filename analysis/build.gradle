@@ -3,10 +3,6 @@ apply plugin: 'application'
 
 mainClassName = 'org.iobserve.analysis.service.AnalysisMain'
 
-project.ext {
-    aspectjVersion = '1.8.4'
-}
-
 buildscript {
     repositories {
         maven {url "https://maven.eveoh.nl/content/repositories/releases"}
@@ -18,14 +14,10 @@ buildscript {
     }
 }
 
-//apply plugin: 'aspectj'
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-	compile gradleApi()
-	
 	clover 'org.openclover:clover:4.2.0'
 	
 	// project dependencies
