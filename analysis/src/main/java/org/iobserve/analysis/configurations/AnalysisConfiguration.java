@@ -83,7 +83,7 @@ public class AnalysisConfiguration extends Configuration {
      * @param correspondenceModelProvider
      *            provider for the correspondence model
      * @throws ConfigurationException
-     *             if the configuration faisl
+     *             if the configuration fails
      */
     public AnalysisConfiguration(final kieker.common.configuration.Configuration configuration,
             final IModelProvider<Repository> repositoryModelProvider,

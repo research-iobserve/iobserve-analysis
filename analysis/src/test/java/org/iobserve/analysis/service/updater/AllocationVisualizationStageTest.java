@@ -62,13 +62,9 @@ public class AllocationVisualizationStageTest {
     private final List<ResourceContainer> inputEvents = new ArrayList<>();
 
     /** test event. */
-    private ResourceContainer allocationEvent;
 
     /** data for generating test container allocation event. */
     private static final String SERVICE = "test-service";
-    private static final String CONTEXT = "/path/test";
-    private static final String URL = "http://" + AllocationVisualizationStageTest.SERVICE + '/'
-            + AllocationVisualizationStageTest.CONTEXT;
 
     /** list of test resource container. */
     private final List<ResourceContainer> testResourceContainerList = new ArrayList<>();
@@ -111,7 +107,7 @@ public class AllocationVisualizationStageTest {
      * the nodegroup.
      *
      */
-    @Test
+    @Test(timeout = 3000)
     public void test() {
 
         StageTester.test(this.allocationVisualizationStage).and().send(this.inputEvents)
