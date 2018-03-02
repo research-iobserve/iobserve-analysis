@@ -42,8 +42,9 @@ public class MultipleConnectionTcpReaderStageTest {
 
     @Test
     public void receiveConnections() throws Exception {
+        final ITraceMetadataRewriter rewriter = new NoneTraceMetadataRewriter();
         final MultipleConnectionTcpReaderStage classUnderTest = PowerMockito.spy(new MultipleConnectionTcpReaderStage(
-                MultipleConnectionTcpReaderStageTest.PORT, MultipleConnectionTcpReaderStageTest.BUFFER_SIZE));
+                MultipleConnectionTcpReaderStageTest.PORT, MultipleConnectionTcpReaderStageTest.BUFFER_SIZE, rewriter));
 
         // StageTester.test(classUnderTest).start();
     }

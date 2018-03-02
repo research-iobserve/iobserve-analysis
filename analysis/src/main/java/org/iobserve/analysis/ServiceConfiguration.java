@@ -30,6 +30,7 @@ import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.analysis.toggle.FeatureToggle;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -42,6 +43,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  * @author Reiner Jung
  *
  */
+@Deprecated
 public class ServiceConfiguration extends MultiInputObservationConfiguration {
 
     /**
@@ -93,7 +95,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
             final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
             final IModelProvider<ResourceContainer> resourceContainerModelProvider,
             final IModelProvider<AssemblyContext> assemblyContextModelProvider, final String visualizationServiceURL,
-            final SnapshotBuilder snapshotBuilder, final FeatureToggle featureToggle) throws MalformedURLException {
+            final SnapshotBuilder snapshotBuilder, final FeatureToggle featureToggle)
+            throws MalformedURLException, ConfigurationException {
         super(configuration, correspondenceModel, usageModelProvider, repositoryModelProvider,
                 resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider, varianceOfUserGroups,
                 thinkTime, closedWorkload, visualizationServiceURL, EAggregationType.X_MEANS_CLUSTERING,

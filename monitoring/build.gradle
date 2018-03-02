@@ -11,10 +11,10 @@ if (group.isEmpty()) {
 dependencies {
 	clover 'org.openclover:clover:4.2.0'
 	
-	compile 'org.slf4j:slf4j-simple:1.7.25'
-
 	compile project(":common")
+	
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
+	
 	compile 'javax.interceptor:javax.interceptor-api:1.2'
 	compile 'javax.servlet:javax.servlet-api:3.1.0'
 	compile 'org.slf4j:slf4j-log4j12:1.7.25'
@@ -22,7 +22,7 @@ dependencies {
     compile 'junit:junit:4.12'
 	
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
+	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
 	compile 'com.neovisionaries:nv-i18n:1.20'
 }
 

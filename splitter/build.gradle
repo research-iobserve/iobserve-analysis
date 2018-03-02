@@ -7,8 +7,6 @@ dependencies {
 	compile project(":service")
 
 	clover 'org.openclover:clover:4.2.0'
-
-	compile "com.beust:jcommander:1.60"
 }
 
 clover {

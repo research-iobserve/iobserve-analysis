@@ -11,8 +11,6 @@ buildscript {
 sourceCompatibility = 1.8
 
 dependencies {
-	// compile gradleApi()
-
 	clover 'org.openclover:clover:4.2.0'
 	
 	compile project(":common")
@@ -22,7 +20,10 @@ dependencies {
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
+	
+	// TODO this dependency must be removed when Kieker has switched to teetime
 	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
+	
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
     
 	compile 'junit:junit:4.11'

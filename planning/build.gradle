@@ -21,11 +21,11 @@ dependencies {
     compile "com.beust:jcommander:1.60"
     compile 'javax.json:javax.json-api:1.0'
     compile 'org.glassfish:javax.json:1.0.4'
-    compile group: 'commons-io', name: 'commons-io', version: '2.5'
-    compile group: 'org.json', name: 'json', version: '20170516'
+    compile 'commons-io:commons-io:2.5'
+    compile 'org.json:json:20170516'
 
     // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
-    testCompile group: 'com.sun.net.httpserver', name: 'http', version: '20070405'
+    testCompile 'com.sun.net.httpserver:http:20070405'
     
     // central
 	testCompile "junit:junit:4.12"

@@ -33,15 +33,14 @@ dependencies {
 	compile group: 'org.glassfish', name: 'javax.json', version: '1.1.2'
 	compile group: 'org.json', name: 'json', version: '20180130'
 
-    compile 'org.slf4j:slf4j-api:1.7.25'
-    //runtime 'org.slf4j:slf4j-log4j12:1.7.25'
+	compile 'org.slf4j:slf4j-api:1.7.25'
+	compile 'org.slf4j:slf4j-log4j12:1.7.25'
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
-	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
     
 	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
@@ -119,11 +118,11 @@ sourceSets {
 		}
 	}
 	main {
-	    	java {
-	    		srcDir 'src/main/java'
-				srcDir 'src/gen/java'
-				srcDir 'src/gen/java-factory'
-	    	}
+		java {
+			srcDir 'src/main/java'
+			srcDir 'src/gen/java'
+			srcDir 'src/gen/java-factory'
+		}
 	    	resources {
 	    		srcDir 'src/main/resources'
 	    	}
@@ -134,7 +133,6 @@ clover {
 	report {
 		html=true
 	}
-	
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
