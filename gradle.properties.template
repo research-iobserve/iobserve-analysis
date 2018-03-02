@@ -42,5 +42,5 @@ pmdAndCpdVersion = 5.2.2
 # => '5.5.0' causes many new PMD errors and PMD warnings
 fbVersion = 3.0.1
 
-cloverCoverage = 100.0
+cloverCoverage = 14.0
 
