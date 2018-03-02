@@ -56,16 +56,10 @@ public class FileSourceCompositeStage extends CompositeStage implements ISourceC
      *             when no valid directory was specified
      */
     public FileSourceCompositeStage(final Configuration configuration) throws ConfigurationException {
-        final Collection<File> directories = new ArrayList<>();
-
         final String[] directoryNames = configuration.getStringArrayProperty(
                 FileSourceCompositeStage.SOURCE_DIRECTORIES, FileSourceCompositeStage.DELIMETER);
-        for (final String directoryName : directoryNames) {
-            final File directory = new File(directoryName);
-            if (directory.isDirectory() && directory.canRead()) {
-                directories.add(directory);
-            }
-        }
+
+        final Collection<File> directories = this.collectDirectories(directoryNames);
 
         if (directories.size() == 0) {
             FileSourceCompositeStage.LOGGER.error("No valid directory found.");
@@ -77,6 +71,25 @@ public class FileSourceCompositeStage extends CompositeStage implements ISourceC
 
         /** connecting filters */
         this.connectPorts(files.getOutputPort(), this.reader.getInputPort());
+    }
+
+    /**
+     * Collect input directories and check if they do exist.
+     *
+     * @param pathStrings
+     *            array of string containing potential paths for directories
+     * @return a collection of directory handles which point to existing directories
+     */
+    private Collection<File> collectDirectories(final String[] pathStrings) {
+        final Collection<File> directories = new ArrayList<>();
+
+        for (final String directoryName : pathStrings) {
+            final File directory = new File(directoryName);
+            if (directory.isDirectory() && directory.canRead()) {
+                directories.add(directory);
+            }
+        }
+        return directories;
     }
 
     @Override

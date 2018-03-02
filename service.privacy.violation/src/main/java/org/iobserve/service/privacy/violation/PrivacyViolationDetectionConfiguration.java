@@ -19,6 +19,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import teetime.framework.Configuration;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
+import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
+import teetime.util.ConcurrentHashMapWithDefault;
+
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
@@ -38,15 +44,10 @@ import org.iobserve.service.privacy.violation.filter.WarnSink;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.RecordSwitch;
 import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
+import org.iobserve.stages.source.NoneTraceMetadataRewriter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
-
-import teetime.framework.Configuration;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
-import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
-import teetime.util.ConcurrentHashMapWithDefault;
 
 /**
  * Configuration for the log replayer.
@@ -89,7 +90,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
         /** instantiating filters. */
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
-                PrivacyViolationDetectionConfiguration.BUFFER_SIZE);
+                PrivacyViolationDetectionConfiguration.BUFFER_SIZE, new NoneTraceMetadataRewriter());
         final RecordSwitch recordSwitch = new RecordSwitch();
 
         /** allocation. */
