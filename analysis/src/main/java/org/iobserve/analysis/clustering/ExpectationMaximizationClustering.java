@@ -47,7 +47,7 @@ public class ExpectationMaximizationClustering implements IDensitityClustering {
         final EM emClustering = new EM();
         ExpectationMaximizationClustering.LOGGER
                 .info("Computing the EM-Clustering with following options: " + emClustering.getOptions());
-        final Map<Integer, List<Pair<Instance, Double>>> resultMap = new HashMap<>();
+        final Map<Integer, List<Pair<Instance, Double>>> resultMap = new HashMap<>(); // NOPMD
         try {
             emClustering.buildClusterer(instances);
             /**
@@ -64,7 +64,7 @@ public class ExpectationMaximizationClustering implements IDensitityClustering {
                 resultMap.get(cluster).add(new Pair<>(currentInstance, probability));
 
             }
-        } catch (final Exception e) {
+        } catch (final Exception e) { // NOPMD
             ExpectationMaximizationClustering.LOGGER.error("Clustering failed.", e);
         }
         return resultMap;

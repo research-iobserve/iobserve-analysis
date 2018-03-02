@@ -41,7 +41,6 @@ import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.impl.LinkingResourceImpl;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,8 +94,8 @@ public final class InitializeDeploymentVisualization {
     public InitializeDeploymentVisualization(final URL visualizationBaseUrl, final String systemId,
             final IModelProvider<Allocation> allocationModelGraphProvider,
             final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider,
-            final IModelProvider<UsageModel> usageModelGraphProvider) throws MalformedURLException {
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider)
+            throws MalformedURLException {
         this.systemUrl = new URL(visualizationBaseUrl + "/v1/systems/");
         this.changelogUrl = new URL(this.systemUrl + systemId + "/changelogs");
         this.allocationModelGraphProvider = allocationModelGraphProvider;
@@ -199,42 +198,6 @@ public final class InitializeDeploymentVisualization {
             }
 
         }
-
-        /** usergroup */
-        // not working yet
-
-        // map elements in entryLevelSystemCalls to assemblyContexts
-
-        // final List<AssemblyContext> userInvokedServices = new ArrayList<>();
-        // List<EntryLevelSystemCall> entryLevelSystemCalls = new ArrayList<>();
-        //
-        // entryLevelSystemCalls = this.collectEntryLevelSystemCalls(usageScenarios);
-        //
-        // for (int m = 0; m < entryLevelSystemCalls.size(); m++) {
-        // final EntryLevelSystemCall userStep = entryLevelSystemCalls.get(m);
-        //
-        // final String providedRoleId = userStep.getProvidedRole_EntryLevelSystemCall().getId();
-        //
-        // final List<EObject> usergroupConnectors = this.systemModelGraphProvider
-        // .readOnlyReferencingComponentsById(OperationProvidedRole.class, providedRoleId);
-        // final ProvidedDelegationConnectorImpl usergroupConnector =
-        // (ProvidedDelegationConnectorImpl) usergroupConnectors
-        // .get(0);
-        //
-        // final AssemblyContext assemblyContext =
-        // usergroupConnector.getAssemblyContext_ProvidedDelegationConnector();
-        //
-        // userInvokedServices.add(assemblyContext);
-        // }
-
-        // if (userInvokedServices.size() > 0) {
-        // SendHttpRequest.post(Changelog.create(
-        // this.usergroupService.createUsergroup(this.systemService.getSystemId(),
-        // userInvokedServices)),
-        // this.systemUrl, this.changelogUrl);
-        //
-        // }
-
     }
 
     /**
@@ -252,35 +215,21 @@ public final class InitializeDeploymentVisualization {
      */
 
     private String getTechnology(final AssemblyConnector connector, final List<LinkingResource> linkingResources) {
+        final String assemblyContextSourceId = connector.getProvidingAssemblyContext_AssemblyConnector().getId();
+        final String assemblyContextTargetId = connector.getRequiringAssemblyContext_AssemblyConnector().getId();
+
         /**
          * ID of resource container on which source (regarding communication) assembly context is
          * deployed
          */
-        String resourceSourceId = null;
+        final String resourceSourceId = this.findResourceIdByAssemblyContextId(assemblyContextSourceId);
         /**
          * ID of resource container on which target (regarding communication) assembly context is
          * deployed
          */
-        String resourceTargetId = null;
+        final String resourceTargetId = this.findResourceIdByAssemblyContextId(assemblyContextTargetId);
         /** technology of communication */
         String technology = null;
-
-        final String assemContSourceId = connector.getProvidingAssemblyContext_AssemblyConnector().getId();
-        final String assemContTargetId = connector.getRequiringAssemblyContext_AssemblyConnector().getId();
-
-        final List<EObject> allocationContextsWithSource = this.allocationModelGraphProvider
-                .readOnlyReferencingComponentsById(AssemblyContext.class, assemContSourceId);
-        if (allocationContextsWithSource.get(0) instanceof AllocationContext) {
-            final AllocationContext allocationContext = (AllocationContext) allocationContextsWithSource.get(0);
-            resourceSourceId = allocationContext.getResourceContainer_AllocationContext().getId();
-        }
-
-        final List<EObject> allocationContextsWithTarget = this.allocationModelGraphProvider
-                .readOnlyReferencingComponentsById(AssemblyContext.class, assemContTargetId);
-        if (allocationContextsWithTarget.get(0) instanceof AllocationContext) {
-            final AllocationContext allocationContext = (AllocationContext) allocationContextsWithTarget.get(0);
-            resourceTargetId = allocationContext.getResourceContainer_AllocationContext().getId();
-        }
 
         if (resourceSourceId != null && resourceTargetId != null) {
             for (int l = 0; l < linkingResources.size(); l++) {
@@ -300,6 +249,24 @@ public final class InitializeDeploymentVisualization {
             }
         }
         return technology;
+    }
+
+    /**
+     * Search for an resource container containing a specific allocation.
+     *
+     * @param assemblyContextId
+     *            the id of the assembly context.
+     * @return the id or null if no such container exists
+     */
+    private String findResourceIdByAssemblyContextId(final String assemblyContextId) {
+        final List<EObject> allocationContexts = this.allocationModelGraphProvider
+                .readOnlyReferencingComponentsById(AssemblyContext.class, assemblyContextId);
+        if (allocationContexts.get(0) instanceof AllocationContext) {
+            final AllocationContext allocationContext = (AllocationContext) allocationContexts.get(0);
+            return allocationContext.getResourceContainer_AllocationContext().getId();
+        } else {
+            return null;
+        }
     }
 
 }

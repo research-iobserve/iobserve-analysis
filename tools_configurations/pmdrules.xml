@@ -1,37 +1,90 @@
 <?xml version="1.0"?>
-<ruleset name="Custom ruleset"
-    xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd"
-    xsi:noNamespaceSchemaLocation="http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
-
-  <description>
-  This ruleset checks my code for bad stuff
+<ruleset name="iObserve PMD ruleset" xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd"
+	xsi:noNamespaceSchemaLocation="http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+	<description>
+    This ruleset is checked for iObserve automatically.
   </description>
 
-<!-- exclude generated code -->
-	<exclude-pattern>.*/src/gen/.*</exclude-pattern>
+	<!-- exclude generated code -->
+	<exclude-pattern>.*/src-gen/.*</exclude-pattern>
+	<exclude-pattern>.*/test-gen/.*</exclude-pattern>
 
-  <!-- We'll use the entire 'strings' ruleset -->
-  <rule ref="rulesets/java/strings.xml"/>
+	<!-- We'll use the following rulesets -->
+	<rule ref="rulesets/internal/all-java.xml">
+		<exclude name="AvoidCatchingNPE" />
+		<exclude name="AvoidDuplicateLiterals" />
+		<exclude name="AvoidFinalLocalVariable" />
+		<exclude name="AvoidInstantiatingObjectsInLoops" />
+		<exclude name="AvoidLiteralsInIfCondition" />
+		<exclude name="AvoidPrefixingMethodParameters" />
+		<exclude name="AvoidThrowingNullPointerException" />
+		<exclude name="AvoidUsingVolatile" />
+		<exclude name="BeanMembersShouldSerialize" />
+		<exclude name="CallSuperInConstructor" />
+		<exclude name="CommentSize" />
+		<exclude name="ConfusingTernary" />
+		<exclude name="CyclomaticComplexity" />
+		<exclude name="DataflowAnomalyAnalysis" />
+		<exclude name="DoNotCallSystemExit" />
+		<exclude name="DoNotUseThreads" />
+		<exclude name="ExcessiveImports" />
+		<exclude name="ExcessiveMethodLength" />
+		<exclude name="ExcessiveParameterList" />
+		<exclude name="GodClass" />
+		<exclude name="LawOfDemeter" />
+		<exclude name="LongVariable" />
+		<exclude name="LoosePackageCoupling" />
+		<exclude name="NcssMethodCount" />
+		<exclude name="NPathComplexity" />
+		<exclude name="OnlyOneReturn" />
+		<exclude name="PackageCase" />
+		<!-- startsWith is better: it returns false instead of an IndexOutOfBoundsException and its name reflects its purpose -->
+		<exclude name="SimplifyStartsWith" />
+		<exclude name="ShortClassName" />
+		<exclude name="ShortVariable" />
+		<exclude name="SignatureDeclareThrowsException" />
+		<!-- Java automatically compiles to StringBuilder and StringBuffer is unnecessarily synchronized -->
+		<exclude name="UseStringBufferForStringAppends" />
+		<exclude name="TooManyMethods" />
+		<exclude name="UnnecessaryConstructor" />
+		<exclude name="UnnecessaryFinalModifier" />
+		<exclude name="UnusedModifier" />
+		<exclude name="UseObjectForClearerAPI" />
+		<exclude name="UseProperClassLoader" />
+		<exclude name="UselessParentheses" />
+		<exclude name="UseVarargs" />
+		<exclude name="AtLeastOneConstructor"/>
+	</rule>
 
-  <!-- Here's some rules we'll specify one at a time -->
-  <rule ref="rulesets/java/unusedcode.xml/UnusedLocalVariable"/>
-  <rule ref="rulesets/java/unusedcode.xml/UnusedPrivateField"/>
-  <rule ref="rulesets/java/imports.xml/DuplicateImports"/>
-  <rule ref="rulesets/java/basic.xml/UnnecessaryConversionTemporary"/>
+	<!-- Here's some rules we'll specify one at a time -->
+	<rule ref="rulesets/java/unusedcode.xml/UnusedLocalVariable"/>
+	<rule ref="rulesets/java/unusedcode.xml/UnusedPrivateField"/>
+	<rule ref="rulesets/java/imports.xml/DuplicateImports"/>
+	<rule ref="rulesets/java/unnecessary.xml/UnnecessaryConversionTemporary"/>
 
-  <!-- We want to customize this rule a bit, change the message and raise the priority  -->
-  <rule
-   ref="rulesets/java/basic.xml/EmptyCatchBlock"
-   message="Must handle exceptions">
-    <priority>2</priority>
-  </rule>
+	<!-- We want to customize this rule a bit, change the message and raise the priority  -->
+	<rule ref="rulesets/java/empty.xml/EmptyCatchBlock" message="Must handle exceptions">
+		<priority>2</priority>
+	</rule>
+
+	<!-- ensure comments -->
+	<rule ref="rulesets/java/comments.xml/CommentRequired">
+		<!-- <priority>5</priority> -->
+		<properties>
+			<property name="violationSuppressXPath"
+				value="//ClassOrInterfaceBodyDeclaration/MethodDeclaration/MethodDeclarator[matches(@Image,'(get|is|set)[\p{Lu}].*') and not(FormalParameters/FormalParameter)]" />
+			<property name="fieldCommentRequirement" value="Ignored" />
+			<property name="protectedMethodCommentRequirement" value="Ignored" />
+			<property name="publicMethodCommentRequirement" value="Ignored" />
+		</properties>
+	</rule>
 
   <!-- Now we'll customize a rule's property value -->
   <rule ref="rulesets/java/codesize.xml/CyclomaticComplexity">
     <properties>
-        <property name="reportLevel" value="5"/>
+        <property name="reportLevel" value="8"/>
     </properties>
   </rule>
 

@@ -33,8 +33,6 @@ public class EntryCallEdge {
      * constructor.
      */
     public EntryCallEdge() {
-        this.source = null;
-        this.target = null;
         this.calls = 0;
     }
 
