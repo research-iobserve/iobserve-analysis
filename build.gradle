@@ -84,8 +84,8 @@ subprojects {
     checkstyle {
         ignoreFailures = true
         showViolations = false
-    	configFile = file("$confDir/checkstyle-rules.xml")
-    	configDir = file("$confDir")	
+	configFile = new File(confDir, "checkstyle-rules.xml")
+	configDir = new File(confDir)
     }
 
     // apply plugin: 'findbugs'
