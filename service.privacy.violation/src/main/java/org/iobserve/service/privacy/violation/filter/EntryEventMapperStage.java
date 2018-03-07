@@ -23,6 +23,8 @@ import org.iobserve.service.privacy.violation.data.PCMEntryCallEvent;
 import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
+ * Transforms {@link EntryCallEvent}s to model level {@link PCMEntryCallEvent}s.
+ *
  * @author Reiner Jung
  *
  */
@@ -43,7 +45,7 @@ public class EntryEventMapperStage extends AbstractConsumerStage<EntryCallEvent>
 
     @Override
     protected void execute(final EntryCallEvent event) throws Exception {
-        // TODO implement stuff
+        // TODO KIT implement stuff
     }
 
     public OutputPort<PCMEntryCallEvent> getOutputPort() {
