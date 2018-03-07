@@ -69,8 +69,8 @@ subprojects {
     apply plugin: 'pmd'
     
     pmd {
-    	// the used PMD version should be the same version as the PMD Eclipse plugin (https://marketplace.eclipse.org/content/eclipse-pmd) uses
-    	// toolVersion = pmdAndCpdVersion
+	// the used PMD version should be the same version as the PMD Eclipse plugin (https://marketplace.eclipse.org/content/eclipse-pmd) uses
+	// toolVersion = pmdAndCpdVersion
         ignoreFailures = true
 
         // Clear the rule set first. Otherwise we would have a lot of additional rules in our rule set.
@@ -84,7 +84,7 @@ subprojects {
     checkstyle {
         ignoreFailures = true
         showViolations = false
-    	configFile = file("$confDir/iobserve-checkstyle-rules.xml")
+    	configFile = file("$confDir/checkstyle-rules.xml")
     	configDir = file("$confDir")	
     }
 
