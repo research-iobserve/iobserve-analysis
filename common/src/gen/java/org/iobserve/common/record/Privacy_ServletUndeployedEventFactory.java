@@ -16,6 +16,7 @@
 package org.iobserve.common.record;
 
 
+import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -28,7 +29,7 @@ public final class Privacy_ServletUndeployedEventFactory implements IRecordFacto
 	
 	
 	@Override
-	public Privacy_ServletUndeployedEvent create(final IValueDeserializer deserializer) {
+	public Privacy_ServletUndeployedEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		return new Privacy_ServletUndeployedEvent(deserializer);
 	}
 	

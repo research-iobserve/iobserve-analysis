@@ -23,8 +23,8 @@ import java.io.PrintWriter;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generic file sink which serializes input.
@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class AbstractFileSink<T> extends AbstractConsumerStage<T> {
 
-    protected static final Logger LOGGER = LogManager.getLogger(AbstractFileSink.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractFileSink.class);
     protected final PrintWriter output;
 
     /**

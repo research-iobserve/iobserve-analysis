@@ -33,7 +33,7 @@ import teetime.framework.OutputPort;
 public class AggregateEventStage<T> extends AbstractStage {
 
     private final List<InputPort<T>> inputPorts = new ArrayList<>();
-    private OutputPort<T> outputPort;
+    private final OutputPort<T> outputPort = this.createOutputPort();
 
     /**
      * Create an aggregation stages.
@@ -66,7 +66,7 @@ public class AggregateEventStage<T> extends AbstractStage {
      * @return the port associated with the port number or null on error.
      */
     public InputPort<T> getInputPort(final int port) {
-        if (port >= 0 && port < this.inputPorts.size()) {
+        if ((port >= 0) && (port < this.inputPorts.size())) {
             return this.inputPorts.get(port);
         } else {
             return null;

@@ -18,6 +18,7 @@ package org.iobserve.analysis.session;
 import kieker.common.configuration.Configuration;
 import kieker.common.record.flow.IFlowRecord;
 
+import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
@@ -25,25 +26,24 @@ import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
 import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
 import teetime.util.ConcurrentHashMapWithDefault;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.iobserve.analysis.AbstractConfigurableCompositeStage;
-import org.iobserve.analysis.ConfigurationException;
-import org.iobserve.analysis.InstantiationFactory;
 import org.iobserve.analysis.deployment.DeployPCMMapper;
 import org.iobserve.analysis.traces.EntryCallSequence;
 import org.iobserve.common.record.ISessionEvent;
+import org.iobserve.service.InstantiationFactory;
+import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Reiner Jung
  *
  */
-public class SessionAggregationCompositeStage extends AbstractConfigurableCompositeStage {
+public class SessionAggregationCompositeStage extends CompositeStage {
 
-    private static final Logger LOGGER = LogManager.getLogger(DeployPCMMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeployPCMMapper.class);
 
     private static final String PREFIX = SessionAggregationCompositeStage.class.getCanonicalName();
     private static final String MATCHER = SessionAggregationCompositeStage.PREFIX + ".matcher";
@@ -64,13 +64,11 @@ public class SessionAggregationCompositeStage extends AbstractConfigurableCompos
      *             on configuration error
      */
     public SessionAggregationCompositeStage(final Configuration configuration) throws ConfigurationException {
-        super(configuration);
-
         this.traceReconstructionFilter = new TraceReconstructionFilter(this.traceBuffer);
         final String matcherClassName = configuration.getStringProperty(SessionAggregationCompositeStage.MATCHER);
         if (matcherClassName != null) {
             final IEntryCallTraceMatcher matcher = InstantiationFactory
-                    .createAndInitialize(IEntryCallTraceMatcher.class, matcherClassName, configuration);
+                    .createWithConfiguration(IEntryCallTraceMatcher.class, matcherClassName, configuration);
             final EntryCallStage entryCall = new EntryCallStage(matcher);
             this.entryCallSequence = new EntryCallSequence();
 

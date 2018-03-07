@@ -21,14 +21,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
-import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import teetime.framework.AbstractConsumerStage;
+
+import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
+import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
+import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 
 /**
  * Transform the behavior.
@@ -38,13 +38,46 @@ import teetime.framework.AbstractConsumerStage;
  */
 
 public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
-    // TODO extract predefined string and convert them to settings
-    private final String systemId = "behaviormodelsystem";
-    private final String changelogUrl = "http://localhost:8080/v1/systems/" + this.systemId + "/changelogs";
-    private final String resetUrl = "http://localhost:8080/v1/systems/createBehavior";
-    private final String behaviorModelGroupID = "Behavior-Model-Group";
+
+    private static final String OPERATION = "operation";
+
+    private static final String ATTRIBUTE_IP = "ip";
+
+    private static final String ATTRIBUTE_HOSTNAME = "hostname";
+
+    private static final String ATTRIBUTE_NODE_GROUP_ID = "nodeGroupId";
+
+    private static final String ATTRIBUTE_NODE_ID = "nodeId";
+
+    private static final String ATTRIBUTE_SERVICE_ID = "serviceId";
+
+    private static final String ATTRIBUTE_NAME = "name";
+
+    private static final String ATTRIBUTE_DATA = "data";
+
+    private static final String ATTRIBUTE_WORKLOAD = "workload";
+
+    private static final String ATTRIBUTE_COMMUNICATION_ID = "communicationId";
+
+    private static final String ATTRIBUTE_TARGET_ID = "targetId";
+
+    private static final String ATTRIBUTE_SOURCE_ID = "sourceId";
+
+    private static final String ATTRIBUTE_TECHNOLOGY = "technology";
+
+    private static final String ATTRIBUTE_ID = "id";
+
+    private static final String ATTRIBUTE_SYSTEM_ID = "systemId";
+
+    private static final String ATTRIBUTE_TYPE = "type";
+
+    private final String systemId;
+    private final String changelogUrl;
+    private final String resetUrl;
+    private final String behaviorModelGroupId; // = "Behavior-Model-Group";
 
     private final ObjectMapper objectMapper;
+    private final String visualizationHost;
 
     /**
      * enum.
@@ -55,8 +88,23 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
 
     /**
      * constructor.
+     *
+     * @param visualizationHost
+     *            host where the visualization info is send to
+     * @param port
+     *            port for the visualizationHost
+     * @param systemId
+     *            system id
+     * @param behaviorModelGroupId
+     *            group id for the behavior model
      */
-    public TIObserveUIServer() {
+    public TIObserveUIServer(final String visualizationHost, final String port, final String systemId,
+            final String behaviorModelGroupId) {
+        this.visualizationHost = visualizationHost;
+        this.systemId = systemId;
+        this.changelogUrl = "http://" + visualizationHost + ":" + port + "/v1/systems/" + this.systemId + "/changelogs";
+        this.resetUrl = "http://" + visualizationHost + ":" + port + "/v1/systems/createBehavior";
+        this.behaviorModelGroupId = behaviorModelGroupId;
         this.objectMapper = new ObjectMapper();
         this.resetSystem();
     }
@@ -109,27 +157,27 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
         final ObjectNode communicationInstance = this.objectMapper.createObjectNode();
         final String communicationInstanceId = this.createID(communicationId, "-I");
 
-        communication.put("type", "communication");
-        communication.put("id", communicationId);
-        communication.put("systemId", this.systemId);
-        communication.put("technology", "");
-        communication.put("sourceId", this.createID(nodeID, fromSignature));
-        communication.put("targetId", this.createID(nodeID, toSignature));
+        communication.put(TIObserveUIServer.ATTRIBUTE_TYPE, "communication");
+        communication.put(ATTRIBUTE_ID, communicationId);
+        communication.put(ATTRIBUTE_SYSTEM_ID, this.systemId);
+        communication.put(ATTRIBUTE_TECHNOLOGY, "");
+        communication.put(ATTRIBUTE_SOURCE_ID, this.createID(nodeID, fromSignature));
+        communication.put(ATTRIBUTE_TARGET_ID, this.createID(nodeID, toSignature));
 
         final ObjectNode communicationChangelog = this.getChangelog(ChangelogType.CREATE);
-        communicationChangelog.put("data", communication);
+        communicationChangelog.put(ATTRIBUTE_DATA, communication);
         changelogs.add(communicationChangelog);
 
-        communicationInstance.put("type", "communicationInstance");
-        communicationInstance.put("id", communicationInstanceId);
-        communicationInstance.put("communicationId", communicationId);
-        communicationInstance.put("systemId", this.systemId);
-        communicationInstance.put("sourceId", this.createID(this.createID(nodeID, fromSignature), "-I"));
-        communicationInstance.put("targetId", this.createID(this.createID(nodeID, toSignature), "-I"));
-        communicationInstance.put("workload", edge.getCalls());
+        communicationInstance.put(TIObserveUIServer.ATTRIBUTE_TYPE, "communicationInstance");
+        communicationInstance.put(ATTRIBUTE_ID, communicationInstanceId);
+        communicationInstance.put(ATTRIBUTE_COMMUNICATION_ID, communicationId);
+        communicationInstance.put(ATTRIBUTE_SYSTEM_ID, this.systemId);
+        communicationInstance.put(ATTRIBUTE_SOURCE_ID, this.createID(this.createID(nodeID, fromSignature), "-I"));
+        communicationInstance.put(ATTRIBUTE_TARGET_ID, this.createID(this.createID(nodeID, toSignature), "-I"));
+        communicationInstance.put(ATTRIBUTE_WORKLOAD, edge.getCalls());
 
         final ObjectNode communicationInstanceChangelog = this.getChangelog(ChangelogType.CREATE);
-        communicationInstanceChangelog.put("data", communicationInstance);
+        communicationInstanceChangelog.put(ATTRIBUTE_DATA, communicationInstance);
         instanceChangelogs.add(communicationInstanceChangelog);
 
     }
@@ -157,24 +205,24 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
         final ObjectNode serviceInstance = this.objectMapper.createObjectNode();
         final String serviceInstanceID = this.createID(serviceID, "-I");
 
-        service.put("type", "service");
-        service.put("systemId", this.systemId);
-        service.put("id", serviceID);
-        service.put("name", signature);
+        service.put(TIObserveUIServer.ATTRIBUTE_TYPE, "service");
+        service.put(ATTRIBUTE_SYSTEM_ID, this.systemId);
+        service.put(ATTRIBUTE_ID, serviceID);
+        service.put(ATTRIBUTE_NAME, signature);
         final ObjectNode serviceChangelog = this.getChangelog(ChangelogType.CREATE);
 
-        serviceInstance.put("type", "serviceInstance");
-        serviceInstance.put("systemId", this.systemId);
-        serviceInstance.put("id", serviceInstanceID);
-        serviceInstance.put("name", signature);
-        serviceInstance.put("serviceId", serviceID);
-        serviceInstance.put("nodeId", nodeID);
+        serviceInstance.put(TIObserveUIServer.ATTRIBUTE_TYPE, "serviceInstance");
+        serviceInstance.put(ATTRIBUTE_SYSTEM_ID, this.systemId);
+        serviceInstance.put(ATTRIBUTE_ID, serviceInstanceID);
+        serviceInstance.put(ATTRIBUTE_NAME, signature);
+        serviceInstance.put(ATTRIBUTE_SERVICE_ID, serviceID);
+        serviceInstance.put(ATTRIBUTE_NODE_ID, nodeID);
 
-        serviceChangelog.put("data", service);
+        serviceChangelog.put(ATTRIBUTE_DATA, service);
         changelogs.add(serviceChangelog);
 
         final ObjectNode serviceInstanceChangelog = this.getChangelog(ChangelogType.CREATE);
-        serviceInstanceChangelog.put("data", serviceInstance);
+        serviceInstanceChangelog.put(ATTRIBUTE_DATA, serviceInstance);
         instanceChangelogs.add(serviceInstanceChangelog);
 
         // entryCallNode.getEntryCallInformation().stream()
@@ -194,18 +242,18 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
     private String createBasicChangelogs(final ArrayList<ObjectNode> list) {
         final String nodeID = UUID.randomUUID().toString();
         final ObjectNode behaviorModelAsNode = this.objectMapper.createObjectNode();
-        behaviorModelAsNode.put("type", "node");
-        behaviorModelAsNode.put("id", nodeID);
+        behaviorModelAsNode.put(TIObserveUIServer.ATTRIBUTE_TYPE, "node");
+        behaviorModelAsNode.put(ATTRIBUTE_ID, nodeID);
         // behaviorModelAsNode.put(revisionNumber,0);
         // behaviorModelAsNode.put(changelogSequence,0)
         // behaviorModelAsNode.put(lastUpdate,new Date().getTime());
-        behaviorModelAsNode.put("name", "behaviorModel");
-        behaviorModelAsNode.put("nodeGroupId", this.behaviorModelGroupID);
-        behaviorModelAsNode.put("hostname", "");
-        behaviorModelAsNode.put("ip", "127.0.0.1");
+        behaviorModelAsNode.put(ATTRIBUTE_NAME, "behaviorModel");
+        behaviorModelAsNode.put(ATTRIBUTE_NODE_GROUP_ID, this.behaviorModelGroupId);
+        behaviorModelAsNode.put(ATTRIBUTE_HOSTNAME, "");
+        behaviorModelAsNode.put(ATTRIBUTE_IP, this.visualizationHost);
 
         final ObjectNode changelog = this.getChangelog(ChangelogType.CREATE);
-        changelog.put("data", behaviorModelAsNode);
+        changelog.put(ATTRIBUTE_DATA, behaviorModelAsNode);
         list.add(changelog);
 
         return nodeID;
@@ -220,19 +268,19 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
      */
     private ObjectNode getChangelog(final ChangelogType type) {
         final ObjectNode changelog = this.objectMapper.createObjectNode();
-        changelog.put("type", "changelog");
-        changelog.put("systemId", this.systemId);
-        changelog.put("id", UUID.randomUUID().toString());
+        changelog.put(TIObserveUIServer.ATTRIBUTE_TYPE, "changelog");
+        changelog.put(ATTRIBUTE_SYSTEM_ID, this.systemId);
+        changelog.put(ATTRIBUTE_ID, UUID.randomUUID().toString());
 
         switch (type) {
         case CREATE:
-            changelog.put("operation", "CREATE");
+            changelog.put(OPERATION, "CREATE");
             break;
         case APPEND:
-            changelog.put("operation", "APPEND");
+            changelog.put(OPERATION, "APPEND");
             break;
         default:
-            changelog.put("operation", "DELETE");
+            changelog.put(OPERATION, "DELETE");
         }
 
         return changelog;
@@ -254,16 +302,16 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
         }
 
         final ObjectNode group = this.objectMapper.createObjectNode();
-        group.put("systemId", this.systemId);
-        group.put("type", "nodeGroup");
-        group.put("id", this.behaviorModelGroupID);
+        group.put(ATTRIBUTE_SYSTEM_ID, this.systemId);
+        group.put(TIObserveUIServer.ATTRIBUTE_TYPE, "nodeGroup");
+        group.put(ATTRIBUTE_ID, this.behaviorModelGroupId);
         // behaviorModelAsNode.put(revisionNumber,0);
         // behaviorModelAsNode.put(changelogSequence,0)
         // behaviorModelAsNode.put(lastUpdate,new Date().getTime());
-        group.put("name", "behaviorModels");
+        group.put(ATTRIBUTE_NAME, "behaviorModels");
 
         final ObjectNode changelog = this.getChangelog(ChangelogType.CREATE);
-        changelog.put("data", group);
+        changelog.put(ATTRIBUTE_DATA, group);
 
         final ArrayList<ObjectNode> list = new ArrayList<>();
         list.add(changelog);

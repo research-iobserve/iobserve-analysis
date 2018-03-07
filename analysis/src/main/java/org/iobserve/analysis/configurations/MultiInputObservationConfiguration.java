@@ -15,18 +15,20 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
+import kieker.common.configuration.Configuration;
+
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.analysis.source.TCPSourceCompositeStage;
+import org.iobserve.analysis.toggle.FeatureToggle;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.service.source.MultipleConnectionTcpCompositeStage;
+import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import kieker.common.configuration.Configuration;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -69,12 +71,9 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      *            output mode
      * @param snapshotBuilder
      *            snapshotbuilder
-     * @param perOpteryxHeadless
-     *            perOpterxyheadless URI
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param deployablesFolder
-     *            folder containing deployables
+     * @param featureToggle
+     *            feature toggle
+     * @throws ConfigurationException
      */
     public MultiInputObservationConfiguration(final Configuration configuration,
             final ICorrespondence correspondenceModel, final IModelProvider<UsageModel> usageModelProvider,
@@ -84,12 +83,12 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
             final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
-            final SnapshotBuilder snapshotBuilder) {
+            final SnapshotBuilder snapshotBuilder, final FeatureToggle featureToggle) throws ConfigurationException {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder);
+                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, featureToggle);
 
-        final TCPSourceCompositeStage reader = new TCPSourceCompositeStage(configuration);
+        final MultipleConnectionTcpCompositeStage reader = new MultipleConnectionTcpCompositeStage(configuration);
 
         this.connectPorts(reader.getOutputPort(), this.recordSwitch.getInputPort());
     }

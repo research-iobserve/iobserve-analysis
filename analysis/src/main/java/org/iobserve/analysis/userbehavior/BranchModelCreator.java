@@ -525,8 +525,9 @@ public class BranchModelCreator {
      */
     private boolean checkPositionMatchInBranch(final EntryCallEvent callEvent, final Branch examinedBranch,
             final int positionInBranch) {
-        if (positionInBranch < examinedBranch.getBranchSequence().size()) {
-            if (examinedBranch.getBranchSequence().get(positionInBranch).getClass().equals(CallElement.class)) {
+        if (positionInBranch < examinedBranch.getBranchSequence().size()) { // NOPMD
+            // the if statements cannot be combined, as it implements a bounce check
+            if (examinedBranch.getBranchSequence().get(positionInBranch).getClass().equals(CallElement.class)) { // NOPMD
                 final CallElement callElement = (CallElement) examinedBranch.getBranchSequence().get(positionInBranch);
                 return this.isCallEventCallElementMatch(callEvent, callElement);
             }
@@ -617,7 +618,7 @@ public class BranchModelCreator {
      */
     private boolean compactChildBranches(final Branch branch) {
         if (branch.getChildBranches().size() > 0) {
-            if (this.checkForEqualNumberOfChildBranches(branch.getChildBranches())) {
+            if (this.checkForEqualNumberOfChildBranches(branch.getChildBranches())) { // NOPMD
                 if (this.doBranchContainChildBranches(branch.getChildBranches().get(0))) {
                     if (this.checkForEqualSubsequentBranches(branch.getChildBranches())) {
                         return this.mergeBranches(branch, true);
@@ -648,7 +649,7 @@ public class BranchModelCreator {
             final ISequenceElement branchElement = branch.getChildBranches().get(0).getBranchSequence().get(i);
             isElementEqual = false;
             for (final Branch childBranch : branch.getChildBranches()) {
-                if ((childBranch.getBranchSequence().size() - 1 - indexOfEqualElements) < 0) {
+                if (childBranch.getBranchSequence().size() - 1 - indexOfEqualElements < 0) {
                     isElementEqual = false;
                     break;
                 } else if (this.doBranchElementsMatch(branchElement, childBranch.getBranchSequence()
@@ -693,7 +694,7 @@ public class BranchModelCreator {
             branch.getChildBranches().clear();
         }
 
-        if (doChildBranchesExist || (indexOfEqualElements > 0)) {
+        if (doChildBranchesExist || indexOfEqualElements > 0) {
             this.fusionPerformed = true;
             return true;
         } else {
@@ -745,8 +746,8 @@ public class BranchModelCreator {
                     for (int j = 0; j < branches.get(i).getChildBranches().size(); j++) {
                         if (this.doBranchElementsMatch(branchesToMatch.get(k).getBranchSequence().get(0),
                                 branches.get(i).getChildBranches().get(j).getBranchSequence().get(0))
-                                && (branchesToMatch.get(k).getBranchLikelihood() == branches.get(i).getChildBranches()
-                                        .get(j).getBranchLikelihood())) {
+                                && branchesToMatch.get(k).getBranchLikelihood() == branches.get(i).getChildBranches()
+                                        .get(j).getBranchLikelihood()) {
                             matchingElementFound = true;
                             break;
                         }
@@ -789,7 +790,7 @@ public class BranchModelCreator {
      * @return whether a branch contains child branches
      */
     private boolean doBranchContainChildBranches(final Branch branch) {
-        return !((branch.getChildBranches() == null) || (branch.getChildBranches().size() == 0));
+        return !(branch.getChildBranches() == null || branch.getChildBranches().size() == 0);
     }
 
     /**
@@ -806,14 +807,10 @@ public class BranchModelCreator {
         if (!sequenceElement1.getClass().equals(sequenceElement2.getClass())) {
             return false;
         }
-        if (sequenceElement1.getClass().equals(CallElement.class)
-                && sequenceElement2.getClass().equals(CallElement.class)) {
-            if ((!sequenceElement1.getClassSignature().equals(sequenceElement2.getClassSignature()))
-                    || (!sequenceElement1.getOperationSignature().equals(sequenceElement2.getOperationSignature()))) {
-                return false;
-            }
-        }
-        return true;
+        return !(sequenceElement1.getClass().equals(CallElement.class)
+                && sequenceElement2.getClass().equals(CallElement.class)
+                && (!sequenceElement1.getClassSignature().equals(sequenceElement2.getClassSignature())
+                        || !sequenceElement1.getOperationSignature().equals(sequenceElement2.getOperationSignature())));
     }
 
 }

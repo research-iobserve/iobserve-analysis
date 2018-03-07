@@ -17,13 +17,17 @@ package org.iobserve.collector;
 
 import teetime.framework.Configuration;
 
+import org.iobserve.service.source.ISourceCompositeStage;
+import org.iobserve.service.source.SourceStageFactory;
+import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.sink.DataDumpStage;
-import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 
 /**
  * Analysis configuration for the data collector.
  *
  * @author Reiner Jung
+ *
+ * @since 0.0.3
  *
  */
 public class SimpleBridgeConfiguration extends Configuration {
@@ -33,17 +37,17 @@ public class SimpleBridgeConfiguration extends Configuration {
     /**
      * Configure analysis.
      *
-     * @param dataLocation
-     *            data location
-     * @param inputPort
-     *            input port
+     * @param configuration
+     *            configuration for the collector
+     * @throws ConfigurationException
      */
-    public SimpleBridgeConfiguration(final String dataLocation, final int inputPort) {
-        final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort, 1024);
+    public SimpleBridgeConfiguration(final kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException {
+        final ISourceCompositeStage sourceStage = SourceStageFactory.createSourceCompositeStage(configuration);
 
-        this.consumer = new DataDumpStage(dataLocation);
+        this.consumer = new DataDumpStage(configuration);
 
-        this.connectPorts(reader.getOutputPort(), this.consumer.getInputPort());
+        this.connectPorts(sourceStage.getOutputPort(), this.consumer.getInputPort());
     }
 
     public DataDumpStage getCounter() {

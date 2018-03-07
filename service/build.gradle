@@ -1,7 +1,3 @@
-project.ext {
-    aspectjVersion = '1.8.4'
-}
-
 buildscript {
     repositories {
         maven {url "https://maven.eveoh.nl/content/repositories/releases"}
@@ -12,32 +8,25 @@ buildscript {
     }
 }
 
-//apply plugin: 'aspectj'
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-	compile gradleApi()
-	
 	clover 'org.openclover:clover:4.2.0'
-	
-	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-	compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.2.3'
-	
+
 	compile project(":common")
 	compile project(":stages")
-	compile project(":analysis")
 
-	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
+
 	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
-	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
     
 	compile 'org.apache.logging.log4j:log4j-api:2.6.2'
 	compile 'org.apache.logging.log4j:log4j-core:2.6.2'
 	compile 'org.apache.jclouds:jclouds-all:2.0.1+'
 	
+	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
+
 	compile 'junit:junit:4.12'
 	
 	testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
@@ -48,16 +37,9 @@ dependencies {
 }
 
 sourceSets {
-	irl {
-		java {
-			srcDir 'src/main/irl'
-		}
-	}
 	main {
 		java {
 			srcDir 'src/main/java'
-				srcDir 'src/gen/java'
-				srcDir 'src/gen/java-factory'
 		}
 	}    
 }

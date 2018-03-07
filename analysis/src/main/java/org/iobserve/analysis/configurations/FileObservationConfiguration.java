@@ -18,19 +18,19 @@ package org.iobserve.analysis.configurations;
 import java.io.File;
 import java.util.Collection;
 
-import org.iobserve.analysis.ConfigurationException;
+import kieker.common.configuration.Configuration;
+
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.analysis.source.FileSourceCompositeStage;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.service.source.FileSourceCompositeStage;
+import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import kieker.common.configuration.Configuration;
 
 /**
  *
@@ -72,14 +72,6 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
      *            output mode
      * @param snapshotBuilder
      *            snapshotbuilder
-     * @param perOpteryxHeadless
-     *            perOpterxyheadless URI
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param eventListener
-     *            eventlistener of some kind
-     * @param deployablesFolder
-     *            folder containing deployables
      * @throws ConfigurationException
      *             on configuration error
      */
@@ -93,7 +85,7 @@ public class FileObservationConfiguration extends AbstractObservationConfigurati
             final SnapshotBuilder snapshotBuilder) throws ConfigurationException {
         super(correspondenceModel, usageModelProvider, repositoryModelProvider, resourceEnvironmentModelProvider,
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
-                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder);
+                visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, null);
 
         final Configuration configuration = new Configuration();
 

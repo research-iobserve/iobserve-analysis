@@ -42,8 +42,7 @@ public class ModelComparer extends AbstractTransformation<URI, Boolean> {
         boolean equalGraphs = false;
         if (this.adaptationData != null) {
             // TODO finish
-            final PCMModelHandler modelProviders = new PCMModelHandler(
-                    new File(element.toFileString()));
+            final PCMModelHandler modelProviders = new PCMModelHandler(new File(element.toFileString()));
             final GraphFactory graphFactory = new GraphFactory();
             final ModelGraph runtimeGraph = graphFactory.buildGraph(modelProviders);
 
@@ -53,7 +52,7 @@ public class ModelComparer extends AbstractTransformation<URI, Boolean> {
                 SystemEvaluation.disableEvaluation();
             }
         }
-        this.outputPort.send(new Boolean(equalGraphs));
+        this.outputPort.send(Boolean.valueOf(equalGraphs));
     }
 
     public void setBaseData(final AdaptationData adaptationData) {

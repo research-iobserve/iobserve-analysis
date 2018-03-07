@@ -31,7 +31,7 @@ import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.misc.KiekerMetadataRecord;
-import kieker.monitoring.core.configuration.ConfigurationFactory;
+import kieker.monitoring.core.configuration.ConfigurationKeys;
 import kieker.monitoring.core.controller.MonitoringController;
 
 import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
@@ -46,8 +46,8 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
     private static final String WRITER_NAME = TestDumpWriter.class.getCanonicalName();
 
     static {
-        System.setProperty(ConfigurationFactory.CONTROLLER_NAME, "iObserve-Experiments");
-        System.setProperty(ConfigurationFactory.WRITER_CLASSNAME,
+        System.setProperty(ConfigurationKeys.CONTROLLER_NAME, "iObserve-Experiments");
+        System.setProperty(ConfigurationKeys.WRITER_CLASSNAME,
                 TestSessionAndTraceRegistrationPayloadFilter.WRITER_NAME);
     }
 

@@ -147,7 +147,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      */
     private boolean matchStart(final Pattern pattern, final String string) {
         final Matcher matcher = pattern.matcher(string);
-        final boolean match = matcher.find() ? matcher.start() == 0 : false;
+        final boolean match = matcher.find() ? matcher.start() == 0 : false; // NOPMD
         return match;
     }
 

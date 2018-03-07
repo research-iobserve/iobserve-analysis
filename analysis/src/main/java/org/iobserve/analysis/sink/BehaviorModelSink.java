@@ -19,14 +19,14 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 import org.iobserve.analysis.clustering.filter.TBehaviorModelVisualization;
 import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
 import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCreationStrategy;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Writes a behavior model into a file.
@@ -36,7 +36,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
  */
 public class BehaviorModelSink extends AbstractModelOutputSink {
 
-    private static final Logger LOGGER = LogManager.getLogger(TBehaviorModelVisualization.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TBehaviorModelVisualization.class);
 
     private final ObjectMapper objectMapper;
 
@@ -58,7 +58,7 @@ public class BehaviorModelSink extends AbstractModelOutputSink {
     @Override
     protected void execute(final BehaviorModel model) throws IOException {
         final String filename = this.baseUrl + model.getName();
-        BehaviorModelSink.LOGGER.info("Write " + filename);
+        BehaviorModelSink.LOGGER.info("Write models to {}", filename);
         final FileWriter fw = new FileWriter(filename);
         final BufferedWriter bw = new BufferedWriter(fw);
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);

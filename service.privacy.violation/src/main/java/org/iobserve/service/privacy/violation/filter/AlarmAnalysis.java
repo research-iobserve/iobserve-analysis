@@ -15,10 +15,10 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.filter;
 
+import org.iobserve.stages.data.Alarms;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
-
-import org.iobserve.service.privacy.violation.data.Alarms;
 
 /**
  * @author Reiner Jung

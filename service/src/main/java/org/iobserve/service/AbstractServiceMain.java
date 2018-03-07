@@ -20,14 +20,14 @@ import java.io.File;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
 import kieker.monitoring.core.configuration.ConfigurationFactory;
 
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
-import org.iobserve.analysis.ConfigurationException;
+import org.iobserve.stages.general.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Generic service main class.
@@ -40,7 +40,7 @@ import org.iobserve.analysis.ConfigurationException;
  */
 public abstract class AbstractServiceMain<T extends Configuration> {
 
-    protected static final Log LOG = LogFactory.getLog(AbstractServiceMain.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractServiceMain.class);
     protected boolean help = false;
 
     /**
@@ -54,7 +54,7 @@ public abstract class AbstractServiceMain<T extends Configuration> {
      *            arguments are ignored
      */
     public void run(final String title, final String label, final String[] args) {
-        AbstractServiceMain.LOG.debug(title);
+        AbstractServiceMain.LOGGER.debug(title);
 
         final JCommander commander = new JCommander(this);
         try {
@@ -68,10 +68,10 @@ public abstract class AbstractServiceMain<T extends Configuration> {
             }
             this.execute(configuration, commander, label);
         } catch (final ParameterException e) {
-            AbstractServiceMain.LOG.error(e.getLocalizedMessage());
+            AbstractServiceMain.LOGGER.error(e.getLocalizedMessage());
             commander.usage();
         } catch (final ConfigurationException e) {
-            AbstractServiceMain.LOG.error(e.getLocalizedMessage());
+            AbstractServiceMain.LOGGER.error(e.getLocalizedMessage());
             commander.usage();
         }
     }
@@ -88,16 +88,16 @@ public abstract class AbstractServiceMain<T extends Configuration> {
 
                     this.shutdownHook(execution);
 
-                    AbstractServiceMain.LOG.debug("Running " + label);
+                    AbstractServiceMain.LOGGER.debug("Running " + label);
 
                     execution.executeBlocking();
                     this.shutdownService();
 
-                    AbstractServiceMain.LOG.debug("Done");
+                    AbstractServiceMain.LOGGER.debug("Done");
                 }
             }
         } else {
-            AbstractServiceMain.LOG.error("Configuration Error");
+            AbstractServiceMain.LOGGER.error("Configuration Error");
         }
     }
 

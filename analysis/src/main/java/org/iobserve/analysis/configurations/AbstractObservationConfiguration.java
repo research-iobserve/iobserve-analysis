@@ -37,13 +37,12 @@ import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceAcceptanceMatcher;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreTraceSignatureCleanupRewriter;
+import org.iobserve.analysis.toggle.FeatureToggle;
 import org.iobserve.analysis.traces.EntryCallSequence;
 import org.iobserve.analysis.traces.TraceOperationCleanupFilter;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.model.correspondence.ICorrespondence;
-
 import org.iobserve.model.provider.neo4j.IModelProvider;
-
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.iobserve.stages.general.RecordSwitch;
@@ -71,9 +70,9 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      */
     protected final RecordSwitch recordSwitch;
 
-    protected final AllocationStage allocation;
-    protected final DeploymentCompositeStage deploymentStage;
-    protected final UndeploymentCompositeStage undeploymentStage;
+    protected AllocationStage allocation;
+    protected DeploymentCompositeStage deploymentStage;
+    protected UndeploymentCompositeStage undeploymentStage;
 
     /**
      * Create a configuration with a ASCII file reader.
@@ -104,14 +103,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
      *            output mode
      * @param snapshotBuilder
      *            snapshotbuilder
-     * @param perOpteryxHeadless
-     *            perOpterxyheadless URI
-     * @param lqnsDir
-     *            layered queuing networks directory
-     * @param eventListener
-     *            eventlistener of some kind
-     * @param deployablesFolder
-     *            folder containing deployables
+     * @param featureToggle
+     *            feature toggle
      */
     public AbstractObservationConfiguration(final ICorrespondence correspondenceModel,
             final IModelProvider<UsageModel> usageModelProvider,
@@ -121,7 +114,7 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider,
             final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,
             final String visualizationServiceURL, final EAggregationType aggregationType, final EOutputMode outputMode,
-            final SnapshotBuilder snapshotBuilder) {
+            final SnapshotBuilder snapshotBuilder, final FeatureToggle featureToggle) {
 
         final kieker.common.configuration.Configuration configuration = new kieker.common.configuration.Configuration();
 
@@ -129,18 +122,25 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.recordSwitch = new RecordSwitch();
 
         /** allocation. */
-        this.allocation = new AllocationStage(resourceEnvironmentModelProvider);
+        if (featureToggle.getAllocationToggle()) {
+            this.allocation = new AllocationStage(resourceEnvironmentModelProvider);
+        }
 
         /** deployment. */
-        this.deploymentStage = new DeploymentCompositeStage(configuration, resourceEnvironmentModelProvider,
-                allocationModelProvider, systemModelProvider, correspondenceModel);
+        if (featureToggle.getDeploymentToggle()) {
+            this.deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
+                    allocationModelProvider, systemModelProvider, correspondenceModel);
+        }
 
         /** undeployment. */
-        this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
-                allocationModelProvider, systemModelProvider, correspondenceModel);
-
+        if (featureToggle.getUndeploymentToggle()) {
+            this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
+                    allocationModelProvider, systemModelProvider, correspondenceModel);
+        }
         /** deallocation. */
-        // TODO missing
+        if (featureToggle.getDeallocationToggle()) {
+            // TODO missing
+        }
 
         /** link deployments. */
         final NetworkLink networkLink = new NetworkLink(allocationModelProvider, systemModelProvider,
@@ -189,6 +189,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
                 varianceOfUserGroups, new ManhattanDistance());
 
         final BehaviorModelConfiguration behaviorModelConfiguration = new BehaviorModelConfiguration();
+
+        // FEATURE BEHAVIOR
         behaviorModelConfiguration.setBehaviorModelNamePrefix("cdor-");
         behaviorModelConfiguration.setVisualizationUrl(visualizationServiceURL);
         behaviorModelConfiguration.setModelGenerationFilter(modelGenerationFilter);
@@ -197,7 +199,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         behaviorModelConfiguration.setClustering(behaviorModelClustering);
         behaviorModelConfiguration.setAggregationType(aggregationType);
         behaviorModelConfiguration.setOutputMode(outputMode);
-
         // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
 
         final BehaviorModelComparison tBehaviorModelComparison = new BehaviorModelComparison(behaviorModelConfiguration,
@@ -213,9 +214,17 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         /** -- end plain clustering. */
 
         /** dispatch different monitoring data. */
-        this.connectPorts(this.recordSwitch.getDeployedOutputPort(), this.deploymentStage.getDeployedInputPort());
-        this.connectPorts(this.recordSwitch.getUndeployedOutputPort(), this.undeploymentStage.getUndeployedInputPort());
-        this.connectPorts(this.recordSwitch.getAllocationOutputPort(), this.allocation.getInputPort());
+        if (featureToggle.getDeploymentToggle()) {
+            this.connectPorts(this.recordSwitch.getDeployedOutputPort(), this.deploymentStage.getDeployedInputPort());
+        }
+        if (featureToggle.getUndeploymentToggle()) {
+            this.connectPorts(this.recordSwitch.getUndeployedOutputPort(),
+                    this.undeploymentStage.getUndeployedInputPort());
+        }
+        if (featureToggle.getAllocationToggle()) {
+            this.connectPorts(this.recordSwitch.getAllocationOutputPort(), this.allocation.getInputPort());
+        }
+
         this.connectPorts(this.recordSwitch.getFlowOutputPort(), traceReconstructionStage.getInputPort());
         this.connectPorts(this.recordSwitch.getSessionEventOutputPort(), entryCallSequence.getSessionEventInputPort());
 
@@ -228,6 +237,8 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.connectPorts(entryCallSequence.getUserSessionOutputPort(), traceAcceptanceFilter.getInputPort());
         this.connectPorts(traceAcceptanceFilter.getOutputPort(), traceOperationCleanupFilter.getInputPort());
         this.connectPorts(traceOperationCleanupFilter.getOutputPort(), collectUserSessions.getUserSessionInputPort());
+
+        // FEATURE BEHAVIOR
         this.connectPorts(collectUserSessions.getOutputPort(), tBehaviorModelComparison.getInputPort());
 
         // TODO for lbl: Implement a way to pass data to the following stages

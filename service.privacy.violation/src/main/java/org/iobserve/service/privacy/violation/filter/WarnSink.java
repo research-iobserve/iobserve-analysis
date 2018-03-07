@@ -18,7 +18,7 @@ package org.iobserve.service.privacy.violation.filter;
 import java.io.File;
 import java.io.IOException;
 
-import org.iobserve.service.privacy.violation.data.Warnings;
+import org.iobserve.stages.data.Warnings;
 
 /**
  * @author Reiner Jung
@@ -41,8 +41,8 @@ public class WarnSink extends AbstractFileSink<Warnings> {
     @Override
     protected void execute(final Warnings element) throws Exception {
         AbstractFileSink.LOGGER.debug("Alarms");
-        for (final String warning : element.getWarnings()) {
-            AbstractFileSink.LOGGER.debug("\t" + warning);
+        for (final String warning : element.getMessages()) {
+            AbstractFileSink.LOGGER.debug("\t {}", warning);
             this.output.println(warning);
         }
     }

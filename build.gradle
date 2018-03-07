@@ -1,8 +1,13 @@
-apply plugin: 'java'
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        jcenter()
+    }
 
-repositories {
-    mavenCentral()
-    mavenLocal()
+    dependencies {
+        classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
+    }
 }
 
 // checking the presence of an Eclipse API baseline repositorsy
@@ -12,49 +17,107 @@ if (project.properties['api.baseline'] == null || project.properties['api.baseli
 	System.err.println("Add the property api.baseline=path to the repository")
 	System.err.println("Use / for path separation")
 	System.err.println("The repository can be found at git@github.com:research-iobserve/iobserve-repository.git")
-} else {
+} else {	
 	println "iObserve API baseline repository is at: " + project.properties['api.baseline']
 }
 
-buildscript { 
-		
-    repositories {
-        mavenCentral()
-        mavenLocal()
-        jcenter()
-    }
-    
-    dependencies {
-        classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
-    }
+apply plugin: 'eclipse'
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'com.bmuschko.clover'
+
+def confDir = "${project.rootDir}/tools_configurations"
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+
+
+clover {
+	report {
+		html = true
+	}
 }
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'maven'
-    apply plugin: 'eclipse'
-    apply plugin: 'checkstyle'
-    apply plugin: 'com.bmuschko.clover'
+	apply plugin: 'java'
+	apply plugin: 'maven'
+	apply plugin: 'eclipse'
+	apply plugin: 'com.bmuschko.clover'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
     
-    version = '0.0.2-SNAPSHOT'
+    version = '0.0.3-SNAPSHOT'
     group = 'org.iobserve'
         
-    checkstyle {
-        configFile = rootProject.file('iobserve-checkstyle-rules.xml')
-        configDir = rootProject.file("${rootDir}")
+
+    clover {
+        report {
+           html=true
+        }
+        compiler {
+           debug = true
     }
+
+    }
+
+    // --- quality assurance plugins ---
+
+    apply plugin: 'pmd'
     
-    tasks.withType(Checkstyle) {
+    pmd {
+    	// the used PMD version should be the same version as the PMD Eclipse plugin (https://marketplace.eclipse.org/content/eclipse-pmd) uses
+    	// toolVersion = pmdAndCpdVersion
+        ignoreFailures = true
+
+        // Clear the rule set first. Otherwise we would have a lot of additional rules in our rule set.
+        // ruleSets = []
+        // ruleSetFiles = files(resolveRelativeToParent(dirConfig, 'pmdrules.xml'))
+    }
+
+    // check.dependsOn(':cpdCheck')
+
+    apply plugin: 'checkstyle'
+    checkstyle {
+        ignoreFailures = true
+        showViolations = false
+    	configFile = file("$confDir/iobserve-checkstyle-rules.xml")
+    	configDir = file("$confDir")	
+    }
+
+    // apply plugin: 'findbugs'
+    // findbugs {	
+    //    toolVersion = fbVersion
+    //    ignoreFailures = true
+    //    effort = "max"
+    //    reportLevel = "low"
+
+    //    excludeFilter = resolveRelativeToParent(dirConfig, 'fb-filter.xml')
+    //}
+
+    tasks.withType(Pmd) {
+        reports {
+            xml.enabled = true
+            html.enabled = false
+        }
+    }
+
+	tasks.withType(Checkstyle) {
 	    reports {
 	        xml.enabled true
 	    }
 	}
-    
-    ext {
-        appName = "org.iobserve"
+
+    tasks.withType(FindBugs) {
+        reports {
+            xml.enabled = true
+            html.enabled = false
+        }
     }
-    sourceCompatibility = 1.8
-    
+
     repositories {
 		mavenLocal()
 		mavenCentral()
@@ -73,6 +136,10 @@ subprojects {
 		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
 		maven {url "https://mvnrepository.com/artifact/org.antlr/antlr-runtime"}
 		maven {url project.properties['api.baseline']}
+    }
+
+    ext {
+        appName = "org.iobserve"
     }
     
     eclipse {
@@ -100,12 +167,24 @@ task reports {
 			folder = new File ("$projectDir/" + s.name + "/build/reports/tests")
 			if (folder.exists()) {
 				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/tests/test/index.html\">JUnit tests</a></li>\n"
-
 			}
 			
 			folder = new File ("$projectDir/" + s.name + "/build/reports/clover")
 			if (folder.exists()) {
 				reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/clover/html/index.html\">Test coverage</a></li>\n"
+			}
+			
+			folder = new File ("$projectDir/" + s.name + "/build/reports/pmd")
+			if (folder.exists()) {
+				def mainFile = new File ("$projectDir/" + s.name + "/build/reports/pmd/main.html")
+				def testFile = new File ("$projectDir/" + s.name + "/build/reports/pmd/test.html")
+				
+				if (mainFile.exists()) {
+					reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/pmd/main.html\">PMD main</a></li>\n"
+				}
+				if (testFile.exists()) {
+					reportCollection += "\t\t\t<li><a href=\"" + s.name + "/build/reports/pmd/test.html\">PMD test</a></li>\n"
+				}
 			}
 
 			reportCollection += "\t\t</ul>\n"
