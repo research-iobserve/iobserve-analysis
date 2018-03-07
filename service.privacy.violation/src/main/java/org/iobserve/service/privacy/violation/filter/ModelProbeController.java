@@ -20,8 +20,6 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.service.privacy.violation.data.IProbeManagement;
-import org.iobserve.service.privacy.violation.data.Warnings;
-import org.iobserve.service.privacy.violation.data.ProbeLocation;
 import org.iobserve.stages.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
