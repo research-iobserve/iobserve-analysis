@@ -27,7 +27,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'com.bmuschko.clover'
 
-def confDir = "${project.rootDir}/tools_configurations"
+def confDir = "${project.rootDir}/qa-configurations"
 
 repositories {
     mavenCentral()
