@@ -16,9 +16,12 @@
 package org.iobserve.service.privacy.violation.data;
 
 /**
+ * This is a dummy interface and must be changed to provide the necessary information for probe
+ * activation or deactivation.
+ *
  * @author Reiner Jung
  *
  */
-public class ProbeLocation {
+public interface IProbeManagement {
 
 }

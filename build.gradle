@@ -27,7 +27,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'com.bmuschko.clover'
 
-def confDir = "${project.rootDir}/tools_configurations"
+def confDir = "${project.rootDir}/qa-configurations"
 
 repositories {
     mavenCentral()
@@ -56,7 +56,7 @@ subprojects {
         
 
     clover {
-    	targetPercentage = cloverCoverage
+	targetPercentage = cloverCoverage
         report {
            html=true
         }
@@ -71,8 +71,9 @@ subprojects {
     apply plugin: 'pmd'
     
     pmd {
-    	// the used PMD version should be the same version as the PMD Eclipse plugin (https://marketplace.eclipse.org/content/eclipse-pmd) uses
-    	toolVersion = pmdAndCpdVersion
+	// the used PMD version should be the same version as the PMD Eclipse plugin (https://marketplace.eclipse.org/content/eclipse-pmd) uses
+	toolVersion = pmdAndCpdVersion
+
         ignoreFailures = true
 
         // Clear the rule set first. Otherwise we would have a lot of additional rules in our rule set.
@@ -86,8 +87,8 @@ subprojects {
     checkstyle {
         ignoreFailures = true
         showViolations = false
-    	configFile = file("$confDir/iobserve-checkstyle-rules.xml")
-    	configDir = file("$confDir")	
+	configFile = new File(confDir, "checkstyle-rules.xml")
+	configDir = new File(confDir)
     }
 
     // apply plugin: 'findbugs'
@@ -374,7 +375,7 @@ rootProject.subprojects.each { project -> configure(project) {
 		    def cpdErrors = 0
 		
 			p = rootProject
-		    	// cpd only produces one single file in the root project without any report types, such as main and test.
+			// cpd only produces one single file in the root project without any report types, such as main and test.
 		        def reportFile = file(p.projectDir.path + '/build/reports/cpd/cpdCheck.xml')
 		        def reportResults = parseCpdReport(reportFile)
 		        cpdErrors += reportResults[0]

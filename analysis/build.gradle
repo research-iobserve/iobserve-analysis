@@ -41,6 +41,8 @@ dependencies {
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
+	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
+
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
     
 	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
