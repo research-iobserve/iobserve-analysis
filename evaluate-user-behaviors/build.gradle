@@ -4,12 +4,11 @@ apply plugin: 'java'
 mainClassName='org.iobserve.evaluation.EvaluationMain'
 
 dependencies {
-	compile project(":analysis")
-
 	clover 'org.openclover:clover:4.2.0'
+
+	compile project(":analysis") // behavior model data
 	compile project(":service")
 
-	compile "com.beust:jcommander:1.60"
 	testCompile "junit:junit:4.12"
 }
 

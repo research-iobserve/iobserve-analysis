@@ -19,14 +19,15 @@ import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.clustering.filter.models.AbstractBehaviorModelTable;
 import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
 import org.iobserve.analysis.clustering.filter.models.CallInformation;
 import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
 import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
@@ -147,8 +148,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
      */
     private boolean matchStart(final Pattern pattern, final String string) {
         final Matcher matcher = pattern.matcher(string);
-        final boolean match = matcher.find() ? matcher.start() == 0 : false; // NOPMD
-        return match;
+        return matcher.find() ? matcher.start() == 0 : false; // NOPMD
     }
 
     /**
@@ -223,9 +223,7 @@ public class TBehaviorModelCreation extends AbstractConsumerStage<Instances> {
     private String[] splitSignature(final Pattern indicatorPattern, final Pattern dividerPattern,
             final String signature) {
         final String removedIndicator = indicatorPattern.matcher(signature).replaceAll("");
-        final String[] dividerSplit = dividerPattern.split(removedIndicator);
-        return dividerSplit;
-
+        return dividerPattern.split(removedIndicator);
     }
 
 }

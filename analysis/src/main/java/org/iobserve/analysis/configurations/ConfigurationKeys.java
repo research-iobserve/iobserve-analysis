@@ -24,7 +24,7 @@ import org.iobserve.analysis.feature.IGeoLocationCompositeStage;
  * @since 0.0.2
  *
  */
-public class ConfigurationKeys {
+public final class ConfigurationKeys {
     private static final String PREFIX = "iobserve.analysis.";
 
     /**

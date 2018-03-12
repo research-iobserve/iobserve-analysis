@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment;
 
-import kieker.common.configuration.Configuration;
-
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
@@ -59,8 +57,7 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
      * @param correspondence
      *            the correspondence model handler
      */
-    public DeploymentCompositeStage(final Configuration configuration,
-            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+    public DeploymentCompositeStage(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
             final ICorrespondence correspondence) {
         this.deployPCMMapper = new DeployPCMMapper(correspondence);

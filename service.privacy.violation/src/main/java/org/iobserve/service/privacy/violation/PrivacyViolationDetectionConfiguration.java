@@ -44,6 +44,7 @@ import org.iobserve.service.privacy.violation.filter.WarnSink;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.RecordSwitch;
 import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
+import org.iobserve.stages.source.NoneTraceMetadataRewriter;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
@@ -89,15 +90,15 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
         /** instantiating filters. */
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
-                PrivacyViolationDetectionConfiguration.BUFFER_SIZE);
+                PrivacyViolationDetectionConfiguration.BUFFER_SIZE, new NoneTraceMetadataRewriter());
         final RecordSwitch recordSwitch = new RecordSwitch();
 
         /** allocation. */
         final AllocationStage allocationStage = new AllocationStage(resourceEnvironmentModelProvider);
 
         /** deployment. */
-        final DeploymentCompositeStage deploymentStage = new DeploymentCompositeStage(configuration,
-                resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider, rac);
+        final DeploymentCompositeStage deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
+                allocationModelProvider, systemModelProvider, rac);
         final UndeploymentCompositeStage undeploymentStage = new UndeploymentCompositeStage(
                 resourceEnvironmentModelProvider, allocationModelProvider, systemModelProvider, rac);
 

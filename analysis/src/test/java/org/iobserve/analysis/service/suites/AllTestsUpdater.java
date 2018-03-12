@@ -16,18 +16,17 @@
 package org.iobserve.analysis.service.suites;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 
 import org.iobserve.analysis.service.updater.AllocationVisualizationStageTest;
 import org.iobserve.analysis.service.updater.DeploymentVisualizationStageTest;
 import org.iobserve.analysis.service.updater.UndeploymentVisualizationStageTest;
-import org.iobserve.analysis.service.util.TestHandler;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import com.sun.net.httpserver.HttpServer;
+import fi.iki.elonen.NanoHTTPD;
 
 /**
  * Test suite that runs all tests for classes in org.iobserve.analysis.service.updater.
@@ -40,8 +39,11 @@ import com.sun.net.httpserver.HttpServer;
         UndeploymentVisualizationStageTest.class })
 public class AllTestsUpdater {
     /** handler for http requests. */
-    private static TestHandler testHandler;
-    private static HttpServer server;
+    private static NanoHTTPD server; // NOCS initialized in setUpClass
+
+    public static NanoHTTPD getServer() {
+        return AllTestsUpdater.server;
+    }
 
     /**
      * Sets up the server to test the methods that require a http connection.
@@ -52,10 +54,15 @@ public class AllTestsUpdater {
     @BeforeClass
     public static void setUpClass() throws IOException {
         /** test server */
-        AllTestsUpdater.testHandler = new TestHandler();
-        AllTestsUpdater.server = HttpServer.create(new InetSocketAddress(9090), 10);
-        AllTestsUpdater.server.createContext("/v1/systems/test_systemId/changelogs", AllTestsUpdater.testHandler);
-        AllTestsUpdater.server.start();
-
+        AllTestsUpdater.server = new VisualizationHttpTestServer();
     }
+
+    /**
+     * Shuts down the server at the end of the test suite.
+     */
+    @AfterClass
+    public static void cleanUpClass() {
+        AllTestsUpdater.server.stop();
+    }
+
 }

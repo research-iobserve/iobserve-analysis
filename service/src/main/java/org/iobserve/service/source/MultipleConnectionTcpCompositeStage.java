@@ -21,7 +21,11 @@ import kieker.common.record.IMonitoringRecord;
 import teetime.framework.CompositeStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.service.InstantiationFactory;
+import org.iobserve.stages.general.ConfigurationException;
+import org.iobserve.stages.source.ITraceMetadataRewriter;
 import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
+import org.iobserve.stages.source.NoneTraceMetadataRewriter;
 
 /**
  * Multiple TCP input stage.
@@ -38,6 +42,8 @@ public class MultipleConnectionTcpCompositeStage extends CompositeStage implemen
     private static final String CAPACITY = MultipleConnectionTcpCompositeStage.PREFIX + ".capacity";
     private static final int DEFAULT_CAPACITY = 1024 * 1024;
 
+    private static final String REWRITER = MultipleConnectionTcpCompositeStage.PREFIX + ".recordRewriter";
+
     private final MultipleConnectionTcpReaderStage reader;
 
     /**
@@ -45,15 +51,19 @@ public class MultipleConnectionTcpCompositeStage extends CompositeStage implemen
      *
      * @param configuration
      *            configuration parameters
+     * @throws ConfigurationException
      */
-    // TODO externalize parameters, all parameters shall be parsed in the central configuration
-    // object
-    public MultipleConnectionTcpCompositeStage(final Configuration configuration) {
+    public MultipleConnectionTcpCompositeStage(final Configuration configuration) throws ConfigurationException {
         final int inputPort = configuration.getIntProperty(MultipleConnectionTcpCompositeStage.SOURCE_PORT,
                 MultipleConnectionTcpCompositeStage.DEFAULT_SOURCE_PORT);
         final int capacity = configuration.getIntProperty(MultipleConnectionTcpCompositeStage.CAPACITY,
                 MultipleConnectionTcpCompositeStage.DEFAULT_CAPACITY);
-        this.reader = new MultipleConnectionTcpReaderStage(inputPort, capacity);
+        final String rewriterClassName = configuration.getStringProperty(MultipleConnectionTcpCompositeStage.REWRITER,
+                NoneTraceMetadataRewriter.class.getName());
+        final Class<?>[] classes = null;
+        final ITraceMetadataRewriter rewriter = InstantiationFactory.create(ITraceMetadataRewriter.class,
+                rewriterClassName, classes);
+        this.reader = new MultipleConnectionTcpReaderStage(inputPort, capacity, rewriter);
     }
 
     @Override

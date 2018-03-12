@@ -141,7 +141,11 @@
       <property name="allowEmptyMethods" value="true"/>
     </module>
     <module name="ImportControl">
+<<<<<<< HEAD:tools_configurations/iobserve-checkstyle-rules.xml
     	  <property name="file" value="${config_loc}/import-control.xml"/>
+=======
+    	<property name="file" value="${config_loc}/import-control.xml"/>
+>>>>>>> origin/master:qa-configurations/checkstyle-rules.xml
     </module>
     <module name="RedundantImport"/>
     <module name="AvoidNestedBlocks"/>

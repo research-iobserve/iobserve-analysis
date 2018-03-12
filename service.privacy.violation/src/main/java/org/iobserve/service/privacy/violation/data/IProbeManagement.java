@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,13 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.data;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
+ * This is a dummy interface and must be changed to provide the necessary information for probe
+ * activation or deactivation.
+ *
  * @author Reiner Jung
  *
  */
-public class Alarms {
-    private final List<String> alarms = new ArrayList<>();
+public interface IProbeManagement {
 
-    public final List<String> getAlarms() {
-        return this.alarms;
-    }
 }

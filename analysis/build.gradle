@@ -3,13 +3,10 @@ apply plugin: 'application'
 
 mainClassName = 'org.iobserve.analysis.service.AnalysisMain'
 
-project.ext {
-    aspectjVersion = '1.8.4'
-}
-
 buildscript {
     repositories {
         maven {url "https://maven.eveoh.nl/content/repositories/releases"}
+        maven {url "https://mvnrepository.com/artifact/org.nanohttpd/nanohttpd" }
     }
 
     dependencies {
@@ -17,14 +14,10 @@ buildscript {
     }
 }
 
-//apply plugin: 'aspectj'
-
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-	compile gradleApi()
-	
 	clover 'org.openclover:clover:4.2.0'
 	
 	// project dependencies
@@ -40,7 +33,8 @@ dependencies {
 	compile group: 'org.glassfish', name: 'javax.json', version: '1.1.2'
 	compile group: 'org.json', name: 'json', version: '20180130'
 
-	compile 'org.slf4j:slf4j-simple:1.7.25'
+	compile 'org.slf4j:slf4j-api:1.7.25'
+	compile 'org.slf4j:slf4j-log4j12:1.7.25'
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
@@ -48,6 +42,7 @@ dependencies {
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
 	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
+
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
     
 	compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.11.1-v20150805-0538'
@@ -105,6 +100,8 @@ dependencies {
 	compile 'extra:lpg.runtime.java:2.0.17.v201004271640'	
 
 	compile 'org.neo4j:neo4j:3.2.0'
+	
+	compile group: 'org.nanohttpd', name: 'nanohttpd', version: '2.3.0'
 
 	testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
 	testCompile 'javax.json:javax.json-api:1.0'
@@ -123,19 +120,21 @@ sourceSets {
 		}
 	}
 	main {
-	    	java {
-	    		srcDir 'src/main/java'
-				srcDir 'src/gen/java'
-				srcDir 'src/gen/java-factory'
+		java {
+			srcDir 'src/main/java'
+			srcDir 'src/gen/java'
+			srcDir 'src/gen/java-factory'
+		}
+	    	resources {
+	    		srcDir 'src/main/resources'
 	    	}
-	}    
+	}
 }
 
 clover {
 	report {
 		html=true
 	}
-	
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -151,6 +150,10 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 artifacts {
     archives sourcesJar
     //archives javadocJar
+}
+
+test {
+	exclude '**/org/iobserve/analysis/service/updater/*AllocationVisualizationStageTest.class'
 }
 
 install {

@@ -30,7 +30,6 @@ public class JPetstoreStrategy implements IRepresentativeStrategy {
     @Override
     public Double findRepresentativeCode(final String signature, final List<Double> callInformationCodes) {
         // summing up all values
-        final Double num = callInformationCodes.stream().reduce(0.0, (a, b) -> a + b);
-        return num;
+        return callInformationCodes.stream().reduce(0.0, (a, b) -> a + b);
     }
 }

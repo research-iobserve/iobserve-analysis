@@ -99,7 +99,7 @@ public class BehaviorModelConfiguration {
      *
      * @return returns true when empty transaction should be kept
      */
-    public boolean keepEmptyTransitions() {
+    public boolean isKeepEmptyTransitions() {
         return this.keepEmptyTransitions;
     }
 

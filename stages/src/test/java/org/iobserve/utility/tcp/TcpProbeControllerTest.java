@@ -46,7 +46,7 @@ public class TcpProbeControllerTest {
     private static String pattern = "test.pattern";
 
     /**
-     *
+     * .
      */
     public TcpProbeControllerTest() {
         super();

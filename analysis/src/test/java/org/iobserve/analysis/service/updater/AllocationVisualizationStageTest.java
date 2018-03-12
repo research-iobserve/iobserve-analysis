@@ -20,10 +20,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import teetime.framework.test.StageTester;
-
 import org.hamcrest.core.Is;
-import org.iobserve.analysis.service.util.TestHandler;
+import org.iobserve.analysis.service.suites.VisualizationHttpTestServer;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -36,6 +34,8 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
+
+import teetime.framework.test.StageTester;
 
 /**
  * Tests for {@link AllocationVisualizationStage}.
@@ -62,13 +62,9 @@ public class AllocationVisualizationStageTest {
     private final List<ResourceContainer> inputEvents = new ArrayList<>();
 
     /** test event. */
-    private ResourceContainer allocationEvent;
 
     /** data for generating test container allocation event. */
     private static final String SERVICE = "test-service";
-    private static final String CONTEXT = "/path/test";
-    private static final String URL = "http://" + AllocationVisualizationStageTest.SERVICE + '/'
-            + AllocationVisualizationStageTest.CONTEXT;
 
     /** list of test resource container. */
     private final List<ResourceContainer> testResourceContainerList = new ArrayList<>();
@@ -111,13 +107,13 @@ public class AllocationVisualizationStageTest {
      * the nodegroup.
      *
      */
-    @Test
+    @Test(timeout = 3000)
     public void test() {
 
         StageTester.test(this.allocationVisualizationStage).and().send(this.inputEvents)
                 .to(this.allocationVisualizationStage.getInputPort()).start();
 
-        final JSONArray changelogs = new JSONArray(TestHandler.getRequestBody());
+        final JSONArray changelogs = new JSONArray(VisualizationHttpTestServer.getRequestBody());
         final JSONObject expectedNodegroup = new JSONObject(changelogs.getJSONObject(0).get("data").toString());
         final JSONObject expectedNode = new JSONObject(changelogs.getJSONObject(1).get("data").toString());
 
