@@ -4,6 +4,7 @@ buildscript {
         mavenLocal()
         jcenter()
         
+        ////////// Goomph //////////
         // make it easy to test a snapshot version of goomph
 		maven {	url 'https://oss.sonatype.org/content/repositories/snapshots/' }
 		// grab dependencies from the gradle plugin portal
@@ -17,7 +18,8 @@ buildscript {
 
     dependencies {
         classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
-                
+         
+        ////////// Goomph //////////      
         // a bunch of eclipse stuff
 		classpath "com.diffplug.gradle:goomph:${VER_GOOMPH}"
 		// creates a targetplatform
