@@ -232,7 +232,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
             json.put("id", 0);
             json.put("start", this.nodeMap.get(sourceSignature));
             json.put("end", this.nodeMap.get(targetSignature));
-            json.put("action", sourceSignature + "->" + targetSignature);
+            json.put("action", String.format("%s->%s", sourceSignature, targetSignature));
             json.put("count", entryCallEdge.getCalls());
 
             this.postElement(json, this.getEdgeUrl(modelId));

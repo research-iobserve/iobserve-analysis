@@ -32,14 +32,15 @@ import org.palladiosimulator.pcm.system.System;
  * @author Philipp Weimann
  * @author Reiner Jung - fix naming and api change
  */
-public class ActionFactory {
+public final class ActionFactory {
 
     private static PCMModelHandler runtimeModelHandler;
     private static PCMModelHandler redeploymentModelHandler;
 
-    /*
-     * ////////// HELPERS //////////
-     */
+    private ActionFactory() {
+
+    }
+
     /**
      * TODO .
      *
@@ -49,10 +50,9 @@ public class ActionFactory {
      *            .
      * @return .
      */
-    protected static AssemblyContext getAssemblyContext(final String contextID, final System systemModel) {
-        final AssemblyContext assemblyContext = systemModel.getAssemblyContexts__ComposedStructure().stream()
-                .filter(s -> s.getId().equals(contextID)).findFirst().get();
-        return assemblyContext;
+    public static AssemblyContext getAssemblyContext(final String contextID, final System systemModel) {
+        return systemModel.getAssemblyContexts__ComposedStructure().stream().filter(s -> s.getId().equals(contextID))
+                .findFirst().get();
     }
 
     /**
@@ -64,11 +64,9 @@ public class ActionFactory {
      *            .
      * @return .
      */
-    protected static AllocationContext getAllocationContext(final String allocationID,
-            final Allocation allocationModel) {
-        final AllocationContext allocationContext = allocationModel.getAllocationContexts_Allocation().stream()
-                .filter(s -> s.getId().equals(allocationID)).findFirst().get();
-        return allocationContext;
+    public static AllocationContext getAllocationContext(final String allocationID, final Allocation allocationModel) {
+        return allocationModel.getAllocationContexts_Allocation().stream().filter(s -> s.getId().equals(allocationID))
+                .findFirst().get();
     }
 
     /**
@@ -80,12 +78,10 @@ public class ActionFactory {
      *            .
      * @return .
      */
-    protected static ResourceContainer getResourceContainer(final String resourceContainerID,
+    public static ResourceContainer getResourceContainer(final String resourceContainerID,
             final ResourceEnvironment resEnvModel) {
-        final ResourceContainer resContainer = resEnvModel.getResourceContainer_ResourceEnvironment().stream()
+        return resEnvModel.getResourceContainer_ResourceEnvironment().stream()
                 .filter(s -> s.getId().equals(resourceContainerID)).findFirst().get();
-
-        return resContainer;
     }
 
     public static PCMModelHandler getRuntimeModels() {

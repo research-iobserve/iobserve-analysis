@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import teetime.stage.basic.AbstractTransformation;
+
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.Action;
@@ -30,8 +32,6 @@ import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.TerminateAction;
-
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  * This stage orderes the adaptation {@link Action}s into an executable sequence.
@@ -86,7 +86,7 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
     }
 
     private void printAdaptionSequence(final List<Action> adaptionSteps) {
-        final StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder(50);
         sb.append("Adaption sequence:\n");
 
         for (int i = 0; i < adaptionSteps.size(); i++) {
@@ -97,7 +97,7 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
     }
 
     private String printAction(final Action action) {
-        final StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder(200);
 
         if (action instanceof AcquireAction) {
             final AcquireAction acquire = (AcquireAction) action;

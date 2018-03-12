@@ -119,7 +119,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
         Graph repositoryModelGraph = graphLoader.initializeRepositoryModelGraph(modelFileHandler.getRepositoryModel());
-        Graph resourceEnvironmentModelGraph = graphLoader
+        Graph resourceEnvironmentGraph = graphLoader
                 .initializeResourceEnvironmentModelGraph(modelFileHandler.getResourceEnvironmentModel());
         Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(modelFileHandler.getAllocationModel());
         Graph systemModelGraph = graphLoader.initializeSystemModelGraph(modelFileHandler.getSystemModel());
@@ -127,7 +127,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
 
         /** load neo4j graphs. */
         repositoryModelGraph = graphLoader.createRepositoryModelGraph();
-        resourceEnvironmentModelGraph = graphLoader.createResourceEnvironmentModelGraph();
+        resourceEnvironmentGraph = graphLoader.createResourceEnvironmentModelGraph();
         allocationModelGraph = graphLoader.createAllocationModelGraph();
         systemModelGraph = graphLoader.createSystemModelGraph();
         usageModelGraph = graphLoader.createUsageModelGraph();
@@ -135,7 +135,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
         /** new graphModelProvider. */
         final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
         final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
-                resourceEnvironmentModelGraph);
+                resourceEnvironmentGraph);
         final IModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
         final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider = new ModelProvider<>(
                 systemModelGraph);

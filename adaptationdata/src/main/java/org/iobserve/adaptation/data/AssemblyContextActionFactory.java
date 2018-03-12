@@ -34,7 +34,11 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
  *
  * @author Philipp Weimann
  */
-public class AssemblyContextActionFactory extends ActionFactory {
+public final class AssemblyContextActionFactory {
+
+    private AssemblyContextActionFactory() {
+        // empty private factory
+    }
 
     private static AssemblyContextAction setSourceAssemblyContext(final AssemblyContextAction action,
             final String assemblyContextID) {

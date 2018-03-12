@@ -34,7 +34,11 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  *
  * @author Philipp Weimann
  */
-public class ResourceContainerActionFactory extends ActionFactory {
+public final class ResourceContainerActionFactory {
+
+    private ResourceContainerActionFactory() {
+        // private factory constructor
+    }
 
     private static ResourceContainerAction setSourceResourceContainer(final ResourceContainerAction action,
             final String resourceContainerID) {
