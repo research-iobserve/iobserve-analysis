@@ -53,6 +53,8 @@ import org.slf4j.LoggerFactory;
  */
 public final class InitializeDeploymentVisualization {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisMain.class);
+
     /** model provider for palladio models. */
     private final IModelProvider<Allocation> allocationModelGraphProvider;
     private final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
@@ -69,8 +71,6 @@ public final class InitializeDeploymentVisualization {
 
     private final URL changelogUrl;
     private final URL systemUrl;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AnalysisMain.class);
 
     /**
      * constructor.

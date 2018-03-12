@@ -49,6 +49,10 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
     private Collection<AssemblyContextAction> changes;
     private Collection<AssemblyContextAction> deallocations;
 
+    public AdaptationPlanning() {
+        // empty constructor
+    }
+
     @Override
     protected void execute(final AdaptationData element) throws Exception {
 

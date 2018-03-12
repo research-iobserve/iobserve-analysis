@@ -70,7 +70,7 @@ public class InitializeUserBehaviorVisualization {
             userInvokedServices.add(assemblyContext);
         }
 
-        if (!userInvokedServices.isEmpty()) {
+        if (!userInvokedServices.isEmpty()) { // NOCS NOPMD
             // SendHttpRequest.post(Changelog.create(
             // this.usergroupService.createUsergroup(this.systemService.getSystemId(),
             // userInvokedServices)),

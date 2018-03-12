@@ -109,7 +109,7 @@ public class XMeansClustering implements IVectorQuantizationClustering {
 
             return Optional.of(xMeansClusteringResults);
 
-        } catch (final Exception e) { // NOPMD
+        } catch (final Exception e) { // NOPMD NOCS api dependency
             XMeansClustering.LOGGER.error("Clustering failed.", e);
         }
 

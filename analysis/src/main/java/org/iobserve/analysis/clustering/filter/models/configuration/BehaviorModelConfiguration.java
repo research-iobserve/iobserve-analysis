@@ -19,7 +19,7 @@ import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
 import org.iobserve.analysis.clustering.XMeansClustering;
-import org.iobserve.analysis.clustering.filter.models.configuration.examples.DefaultStrategy;
+import org.iobserve.analysis.clustering.filter.models.configuration.examples.FirstCallInformationCodeStrategy;
 
 import weka.core.ManhattanDistance;
 
@@ -60,7 +60,7 @@ public class BehaviorModelConfiguration {
         this.visualizationUrl = "localhost:8080";
         this.keepEmptyTransitions = true;
         this.modelGenerationFilter = new EntryCallFilterRules(false).addFilterRule(".*");
-        this.representativeStrategy = new DefaultStrategy();
+        this.representativeStrategy = new FirstCallInformationCodeStrategy();
         this.signatureCreationStrategy = new GetLastXSignatureStrategy(Integer.MAX_VALUE);
         this.clustering = new XMeansClustering(1, 1, new ManhattanDistance());
     }

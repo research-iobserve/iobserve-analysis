@@ -15,6 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
+import teetime.framework.Configuration;
+import teetime.framework.OutputPort;
+import teetime.stage.basic.distributor.Distributor;
+import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
+import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
@@ -37,13 +44,6 @@ import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import teetime.framework.Configuration;
-import teetime.framework.OutputPort;
-import teetime.stage.basic.distributor.Distributor;
-import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
-import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 /**
  * This is a generic configuration for all analyses.

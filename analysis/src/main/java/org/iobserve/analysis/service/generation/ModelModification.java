@@ -119,7 +119,7 @@ public class ModelModification {
      */
     private static URI copyRepoToOutput(final URI outputLocation, final PCMModelHandler modelProviders) {
         SnapshotBuilder.setBaseSnapshotURI(outputLocation);
-        SnapshotBuilder snapshotBuilder;
+        final SnapshotBuilder snapshotBuilder;
         URI snapshotURI = null;
 
         try {

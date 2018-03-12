@@ -15,13 +15,14 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.composite;
 
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.clustering.IDensitityClustering;
 import org.iobserve.analysis.clustering.filter.ClusterMerger;
 import org.iobserve.analysis.clustering.filter.TDensityClustering;
 
-import teetime.framework.CompositeStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
 import weka.clusterers.EM;
 import weka.core.Instances;
 

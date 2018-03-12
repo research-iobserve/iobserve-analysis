@@ -26,7 +26,11 @@ import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentat
  * @author Christoph Dornieden
  *
  */
-public class DefaultStrategy implements IRepresentativeStrategy {
+public class FirstCallInformationCodeStrategy implements IRepresentativeStrategy {
+
+    public FirstCallInformationCodeStrategy() {
+        // empty constructor
+    }
 
     @Override
     public Double findRepresentativeCode(final String signature, final List<Double> callInformationCodes) {

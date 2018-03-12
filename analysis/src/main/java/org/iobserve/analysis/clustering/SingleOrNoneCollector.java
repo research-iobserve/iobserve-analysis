@@ -33,6 +33,10 @@ import java.util.stream.Collector;
  */
 public class SingleOrNoneCollector<T> implements Collector<T, SingleOrNoneAccumulator<T>, Optional<T>> {
 
+    public SingleOrNoneCollector() {
+        // empty constructor
+    }
+
     @Override
     public BiConsumer<SingleOrNoneAccumulator<T>, T> accumulator() {
         return (a, t) -> a.add(t);

@@ -84,7 +84,7 @@ public class GraphFactory {
     /*
      * Prepare all data structures.
      */
-    private void init(final PCMModelHandler modelProvider) {
+    private void init(final PCMModelHandler modelProvider) { // NOCS
         this.modelProvider = modelProvider;
 
         this.assemblyContexts = new HashMap<>();
@@ -213,8 +213,8 @@ public class GraphFactory {
      * Build Graph Helpers
      */
     private ModelGraph createModelGraph() {
-        final HashMap<String, DeploymentNode> servers = new HashMap<>();
-        final HashMap<String, ComponentNode> components = new HashMap<>();
+        final Map<String, DeploymentNode> servers = new HashMap<>();
+        final Map<String, ComponentNode> components = new HashMap<>();
 
         // Build Servers Nodes
         for (final ResourceContainerPrivacy resContainer : this.resourceContainers.values()) {

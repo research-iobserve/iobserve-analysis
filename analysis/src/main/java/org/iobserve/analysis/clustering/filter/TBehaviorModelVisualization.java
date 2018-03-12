@@ -131,7 +131,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
      * @return ids as List
      */
     private Optional<List<Long>> getAllGraphsFromUI(final String targetUrl) {
-        URL url;
+        final URL url;
         try {
             url = new URL(targetUrl);
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -169,7 +169,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
      *            targetUrl
      */
     private void sendDelete(final String targetUrl) {
-        URL url;
+        final URL url;
         try {
             url = new URL(targetUrl);
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();

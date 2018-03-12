@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -135,14 +136,14 @@ public class SystemGeneration {
         }
     }
 
-    private void fillInterfaceMaps(final HashMap<String, List<AssemblyContext>> openRequiredInterfaces,
-            final HashMap<String, List<AssemblyContext>> openProvidedInterfaces) {
+    private void fillInterfaceMaps(final Map<String, List<AssemblyContext>> openRequiredInterfaces,
+            final Map<String, List<AssemblyContext>> replacementOpenProvidedInterfaces) {
         for (final String key : openRequiredInterfaces.keySet()) {
             this.openRequiredInterfaces.replace(key, openRequiredInterfaces.get(key));
         }
 
-        for (final String key : openProvidedInterfaces.keySet()) {
-            this.openProvidedInterfaces.replace(key, openProvidedInterfaces.get(key));
+        for (final String key : replacementOpenProvidedInterfaces.keySet()) {
+            this.openProvidedInterfaces.replace(key, replacementOpenProvidedInterfaces.get(key));
         }
 
         for (final Connector connector : this.system.getConnectors__ComposedStructure()) {

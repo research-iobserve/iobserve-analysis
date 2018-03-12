@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.clustering.SingleOrNoneCollector;
 import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
 import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
@@ -35,9 +38,6 @@ import org.palladiosimulator.pcm.usagemodel.Start;
 import org.palladiosimulator.pcm.usagemodel.Stop;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * Transforms an entryCallSequenceModel to an UBM UI compatible JSON and sends it to the UBM UI.

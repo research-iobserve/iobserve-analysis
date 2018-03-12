@@ -53,6 +53,10 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
     private Set<AssemblyContextAction> acActions;
     private Set<ResourceContainerAction> rcActions;
 
+    public AdaptationCalculation() {
+        // empty constructor
+    }
+
     private void init(final AdaptationData data) {
         this.runtimeComponentNodes = new HashMap<>();
         this.runtimeDeploymentNodes = new HashMap<>();
