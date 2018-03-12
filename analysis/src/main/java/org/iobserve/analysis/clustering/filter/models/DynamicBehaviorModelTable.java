@@ -47,10 +47,10 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
     private final Map<String, Pair<Integer, ArrayList<AggregatedCallInformation>>> signatures;
 
     /** a list for getting transitions. */
-    private final ArrayList<String> inverseSignatures;
+    private final List<String> inverseSignatures;
 
     /** transition matrix. */
-    private final LinkedList<LinkedList<Integer>> transitions;
+    private final LinkedList<LinkedList<Integer>> transitions; // NOPMD specific interface is used
 
     /** Aggregation strategy. */
     private final IRepresentativeStrategy strategy;
@@ -103,9 +103,8 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
      * @return index of the signature in the transition table
      */
     private int getSignatureIndex(final String signature) {
-        final Integer index = this.signatures.containsKey(signature) ? this.signatures.get(signature).getFirst()
+        return this.signatures.containsKey(signature) ? this.signatures.get(signature).getFirst()
                 : this.addSignature(signature);
-        return index;
     }
 
     @Override
@@ -202,10 +201,7 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
         final Integer[][] fixedTransitions = this.transitions.stream().map(l -> l.stream().toArray(Integer[]::new))
                 .toArray(Integer[][]::new);
 
-        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(fixedSignatures,
-                fixedInverseSignatures, fixedTransitions);
-
-        return fixedBehaviorModelTable;
+        return new BehaviorModelTable(fixedSignatures, fixedInverseSignatures, fixedTransitions);
     }
 
     /**
@@ -245,10 +241,7 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
             }
         }
 
-        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(fixedSignatures,
-                fixedInverseSignatures, fixedTransitions);
-
-        return fixedBehaviorModelTable;
+        return new BehaviorModelTable(fixedSignatures, fixedInverseSignatures, fixedTransitions);
     }
 
     @Override

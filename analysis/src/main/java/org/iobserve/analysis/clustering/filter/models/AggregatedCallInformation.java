@@ -46,7 +46,6 @@ public class AggregatedCallInformation {
     public AggregatedCallInformation(final IRepresentativeStrategy strategy, final String signature) {
         this.signature = signature;
         this.callInformationCodes = new ArrayList<>();
-        this.representativeCode = null;
         this.strategy = strategy;
     }
 
@@ -134,7 +133,6 @@ public class AggregatedCallInformation {
      */
     public void clearInformations() {
         this.callInformationCodes = new ArrayList<>();
-        this.representativeCode = null;
     }
 
     /**

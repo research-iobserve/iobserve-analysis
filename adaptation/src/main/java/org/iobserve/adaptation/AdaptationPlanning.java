@@ -101,42 +101,42 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 
         if (action instanceof AcquireAction) {
             final AcquireAction acquire = (AcquireAction) action;
-            sb.append("Acquire:\t" + acquire.getSourceResourceContainer().getEntityName());
-            sb.append("\tID: " + acquire.getSourceResourceContainer().getId());
+            sb.append("Acquire:\t").append(acquire.getSourceResourceContainer().getEntityName());
+            sb.append("\tID: ").append(acquire.getSourceResourceContainer().getId());
 
         } else if (action instanceof TerminateAction) {
             final TerminateAction terminate = (TerminateAction) action;
-            sb.append("Terminate:\t" + terminate.getSourceResourceContainer().getEntityName());
-            sb.append("\tID: " + terminate.getSourceResourceContainer().getId());
+            sb.append("Terminate:\t").append(terminate.getSourceResourceContainer().getEntityName());
+            sb.append("\tID: ").append(terminate.getSourceResourceContainer().getId());
 
         } else if (action instanceof AllocateAction) {
             final AllocateAction allocate = (AllocateAction) action;
-            sb.append("Allocate:\t" + allocate.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: " + allocate.getSourceAssemblyContext().getId());
-            sb.append("\t" + " ------- ");
-            sb.append("\t->\t" + allocate.getNewAllocationContext().getEntityName());
+            sb.append("Allocate:\t").append(allocate.getSourceAssemblyContext().getEntityName());
+            sb.append("\tID: ").append(allocate.getSourceAssemblyContext().getId());
+            sb.append("\t ------- ");
+            sb.append("\t->\t").append(allocate.getNewAllocationContext().getEntityName());
 
         } else if (action instanceof MigrateAction) {
             final MigrateAction migrate = (MigrateAction) action;
-            sb.append("Migrate:\t" + migrate.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: " + migrate.getSourceAssemblyContext().getId());
-            sb.append("\t"
-                    + migrate.getSourceAllocationContext().getResourceContainer_AllocationContext().getEntityName());
-            sb.append("\t->\t"
-                    + migrate.getNewAllocationContext().getResourceContainer_AllocationContext().getEntityName());
+            sb.append("Migrate:\t").append(migrate.getSourceAssemblyContext().getEntityName());
+            sb.append("\tID: ").append(migrate.getSourceAssemblyContext().getId());
+            sb.append('\t').append(
+                    migrate.getSourceAllocationContext().getResourceContainer_AllocationContext().getEntityName());
+            sb.append("\t->\t")
+                    .append(migrate.getNewAllocationContext().getResourceContainer_AllocationContext().getEntityName());
 
         } else if (action instanceof ChangeRepositoryComponentAction) {
             final ChangeRepositoryComponentAction change = (ChangeRepositoryComponentAction) action;
-            sb.append("ChangeComp:\t" + change.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: " + change.getSourceAssemblyContext().getId());
-            sb.append("\t"
-                    + change.getSourceAssemblyContext().getEncapsulatedComponent__AssemblyContext().getEntityName());
-            sb.append("\t->\t" + change.getNewRepositoryComponent().getEntityName());
+            sb.append("ChangeComp:\t").append(change.getSourceAssemblyContext().getEntityName());
+            sb.append("\tID: ").append(change.getSourceAssemblyContext().getId());
+            sb.append('\t').append(
+                    change.getSourceAssemblyContext().getEncapsulatedComponent__AssemblyContext().getEntityName());
+            sb.append("\t->\t").append(change.getNewRepositoryComponent().getEntityName());
 
         } else if (action instanceof DeallocateAction) {
             final DeallocateAction deAllocate = (DeallocateAction) action;
-            sb.append("Deallocate:\t" + deAllocate.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: " + deAllocate.getSourceAssemblyContext().getId());
+            sb.append("Deallocate:\t").append(deAllocate.getSourceAssemblyContext().getEntityName());
+            sb.append("\tID: ").append(deAllocate.getSourceAssemblyContext().getId());
 
         } else {
             sb.append("UNKOWN:\t" + " ------------------------------------ ");

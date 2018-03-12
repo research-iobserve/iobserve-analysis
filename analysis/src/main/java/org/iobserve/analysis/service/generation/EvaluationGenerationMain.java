@@ -29,31 +29,35 @@ import org.iobserve.analysis.data.graph.GraphFactory;
 import org.iobserve.model.PCMModelHandler;
 
 /**
- * ToDo .
+ * TODO move class into own project if this is still used.
  *
  * @author unknown
  *
  */
-public class EvaluationGeneration {
+public final class EvaluationGenerationMain {
 
-    private static final Logger LOG = LogManager.getLogger(EvaluationGeneration.class);
+    private static final Logger LOG = LogManager.getLogger(EvaluationGenerationMain.class);
+
+    private EvaluationGenerationMain() {
+        // all static class
+    }
 
     public static void main(final String[] args) {
 
         final CommandLineParser parser = new DefaultParser();
         try {
-            CommandLine commandLine = parser.parse(EvaluationGeneration.createHelpOptions(), args);
+            CommandLine commandLine = parser.parse(EvaluationGenerationMain.createHelpOptions(), args);
 
             if (commandLine.hasOption("h")) {
                 final HelpFormatter formatter = new HelpFormatter();
-                formatter.printHelp("iobserve-analysis", EvaluationGeneration.createOptions());
+                formatter.printHelp("iobserve-analysis", EvaluationGenerationMain.createOptions());
             } else {
-                commandLine = parser.parse(EvaluationGeneration.createOptions(), args);
+                commandLine = parser.parse(EvaluationGenerationMain.createOptions(), args);
 
                 final File model = new File(commandLine.getOptionValue("o"));
 
                 if (commandLine.hasOption("n")) {
-                    EvaluationGeneration.clearDirectory(commandLine.getOptionValue("o"));
+                    EvaluationGenerationMain.clearDirectory(commandLine.getOptionValue("o"));
                     ModelGeneration.createNewModel(commandLine);
 
                     final PCMModelHandler modelProviders = new PCMModelHandler(model);
@@ -61,7 +65,7 @@ public class EvaluationGeneration {
                     graphFactory.buildGraph(modelProviders);
                 }
                 if (commandLine.hasOption("m")) {
-                    EvaluationGeneration.clearDirectory(commandLine.getOptionValue("o"));
+                    EvaluationGenerationMain.clearDirectory(commandLine.getOptionValue("o"));
                     ModelModification.createNewModel(commandLine);
 
                     final PCMModelHandler modelProviers = new PCMModelHandler(model);
@@ -75,7 +79,7 @@ public class EvaluationGeneration {
     }
 
     private static void clearDirectory(final String fileURI) {
-        EvaluationGeneration.LOG.info("Clearing output folder: " + fileURI);
+        EvaluationGenerationMain.LOG.info("Clearing output folder: " + fileURI);
         final File outputDir = new File(fileURI);
 
         if (outputDir.exists()) {

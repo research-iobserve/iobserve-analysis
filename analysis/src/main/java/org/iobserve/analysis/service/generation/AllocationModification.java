@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -43,8 +44,8 @@ public class AllocationModification {
     private final System systemModel;
     private final ResourceEnvironment resEnvModel;
     private final ResourceContainer[] resContainer;
-    private HashMap<String, List<AllocationContext>> resContainer2AllocationContext;
-    private HashMap<String, AllocationContext> assemblyCon2AllocationContext;
+    private Map<String, List<AllocationContext>> resContainer2AllocationContext;
+    private Map<String, AllocationContext> assemblyCon2AllocationContext;
 
     public AllocationModification(final Allocation allocationModel, final System systemModel,
             final ResourceEnvironment resEnvModel) {
@@ -144,7 +145,7 @@ public class AllocationModification {
 
         for (int i = 0; i < migarions; i++) {
             AllocationContext ac = null;
-            for (int j = 0; (ac != null) && (j < (allocationContexts.size() * 10)); j++) {
+            for (int j = 0; ac != null && j < allocationContexts.size() * 10; j++) {
                 final int randomIndex = ThreadLocalRandom.current().nextInt(allocationContexts.size());
                 if (!usedAllocationContexts.contains(allocationContexts.get(randomIndex))) {
                     ac = allocationContexts.get(randomIndex);

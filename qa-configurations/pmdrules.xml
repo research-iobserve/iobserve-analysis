@@ -56,7 +56,14 @@
 		<exclude name="UselessParentheses" />
 		<exclude name="UseVarargs" />
 		<exclude name="AtLeastOneConstructor"/>
+		<exclude name="UseConcurrentHashMap"/>
 	</rule>
+
+    <rule ref="rulesets/internal/all-java.xml/ConsecutiveLiteralAppends">
+    	<properties>
+    		<property name="threshold" value="2"/>
+    	</properties>
+    </rule>
 
 	<!-- Here's some rules we'll specify one at a time -->
 	<rule ref="rulesets/java/unusedcode.xml/UnusedLocalVariable"/>
