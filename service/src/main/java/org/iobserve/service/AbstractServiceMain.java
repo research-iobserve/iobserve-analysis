@@ -17,17 +17,16 @@ package org.iobserve.service;
 
 import java.io.File;
 
+import org.iobserve.analysis.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
 import kieker.monitoring.core.configuration.ConfigurationFactory;
-
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
-
-import org.iobserve.analysis.ConfigurationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Generic service main class.
@@ -89,7 +88,6 @@ public abstract class AbstractServiceMain<T extends Configuration> {
                     this.shutdownHook(execution);
 
                     AbstractServiceMain.LOGGER.debug("Running " + label);
-
                     execution.executeBlocking();
                     this.shutdownService();
 

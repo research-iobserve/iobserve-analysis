@@ -55,7 +55,7 @@ public class MJConfiguration extends Configuration {
     /** Set acceptance matcher required for SessionAcceptanceFilter. STRING */
     public static final String ENTRY_CALL_ACCEPTANCE_MATCHER = IEntryCallAcceptanceMatcher.class.getCanonicalName();
 
-    /** Set cleanup rewriter eequired for TraceOperationCleanupFilter. STRING */
+    /** Set cleanup rewriter required for TraceOperationCleanupFilter. STRING */
     public static final String CLEANUP_REWRITER = ITraceSignatureCleanupRewriter.class.getCanonicalName();
 
     /**
