@@ -13,32 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.service;
+package org.iobserve.analysis;
 
-import java.io.File;
+import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
 
-import teetime.framework.AbstractProducerStage;
+import teetime.framework.Configuration;
 
 /**
- * Only for debugging.
+ * Configuration for the stages of the adaptation service.
  *
  * @author Lars Bluemke
  *
  */
-public class AnalysisMainDebugModelProducer extends AbstractProducerStage<File> {
+public class AnalysisMainDebugConfiguration extends Configuration {
 
-    private static final File PCM_MODELS_DIRECTORY = new File(
-            "/Users/LarsBlumke/Documents/CAU/Masterarbeit/working-dir-analysis");
+    public AnalysisMainDebugConfiguration() {
 
-    @Override
-    protected void execute() throws Exception {
+        // Debugging
+        final AnalysisMainDebugModelProducer modelProducer = new AnalysisMainDebugModelProducer();
+        final SingleConnectionTcpWriterStage modelWriter = new SingleConnectionTcpWriterStage("localhost", 12349);
 
-        final File allocationModelFile = new File(AnalysisMainDebugModelProducer.PCM_MODELS_DIRECTORY,
-                "default.allocation");
-
-        this.outputPort.send(allocationModelFile);
-
-        this.workCompleted();
+        this.connectPorts(modelProducer.getOutputPort(), modelWriter.getInputPort());
     }
 
 }
