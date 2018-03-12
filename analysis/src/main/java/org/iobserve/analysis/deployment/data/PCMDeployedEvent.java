@@ -28,7 +28,7 @@ public class PCMDeployedEvent {
     private final Correspondent correspondent;
     private final String url;
     private ResourceContainer resourceContainer;
-    private final short countryCode;
+    private final short countryCode; // NOPMD country code is short
 
     /**
      * Create a deployment event which initialized values for service, correspondent, url, and
@@ -44,7 +44,7 @@ public class PCMDeployedEvent {
      *            the country code of the service in case that is available.
      */
     public PCMDeployedEvent(final String service, final Correspondent correspondent, final String url,
-            final short countryCode) {
+            final short countryCode) { // NOPMD country code is short
         this.service = service;
         this.correspondent = correspondent;
         this.url = url;
@@ -71,7 +71,7 @@ public class PCMDeployedEvent {
         return this.resourceContainer;
     }
 
-    public final short getCountryCode() {
+    public final short getCountryCode() { // NOPMD country code is short
         return this.countryCode;
     }
 

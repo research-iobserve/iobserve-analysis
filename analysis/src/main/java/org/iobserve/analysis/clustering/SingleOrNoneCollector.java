@@ -39,7 +39,7 @@ public class SingleOrNoneCollector<T> implements Collector<T, SingleOrNoneAccumu
     }
 
     @Override
-    public Set<java.util.stream.Collector.Characteristics> characteristics() {
+    public Set<Characteristics> characteristics() {
         return EnumSet.of(Characteristics.UNORDERED);
     }
 

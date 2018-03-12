@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -155,9 +156,8 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
                 return Optional.of(graphIds);
             }
 
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             TBehaviorModelVisualization.LOGGER.error("Fetching data from visualization service failed.", e);
-            e.printStackTrace();
         }
         return Optional.empty();
     }
@@ -178,7 +178,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
 
             con.getResponseCode();
 
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             TBehaviorModelVisualization.LOGGER.error("HTTP DELETE failed.", e);
         }
 
@@ -275,8 +275,8 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
             con.disconnect();
             return contendNode;
 
-        } catch (final Exception ex) {
-            ex.printStackTrace();
+        } catch (final IOException ex) {
+            TBehaviorModelVisualization.LOGGER.error("Cannot post element.", ex);
         }
         return this.objectMapper.createObjectNode();
     }

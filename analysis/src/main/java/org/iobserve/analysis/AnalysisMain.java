@@ -152,7 +152,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
 
             final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
                     this.containerManagementVisualizationBaseUrl, systemId, allocationModelProvider,
-                    systemModelProvider, resourceEnvironmentModelProvider, usageModelProvider);
+                    systemModelProvider, resourceEnvironmentModelProvider);
 
             deploymentVisualization.initialize();
 
@@ -179,7 +179,9 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
 
     @Override
     protected void shutdownService() {
-
+        // No additional shutdown hooks necessary.
+        // In case runtime data must be serialized, this would be the right place to trigger
+        // serialization
     }
 
     @Override

@@ -30,7 +30,6 @@ teetime.log
 **/**.xtendbin
 *.zip
 /build/
-gradle.properties
 repos/
 *.log
 rac.creator/mapped.txt

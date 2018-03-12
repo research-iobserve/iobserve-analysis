@@ -15,13 +15,16 @@
  ***************************************************************************/
 package org.iobserve.analysis.sink;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-
 import teetime.framework.AbstractConsumerStage;
 
+import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
+
 /**
+ * Used to define a common interface for ModelOutputSinks.
  *
- * @author unknown
+ * TODO complete this feature or remove it
+ *
+ * @author Christoph Dornieden
  *
  */
 public abstract class AbstractModelOutputSink extends AbstractConsumerStage<BehaviorModel> {

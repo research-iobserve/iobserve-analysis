@@ -30,4 +30,17 @@ GOOMPH_PDE_VER=4.5.2
 # Testing
 VER_JUNIT=4.12
 
+# Thresholds are now project-specific.
+# Please have a look at the subproject's file 'gradle.properties'.
+
+cpdErrorThreshold = 360
+
+org.gradle.jvmargs = "-XX:MaxPermSize=128m"
+
+checkstyleVersion = 8.8
+pmdAndCpdVersion = 5.2.2
+# => '5.5.0' causes many new PMD errors and PMD warnings
+fbVersion = 3.0.1
+
+cloverCoverage = 14.0
 

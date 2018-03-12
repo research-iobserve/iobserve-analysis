@@ -82,7 +82,7 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
 
             final List<IMonitoringRecord> storage = TestDumpWriter.getRecords();
 
-            Assert.assertTrue("No records received", storage.size() > 0);
+            Assert.assertTrue("No records received", !storage.isEmpty());
 
             IMonitoringRecord record = storage.get(0);
             Assert.assertEquals("Should be KiekerMetadataRecord", KiekerMetadataRecord.class, record.getClass());
@@ -123,9 +123,9 @@ public class TestSessionAndTraceRegistrationPayloadFilter {
 
             Assert.assertEquals("Wrong number of records ", 4, storage.size());
         } catch (final ServletException e) {
-            e.printStackTrace();
+            Assert.fail(e.getMessage());
         } catch (final IOException e) {
-            e.printStackTrace();
+            Assert.fail(e.getMessage());
         }
     }
 

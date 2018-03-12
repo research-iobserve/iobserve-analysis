@@ -47,8 +47,6 @@ import com.beust.jcommander.converters.IntegerConverter;
 import kieker.common.logging.Log;
 import kieker.common.logging.LogFactory;
 import teetime.framework.Configuration;
-import teetime.framework.Execution;
-
 /**
  * Main class for starting the iObserve application. This class is mainly meant as an example of the
  * set up of the neo4j model providers.
@@ -58,7 +56,6 @@ import teetime.framework.Execution;
  * @author Alessandro Giusa
  * @author Lars Bluemke
  */
-public final class AnalysisMainNeo4j {
     private static final Log LOG = LogFactory.getLog(AnalysisMain.class);
 
     @Parameter(names = "--help", help = true)
@@ -278,4 +275,4 @@ public final class AnalysisMainNeo4j {
 
     }
 
-}
+
