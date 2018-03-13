@@ -158,10 +158,10 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
                     allocationModelProvider, systemModelProvider, usageModelProvider, correspondenceModel);
 
         } catch (final MalformedURLException e) {
-            AbstractServiceMain.LOGGER.debug("URL construction for deployment visualization failed.", e);
+            AbstractServiceMain.LOGGER.error("URL construction for deployment visualization failed.", e);
             return null;
         } catch (final IOException e) {
-            AbstractServiceMain.LOGGER.debug("Deployment visualization could not connect to visualization service.", e);
+            AbstractServiceMain.LOGGER.error("Deployment visualization could not connect to visualization service.", e);
             return null;
         }
     }
