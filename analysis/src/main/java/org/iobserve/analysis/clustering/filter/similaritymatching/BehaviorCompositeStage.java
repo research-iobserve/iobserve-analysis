@@ -1,14 +1,14 @@
 package org.iobserve.analysis.clustering.filter.similaritymatching;
 
-import org.iobserve.analysis.ConfigurationException;
-import org.iobserve.analysis.IBehaviorCompositeStage;
-import org.iobserve.analysis.InstantiationFactory;
 import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.configurations.ConfigurationKeys;
 import org.iobserve.analysis.configurations.MJConfiguration;
+import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
 import org.iobserve.common.record.ISessionEvent;
+import org.iobserve.service.InstantiationFactory;
+import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ public class BehaviorCompositeStage implements IBehaviorCompositeStage {
             throw new ConfigurationException("Initialization incomplete: No trace matcher specified.");
         }
         final IEntryCallTraceMatcher traceMatcher = InstantiationFactory
-                .createAndInitialize(IEntryCallTraceMatcher.class, traceMatcherClassName, configuration);
+                .createWithConfiguration(IEntryCallTraceMatcher.class, traceMatcherClassName, configuration);
 
         /** For SessionAcceptanceFilter */
         final String entryCallMatcherClassName = configuration
@@ -41,7 +41,7 @@ public class BehaviorCompositeStage implements IBehaviorCompositeStage {
             throw new ConfigurationException("Initialization incomplete: No entry call acceptance matcher specified.");
         }
         final IEntryCallAcceptanceMatcher entryCallMatcher = InstantiationFactory
-                .createAndInitialize(IEntryCallAcceptanceMatcher.class, entryCallMatcherClassName, configuration);
+                .createWithConfiguration(IEntryCallAcceptanceMatcher.class, entryCallMatcherClassName, configuration);
 
         /** For TraceOperationsCleanupFilter */
         final String cleanupRewriterClassName = configuration.getStringProperty(ConfigurationKeys.CLEANUP_REWRITER);

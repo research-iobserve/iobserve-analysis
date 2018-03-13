@@ -15,10 +15,10 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.similaritymatching;
 
-import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
 import org.iobserve.analysis.configurations.MJConfiguration;
 import org.iobserve.analysis.session.data.UserSession;
+import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.source.TimeTriggerFilter;
 
 import teetime.framework.CompositeStage;

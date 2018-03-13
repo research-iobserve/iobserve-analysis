@@ -15,13 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-import org.iobserve.analysis.ConfigurationException;
-import org.iobserve.analysis.IBehaviorCompositeStage;
-import org.iobserve.analysis.ISourceCompositeStage;
-import org.iobserve.analysis.InstantiationFactory;
 import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
+import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
+import org.iobserve.service.InstantiationFactory;
+import org.iobserve.service.source.ISourceCompositeStage;
+import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.iobserve.stages.general.RecordSwitch;
 import org.slf4j.Logger;
@@ -86,7 +86,7 @@ public class MJConfiguration extends Configuration {
         final String sourceClassName = configuration.getStringProperty(MJConfiguration.SOURCE);
         if (!sourceClassName.isEmpty()) {
             final ISourceCompositeStage sourceCompositeStage = InstantiationFactory
-                    .createAndInitialize(ISourceCompositeStage.class, sourceClassName, configuration);
+                    .createWithConfiguration(ISourceCompositeStage.class, sourceClassName, configuration);
 
             this.connectPorts(sourceCompositeStage.getOutputPort(), this.recordSwitch.getInputPort());
 

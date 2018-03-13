@@ -15,19 +15,10 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-<<<<<<< HEAD
-import org.iobserve.analysis.ConfigurationException;
-import org.iobserve.analysis.clustering.EAggregationType;
-import org.iobserve.analysis.clustering.EOutputMode;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.analysis.source.FileSourceCompositeStage;
-=======
-import kieker.common.configuration.Configuration;
 
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.snapshot.SnapshotBuilder;
->>>>>>> master
 import org.iobserve.analysis.toggle.FeatureToggle;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.IModelProvider;
@@ -37,7 +28,8 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-import org.slf4j.LoggerFactory;
+
+import kieker.common.configuration.Configuration;
 
 /**
  * Configuration prepared to handle multiple TCP input streams.
@@ -97,18 +89,7 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
                 allocationModelProvider, systemModelProvider, varianceOfUserGroups, thinkTime, closedWorkload,
                 visualizationServiceURL, aggregationType, outputMode, snapshotBuilder, featureToggle);
 
-<<<<<<< HEAD
-        // final TCPSourceCompositeStage reader = new
-        // TCPSourceCompositeStage(configuration);
-        try {
-            final FileSourceCompositeStage reader = new FileSourceCompositeStage(configuration);
-            this.connectPorts(reader.getOutputPort(), this.recordSwitch.getInputPort());
-        } catch (final ConfigurationException ex) {
-            LoggerFactory.getLogger(MultiInputObservationConfiguration.class).error(ex.getLocalizedMessage());
-        }
-=======
         final MultipleConnectionTcpCompositeStage reader = new MultipleConnectionTcpCompositeStage(configuration);
->>>>>>> master
 
     }
 

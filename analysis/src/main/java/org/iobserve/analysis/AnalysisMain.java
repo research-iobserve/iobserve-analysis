@@ -28,6 +28,8 @@ import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
