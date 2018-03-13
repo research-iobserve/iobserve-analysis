@@ -87,6 +87,9 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
             .getTimeSource();
     /** Host name of the host the code is running on. */
     protected static final String VM_NAME = SessionAndTraceRegistrationFilterForJPetstore.CTRLINST.getHostname();
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionAndTraceRegistrationFilterForJPetstore.class);
+
     /** Kieker trace registry. */
     private static final TraceRegistry TRACEREGISTRY = TraceRegistry.INSTANCE;
     private static final int INFORMATION_VALUE = 1;
@@ -102,7 +105,9 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
     private final Pattern removeActionOfIndexPattern = Pattern.compile("\\.action\\(");
     private final Pattern removeActionOfOperationPattern = Pattern.compile("action\\.");
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SessionAndTraceRegistrationFilterForJPetstore.class);
+    public SessionAndTraceRegistrationFilterForJPetstore() {
+        // empty default constructor
+    }
 
     @Override
     public void init(final FilterConfig config) throws ServletException {
@@ -135,7 +140,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
             // if (CTRLINST.isProbeActivated(this.filterOperationSignatureString)) {
 
             String operationSignature;
-            String componentSignature;
+            final String componentSignature;
             final String method;
             final String path;
             final String sessionId;

@@ -21,6 +21,9 @@ import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
 import org.iobserve.analysis.protocom.PcmEntity;
 import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
@@ -28,9 +31,6 @@ import org.iobserve.rac.creator.ModelMappingReader;
 import org.iobserve.rac.creator.RepositoryFileReader;
 import org.iobserve.rac.creator.data.ClassAndMethod;
 import org.xml.sax.SAXException;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 // TODO This is a filter containing the core functionality. It can be divided into smaller filters.
 /**

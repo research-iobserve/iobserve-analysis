@@ -28,10 +28,15 @@ import org.slf4j.LoggerFactory;
  * @author Lars Bluemke
  *
  */
-public class ModelProviderSynchronizer {
+public final class ModelProviderSynchronizer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelProviderSynchronizer.class);
+
     private static ConcurrentHashMap<Graph, ModelProvider<?>> locks = new ConcurrentHashMap<>();
+
+    private ModelProviderSynchronizer() {
+        // private constructor, utility class
+    }
 
     /**
      * Gets the lock for the graph database of the calling {@link ModelProvider}. Blocks if the lock

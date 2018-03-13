@@ -18,15 +18,15 @@ package org.iobserve.model.factory;
 import java.io.IOException;
 import java.util.Collections;
 
+import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.cost.FixedProcessingResourceCost;
+import de.uka.ipd.sdq.pcm.cost.costFactory;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.palladiosimulator.pcm.resourceenvironment.ProcessingResourceSpecification;
-
-import de.uka.ipd.sdq.pcm.cost.CostRepository;
-import de.uka.ipd.sdq.pcm.cost.FixedProcessingResourceCost;
-import de.uka.ipd.sdq.pcm.cost.costFactory;
 
 /**
  * Model builder for cost models.
@@ -34,7 +34,11 @@ import de.uka.ipd.sdq.pcm.cost.costFactory;
  * @author Tobias Pöppke
  *
  */
-public class CostModelFactory {
+public final class CostModelFactory {
+
+    private CostModelFactory() {
+        // private constructor, utility class
+    }
 
     /**
      * Save the given cost repository with the specified file name in the given folder.

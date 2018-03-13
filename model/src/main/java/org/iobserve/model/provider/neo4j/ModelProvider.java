@@ -59,13 +59,14 @@ import org.slf4j.LoggerFactory;
  */
 public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
+    protected static final String EMF_URI = "emfUri";
+    protected static final String REF_POS = "refPos";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelProvider.class);
 
-    protected static final String EMF_URI = "emfUri";
     private static final String ENTITY_NAME = "entityName";
     private static final String ID = "id";
     private static final String REF_NAME = "refName";
-    protected static final String REF_POS = "refPos";
     private static final String TYPE = "type";
 
     private static final String ACCESSIBLE = "accessible";
@@ -309,11 +310,11 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     @SuppressWarnings("unchecked")
     public T readOnlyComponentById(final Class<T> clazz, final String id) {
         final Label label = Label.label(clazz.getSimpleName());
-        Node node;
-        EObject component;
+
+        EObject component = null;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                     new HashSet<Node>());
             component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
@@ -359,7 +360,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
-                final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                         new HashSet<Node>());
                 final EObject component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 nodes.add((T) component);
@@ -411,9 +412,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @return The root
      */
     @SuppressWarnings("unchecked")
-    private EObject readNodes(final Node node, final HashSet<Node> containmentsAndDatatypes,
-            final HashMap<Node, EObject> nodesToCreatedObjects) {
-        EObject component;
+    private EObject readNodes(final Node node, final Set<Node> containmentsAndDatatypes,
+            final Map<Node, EObject> nodesToCreatedObjects) {
+        final EObject component;
 
         if (!nodesToCreatedObjects.containsKey(node)) {
             // Get node's data type label and instantiate a new empty object of this data type
@@ -818,10 +819,9 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         ModelProviderSynchronizer.getLock(this);
 
         final Label label = Label.label(clazz.getSimpleName());
-        Node node;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             if (node != null) {
                 this.deleteComponentNodes(node);
             }
@@ -863,7 +863,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         ModelProviderSynchronizer.getLock(this);
 
         final Label label = Label.label(clazz.getSimpleName());
-        Node node;
+        final Node node;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);

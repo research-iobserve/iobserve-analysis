@@ -27,12 +27,18 @@ import teetime.framework.OutputPort;
  *
  * @author Reiner Jung
  *
+ * @since 0.0.2
+ *
  */
 public class UniqueFilter extends AbstractConsumerStage<String> {
 
     private final Collection<String> stringCollection = new ArrayList<>();
 
     private final OutputPort<String> outputPort = this.createOutputPort();
+
+    public UniqueFilter() {
+        // empty default constructor
+    }
 
     public OutputPort<String> getOutputPort() {
         return this.outputPort;

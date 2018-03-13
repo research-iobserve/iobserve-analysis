@@ -38,6 +38,14 @@ public class InitializeUserBehaviorVisualization {
     private Object usageScenarios;
     private final IModelProvider<System> systemModelProvider;
 
+    /**
+     * Create the user bevahor visualization.
+     *
+     * @param systemModelGraphProvider
+     *            system model provider
+     * @param usageModelGraphProvider
+     *            usage model provier
+     */
     public InitializeUserBehaviorVisualization(
             final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider,
             final IModelProvider<UsageModel> usageModelGraphProvider) {
@@ -45,6 +53,9 @@ public class InitializeUserBehaviorVisualization {
         this.usageModelProvider = usageModelGraphProvider;
     }
 
+    /**
+     * Initialize the diagram.
+     */
     public void initialize() {
         // TODO not working yet
 

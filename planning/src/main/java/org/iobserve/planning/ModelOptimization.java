@@ -15,9 +15,9 @@
  ***************************************************************************/
 package org.iobserve.planning;
 
-import org.iobserve.planning.data.PlanningData;
-
 import teetime.stage.basic.AbstractTransformation;
+
+import org.iobserve.planning.data.PlanningData;
 
 /**
  * This class creates potential migration candidates via PerOpteryx. The class is OS independent.

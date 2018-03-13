@@ -33,7 +33,7 @@ import java.util.stream.Collector;
  */
 public class SingleOrNoneCollector<T> implements Collector<T, SingleOrNoneAccumulator<T>, Optional<T>> {
 
-    public SingleOrNoneCollector() {
+    public SingleOrNoneCollector() { // NOCS empty constructor
         // empty constructor
     }
 

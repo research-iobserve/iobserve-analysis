@@ -71,7 +71,7 @@ public class PCMDeployedEvent {
         return this.resourceContainer;
     }
 
-    public final short getCountryCode() { // NOPMD country code is short
+    public final short getCountryCode() { // NOPMD NOCS country code is short
         return this.countryCode;
     }
 

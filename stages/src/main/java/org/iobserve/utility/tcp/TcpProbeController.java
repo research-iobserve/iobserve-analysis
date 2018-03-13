@@ -15,20 +15,22 @@
  ***************************************************************************/
 package org.iobserve.utility.tcp;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import kieker.common.configuration.Configuration;
+import kieker.common.record.remotecontrol.ActivationEvent;
+import kieker.common.record.remotecontrol.DeactivationEvent;
+import kieker.common.record.remotecontrol.IRemoteControlEvent;
+import kieker.monitoring.writer.tcp.ConnectionTimeoutException;
+import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
 
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
 import org.iobserve.utility.tcp.events.TcpActivationControlEvent;
 import org.iobserve.utility.tcp.events.TcpDeactivationEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import kieker.common.configuration.Configuration;
-import kieker.common.record.remotecontrol.ActivationEvent;
-import kieker.common.record.remotecontrol.DeactivationEvent;
-import kieker.common.record.remotecontrol.IRemoteControlEvent;
-import kieker.monitoring.writer.tcp.SingleSocketTcpWriter;
 
 /**
  * Controller to send remote control events for probes to given addresses. Establishes TCP
@@ -44,6 +46,10 @@ public class TcpProbeController {
      * Saves already established connections, the key pattern is "ip:port".
      */
     private final Map<String, TcpControlConnection> knownAddresses = new HashMap<>();
+
+    public TcpProbeController() {
+        // empty default constructor
+    }
 
     /**
      * Convenience method for {@link AbstractControlEvent control events}.
@@ -111,12 +117,12 @@ public class TcpProbeController {
     private void sendTcpCommand(final String ip, final int port, final String hostname,
             final IRemoteControlEvent monitoringRecord) throws RemoteControlFailedException {
         final String writerKey = ip + ":" + port;
-        SingleSocketTcpWriter tcpWriter;
+        final SingleSocketTcpWriter tcpWriter;
 
         TcpControlConnection currentConnection = this.knownAddresses.get(writerKey);
 
         // if host was never used or an other module was there before, create a new connection
-        if ((currentConnection == null) || (currentConnection.getHostname() != hostname)) {
+        if (currentConnection == null || currentConnection.getHostname() != hostname) {
             currentConnection = new TcpControlConnection(ip, port, hostname, this.createNewTcpWriter(ip, port));
             this.knownAddresses.put(writerKey, currentConnection);
         }
@@ -148,7 +154,7 @@ public class TcpProbeController {
         try {
             tcpWriter = new SingleSocketTcpWriter(configuration);
             tcpWriter.onStarting();
-        } catch (final Exception e) {
+        } catch (final IOException | ConnectionTimeoutException e) {
             // runtime exception is thrown after timeout
             if (TcpProbeController.LOGGER.isDebugEnabled()) {
                 TcpProbeController.LOGGER.debug("Could not create TCP connections to " + hostname + " on port " + port,
