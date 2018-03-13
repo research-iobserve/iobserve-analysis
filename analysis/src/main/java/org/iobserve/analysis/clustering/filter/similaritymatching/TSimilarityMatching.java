@@ -16,20 +16,64 @@
 package org.iobserve.analysis.clustering.filter.similaritymatching;
 
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
+import org.iobserve.analysis.configurations.ConfigurationKeys;
 import org.iobserve.analysis.session.data.UserSession;
+import org.iobserve.service.InstantiationFactory;
+import org.iobserve.stages.general.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import kieker.common.configuration.Configuration;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
 public class TSimilarityMatching extends CompositeStage implements IClassificationStage {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorCompositeStage.class);
+
     private final InputPort<UserSession> sessionInputPort;
     private final InputPort<Long> timerInputPort;
     private final OutputPort<BehaviorModel[]> outputPort;
 
-    public TSimilarityMatching(final IStructureMetricStrategy structureMetric,
-            final IParameterMetricStrategy parameterMetric, final IModelGenerationStrategy modelGenerationStrategy,
-            final double similarityRadius) {
+    public TSimilarityMatching(final Configuration configuration) throws ConfigurationException {
+        /** Instantiate configurable objects/properties */
+
+        /** For TVectorization */
+        final String structureMetricClassName = configuration
+                .getStringProperty(ConfigurationKeys.SIM_MATCH_STRUCTURE_STRATEGY);
+        if (structureMetricClassName.isEmpty()) {
+            TSimilarityMatching.LOGGER.error("Initialization incomplete: No structure metric strategy specified.");
+            throw new ConfigurationException("Initialization incomplete: No structure metric strategy specified.");
+        }
+        final IStructureMetricStrategy structureMetric = InstantiationFactory.create(IStructureMetricStrategy.class,
+                structureMetricClassName, null);
+
+        /** For TVectorization */
+        final String parameterMetricClassName = configuration
+                .getStringProperty(ConfigurationKeys.SIM_MATCH_PARAMETER_STRATEGY);
+        if (parameterMetricClassName.isEmpty()) {
+            TSimilarityMatching.LOGGER.error("Initialization incomplete: No parameter metric strategy specified.");
+            throw new ConfigurationException("Initialization incomplete: No parameter metric strategy specified.");
+        }
+        final IParameterMetricStrategy parameterMetric = InstantiationFactory.create(IParameterMetricStrategy.class,
+                parameterMetricClassName, null);
+
+        /** For TModelGeneration */
+        final String modelStrategyClassName = configuration
+                .getStringProperty(ConfigurationKeys.SIM_MATCH_MODEL_STRATEGY);
+        if (modelStrategyClassName.isEmpty()) {
+            TSimilarityMatching.LOGGER.error("Initialization incomplete: No model generation strategy specified.");
+            throw new ConfigurationException("Initialization incomplete: No model generation strategy specified.");
+        }
+        final IModelGenerationStrategy modelGenerationStrategy = InstantiationFactory
+                .create(IModelGenerationStrategy.class, modelStrategyClassName, null);
+
+        /** For TGroupingStage */
+        final double similarityRadius = configuration.getDoubleProperty(ConfigurationKeys.SIM_MATCH_RADIUS, -1);
+        if (similarityRadius < 0) {
+            TSimilarityMatching.LOGGER.error("Initialization incomplete: No similarity radius specified.");
+            throw new ConfigurationException("Initialization incomplete: No similarity radius specified.");
+        }
 
         /** Create individual stages */
         final TSessionToModel sessionToModel = new TSessionToModel();

@@ -17,6 +17,9 @@ package org.iobserve.analysis.configurations;
 
 import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.clustering.filter.similaritymatching.IClassificationStage;
+import org.iobserve.analysis.clustering.filter.similaritymatching.IModelGenerationStrategy;
+import org.iobserve.analysis.clustering.filter.similaritymatching.IParameterMetricStrategy;
+import org.iobserve.analysis.clustering.filter.similaritymatching.IStructureMetricStrategy;
 import org.iobserve.analysis.feature.IGeoLocationCompositeStage;
 import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
@@ -140,6 +143,33 @@ public final class ConfigurationKeys {
      * Set behaviour model sink base url to configure file writing directory STRING
      */
     public static final String SINK_BASE_URL = ConfigurationKeys.PREFIX + "behavior.sink.baseUrl";
+
+    /**
+     * Specific to Similarity Matching
+     */
+
+    /**
+     * Set parameter metric strategy STRING
+     */
+    public static final String SIM_MATCH_PARAMETER_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
+            + IParameterMetricStrategy.class.getCanonicalName();
+
+    /**
+     * Set structure metric strategy STRING
+     */
+    public static final String SIM_MATCH_STRUCTURE_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
+            + IStructureMetricStrategy.class.getCanonicalName();
+
+    /**
+     * Set model generation strategy STRING
+     */
+    public static final String SIM_MATCH_MODEL_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
+            + IModelGenerationStrategy.class.getCanonicalName();
+
+    /**
+     * Set similarity radius DOUBLE
+     */
+    public static final String SIM_MATCH_RADIUS = ConfigurationKeys.PREFIX + "behavior.sm.radius";
 
     /**
      * Model.
