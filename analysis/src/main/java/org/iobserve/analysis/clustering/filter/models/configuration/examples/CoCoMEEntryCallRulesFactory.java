@@ -24,10 +24,13 @@ import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenera
  * @author Christoph Dornieden
  *
  */
-public class CoCoMEEntryCallRulesFactory implements IModelGenerationFilterFactory {
+public final class CoCoMEEntryCallRulesFactory implements IModelGenerationFilterFactory {
 
-    @Override
-    public EntryCallFilterRules createFilter() {
+    private CoCoMEEntryCallRulesFactory() {
+        // empty factory constructor
+    }
+
+    public static EntryCallFilterRules createFilter() {
         final EntryCallFilterRules modelGenerationFilter = new EntryCallFilterRules(false);
         modelGenerationFilter.addFilterRule(
                 // allow all operations of the package

@@ -16,7 +16,7 @@
 package org.iobserve.common.record
 	 
 import kieker.common.record.flow.IEventRecord
-
+import org.iobserve.common.record.GeoLocation
 	 
 /** 
  * Marker interfaces for deployment and undeployment.	 
@@ -59,6 +59,6 @@ event EJBDeployedEvent extends EJBDescriptor : IDeployedEvent
 event EJBUndeployedEvent extends EJBDescriptor : IUndeployedEvent
 
 model Deployment IDeployedEvent, IUndeployedEvent
-sub Privacy Deployment : org.iobserve.common.record.GeoLocation
+sub Privacy Deployment : GeoLocation
 
 

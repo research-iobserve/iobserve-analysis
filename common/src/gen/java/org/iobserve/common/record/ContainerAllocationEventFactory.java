@@ -15,31 +15,30 @@
  ***************************************************************************/
 package org.iobserve.common.record;
 
-
 import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Reiner Jung
- * 
+ *
  * @since 0.0.2
  */
 public final class ContainerAllocationEventFactory implements IRecordFactory<ContainerAllocationEvent> {
-	
-	
-	@Override
-	public ContainerAllocationEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		return new ContainerAllocationEvent(deserializer);
-	}
-	
-	@Override
-	@Deprecated
-	public ContainerAllocationEvent create(final Object[] values) {
-		return new ContainerAllocationEvent(values);
-	}
-	
-	public int getRecordSizeInBytes() {
-		return ContainerAllocationEvent.SIZE;
-	}
+
+    @Override
+    public ContainerAllocationEvent create(final IValueDeserializer deserializer) throws RecordInstantiationException {
+        return new ContainerAllocationEvent(deserializer);
+    }
+
+    @Override
+    @Deprecated
+    public ContainerAllocationEvent create(final Object[] values) {
+        return new ContainerAllocationEvent(values);
+    }
+
+    @Override
+    public int getRecordSizeInBytes() {
+        return ContainerAllocationEvent.SIZE;
+    }
 }

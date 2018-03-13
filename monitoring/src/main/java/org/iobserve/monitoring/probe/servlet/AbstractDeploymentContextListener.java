@@ -23,6 +23,8 @@ import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.timer.ITimeSource;
 
 /**
+ * Abstract class usable for all deployment context listeners (Java Servlet).
+ *
  * @author Reiner Jung
  *
  */

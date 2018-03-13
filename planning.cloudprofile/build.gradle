@@ -16,7 +16,7 @@ dependencies {
 
 	clover 'org.openclover:clover:4.2.0'
 
-    compile group: 'org.apache.logging.log4j', name: 'log4j-1.2-api', version: '2.8.1'
+    compile 'org.apache.logging.log4j:log4j-1.2-api:2.8.1'
 
     // Declare the dependency for your favourite test framework you want to use in your tests.
     // TestNG is also supported by the Gradle Test task. Just change the
@@ -27,7 +27,6 @@ dependencies {
     compile 'org.eclipse.emf:org.eclipse.emf.common:2.12.0+'
     compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.12.0+'
     compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.12.0+'
-    //compile 'org.eclipse.emf:org.eclipse.emf.query:1.7.0+'
 }
 
 clover {

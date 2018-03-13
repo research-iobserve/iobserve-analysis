@@ -29,7 +29,7 @@ import org.iobserve.analysis.clustering.filter.models.IParameterValueDoubleMappe
  */
 public class JPetStoreParameterValueDoubleMapper implements IParameterValueDoubleMapper {
 
-    private final Map<String, Map<String, Double>> valueMap = new HashMap<String, Map<String, Double>>();
+    private final Map<String, Map<String, Double>> valueMap = new HashMap<>();
 
     /**
      * Constructor of the value double mapper.
@@ -41,7 +41,7 @@ public class JPetStoreParameterValueDoubleMapper implements IParameterValueDoubl
     }
 
     private Map<String, Double> createItemId() {
-        final HashMap<String, Double> map = new HashMap<String, Double>();
+        final Map<String, Double> map = new HashMap<>();
 
         /** fish. SW. */
         map.put("EST-1", 1011.0);
@@ -101,7 +101,7 @@ public class JPetStoreParameterValueDoubleMapper implements IParameterValueDoubl
     }
 
     private Map<String, Double> createProductId() {
-        final HashMap<String, Double> map = new HashMap<String, Double>();
+        final Map<String, Double> map = new HashMap<>();
 
         map.put("FI-SW-01", 1010.0);
         map.put("FI-SW-02", 1020.0);
@@ -128,7 +128,7 @@ public class JPetStoreParameterValueDoubleMapper implements IParameterValueDoubl
     }
 
     private Map<String, Double> createCategoryId() {
-        final HashMap<String, Double> map = new HashMap<String, Double>();
+        final Map<String, Double> map = new HashMap<>();
 
         map.put("FISH", 1000.0);
         map.put("DOGS", 2000.0);

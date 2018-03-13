@@ -56,6 +56,13 @@ public class AdaptationData {
     private final Set<String> migratedContexts = new HashSet<>();
     private final Set<String> terminatedGroups = new HashSet<>();
 
+    /**
+     * Data model for adaptation.
+     */
+    public AdaptationData() {
+        // empty constructor
+    }
+
     ////////////////////// GETTERS & SETTERS //////////////////////
     /**
      * @return the runtimeModelURI

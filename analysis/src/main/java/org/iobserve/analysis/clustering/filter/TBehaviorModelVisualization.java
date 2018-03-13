@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -130,7 +131,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
      * @return ids as List
      */
     private Optional<List<Long>> getAllGraphsFromUI(final String targetUrl) {
-        URL url;
+        final URL url;
         try {
             url = new URL(targetUrl);
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -155,9 +156,8 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
                 return Optional.of(graphIds);
             }
 
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             TBehaviorModelVisualization.LOGGER.error("Fetching data from visualization service failed.", e);
-            e.printStackTrace();
         }
         return Optional.empty();
     }
@@ -169,7 +169,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
      *            targetUrl
      */
     private void sendDelete(final String targetUrl) {
-        URL url;
+        final URL url;
         try {
             url = new URL(targetUrl);
             final HttpURLConnection con = (HttpURLConnection) url.openConnection();
@@ -178,7 +178,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
 
             con.getResponseCode();
 
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             TBehaviorModelVisualization.LOGGER.error("HTTP DELETE failed.", e);
         }
 
@@ -232,7 +232,7 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
             json.put("id", 0);
             json.put("start", this.nodeMap.get(sourceSignature));
             json.put("end", this.nodeMap.get(targetSignature));
-            json.put("action", sourceSignature + "->" + targetSignature);
+            json.put("action", String.format("%s->%s", sourceSignature, targetSignature));
             json.put("count", entryCallEdge.getCalls());
 
             this.postElement(json, this.getEdgeUrl(modelId));
@@ -275,8 +275,8 @@ public class TBehaviorModelVisualization extends AbstractModelOutputSink {
             con.disconnect();
             return contendNode;
 
-        } catch (final Exception ex) {
-            ex.printStackTrace();
+        } catch (final IOException ex) {
+            TBehaviorModelVisualization.LOGGER.error("Cannot post element.", ex);
         }
         return this.objectMapper.createObjectNode();
     }

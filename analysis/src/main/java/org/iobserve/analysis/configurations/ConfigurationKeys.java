@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-import org.iobserve.analysis.IGeoLocationCompositeStage;
+import org.iobserve.analysis.feature.IGeoLocationCompositeStage;
 
 /**
  *
@@ -24,7 +24,7 @@ import org.iobserve.analysis.IGeoLocationCompositeStage;
  * @since 0.0.2
  *
  */
-public class ConfigurationKeys {
+public final class ConfigurationKeys {
     private static final String PREFIX = "iobserve.analysis.";
 
     /**
@@ -70,7 +70,7 @@ public class ConfigurationKeys {
      */
 
     /** Set whether separate geo location events should be processed. BOOLEAN */
-    public static final String GEO_LOCATION = IGeoLocationCompositeStage.class.getCanonicalName();
+    public static final String GEO_LOCATION = IGeoLocationCompositeStage.class.getCanonicalName(); // NOCS
 
     /**
      * Source.

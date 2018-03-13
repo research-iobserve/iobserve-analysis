@@ -3,12 +3,10 @@ apply plugin: 'application'
 mainClassName='org.iobserve.splitter.SplitterMain'
 
 dependencies {
-	compile project(":analysis")
+	compile project(":stages")
 	compile project(":service")
 
 	clover 'org.openclover:clover:4.2.0'
-
-	compile "com.beust:jcommander:1.60"
 }
 
 clover {

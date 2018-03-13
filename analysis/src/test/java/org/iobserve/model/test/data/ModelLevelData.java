@@ -30,15 +30,15 @@ public class ModelLevelData {
     public static final PCMUndeployedEvent PCM_UNDEPLOYED_EVENT = ModelLevelData.createPCMUndeployedEvent();
 
     private static PCMDeployedEvent createPCMDeployedEvent(final short countryCode) {
-        final String urlContext = ImplementationLevelData.CONTEXT.replaceAll("\\.", "/");
-        final String url = "http://" + ImplementationLevelData.SERVICE + '/' + urlContext;
+        final String urlContext = ImplementationLevelDataFactory.CONTEXT.replaceAll("\\.", "/");
+        final String url = "http://" + ImplementationLevelDataFactory.SERVICE + '/' + urlContext;
 
-        return new PCMDeployedEvent(ImplementationLevelData.SERVICE, CorrespondenceModelData.CORRESPONDENT, url,
+        return new PCMDeployedEvent(ImplementationLevelDataFactory.SERVICE, CorrespondenceModelDataFactory.CORRESPONDENT, url,
                 countryCode);
     }
 
     private static PCMUndeployedEvent createPCMUndeployedEvent() {
-        return new PCMUndeployedEvent(ImplementationLevelData.SERVICE, CorrespondenceModelData.CORRESPONDENT);
+        return new PCMUndeployedEvent(ImplementationLevelDataFactory.SERVICE, CorrespondenceModelDataFactory.CORRESPONDENT);
     }
 
 }

@@ -19,9 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
 import org.iobserve.analysis.userbehavior.builder.SimpleSequenceReference;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.RepositoryLookupModelProvider;
@@ -29,6 +26,8 @@ import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.palladiosimulator.pcm.repository.Repository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Test of the UserBehaviorTransformation.
@@ -53,7 +52,7 @@ public final class UserBehaviorTransformationTest {
     private static final String REFERENCE_USAGE_MODEL = UserBehaviorTransformationTest.USAGE_MODEL_FOLDER
             + "ReferenceModel.usagemodel";
 
-    private static final Log LOG = LogFactory.getLog(UserBehaviorTransformationTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserBehaviorTransformationTest.class);
 
     /**
      * Test class.

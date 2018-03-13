@@ -24,9 +24,9 @@ import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
 
-import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
+import org.iobserve.stages.general.ConfigurationException;
 
 /**
  * Splitter main class.

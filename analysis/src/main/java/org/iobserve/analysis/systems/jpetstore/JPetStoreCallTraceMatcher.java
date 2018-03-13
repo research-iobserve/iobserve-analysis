@@ -18,6 +18,7 @@ package org.iobserve.analysis.systems.jpetstore;
 import kieker.common.record.flow.trace.AbstractTraceEvent;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
+
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
@@ -34,6 +35,10 @@ public class JPetStoreCallTraceMatcher implements IEntryCallTraceMatcher {
     private BeforeOperationEvent beforeOperationEvent;
 
     private AfterOperationEvent afterOperationEvent;
+
+    public JPetStoreCallTraceMatcher() {
+        // no empty constructor
+    }
 
     @Override
     public boolean stateMatch(final EventBasedTrace trace, final BeforeOperationEvent beforeEvent) {

@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.adaptation.configurations;
 
+import teetime.framework.Configuration;
+
 import org.iobserve.adaptation.AdaptationCalculation;
 import org.iobserve.adaptation.AdaptationPlanning;
 import org.iobserve.adaptation.SystemAdaptation;
-
-import teetime.framework.Configuration;
 
 /**
  * Configuration for the stages of the adaptation service.

@@ -17,7 +17,7 @@ package org.iobserve.service;
 
 import java.io.File;
 
-import org.iobserve.analysis.ConfigurationException;
+import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

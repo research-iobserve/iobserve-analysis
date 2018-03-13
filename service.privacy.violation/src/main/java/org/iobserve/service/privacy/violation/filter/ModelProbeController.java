@@ -18,25 +18,27 @@ package org.iobserve.service.privacy.violation.filter;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.service.privacy.violation.data.ProbeLocation;
-import org.iobserve.service.privacy.violation.data.Warnings;
+import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.iobserve.service.privacy.violation.data.IProbeManagement;
+import org.iobserve.stages.data.Warnings;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
 /**
- * Model level controller for probes.
+ * Model level controller for probes. The filter receives a list of warnings and computes a list of
+ * probe activation and deactivations. Therefore, it requires internal knowledge of previous probe
+ * activations.
  *
  * @author Reiner Jung -- initial
  *
  */
 public class ModelProbeController extends AbstractConsumerStage<Warnings> {
 
-    private final OutputPort<ProbeLocation> outputPort = this.createOutputPort(ProbeLocation.class);
-    private final ModelProvider<Allocation> allocationModelGraphProvider;
-    private final ModelProvider<System> systemModelGraphProvider;
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final OutputPort<IProbeManagement> outputPort = this.createOutputPort(IProbeManagement.class);
+    private final IModelProvider<Allocation> allocationModelGraphProvider;
+    private final IModelProvider<System> systemModelGraphProvider;
+    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     /**
      * Create an initialize the model probe controller.
@@ -48,9 +50,9 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
      * @param resourceEnvironmentModelGraphProvider
      *            resource environment model provider
      */
-    public ModelProbeController(final ModelProvider<Allocation> allocationModelGraphProvider,
-            final ModelProvider<System> systemModelGraphProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
+    public ModelProbeController(final IModelProvider<Allocation> allocationModelGraphProvider,
+            final IModelProvider<System> systemModelGraphProvider,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;
@@ -62,7 +64,7 @@ public class ModelProbeController extends AbstractConsumerStage<Warnings> {
 
     }
 
-    public OutputPort<ProbeLocation> getOutputPort() {
+    public OutputPort<IProbeManagement> getOutputPort() {
         return this.outputPort;
     }
 
