@@ -8,11 +8,9 @@
 	<property name="severity" value="error" />
 
 	<!-- http://checkstyle.sourceforge.net/config_filters.html#SuppressionFilter -->
-	<!-- <module name="SuppressionFilter"> -->
-	<!-- for rel/abs file path issue, see: https://github.com/checkstyle/checkstyle/issues/2976 -->
-	<!-- <property name="file" value="/config/cs-suppressions.xml" /> -->
-	<!-- <property name="optional" value="false" /> -->
-	<!-- </module> -->
+	<module name="SuppressionFilter">
+    	<property name="file" value="${config_loc}/suppressions.xml"/>
+	</module>
 
 	<!-- If you set the basedir property below, then all reported file names 
 		will be relative to the specified directory. See http://checkstyle.sourceforge.net/5.x/config.html#Checker 

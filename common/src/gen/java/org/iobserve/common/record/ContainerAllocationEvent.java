@@ -43,7 +43,7 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 
     /**
      * Creates a new instance of this class using the given parameters.
-     * 
+     *
      * @param url
      *            url
      */
@@ -54,7 +54,7 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
     /**
      * This constructor converts the given array into a record. It is recommended to use the array
      * which is the result of a call to {@link #toArray()}.
-     * 
+     *
      * @param values
      *            The values for the record.
      *
@@ -67,7 +67,7 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 
     /**
      * This constructor uses the given array to initialize the fields of this record.
-     * 
+     *
      * @param values
      *            The values for the record.
      * @param valueTypes
@@ -147,7 +147,7 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 
     /**
      * {@inheritDoc}
-     * 
+     *
      * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory}
      *             mechanism. Hence, this method is not implemented.
      */

@@ -58,7 +58,7 @@ public final class EvaluationGenerationMain {
 
                 if (commandLine.hasOption("n")) {
                     EvaluationGenerationMain.clearDirectory(commandLine.getOptionValue("o"));
-                    ModelGeneration.createNewModel(commandLine);
+                    ModelGenerationFactory.createNewModel(commandLine);
 
                     final PCMModelHandler modelProviders = new PCMModelHandler(model);
                     final GraphFactory graphFactory = new GraphFactory();
@@ -66,14 +66,14 @@ public final class EvaluationGenerationMain {
                 }
                 if (commandLine.hasOption("m")) {
                     EvaluationGenerationMain.clearDirectory(commandLine.getOptionValue("o"));
-                    ModelModification.createNewModel(commandLine);
+                    ModelModificationFactory.createNewModel(commandLine);
 
                     final PCMModelHandler modelProviers = new PCMModelHandler(model);
                     final GraphFactory graphFactory = new GraphFactory();
                     graphFactory.buildGraph(modelProviers);
                 }
             }
-        } catch (final Exception e) {
+        } catch (final Exception e) { // NOCS
             e.printStackTrace();
         }
     }

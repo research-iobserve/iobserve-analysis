@@ -117,12 +117,12 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
     /**
      * Execute case object instanceof BehaviorModelTable.
      *
-     * @param behaviorModelTable
+     * @param newBehaviorModelTable
      *            behaviorModelTable
      */
-    private void executeBehaviorModelTable(final BehaviorModelTable behaviorModelTable) {
+    private void executeBehaviorModelTable(final BehaviorModelTable newBehaviorModelTable) {
         if (this.behaviorModelTable == null) {
-            this.behaviorModelTable = behaviorModelTable;
+            this.behaviorModelTable = newBehaviorModelTable;
             this.sequenceModelCache.forEach(this::executeEntryCallSequenceModel);
             this.sequenceModelCache.clear();
         } else {

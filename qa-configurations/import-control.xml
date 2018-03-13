@@ -16,6 +16,7 @@
 	<allow pkg="org.eclipse"/>
     <allow pkg="org.hamcrest"/>
     <allow pkg="org.junit"/>
+    <allow pkg="org.json"/>
     <allow pkg="org.mockito"/>
     <allow pkg="org.neo4j"/>
 	<allow pkg="org.palladiosimulator"/>
@@ -23,6 +24,7 @@
     <allow pkg="org.slf4j"/>
     <allow pkg="org.w3c.dom"/>
     <allow pkg="org.xml.sax"/>
+    <allow pkg="fi.iki.elonen"/>
 
 	<allow pkg="weka"/>
     

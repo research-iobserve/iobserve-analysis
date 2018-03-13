@@ -138,10 +138,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
                     allocationModelProvider, systemModelProvider, correspondenceModel);
         }
-        /** deallocation. */
-        if (featureToggle.getDeallocationToggle()) {
-            // TODO missing
-        }
 
         /** link deployments. */
         final NetworkLink networkLink = new NetworkLink(allocationModelProvider, systemModelProvider,

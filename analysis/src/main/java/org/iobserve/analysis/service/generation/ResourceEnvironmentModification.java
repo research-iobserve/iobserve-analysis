@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ResourceEnvironmentModification {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelModification.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelModificationFactory.class);
 
     private final ResourceEnvironment resourceEnvironment;
 

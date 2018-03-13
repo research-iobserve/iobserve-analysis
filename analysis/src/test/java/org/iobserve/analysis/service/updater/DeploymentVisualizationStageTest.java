@@ -46,7 +46,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
  *
  */
 @RunWith(MockitoJUnitRunner.class)
-public class DeploymentVisualizationStageTest {
+public class DeploymentVisualizationStageTest { // NOCS test
 
     /** stage under test. */
     private DeploymentVisualizationStage deploymentVisualizationStage;

@@ -15,25 +15,20 @@
  ***************************************************************************/
 package org.iobserve.model.test.data;
 
-import org.iobserve.model.correspondence.Correspondent;
-import org.iobserve.model.correspondence.CorrespondentFactory;
+import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.system.SystemFactory;
 
 /**
+ * System model.
+ *
  * @author Reiner Jung
  *
  */
-public class CorrespondenceModelData {
+public class SystemDataFactory {
 
-    public static final String PCM_ENTITY_NAME = "test.org.pcm.entity";
-    public static final String PCM_ENTITY_ID = "testPcmEntityId";
-    public static final String PCM_OPERATION_NAME = "testPcmOperationName";
-    public static final String PCM_OPERATION_ID = "testPcmOperationId";
+    public static final System SYSTEM = SystemDataFactory.createSystem();
 
-    public static final Correspondent CORRESPONDENT = CorrespondenceModelData.createCorrespondent();
-
-    private static Correspondent createCorrespondent() {
-        return CorrespondentFactory.newInstance(CorrespondenceModelData.PCM_ENTITY_NAME,
-                CorrespondenceModelData.PCM_ENTITY_ID, CorrespondenceModelData.PCM_OPERATION_NAME,
-                CorrespondenceModelData.PCM_OPERATION_ID);
+    private static System createSystem() {
+        return SystemFactory.eINSTANCE.createSystem();
     }
 }

@@ -31,7 +31,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
  * @author Josefine Wegert
  *
  */
-public class NodeServiceTest {
+public class NodeServiceTest { // NOCS test
 
     /** class under test. */
     private NodeService nodeService;

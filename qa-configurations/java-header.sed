@@ -1,5 +1,5 @@
 ^/\*{75}$
-^ \* Copyright \(?C?\)? \d\d\d\d iObserve Project \(https://www.iobserve-devops.net\)$
+^ \* Copyright \(?C?\)? ?\d\d\d\d iObserve Project \(https://www.iobserve-devops.net\)$
 ^ \*$
 ^ \* Licensed under the Apache License, Version 2\.0 \(the "License"\);$
 ^ \* you may not use this file except in compliance with the License.$

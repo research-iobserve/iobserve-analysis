@@ -41,8 +41,8 @@ import org.palladiosimulator.pcm.core.composition.CompositionFactory;
  * @author Josefine Wegert
  *
  */
-@RunWith(MockitoJUnitRunner.class)
-public class ServiceInstanceServiceTest {
+@RunWith(MockitoJUnitRunner.class) // NOCS test
+public class ServiceInstanceServiceTest { // NOCS test
 
     /** class under test. */
     private ServiceInstanceService serviceInstanceService;

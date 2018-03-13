@@ -58,13 +58,14 @@ import org.slf4j.LoggerFactory;
  */
 public class PcmUsageModelBuilder {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PcmUsageModelBuilder.class);
+
     private final List<BranchModel> loopBranchModels;
     private final boolean isClosedWorkloadRequested;
     private final double thinkTime;
     private final List<Map<Integer, ScenarioBehaviour>> branchScenarioBehavioursOfUserGroups;
     private final ICorrespondence correspondenceModel;
     private final RepositoryLookupModelProvider repositoryLookupModel;
-    private static final Logger LOGGER = LoggerFactory.getLogger(PcmUsageModelBuilder.class);
 
     /**
      *

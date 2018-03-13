@@ -64,7 +64,7 @@ public final class SendHttpRequest {
         final JsonArray dataArray = Json.createArrayBuilder().add(modelData).build();
 
         final JsonString type = (JsonString) modelData.get("type");
-        if (type.getString() == "system") {
+        if ("system".equals(type.getString())) {
             connection = (HttpURLConnection) systemUrl.openConnection();
         } else {
             connection = (HttpURLConnection) changelogUrl.openConnection();
@@ -78,7 +78,7 @@ public final class SendHttpRequest {
         // Send post request
         connection.setDoOutput(true);
         final JsonWriter jsonWriter = Json.createWriter(connection.getOutputStream());
-        if (type.getString() == "system") {
+        if ("system".equals(type.getString())) {
             jsonWriter.write(modelData);
 
             SendHttpRequest.LOGGER.debug("Sending 'POST' request to URL : {}", systemUrl);

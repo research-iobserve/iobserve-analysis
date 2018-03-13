@@ -20,6 +20,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.service.suites.VisualizationHttpTestServer;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -35,8 +37,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
-import teetime.framework.test.StageTester;
-
 /**
  * Tests for {@link AllocationVisualizationStage}.
  *
@@ -44,7 +44,7 @@ import teetime.framework.test.StageTester;
  *
  */
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.class) // NOCS
 public class AllocationVisualizationStageTest {
 
     /** stage under test. */

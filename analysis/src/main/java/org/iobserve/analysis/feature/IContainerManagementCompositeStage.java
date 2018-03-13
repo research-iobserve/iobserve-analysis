@@ -22,6 +22,6 @@ package org.iobserve.analysis.feature;
  * @author Reiner Jung
  *
  */
-public class IContainerManagementCompositeStage {
+public interface IContainerManagementCompositeStage {
 
 }

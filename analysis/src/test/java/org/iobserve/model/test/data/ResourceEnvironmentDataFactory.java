@@ -23,20 +23,20 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
  * @author Reiner Jung
  *
  */
-public class ResourceEnvironmentData {
+public class ResourceEnvironmentDataFactory {
 
     public static final String RESOURCE_CONTAINER_NAME = "TestResourceContainer";
     public static final String RESOURCE_CONAINTER_ID = "_resourcecontainer_test_id";
 
-    public static final ResourceContainer RESOURCE_CONTAINER = ResourceEnvironmentData.createResourceContainer();
-    public static final ResourceEnvironment RESOURCE_ENVIRONMENT = ResourceEnvironmentData.createResourceEnvironment();
+    public static final ResourceContainer RESOURCE_CONTAINER = ResourceEnvironmentDataFactory.createResourceContainer();
+    public static final ResourceEnvironment RESOURCE_ENVIRONMENT = ResourceEnvironmentDataFactory.createResourceEnvironment();
 
     private static ResourceContainer createResourceContainer() {
         /** optional test resource container with value */
         final ResourceContainer container = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
 
-        container.setEntityName(ResourceEnvironmentData.RESOURCE_CONTAINER_NAME);
-        container.setId(ResourceEnvironmentData.RESOURCE_CONAINTER_ID);
+        container.setEntityName(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER_NAME);
+        container.setId(ResourceEnvironmentDataFactory.RESOURCE_CONAINTER_ID);
 
         return container;
     }

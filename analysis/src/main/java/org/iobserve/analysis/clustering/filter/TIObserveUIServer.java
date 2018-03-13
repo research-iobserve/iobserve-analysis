@@ -352,7 +352,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
 
             con.disconnect();
 
-        } catch (final Exception ex) {
+        } catch (final Exception ex) { // NOCS
             ex.printStackTrace();
         }
     }

@@ -26,11 +26,12 @@ import org.slf4j.LoggerFactory;
  */
 public class ClusteringResults {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringResults.class);
+
     private final String clusteringMethod;
     private final int numberOfClusters;
     private final int[] assignments;
     private final ClusteringMetrics clusteringMetrics;
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringResults.class);
 
     /**
      * Create a result node.

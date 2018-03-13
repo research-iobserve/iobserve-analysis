@@ -58,9 +58,9 @@ public class SystemGeneration {
     private final RepositoryComponent[] components;
     private final System system;
 
-    private HashMap<String, List<AssemblyContext>> openRequiredInterfaces;
-    private HashMap<String, List<AssemblyContext>> openProvidedInterfaces;
-    private HashMap<String, List<AssemblyContext>> connectedProvidedInterfaces;
+    private Map<String, List<AssemblyContext>> openRequiredInterfaces;
+    private Map<String, List<AssemblyContext>> openProvidedInterfaces;
+    private Map<String, List<AssemblyContext>> connectedProvidedInterfaces;
     private Set<AssemblyContext> unconnectedAssemblyContextes;
 
     /**
@@ -87,8 +87,8 @@ public class SystemGeneration {
      * @param openProvidedInterfaces
      */
     public SystemGeneration(final Repository repo, final System system,
-            final HashMap<String, List<AssemblyContext>> openRequiredInterfaces,
-            final HashMap<String, List<AssemblyContext>> openProvidedInterfaces) {
+            final Map<String, List<AssemblyContext>> openRequiredInterfaces,
+            final Map<String, List<AssemblyContext>> openProvidedInterfaces) {
         this.repo = repo;
         this.components = repo.getComponents__Repository()
                 .toArray(new RepositoryComponent[repo.getComponents__Repository().size()]);
@@ -136,10 +136,10 @@ public class SystemGeneration {
         }
     }
 
-    private void fillInterfaceMaps(final Map<String, List<AssemblyContext>> openRequiredInterfaces,
+    private void fillInterfaceMaps(final Map<String, List<AssemblyContext>> newOpenRequiredInterfaces,
             final Map<String, List<AssemblyContext>> replacementOpenProvidedInterfaces) {
-        for (final String key : openRequiredInterfaces.keySet()) {
-            this.openRequiredInterfaces.replace(key, openRequiredInterfaces.get(key));
+        for (final String key : newOpenRequiredInterfaces.keySet()) {
+            this.openRequiredInterfaces.replace(key, newOpenRequiredInterfaces.get(key));
         }
 
         for (final String key : replacementOpenProvidedInterfaces.keySet()) {

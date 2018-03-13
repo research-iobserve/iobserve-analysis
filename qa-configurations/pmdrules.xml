@@ -50,7 +50,6 @@
 		<exclude name="TooManyMethods" />
 		<exclude name="UnnecessaryConstructor" />
 		<exclude name="UnnecessaryFinalModifier" />
-		<exclude name="UnnecessaryModifier" />
 		<exclude name="UseObjectForClearerAPI" />
 		<exclude name="UseProperClassLoader" />
 		<exclude name="UselessParentheses" />
