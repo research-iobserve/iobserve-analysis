@@ -163,8 +163,9 @@ public class DeploymentResourceContainerTest {
         final List<PCMDeployedEvent> outputEvents = new ArrayList<>();
 
         StageTester.test(this.deploymentModelUpdater).and().send(inputEvents)
-                .to(this.deploymentModelUpdater.getInputPort()).and().receive(outputEvents)
-                .from(this.deploymentModelUpdater.getDeployedNotifyOutputPort()).start();
+                .to(this.deploymentModelUpdater.getInputPort()).start();
+
+        Assert.assertThat(this.deploymentModelUpdater.getDeployedNotifyOutputPort(), StageTester.producesNothing());
 
         Assert.assertEquals("There should be no notification for errorous data.", outputEvents.size(), 0);
     }
