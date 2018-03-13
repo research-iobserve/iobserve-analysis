@@ -15,8 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.similaritymatching;
 
+import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
+import org.iobserve.analysis.configurations.MJConfiguration;
 import org.iobserve.analysis.session.data.UserSession;
+import org.iobserve.stages.source.TimeTriggerFilter;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -30,6 +33,18 @@ public class TSimilarityMatching extends CompositeStage {
     public TSimilarityMatching(final IStructureMetricStrategy structureMetric,
             final IParameterMetricStrategy parameterMetric, final IModelGenerationStrategy modelGenerationStrategy,
             final double similarityRadius) {
+        /**
+         * Create Clock. Default value of -1 was selected because the method
+         * getLongProperty states it will return "null" if no value was specified, but
+         * long is a primitive type ...
+         */
+        final Long triggerInterval = configuration.getLongProperty(MJConfiguration.TRIGGER_INTERVAL, -1);
+        if (triggerInterval < 0) {
+            MJConfiguration.LOGGER.error("Initialization incomplete: No time trigger interval specified.");
+            throw new ConfigurationException("Initialization incomplete: No time trigger interval specified.");
+        }
+        final TimeTriggerFilter sessionCollectionTimer = new TimeTriggerFilter(triggerInterval);
+
         /** Create individual stages */
         final TSessionToModel sessionToModel = new TSessionToModel();
         final TVectorization vectorization = new TVectorization(structureMetric, parameterMetric);

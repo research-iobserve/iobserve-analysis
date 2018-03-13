@@ -38,4 +38,8 @@ public final class TSessionOperationsFilter extends AbstractConsumerStage<UserSe
 
         this.outputPort.send(filteredUserSession);
     }
+
+    public OutputPort<UserSession> getOutputPort() {
+        return this.outputPort;
+    }
 }
