@@ -39,11 +39,11 @@ import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
  */
 public final class TEntryCallSequenceWithPCM extends AbstractConsumerStage<PayloadAwareEntryCallEvent> {
 
-    /** reference to the correspondence model. */
-    private final ICorrespondence correspondenceModel;
-
     /** threshold for user session elements until their are send to the next filter. */
     private static final int USER_SESSION_THRESHOLD = 0;
+
+    /** reference to the correspondence model. */
+    private final ICorrespondence correspondenceModel;
     /** map of sessions. */
     private final Map<String, UserSession> sessions = new HashMap<>();
     /** output ports. */

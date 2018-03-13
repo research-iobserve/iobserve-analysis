@@ -15,17 +15,23 @@
  ***************************************************************************/
 package org.iobserve.model.test.data;
 
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.allocation.AllocationFactory;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 
 /**
  * @author Reiner Jung
  *
  */
-public class AllocationData {
-    public static final Allocation ALLOCATION = AllocationData.createAllocation();
+public class AssemblyContextDataFactory {
+    public static final String ASSEMBLY_CONTEXT_NAME = CorrespondenceModelDataFactory.PCM_ENTITY_NAME + "_"
+            + ImplementationLevelDataFactory.SERVICE;
+    public static final AssemblyContext ASSEMBLY_CONTEXT = AssemblyContextDataFactory.createAssemblyContext();
 
-    private static Allocation createAllocation() {
-        return AllocationFactory.eINSTANCE.createAllocation();
+    private static AssemblyContext createAssemblyContext() {
+        final AssemblyContext assemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+        assemblyContext.setEntityName(AssemblyContextDataFactory.ASSEMBLY_CONTEXT_NAME);
+        assemblyContext.setId("_assemblycontext_test_id");
+
+        return assemblyContext;
     }
 }

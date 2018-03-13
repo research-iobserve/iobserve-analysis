@@ -23,32 +23,32 @@ import org.iobserve.common.record.ServletDeployedEvent;
  * @author Reiner Jung
  *
  */
-public class ImplementationLevelData {
+public class ImplementationLevelDataFactory {
     public static final long DEPLOY_TIME = 1;
     public static final String SERVICE = "test-service";
     public static final String CONTEXT = "/path/test";
     public static final String DEPLOYMENT_ID = "service-01";
 
-    public static final String URL = "http://" + ImplementationLevelData.SERVICE + '/'
-            + ImplementationLevelData.CONTEXT;
+    public static final String URL = "http://" + ImplementationLevelDataFactory.SERVICE + '/'
+            + ImplementationLevelDataFactory.CONTEXT;
 
-    public static final ServletDeployedEvent SERVLET_DEPLOYED_EVENT = ImplementationLevelData
+    public static final ServletDeployedEvent SERVLET_DEPLOYED_EVENT = ImplementationLevelDataFactory
             .createServletDeployedEvent();
-    public static final EJBDeployedEvent EJB_DEPLOYED_EVENT = ImplementationLevelData.createEJBDeployedEvent();
-    public static final ContainerAllocationEvent CONTAINER_ALLOCATION_EVENT = ImplementationLevelData
+    public static final EJBDeployedEvent EJB_DEPLOYED_EVENT = ImplementationLevelDataFactory.createEJBDeployedEvent();
+    public static final ContainerAllocationEvent CONTAINER_ALLOCATION_EVENT = ImplementationLevelDataFactory
             .createContainerAllocationEvent();
 
     private static ServletDeployedEvent createServletDeployedEvent() {
-        return new ServletDeployedEvent(ImplementationLevelData.DEPLOY_TIME, ImplementationLevelData.SERVICE,
-                ImplementationLevelData.CONTEXT, ImplementationLevelData.DEPLOYMENT_ID);
+        return new ServletDeployedEvent(ImplementationLevelDataFactory.DEPLOY_TIME, ImplementationLevelDataFactory.SERVICE,
+                ImplementationLevelDataFactory.CONTEXT, ImplementationLevelDataFactory.DEPLOYMENT_ID);
     }
 
     private static EJBDeployedEvent createEJBDeployedEvent() {
-        return new EJBDeployedEvent(ImplementationLevelData.DEPLOY_TIME, ImplementationLevelData.SERVICE,
-                ImplementationLevelData.CONTEXT, ImplementationLevelData.DEPLOYMENT_ID);
+        return new EJBDeployedEvent(ImplementationLevelDataFactory.DEPLOY_TIME, ImplementationLevelDataFactory.SERVICE,
+                ImplementationLevelDataFactory.CONTEXT, ImplementationLevelDataFactory.DEPLOYMENT_ID);
     }
 
     private static ContainerAllocationEvent createContainerAllocationEvent() {
-        return new ContainerAllocationEvent(ImplementationLevelData.URL);
+        return new ContainerAllocationEvent(ImplementationLevelDataFactory.URL);
     }
 }

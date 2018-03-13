@@ -1,11 +1,7 @@
 <?xml version="1.0"?>
-<!--
-<!DOCTYPE import-control PUBLIC
-    "-//Puppy Crawl//DTD Import Control 1.3//EN"
-	"http://checkstyle.sourceforge.net/dtds/import_control_1_3.dtd">
--->
-<!DOCTYPE import-control SYSTEM 
-	"./qa-configurations/import_control_1_3.dtd">
+<!DOCTYPE import-control PUBLIC "-//Puppy Crawl//DTD Import Control 1.3//EN" "http://checkstyle.sourceforge.net/dtds/import_control_1_3.dtd">
+<!--  <!DOCTYPE import-control SYSTEM 
+	"./qa-configurations/import_control_1_3.dtd"> -->
 <import-control pkg="org.iobserve">
 	<allow pkg="com"/>
 	<allow pkg="java"/>
@@ -20,6 +16,7 @@
 	<allow pkg="org.eclipse"/>
     <allow pkg="org.hamcrest"/>
     <allow pkg="org.junit"/>
+    <allow pkg="org.json"/>
     <allow pkg="org.mockito"/>
     <allow pkg="org.neo4j"/>
 	<allow pkg="org.palladiosimulator"/>
@@ -27,6 +24,7 @@
     <allow pkg="org.slf4j"/>
     <allow pkg="org.w3c.dom"/>
     <allow pkg="org.xml.sax"/>
+    <allow pkg="fi.iki.elonen"/>
 
 	<allow pkg="weka"/>
     

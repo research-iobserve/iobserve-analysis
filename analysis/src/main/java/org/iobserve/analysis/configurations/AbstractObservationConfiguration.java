@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
+import teetime.framework.Configuration;
+
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
@@ -52,7 +54,6 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
-import teetime.framework.Configuration;
 import weka.core.ManhattanDistance;
 
 /**
@@ -137,10 +138,6 @@ public abstract class AbstractObservationConfiguration extends Configuration {
             this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
                     allocationModelProvider, systemModelProvider, correspondenceModel);
         }
-        /** deallocation. */
-        if (featureToggle.getDeallocationToggle()) {
-            // TODO missing
-        }
 
         /** link deployments. */
         final NetworkLink networkLink = new NetworkLink(allocationModelProvider, systemModelProvider,
@@ -175,11 +172,11 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         final ISignatureCreationStrategy signatureStrategy;
         final int expectedUserGroups;
         if (thinkTime == 1) {
-            modelGenerationFilter = new JPetStoreEntryCallRulesFactory().createFilter();
+            modelGenerationFilter = JPetStoreEntryCallRulesFactory.createFilter();
             expectedUserGroups = 9;
             signatureStrategy = new GetLastXSignatureStrategy(2);
         } else {
-            modelGenerationFilter = new CoCoMEEntryCallRulesFactory().createFilter();
+            modelGenerationFilter = CoCoMEEntryCallRulesFactory.createFilter();
             signatureStrategy = new GetLastXSignatureStrategy(1);
             expectedUserGroups = 4;
         }

@@ -18,11 +18,12 @@ package org.iobserve.analysis.clustering.filter;
 import java.util.List;
 import java.util.Map;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.eclipse.net4j.util.collection.Pair;
 import org.iobserve.analysis.clustering.IDensitityClustering;
 
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 import weka.core.Instance;
 import weka.core.Instances;
 

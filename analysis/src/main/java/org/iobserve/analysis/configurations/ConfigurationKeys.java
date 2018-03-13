@@ -70,7 +70,7 @@ public final class ConfigurationKeys {
      */
 
     /** Set whether separate geo location events should be processed. BOOLEAN */
-    public static final String GEO_LOCATION = IGeoLocationCompositeStage.class.getCanonicalName();
+    public static final String GEO_LOCATION = IGeoLocationCompositeStage.class.getCanonicalName(); // NOCS
 
     /**
      * Source.

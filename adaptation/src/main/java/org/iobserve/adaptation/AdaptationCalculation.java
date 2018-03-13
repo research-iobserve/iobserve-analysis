@@ -18,8 +18,11 @@ package org.iobserve.adaptation;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import teetime.stage.basic.AbstractTransformation;
 
 import org.iobserve.adaptation.data.ActionFactory;
 import org.iobserve.adaptation.data.AdaptationData;
@@ -34,8 +37,6 @@ import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.TerminateAction;
 
-import teetime.stage.basic.AbstractTransformation;
-
 /**
  * This class is the inital phase of the adaption filter stage. It compares a runtime PCM to a
  * redeployment PCM and calculates systemadaption {@link Action}s to transform the deployed system
@@ -46,11 +47,15 @@ import teetime.stage.basic.AbstractTransformation;
  */
 public class AdaptationCalculation extends AbstractTransformation<AdaptationData, AdaptationData> {
 
-    private HashMap<String, ComponentNode> runtimeComponentNodes;
-    private HashMap<String, DeploymentNode> runtimeDeploymentNodes;
+    private Map<String, ComponentNode> runtimeComponentNodes;
+    private Map<String, DeploymentNode> runtimeDeploymentNodes;
 
-    private HashSet<AssemblyContextAction> acActions;
-    private HashSet<ResourceContainerAction> rcActions;
+    private Set<AssemblyContextAction> acActions;
+    private Set<ResourceContainerAction> rcActions;
+
+    public AdaptationCalculation() {
+        // empty constructor
+    }
 
     private void init(final AdaptationData data) {
         this.runtimeComponentNodes = new HashMap<>();
@@ -66,8 +71,8 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
     @Override
     protected void execute(final AdaptationData element) throws Exception {
 
-        assert (element.getRuntimeGraph() != null);
-        assert (element.getReDeploymentGraph() != null);
+        assert element.getRuntimeGraph() != null;
+        assert element.getReDeploymentGraph() != null;
 
         SystemAdaptation.LOG.info("Calculating system adaptation");
 

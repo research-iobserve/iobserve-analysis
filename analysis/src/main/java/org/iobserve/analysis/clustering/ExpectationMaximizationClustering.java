@@ -33,7 +33,12 @@ import weka.core.Instances;
  *
  */
 public class ExpectationMaximizationClustering implements IDensitityClustering {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ExpectationMaximizationClustering.class);
+
+    public ExpectationMaximizationClustering() {
+        // empty constructor
+    }
 
     /*
      * (non-Javadoc)
@@ -64,7 +69,7 @@ public class ExpectationMaximizationClustering implements IDensitityClustering {
                 resultMap.get(cluster).add(new Pair<>(currentInstance, probability));
 
             }
-        } catch (final Exception e) { // NOPMD
+        } catch (final Exception e) { // NOPMD NOCS api induced
             ExpectationMaximizationClustering.LOGGER.error("Clustering failed.", e);
         }
         return resultMap;

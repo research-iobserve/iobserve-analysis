@@ -20,14 +20,14 @@ import java.util.Optional;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.model.factory.AllocationModelFactory;
 import org.iobserve.model.factory.SystemModelFactory;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class contains the transformation for updating the PCM allocation model with respect to
@@ -43,7 +43,7 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
  */
 public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeployedEvent> {
 
-    private static final Logger LOGGER = LogManager.getLogger(DeployPCMMapper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeployPCMMapper.class);
 
     /** reference to allocation model provider. */
     private final IModelProvider<Allocation> allocationModelGraphProvider;
@@ -120,18 +120,18 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
     /**
      * Create {@link AssemblyContext} with the given name and insert it in the system model.
      *
-     * @param systemModelGraphProvider
+     * @param systemModelProvider
      *            system model provider
      * @param name
      *            name of the assembly context
      * @return created assembly context
      */
     private AssemblyContext createAndAddAssemblyContext(
-            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider, final String name) {
-        final org.palladiosimulator.pcm.system.System systemModel = systemModelGraphProvider
+            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider, final String name) {
+        final org.palladiosimulator.pcm.system.System systemModel = systemModelProvider
                 .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
         final AssemblyContext assemblyContext = SystemModelFactory.createAssemblyContextsIfAbsent(systemModel, name);
-        systemModelGraphProvider.updateComponent(org.palladiosimulator.pcm.system.System.class, systemModel);
+        systemModelProvider.updateComponent(org.palladiosimulator.pcm.system.System.class, systemModel);
 
         return assemblyContext;
     }

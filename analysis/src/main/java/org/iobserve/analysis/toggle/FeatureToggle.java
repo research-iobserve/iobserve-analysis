@@ -31,7 +31,7 @@ public class FeatureToggle {
     private String behaviourToggle;
     private boolean dataFlowToggle;
     private boolean geolocationToggle;
-    private boolean SinksToggle;
+    private boolean sinksToggle;
 
     /**
      * Creates FeatureToggle object. Expects boolean for toggles: deployment, undeployment,
@@ -50,7 +50,7 @@ public class FeatureToggle {
         this.behaviourToggle = behaviourToggle;
         this.dataFlowToggle = dataflowToggle;
         this.geolocationToggle = geolocationToggle;
-        this.SinksToggle = sinksToggle;
+        this.sinksToggle = sinksToggle;
     }
 
     // Deployment.
@@ -108,11 +108,11 @@ public class FeatureToggle {
 
     // Sink.
     public boolean getSinksToggle() {
-        return this.SinksToggle;
+        return this.sinksToggle;
     }
 
     public void setSinksToggle(final boolean sinksToggle) {
-        this.SinksToggle = sinksToggle;
+        this.sinksToggle = sinksToggle;
     }
 
     // Dataflow.

@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -45,16 +46,16 @@ import org.slf4j.LoggerFactory;
  */
 public class SystemModification {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelGeneration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelGenerationFactory.class);
 
     private final Repository repositoryModel;
     private final RepositoryComponent[] repositoryComponents;
     private final System systemModel;
 
-    private final HashMap<String, List<RepositoryComponent>> duplicateRepositoryComponents;
+    private final Map<String, List<RepositoryComponent>> duplicateRepositoryComponents;
 
-    private final HashMap<String, List<AssemblyContext>> openRequiredInterfaces = new HashMap<>();
-    private final HashMap<String, List<AssemblyContext>> openProvidedInterfaces = new HashMap<>();
+    private final Map<String, List<AssemblyContext>> openRequiredInterfaces = new HashMap<>();
+    private final Map<String, List<AssemblyContext>> openProvidedInterfaces = new HashMap<>();
 
     public SystemModification(final System systemModel, final Repository repositoryModel) {
         this.systemModel = systemModel;
@@ -74,7 +75,7 @@ public class SystemModification {
     private void initDuplicateRepo(final RepositoryComponent[] comps) {
         SystemModification.LOGGER.info("Calculating euql Repository Components ...");
 
-        final HashMap<String, RepositoryComponent> existingInterfaceSig = new HashMap<>();
+        final Map<String, RepositoryComponent> existingInterfaceSig = new HashMap<>();
 
         for (final RepositoryComponent comp : comps) {
             // Calc Sig

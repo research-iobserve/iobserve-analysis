@@ -37,10 +37,9 @@ import weka.core.Instances;
  */
 public class TBehaviorModelAggregation extends CompositeStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(TBehaviorModelAggregation.class);
-    private TVectorQuantizationClustering tClustering;
-    private final TBehaviorModelCreation tBehaviorModelCreation;
 
-    private final BehaviorModelConfiguration configuration;
+    private TVectorQuantizationClustering tClustering;
+
     private EMClusteringProcess emClustering;
 
     /**
@@ -50,18 +49,16 @@ public class TBehaviorModelAggregation extends CompositeStage {
      *            filter configuration
      */
     public TBehaviorModelAggregation(final BehaviorModelConfiguration configuration) {
-        this.configuration = configuration;
-
-        this.tBehaviorModelCreation = new TBehaviorModelCreation(configuration.getNamePrefix());
+        final TBehaviorModelCreation tBehaviorModelCreation = new TBehaviorModelCreation(configuration.getNamePrefix());
 
         switch (configuration.getAggregationType()) {
         case X_MEANS_CLUSTERING:
-            this.tClustering = new TVectorQuantizationClustering(this.configuration.getClustering());
-            this.connectPorts(this.tClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
+            this.tClustering = new TVectorQuantizationClustering(configuration.getClustering());
+            this.connectPorts(this.tClustering.getOutputPort(), tBehaviorModelCreation.getInputPort());
             break;
         case EM_CLUSTERING:
             this.emClustering = new EMClusteringProcess(new ExpectationMaximizationClustering());
-            this.connectPorts(this.emClustering.getOutputPort(), this.tBehaviorModelCreation.getInputPort());
+            this.connectPorts(this.emClustering.getOutputPort(), tBehaviorModelCreation.getInputPort());
             break;
         default:
             TBehaviorModelAggregation.LOGGER.error("Unknown clustering method {}.", configuration.getAggregationType());
@@ -74,14 +71,17 @@ public class TBehaviorModelAggregation extends CompositeStage {
         case UBM_VISUALIZATION:
             tIObserveUBM = new TBehaviorModelVisualization(configuration.getVisualizationUrl(),
                     configuration.getSignatureCreationStrategy());
+            break;
         case FILE_OUTPUT:
             tIObserveUBM = new BehaviorModelSink(configuration.getVisualizationUrl(),
                     configuration.getSignatureCreationStrategy());
+            break;
         default:
             TBehaviorModelAggregation.LOGGER.error("Unknown visualization method {}.", configuration.getOutputMode());
+            break;
         }
 
-        this.connectPorts(this.tBehaviorModelCreation.getOutputPort(), tIObserveUBM.getInputPort());
+        this.connectPorts(tBehaviorModelCreation.getOutputPort(), tIObserveUBM.getInputPort());
     }
 
     /**

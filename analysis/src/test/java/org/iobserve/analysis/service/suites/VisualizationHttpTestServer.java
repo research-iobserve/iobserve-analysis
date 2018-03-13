@@ -33,7 +33,7 @@ import fi.iki.elonen.NanoHTTPD.Response.Status;
  */
 public class VisualizationHttpTestServer extends NanoHTTPD {
 
-    private static Logger LOGGER = LoggerFactory.getLogger(VisualizationHttpTestServer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VisualizationHttpTestServer.class);
 
     private static final int VISUALIZATION_PORT = 9090;
     private static final String URL = "/v1/systems/test_systemId/changelogs";

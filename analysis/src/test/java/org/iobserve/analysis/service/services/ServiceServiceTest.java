@@ -31,7 +31,7 @@ import org.palladiosimulator.pcm.core.composition.CompositionFactory;
  * @author Josefine Wegert
  *
  */
-public class ServiceServiceTest {
+public class ServiceServiceTest { // NOCS test
 
     /** class under test. */
     private ServiceService serviceService;

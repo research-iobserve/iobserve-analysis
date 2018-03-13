@@ -38,29 +38,33 @@ import org.slf4j.LoggerFactory;
  * @author unknown
  *
  */
-public class ModelGeneration {
+public final class ModelGenerationFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModelGeneration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelGenerationFactory.class);
+
+    private ModelGenerationFactory() {
+        // factory
+    }
 
     public static void createNewModel(final CommandLine commandLine) throws InitializationException, IOException {
-        ModelGeneration.LOGGER.info("Creating new model!");
+        ModelGenerationFactory.LOGGER.info("Creating new model!");
 
         final URI repoLocation = URI.createFileURI(commandLine.getOptionValue("i"));
         final URI outputLocation = URI.createFileURI(commandLine.getOptionValue("o"));
 
-        ModelGeneration.LOGGER.info("Copying repository model to new location.");
+        ModelGenerationFactory.LOGGER.info("Copying repository model to new location.");
         final RepositoryModelHandler repoModelProvider = new RepositoryModelHandler();
         repoModelProvider.load(repoLocation);
-        ModelGeneration.copyRepoToOutput(outputLocation, repoModelProvider);
+        ModelGenerationFactory.copyRepoToOutput(outputLocation, repoModelProvider);
 
-        ModelGeneration.LOGGER.info("Generating system model.");
-        final System systemModel = ModelGeneration.generateAndSaveSystem(commandLine, outputLocation);
-        ModelGeneration.LOGGER.info("Generating resource environment model.");
-        final ResourceEnvironment resEnvModel = ModelGeneration.generateAndSaveResourceEnvironment(commandLine,
+        ModelGenerationFactory.LOGGER.info("Generating system model.");
+        final System systemModel = ModelGenerationFactory.generateAndSaveSystem(commandLine, outputLocation);
+        ModelGenerationFactory.LOGGER.info("Generating resource environment model.");
+        final ResourceEnvironment resEnvModel = ModelGenerationFactory.generateAndSaveResourceEnvironment(commandLine,
                 outputLocation, systemModel.getEntityName());
-        ModelGeneration.LOGGER.info("Generating allocation model.");
-        ModelGeneration.generateAndSaveAllocation(outputLocation, systemModel, resEnvModel);
-        ModelGeneration.LOGGER.info("Generating done!");
+        ModelGenerationFactory.LOGGER.info("Generating allocation model.");
+        ModelGenerationFactory.generateAndSaveAllocation(outputLocation, systemModel, resEnvModel);
+        ModelGenerationFactory.LOGGER.info("Generating done!");
     }
 
     private static System generateAndSaveSystem(final CommandLine commandLine, final URI outputLocation) {
