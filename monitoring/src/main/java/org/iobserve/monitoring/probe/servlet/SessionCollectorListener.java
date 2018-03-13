@@ -18,12 +18,12 @@ package org.iobserve.monitoring.probe.servlet;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.iobserve.common.record.SessionEndEvent;
-import org.iobserve.common.record.SessionStartEvent;
-
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.timer.ITimeSource;
+
+import org.iobserve.common.record.SessionEndEvent;
+import org.iobserve.common.record.SessionStartEvent;
 
 /**
  * The listener triggers events for session creation and destruction.

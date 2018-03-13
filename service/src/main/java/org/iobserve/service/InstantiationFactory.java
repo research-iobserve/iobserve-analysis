@@ -33,9 +33,13 @@ import org.slf4j.LoggerFactory;
  * @since 0.0.2
  *
  */
-public class InstantiationFactory { // NOPMD
+public final class InstantiationFactory { // NOPMD
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstantiationFactory.class);
+
+    private InstantiationFactory() {
+        // empty private default constructor for factory class
+    }
 
     /**
      * Create a class based on a set of parameters and a signature description.

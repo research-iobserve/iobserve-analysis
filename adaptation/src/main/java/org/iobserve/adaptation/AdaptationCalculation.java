@@ -53,7 +53,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
     private Set<AssemblyContextAction> acActions;
     private Set<ResourceContainerAction> rcActions;
 
-    public AdaptationCalculation() {
+    public AdaptationCalculation() { // NOCS missing comment
         // empty constructor
     }
 

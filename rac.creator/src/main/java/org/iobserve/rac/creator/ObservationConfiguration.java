@@ -21,6 +21,10 @@ import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import teetime.framework.Configuration;
+import teetime.stage.InitialElementProducer;
+import teetime.stage.className.ClassNameRegistryRepository;
+
 import org.iobserve.rac.creator.filter.DoAllFilter;
 import org.iobserve.rac.creator.filter.ListWriter;
 import org.iobserve.rac.creator.filter.PcmCorrespondentMethodStage;
@@ -30,10 +34,6 @@ import org.iobserve.rac.creator.filter.UniqueFilter;
 import org.iobserve.stages.general.RecordSwitch;
 import org.iobserve.stages.source.Dir2RecordsFilter;
 import org.xml.sax.SAXException;
-
-import teetime.framework.Configuration;
-import teetime.stage.InitialElementProducer;
-import teetime.stage.className.ClassNameRegistryRepository;
 
 // TODO complete this class. This configuration is incomplete as the read Kieker data is not further
 /**

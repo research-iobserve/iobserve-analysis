@@ -40,6 +40,10 @@ public class PlainTraceMetadataRewriter implements ITraceMetadataRewriter {
     private volatile long traceId = 0;
     private final Map<String, Map<Long, TraceMetadata>> metadatamap = new HashMap<>();
 
+    public PlainTraceMetadataRewriter() {
+        // empty default constructor
+    }
+
     /**
      * Trace data records use unique ids for their respective host. However, in a multi read stage
      * these ids may be used on different hosts. Therefore, they have to be mapped.
@@ -78,7 +82,7 @@ public class PlainTraceMetadataRewriter implements ITraceMetadataRewriter {
 
                 outputPort.send(record);
             }
-        } else if (record instanceof KiekerMetadataRecord) {
+        } else if (record instanceof KiekerMetadataRecord) { // NOCS ignore metadata record
             /** ignore metadata record. */
         } else {
             /** pass all records unmodified, which are not trace records. */

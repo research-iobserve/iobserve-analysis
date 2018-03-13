@@ -23,16 +23,17 @@ package org.iobserve.utility.tcp;
  */
 public class RemoteControlFailedException extends Exception {
 
+    /**
+    *
+    */
+    private static final long serialVersionUID = 1L;
+
     public RemoteControlFailedException() {
+        super();
     }
 
     public RemoteControlFailedException(final String message) {
         super(message);
     }
-
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
 
 }

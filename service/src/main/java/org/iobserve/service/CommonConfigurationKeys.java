@@ -26,4 +26,8 @@ public final class CommonConfigurationKeys {
 
     public static final String SOURCE_STAGE = CommonConfigurationKeys.PREFIX + "reader";
 
+    private CommonConfigurationKeys() {
+        // factory class constructor
+    }
+
 }

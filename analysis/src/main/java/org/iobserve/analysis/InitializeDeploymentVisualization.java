@@ -85,8 +85,6 @@ public final class InitializeDeploymentVisualization {
      *            provider for system model
      * @param resourceEnvironmentModelGraphProvider
      *            provider for resource environment model
-     * @param usageModelGraphProvider
-     *            provider for usage model
      * @throws MalformedURLException
      *             in case the specified url does not work
      */

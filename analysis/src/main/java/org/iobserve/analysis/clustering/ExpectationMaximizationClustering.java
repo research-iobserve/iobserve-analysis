@@ -36,7 +36,7 @@ public class ExpectationMaximizationClustering implements IDensitityClustering {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ExpectationMaximizationClustering.class);
 
-    public ExpectationMaximizationClustering() {
+    public ExpectationMaximizationClustering() { // NOCS empty constructor
         // empty constructor
     }
 

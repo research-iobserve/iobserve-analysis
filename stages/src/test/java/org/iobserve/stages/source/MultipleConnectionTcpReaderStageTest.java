@@ -27,8 +27,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author Reiner Jung
  *
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ MultipleConnectionTcpReaderStage.class })
+@RunWith(PowerMockRunner.class) // NOCS test class, no constructor
+@PrepareForTest({ MultipleConnectionTcpReaderStage.class }) // NOCS api
 public class MultipleConnectionTcpReaderStageTest {
 
     private static final int PORT = 9876;
