@@ -17,7 +17,6 @@ package org.iobserve.analysis.clustering.filter.similaritymatching;
 
 import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.configurations.ConfigurationKeys;
-import org.iobserve.analysis.configurations.MJConfiguration;
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
@@ -34,13 +33,13 @@ import teetime.framework.InputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 public class BehaviorCompositeStage extends CompositeStage implements IBehaviorCompositeStage {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MJConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorCompositeStage.class);
 
     private final InputPort<EventBasedTrace> eventBasedTraceInputPort;
     private final InputPort<ISessionEvent> sessionEventInputPort;
 
     public BehaviorCompositeStage(final Configuration configuration) throws ConfigurationException {
-        /** Instantiate objects for PreprocessingCompositeStage */
+        /** Instantiate configurable objects/properties for stages */
 
         /** For EntryCallStage */
         final String traceMatcherClassName = configuration.getStringProperty(ConfigurationKeys.TRACE_MATCHER);
@@ -94,6 +93,13 @@ public class BehaviorCompositeStage extends CompositeStage implements IBehaviorC
             throw new ConfigurationException("Initialization incomplete: No time trigger interval specified.");
         }
 
+        /** Get base URL for BehaviourModelSink */
+        final String baseURL = configuration.getStringProperty(ConfigurationKeys.SINK_BASE_URL);
+        if (baseURL.isEmpty()) {
+            BehaviorCompositeStage.LOGGER.error("Initialization incomplete: No sink base URL specified.");
+            throw new ConfigurationException("Initialization incomplete: No sink base URL specified.");
+        }
+
         /** Instantiate IClassificationStage */
 
         final String classificationStageClassName = configuration
@@ -105,19 +111,17 @@ public class BehaviorCompositeStage extends CompositeStage implements IBehaviorC
         final IClassificationStage classificationStage = InstantiationFactory
                 .createWithConfiguration(IClassificationStage.class, classificationStageClassName, configuration);
 
-        /** Instantiate sink stage */
-        // TODO
-
         /** Create remaining stages and connect them */
         final PreprocessingCompositeStage preStage = new PreprocessingCompositeStage(traceMatcher, entryCallMatcher,
                 cleanupRewriter, filterRulesFactory, triggerInterval);
-        // TODO: sink stage...
+        final BehaviorModelCompositeSinkStage sinkStage = new BehaviorModelCompositeSinkStage(baseURL);
 
         this.eventBasedTraceInputPort = preStage.getTraceInputPort();
         this.sessionEventInputPort = preStage.getSessionEventInputPort();
 
         this.connectPorts(preStage.getSessionOutputPort(), classificationStage.getSessionInputPort());
         this.connectPorts(preStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
+        this.connectPorts(classificationStage.getOutputPort(), sinkStage.getInputPort());
     }
 
     @Override

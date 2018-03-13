@@ -137,6 +137,11 @@ public final class ConfigurationKeys {
             + IClassificationStage.class.getCanonicalName();
 
     /**
+     * Set behaviour model sink base url to configure file writing directory STRING
+     */
+    public static final String SINK_BASE_URL = ConfigurationKeys.PREFIX + "behavior.sink.baseUrl";
+
+    /**
      * Model.
      */
 
