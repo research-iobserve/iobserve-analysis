@@ -13,16 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.clustering.filter.composite;
+package org.iobserve.analysis.clustering.filter.similaritymatching;
 
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.IModelGenerationStrategy;
-import org.iobserve.analysis.clustering.filter.IParameterMetricStrategy;
-import org.iobserve.analysis.clustering.filter.IStructureMetricStrategy;
-import org.iobserve.analysis.clustering.filter.TGroupingStage;
-import org.iobserve.analysis.clustering.filter.TModelGeneration;
-import org.iobserve.analysis.clustering.filter.TSessionToModel;
-import org.iobserve.analysis.clustering.filter.TVectorization;
 import org.iobserve.analysis.session.data.UserSession;
 
 import teetime.framework.CompositeStage;

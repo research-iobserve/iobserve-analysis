@@ -1,4 +1,4 @@
-package org.iobserve.analysis.clustering.filter;
+package org.iobserve.analysis.clustering.filter.similaritymatching;
 
 import java.util.ArrayList;
 import java.util.Iterator;

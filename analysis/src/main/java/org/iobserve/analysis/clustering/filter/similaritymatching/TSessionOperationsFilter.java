@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.clustering.filter;
+package org.iobserve.analysis.clustering.filter.similaritymatching;
 
 import org.iobserve.analysis.clustering.filter.models.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.session.data.UserSession;
