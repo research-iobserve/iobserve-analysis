@@ -25,6 +25,7 @@ import org.iobserve.analysis.traces.TraceOperationCleanupFilter;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
+import org.iobserve.stages.source.TimeTriggerFilter;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -35,11 +36,12 @@ public class PreprocessingCompositeStage extends CompositeStage {
     private final InputPort<EventBasedTrace> traceInputPort;
     private final InputPort<ISessionEvent> sessionEventInputPort;
 
-    private final OutputPort<UserSession> outputPort;
+    private final OutputPort<UserSession> sessionOutputPort;
+    private final OutputPort<Long> timerOutputPort;
 
     public PreprocessingCompositeStage(final IEntryCallTraceMatcher traceMatcher,
             final IEntryCallAcceptanceMatcher entryCallMatcher, final ITraceSignatureCleanupRewriter cleanupRewriter,
-            final IModelGenerationFilterFactory filterRulesFactory) {
+            final IModelGenerationFilterFactory filterRulesFactory, final long triggerInterval) {
 
         /** Create EntryCallStage */
         final EntryCallStage entryCallStage = new EntryCallStage(traceMatcher);
@@ -53,6 +55,8 @@ public class PreprocessingCompositeStage extends CompositeStage {
         /** Create UserSessionOperationsFilter */
         final TSessionOperationsFilter sessionOperationsFilter = new TSessionOperationsFilter(
                 filterRulesFactory.createFilter());
+        /** Create Clock */
+        final TimeTriggerFilter sessionCollectionTimer = new TimeTriggerFilter(triggerInterval);
 
         /** Connect all ports */
         this.traceInputPort = entryCallStage.getInputPort();
@@ -63,7 +67,8 @@ public class PreprocessingCompositeStage extends CompositeStage {
         this.connectPorts(sessionAcceptanceFilter.getOutputPort(), traceOperationCleanupFilter.getInputPort());
         this.connectPorts(traceOperationCleanupFilter.getOutputPort(), sessionOperationsFilter.getInputPort());
 
-        this.outputPort = sessionOperationsFilter.getOutputPort();
+        this.sessionOutputPort = sessionOperationsFilter.getOutputPort();
+        this.timerOutputPort = sessionCollectionTimer.getOutputPort();
     }
 
     public InputPort<EventBasedTrace> getTraceInputPort() {
@@ -74,7 +79,11 @@ public class PreprocessingCompositeStage extends CompositeStage {
         return this.sessionEventInputPort;
     }
 
-    public OutputPort<UserSession> getOutputPort() {
-        return this.outputPort;
+    public OutputPort<UserSession> getSessionOutputPort() {
+        return this.sessionOutputPort;
+    }
+
+    public OutputPort<Long> getTimerOutputPort() {
+        return this.timerOutputPort;
     }
 }

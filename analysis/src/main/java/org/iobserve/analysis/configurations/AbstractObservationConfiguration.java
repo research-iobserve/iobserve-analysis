@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-import teetime.framework.Configuration;
-
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
 import org.iobserve.analysis.clustering.IVectorQuantizationClustering;
@@ -54,6 +52,7 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
+import teetime.framework.Configuration;
 import weka.core.ManhattanDistance;
 
 /**
@@ -66,8 +65,8 @@ import weka.core.ManhattanDistance;
 public abstract class AbstractObservationConfiguration extends Configuration {
 
     /**
-     * record switch filter. Is required to be global so we can cheat and get measurements from the
-     * filter.
+     * record switch filter. Is required to be global so we can cheat and get
+     * measurements from the filter.
      */
     protected final RecordSwitch recordSwitch;
 
@@ -172,11 +171,13 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         final ISignatureCreationStrategy signatureStrategy;
         final int expectedUserGroups;
         if (thinkTime == 1) {
-            modelGenerationFilter = JPetStoreEntryCallRulesFactory.createFilter();
+            final JPetStoreEntryCallRulesFactory jFactory = new JPetStoreEntryCallRulesFactory();
+            modelGenerationFilter = jFactory.createFilter();
             expectedUserGroups = 9;
             signatureStrategy = new GetLastXSignatureStrategy(2);
         } else {
-            modelGenerationFilter = CoCoMEEntryCallRulesFactory.createFilter();
+            final CoCoMEEntryCallRulesFactory cocoFactory = new CoCoMEEntryCallRulesFactory();
+            modelGenerationFilter = cocoFactory.createFilter();
             signatureStrategy = new GetLastXSignatureStrategy(1);
             expectedUserGroups = 4;
         }
@@ -196,15 +197,18 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         behaviorModelConfiguration.setClustering(behaviorModelClustering);
         behaviorModelConfiguration.setAggregationType(aggregationType);
         behaviorModelConfiguration.setOutputMode(outputMode);
-        // final TBehaviorModel tBehaviorModel = new TBehaviorModel(behaviorModelConfiguration);
+        // final TBehaviorModel tBehaviorModel = new
+        // TBehaviorModel(behaviorModelConfiguration);
 
         final BehaviorModelComparison tBehaviorModelComparison = new BehaviorModelComparison(behaviorModelConfiguration,
                 correspondenceModel, usageModelProvider, repositoryModelProvider, varianceOfUserGroups, thinkTime,
                 closedWorkload);
 
         /** plain clustering. It might be included in the setup above. */
-        // tEntryCallSequenceWithPCM = new TEntryCallSequenceWithPCM(correspondenceModel);
-        // tEntryEventSequence = new TEntryEventSequence(correspondenceModel, usageModelProvider,
+        // tEntryCallSequenceWithPCM = new
+        // TEntryCallSequenceWithPCM(correspondenceModel);
+        // tEntryEventSequence = new TEntryEventSequence(correspondenceModel,
+        // usageModelProvider,
         // repositoryModelProvider, varianceOfUserGroups, thinkTime, closedWorkload);
         // final TNetworkLink tNetworkLink = new TNetworkLink(allocationModelProvider,
         // systemModelProvider, resourceEnvironmentModelProvider);

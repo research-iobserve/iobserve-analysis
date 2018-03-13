@@ -16,16 +16,13 @@
 package org.iobserve.analysis.clustering.filter.similaritymatching;
 
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
-import org.iobserve.analysis.configurations.MJConfiguration;
 import org.iobserve.analysis.session.data.UserSession;
-import org.iobserve.stages.general.ConfigurationException;
-import org.iobserve.stages.source.TimeTriggerFilter;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-public class TSimilarityMatching extends CompositeStage {
+public class TSimilarityMatching extends CompositeStage implements IClassificationStage {
     private final InputPort<UserSession> sessionInputPort;
     private final InputPort<Long> timerInputPort;
     private final OutputPort<BehaviorModel[]> outputPort;
@@ -33,17 +30,6 @@ public class TSimilarityMatching extends CompositeStage {
     public TSimilarityMatching(final IStructureMetricStrategy structureMetric,
             final IParameterMetricStrategy parameterMetric, final IModelGenerationStrategy modelGenerationStrategy,
             final double similarityRadius) {
-        /**
-         * Create Clock. Default value of -1 was selected because the method
-         * getLongProperty states it will return "null" if no value was specified, but
-         * long is a primitive type ...
-         */
-        final Long triggerInterval = configuration.getLongProperty(MJConfiguration.TRIGGER_INTERVAL, -1);
-        if (triggerInterval < 0) {
-            MJConfiguration.LOGGER.error("Initialization incomplete: No time trigger interval specified.");
-            throw new ConfigurationException("Initialization incomplete: No time trigger interval specified.");
-        }
-        final TimeTriggerFilter sessionCollectionTimer = new TimeTriggerFilter(triggerInterval);
 
         /** Create individual stages */
         final TSessionToModel sessionToModel = new TSessionToModel();
@@ -61,14 +47,17 @@ public class TSimilarityMatching extends CompositeStage {
         this.outputPort = modelGeneration.getOutputPort();
     }
 
+    @Override
     public InputPort<UserSession> getSessionInputPort() {
         return this.sessionInputPort;
     }
 
+    @Override
     public InputPort<Long> getTimerInputPort() {
         return this.timerInputPort;
     }
 
+    @Override
     public OutputPort<BehaviorModel[]> getOutputPort() {
         return this.outputPort;
     }

@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.similaritymatching;
 
 import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
@@ -14,11 +29,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kieker.common.configuration.Configuration;
+import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
-public class BehaviorCompositeStage implements IBehaviorCompositeStage {
+public class BehaviorCompositeStage extends CompositeStage implements IBehaviorCompositeStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(MJConfiguration.class);
+
+    private final InputPort<EventBasedTrace> eventBasedTraceInputPort;
+    private final InputPort<ISessionEvent> sessionEventInputPort;
 
     public BehaviorCompositeStage(final Configuration configuration) throws ConfigurationException {
         /** Instantiate objects for PreprocessingCompositeStage */
@@ -29,8 +48,8 @@ public class BehaviorCompositeStage implements IBehaviorCompositeStage {
             BehaviorCompositeStage.LOGGER.error("Initialization incomplete: No trace matcher specified.");
             throw new ConfigurationException("Initialization incomplete: No trace matcher specified.");
         }
-        final IEntryCallTraceMatcher traceMatcher = InstantiationFactory
-                .createWithConfiguration(IEntryCallTraceMatcher.class, traceMatcherClassName, configuration);
+        final IEntryCallTraceMatcher traceMatcher = InstantiationFactory.create(IEntryCallTraceMatcher.class,
+                traceMatcherClassName, null);
 
         /** For SessionAcceptanceFilter */
         final String entryCallMatcherClassName = configuration
@@ -41,7 +60,7 @@ public class BehaviorCompositeStage implements IBehaviorCompositeStage {
             throw new ConfigurationException("Initialization incomplete: No entry call acceptance matcher specified.");
         }
         final IEntryCallAcceptanceMatcher entryCallMatcher = InstantiationFactory
-                .createWithConfiguration(IEntryCallAcceptanceMatcher.class, entryCallMatcherClassName, configuration);
+                .create(IEntryCallAcceptanceMatcher.class, entryCallMatcherClassName, null);
 
         /** For TraceOperationsCleanupFilter */
         final String cleanupRewriterClassName = configuration.getStringProperty(ConfigurationKeys.CLEANUP_REWRITER);
@@ -50,7 +69,7 @@ public class BehaviorCompositeStage implements IBehaviorCompositeStage {
             throw new ConfigurationException("Initialization incomplete: No signature cleanup rewriter specified.");
         }
         final ITraceSignatureCleanupRewriter cleanupRewriter = InstantiationFactory
-                .createAndInitialize(ITraceSignatureCleanupRewriter.class, cleanupRewriterClassName, configuration);
+                .create(ITraceSignatureCleanupRewriter.class, cleanupRewriterClassName, null);
 
         /** For TSessionOperationsFilter */
         final String entryCallFilterFactoryClassName = configuration
@@ -61,31 +80,54 @@ public class BehaviorCompositeStage implements IBehaviorCompositeStage {
             throw new ConfigurationException(
                     "Initialization incomplete: No entry call filter rules factory specified.");
         }
-        final IModelGenerationFilterFactory filterRulesFactory = InstantiationFactory.createAndInitialize(
-                IModelGenerationFilterFactory.class, entryCallFilterFactoryClassName, configuration);
+        final IModelGenerationFilterFactory filterRulesFactory = InstantiationFactory
+                .create(IModelGenerationFilterFactory.class, entryCallFilterFactoryClassName, null);
+
+        /**
+         * Create Clock. Default value of -1 was selected because the method
+         * getLongProperty states it will return "null" if no value was specified, but
+         * long is a primitive type ...
+         */
+        final Long triggerInterval = configuration.getLongProperty(ConfigurationKeys.TRIGGER_INTERVAL, -1);
+        if (triggerInterval < 0) {
+            BehaviorCompositeStage.LOGGER.error("Initialization incomplete: No time trigger interval specified.");
+            throw new ConfigurationException("Initialization incomplete: No time trigger interval specified.");
+        }
 
         /** Instantiate IClassificationStage */
+
         final String classificationStageClassName = configuration
                 .getStringProperty(ConfigurationKeys.CLASSIFICATION_STAGE);
         if (classificationStageClassName.isEmpty()) {
             BehaviorCompositeStage.LOGGER.error("Initialization incomplete: No classification stage specified.");
             throw new ConfigurationException("Initialization incomplete: No classification stage specified.");
         }
-        final IClassificationStage classificationStage = InstatiationFactory
-                .createAndInitialize(IClassificationStage.class, classificationStageClassName, configuration);
+        final IClassificationStage classificationStage = InstantiationFactory
+                .createWithConfiguration(IClassificationStage.class, classificationStageClassName, configuration);
 
+        /** Instantiate sink stage */
+        // TODO
+
+        /** Create remaining stages and connect them */
+        final PreprocessingCompositeStage preStage = new PreprocessingCompositeStage(traceMatcher, entryCallMatcher,
+                cleanupRewriter, filterRulesFactory, triggerInterval);
+        // TODO: sink stage...
+
+        this.eventBasedTraceInputPort = preStage.getTraceInputPort();
+        this.sessionEventInputPort = preStage.getSessionEventInputPort();
+
+        this.connectPorts(preStage.getSessionOutputPort(), classificationStage.getSessionInputPort());
+        this.connectPorts(preStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
     }
 
     @Override
     public InputPort<EventBasedTrace> getEventBasedTracePort() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.eventBasedTraceInputPort;
     }
 
     @Override
     public InputPort<ISessionEvent> getSessionEventInputPort() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.sessionEventInputPort;
     }
 
 }

@@ -26,11 +26,12 @@ import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenera
  */
 public final class JPetStoreEntryCallRulesFactory implements IModelGenerationFilterFactory {
 
-    private JPetStoreEntryCallRulesFactory() {
+    public JPetStoreEntryCallRulesFactory() {
         // empty constructor
     }
 
-    public static EntryCallFilterRules createFilter() {
+    @Override
+    public EntryCallFilterRules createFilter() {
         final EntryCallFilterRules modelGenerationFilter;
         modelGenerationFilter = new EntryCallFilterRules(true);
         modelGenerationFilter.addFilterRule("(\\w*\\.)*images.*");

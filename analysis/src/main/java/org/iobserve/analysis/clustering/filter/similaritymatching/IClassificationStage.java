@@ -7,7 +7,9 @@ import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
 public interface IClassificationStage {
-    InputPort<UserSession> getInputPort();
+    InputPort<UserSession> getSessionInputPort();
+
+    InputPort<Long> getTimerInputPort();
 
     OutputPort<BehaviorModel[]> getOutputPort();
 }
