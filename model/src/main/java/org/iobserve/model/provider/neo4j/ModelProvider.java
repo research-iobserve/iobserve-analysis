@@ -411,7 +411,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            are instantiated just once
      * @return The root
      */
-    @SuppressWarnings("unchecked")
     private EObject readNodes(final Node node, final Set<Node> containmentsAndDatatypes,
             final Map<Node, EObject> nodesToCreatedObjects) {
         final EObject component;
@@ -421,87 +420,114 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
             component = ModelProviderUtil.instantiateEObject(label.name());
 
-            // Load attribute values from the node
-            final Iterator<Map.Entry<String, Object>> i = node.getAllProperties().entrySet().iterator();
-            while (i.hasNext()) {
-                final Entry<String, Object> property = i.next();
-                final EAttribute attr = (EAttribute) component.eClass().getEStructuralFeature(property.getKey());
-
-                // attr == null for the emfUri property stored in the graph
-                if (attr != null) {
-                    final Object value = ModelProviderUtil.instantiateAttribute(
-                            attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
-
-                    if (value != null) {
-                        component.eSet(attr, value);
-                    }
-                }
-            }
+            this.loadAttributes(component, node.getAllProperties());
 
             // Already register unfinished components because there might be circles
             nodesToCreatedObjects.putIfAbsent(node, component);
 
-            // Load related nodes representing referenced components
-            for (final Relationship rel : ModelProviderUtil
-                    .sortRelsByPosition(node.getRelationships(Direction.OUTGOING))) {
-                final Node endNode = rel.getEndNode();
-                final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
-                final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
-                Object refReprensation = component.eGet(ref);
-
-                // For partial reading: Only load containments and data types of the root
-                if (containmentsAndDatatypes.contains(endNode)) {
-
-                    if (refReprensation instanceof EList<?>) {
-                        final EObject endComponent = this.readNodes(endNode, containmentsAndDatatypes,
-                                nodesToCreatedObjects);
-                        ((EList<EObject>) refReprensation).add(endComponent);
-
-                    } else {
-                        refReprensation = this.readNodes(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
-                        component.eSet(ref, refReprensation);
-                    }
-
-                } else {
-                    // Create proxy EObject here...
-                    final Label endLabel = ModelProviderUtil.getFirstLabel(endNode.getLabels());
-                    final EObject endComponent = ModelProviderUtil.instantiateEObject(endLabel.name());
-
-                    if (endComponent != null) {
-                        final URI endUri = URI.createURI(endNode.getProperty(ModelProvider.EMF_URI).toString());
-                        ((BasicEObjectImpl) endComponent).eSetProxyURI(endUri);
-
-                        // Load attribute values from the node
-                        final Iterator<Map.Entry<String, Object>> i2 = endNode.getAllProperties().entrySet().iterator();
-                        while (i2.hasNext()) {
-                            final Entry<String, Object> property = i2.next();
-                            final EAttribute attr = (EAttribute) endComponent.eClass()
-                                    .getEStructuralFeature(property.getKey());
-
-                            // attr == null for the emfUri property stored in the graph
-                            if (attr != null) {
-                                final Object value = ModelProviderUtil.instantiateAttribute(
-                                        attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
-
-                                if (value != null) {
-                                    endComponent.eSet(attr, value);
-                                }
-                            }
-                        }
-
-                        if (refReprensation instanceof EList<?>) {
-                            ((EList<EObject>) refReprensation).add(endComponent);
-                        } else {
-                            component.eSet(ref, endComponent);
-                        }
-                    }
-                }
-            }
+            this.loadRelatedNodes(component, node, containmentsAndDatatypes, nodesToCreatedObjects);
         } else {
             component = nodesToCreatedObjects.get(node);
         }
 
         return component;
+    }
+
+    /**
+     * Load related nodes representing referenced components.
+     *
+     * @param component
+     *            component the other components are related to
+     * @param node
+     *            the corresponding node to the component
+     * @param containmentsAndDatatypes
+     *            datatypes
+     * @param nodesToCreatedObjects
+     *            additional nodes
+     */
+    @SuppressWarnings("unchecked")
+    private void loadRelatedNodes(final EObject component, final Node node, final Set<Node> containmentsAndDatatypes,
+            final Map<Node, EObject> nodesToCreatedObjects) {
+        for (final Relationship rel : ModelProviderUtil.sortRelsByPosition(node.getRelationships(Direction.OUTGOING))) {
+            final Node endNode = rel.getEndNode();
+            final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
+            final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
+            Object refReprensation = component.eGet(ref);
+
+            // For partial reading: Only load containments and data types of the root
+            if (containmentsAndDatatypes.contains(endNode)) {
+
+                if (refReprensation instanceof EList<?>) {
+                    final EObject endComponent = this.readNodes(endNode, containmentsAndDatatypes,
+                            nodesToCreatedObjects);
+                    ((EList<EObject>) refReprensation).add(endComponent);
+
+                } else {
+                    refReprensation = this.readNodes(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
+                    component.eSet(ref, refReprensation);
+                }
+
+            } else {
+                // Create proxy EObject here...
+                final Label endLabel = ModelProviderUtil.getFirstLabel(endNode.getLabels());
+                final EObject endComponent = ModelProviderUtil.instantiateEObject(endLabel.name());
+
+                if (endComponent != null) {
+                    final URI endUri = URI.createURI(endNode.getProperty(ModelProvider.EMF_URI).toString());
+                    ((BasicEObjectImpl) endComponent).eSetProxyURI(endUri);
+
+                    // Load attribute values from the node
+                    final Iterator<Map.Entry<String, Object>> i2 = endNode.getAllProperties().entrySet().iterator();
+                    while (i2.hasNext()) {
+                        final Entry<String, Object> property = i2.next();
+                        final EAttribute attr = (EAttribute) endComponent.eClass()
+                                .getEStructuralFeature(property.getKey());
+
+                        // attr == null for the emfUri property stored in the graph
+                        if (attr != null) {
+                            final Object value = ModelProviderUtil.instantiateAttribute(
+                                    attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
+
+                            if (value != null) {
+                                endComponent.eSet(attr, value);
+                            }
+                        }
+                    }
+
+                    if (refReprensation instanceof EList<?>) {
+                        ((EList<EObject>) refReprensation).add(endComponent);
+                    } else {
+                        component.eSet(ref, endComponent);
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Load attribute values from the node.
+     *
+     * @param component
+     *            component where the attributes are attached to
+     * @param properties
+     *            the attributes to scan for values
+     */
+    private void loadAttributes(final EObject component, final Map<String, Object> properties) {
+        for (final Entry<String, Object> property : properties.entrySet()) {
+
+            final EAttribute attr = (EAttribute) component.eClass().getEStructuralFeature(property.getKey());
+
+            // attr == null for the emfUri property stored in the graph
+            if (attr != null) {
+                final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
+                        property.getValue().toString());
+
+                if (value != null) {
+                    component.eSet(attr, value);
+                }
+            }
+        }
     }
 
     /*

@@ -29,8 +29,6 @@ import de.uka.ipd.sdq.pcm.designdecision.specific.specificPackage;
 import de.uka.ipd.sdq.pcm.designdecision.specific.util.specificResourceFactoryImpl;
 import de.uka.ipd.sdq.pcm.designdecision.util.designdecisionResourceFactoryImpl;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.URIConverter;
@@ -64,6 +62,8 @@ import org.palladiosimulator.pcm.subsystem.util.SubsystemResourceFactoryImpl;
 import org.palladiosimulator.pcm.system.util.SystemResourceFactoryImpl;
 import org.palladiosimulator.pcm.usagemodel.util.UsagemodelResourceFactoryImpl;
 import org.palladiosimulator.pcm.util.PcmResourceFactoryImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * As Palladio is executed outside an Eclipse environment, we'll have to manually provide certain
@@ -79,7 +79,7 @@ import org.palladiosimulator.pcm.util.PcmResourceFactoryImpl;
 public enum PalladioEclipseEnvironment {
     INSTANCE;
 
-    private static final Logger LOG = LogManager.getLogger(PalladioEclipseEnvironment.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(PalladioEclipseEnvironment.class.getName());
 
     private boolean isSetup = false;
     private URIConverterHandler uriConverter;
@@ -99,12 +99,12 @@ public enum PalladioEclipseEnvironment {
             }
             this.isSetup = true;
 
-            PalladioEclipseEnvironment.LOG.info("Starting to set up the Palladio Eclipse environment.");
+            PalladioEclipseEnvironment.LOGGER.info("Starting to set up the Palladio Eclipse environment.");
             this.registerFactories();
             this.registerUriConverter();
             this.registerPathmapConverters();
             this.registerPalladioResourceRepository();
-            PalladioEclipseEnvironment.LOG.info("Finished setting up the Palladio Eclipse environment.");
+            PalladioEclipseEnvironment.LOGGER.info("Finished setting up the Palladio Eclipse environment.");
         }
     }
 
@@ -124,7 +124,7 @@ public enum PalladioEclipseEnvironment {
         for (final EPackage ePackage : AbstractPCMWorkflowRunConfiguration.PCM_EPACKAGES) {
             Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put(ePackage.getNsURI(), ePackage);
         }
-        PalladioEclipseEnvironment.LOG.info("Initialized EMF factories");
+        PalladioEclipseEnvironment.LOGGER.info("Initialized EMF factories");
 
         // register factories:
         // http://wiki.eclipse.org/EMF/FAQ#How_do_I_use_EMF_in_standalone_applications_.28such_as_an_ordinary_main.29.3F
@@ -174,7 +174,7 @@ public enum PalladioEclipseEnvironment {
                 new CloudprofileResourceFactoryImpl());
         Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("*", new XMIResourceFactoryImpl());
 
-        PalladioEclipseEnvironment.LOG.info("Initialized resource factories");
+        PalladioEclipseEnvironment.LOGGER.info("Initialized resource factories");
 
         designdecisionPackage.eINSTANCE.eClass();
         specificPackage.eINSTANCE.eClass();
@@ -182,7 +182,7 @@ public enum PalladioEclipseEnvironment {
         costPackage.eINSTANCE.eClass();
         CloudprofilePackage.eINSTANCE.eClass();
 
-        PalladioEclipseEnvironment.LOG.info("Registered package instances");
+        PalladioEclipseEnvironment.LOGGER.info("Registered package instances");
     }
 
     /**
@@ -200,10 +200,10 @@ public enum PalladioEclipseEnvironment {
             modifiersField.setAccessible(true);
             modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
             field.set(null, this.uriConverter);
-            PalladioEclipseEnvironment.LOG.info("Registered custom URIConverter");
+            PalladioEclipseEnvironment.LOGGER.info("Registered custom URIConverter");
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            PalladioEclipseEnvironment.LOG.warn("Could not set the URIConverter globally.");
-            PalladioEclipseEnvironment.LOG.warn(Throwables.getStackTraceAsString(e));
+            PalladioEclipseEnvironment.LOGGER.warn("Could not set the URIConverter globally.");
+            PalladioEclipseEnvironment.LOGGER.warn(Throwables.getStackTraceAsString(e));
         }
     }
 
