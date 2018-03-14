@@ -122,7 +122,8 @@ public class TestHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Enumeration<String> getParameterNames() {
-        return new Vector<>(this.parameters.keySet()).elements();
+        return new Vector<>(this.parameters.keySet()).elements(); // NOPMD vector is used to create
+                                                                  // enumeration
     }
 
     @Override

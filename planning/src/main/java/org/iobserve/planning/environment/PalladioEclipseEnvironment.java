@@ -92,18 +92,20 @@ public enum PalladioEclipseEnvironment {
      * functionality in the right places. This method is thread-safe and will only perform the setup
      * once, even when called multiple times.
      */
-    public synchronized void setup() {
-        if (this.isSetup) {
-            return;
-        }
-        this.isSetup = true;
+    public void setup() {
+        synchronized (this) {
+            if (this.isSetup) {
+                return;
+            }
+            this.isSetup = true;
 
-        PalladioEclipseEnvironment.LOG.info("Starting to set up the Palladio Eclipse environment.");
-        this.registerFactories();
-        this.registerUriConverter();
-        this.registerPathmapConverters();
-        this.registerPalladioResourceRepository();
-        PalladioEclipseEnvironment.LOG.info("Finished setting up the Palladio Eclipse environment.");
+            PalladioEclipseEnvironment.LOG.info("Starting to set up the Palladio Eclipse environment.");
+            this.registerFactories();
+            this.registerUriConverter();
+            this.registerPathmapConverters();
+            this.registerPalladioResourceRepository();
+            PalladioEclipseEnvironment.LOG.info("Finished setting up the Palladio Eclipse environment.");
+        }
     }
 
     /**

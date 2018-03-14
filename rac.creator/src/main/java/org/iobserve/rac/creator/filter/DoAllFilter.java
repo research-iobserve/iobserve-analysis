@@ -109,26 +109,26 @@ public class DoAllFilter extends AbstractConsumerStage<ClassAndMethod> {
      * Returns a correspondent for the given name, if not already contained it is created.
      *
      * @param classSignature
-     * @param correspondentMapping
-     * @return
+     *            class signature to be looked up
+     * @param newCorrespondentMapping
+     *            new set of mappings
+     * @return the correspondent for the given class signature
      */
     private PcmEntityCorrespondent getOrCreateCorrespondent(final String classSignature,
-            final Map<String, PcmEntityCorrespondent> correspondentMapping) {
+            final Map<String, PcmEntityCorrespondent> newCorrespondentMapping) {
         /** TODO this filters test whether a certain class signature already exists. */
-        if (!correspondentMapping.containsKey(classSignature)) {
+        if (!newCorrespondentMapping.containsKey(classSignature)) {
             final PcmEntityCorrespondent correspondent = new PcmEntityCorrespondent();
             correspondent.setFilePath("No Path");
             correspondent.setProjectName("No Project");
-            try {
-                correspondent.setPackageName(classSignature.substring(0, classSignature.lastIndexOf('.')));
-                correspondent.setUnitName(classSignature.substring(classSignature.lastIndexOf('.') + 1));
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
-            correspondentMapping.put(classSignature, correspondent);
+
+            correspondent.setPackageName(classSignature.substring(0, classSignature.lastIndexOf('.')));
+            correspondent.setUnitName(classSignature.substring(classSignature.lastIndexOf('.') + 1));
+
+            newCorrespondentMapping.put(classSignature, correspondent);
         }
 
-        return correspondentMapping.get(classSignature);
+        return newCorrespondentMapping.get(classSignature);
     }
 
     /**

@@ -49,7 +49,7 @@ public class SystemEvaluation extends AbstractLinearComposition<URI, Boolean> {
      *            set base data
      */
     public static void enableEvaluation(final AdaptationData adaptationData) {
-        SystemEvaluation.modelComparer.setBaseData(adaptationData);
+        SystemEvaluation.modelComparer.setBaseAdaptationData(adaptationData);
         SnapshotBuilder.setEvaluationMode(true);
     }
 
@@ -57,7 +57,7 @@ public class SystemEvaluation extends AbstractLinearComposition<URI, Boolean> {
      * disable evaluation.
      */
     public static void disableEvaluation() {
-        SystemEvaluation.modelComparer.setBaseData(null);
+        SystemEvaluation.modelComparer.setBaseAdaptationData(null);
         SnapshotBuilder.setEvaluationMode(false);
     }
 

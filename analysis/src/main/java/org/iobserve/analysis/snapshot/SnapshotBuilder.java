@@ -38,7 +38,7 @@ import org.iobserve.model.PCMModelHandler;
  */
 public class SnapshotBuilder extends AbstractStage {
 
-    protected static final Logger LOG = LogManager.getLogger(SnapshotBuilder.class);
+    protected static final Logger LOGGER = LogManager.getLogger(SnapshotBuilder.class);
 
     private static URI baseSnapshotLocation = null;
     private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING,
@@ -114,7 +114,9 @@ public class SnapshotBuilder extends AbstractStage {
      *             on io error while producing output files
      */
     public URI createSnapshot() throws IOException {
-        SnapshotBuilder.LOG.info("Creating Snapshot: \t" + this.snapshotURI.toFileString());
+        if (SnapshotBuilder.LOGGER.isInfoEnabled()) {
+            SnapshotBuilder.LOGGER.info("Creating Snapshot: \t" + this.snapshotURI.toFileString());
+        }
 
         this.modelHandler.save(this.snapshotURI);
 

@@ -35,6 +35,7 @@ import org.iobserve.evaluation.data.NodeDifference;
  *
  * @author Reiner Jung
  *
+ * @since 0.0.2
  */
 public class ModelComparisonStage extends AbstractStage {
 
@@ -45,6 +46,13 @@ public class ModelComparisonStage extends AbstractStage {
     private BehaviorModel referenceModel;
 
     private BehaviorModel testModel;
+
+    /**
+     * Model comparison stage.
+     */
+    public ModelComparisonStage() {
+        // empty
+    }
 
     /*
      * (non-Javadoc)

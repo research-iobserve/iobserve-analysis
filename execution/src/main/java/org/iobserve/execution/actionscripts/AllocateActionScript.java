@@ -104,7 +104,7 @@ public class AllocateActionScript extends AbstractActionScript {
         builder.append(sourceContainer.getInstanceType().getLocation());
         builder.append("' with name '");
         builder.append(ModelHelper.getGroupName(sourceContainer));
-        builder.append("'");
+        builder.append('\'');
         return builder.toString();
     }
 

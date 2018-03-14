@@ -40,8 +40,11 @@ import org.palladiosimulator.pcm.resourcetype.ResourcetypeFactory;
  *
  * @author Lars Bluemke
  *
+ * @since 0.0.2
  */
-public class ResourceEnvironmentModelProviderTest implements IModelProviderTest {
+public class ResourceEnvironmentModelProviderTest implements IModelProviderTest { // NOCS no
+                                                                                  // constructor in
+                                                                                  // test
     private static final File GRAPH_DIR = new File("./testdb");
 
     private static Graph graph = new GraphLoader(ResourceEnvironmentModelProviderTest.GRAPH_DIR)

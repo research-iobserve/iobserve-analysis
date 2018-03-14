@@ -54,9 +54,11 @@ public final class ModelProviderSynchronizer {
                 try {
                     graph.wait();
                 } catch (final InterruptedException e) {
-                    ModelProviderSynchronizer.LOGGER
-                            .error("Thread was interrupted before or while waiting for a notification to "
-                                    + "get the database lock.");
+                    if (ModelProviderSynchronizer.LOGGER.isErrorEnabled()) {
+                        ModelProviderSynchronizer.LOGGER
+                                .error("Thread was interrupted before or while waiting for a notification to "
+                                        + "get the database lock.");
+                    }
                 }
             }
             ModelProviderSynchronizer.locks.put(graph, modelProvider);

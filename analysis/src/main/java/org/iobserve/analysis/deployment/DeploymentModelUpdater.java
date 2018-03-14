@@ -90,8 +90,10 @@ public final class DeploymentModelUpdater extends AbstractConsumerStage<PCMDeplo
                 assemblyContextName);
 
         if (optAssemblyContext.isPresent()) {
-            DeploymentModelUpdater.LOGGER
-                    .warn("Assembly Context already exists in system model: " + assemblyContextName);
+            if (DeploymentModelUpdater.LOGGER.isWarnEnabled()) {
+                DeploymentModelUpdater.LOGGER
+                        .warn("Assembly Context already exists in system model: " + assemblyContextName);
+            }
         } else {
             assemblyContext = this.createAndAddAssemblyContext(this.systemModelGraphProvider, assemblyContextName);
 

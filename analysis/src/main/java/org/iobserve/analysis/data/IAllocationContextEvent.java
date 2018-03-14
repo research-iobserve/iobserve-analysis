@@ -29,5 +29,5 @@ public interface IAllocationContextEvent {
      *
      * @return returns the allocation context
      */
-    public ResourceContainer getAllocationContext();
+    ResourceContainer getAllocationContext();
 }

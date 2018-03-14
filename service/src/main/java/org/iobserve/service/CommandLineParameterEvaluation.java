@@ -86,15 +86,21 @@ public final class CommandLineParameterEvaluation {
      */
     public static boolean isFileReadable(final File file, final String label) throws IOException {
         if (!file.exists()) {
-            CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " does not exist.");
+            if (CommandLineParameterEvaluation.LOGGER.isErrorEnabled()) {
+                CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " does not exist.");
+            }
             return false;
         }
         if (!file.isFile()) {
-            CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " is not a file.");
+            if (CommandLineParameterEvaluation.LOGGER.isErrorEnabled()) {
+                CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " is not a file.");
+            }
             return false;
         }
         if (!file.canRead()) {
-            CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " cannot be read.");
+            if (CommandLineParameterEvaluation.LOGGER.isErrorEnabled()) {
+                CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " cannot be read.");
+            }
             return false;
         }
 
@@ -114,7 +120,9 @@ public final class CommandLineParameterEvaluation {
         try {
             return new URL(urlString);
         } catch (final MalformedURLException e) {
-            CommandLineParameterEvaluation.LOGGER.error(label + " Malformend URL " + urlString);
+            if (CommandLineParameterEvaluation.LOGGER.isErrorEnabled()) {
+                CommandLineParameterEvaluation.LOGGER.error(label + " Malformend URL " + urlString);
+            }
             return null;
         }
 

@@ -80,7 +80,7 @@ public class DeploymentResourceContainerTest {
      */
     @SuppressWarnings("unchecked")
     @BeforeClass
-    public static void setup() {
+    public static void setUp() {
 
         /** mocks for model graph provider */
         DeploymentResourceContainerTest.mockedSystemModelGraphProvider = Mockito.mock(ModelProvider.class);

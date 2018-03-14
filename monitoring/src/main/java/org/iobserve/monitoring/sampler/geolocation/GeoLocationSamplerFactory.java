@@ -31,7 +31,7 @@ public final class GeoLocationSamplerFactory {
      * @return ServerGeoLocationSampler with the DummyCountryInvestigator
      */
     public static AbstractGeoLocationSampler getDummyGeoLocationSampler() {
-        return new ServerGeoLocationSampler(new IDummyCountryInvestigator());
+        return new ServerGeoLocationSampler(new DummyCountryInvestigator());
     }
 
 }

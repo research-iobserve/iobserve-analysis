@@ -34,20 +34,27 @@ import org.iobserve.model.PCMModelHandler;
  */
 public class ModelComparer extends AbstractTransformation<URI, Boolean> {
 
-    private AdaptationData adaptationData;
+    private AdaptationData baseAdaptationData;
+
+    /**
+     * Create a model comparer stage.
+     */
+    public ModelComparer() {
+        // empty default constructor
+    }
 
     @Override
     protected void execute(final URI element) throws Exception {
 
         boolean equalGraphs = false;
-        if (this.adaptationData != null) {
+        if (this.baseAdaptationData != null) {
             // TODO finish
             final PCMModelHandler modelProviders = new PCMModelHandler(new File(element.toFileString()));
             final GraphFactory graphFactory = new GraphFactory();
             final ModelGraph runtimeGraph = graphFactory.buildGraph(modelProviders);
 
-            if (runtimeGraph.equals(this.adaptationData.getReDeploymentGraph())
-                    && this.adaptationData.getReDeploymentGraph().equals(runtimeGraph)) {
+            if (runtimeGraph.equals(this.baseAdaptationData.getReDeploymentGraph())
+                    && this.baseAdaptationData.getReDeploymentGraph().equals(runtimeGraph)) {
                 equalGraphs = true;
                 SystemEvaluation.disableEvaluation();
             }
@@ -55,8 +62,8 @@ public class ModelComparer extends AbstractTransformation<URI, Boolean> {
         this.outputPort.send(Boolean.valueOf(equalGraphs));
     }
 
-    public void setBaseData(final AdaptationData adaptationData) {
-        this.adaptationData = adaptationData;
+    public void setBaseAdaptationData(final AdaptationData baseAdaptationData) {
+        this.baseAdaptationData = baseAdaptationData;
     }
 
 }

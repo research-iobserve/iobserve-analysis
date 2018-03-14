@@ -41,14 +41,14 @@ import org.junit.Assert;
  * @author Reiner Jung
  *
  */
-public class TestSessionAndTraceRegistrationPayloadFilter {
+public class SessionAndTraceRegistrationPayloadFilterTest { // NOCS no constructor in test
 
     private static final String WRITER_NAME = TestDumpWriter.class.getCanonicalName();
 
     static {
         System.setProperty(ConfigurationKeys.CONTROLLER_NAME, "iObserve-Experiments");
         System.setProperty(ConfigurationKeys.WRITER_CLASSNAME,
-                TestSessionAndTraceRegistrationPayloadFilter.WRITER_NAME);
+                SessionAndTraceRegistrationPayloadFilterTest.WRITER_NAME);
     }
 
     /**

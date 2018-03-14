@@ -31,7 +31,7 @@ import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
  */
 public class URIConverterHandler extends ExtensibleURIConverterImpl {
 
-    private static final Logger LOG = LogManager.getLogger(URIConverterHandler.class.getName());
+    private static final Logger LOGGER = LogManager.getLogger(URIConverterHandler.class.getName());
 
     private final URIConverter uriConverter;
 
@@ -66,9 +66,15 @@ public class URIConverterHandler extends ExtensibleURIConverterImpl {
     @Override
     public URI normalize(final URI uri) {
         final URI normalized = this.doNormalize(uri);
-        URIConverterHandler.LOG.info(String.format("Normalize uri '%s' to '%s'", uri, normalized));
+
+        if (URIConverterHandler.LOGGER.isInfoEnabled()) {
+            URIConverterHandler.LOGGER.info(String.format("Normalize uri '%s' to '%s'", uri, normalized));
+        }
         if (!new java.io.File(normalized.toString()).exists()) {
-            URIConverterHandler.LOG.warn("Normalized URI is not a file: " + normalized);
+            if (URIConverterHandler.LOGGER.isWarnEnabled()) { // NOPMD nesting is relevant for
+                                                              // understanding the code
+                URIConverterHandler.LOGGER.warn("Normalized URI is not a file: " + normalized);
+            }
         }
         return normalized;
     }

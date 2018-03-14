@@ -124,8 +124,10 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         } else if (clazz.equals(UsageModel.class)) {
             return graphLoader.cloneNewUsageModelGraphVersion();
         } else {
-            ModelProvider.LOGGER.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
-                    + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
+            if (ModelProvider.LOGGER.isWarnEnabled()) {
+                ModelProvider.LOGGER.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
+                        + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
+            }
             return null;
         }
     }
@@ -140,7 +142,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         ModelProviderSynchronizer.getLock(this);
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final HashSet<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
+            final Set<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
                     new HashSet<>());
             this.createNodes(component, containmentsAndDatatypes, new HashMap<>());
             tx.success();
@@ -159,8 +161,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Initially empty set of all containments and data types
      * @return The passed containmentsAndDatatypes set now filled with containments and data types
      */
-    private HashSet<EObject> getAllContainmentsAndDatatypes(final EObject component,
-            final HashSet<EObject> containmentsAndDatatypes) {
+    private Set<EObject> getAllContainmentsAndDatatypes(final EObject component,
+            final Set<EObject> containmentsAndDatatypes) {
         if (!containmentsAndDatatypes.contains(component)) {
             containmentsAndDatatypes.add(component);
 
@@ -199,8 +201,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            sure nodes are written just once
      * @return Root node of the component's graph
      */
-    private Node createNodes(final EObject component, final HashSet<EObject> containmentsAndDatatypes,
-            final HashMap<EObject, Node> objectsToCreatedNodes) {
+    private Node createNodes(final EObject component, final Set<EObject> containmentsAndDatatypes,
+            final Map<EObject, Node> objectsToCreatedNodes) {
         // Create a label representing the type of the component
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         Node node = null;
@@ -315,8 +317,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
-            final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
-                    new HashSet<Node>());
+            final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node, new HashSet<Node>());
             component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             tx.success();
         }
@@ -382,8 +383,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Initially empty set of all containments and data types
      * @return The passed containmentsAndDatatypes set now filled with containments and data types
      */
-    private HashSet<Node> getAllContainmentsAndDatatypes(final Node node,
-            final HashSet<Node> containmentsAndDatatypes) {
+    private Set<Node> getAllContainmentsAndDatatypes(final Node node, final Set<Node> containmentsAndDatatypes) {
 
         if (!containmentsAndDatatypes.contains(node)) {
             containmentsAndDatatypes.add(node);
@@ -514,7 +514,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                     .findNodes(Label.label(clazz.getSimpleName()));
-            final LinkedList<String> ids = new LinkedList<>();
+            final List<String> ids = new LinkedList<>();
 
             while (nodes.hasNext()) {
                 final Node n = nodes.next();
@@ -557,7 +557,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                         .findNodes(Label.label(clazz.getSimpleName()));
                 if (nodes.hasNext()) {
                     final Node node = nodes.next();
-                    final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
+                    final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                             new HashSet<Node>());
                     component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 }
@@ -607,7 +607,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             if (inRels.hasNext()) {
                 final Node endNode = inRels.next().getStartNode();
-                final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
                         new HashSet<Node>());
                 component = this.readNodes(endNode, containmentsAndDatatypes, new HashMap<Node, EObject>());
             }
@@ -651,7 +651,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.REFERENCES)) {
                 final Node startNode = inRel.getStartNode();
-                final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
                         new HashSet<Node>());
                 final EObject component = this.readNodes(startNode, containmentsAndDatatypes,
                         new HashMap<Node, EObject>());
@@ -675,7 +675,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         final Label label = Label.label(clazz.getSimpleName());
-        final HashSet<EObject> containmentsAndDatatypes;
+        final Set<EObject> containmentsAndDatatypes;
         final Node node;
 
         if (idAttr != null) {
@@ -697,14 +697,16 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 tx.success();
             }
         } else {
-            ModelProvider.LOGGER.warn("Updated component needs to have an id or be of type Allocation, Repository, "
-                    + "ResourceEnvironment, System or UsageModel");
+            if (ModelProvider.LOGGER.isWarnEnabled()) {
+                ModelProvider.LOGGER.warn("Updated component needs to have an id or be of type Allocation, Repository, "
+                        + "ResourceEnvironment, System or UsageModel");
+            }
         }
 
         ModelProviderSynchronizer.releaseLock(this);
     }
 
-    private Node updateNodes(final EObject component, final Node node, final HashSet<EObject> containmentsAndDatatypes,
+    private Node updateNodes(final EObject component, final Node node, final Set<EObject> containmentsAndDatatypes,
             final Set<EObject> updatedComponents) {
 
         if (!updatedComponents.contains(component)) {
@@ -741,7 +743,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             if (containmentsAndDatatypes.contains(component)) {
 
                 // Create list of node's outgoing relationships
-                final LinkedList<Relationship> outRels = new LinkedList<>();
+                final List<Relationship> outRels = new LinkedList<>();
                 node.getRelationships(Direction.OUTGOING).forEach(outRels::add);
 
                 for (final EReference ref : component.eClass().getEAllReferences()) {
@@ -911,8 +913,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 this.markAccessibleNodes(rel.getEndNode());
             }
         }
-
-        return;
     }
 
     /**
@@ -1005,8 +1005,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             // node has already been deleted on another path
             e.printStackTrace();
         }
-
-        return;
     }
 
     /**

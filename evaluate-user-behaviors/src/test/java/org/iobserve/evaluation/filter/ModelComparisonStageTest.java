@@ -37,8 +37,9 @@ import org.junit.Test;
  *
  * @author Reiner Jung
  *
+ * @since 0.0.2
  */
-public class ModelComparisonStageTest {
+public class ModelComparisonStageTest { // NOCS no constructor for tests
 
     private final EntryCallNode nodeA = new EntryCallNode("A");
     private final EntryCallNode nodeAtest = new EntryCallNode("A");
@@ -56,7 +57,7 @@ public class ModelComparisonStageTest {
      * Setup test by creating input and output models.
      */
     @Before
-    public void setup() {
+    public void setUp() {
         this.expectedResult.setAdditionalEdgeCount(1);
         this.expectedResult.getAdditionalNodes().add(this.nodeDtest);
         this.expectedResult.getBaselineEdges().addAll(this.referenceModel.getEdges());
@@ -300,4 +301,3 @@ public class ModelComparisonStageTest {
     }
 
 }
-

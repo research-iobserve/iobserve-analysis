@@ -8,8 +8,8 @@
   </description>
 
 	<!-- exclude generated code -->
-	<exclude-pattern>.*/src-gen/.*</exclude-pattern>
-	<exclude-pattern>.*/test-gen/.*</exclude-pattern>
+	<exclude-pattern>.*/src/gen/.*</exclude-pattern>
+	<exclude-pattern>.*/test/gen/.*</exclude-pattern>
 
 	<!-- We'll use the following rulesets -->
 	<rule ref="rulesets/internal/all-java.xml">
@@ -21,6 +21,7 @@
 		<exclude name="AvoidPrefixingMethodParameters" />
 		<exclude name="AvoidThrowingNullPointerException" />
 		<exclude name="AvoidUsingVolatile" />
+		<exclude name="AssignmentInOperand"/>
 		<exclude name="BeanMembersShouldSerialize" />
 		<exclude name="CallSuperInConstructor" />
 		<exclude name="CommentSize" />

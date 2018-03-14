@@ -32,10 +32,21 @@ import org.eclipse.emf.ecore.util.EcoreUtil.EqualityHelper;
  *
  * @see EqualityHelper
  *
+ * @since 0.0.2
+ *
  */
 public class Neo4jEqualityHelper extends EqualityHelper {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * Create Neo4JEqualityHelper.
+     *
+     * TODO is this an architecture issue?
+     */
+    public Neo4jEqualityHelper() {
+        // empty default constructor
+    }
 
     /**
      * Returns whether <code>list1</code> and <code>list2</code> contain

@@ -49,7 +49,9 @@ public class VisualizationHttpTestServer extends NanoHTTPD {
 
     @Override
     public Response serve(final IHTTPSession session) {
-        VisualizationHttpTestServer.LOGGER.info("http - response [" + session.getUri() + "]");
+        if (VisualizationHttpTestServer.LOGGER.isInfoEnabled()) {
+            VisualizationHttpTestServer.LOGGER.info("http - response [" + session.getUri() + "]");
+        }
         if (session.getUri().equals(VisualizationHttpTestServer.URL)) {
             if (session.getMethod() == Method.POST) {
                 try {

@@ -17,6 +17,7 @@ package org.iobserve.monitoring.probe.servlet;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
@@ -144,7 +145,7 @@ public class SessionAndTraceRegistrationFilterForJPetstore implements Filter, IM
             final String method;
             final String path;
             final String sessionId;
-            final ArrayList<CallInformation> callInformations = new ArrayList<>();
+            final List<CallInformation> callInformations = new ArrayList<>();
 
             String query = null;
             String[] queryParameters = null;

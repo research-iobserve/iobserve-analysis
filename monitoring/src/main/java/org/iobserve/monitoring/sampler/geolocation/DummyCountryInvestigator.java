@@ -21,7 +21,14 @@ package org.iobserve.monitoring.sampler.geolocation;
  * @author unknown
  *
  */
-public class IDummyCountryInvestigator implements ICountryInvestigator {
+public class DummyCountryInvestigator implements ICountryInvestigator {
+
+    /**
+     * Dummy country investigator.
+     */
+    public DummyCountryInvestigator() {
+        // empty constructor
+    }
 
     /**
      * {@inheritDoc}

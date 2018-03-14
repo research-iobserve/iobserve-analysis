@@ -25,9 +25,10 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  * @author Reiner Jung
  *
+ * @since 0.0.2
  */
-@RunWith(Suite.class)
-@SuiteClasses({ ModelComparisonStageTest.class })
+@RunWith(Suite.class) // NOCS no constructor for tests
+@SuiteClasses({ ModelComparisonStageTest.class }) // NOCS array is necessary for test API
 public class TestSuiteFilter {
 
 }

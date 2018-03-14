@@ -24,6 +24,8 @@ import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
 /**
  * @author Reiner Jung
  *
+ * @since 0.0.2
+ *
  */
 public class ComparisonResult {
 
@@ -39,6 +41,13 @@ public class ComparisonResult {
 
     private int missingEdgeCount;
     private int additionalEdgeCount;
+
+    /**
+     * Default constructor.
+     */
+    public ComparisonResult() {
+        // empty
+    }
 
     public List<NodeDifference> getNodeDifferences() {
         return this.nodeDifferences;
