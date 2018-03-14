@@ -17,8 +17,6 @@ package org.iobserve.execution.actionscripts;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.execution.utils.ModelHelper;
@@ -28,6 +26,8 @@ import org.jclouds.compute.RunScriptOnNodesException;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Action script for migrating an assembly context from one cloud resource container group to
@@ -42,9 +42,10 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  *
  * @author Tobias Pöppke
  *
+ * @since 0.0.2
  */
 public class MigrateActionScript extends AbstractActionScript {
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(MigrateActionScript.class);
 
     private final MigrateAction action;
 
@@ -94,7 +95,7 @@ public class MigrateActionScript extends AbstractActionScript {
             return this.getFileContents(scriptURI);
         } catch (final IOException e) {
             // No script found, so we can not execute anything
-            MigrateActionScript.LOG.warn(
+            MigrateActionScript.LOGGER.warn(
                     String.format("Could not find script '%s'. No script will be executed.", scriptURI.toFileString()));
             return "";
         }

@@ -22,8 +22,15 @@ import org.palladiosimulator.pcm.allocation.AllocationFactory;
  * @author Reiner Jung
  *
  */
-public class AllocationDataFactory {
+public final class AllocationDataFactory {
     public static final Allocation ALLOCATION = AllocationDataFactory.createAllocation();
+
+    /**
+     * Empty factory.
+     */
+    private AllocationDataFactory() {
+        // empty factory constructor.
+    }
 
     private static Allocation createAllocation() {
         return AllocationFactory.eINSTANCE.createAllocation();

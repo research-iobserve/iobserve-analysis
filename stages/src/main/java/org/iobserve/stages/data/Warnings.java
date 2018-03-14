@@ -19,11 +19,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Collection of warnings.
+ *
  * @author Reiner Jung
  *
+ * @since 0.0.3
  */
 public class Warnings implements IErrorMessages {
     private List<String> warnings = new ArrayList<>();
+
+    /**
+     * Create a warnings result object.
+     */
+    public Warnings() {
+        // empty data class constructor
+    }
 
     @Override
     public final List<String> getMessages() {

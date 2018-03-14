@@ -52,7 +52,7 @@ public class CommunicationInstanceServiceTest { // NOCS test
      * Prepare test data.
      */
     @Before
-    public void setup() {
+    public void setUp() {
         this.communicationInstanceService = new CommunicationInstanceService();
 
         /** test data */

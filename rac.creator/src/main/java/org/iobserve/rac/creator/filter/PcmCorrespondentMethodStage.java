@@ -18,12 +18,13 @@ package org.iobserve.rac.creator.filter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
-import org.iobserve.rac.creator.data.ClassAndMethod;
-
 import kieker.common.record.flow.trace.operation.AbstractOperationEvent;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
+import org.iobserve.rac.creator.data.ClassAndMethod;
 
 /**
  *
@@ -34,6 +35,10 @@ import teetime.framework.OutputPort;
 public class PcmCorrespondentMethodStage extends AbstractConsumerStage<AbstractOperationEvent> {
 
     private final OutputPort<ClassAndMethod> outputPort = this.createOutputPort();
+
+    public PcmCorrespondentMethodStage() {
+        // empty default constructor
+    }
 
     public OutputPort<ClassAndMethod> getOutputPort() {
         return this.outputPort;

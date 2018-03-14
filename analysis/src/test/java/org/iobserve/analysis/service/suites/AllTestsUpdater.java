@@ -37,7 +37,7 @@ import fi.iki.elonen.NanoHTTPD;
 @RunWith(Suite.class) // NOCS test
 @SuiteClasses({ AllocationVisualizationStageTest.class, DeploymentVisualizationStageTest.class,
         UndeploymentVisualizationStageTest.class })
-public class AllTestsUpdater {
+public class AllTestsUpdater { // NOPMD all static, but test
     /** handler for http requests. */
     private static NanoHTTPD server; // NOCS initialized in setUpClass
 

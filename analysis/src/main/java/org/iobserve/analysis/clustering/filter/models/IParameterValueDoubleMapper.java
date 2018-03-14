@@ -33,5 +33,5 @@ public interface IParameterValueDoubleMapper {
      *
      * @return double number representing the value
      */
-    public double mapValue(String parameter, String value);
+    double mapValue(String parameter, String value);
 }

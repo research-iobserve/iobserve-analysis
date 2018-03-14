@@ -107,7 +107,9 @@ public class GraphFactory {
             acs.add(assemblyContext.getId());
         }
 
-        GraphFactory.LOGGER.info("Individual Assembly Contexts found in System Model: " + acs.size());
+        if (GraphFactory.LOGGER.isInfoEnabled()) {
+            GraphFactory.LOGGER.info("Individual Assembly Contexts found in System Model: " + acs.size());
+        }
     }
 
     private void extractAssemblyConnectors(final org.palladiosimulator.pcm.system.System sysModel) {
@@ -139,7 +141,9 @@ public class GraphFactory {
             acs.add(providedACID);
         }
 
-        GraphFactory.LOGGER.info("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
+        if (GraphFactory.LOGGER.isInfoEnabled()) {
+            GraphFactory.LOGGER.info("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
+        }
     }
 
     private void updatePrivacyLvl(final AssemblyConnectorPrivacy acp, final DataPrivacyLvl assemblyConnectorPrivacyLvl,
@@ -147,10 +151,11 @@ public class GraphFactory {
         // Check whether the AssemblyContext was found while extracting
         final AssemblyContext assemblyContext = this.assemblyContexts.get(assemblyContextID);
         if (assemblyContext == null) {
-            GraphFactory.LOGGER.error("The provided AssemblyContext (ID: " + assemblyContextID
-                    + ") form the AssemblyConnectorPrivacy (ID:" + acp.getId() + ") "
-                    + "was not found during the AssemblyContextExtraction");
-
+            if (GraphFactory.LOGGER.isErrorEnabled()) {
+                GraphFactory.LOGGER.error("The provided AssemblyContext (ID: " + assemblyContextID
+                        + ") form the AssemblyConnectorPrivacy (ID:" + acp.getId() + ") "
+                        + "was not found during the AssemblyContextExtraction");
+            }
             this.assemblyContexts.put(assemblyContextID, acp.getProvidingAssemblyContext_AssemblyConnector());
         }
 
@@ -173,8 +178,10 @@ public class GraphFactory {
             if (resourceContainer instanceof ResourceContainerPrivacy) {
                 this.resourceContainers.put(resourceContainer.getId(), (ResourceContainerPrivacy) resourceContainer);
             } else {
-                GraphFactory.LOGGER.error("A ResourceContainer (ID: " + resourceContainer.getId()
-                        + ") was found which has no privacy extention\n");
+                if (GraphFactory.LOGGER.isErrorEnabled()) {
+                    GraphFactory.LOGGER.error("A ResourceContainer (ID: " + resourceContainer.getId()
+                            + ") was found which has no privacy extention\n");
+                }
             }
         }
     }
@@ -191,15 +198,19 @@ public class GraphFactory {
             boolean correctIDs = true;
             final String resContainerID = resContainer.getId();
             if (!this.resourceContainers.containsKey(resContainerID)) {
-                GraphFactory.LOGGER.error("A unknown ResourceContainer (ID: " + resContainer.getId()
-                        + ") was found during allocation context analysis.\n");
+                if (GraphFactory.LOGGER.isErrorEnabled()) {
+                    GraphFactory.LOGGER.error("A unknown ResourceContainer (ID: " + resContainer.getId()
+                            + ") was found during allocation context analysis.\n");
+                }
                 correctIDs = false;
             }
 
             final String assemblyContextID = assemblyContext.getId();
             if (!this.assemblyContexts.containsKey(assemblyContextID)) {
-                GraphFactory.LOGGER.error("An unknown AssemblyContext (ID: " + assemblyContext.getId()
-                        + ") was found during allocation context analysis.\n");
+                if (GraphFactory.LOGGER.isErrorEnabled()) {
+                    GraphFactory.LOGGER.error("An unknown AssemblyContext (ID: " + assemblyContext.getId()
+                            + ") was found during allocation context analysis.\n");
+                }
                 correctIDs = false;
             }
 

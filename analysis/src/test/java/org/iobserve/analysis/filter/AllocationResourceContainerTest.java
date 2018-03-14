@@ -62,7 +62,7 @@ public class AllocationResourceContainerTest {
      * Initialize test data.
      */
     @BeforeClass
-    public static void setup() {
+    public static void setUp() {
 
         /** input allocation event */
     }

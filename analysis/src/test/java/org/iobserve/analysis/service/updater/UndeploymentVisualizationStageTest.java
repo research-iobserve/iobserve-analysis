@@ -45,17 +45,29 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
  * @author Josefine Wegert
  *
  */
-@RunWith(MockitoJUnitRunner.class)
-public class UndeploymentVisualizationStageTest { // NOCS test
+@RunWith(MockitoJUnitRunner.class) // NOCS tests do not need a constructor
+public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fields
+
+    /** data for generating test events. */
+    private static final long DEPLOY_TIME = 1;
+    private static final String SERVICE = "test-service";
+    private static final String CONTEXT = "/path/test";
+    private static final String DEPLOYMENT_ID = "service-01";
+
+    /** test parameters for stage under test. */
+    private static final String OUTPUT_PORT = "9090";
+    private static final String OUTPUT_HOSTNAME = "localhost";
+    private static final String SYSTEM_ID = "test_systemId";
+
+    private static final String TEST_NODE_ID = "test_nodeId";
+
+    /** test correspondent. */
+    private static Correspondent testCorrespondent;
+    private static Optional<Correspondent> optTestCorrespondent;
 
     /** stage under test. */
     private UndeploymentVisualizationStage undeploymentVisualizationStage;
 
-    /** test parameters for stage under test. */
-    private URL changelogURL;
-    private final String outputPort = "9090";
-    private final String outputHostname = "localhost";
-    private final String systemId = "test_systemId";
     @Mock
     private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
     @Mock
@@ -68,27 +80,12 @@ public class UndeploymentVisualizationStageTest { // NOCS test
     /** input events. */
     private final List<PCMUndeployedEvent> inputEvents = new ArrayList<>();
 
-    /** test event. */
-    private PCMUndeployedEvent undeployedEvent;
-
-    /** data for generating test events. */
-    private static final long DEPLOY_TIME = 1;
-    private static final String SERVICE = "test-service";
-    private static final String CONTEXT = "/path/test";
-    private static final String DEPLOYMENT_ID = "service-01";
-
-    /** test correspondent. */
-    private static Correspondent testCorrespondent;
-    private static Optional<Correspondent> optTestCorrespondent;
-
     /** test resource container. */
     private final List<ResourceContainer> testResourceContainers = new ArrayList<>();
-    private final String testNodeId = "test_nodeId";
     private ResourceContainer testResourceContainer;
 
     /** test assembly context. */
     private final List<AssemblyContext> testAssemblyContexts = new ArrayList<>();
-    private AssemblyContext testAssemblyContext;
 
     /**
      * Initialize test data and stub necessary method calls.
@@ -98,14 +95,15 @@ public class UndeploymentVisualizationStageTest { // NOCS test
      *
      */
     @Before
-    public void setup() throws MalformedURLException {
+    public void setUp() throws MalformedURLException {
 
-        this.changelogURL = new URL("http://" + this.outputHostname + ":" + this.outputPort + "/v1/systems/"
-                + this.systemId + "/changelogs");
+        final URL changelogURL = new URL("http://" + UndeploymentVisualizationStageTest.OUTPUT_HOSTNAME + ":"
+                + UndeploymentVisualizationStageTest.OUTPUT_PORT + "/v1/systems/"
+                + UndeploymentVisualizationStageTest.SYSTEM_ID + "/changelogs");
 
-        this.undeploymentVisualizationStage = new UndeploymentVisualizationStage(this.changelogURL, this.systemId,
-                this.mockedResourceContainerModelProvider, this.mockedAssemblyContextModelProvider,
-                this.mockedSystemModelGraphProvider);
+        this.undeploymentVisualizationStage = new UndeploymentVisualizationStage(changelogURL,
+                UndeploymentVisualizationStageTest.SYSTEM_ID, this.mockedResourceContainerModelProvider,
+                this.mockedAssemblyContextModelProvider, this.mockedSystemModelGraphProvider);
 
         /** test correspondent */
         UndeploymentVisualizationStageTest.testCorrespondent = CorrespondentFactory.newInstance("test.org.pcm.entity",
@@ -117,24 +115,24 @@ public class UndeploymentVisualizationStageTest { // NOCS test
         final String urlContext = UndeploymentVisualizationStageTest.CONTEXT.replaceAll("\\.", "/");
         final String url = "http://" + UndeploymentVisualizationStageTest.SERVICE + '/' + urlContext;
 
-        this.undeployedEvent = new PCMUndeployedEvent(UndeploymentVisualizationStageTest.SERVICE,
+        final PCMUndeployedEvent undeployedEvent = new PCMUndeployedEvent(UndeploymentVisualizationStageTest.SERVICE,
                 UndeploymentVisualizationStageTest.testCorrespondent);
 
-        this.undeployedEvent.setResourceContainer(this.testResourceContainer);
+        undeployedEvent.setResourceContainer(this.testResourceContainer);
 
         /** input events */
-        this.inputEvents.add(this.undeployedEvent);
+        this.inputEvents.add(undeployedEvent);
 
         /** test resource container */
         this.testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-        this.testResourceContainer.setId(this.testNodeId);
+        this.testResourceContainer.setId(UndeploymentVisualizationStageTest.TEST_NODE_ID);
         this.testResourceContainers.add(this.testResourceContainer);
 
         /** test assembly context */
-        this.testAssemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
-        this.testAssemblyContext.setId("test_serviceId");
-        this.testAssemblyContext.setEntityName("test_serviceName");
-        this.testAssemblyContexts.add(this.testAssemblyContext);
+        final AssemblyContext testAssemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+        testAssemblyContext.setId("test_serviceId");
+        testAssemblyContext.setEntityName("test_serviceName");
+        this.testAssemblyContexts.add(testAssemblyContext);
 
         // stubbing
         Mockito.when(this.mockedResourceContainerModelProvider.readOnlyComponentByName(ResourceContainer.class,

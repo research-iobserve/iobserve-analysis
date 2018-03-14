@@ -43,7 +43,7 @@ public class TInstanceTransformations extends AbstractConsumerStage<BehaviorMode
      * constructor.
      */
     public TInstanceTransformations() {
-        this.instances = null;
+        // empty constructor
     }
 
     @Override

@@ -17,9 +17,9 @@ package org.iobserve.planning.peropteryx;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is an abstract execution warpper for starting an headless PerOpteryx instance.
@@ -29,7 +29,7 @@ import org.eclipse.emf.common.util.URI;
  */
 public abstract class AbstractExecutionWrapper {
 
-    protected static final Logger LOG = LogManager.getLogger(ExecutionWrapper.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(ExecutionWrapper.class);
 
     private final URI inputModelDir;
     private final URI perOpteryxDir;
@@ -64,7 +64,7 @@ public abstract class AbstractExecutionWrapper {
             process = processBuilder.start();
             this.watch(process);
         } catch (IOException | InterruptedException e) {
-            AbstractExecutionWrapper.LOG
+            AbstractExecutionWrapper.LOGGER
                     .error("Could not start PerOpteryx executable process. Check the parameters and the log files!", e);
             return -1;
         }

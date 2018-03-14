@@ -75,6 +75,7 @@ public class MultiInputObservationConfiguration extends AbstractObservationConfi
      * @param featureToggle
      *            feature toggle
      * @throws ConfigurationException
+     *             on configuration errors
      */
     public MultiInputObservationConfiguration(final Configuration configuration,
             final ICorrespondence correspondenceModel, final IModelProvider<UsageModel> usageModelProvider,

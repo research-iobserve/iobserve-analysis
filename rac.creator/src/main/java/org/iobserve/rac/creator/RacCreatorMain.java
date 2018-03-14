@@ -66,6 +66,13 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
     private File repositoryFile;
 
     /**
+     * Create a new rac creator.
+     */
+    public RacCreatorMain() {
+        // empty constructor
+    }
+
+    /**
      * @param args
      *            command line arguments
      * @throws IOException

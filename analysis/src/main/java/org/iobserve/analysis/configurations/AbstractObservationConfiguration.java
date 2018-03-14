@@ -122,18 +122,18 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         this.recordSwitch = new RecordSwitch();
 
         /** allocation. */
-        if (featureToggle.getAllocationToggle()) {
+        if (featureToggle.isAllocationToggle()) {
             this.allocation = new AllocationStage(resourceEnvironmentModelProvider);
         }
 
         /** deployment. */
-        if (featureToggle.getDeploymentToggle()) {
+        if (featureToggle.isDeploymentToggle()) {
             this.deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
                     allocationModelProvider, systemModelProvider, correspondenceModel);
         }
 
         /** undeployment. */
-        if (featureToggle.getUndeploymentToggle()) {
+        if (featureToggle.isUndeploymentToggle()) {
             this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
                     allocationModelProvider, systemModelProvider, correspondenceModel);
         }
@@ -215,14 +215,14 @@ public abstract class AbstractObservationConfiguration extends Configuration {
         /** -- end plain clustering. */
 
         /** dispatch different monitoring data. */
-        if (featureToggle.getDeploymentToggle()) {
+        if (featureToggle.isDeploymentToggle()) {
             this.connectPorts(this.recordSwitch.getDeployedOutputPort(), this.deploymentStage.getDeployedInputPort());
         }
-        if (featureToggle.getUndeploymentToggle()) {
+        if (featureToggle.isUndeploymentToggle()) {
             this.connectPorts(this.recordSwitch.getUndeployedOutputPort(),
                     this.undeploymentStage.getUndeployedInputPort());
         }
-        if (featureToggle.getAllocationToggle()) {
+        if (featureToggle.isAllocationToggle()) {
             this.connectPorts(this.recordSwitch.getAllocationOutputPort(), this.allocation.getInputPort());
         }
 

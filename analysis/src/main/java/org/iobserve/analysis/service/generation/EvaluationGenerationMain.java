@@ -29,14 +29,14 @@ import org.iobserve.analysis.data.graph.GraphFactory;
 import org.iobserve.model.PCMModelHandler;
 
 /**
- * TODO move class into own project if this is still used.
+ * TODO move class into own project if this is still used. TODO convert to JCommander based program.
  *
  * @author unknown
  *
  */
 public final class EvaluationGenerationMain {
 
-    private static final Logger LOG = LogManager.getLogger(EvaluationGenerationMain.class);
+    private static final Logger LOGGER = LogManager.getLogger(EvaluationGenerationMain.class);
 
     private EvaluationGenerationMain() {
         // all static class
@@ -73,13 +73,15 @@ public final class EvaluationGenerationMain {
                     graphFactory.buildGraph(modelProviers);
                 }
             }
-        } catch (final Exception e) { // NOCS
+        } catch (final Exception e) { // NOCS NOPMD
             e.printStackTrace();
         }
     }
 
     private static void clearDirectory(final String fileURI) {
-        EvaluationGenerationMain.LOG.info("Clearing output folder: " + fileURI);
+        if (EvaluationGenerationMain.LOGGER.isInfoEnabled()) {
+            EvaluationGenerationMain.LOGGER.info("Clearing output folder: " + fileURI);
+        }
         final File outputDir = new File(fileURI);
 
         if (outputDir.exists()) {

@@ -67,7 +67,7 @@ public class AllocationNoResourceContainerTest {
      * Initialize test data.
      */
     @BeforeClass
-    public static void setup() {
+    public static void setUp() {
         /** optional test resource container without value */
         AllocationNoResourceContainerTest.optTestNullResourceContainer = Optional.ofNullable(null);
     }

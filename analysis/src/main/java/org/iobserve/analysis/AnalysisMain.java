@@ -149,12 +149,17 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
 
         try {
             /** URLs for sending updates to the deployment visualization. */
+            // TODO this should be moved to the visualization sinks
+            final String[] sinks = configuration.getStringArrayProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_SINK,
+                    ",");
 
-            final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                    this.containerManagementVisualizationBaseUrl, systemId, allocationModelProvider,
-                    systemModelProvider, resourceEnvironmentModelProvider);
+            if (sinks.length > 0) {
+                final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
+                        this.containerManagementVisualizationBaseUrl, systemId, allocationModelProvider,
+                        systemModelProvider, resourceEnvironmentModelProvider);
 
-            deploymentVisualization.initialize();
+                deploymentVisualization.initialize();
+            }
 
             return new AnalysisConfiguration(configuration, repositoryModelProvider, resourceEnvironmentModelProvider,
                     allocationModelProvider, systemModelProvider, usageModelProvider, correspondenceModel);

@@ -18,8 +18,8 @@ package org.iobserve.utility.tcp;
 import java.util.HashMap;
 import java.util.Map;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
+import kieker.common.logging.Log; // NOCS required die to dependency
+import kieker.common.logging.LogFactory; // NOCS required die to dependency
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.IRecordReceivedListener;
 import kieker.common.record.remotecontrol.ActivationEvent;
@@ -36,17 +36,22 @@ import org.junit.Test;
  *
  */
 public class TcpProbeControllerTest {
-    private static TcpProbeController tcpProbeController;
-    private static SingleSocketRecordReader tcpReader;
+
+    private static final Log LOGGER = LogFactory.getLog(TcpProbeControllerTest.class); // NOPMD
+                                                                                       // controller
+
     private static final int BUFFER_SIZE = 65535;
-    private static final Log LOG = LogFactory.getLog(TcpProbeControllerTest.class);
-    private static final String ARBITRARY_IP = "90.90.90.90";
-    private static final String LOCALHOST_IP = "127.0.0.1";
+    private static final String ARBITRARY_IP = "90.90.90.90"; // NOPMD do not code IP addresses
+    private static final String LOCALHOST_IP = "127.0.0.1"; // NOPMD do not code IP addresses
     private static final String TEST_HOST = "test.host";
-    private static TestListener listener;
 
     private static final int PORT = 9753;
     private static final String PATTERN = "test.pattern";
+
+    private static TcpProbeController tcpProbeController;
+    private static SingleSocketRecordReader tcpReader;
+
+    private static TestListener listener;
 
     /**
      * .
@@ -64,8 +69,15 @@ public class TcpProbeControllerTest {
         TcpProbeControllerTest.tcpProbeController = new TcpProbeController();
         TcpProbeControllerTest.listener = new TestListener();
         TcpProbeControllerTest.tcpReader = new SingleSocketRecordReader(TcpProbeControllerTest.PORT,
-                TcpProbeControllerTest.BUFFER_SIZE, TcpProbeControllerTest.LOG, TcpProbeControllerTest.listener);
+                TcpProbeControllerTest.BUFFER_SIZE, TcpProbeControllerTest.LOGGER, TcpProbeControllerTest.listener);
         new Thread(TcpProbeControllerTest.tcpReader).start();
+        try { // TODO we must wait until the reader is up. This is not a unit test. Either rewriter
+              // as unit test using powermock or transform into integration test
+            Thread.sleep(10000);
+        } catch (final InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -126,7 +138,8 @@ public class TcpProbeControllerTest {
      * @author Marc Adolf
      *
      */
-    private static class TestListener implements IRecordReceivedListener {
+    private static class TestListener implements IRecordReceivedListener { // NOCS private class, no
+                                                                           // constructor
         private final Map<String, Boolean> state = new HashMap<>();
 
         public Map<String, Boolean> getState() {

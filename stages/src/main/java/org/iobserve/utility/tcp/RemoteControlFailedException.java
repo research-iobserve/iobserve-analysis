@@ -20,19 +20,34 @@ package org.iobserve.utility.tcp;
  *
  * @author Marc Adolf
  *
+ * @since 0.0.3
+ *
  */
 public class RemoteControlFailedException extends Exception {
 
-    public RemoteControlFailedException() {
-    }
+    /**
+    *
+    */
+    private static final long serialVersionUID = 1L;
 
+    /**
+     * Create exception with new message.
+     *
+     * @param message
+     *            the message
+     */
     public RemoteControlFailedException(final String message) {
         super(message);
     }
 
     /**
+     * Create a chained exception.
      *
+     * @param e
+     *            previous exception
      */
-    private static final long serialVersionUID = 1L;
+    public RemoteControlFailedException(final Exception e) {
+        super(e);
+    }
 
 }

@@ -51,7 +51,7 @@ public class CommunicationServiceTest { // NOCS test
      * Prepare test data.
      */
     @Before
-    public void setup() {
+    public void setUp() {
 
         this.communicationService = new CommunicationService();
 

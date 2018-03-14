@@ -285,6 +285,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
             break;
         default:
             changelog.put(TIObserveUIServer.OPERATION, "DELETE");
+            break;
         }
 
         return changelog;
@@ -352,7 +353,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
 
             con.disconnect();
 
-        } catch (final Exception ex) { // NOCS
+        } catch (final Exception ex) { // NOCS NOPMD
             ex.printStackTrace();
         }
     }

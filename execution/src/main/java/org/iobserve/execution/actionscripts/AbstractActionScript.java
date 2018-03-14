@@ -23,8 +23,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
 import com.google.inject.Module;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.jclouds.ContextBuilder;
@@ -38,6 +36,8 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.CloudProvider;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class representing an execution script to be executed for a specific action.
@@ -49,7 +49,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  *
  */
 public abstract class AbstractActionScript {
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractActionScript.class);
 
     /** Data that is shared throughout the adaptation stage. */
     protected final AdaptationData data;

@@ -24,8 +24,16 @@ import org.neo4j.graphdb.Relationship;
  *
  * @author Lars Bluemke
  *
+ * @since 0.0.2
  */
 public class RelationshipComparator implements Comparator<Relationship> {
+
+    /**
+     * Create relationship comparator.
+     */
+    public RelationshipComparator() {
+        // empty constructor
+    }
 
     @Override
     public int compare(final Relationship o1, final Relationship o2) {

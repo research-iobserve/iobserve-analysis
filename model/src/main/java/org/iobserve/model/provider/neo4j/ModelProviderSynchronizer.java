@@ -28,10 +28,15 @@ import org.slf4j.LoggerFactory;
  * @author Lars Bluemke
  *
  */
-public class ModelProviderSynchronizer {
+public final class ModelProviderSynchronizer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelProviderSynchronizer.class);
+
     private static ConcurrentHashMap<Graph, ModelProvider<?>> locks = new ConcurrentHashMap<>();
+
+    private ModelProviderSynchronizer() {
+        // private constructor, utility class
+    }
 
     /**
      * Gets the lock for the graph database of the calling {@link ModelProvider}. Blocks if the lock
@@ -49,9 +54,11 @@ public class ModelProviderSynchronizer {
                 try {
                     graph.wait();
                 } catch (final InterruptedException e) {
-                    ModelProviderSynchronizer.LOGGER
-                            .error("Thread was interrupted before or while waiting for a notification to "
-                                    + "get the database lock.");
+                    if (ModelProviderSynchronizer.LOGGER.isErrorEnabled()) {
+                        ModelProviderSynchronizer.LOGGER
+                                .error("Thread was interrupted before or while waiting for a notification to "
+                                        + "get the database lock.");
+                    }
                 }
             }
             ModelProviderSynchronizer.locks.put(graph, modelProvider);

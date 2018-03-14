@@ -15,14 +15,14 @@
  ***************************************************************************/
 package org.iobserve.stages.tcp;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.stages.data.Alarms;
 import org.iobserve.stages.data.IErrorMessages;
 import org.iobserve.utility.tcp.RemoteControlFailedException;
 import org.iobserve.utility.tcp.TcpProbeController;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * Receives {@link AbstractTcpControlEvent control events}, processes them and in case of error

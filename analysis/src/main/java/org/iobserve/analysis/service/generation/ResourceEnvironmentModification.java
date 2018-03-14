@@ -57,7 +57,10 @@ public class ResourceEnvironmentModification {
             final ResourceContainer removedResCon = resourceContainers.remove(randomIndex);
             removedResourceContainers.add(removedResCon);
 
-            ResourceEnvironmentModification.LOGGER.info("REMOVING: \tResourceContainer: \t" + removedResCon.getId());
+            if (ResourceEnvironmentModification.LOGGER.isInfoEnabled()) {
+                ResourceEnvironmentModification.LOGGER
+                        .info("REMOVING: \tResourceContainer: \t" + removedResCon.getId());
+            }
         }
 
         return removedResourceContainers;

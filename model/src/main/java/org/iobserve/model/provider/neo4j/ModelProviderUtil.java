@@ -78,7 +78,11 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  * @author Lars Bluemke
  *
  */
-public class ModelProviderUtil {
+public final class ModelProviderUtil {
+
+    private ModelProviderUtil() {
+        // private utility class
+    }
 
     /**
      * Based on a certain component's URI and a list of references to nodes which possibly represent

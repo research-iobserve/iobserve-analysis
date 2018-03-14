@@ -132,8 +132,10 @@ class CorrespondenceModelImpl implements ICorrespondence {
 
     @Override
     public Optional<Correspondent> getCorrespondent(final String classSig, final String operationSig) {
-        CorrespondenceModelImpl.LOGGER.debug(String.format(
-                "Try to get correspondence for classSig= " + classSig + ", operationSig= " + operationSig + "..."));
+        if (CorrespondenceModelImpl.LOGGER.isDebugEnabled()) {
+            CorrespondenceModelImpl.LOGGER.debug(String.format(
+                    "Try to get correspondence for classSig= " + classSig + ", operationSig= " + operationSig + "..."));
+        }
 
         // assert parameters are not null
         if (classSig == null || operationSig == null) {
@@ -154,14 +156,19 @@ class CorrespondenceModelImpl implements ICorrespondence {
         if (correspondent == null) {
             final PcmEntityCorrespondent pcmEntityCorrespondent = this.getPcmEntityCorrespondent(classSig);
             if (pcmEntityCorrespondent == null) {
-                CorrespondenceModelImpl.LOGGER.info("Mapping not available for class signature: " + classSig);
+                if (CorrespondenceModelImpl.LOGGER.isInfoEnabled()) {
+                    CorrespondenceModelImpl.LOGGER.info("Mapping not available for class signature: " + classSig);
+                }
                 return ICorrespondence.NULL_CORRESPONDENZ;
             }
 
             final PcmOperationSignature pcmOperationSignature = this.getPcmOperationSignature(pcmEntityCorrespondent,
                     operationSig);
             if (pcmOperationSignature == null) {
-                CorrespondenceModelImpl.LOGGER.info("Mapping not available for operation signature: " + operationSig);
+                if (CorrespondenceModelImpl.LOGGER.isInfoEnabled()) {
+                    CorrespondenceModelImpl.LOGGER
+                            .info("Mapping not available for operation signature: " + operationSig);
+                }
 
                 return ICorrespondence.NULL_CORRESPONDENZ;
             }

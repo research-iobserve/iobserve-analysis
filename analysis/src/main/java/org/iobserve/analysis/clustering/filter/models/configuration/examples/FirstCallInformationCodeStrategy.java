@@ -28,7 +28,7 @@ import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentat
  */
 public class FirstCallInformationCodeStrategy implements IRepresentativeStrategy {
 
-    public FirstCallInformationCodeStrategy() {
+    public FirstCallInformationCodeStrategy() { // NOCS empty constructor
         // empty constructor
     }
 

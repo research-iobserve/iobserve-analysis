@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
-import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,8 +40,9 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
  *
  * @author Lars Bluemke
  *
+ * @since 0.0.2
  */
-public class UsageModelProviderTest implements IModelProviderTest {
+public class UsageModelProviderTest implements IModelProviderTest { // NOCS no constructor in test
     private static final File GRAPH_DIR = new File("./testdb");
 
     private static Graph graph = new GraphLoader(UsageModelProviderTest.GRAPH_DIR).createUsageModelGraph();
@@ -182,7 +180,7 @@ public class UsageModelProviderTest implements IModelProviderTest {
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final UsageModel writtenModel = testModelBuilder.getUsageModel();
         final UsageScenario writtenScenario = writtenModel.getUsageScenario_UsageModel().get(0);
-        List<EObject> readReferencingComponents;
+        final List<EObject> readReferencingComponents;
 
         modelProvider.createComponent(writtenModel);
 
