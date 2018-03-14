@@ -81,7 +81,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
                 try {
                     return o1.getCanonicalFile().compareTo(o2.getCanonicalFile());
                 } catch (final IOException e) {
-                    Dir2RecordsFilter.LOGGER.error("Exception while getting canonical file name", e);
+                    Dir2RecordsFilter.LOGGER.error("Exception while getting canonical file name", e); // NOPMD
                     return 0;
                 }
             }

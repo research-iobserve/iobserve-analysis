@@ -18,6 +18,7 @@ package org.iobserve.rac.creator;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public class ModelMappingReader {
      * Create a reader for model mappings.
      *
      * @param mappingFile
-     *            a hfile handle for the mapping file
+     *            a file handle for the mapping file
      */
     public ModelMappingReader(final File mappingFile) {
         this.mappingFile = mappingFile;
@@ -62,7 +63,7 @@ public class ModelMappingReader {
             }
             in.close();
             return systemMapping;
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             e.printStackTrace();
             return null;
         }

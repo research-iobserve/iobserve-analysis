@@ -74,13 +74,17 @@ public final class PlanningMain {
         final CommandLine commandLine;
         try {
             for (final String arg : args) {
-                PlanningMain.LOGGER.info("arg: " + arg);
+                if (PlanningMain.LOGGER.isInfoEnabled()) {
+                    PlanningMain.LOGGER.info("arg: " + arg);
+                }
             }
             commandLine = parser.parse(PlanningMain.createOptions(), args);
             workingDir = commandLine.getOptionValue(PlanningMain.INPUT_WORKING_DIR_OPTION);
             perOpteryxDir = commandLine.getOptionValue(PlanningMain.PEROPTERYX_DIR_OPTION);
 
-            PlanningMain.LOGGER.info("Working dir: " + workingDir + ", PerOpteryx dir: " + perOpteryxDir);
+            if (PlanningMain.LOGGER.isInfoEnabled()) {
+                PlanningMain.LOGGER.info("Working dir: " + workingDir + ", PerOpteryx dir: " + perOpteryxDir);
+            }
         } catch (final ParseException exp) {
             // LOG.error("CLI error: " + exp.getMessage());
             final HelpFormatter formatter = new HelpFormatter();
@@ -89,17 +93,21 @@ public final class PlanningMain {
         }
 
         final URI modelURI = URI.createFileURI(workingDir);
-        PlanningMain.LOGGER.info("modelURI: " + modelURI);
+        if (PlanningMain.LOGGER.isInfoEnabled()) {
+            PlanningMain.LOGGER.info("modelURI: " + modelURI);
+        }
 
         final URI perOpteryxURI = URI.createFileURI(perOpteryxDir);
-        PlanningMain.LOGGER.info("perOpteryxURI: " + perOpteryxURI);
-
-        PlanningMain.LOGGER.info("lqnsURI: " + perOpteryxURI);
-
+        if (PlanningMain.LOGGER.isInfoEnabled()) {
+            PlanningMain.LOGGER.info("perOpteryxURI: " + perOpteryxURI);
+            PlanningMain.LOGGER.info("lqnsURI: " + perOpteryxURI);
+        }
         PalladioEclipseEnvironment.INSTANCE.setup();
 
         if (!commandLine.hasOption(PlanningMain.CREATE_RESOURCEENVIRONMENT_OPTION)) {
-            PlanningMain.LOGGER.info("Executing optimization...");
+            if (PlanningMain.LOGGER.isInfoEnabled()) {
+                PlanningMain.LOGGER.info("Executing optimization...");
+            }
 
             final AdaptationData adaptationData = new AdaptationData();
             adaptationData.setRuntimeModelURI(modelURI);
@@ -126,16 +134,24 @@ public final class PlanningMain {
             // }
 
             if (result == 0) {
-                PlanningMain.LOGGER.info("Optimization was successful.");
+                if (PlanningMain.LOGGER.isInfoEnabled()) {
+                    PlanningMain.LOGGER.info("Optimization was successful.");
+                }
             } else {
-                PlanningMain.LOGGER.info("Optimization failed.");
+                if (PlanningMain.LOGGER.isInfoEnabled()) {
+                    PlanningMain.LOGGER.info("Optimization failed.");
+                }
             }
         } else {
-            PlanningMain.LOGGER.info("Creating ResourceEnvironment...");
+            if (PlanningMain.LOGGER.isInfoEnabled()) {
+                PlanningMain.LOGGER.info("Creating ResourceEnvironment...");
+            }
             final PCMModelHandler modelHandler = new PCMModelHandler(new File(workingDir));
             ModelHelper.fillResourceEnvironmentFromCloudProfile(
                     org.eclipse.emf.common.util.URI.createFileURI(workingDir), modelHandler);
-            PlanningMain.LOGGER.info("ResourceEnvironment successfully created.");
+            if (PlanningMain.LOGGER.isInfoEnabled()) {
+                PlanningMain.LOGGER.info("ResourceEnvironment successfully created.");
+            }
         }
     }
 

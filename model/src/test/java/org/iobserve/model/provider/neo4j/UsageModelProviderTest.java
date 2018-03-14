@@ -40,8 +40,9 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
  *
  * @author Lars Bluemke
  *
+ * @since 0.0.2
  */
-public class UsageModelProviderTest implements IModelProviderTest {
+public class UsageModelProviderTest implements IModelProviderTest { // NOCS no constructor in test
     private static final File GRAPH_DIR = new File("./testdb");
 
     private static Graph graph = new GraphLoader(UsageModelProviderTest.GRAPH_DIR).createUsageModelGraph();

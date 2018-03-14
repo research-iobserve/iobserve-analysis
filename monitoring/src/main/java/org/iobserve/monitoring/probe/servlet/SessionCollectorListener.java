@@ -42,6 +42,13 @@ public class SessionCollectorListener implements HttpSessionListener {
     /** Kieker time source. */
     private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
 
+    /**
+     * Create a session collector listener.
+     */
+    public SessionCollectorListener() {
+        // empty constructor
+    }
+
     @Override
     public void sessionCreated(final HttpSessionEvent event) {
         if (this.monitoringCtrl.isMonitoringEnabled()) {

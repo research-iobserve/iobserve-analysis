@@ -189,12 +189,10 @@ public class LoopBranchModelCreator {
                 && !sequenceElement1.getClassSignature().equals(sequenceElement2.getClassSignature())
                 || !sequenceElement1.getOperationSignature().equals(sequenceElement2.getOperationSignature())) {
             return false;
-        } else if (sequenceElement1.getClass().equals(BranchElement.class) // NOCS
-                && sequenceElement2.getClass().equals(BranchElement.class)
-                && !this.doBranchElementsMatch((BranchElement) sequenceElement1, (BranchElement) sequenceElement2)) {
-            return false;
         } else {
-            return true;
+            return !(sequenceElement1.getClass().equals(BranchElement.class) // NOCS
+                    && sequenceElement2.getClass().equals(BranchElement.class)
+                    && !this.doBranchElementsMatch((BranchElement) sequenceElement1, (BranchElement) sequenceElement2));
         }
     }
 

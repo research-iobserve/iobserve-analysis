@@ -25,6 +25,7 @@
     <allow pkg="org.w3c.dom"/>
     <allow pkg="org.xml.sax"/>
     <allow pkg="fi.iki.elonen"/>
+    <allow pkg="org.jclouds"/>
 
 	<allow pkg="weka"/>
     

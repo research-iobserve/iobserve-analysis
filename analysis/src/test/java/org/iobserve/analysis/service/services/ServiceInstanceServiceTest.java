@@ -69,7 +69,7 @@ public class ServiceInstanceServiceTest { // NOCS test
      * Prepare test data.
      */
     @Before
-    public void setup() {
+    public void setUp() {
 
         this.serviceInstanceService = new ServiceInstanceService();
 

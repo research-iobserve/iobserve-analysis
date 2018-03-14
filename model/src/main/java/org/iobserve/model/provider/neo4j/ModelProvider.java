@@ -124,8 +124,10 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         } else if (clazz.equals(UsageModel.class)) {
             return graphLoader.cloneNewUsageModelGraphVersion();
         } else {
-            ModelProvider.LOGGER.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
-                    + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
+            if (ModelProvider.LOGGER.isWarnEnabled()) {
+                ModelProvider.LOGGER.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
+                        + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
+            }
             return null;
         }
     }
@@ -140,7 +142,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         ModelProviderSynchronizer.getLock(this);
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final HashSet<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
+            final Set<EObject> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component,
                     new HashSet<>());
             this.createNodes(component, containmentsAndDatatypes, new HashMap<>());
             tx.success();
@@ -159,8 +161,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Initially empty set of all containments and data types
      * @return The passed containmentsAndDatatypes set now filled with containments and data types
      */
-    private HashSet<EObject> getAllContainmentsAndDatatypes(final EObject component,
-            final HashSet<EObject> containmentsAndDatatypes) {
+    private Set<EObject> getAllContainmentsAndDatatypes(final EObject component,
+            final Set<EObject> containmentsAndDatatypes) {
         if (!containmentsAndDatatypes.contains(component)) {
             containmentsAndDatatypes.add(component);
 
@@ -199,8 +201,8 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            sure nodes are written just once
      * @return Root node of the component's graph
      */
-    private Node createNodes(final EObject component, final HashSet<EObject> containmentsAndDatatypes,
-            final HashMap<EObject, Node> objectsToCreatedNodes) {
+    private Node createNodes(final EObject component, final Set<EObject> containmentsAndDatatypes,
+            final Map<EObject, Node> objectsToCreatedNodes) {
         // Create a label representing the type of the component
         final Label label = Label.label(ModelProviderUtil.getTypeName(component.eClass()));
         Node node = null;
@@ -315,8 +317,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
-            final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
-                    new HashSet<Node>());
+            final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node, new HashSet<Node>());
             component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             tx.success();
         }
@@ -382,8 +383,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            Initially empty set of all containments and data types
      * @return The passed containmentsAndDatatypes set now filled with containments and data types
      */
-    private HashSet<Node> getAllContainmentsAndDatatypes(final Node node,
-            final HashSet<Node> containmentsAndDatatypes) {
+    private Set<Node> getAllContainmentsAndDatatypes(final Node node, final Set<Node> containmentsAndDatatypes) {
 
         if (!containmentsAndDatatypes.contains(node)) {
             containmentsAndDatatypes.add(node);
@@ -411,7 +411,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *            are instantiated just once
      * @return The root
      */
-    @SuppressWarnings("unchecked")
     private EObject readNodes(final Node node, final Set<Node> containmentsAndDatatypes,
             final Map<Node, EObject> nodesToCreatedObjects) {
         final EObject component;
@@ -421,87 +420,114 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             final Label label = ModelProviderUtil.getFirstLabel(node.getLabels());
             component = ModelProviderUtil.instantiateEObject(label.name());
 
-            // Load attribute values from the node
-            final Iterator<Map.Entry<String, Object>> i = node.getAllProperties().entrySet().iterator();
-            while (i.hasNext()) {
-                final Entry<String, Object> property = i.next();
-                final EAttribute attr = (EAttribute) component.eClass().getEStructuralFeature(property.getKey());
-
-                // attr == null for the emfUri property stored in the graph
-                if (attr != null) {
-                    final Object value = ModelProviderUtil.instantiateAttribute(
-                            attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
-
-                    if (value != null) {
-                        component.eSet(attr, value);
-                    }
-                }
-            }
+            this.loadAttributes(component, node.getAllProperties());
 
             // Already register unfinished components because there might be circles
             nodesToCreatedObjects.putIfAbsent(node, component);
 
-            // Load related nodes representing referenced components
-            for (final Relationship rel : ModelProviderUtil
-                    .sortRelsByPosition(node.getRelationships(Direction.OUTGOING))) {
-                final Node endNode = rel.getEndNode();
-                final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
-                final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
-                Object refReprensation = component.eGet(ref);
-
-                // For partial reading: Only load containments and data types of the root
-                if (containmentsAndDatatypes.contains(endNode)) {
-
-                    if (refReprensation instanceof EList<?>) {
-                        final EObject endComponent = this.readNodes(endNode, containmentsAndDatatypes,
-                                nodesToCreatedObjects);
-                        ((EList<EObject>) refReprensation).add(endComponent);
-
-                    } else {
-                        refReprensation = this.readNodes(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
-                        component.eSet(ref, refReprensation);
-                    }
-
-                } else {
-                    // Create proxy EObject here...
-                    final Label endLabel = ModelProviderUtil.getFirstLabel(endNode.getLabels());
-                    final EObject endComponent = ModelProviderUtil.instantiateEObject(endLabel.name());
-
-                    if (endComponent != null) {
-                        final URI endUri = URI.createURI(endNode.getProperty(ModelProvider.EMF_URI).toString());
-                        ((BasicEObjectImpl) endComponent).eSetProxyURI(endUri);
-
-                        // Load attribute values from the node
-                        final Iterator<Map.Entry<String, Object>> i2 = endNode.getAllProperties().entrySet().iterator();
-                        while (i2.hasNext()) {
-                            final Entry<String, Object> property = i2.next();
-                            final EAttribute attr = (EAttribute) endComponent.eClass()
-                                    .getEStructuralFeature(property.getKey());
-
-                            // attr == null for the emfUri property stored in the graph
-                            if (attr != null) {
-                                final Object value = ModelProviderUtil.instantiateAttribute(
-                                        attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
-
-                                if (value != null) {
-                                    endComponent.eSet(attr, value);
-                                }
-                            }
-                        }
-
-                        if (refReprensation instanceof EList<?>) {
-                            ((EList<EObject>) refReprensation).add(endComponent);
-                        } else {
-                            component.eSet(ref, endComponent);
-                        }
-                    }
-                }
-            }
+            this.loadRelatedNodes(component, node, containmentsAndDatatypes, nodesToCreatedObjects);
         } else {
             component = nodesToCreatedObjects.get(node);
         }
 
         return component;
+    }
+
+    /**
+     * Load related nodes representing referenced components.
+     *
+     * @param component
+     *            component the other components are related to
+     * @param node
+     *            the corresponding node to the component
+     * @param containmentsAndDatatypes
+     *            datatypes
+     * @param nodesToCreatedObjects
+     *            additional nodes
+     */
+    @SuppressWarnings("unchecked")
+    private void loadRelatedNodes(final EObject component, final Node node, final Set<Node> containmentsAndDatatypes,
+            final Map<Node, EObject> nodesToCreatedObjects) {
+        for (final Relationship rel : ModelProviderUtil.sortRelsByPosition(node.getRelationships(Direction.OUTGOING))) {
+            final Node endNode = rel.getEndNode();
+            final String relName = (String) rel.getProperty(ModelProvider.REF_NAME);
+            final EReference ref = (EReference) component.eClass().getEStructuralFeature(relName);
+            Object refReprensation = component.eGet(ref);
+
+            // For partial reading: Only load containments and data types of the root
+            if (containmentsAndDatatypes.contains(endNode)) {
+
+                if (refReprensation instanceof EList<?>) {
+                    final EObject endComponent = this.readNodes(endNode, containmentsAndDatatypes,
+                            nodesToCreatedObjects);
+                    ((EList<EObject>) refReprensation).add(endComponent);
+
+                } else {
+                    refReprensation = this.readNodes(endNode, containmentsAndDatatypes, nodesToCreatedObjects);
+                    component.eSet(ref, refReprensation);
+                }
+
+            } else {
+                // Create proxy EObject here...
+                final Label endLabel = ModelProviderUtil.getFirstLabel(endNode.getLabels());
+                final EObject endComponent = ModelProviderUtil.instantiateEObject(endLabel.name());
+
+                if (endComponent != null) {
+                    final URI endUri = URI.createURI(endNode.getProperty(ModelProvider.EMF_URI).toString());
+                    ((BasicEObjectImpl) endComponent).eSetProxyURI(endUri);
+
+                    // Load attribute values from the node
+                    final Iterator<Map.Entry<String, Object>> i2 = endNode.getAllProperties().entrySet().iterator();
+                    while (i2.hasNext()) {
+                        final Entry<String, Object> property = i2.next();
+                        final EAttribute attr = (EAttribute) endComponent.eClass()
+                                .getEStructuralFeature(property.getKey());
+
+                        // attr == null for the emfUri property stored in the graph
+                        if (attr != null) {
+                            final Object value = ModelProviderUtil.instantiateAttribute(
+                                    attr.getEAttributeType().getInstanceClass(), property.getValue().toString());
+
+                            if (value != null) {
+                                endComponent.eSet(attr, value);
+                            }
+                        }
+                    }
+
+                    if (refReprensation instanceof EList<?>) {
+                        ((EList<EObject>) refReprensation).add(endComponent);
+                    } else {
+                        component.eSet(ref, endComponent);
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Load attribute values from the node.
+     *
+     * @param component
+     *            component where the attributes are attached to
+     * @param properties
+     *            the attributes to scan for values
+     */
+    private void loadAttributes(final EObject component, final Map<String, Object> properties) {
+        for (final Entry<String, Object> property : properties.entrySet()) {
+
+            final EAttribute attr = (EAttribute) component.eClass().getEStructuralFeature(property.getKey());
+
+            // attr == null for the emfUri property stored in the graph
+            if (attr != null) {
+                final Object value = ModelProviderUtil.instantiateAttribute(attr.getEAttributeType().getInstanceClass(),
+                        property.getValue().toString());
+
+                if (value != null) {
+                    component.eSet(attr, value);
+                }
+            }
+        }
     }
 
     /*
@@ -514,7 +540,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                     .findNodes(Label.label(clazz.getSimpleName()));
-            final LinkedList<String> ids = new LinkedList<>();
+            final List<String> ids = new LinkedList<>();
 
             while (nodes.hasNext()) {
                 final Node n = nodes.next();
@@ -557,7 +583,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                         .findNodes(Label.label(clazz.getSimpleName()));
                 if (nodes.hasNext()) {
                     final Node node = nodes.next();
-                    final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
+                    final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node,
                             new HashSet<Node>());
                     component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
                 }
@@ -607,7 +633,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
             if (inRels.hasNext()) {
                 final Node endNode = inRels.next().getStartNode();
-                final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(endNode,
                         new HashSet<Node>());
                 component = this.readNodes(endNode, containmentsAndDatatypes, new HashMap<Node, EObject>());
             }
@@ -651,7 +677,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
             for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.REFERENCES)) {
                 final Node startNode = inRel.getStartNode();
-                final HashSet<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
+                final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
                         new HashSet<Node>());
                 final EObject component = this.readNodes(startNode, containmentsAndDatatypes,
                         new HashMap<Node, EObject>());
@@ -675,7 +701,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
 
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         final Label label = Label.label(clazz.getSimpleName());
-        final HashSet<EObject> containmentsAndDatatypes;
+        final Set<EObject> containmentsAndDatatypes;
         final Node node;
 
         if (idAttr != null) {
@@ -697,14 +723,16 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 tx.success();
             }
         } else {
-            ModelProvider.LOGGER.warn("Updated component needs to have an id or be of type Allocation, Repository, "
-                    + "ResourceEnvironment, System or UsageModel");
+            if (ModelProvider.LOGGER.isWarnEnabled()) {
+                ModelProvider.LOGGER.warn("Updated component needs to have an id or be of type Allocation, Repository, "
+                        + "ResourceEnvironment, System or UsageModel");
+            }
         }
 
         ModelProviderSynchronizer.releaseLock(this);
     }
 
-    private Node updateNodes(final EObject component, final Node node, final HashSet<EObject> containmentsAndDatatypes,
+    private Node updateNodes(final EObject component, final Node node, final Set<EObject> containmentsAndDatatypes,
             final Set<EObject> updatedComponents) {
 
         if (!updatedComponents.contains(component)) {
@@ -741,7 +769,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             if (containmentsAndDatatypes.contains(component)) {
 
                 // Create list of node's outgoing relationships
-                final LinkedList<Relationship> outRels = new LinkedList<>();
+                final List<Relationship> outRels = new LinkedList<>();
                 node.getRelationships(Direction.OUTGOING).forEach(outRels::add);
 
                 for (final EReference ref : component.eClass().getEAllReferences()) {
@@ -911,8 +939,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 this.markAccessibleNodes(rel.getEndNode());
             }
         }
-
-        return;
     }
 
     /**
@@ -1005,8 +1031,6 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
             // node has already been deleted on another path
             e.printStackTrace();
         }
-
-        return;
     }
 
     /**

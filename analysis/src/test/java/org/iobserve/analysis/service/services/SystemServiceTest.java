@@ -45,7 +45,7 @@ public class SystemServiceTest { // NOCS test
      * Test setup.
      */
     @Before
-    public void setup() {
+    public void setUp() {
 
         this.systemService = new SystemService();
 

@@ -206,8 +206,10 @@ public class PcmUsageModelBuilder {
                         .getCorrespondent(branchElement.getClassSignature(), operationSplit[operationSplit.length - 1]);
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                    PcmUsageModelBuilder.LOGGER.debug("Usage: Found Correspondent: {}",
-                            correspondent.getPcmEntityName() + " " + correspondent.getPcmOperationName());
+                    if (PcmUsageModelBuilder.LOGGER.isDebugEnabled()) {
+                        PcmUsageModelBuilder.LOGGER.debug("Usage: Found Correspondent: {}",
+                                correspondent.getPcmEntityName() + " " + correspondent.getPcmOperationName());
+                    }
                     eSysCall = UsageModelFactory.createEntryLevelSystemCall(this.repositoryLookupModel, correspondent);
                 }
                 if (eSysCall != null) {

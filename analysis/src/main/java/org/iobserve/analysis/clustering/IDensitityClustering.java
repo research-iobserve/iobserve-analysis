@@ -39,6 +39,6 @@ public interface IDensitityClustering extends IClustering {
      *         to each cluster. Every instance is only assigned to one cluster.
      */
     @Override
-    public Map<Integer, List<Pair<Instance, Double>>> clusterInstances(Instances instances);
+    Map<Integer, List<Pair<Instance, Double>>> clusterInstances(Instances instances);
 
 }

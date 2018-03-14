@@ -38,8 +38,10 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
  *
  * @author Lars Bluemke
  *
+ * @since 0.0.2
  */
-public class AllocationModelProviderTest implements IModelProviderTest {
+public class AllocationModelProviderTest implements IModelProviderTest { // NOCS no constructor in
+                                                                         // test
     private static final File GRAPH_DIR = new File("./testdb");
 
     private static Graph graph = new GraphLoader(AllocationModelProviderTest.GRAPH_DIR).createAllocationModelGraph();

@@ -130,7 +130,7 @@ public interface IModelProvider<T extends EObject> {
      *            Data type of the root component
      * @return The read component
      */
-    public T readOnlyRootComponent(final Class<T> clazz);
+    T readOnlyRootComponent(final Class<T> clazz);
 
     /**
      * Reads a specified component from the provider's graph without locking it for other providers.
@@ -141,7 +141,7 @@ public interface IModelProvider<T extends EObject> {
      *            Id of component to be read
      * @return The read component
      */
-    public T readOnlyComponentById(final Class<T> clazz, final String id);
+    T readOnlyComponentById(final Class<T> clazz, final String id);
 
     /**
      * Reads components referencing to the specified component from the provider's graph without
@@ -153,7 +153,7 @@ public interface IModelProvider<T extends EObject> {
      *            Id of the referenced component
      * @return The referencing components
      */
-    public List<EObject> readOnlyReferencingComponentsById(final Class<?> clazz, final String id);
+    List<EObject> readOnlyReferencingComponentsById(final Class<?> clazz, final String id);
 
     /**
      * Reads components from the provider's graph by their entityName without locking it for other
@@ -167,6 +167,6 @@ public interface IModelProvider<T extends EObject> {
      *            EntityName of the component(s) to be read
      * @return List of the read component(s)
      */
-    public List<T> readOnlyComponentByName(final Class<T> clazz, final String entityName);
+    List<T> readOnlyComponentByName(final Class<T> clazz, final String entityName);
 
 }

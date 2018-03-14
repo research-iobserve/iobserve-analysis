@@ -42,11 +42,15 @@ import org.slf4j.LoggerFactory;
 public class TcpProbeController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TcpProbeController.class);
     private static final int CONN_TIMEOUT_IN_MS = 100;
+
     /**
      * Saves already established connections, the key pattern is "ip:port".
      */
     private final Map<String, TcpControlConnection> knownAddresses = new HashMap<>();
 
+    /**
+     * Create the probe controller.
+     */
     public TcpProbeController() {
         // empty default constructor
     }

@@ -37,8 +37,11 @@ import org.palladiosimulator.pcm.repository.RepositoryFactory;
  * Test cases for the model provider using a repository model.
  *
  * @author Lars Bluemke RepositoryModelProviderTest.GRAPH_DIR
+ *
+ * @since 0.0.2
  */
-public class RepositoryModelProviderTest implements IModelProviderTest {
+public class RepositoryModelProviderTest implements IModelProviderTest { // NOCS no constructor in
+                                                                         // test
     private static final File GRAPH_DIR = new File("./testdb");
 
     private static Graph graph = new GraphLoader(RepositoryModelProviderTest.GRAPH_DIR).createRepositoryModelGraph();

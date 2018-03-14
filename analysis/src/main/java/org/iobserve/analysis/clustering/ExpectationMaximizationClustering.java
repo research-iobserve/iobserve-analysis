@@ -50,8 +50,10 @@ public class ExpectationMaximizationClustering implements IDensitityClustering {
     @Override
     public Map<Integer, List<Pair<Instance, Double>>> clusterInstances(final Instances instances) {
         final EM emClustering = new EM();
-        ExpectationMaximizationClustering.LOGGER
-                .info("Computing the EM-Clustering with following options: " + emClustering.getOptions());
+        if (ExpectationMaximizationClustering.LOGGER.isInfoEnabled()) {
+            ExpectationMaximizationClustering.LOGGER
+                    .info("Computing the EM-Clustering with following options: " + emClustering.getOptions());
+        }
         final Map<Integer, List<Pair<Instance, Double>>> resultMap = new HashMap<>(); // NOPMD
         try {
             emClustering.buildClusterer(instances);

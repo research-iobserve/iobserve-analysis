@@ -37,8 +37,10 @@ import org.palladiosimulator.pcm.system.System;
  *
  * @author Lars Bluemke
  *
+ * @since 0.0.2
+ *
  */
-public class SystemModelProviderTest implements IModelProviderTest {
+public class SystemModelProviderTest implements IModelProviderTest { // NOCS no constructor in test
 
     private static final File GRAPH_DIR = new File("./testdb");
 

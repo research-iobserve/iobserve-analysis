@@ -242,7 +242,7 @@ public class SystemModification {
 
         // Build sig part from Prefix + Interface ID
         for (final OperationProvidedRole provInterface : provInterfaces) {
-            sb.append(";p_" + provInterface.getProvidedInterface__OperationProvidedRole().getId());
+            sb.append(";p_").append(provInterface.getProvidedInterface__OperationProvidedRole().getId());
         }
 
         // Calculate Requiring Signature
@@ -261,7 +261,7 @@ public class SystemModification {
 
         // Build sig part from Prefix + Interface ID
         for (final OperationRequiredRole reqInterface : reqInterfaces) {
-            sb.append(";r_" + reqInterface.getRequiredInterface__OperationRequiredRole().getId());
+            sb.append(";r_").append(reqInterface.getRequiredInterface__OperationRequiredRole().getId());
         }
 
         return sb.toString();

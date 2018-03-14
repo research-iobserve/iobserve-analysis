@@ -64,13 +64,17 @@ public final class InstantiationFactory { // NOPMD
             if (implementedInterface.isAssignableFrom(clazz)) {
                 return InstantiationFactory.instantiateClass(implementedInterface, clazz, parameterTypes, parameters);
             } else {
-                InstantiationFactory.LOGGER.error(
-                        "Class '" + className + "' has to implement '" + implementedInterface.getSimpleName() + "'");
+                if (InstantiationFactory.LOGGER.isErrorEnabled()) {
+                    InstantiationFactory.LOGGER.error("Class '" + className + "' has to implement '"
+                            + implementedInterface.getSimpleName() + "'");
+                }
                 throw new ConfigurationException("Requested class does not match interface.");
             }
         } catch (final ClassNotFoundException e) {
-            InstantiationFactory.LOGGER
-                    .error(implementedInterface.getSimpleName() + ": Class '" + className + "' not found", e);
+            if (InstantiationFactory.LOGGER.isErrorEnabled()) {
+                InstantiationFactory.LOGGER
+                        .error(implementedInterface.getSimpleName() + ": Class '" + className + "' not found", e);
+            }
             throw new ConfigurationException(e);
         }
     }

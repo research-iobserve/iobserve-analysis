@@ -75,26 +75,38 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
             String line = null;
             try {
                 while ((line = input.readLine()) != null) {
-                    AbstractExecutionWrapper.LOG.error("PerOpteryx Output: " + line);
-                    // LOG.info("PerOpteryx Output: " + line);
+                    if (AbstractExecutionWrapper.LOGGER.isErrorEnabled()) {
+                        AbstractExecutionWrapper.LOGGER.error("PerOpteryx Output: " + line);
+                        // LOG.info("PerOpteryx Output: " + line);
+                    }
                 }
             } catch (final IOException e) {
-                AbstractExecutionWrapper.LOG.error("Watcher Thread terminated");
-                // LOG.error("IOException during PerOpteryx run: " +
-                // e.getStackTrace());
+                if (AbstractExecutionWrapper.LOGGER.isErrorEnabled()) {
+                    AbstractExecutionWrapper.LOGGER.error("Watcher Thread terminated");
+                    // LOG.error("IOException during PerOpteryx run: " +
+                    // e.getStackTrace());
+                }
             }
         });
         synchronized (watcherThread) {
-            AbstractExecutionWrapper.LOG.info("Starting Watcher Thread!");
+            if (AbstractExecutionWrapper.LOGGER.isInfoEnabled()) {
+                AbstractExecutionWrapper.LOGGER.info("Starting Watcher Thread!");
+            }
+
             watcherThread.start();
             watcherThread.wait();
-            AbstractExecutionWrapper.LOG.info("Watcher Thread terminated");
+
+            if (AbstractExecutionWrapper.LOGGER.isInfoEnabled()) {
+                AbstractExecutionWrapper.LOGGER.info("Watcher Thread terminated");
+            }
         }
     }
 
     @Override
     public ProcessBuilder createProcess() {
-        AbstractExecutionWrapper.LOG.info("Starting optimization process...");
+        if (AbstractExecutionWrapper.LOGGER.isInfoEnabled()) {
+            AbstractExecutionWrapper.LOGGER.info("Starting optimization process...");
+        }
         final String modelDir = this.getInputModelDir().toFileString();
 
         final ProcessBuilder builder = new ProcessBuilder(this.execEnvironment, this.execEnvironmentParam,
@@ -114,7 +126,9 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
             env.put("PATH", path);
         }
 
-        AbstractExecutionWrapper.LOG.info("Environment PATH: " + path);
+        if (AbstractExecutionWrapper.LOGGER.isInfoEnabled()) {
+            AbstractExecutionWrapper.LOGGER.info("Environment PATH: " + path);
+        }
         builder.directory(new File(perOpteryxDir));
         builder.redirectOutput();
         builder.redirectErrorStream(true);

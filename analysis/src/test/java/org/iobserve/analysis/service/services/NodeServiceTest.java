@@ -48,7 +48,7 @@ public class NodeServiceTest { // NOCS test
      * Prepare test data.
      */
     @Before
-    public void setup() {
+    public void setUp() {
 
         this.nodeService = new NodeService();
 

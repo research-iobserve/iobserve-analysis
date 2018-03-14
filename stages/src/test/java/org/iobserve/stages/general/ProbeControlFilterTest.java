@@ -36,7 +36,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests the different results of the {@link ProbeControlFilter}
+ * Tests the different results of the {@link ProbeControlFilter}.
  *
  * @author Marc Adolf
  *
@@ -61,26 +61,33 @@ public class ProbeControlFilterTest {
         super();
     }
 
+    /**
+     * Setup the test.
+     */
     @Before
-    public synchronized void testSetup() {
-        final IRecordReceivedListener listener = new IRecordReceivedListener() {
+    public void testSetup() {
+        synchronized (this) {
+            final IRecordReceivedListener listener = new IRecordReceivedListener() {
 
-            @Override
-            public void onRecordReceived(final IMonitoringRecord record) {
-                // do nothing.. the TCP sender is tested elsewhere
-            }
-        };
+                @Override
+                public void onRecordReceived(final IMonitoringRecord record) {
+                    // do nothing.. the TCP sender is tested elsewhere
+                }
+            };
 
-        ProbeControlFilterTest.port++;
+            ProbeControlFilterTest.port++;
 
-        this.tcpReader = new SingleSocketRecordReader(ProbeControlFilterTest.port, ProbeControlFilterTest.BUFFER_SIZE,
-                ProbeControlFilterTest.LOG, listener);
-        new Thread(this.tcpReader).start();
+            this.tcpReader = new SingleSocketRecordReader(ProbeControlFilterTest.port,
+                    ProbeControlFilterTest.BUFFER_SIZE, ProbeControlFilterTest.LOG, listener);
+            new Thread(this.tcpReader).start();
 
-        this.probeControlFilter = new ProbeControlFilter();
-
+            this.probeControlFilter = new ProbeControlFilter();
+        }
     }
 
+    /**
+     * Check whether the control event is communicated properly.
+     */
     @Test
     public void getValidControlEventTest() {
         final String ip = "127.0.0.1";
@@ -98,6 +105,9 @@ public class ProbeControlFilterTest {
         Assert.assertTrue(output.size() == 0);
     }
 
+    /**
+     * Test whether an invalid event is handled properly.
+     */
     @Test(timeout = 300)
     public void getInvalidControlEventTest() {
         final String ip = "1.2.3.4";

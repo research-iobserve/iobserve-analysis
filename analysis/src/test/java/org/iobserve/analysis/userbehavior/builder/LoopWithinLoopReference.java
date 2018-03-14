@@ -77,14 +77,9 @@ public final class LoopWithinLoopReference {
         // sessions' behavior will be created according to the reference usage model and
         // subsequently the user sessions are used to create a usage model. The created usage model
         // is matched against the reference usage model
-        final int numberOfConcurrentUsers = TestHelper.getRandomInteger(200, 1);
         final int countOfLoop1 = TestHelper.getRandomInteger(4, 2);
         final int countOfLoop2 = TestHelper.getRandomInteger(4, 2);
         final int lengthOfSubsequentLoopSequence = TestHelper.getRandomInteger(2, 1);
-
-        final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
-                TestHelper.getUserSessions(numberOfConcurrentUsers));
-        final ReferenceElements referenceElements = new ReferenceElements();
 
         // In the following the reference usage model is created
         Optional<Correspondent> optionCorrespondent;
@@ -162,6 +157,11 @@ public final class LoopWithinLoopReference {
         }
         UsageModelFactory.connect(lastAction, loopStop);
 
+        final int numberOfConcurrentUsers = TestHelper.getRandomInteger(200, 1);
+
+        final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
+                TestHelper.getUserSessions(numberOfConcurrentUsers));
+
         // According to the reference usage model user sessions are created that exactly represent
         // the user behavior of the reference usage model. The entry and exit times enable that the
         // calls within the user sessions are ordered according to the reference usage model.
@@ -208,6 +208,8 @@ public final class LoopWithinLoopReference {
         // Saves the reference usage model and sets the usage model and the EntryCallSequenceModel
         // as the reference elements. Our approach is now executed with the EntryCallSequenceModel
         // and the resulting usage model can be matched against the reference usage model
+        final ReferenceElements referenceElements = new ReferenceElements();
+
         TestHelper.saveModel(usageModel, referenceUsageModelFileName);
         referenceElements.setEntryCallSequenceModel(entryCallSequenceModel);
         referenceElements.setUsageModel(usageModel);

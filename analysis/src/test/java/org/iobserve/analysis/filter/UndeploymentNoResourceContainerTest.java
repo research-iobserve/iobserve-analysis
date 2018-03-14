@@ -85,7 +85,7 @@ public class UndeploymentNoResourceContainerTest {
      * Initialize test events and mock necessary classes.
      */
     @BeforeClass
-    public static void setup() {
+    public static void setUp() {
 
         /** input deployment event */
         UndeploymentNoResourceContainerTest.inputEvents.add(ModelLevelData.PCM_UNDEPLOYED_EVENT);

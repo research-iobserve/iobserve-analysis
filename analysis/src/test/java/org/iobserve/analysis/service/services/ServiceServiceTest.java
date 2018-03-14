@@ -47,7 +47,7 @@ public class ServiceServiceTest { // NOCS test
      * Prepare test data.
      */
     @Before
-    public void setup() {
+    public void setUp() {
         this.serviceService = new ServiceService();
 
         /** test data */

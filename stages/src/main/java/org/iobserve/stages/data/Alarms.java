@@ -28,6 +28,9 @@ import java.util.List;
 public class Alarms implements IErrorMessages {
     private List<String> alarms = new ArrayList<>();
 
+    /**
+     * Create an alarm result.
+     */
     public Alarms() {
         // empty default constructor
     }

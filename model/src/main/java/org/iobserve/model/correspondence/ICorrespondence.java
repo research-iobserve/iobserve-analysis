@@ -48,7 +48,7 @@ public interface ICorrespondence {
      *            function signature
      * @return return TRUE on match
      */
-    public boolean containsCorrespondent(String classSig, String functionSig);
+    boolean containsCorrespondent(String classSig, String functionSig);
 
     /**
      * Get the correspondent object which contains all the information needed to get the actual
@@ -61,7 +61,7 @@ public interface ICorrespondence {
      *
      * @return option on a {@link Correspondent} object.
      */
-    public Optional<Correspondent> getCorrespondent(String classSig, String functionSig);
+    Optional<Correspondent> getCorrespondent(String classSig, String functionSig);
 
     /**
      * Get the correspondent model component based on the class signature.
@@ -71,7 +71,7 @@ public interface ICorrespondence {
      * @return option of a correspondent in model
      */
 
-    public Optional<Correspondent> getCorrespondent(String classSig);
+    Optional<Correspondent> getCorrespondent(String classSig);
 
     /**
      * Note: Alessandro I would recommend to defines this interface as follows. However,

@@ -19,8 +19,6 @@ import java.io.IOException;
 
 import com.google.common.collect.Iterables;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.execution.utils.ModelHelper;
@@ -38,15 +36,18 @@ import org.jclouds.scriptbuilder.statements.login.AdminAccess;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.VMType;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Action script for acquiring a new cloud resource container.
  *
  * @author Tobias Pöppke
  *
+ * @since 0.0.2
  */
 public class AcquireActionScript extends AbstractActionScript {
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(AcquireActionScript.class);
 
     private final AcquireAction action;
 
@@ -94,7 +95,7 @@ public class AcquireActionScript extends AbstractActionScript {
 
         final NodeMetadata node = Iterables.getOnlyElement(client.createNodesInGroup(groupName, 1, template));
 
-        AcquireActionScript.LOG
+        AcquireActionScript.LOGGER
                 .info(String.format("Acquired node for resource container '%s'. NodeID: %s, Hostname: %s, Adresses: %s",
                         cloudContainer.getEntityName(), node.getId(), node.getHostname(),
                         Iterables.concat(node.getPrivateAddresses(), node.getPublicAddresses())));
@@ -116,7 +117,7 @@ public class AcquireActionScript extends AbstractActionScript {
             return this.getFileContents(nodeStartupScriptURI);
         } catch (final IOException e) {
             // No script found, so we can not execute anything
-            AcquireActionScript.LOG.warn("Could not find script for node startup. No script will be executed.");
+            AcquireActionScript.LOGGER.warn("Could not find script for node startup. No script will be executed.");
             return "";
         }
     }
@@ -138,7 +139,7 @@ public class AcquireActionScript extends AbstractActionScript {
         builder.append(container.getInstanceType());
         builder.append("' in location '");
         builder.append(container.getInstanceType().getLocation());
-        builder.append("'");
+        builder.append('\'');
         return builder.toString();
 
     }
