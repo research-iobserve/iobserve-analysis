@@ -153,7 +153,7 @@ public class ModelTransformer {
         for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
             final AllocationContext representingContext = allocationGroup.getRepresentingContext();
 
-            this.createResourcesAndReplicationDegrees(this.decisionModel, allocationGroup);
+            this.createResourcesAndReplicationDegrees(allocationGroup);
 
             this.allocationModel.getAllocationContexts_Allocation().add(representingContext);
         }
@@ -183,8 +183,7 @@ public class ModelTransformer {
                 this.resourceEnvironmentModel);
     }
 
-    private void createResourcesAndReplicationDegrees(final DecisionSpace decisionSpace,
-            final AllocationGroup allocationGroup) {
+    private void createResourcesAndReplicationDegrees(final AllocationGroup allocationGroup) {
         final CloudProfile profile = this.cloudProfileModel;
         final ResourceEnvironment environment = this.resourceEnvironmentModel;
         final CostRepository costs = this.costModel;
@@ -234,8 +233,8 @@ public class ModelTransformer {
                         degreeName = String.format("%s_ReplicationDegree", containerName);
                     }
 
-                    DesignDecisionModelFactory.createReplicationDegree(decisionSpace, degreeName, createdContainer, 1,
-                            toNrOfReplicas);
+                    DesignDecisionModelFactory.createReplicationDegree(this.decisionSpace, degreeName, createdContainer,
+                            1, toNrOfReplicas);
 
                 }
             }
