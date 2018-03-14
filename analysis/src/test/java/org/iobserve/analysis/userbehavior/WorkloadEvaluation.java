@@ -62,15 +62,15 @@ public final class WorkloadEvaluation {
             // population count of a closed workload
             final int usageModelWorkload = closedWorkloadOfUsageModel.getPopulation();
             final int referenceWorkload = referenceElements.getMeanConcurrentUserSessions();
-            rme = ((1.0 * usageModelWorkload) - (1.0 * referenceWorkload)) / (1.0 * referenceWorkload);
+            rme = (1.0 * usageModelWorkload - 1.0 * referenceWorkload) / (1.0 * referenceWorkload);
         } else if (workload.getClass().equals(OpenWorkloadImpl.class)) {
             final OpenWorkload openWorkloadOfUsageModel = (OpenWorkload) workload;
             final String interArrivalTime = openWorkloadOfUsageModel.getInterArrivalTime_OpenWorkload()
                     .getSpecification();
             // The RME is calculated by the mean inter arrival time that states an open workload
-            final long usageModelWorkload = Long.valueOf(interArrivalTime).longValue();
+            final long usageModelWorkload = Long.parseLong(interArrivalTime);
             final long referenceWorkload = referenceElements.getMeanInterArrivalTime();
-            rme = ((1.0 * usageModelWorkload) - (1.0 * referenceWorkload)) / (1.0 * referenceWorkload);
+            rme = (1.0 * usageModelWorkload - 1.0 * referenceWorkload) / (1.0 * referenceWorkload);
         }
 
         rme = Math.abs(rme) * 100;

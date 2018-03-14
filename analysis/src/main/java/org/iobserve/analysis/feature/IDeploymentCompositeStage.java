@@ -33,20 +33,20 @@ public interface IDeploymentCompositeStage {
      *
      * @return returns the input port
      */
-    public InputPort<IDeployedEvent> getDeployedInputPort();
+    InputPort<IDeployedEvent> getDeployedInputPort();
 
     /**
      * output port to inform about deployments.
      *
      * @return returns the output port
      */
-    public OutputPort<PCMDeployedEvent> getDeployedOutputPort();
+    OutputPort<PCMDeployedEvent> getDeployedOutputPort();
 
     /**
      * Output port to inform about an allocation performed by the stage.
      *
      * @return returns the output port
      */
-    public OutputPort<ResourceContainer> getAllocationOutputPort();
+    OutputPort<ResourceContainer> getAllocationOutputPort();
 
 }

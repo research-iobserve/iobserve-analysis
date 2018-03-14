@@ -99,7 +99,7 @@ public class XMeansClustering extends AbstractClustering {
             xMeansClusteringResults = new ClusteringResults("X-Means", xmeans.getClusterCenters().numInstances(),
                     assignments, clusteringMetrics);
 
-        } catch (final Exception e) { // NOCS due to broken xmeans implementation triggering
+        } catch (final Exception e) { // NOPMD NOCS due to broken xmeans implementation triggering
                                       // Exception
             e.printStackTrace();
         }

@@ -74,32 +74,12 @@ public class ModelElement {
      * @return true if element is the equivalence of this element
      */
     public boolean equals(final ModelElement modelElement) { // NOCS
-        if (this.isStartElement != modelElement.isStartElement) {
-            return false;
-        }
-        if (this.isStopElement != modelElement.isStopElement) {
-            return false;
-        }
-        if (this.isCallElement != modelElement.isCallElement) {
-            return false;
-        }
-        if (this.isBranchTransitionElement != modelElement.isBranchTransitionElement) {
-            return false;
-        }
-        if (this.isLoopElement != modelElement.isLoopElement) {
-            return false;
-        }
-        if (!this.entiteyName.equals(modelElement.entiteyName)) {
-            return false;
-        }
-        if (!this.loopIteration.equals(modelElement.loopIteration)) {
-            return false;
-        }
-        if (this.branchProbability != modelElement.branchProbability) {
-            return false;
-        }
-
-        return true;
+        return this.isStartElement == modelElement.isStartElement && this.isStopElement == modelElement.isStopElement
+                && this.isCallElement == modelElement.isCallElement
+                && this.isBranchTransitionElement == modelElement.isBranchTransitionElement
+                && this.isLoopElement == modelElement.isLoopElement && this.entiteyName.equals(modelElement.entiteyName)
+                && this.loopIteration.equals(modelElement.loopIteration)
+                && this.branchProbability == modelElement.branchProbability;
     }
 
 }

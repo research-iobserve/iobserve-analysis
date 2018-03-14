@@ -30,6 +30,11 @@ public final class JPetStoreEntryCallRulesFactory implements IModelGenerationFil
         // empty constructor
     }
 
+    /**
+     * Create an entry call filter rule for the JPetStore.
+     *
+     * @return return the filter
+     */
     public static EntryCallFilterRules createFilter() {
         final EntryCallFilterRules modelGenerationFilter;
         modelGenerationFilter = new EntryCallFilterRules(true);

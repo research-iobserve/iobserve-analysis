@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.model.provider.neo4j;
 
-import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
@@ -32,7 +31,7 @@ public interface IModelProviderTest {
      * Clears the graph db for the next test.
      */
     @Before
-    public void clearGraph();
+    void clearGraph();
 
     /**
      * Writes a model to the graph, clones the graph using
@@ -40,14 +39,14 @@ public interface IModelProviderTest {
      * asserts that it is equal to the one written to the first graph.
      */
     @Test
-    public void createThenCloneThenRead();
+    void createThenCloneThenRead();
 
     /**
      * Writes a model to the graph, clears the graph using {@link ModelProvider#clearGraph()} and
      * asserts that the graph is empty afterwards.
      */
     @Test
-    public void createThenClearGraph();
+    void createThenClearGraph();
 
     /**
      * Writes a model to the graph, reads it from the graph using
@@ -55,7 +54,7 @@ public interface IModelProviderTest {
      * the one written to the graph.
      */
     @Test
-    public void createThenReadById();
+    void createThenReadById();
 
     /**
      * Writes a model to the graph, reads it from the graph using
@@ -63,7 +62,7 @@ public interface IModelProviderTest {
      * the one written to the graph.
      */
     @Test
-    public void createThenReadByName();
+    void createThenReadByName();
 
     /**
      * Writes a model to the graph, reads it from the graph using
@@ -71,7 +70,7 @@ public interface IModelProviderTest {
      * written to the graph.
      */
     @Test
-    public void createThenReadByType();
+    void createThenReadByType();
 
     /**
      * Writes a model to the graph, reads it from the graph using
@@ -79,7 +78,7 @@ public interface IModelProviderTest {
      * written to the graph.
      */
     @Test
-    public void createThenReadRoot();
+    void createThenReadRoot();
 
     /**
      * Writes a model to the graph, reads the container of a certain model component from the graph
@@ -87,7 +86,7 @@ public interface IModelProviderTest {
      * it is equal to the container from the original model.
      */
     @Test
-    public void createThenReadContaining();
+    void createThenReadContaining();
 
     /**
      * Writes a model to the graph, reads the components referencing to a certain component using
@@ -95,7 +94,7 @@ public interface IModelProviderTest {
      * equal to the referencing components from the original model.
      */
     @Test
-    public void createThenReadReferencing();
+    void createThenReadReferencing();
 
     /**
      * Writes a model to the graph, modifies the original model, updates it in the graph using
@@ -103,7 +102,7 @@ public interface IModelProviderTest {
      * updated model from the graph and asserts that it is equal to the modified original model.
      */
     @Test
-    public void createThenUpdateThenReadUpdated();
+    void createThenUpdateThenReadUpdated();
 
     /**
      * Writes a model to the graph, deletes it using
@@ -111,7 +110,7 @@ public interface IModelProviderTest {
      * afterwards.
      */
     @Test
-    public void createThenDeleteComponent();
+    void createThenDeleteComponent();
 
     /**
      * Writes a model to the graph, deletes it using
@@ -119,7 +118,7 @@ public interface IModelProviderTest {
      * is empty afterwards.
      */
     @Test
-    public void createThenDeleteComponentAndDatatypes();
+    void createThenDeleteComponentAndDatatypes();
 
     /**
      * Checks whether the graph of a given {@link ModelProvider} is empty.
@@ -128,8 +127,8 @@ public interface IModelProviderTest {
      *            A model provider, containing a graph
      * @return True if the graph is empty, false otherwise
      */
-    public static boolean isGraphEmpty(final ModelProvider<?> modelProvider) {
-        boolean isEmpty;
+    static boolean isGraphEmpty(final ModelProvider<?> modelProvider) {
+        boolean isEmpty = false;
 
         try (Transaction tx = modelProvider.getGraph().getGraphDatabaseService().beginTx()) {
             isEmpty = !modelProvider.getGraph().getGraphDatabaseService().getAllNodes().iterator().hasNext();

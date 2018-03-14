@@ -42,6 +42,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 /**
  * @author Reiner Jung
  *
+ * @deprecated since 0.0.3
  */
 @Deprecated
 public class ServiceConfiguration extends MultiInputObservationConfiguration {
@@ -86,6 +87,8 @@ public class ServiceConfiguration extends MultiInputObservationConfiguration {
      *
      * @throws MalformedURLException
      *             if any passed URL in the configuration is broken.
+     * @throws ConfigurationException
+     *             on configuration errors.
      */
     public ServiceConfiguration(final Configuration configuration, final URL visualizationBaseUrl,
             final String systemId, final int varianceOfUserGroups, final int thinkTime, final boolean closedWorkload,

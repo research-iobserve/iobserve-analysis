@@ -28,7 +28,7 @@ import org.palladiosimulator.pcm.system.System;
 
 /**
  * Todo .
- * 
+ *
  * @author unknown
  *
  */
@@ -41,6 +41,14 @@ public class AllocationGeneration {
     private final ResourceEnvironment resEnvModel;
     private final ResourceContainer[] resContainer;
 
+    /**
+     * Generate allocation.
+     *
+     * @param systemModel
+     *            system model
+     * @param resEnvModel
+     *            resource environment model
+     */
     public AllocationGeneration(final System systemModel, final ResourceEnvironment resEnvModel) {
         this.systemModel = systemModel;
         this.resEnvModel = resEnvModel;
@@ -56,6 +64,16 @@ public class AllocationGeneration {
         this.allocationModel.setTargetResourceEnvironment_Allocation(this.resEnvModel);
     }
 
+    /**
+     * Generate allocation.
+     *
+     * @param allocationModel
+     *            allocation model
+     * @param systemModel
+     *            system model
+     * @param resEnvModel
+     *            resource environment model
+     */
     public AllocationGeneration(final Allocation allocationModel, final System systemModel,
             final ResourceEnvironment resEnvModel) {
         this.systemModel = systemModel;

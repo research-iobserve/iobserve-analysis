@@ -21,7 +21,7 @@ import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
-import org.iobserve.planning.systemadaptation.systemadaptationFactory;
+import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
@@ -59,7 +59,7 @@ public final class AssemblyContextActionFactory {
      */
     public static ChangeRepositoryComponentAction generateChangeRepositoryComponentAction(
             final ComponentNode runtimeNode, final ComponentNode reDeploymentNode) {
-        final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
+        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
         final ChangeRepositoryComponentAction action = factory.createChangeRepositoryComponentAction();
 
         AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
@@ -83,7 +83,7 @@ public final class AssemblyContextActionFactory {
      */
     public static MigrateAction generateMigrateAction(final ComponentNode runtimeNode,
             final ComponentNode reDeploymentNode) {
-        final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
+        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
         final MigrateAction action = factory.createMigrateAction();
 
         AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
@@ -106,7 +106,7 @@ public final class AssemblyContextActionFactory {
      * @return returns the deallocation action
      */
     public static DeallocateAction generateDeallocateAction(final ComponentNode runtimeNode) {
-        final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
+        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
         final DeallocateAction action = factory.createDeallocateAction();
 
         AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
@@ -129,7 +129,7 @@ public final class AssemblyContextActionFactory {
      */
     public static AllocateAction generateAllocateAction(final ComponentNode runtimeNode,
             final ComponentNode reDeploymentNode) {
-        final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
+        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
         final AllocateAction action = factory.createAllocateAction();
 
         // Allcotaion has no runtime component

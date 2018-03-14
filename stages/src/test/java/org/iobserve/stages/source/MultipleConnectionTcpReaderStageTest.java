@@ -27,19 +27,28 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author Reiner Jung
  *
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ MultipleConnectionTcpReaderStage.class })
+@RunWith(PowerMockRunner.class) // NOCS test class, no constructor
+@PrepareForTest({ MultipleConnectionTcpReaderStage.class }) // NOCS api
 public class MultipleConnectionTcpReaderStageTest {
 
     private static final int PORT = 9876;
 
     private static final int BUFFER_SIZE = 1024;
 
+    /**
+     * Setup TCP connection testing.
+     */
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
+    /**
+     * Test if receiving connections work.
+     *
+     * @throws Exception
+     *             on various error
+     */
     @Test
     public void receiveConnections() throws Exception {
         final ITraceMetadataRewriter rewriter = new NoneTraceMetadataRewriter();

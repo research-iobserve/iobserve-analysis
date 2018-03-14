@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
-import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -41,8 +38,10 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
  *
  * @author Lars Bluemke
  *
+ * @since 0.0.2
  */
-public class AllocationModelProviderTest implements IModelProviderTest {
+public class AllocationModelProviderTest implements IModelProviderTest { // NOCS no constructor in
+                                                                         // test
     private static final File GRAPH_DIR = new File("./testdb");
 
     private static Graph graph = new GraphLoader(AllocationModelProviderTest.GRAPH_DIR).createAllocationModelGraph();
@@ -168,7 +167,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
         final ModelProvider<Allocation> modelProvider = new ModelProvider<>(AllocationModelProviderTest.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final Allocation writtenModel = testModelBuilder.getAllocation();
-        List<EObject> readReferencingComponents;
+        final List<EObject> readReferencingComponents;
 
         modelProvider.createComponent(writtenModel);
 
@@ -194,7 +193,7 @@ public class AllocationModelProviderTest implements IModelProviderTest {
         final AllocationContext privateOrderServerAllocationContext = testModelBuilder
                 .getPrivateOrderServerAllocationContext();
 
-        Allocation readModel;
+        final Allocation readModel;
 
         modelProvider.createComponent(writtenModel);
 

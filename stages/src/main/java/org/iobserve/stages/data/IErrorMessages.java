@@ -31,7 +31,7 @@ public interface IErrorMessages {
      *
      * @return the contained (error) messages.
      */
-    public List<String> getMessages();
+    List<String> getMessages();
 
     /**
      * Sets the list of saved messages.
@@ -39,7 +39,7 @@ public interface IErrorMessages {
      * @param messages
      *            the list of messages.
      */
-    public void setMessages(List<String> messages);
+    void setMessages(List<String> messages);
 
     /**
      * Adds one message to the list.
@@ -47,6 +47,6 @@ public interface IErrorMessages {
      * @param message
      *            the new message in the list.
      */
-    public void addMessage(String message);
+    void addMessage(String message);
 
 }

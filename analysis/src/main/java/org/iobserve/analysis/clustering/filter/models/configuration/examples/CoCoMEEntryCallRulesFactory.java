@@ -30,6 +30,11 @@ public final class CoCoMEEntryCallRulesFactory implements IModelGenerationFilter
         // empty factory constructor
     }
 
+    /**
+     * Create an entry call filter.
+     *
+     * @return return the filter
+     */
     public static EntryCallFilterRules createFilter() {
         final EntryCallFilterRules modelGenerationFilter = new EntryCallFilterRules(false);
         modelGenerationFilter.addFilterRule(

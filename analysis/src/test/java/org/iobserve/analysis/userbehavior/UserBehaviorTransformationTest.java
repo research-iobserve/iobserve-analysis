@@ -52,7 +52,7 @@ public final class UserBehaviorTransformationTest {
     private static final String REFERENCE_USAGE_MODEL = UserBehaviorTransformationTest.USAGE_MODEL_FOLDER
             + "ReferenceModel.usagemodel";
 
-    private static final Logger LOG = LoggerFactory.getLogger(UserBehaviorTransformationTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserBehaviorTransformationTest.class);
 
     /**
      * Test class.
@@ -104,12 +104,16 @@ public final class UserBehaviorTransformationTest {
             final double relativeMeasurementError = WorkloadEvaluation.calculateRME(behaviorModeling.getPcmUsageModel(),
                     referenceElements);
 
-            UserBehaviorTransformationTest.LOG.debug("RME " + relativeMeasurementError);
+            if (UserBehaviorTransformationTest.LOGGER.isDebugEnabled()) {
+                UserBehaviorTransformationTest.LOGGER.debug("RME " + relativeMeasurementError);
+            }
 
             TestHelper.saveModel(behaviorModeling.getPcmUsageModel(),
                     UserBehaviorTransformationTest.OUTPUT_USAGE_MODEL);
 
-            UserBehaviorTransformationTest.LOG.debug("Iteration :" + i + "/" + numberOfIterations);
+            if (UserBehaviorTransformationTest.LOGGER.isDebugEnabled()) {
+                UserBehaviorTransformationTest.LOGGER.debug("Iteration :" + i + "/" + numberOfIterations);
+            }
         }
 
         TestHelper.writeAccuracyResults(results);

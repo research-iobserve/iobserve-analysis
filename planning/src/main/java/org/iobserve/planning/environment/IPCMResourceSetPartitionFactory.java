@@ -35,12 +35,12 @@ public interface IPCMResourceSetPartitionFactory {
 
     /**
      * {@link PCMResourceSetPartition}s do not by default hold references to the default models
-     * shipped with Palladio. They are somehow automagically registered when loading the model.
+     * shipped with Palladio. They are somehow automatically registered when loading the model.
      * However, we need to load them manually and this class shows how this can be done. While this
      * is not nice and future proof, it works for the moment. This should be replaced by some proper
      * loading in the near future.
      */
-    class DefaultFactory implements IPCMResourceSetPartitionFactory {
+    class DefaultFactory implements IPCMResourceSetPartitionFactory { // NOCS
 
         private static final String[] TOLOAD = { "pathmap://PCM_MODELS/Palladio.resourcetype" };
 

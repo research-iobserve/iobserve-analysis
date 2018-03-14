@@ -20,10 +20,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author reiner
+ * @author Reiner Jung
  *
+ * @since 0.0.2
  */
-public class ListWriterTest {
+public class ListWriterTest { // NOCS test does not need default constructor
 
     /**
      * @throws java.lang.Exception

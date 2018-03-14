@@ -88,7 +88,7 @@ public final class CorrespondeceModelFactory {
         try {
             final FileInputStream input = new FileInputStream(path);
             mapping = JAXB.unmarshal(input, PcmMapping.class);
-        } catch (final Exception e) { // NOCS
+        } catch (final Exception e) { // NOCS NOPMD
             e.printStackTrace();
         }
         return mapping;

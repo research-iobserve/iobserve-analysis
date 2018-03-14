@@ -22,10 +22,14 @@ import org.palladiosimulator.pcm.core.composition.CompositionFactory;
  * @author Reiner Jung
  *
  */
-public class AssemblyContextDataFactory {
+public final class AssemblyContextDataFactory {
     public static final String ASSEMBLY_CONTEXT_NAME = CorrespondenceModelDataFactory.PCM_ENTITY_NAME + "_"
             + ImplementationLevelDataFactory.SERVICE;
     public static final AssemblyContext ASSEMBLY_CONTEXT = AssemblyContextDataFactory.createAssemblyContext();
+
+    private AssemblyContextDataFactory() {
+        // empty factory constructor
+    }
 
     private static AssemblyContext createAssemblyContext() {
         final AssemblyContext assemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();

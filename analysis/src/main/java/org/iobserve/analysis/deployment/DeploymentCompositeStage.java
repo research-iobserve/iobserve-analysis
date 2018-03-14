@@ -46,8 +46,6 @@ public class DeploymentCompositeStage extends CompositeStage implements IDeploym
     /**
      * Create a composite stage for deployment handling.
      *
-     * @param configuration
-     *            configuration parameters
      * @param resourceEnvironmentModelProvider
      *            model provider for the resource environment
      * @param allocationModelProvider

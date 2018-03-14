@@ -36,13 +36,13 @@ import org.slf4j.LoggerFactory;
  */
 public class DataSendStage extends AbstractConsumerStage<IMonitoringRecord> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataSendStage.class);
+
     private static final String WRITER_NAME = SingleSocketTcpWriter.class.getCanonicalName();
 
     private final IMonitoringController ctrl;
 
-    private long count = 0;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataSendStage.class);
+    private long count;
 
     /**
      * Configure and setup the Kieker writer.

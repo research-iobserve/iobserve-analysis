@@ -54,7 +54,7 @@ public class FeatureToggle {
     }
 
     // Deployment.
-    public boolean getDeploymentToggle() {
+    public boolean isDeploymentToggle() {
         return this.deploymentToggle;
     }
 
@@ -63,7 +63,7 @@ public class FeatureToggle {
     }
 
     // Undeployment.
-    public boolean getUndeploymentToggle() {
+    public boolean isUndeploymentToggle() {
         return this.undeploymentToggle;
     }
 
@@ -72,7 +72,7 @@ public class FeatureToggle {
     }
 
     // Allocation.
-    public boolean getAllocationToggle() {
+    public boolean isAllocationToggle() {
         return this.allocationToggle;
     }
 
@@ -80,7 +80,7 @@ public class FeatureToggle {
         this.allocationToggle = allocationToggle;
     }
 
-    public boolean getDeallocationToggle() {
+    public boolean isDeallocationToggle() {
         return this.deallocationToggle;
     }
 
@@ -98,7 +98,7 @@ public class FeatureToggle {
     }
 
     // Geolocation.
-    public boolean getGeolocationToggle() {
+    public boolean isGeolocationToggle() {
         return this.geolocationToggle;
     }
 
@@ -107,7 +107,7 @@ public class FeatureToggle {
     }
 
     // Sink.
-    public boolean getSinksToggle() {
+    public boolean isSinksToggle() {
         return this.sinksToggle;
     }
 
@@ -116,7 +116,7 @@ public class FeatureToggle {
     }
 
     // Dataflow.
-    public boolean getDataFlowToggle() {
+    public boolean isDataFlowToggle() {
         return this.dataFlowToggle;
     }
 

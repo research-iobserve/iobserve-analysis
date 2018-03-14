@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.execution.actionscripts;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.Action;
@@ -26,15 +24,18 @@ import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.TerminateAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A factory for constructing execution scripts from adaptation actions.
  *
  * @author Tobias Pöppke
  *
+ * @since 0.0.2
  */
 public class ActionScriptFactory {
-    private static final Logger LOG = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(ActionScriptFactory.class);
 
     private final AdaptationData data;
 
@@ -76,7 +77,7 @@ public class ActionScriptFactory {
             final String errorMsg = String.format(
                     "Could not create action script for adaptationAction '%s', no suitable class could be found",
                     action);
-            ActionScriptFactory.LOG.error(errorMsg);
+            ActionScriptFactory.LOGGER.error(errorMsg);
             throw new IllegalArgumentException(errorMsg);
         }
     }

@@ -30,6 +30,7 @@ import org.iobserve.model.factory.UsageModelFactory;
 import org.iobserve.model.provider.RepositoryLookupModelProvider;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
+import org.palladiosimulator.pcm.usagemodel.Branch;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
 import org.palladiosimulator.pcm.usagemodel.EntryLevelSystemCall;
 import org.palladiosimulator.pcm.usagemodel.ScenarioBehaviour;
@@ -69,8 +70,8 @@ public final class SimpleBranchReference {
      *             on error
      */
     public static ReferenceElements getModel(final String referenceModelFileName,
-            final RepositoryLookupModelProvider repositoryLookupModelProvider, final ICorrespondence correspondenceModel)
-            throws IOException {
+            final RepositoryLookupModelProvider repositoryLookupModelProvider,
+            final ICorrespondence correspondenceModel) throws IOException {
 
         // Create a random number of user sessions and random model element parameters. The user
         // sessions' behavior will be created according to the reference usage model and
@@ -83,7 +84,6 @@ public final class SimpleBranchReference {
 
         final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
                 TestHelper.getUserSessions(numberOfConcurrentUsers));
-        final ReferenceElements referenceElements = new ReferenceElements();
 
         // In the following the reference usage model is created
         Optional<Correspondent> correspondent;
@@ -154,13 +154,38 @@ public final class SimpleBranchReference {
         }
         UsageModelFactory.connect(lastAction, stop);
 
-        // According to the reference usage model user sessions are created that exactly represent
-        // the user behavior of the reference usage model. The entry and exit times enable that the
-        // calls within the user sessions are ordered according to the reference usage model
-        // The branch transition counter ensures that each branch transition is visited by at least
-        // one user session
+        final List<Integer> branchTransitionCounter = SimpleBranchReference
+                .computeBranchTransitions(entryCallSequenceModel, branch, numberOfBranchTransitions);
+
+        // Set the likelihoods of the branch transitions of the reference usage model according to
+        // the randomly created user sessions
+        for (int i = 0; i < branch.getBranchTransitions_Branch().size(); i++) {
+            branch.getBranchTransitions_Branch().get(i)
+                    .setBranchProbability((double) branchTransitionCounter.get(i) / numberOfConcurrentUsers);
+        }
+
+        return SimpleBranchReference.saveReferenceElements(usageModel, referenceModelFileName, entryCallSequenceModel);
+    }
+
+    /**
+     * According to the reference usage model user sessions are created that exactly represent the
+     * user behavior of the reference usage model. The entry and exit times enable that the calls
+     * within the user sessions are ordered according to the reference usage model The branch
+     * transition counter ensures that each branch transition is visited by at least one user
+     * session.
+     *
+     * @param entryCallSequenceModel
+     * @param branch
+     * @param numberOfBranchTransitions
+     *
+     * @return list of branch transition counter
+     */
+    private static List<Integer> computeBranchTransitions(final EntryCallSequenceModel entryCallSequenceModel,
+            final Branch branch, final int numberOfBranchTransitions) {
+
         final List<Integer> branchTransitionCounter = new ArrayList<>();
         boolean areAllBranchesVisited = true;
+
         do {
             for (int i = 0; i < branch.getBranchTransitions_Branch().size(); i++) {
                 branchTransitionCounter.add(i, 0);
@@ -200,16 +225,30 @@ public final class SimpleBranchReference {
             }
         } while (!areAllBranchesVisited);
 
-        // Set the likelihoods of the branch transitions of the reference usage model according to
-        // the randomly created user sessions
-        for (int i = 0; i < branch.getBranchTransitions_Branch().size(); i++) {
-            branch.getBranchTransitions_Branch().get(i)
-                    .setBranchProbability((double) branchTransitionCounter.get(i) / (double) numberOfConcurrentUsers);
-        }
+        return branchTransitionCounter;
+    }
 
-        // Saves the reference usage model and sets the usage model and the EntryCallSequenceModel
-        // as the reference elements. Our approach is now executed with the EntryCallSequenceModel
-        // and the resulting usage model can be matched against the reference usage model
+    /**
+     * Saves the reference usage model and sets the usage model and the EntryCallSequenceModel as
+     * the reference elements. Our approach is now executed with the EntryCallSequenceModel and the
+     * resulting usage model can be matched against the reference usage model
+     *
+     * @param usageModel
+     *            usage model
+     * @param referenceModelFileName
+     *            reference model file name
+     * @param entryCallSequenceModel
+     *            entry call sequence model
+     *
+     * @return reference elements
+     * @throws IOException
+     *             when the file is written
+     */
+    private static ReferenceElements saveReferenceElements(final UsageModel usageModel,
+            final String referenceModelFileName, final EntryCallSequenceModel entryCallSequenceModel)
+            throws IOException {
+        final ReferenceElements referenceElements = new ReferenceElements();
+
         TestHelper.saveModel(usageModel, referenceModelFileName);
         referenceElements.setEntryCallSequenceModel(entryCallSequenceModel);
         referenceElements.setUsageModel(usageModel);

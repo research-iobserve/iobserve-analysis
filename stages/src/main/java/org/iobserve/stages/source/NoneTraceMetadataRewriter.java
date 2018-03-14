@@ -29,6 +29,13 @@ import teetime.framework.OutputPort;
  */
 public class NoneTraceMetadataRewriter implements ITraceMetadataRewriter {
 
+    /**
+     * Create the rewriter.
+     */
+    public NoneTraceMetadataRewriter() {
+        // empty default constructor
+    }
+
     /*
      * (non-Javadoc)
      *

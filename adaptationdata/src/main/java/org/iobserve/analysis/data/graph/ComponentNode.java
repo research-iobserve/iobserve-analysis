@@ -171,13 +171,16 @@ public class ComponentNode {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append(this.getAssemblyContextID() + "\t" + this.privacyLvl.toString() + "\t");
 
-        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.PERSONAL).count() + "\t");
-        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED).count() + "\t");
-        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.ANONYMIZED).count() + "\t");
+        sb.append(this.getAssemblyContextID()).append('\t').append(this.privacyLvl.toString()).append('\t');
 
-        sb.append(this.getAssemblyName() + "\n");
+        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.PERSONAL).count()).append('\t');
+        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.DEPERSONALIZED).count())
+                .append('\t');
+        sb.append(this.edges.stream().filter((s) -> s.getPrivacyLvl() == DataPrivacyLvl.ANONYMIZED).count())
+                .append('\t');
+
+        sb.append(this.getAssemblyName()).append('\n');
         return sb.toString();
     }
 

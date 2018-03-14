@@ -30,6 +30,6 @@ public interface IClustering {
      *            the instances to be clustered
      * @return the clustered object
      */
-    public Object clusterInstances(Instances instances);
+    Object clusterInstances(Instances instances);
 
 }

@@ -37,6 +37,6 @@ public interface IVectorQuantizationClustering extends IClustering {
      * @return cluster centers as instances
      */
     @Override
-    public Optional<ClusteringResults> clusterInstances(Instances instances);
+    Optional<ClusteringResults> clusterInstances(Instances instances);
 
 }

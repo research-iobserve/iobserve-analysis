@@ -455,11 +455,9 @@ public class BranchModelCreator {
     private boolean checkIfBranchSequenceTerminates(final Branch examinedBranch, final int positionInBranch) {
         if (positionInBranch >= examinedBranch.getBranchSequence().size()) {
             return false;
+        } else {
+            return examinedBranch.getBranchSequence().get(positionInBranch).getClass().equals(ExitElement.class);
         }
-        if (examinedBranch.getBranchSequence().get(positionInBranch).getClass().equals(ExitElement.class)) {
-            return true;
-        }
-        return false;
     }
 
     /**

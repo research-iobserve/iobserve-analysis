@@ -25,8 +25,8 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Josefine Wegert
  *
  */
-@RunWith(Suite.class)
-@SuiteClasses({ RecordSwitchTests.class, })
+@RunWith(Suite.class) // NOCS test class
+@SuiteClasses({ RecordSwitchTests.class }) // NOCS must be array, api
 public class AllTestsFilter {
 
 }

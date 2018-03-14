@@ -25,7 +25,7 @@
       <!-- @generated systemadaptation -->
       <package
             uri="http://iobserve.org/SystemAdaptation"
-            class="org.iobserve.planning.systemadaptation.systemadaptationPackage"
+            class="org.iobserve.planning.systemadaptation.SystemadaptationPackage"
             genModel="model/systemadaptation.genmodel"/>
    </extension>
 

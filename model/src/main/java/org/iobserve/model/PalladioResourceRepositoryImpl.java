@@ -33,8 +33,6 @@ import org.palladiosimulator.pcm.resourcetype.SchedulingPolicy;
  */
 public class PalladioResourceRepositoryImpl implements IPalladioResourceRepository {
 
-    private final ResourceRepository repository;
-
     private static final String CPU = "CPU";
     private static final String LAN = "LAN";
     private static final String HDD = "HDD";
@@ -44,12 +42,14 @@ public class PalladioResourceRepositoryImpl implements IPalladioResourceReposito
     private static final String POLICY_FCFS = "First-Come-First-Serve";
     private static final String POLICY_PROCESSOR_SHARING = "Processor Sharing";
 
+    private final ResourceRepository repository;
+
     private final Map<String, Entity> resourceTypes = new HashMap<>();
     private final Map<String, SchedulingPolicy> schedulingPolicies = new HashMap<>();
 
     /**
      * Create an Palladio resource repository.
-     * 
+     *
      * @param repository
      *            the resource repository
      */

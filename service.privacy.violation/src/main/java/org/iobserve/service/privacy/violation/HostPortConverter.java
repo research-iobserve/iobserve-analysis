@@ -25,10 +25,14 @@ import com.beust.jcommander.IStringConverter;
  */
 public class HostPortConverter implements IStringConverter<ConnectionData> {
 
+    public HostPortConverter() {
+        // empty default constructor
+    }
+
     @Override
     public ConnectionData convert(final String value) {
         final String[] s = value.split(":");
 
-        return new ConnectionData(s[0], new Integer(Integer.parseInt(s[1])));
+        return new ConnectionData(s[0], Integer.valueOf(Integer.parseInt(s[1])));
     }
 }

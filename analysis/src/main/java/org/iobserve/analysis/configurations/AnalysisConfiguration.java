@@ -73,6 +73,7 @@ public class AnalysisConfiguration extends Configuration {
      * @param configuration
      *            the configuration parameter
      * @param repositoryModelProvider
+     *            repository model provider
      * @param resourceEnvironmentModelProvider
      *            provider for an environment model
      * @param allocationModelProvider
@@ -80,6 +81,7 @@ public class AnalysisConfiguration extends Configuration {
      * @param systemModelProvider
      *            provider for the system model
      * @param usageModelProvider
+     *            usage model provider
      * @param correspondenceModelProvider
      *            provider for the correspondence model
      * @throws ConfigurationException

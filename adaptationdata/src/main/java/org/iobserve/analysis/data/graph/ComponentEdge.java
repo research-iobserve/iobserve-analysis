@@ -93,7 +93,10 @@ public class ComponentEdge {
         } else if (firstNode == this.requiringNode) {
             return this.providingNode;
         } else {
-            ComponentEdge.LOGGER.error("ERROR: no edge partner found for node: " + firstNode.getAssemblyContextID());
+            if (ComponentEdge.LOGGER.isErrorEnabled()) {
+                ComponentEdge.LOGGER
+                        .error("ERROR: no edge partner found for node: " + firstNode.getAssemblyContextID());
+            }
         }
         return null;
     }
