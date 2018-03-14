@@ -220,8 +220,8 @@ public class ModelTransformer {
                 if (cloudResource instanceof VMType) {
                     final VMType cloudVM = (VMType) cloudResource;
 
-                    String degreeName;
-                    ResourceContainerCloud createdContainer;
+                    final String degreeName;
+                    final ResourceContainerCloud createdContainer;
                     if (this.isSameVMType(cloudVM, representingContainer)) {
                         createdContainer = representingContainer;
                         degreeName = String.format("%s_ReplicationDegree", allocationGroup.getName());

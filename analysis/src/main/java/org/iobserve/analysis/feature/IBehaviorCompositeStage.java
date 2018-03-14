@@ -28,8 +28,18 @@ import org.iobserve.common.record.ISessionEvent;
  */
 public interface IBehaviorCompositeStage {
 
+    /**
+     * get event based traces.
+     *
+     * @return returns the trace port
+     */
     InputPort<EventBasedTrace> getEventBasedTracePort();
 
+    /**
+     * get session input port.
+     *
+     * @return returns session input port.
+     */
     InputPort<ISessionEvent> getSessionEventInputPort();
 
 }

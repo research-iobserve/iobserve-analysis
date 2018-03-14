@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.model.provider.neo4j;
 
-import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.neo4j.graphdb.Transaction;
@@ -129,7 +128,7 @@ public interface IModelProviderTest {
      * @return True if the graph is empty, false otherwise
      */
     public static boolean isGraphEmpty(final ModelProvider<?> modelProvider) {
-        boolean isEmpty;
+        boolean isEmpty = false;
 
         try (Transaction tx = modelProvider.getGraph().getGraphDatabaseService().beginTx()) {
             isEmpty = !modelProvider.getGraph().getGraphDatabaseService().getAllNodes().iterator().hasNext();

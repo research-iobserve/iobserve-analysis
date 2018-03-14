@@ -40,11 +40,6 @@ import org.slf4j.LoggerFactory;
  */
 public class SimpleSplitterConfiguration extends Configuration {
 
-    private final InitialElementProducer<File> files;
-    private final Dir2RecordsFilter reader;
-    private final DataDumpStage[] consumer;
-    private final Splitter splitter;
-    private final StripIObserveSpecificEventsFilter filter;
     private static final Logger LOGGER = LoggerFactory.getLogger(SimpleSplitterConfiguration.class);
 
     /**
@@ -68,23 +63,23 @@ public class SimpleSplitterConfiguration extends Configuration {
 
         directories.add(dataLocation);
 
-        this.files = new InitialElementProducer<>(directories);
-        this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
+        final InitialElementProducer<File> files = new InitialElementProducer<>(directories);
+        final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
 
-        this.filter = new StripIObserveSpecificEventsFilter();
+        final StripIObserveSpecificEventsFilter removeIObserveEventsFilter = new StripIObserveSpecificEventsFilter();
 
-        this.splitter = new Splitter(hostnames);
+        final Splitter splitter = new Splitter(hostnames);
 
-        this.consumer = new DataDumpStage[hostnames.length];
+        final DataDumpStage[] consumer = new DataDumpStage[hostnames.length];
 
         for (int i = 0; i < hostnames.length; i++) {
-            this.consumer[i] = new DataDumpStage(
-                    this.createConfiguration(outputLocation.getCanonicalPath(), hostnames[i]));
-            this.connectPorts(this.splitter.getAllOutputPorts().get(i), this.consumer[i].getInputPort());
+            consumer[i] = new DataDumpStage(this.createConfiguration(outputLocation.getCanonicalPath(), hostnames[i]));
+            this.connectPorts(splitter.getAllOutputPorts().get(i), consumer[i].getInputPort());
         }
-        this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
-        this.connectPorts(this.reader.getOutputPort(), this.filter.getInputPort());
-        this.connectPorts(this.filter.getOutputPort(), this.splitter.getInputPort());
+
+        this.connectPorts(files.getOutputPort(), reader.getInputPort());
+        this.connectPorts(reader.getOutputPort(), removeIObserveEventsFilter.getInputPort());
+        this.connectPorts(removeIObserveEventsFilter.getOutputPort(), splitter.getInputPort());
     }
 
     private kieker.common.configuration.Configuration createConfiguration(final String canonicalPath,

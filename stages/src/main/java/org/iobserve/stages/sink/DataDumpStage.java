@@ -33,21 +33,17 @@ import org.slf4j.LoggerFactory;
  */
 public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataDumpStage.class);
+
     private final IMonitoringController ctrl;
 
-    private long count = 0;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DataDumpStage.class);
+    private long count;
 
     /**
      * Configure and setup the Kieker writer.
      *
-     * @param dataLocation
-     *            data location
-     * @param hostname
-     *            host name where the monitoring is running on
-     * @param type
-     *            type of serialization
+     * @param configuration
+     *            kieker configuration containing the dump stage writer setup
      */
     public DataDumpStage(final Configuration configuration) {
         DataDumpStage.LOGGER.debug("Configuration complete.");

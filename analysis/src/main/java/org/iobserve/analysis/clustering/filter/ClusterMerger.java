@@ -42,7 +42,7 @@ public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<
 
     private final OutputPort<Instances> outputPort = this.createOutputPort();
 
-    public ClusterMerger() {
+    public ClusterMerger() { // NOCS empty constructor
         // empty constructor
     }
 

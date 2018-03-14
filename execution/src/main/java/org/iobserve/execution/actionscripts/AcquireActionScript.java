@@ -17,6 +17,8 @@ package org.iobserve.execution.actionscripts;
 
 import java.io.IOException;
 
+import com.google.common.collect.Iterables;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
@@ -36,8 +38,6 @@ import org.jclouds.scriptbuilder.statements.login.AdminAccess;
 import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.VMType;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-
-import com.google.common.collect.Iterables;
 
 /**
  * Action script for acquiring a new cloud resource container.

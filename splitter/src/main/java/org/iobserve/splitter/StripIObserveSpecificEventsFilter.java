@@ -39,6 +39,10 @@ public class StripIObserveSpecificEventsFilter extends AbstractConsumerStage<IMo
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractConsumerStage.class);
     private final OutputPort<IMonitoringRecord> outputPort = this.createOutputPort();
 
+    public StripIObserveSpecificEventsFilter() {
+        // empty default constructor
+    }
+
     @Override
     protected void execute(final IMonitoringRecord element) throws Exception {
         if (element instanceof IDeployedEvent || element instanceof IUndeployedEvent || element instanceof ITraceHelper

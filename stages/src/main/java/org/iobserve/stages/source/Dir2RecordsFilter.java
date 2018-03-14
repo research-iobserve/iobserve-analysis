@@ -46,11 +46,12 @@ import org.slf4j.LoggerFactory;
  */
 public final class Dir2RecordsFilter extends CompositeStage {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Dir2RecordsFilter.class);
+
     private final ClassNameRegistryCreationFilter classNameRegistryCreationFilter;
     private final Merger<IMonitoringRecord> recordMerger;
 
     private ClassNameRegistryRepository classNameRegistryRepository;
-    private static final Logger LOGGER = LoggerFactory.getLogger(Dir2RecordsFilter.class);
 
     /**
      * Default constructor using a new instance of {@link ClassNameRegistryRepository}.

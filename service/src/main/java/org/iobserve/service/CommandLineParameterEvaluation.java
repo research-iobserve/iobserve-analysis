@@ -30,10 +30,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Reiner Jung
  *
+ * @since 0.0.3
+ *
  */
-public class CommandLineParameterEvaluation {
+public final class CommandLineParameterEvaluation {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandLineParameterEvaluation.class);
+
+    private CommandLineParameterEvaluation() {
+        // private constructor for utility class
+    }
 
     /**
      * Check whether the given handle refers to an existing directory.

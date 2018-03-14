@@ -21,7 +21,11 @@ package org.iobserve.monitoring.sampler.geolocation;
  * @author unknown
  *
  */
-public class GeoLocationSamplerFactory {
+public final class GeoLocationSamplerFactory {
+
+    private GeoLocationSamplerFactory() {
+        // factory constructor
+    }
 
     /**
      * @return ServerGeoLocationSampler with the DummyCountryInvestigator

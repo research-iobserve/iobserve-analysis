@@ -15,10 +15,10 @@
  ***************************************************************************/
 package org.iobserve.monitoring.probe.servlet.geolocation;
 
-import org.iobserve.monitoring.sampler.geolocation.GeoLocationSamplerFactory;
-
 import kieker.monitoring.core.sampler.ISampler;
 import kieker.monitoring.probe.servlet.AbstractRegularSamplingServletContextListener;
+
+import org.iobserve.monitoring.sampler.geolocation.GeoLocationSamplerFactory;
 
 /**
  * <p>

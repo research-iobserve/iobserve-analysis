@@ -21,10 +21,10 @@ import java.util.Map;
 
 import javax.xml.bind.JAXB;
 
+import teetime.framework.AbstractConsumerStage;
+
 import org.iobserve.analysis.protocom.PcmEntity;
 import org.iobserve.analysis.protocom.PcmMapping;
-
-import teetime.framework.AbstractConsumerStage;
 
 /**
  *

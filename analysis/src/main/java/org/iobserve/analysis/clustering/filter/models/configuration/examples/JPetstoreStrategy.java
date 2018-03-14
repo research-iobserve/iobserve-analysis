@@ -27,7 +27,7 @@ import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentat
  */
 public class JPetstoreStrategy implements IRepresentativeStrategy {
 
-    public JPetstoreStrategy() {
+    public JPetstoreStrategy() { // NOCS empty constructor
         // empty constructor
     }
 

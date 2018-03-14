@@ -34,7 +34,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
  * @author Tobias Pöppke
  *
  */
-public class ResourceEnvironmentCloudFactory {
+public final class ResourceEnvironmentCloudFactory {
 
     // 100 ms latency is a conservative value
     private static final double DEFAULT_LATENCY = 100;
@@ -45,6 +45,10 @@ public class ResourceEnvironmentCloudFactory {
 
     // Default failure probability is 10%
     private static final double DEFAULT_FAILURE_PROB = 0.1;
+
+    private ResourceEnvironmentCloudFactory() {
+        // private constructor, utility class
+    }
 
     /**
      * Creates a new processing resource specification for the given resource container.

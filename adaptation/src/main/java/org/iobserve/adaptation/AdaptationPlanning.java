@@ -49,7 +49,7 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
     private Collection<AssemblyContextAction> changes;
     private Collection<AssemblyContextAction> deallocations;
 
-    public AdaptationPlanning() {
+    public AdaptationPlanning() { // NOCS missing comment
         // empty constructor
     }
 

@@ -19,11 +19,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Collection of alarms.
+ *
  * @author Reiner Jung
  *
+ * @since 0.0.3
  */
 public class Alarms implements IErrorMessages {
     private List<String> alarms = new ArrayList<>();
+
+    public Alarms() {
+        // empty default constructor
+    }
 
     @Override
     public final List<String> getMessages() {
