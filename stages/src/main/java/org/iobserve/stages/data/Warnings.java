@@ -28,6 +28,9 @@ import java.util.List;
 public class Warnings implements IErrorMessages {
     private List<String> warnings = new ArrayList<>();
 
+    /**
+     * Create a warnings result object.
+     */
     public Warnings() {
         // empty data class constructor
     }

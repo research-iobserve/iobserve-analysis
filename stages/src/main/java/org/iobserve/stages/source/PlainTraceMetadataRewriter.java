@@ -40,6 +40,9 @@ public class PlainTraceMetadataRewriter implements ITraceMetadataRewriter {
     private volatile long traceId = 0;
     private final Map<String, Map<Long, TraceMetadata>> metadatamap = new HashMap<>();
 
+    /**
+     * Create the plain trace rewriter.
+     */
     public PlainTraceMetadataRewriter() {
         // empty default constructor
     }

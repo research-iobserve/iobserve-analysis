@@ -25,10 +25,22 @@ public class ConfigurationException extends Exception {
     */
     private static final long serialVersionUID = -6121223240278366389L;
 
+    /**
+     * Configuration exception.
+     *
+     * @param message
+     *            message to be reported
+     */
     public ConfigurationException(final String message) {
         super(message);
     }
 
+    /**
+     * Configuration exception.
+     *
+     * @param e
+     *            chained exception
+     */
     public ConfigurationException(final Exception e) {
         super(e);
     }

@@ -35,11 +35,20 @@ public class MultipleConnectionTcpReaderStageTest {
 
     private static final int BUFFER_SIZE = 1024;
 
+    /**
+     * Setup TCP connection testing.
+     */
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
 
+    /**
+     * Test if receiving connections work.
+     *
+     * @throws Exception
+     *             on various error
+     */
     @Test
     public void receiveConnections() throws Exception {
         final ITraceMetadataRewriter rewriter = new NoneTraceMetadataRewriter();
