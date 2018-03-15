@@ -117,14 +117,14 @@ public class BehaviorCompositeStage extends CompositeStage implements IBehaviorC
         /** Create remaining stages and connect them */
         final PreprocessingCompositeStage preStage = new PreprocessingCompositeStage(traceMatcher, entryCallMatcher,
                 cleanupRewriter, filterRulesFactory, triggerInterval);
-        final BehaviorModelCompositeSinkStage sinkStage = new BehaviorModelCompositeSinkStage(baseURL);
+        //final BehaviorModelCompositeSinkStage sinkStage = new BehaviorModelCompositeSinkStage(baseURL);
 
         this.eventBasedTraceInputPort = preStage.getTraceInputPort();
         this.sessionEventInputPort = preStage.getSessionEventInputPort();
 
         this.connectPorts(preStage.getSessionOutputPort(), classificationStage.getSessionInputPort());
         this.connectPorts(preStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
-        this.connectPorts(classificationStage.getOutputPort(), sinkStage.getInputPort());
+        //this.connectPorts(classificationStage.getOutputPort(), sinkStage.getInputPort());
     }
 
     @Override
