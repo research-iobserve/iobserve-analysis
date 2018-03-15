@@ -112,22 +112,22 @@ public final class ConfigurationKeys {
 
     /** Set trace matcher required for EntryCallStage. STRING */
     public static final String TRACE_MATCHER = ConfigurationKeys.PREFIX + "behavior."
-            + IEntryCallTraceMatcher.class.getCanonicalName();
+            + IEntryCallTraceMatcher.class.getSimpleName();
 
     /** Set acceptance matcher required for SessionAcceptanceFilter. STRING */
     public static final String ENTRY_CALL_ACCEPTANCE_MATCHER = ConfigurationKeys.PREFIX + "behavior."
-            + IEntryCallAcceptanceMatcher.class.getCanonicalName();
+            + IEntryCallAcceptanceMatcher.class.getSimpleName();
 
     /** Set cleanup rewriter required for TraceOperationCleanupFilter. STRING */
     public static final String CLEANUP_REWRITER = ConfigurationKeys.PREFIX + "behavior."
-            + ITraceSignatureCleanupRewriter.class.getCanonicalName();
+            + ITraceSignatureCleanupRewriter.class.getSimpleName();
 
     /**
      * Set entry call filter rules factory required for TSessionOperationsFilter.
      * STRING
      */
     public static final String ENTRY_CALL_FILTER_RULES_FACTORY = ConfigurationKeys.PREFIX + "behavior."
-            + IModelGenerationFilterFactory.class.getCanonicalName();
+            + IModelGenerationFilterFactory.class.getSimpleName();
 
     /** Set time interval required for TimeTriggerFilter. LONG */
     public static final String TRIGGER_INTERVAL = ConfigurationKeys.PREFIX + "behavior." + "triggerInterval";
@@ -137,7 +137,7 @@ public final class ConfigurationKeys {
      * BehaviorCompositeStage STRING
      */
     public static final String CLASSIFICATION_STAGE = ConfigurationKeys.PREFIX + "behavior."
-            + IClassificationStage.class.getCanonicalName();
+            + IClassificationStage.class.getSimpleName();
 
     /**
      * Set behaviour model sink base url to configure file writing directory STRING
@@ -152,19 +152,19 @@ public final class ConfigurationKeys {
      * Set parameter metric strategy STRING
      */
     public static final String SIM_MATCH_PARAMETER_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
-            + IParameterMetricStrategy.class.getCanonicalName();
+            + IParameterMetricStrategy.class.getSimpleName();
 
     /**
      * Set structure metric strategy STRING
      */
     public static final String SIM_MATCH_STRUCTURE_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
-            + IStructureMetricStrategy.class.getCanonicalName();
+            + IStructureMetricStrategy.class.getSimpleName();
 
     /**
      * Set model generation strategy STRING
      */
     public static final String SIM_MATCH_MODEL_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
-            + IModelGenerationStrategy.class.getCanonicalName();
+            + IModelGenerationStrategy.class.getSimpleName();
 
     /**
      * Set similarity radius DOUBLE

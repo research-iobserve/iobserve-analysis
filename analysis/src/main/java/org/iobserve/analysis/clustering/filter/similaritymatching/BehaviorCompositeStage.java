@@ -28,10 +28,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kieker.common.configuration.Configuration;
+import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
+@ReceiveUnfilteredConfiguration
 public class BehaviorCompositeStage extends CompositeStage implements IBehaviorCompositeStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorCompositeStage.class);
 
@@ -42,6 +44,7 @@ public class BehaviorCompositeStage extends CompositeStage implements IBehaviorC
         /** Instantiate configurable objects/properties for stages */
 
         /** For EntryCallStage */
+        BehaviorCompositeStage.LOGGER.debug(ConfigurationKeys.TRACE_MATCHER);
         final String traceMatcherClassName = configuration.getStringProperty(ConfigurationKeys.TRACE_MATCHER);
         if (traceMatcherClassName.isEmpty()) {
             BehaviorCompositeStage.LOGGER.error("Initialization incomplete: No trace matcher specified.");

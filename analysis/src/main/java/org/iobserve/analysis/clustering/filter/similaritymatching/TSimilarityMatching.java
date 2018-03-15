@@ -24,10 +24,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import kieker.common.configuration.Configuration;
+import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
+@ReceiveUnfilteredConfiguration
 public class TSimilarityMatching extends CompositeStage implements IClassificationStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorCompositeStage.class);
 
@@ -78,8 +80,10 @@ public class TSimilarityMatching extends CompositeStage implements IClassificati
         /** Create individual stages */
         final TSessionToModel sessionToModel = new TSessionToModel();
         final TVectorization vectorization = new TVectorization(structureMetric, parameterMetric);
+        vectorization.declareActive();
         final TGroupingStage groupingStage = new TGroupingStage(similarityRadius);
         final TModelGeneration modelGeneration = new TModelGeneration(modelGenerationStrategy);
+        modelGeneration.declareActive();
 
         /** Connect ports */
         this.sessionInputPort = sessionToModel.getInputPort();

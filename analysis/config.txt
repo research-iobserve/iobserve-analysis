@@ -1,12 +1,14 @@
-org.iobserve.service.source.FileSourceCompositeStage.sourceDirectories=C:\\testing\\data\\kieker-20170913-151241-693176440943711-UTC--iObserve-Experiments
+org.iobserve.service.source.FileSourceCompositeStage.sourceDirectories=C:\\testing\\data\\kieker-20170609-211804780-UTC-KIEKER-DEMO-SRV-KIEKER-LIVEDEMO
 iobserve.analysis.model.pcm.directory.db=C:\\testing\\data\\db
 iobserve.analysis.model.pcm.directory.init=C:\\testing\\data\\pcm
 iobserve.analysis.container.management.sink.visualizationUrl=http://127.0.0.1:4200
 iobserve.analysis.source=org.iobserve.service.source.FileSourceCompositeStage
+iobserve.analysis.traces=true
+iobserve.analysis.dataFlow=true
 
 iobserve.analysis.behaviour.filter=org.iobserve.analysis.clustering.filter.similaritymatching.BehaviorCompositeStage
-iobserve.analysis.behaviour.IEntryCallTraceMatcher=org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher
-iobserve.analysis.behaviour.IEntryCallAcceptanceMatcher=org.iobserve.analysis.systems.jpetstore.JPetStoreTraceAcceptanceMatcher
+iobserve.analysis.behavior.IEntryCallTraceMatcher=org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher
+iobserve.analysis.behavior.IEntryCallAcceptanceMatcher=org.iobserve.analysis.systems.jpetstore.JPetStoreTraceAcceptanceMatcher
 iobserve.analysis.behavior.ITraceSignatureCleanupRewriter=org.iobserve.analysis.systems.jpetstore.JPetStoreTraceSignatureCleanupRewriter
 iobserve.analysis.behavior.IModelGenerationFilterFactory=org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetStoreEntryCallRulesFactory
 iobserve.analysis.behavior.triggerInterval=1000
@@ -16,3 +18,4 @@ iobserve.analysis.behavior.sm.IParameterMetricStrategy=org.iobserve.analysis.clu
 iobserve.analysis.behavior.sm.IStructureMetricStrategy=org.iobserve.analysis.clustering.filter.similaritymatching.GeneralStructureMetric
 iobserve.analysis.behavior.sm.IModelGenerationStrategy=org.iobserve.analysis.clustering.filter.similaritymatching.UnionModelGenerationStrategy
 iobserve.analysis.behavior.sm.radius=2
+
