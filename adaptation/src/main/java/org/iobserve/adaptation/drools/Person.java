@@ -17,7 +17,7 @@ package org.iobserve.adaptation.drools;
 
 /**
  * A person for testing.
- * 
+ *
  * @author Lars Bluemke
  *
  */
@@ -53,5 +53,9 @@ public class Person {
 
     public void setTime(final int time) {
         this.time = time;
+    }
+
+    public static String test(final String s) {
+        return "hello " + s;
     }
 }
