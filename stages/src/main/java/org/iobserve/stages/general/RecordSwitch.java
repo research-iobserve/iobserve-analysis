@@ -78,7 +78,7 @@ public class RecordSwitch extends AbstractConsumerStage<IMonitoringRecord> {
     }
 
     @Override
-    protected void execute(final IMonitoringRecord element) {
+    protected void execute(final IMonitoringRecord element) { // NOPMD complexity high due to switch
         this.recordCount++;
         if (this.recordCount % RecordSwitch.LOOP_COUNT == 0) {
             RecordSwitch.LOGGER.debug("Records processed {}.", this.recordCount);

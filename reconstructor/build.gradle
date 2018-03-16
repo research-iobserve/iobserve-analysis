@@ -1,0 +1,23 @@
+apply plugin: 'application'
+apply plugin: 'java'
+
+mainClassName='org.iobserve.reconstructor.ReconstructorMain'
+
+dependencies {
+	clover 'org.openclover:clover:4.2.0'
+	
+	compile project(":service")
+	compile project(":stages")
+
+	testCompile "junit:junit:4.12"
+}
+
+install {
+    repositories.mavenInstaller {
+        pom.version = version
+        pom.groupId = 'org.iobserve'
+        pom.artifactId = 'reconstructor'
+    }
+}
+
+

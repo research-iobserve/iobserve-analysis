@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,14 +31,11 @@ import org.iobserve.common.record.ISessionEvent;
  * 
  * @since 0.0.2
  */
-public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
-	private static final long serialVersionUID = -3984952055142342793L;
-
+public class SessionEndEvent extends AbstractEvent implements ISessionEvent {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_STRING // ISessionEvent.hostname
-			 + TYPE_SIZE_STRING // ISessionEvent.sessionId
-	;
+			 + TYPE_SIZE_STRING; // ISessionEvent.sessionId
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEventRecord.timestamp
@@ -46,10 +43,10 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 		String.class, // ISessionEvent.sessionId
 	};
 	
-	
 	/** default constants. */
 	public static final String HOSTNAME = "";
 	public static final String SESSION_ID = "";
+	private static final long serialVersionUID = -3984952055142342793L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -116,6 +113,7 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public SessionEndEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
@@ -134,7 +132,7 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 		return new Object[] {
 			this.getTimestamp(),
 			this.getHostname(),
-			this.getSessionId()
+			this.getSessionId(),
 		};
 	}
 	/**
@@ -145,6 +143,7 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 		stringRegistry.get(this.getHostname());
 		stringRegistry.get(this.getSessionId());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -155,6 +154,7 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 		serializer.putString(this.getHostname());
 		serializer.putString(this.getSessionId());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -195,15 +195,30 @@ public class SessionEndEvent extends AbstractEvent implements ISessionEvent {
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final SessionEndEvent castedRecord = (SessionEndEvent) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (!this.getHostname().equals(castedRecord.getHostname())) return false;
-		if (!this.getSessionId().equals(castedRecord.getSessionId())) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (this.getTimestamp() != castedRecord.getTimestamp()) {
+			return false;
+		}
+		if (!this.getHostname().equals(castedRecord.getHostname())) {
+			return false;
+		}
+		if (!this.getSessionId().equals(castedRecord.getSessionId())) {
+			return false;
+		}
+		
 		return true;
 	}
 	

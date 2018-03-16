@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.common.record;
+package org.iobserve.reconstructor;
 
-import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.flow.ITraceRecord;
+import kieker.common.record.flow.trace.TraceMetadata;
 
 /**
- * @author Generic Kieker
- * 
- * @since 1.13
+ * @author Reiner Jung
+ *
  */
-public interface IDeallocationEvent extends IMonitoringRecord {
+public class Pair {
+
+    private final TraceMetadata first;
+
+    private final ITraceRecord last;
+
+    public Pair(final TraceMetadata first, final ITraceRecord last) {
+        this.first = first;
+        this.last = last;
+    }
+
+    public final TraceMetadata getFirst() {
+        return this.first;
+    }
+
+    public final ITraceRecord getLast() {
+        return this.last;
+    }
+
 }
