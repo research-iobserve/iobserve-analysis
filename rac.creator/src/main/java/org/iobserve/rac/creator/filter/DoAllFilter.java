@@ -24,9 +24,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
-import org.iobserve.analysis.protocom.PcmEntity;
-import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
+import org.iobserve.model.protocom.PcmCorrespondentMethod;
+import org.iobserve.model.protocom.PcmEntity;
+import org.iobserve.model.protocom.PcmEntityCorrespondent;
 import org.iobserve.rac.creator.ModelMappingReader;
 import org.iobserve.rac.creator.RepositoryFileReader;
 import org.iobserve.rac.creator.data.ClassAndMethod;

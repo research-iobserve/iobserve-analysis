@@ -22,11 +22,11 @@ import java.util.Optional;
 
 import javax.xml.bind.JAXB;
 
-import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
-import org.iobserve.analysis.protocom.PcmEntity;
-import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
-import org.iobserve.analysis.protocom.PcmMapping;
-import org.iobserve.analysis.protocom.PcmOperationSignature;
+import org.iobserve.model.protocom.PcmCorrespondentMethod;
+import org.iobserve.model.protocom.PcmEntity;
+import org.iobserve.model.protocom.PcmEntityCorrespondent;
+import org.iobserve.model.protocom.PcmMapping;
+import org.iobserve.model.protocom.PcmOperationSignature;
 import org.iobserve.model.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

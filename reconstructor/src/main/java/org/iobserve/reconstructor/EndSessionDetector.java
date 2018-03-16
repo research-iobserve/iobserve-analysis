@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.ITraceRecord;
@@ -45,7 +44,7 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
     private final OutputPort<IMonitoringRecord> outputPort = this.createOutputPort(IMonitoringRecord.class);
 
     private final Map<String, List<IMonitoringRecord>> sessionRecords = new HashMap<>();
-    private final Map<String, Long> traceIdMap = new HashMap<>();
+    private final Map<Long, String> traceIdMap = new HashMap<>();
     private final List<IMonitoringRecord> allRecords = new ArrayList<>();
 
     private final Map<Long, List<IMonitoringRecord>> stash = new HashMap<>();
@@ -53,43 +52,52 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
     @Override
     protected void execute(final IMonitoringRecord event) throws Exception {
         if (event instanceof TraceMetadata) {
-            final TraceMetadata traceMetadata = (TraceMetadata) event;
-            if (!(this.traceIdMap.get(traceMetadata.getSessionId()) != null)) {
-                this.traceIdMap.put(traceMetadata.getSessionId(), traceMetadata.getTraceId());
-
-                final List<IMonitoringRecord> recordList = new ArrayList<>();
-                recordList.add(event);
-
-                /** copy stash. */
-                final List<IMonitoringRecord> stashedRecords = this.stash.get(traceMetadata.getTraceId());
-                if (stashedRecords != null) {
-                    recordList.addAll(stashedRecords);
-                    this.stash.remove(traceMetadata.getTraceId());
-                }
-
-                this.sessionRecords.put(traceMetadata.getSessionId(), recordList);
-            }
+            this.receiveTraceMetadata((TraceMetadata) event);
         } else if (event instanceof ITraceRecord) {
-            final String sessionId = this.getSessionId((ITraceRecord) event);
-
-            if (sessionId != null) {
-                this.sessionRecords.get(sessionId).add(event);
-            } else {
-                /** session and trace did not start yet. Stash element. */
-
-                final Long traceId = ((ITraceRecord) event).getTraceId();
-                List<IMonitoringRecord> stashedRecords = this.stash.get(traceId);
-                if (stashedRecords == null) {
-                    stashedRecords = new ArrayList<>();
-                }
-                stashedRecords.add(event);
-                this.stash.put(traceId, stashedRecords);
-            }
+            this.receiveTraceRecord((ITraceRecord) event);
         } else if (event instanceof EmptyRecord) {
             this.flushAllRecords();
         }
 
         this.allRecords.add(event);
+    }
+
+    private void receiveTraceMetadata(final TraceMetadata traceMetadata) {
+        if (this.traceIdMap.get(traceMetadata.getTraceId()) == null) {
+            this.traceIdMap.put(traceMetadata.getTraceId(), traceMetadata.getSessionId());
+
+            final List<IMonitoringRecord> recordList = new ArrayList<>();
+            recordList.add(traceMetadata);
+
+            /** copy stash. */
+            final List<IMonitoringRecord> stashedRecords = this.stash.get(traceMetadata.getTraceId());
+
+            if (stashedRecords != null) {
+                recordList.addAll(stashedRecords);
+                this.stash.remove(traceMetadata.getTraceId());
+            }
+
+            this.sessionRecords.put(traceMetadata.getSessionId(), recordList);
+        }
+    }
+
+    private void receiveTraceRecord(final ITraceRecord event) {
+        final String sessionId = this.traceIdMap.get(event.getTraceId());
+
+        if (sessionId != null) {
+            this.sessionRecords.get(sessionId).add(event);
+        } else {
+            /** session and trace did not start yet. Stash element. */
+            final Long traceId = event.getTraceId();
+            List<IMonitoringRecord> stashedRecords = this.stash.get(traceId);
+            if (stashedRecords == null) {
+                stashedRecords = new ArrayList<>();
+            }
+            stashedRecords.add(event);
+
+            this.stash.put(traceId, stashedRecords);
+        }
+
     }
 
     private void flushAllRecords() {
@@ -103,7 +111,6 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
 
                 if (firstLast != null) {
                     if (firstLast.getLast() == traceEvent) {
-                        System.err.println("Session end " + firstLast.getFirst().getSessionId());
                         this.outputPort.send(new SessionEndEvent(firstLast.getLast().getLoggingTimestamp(),
                                 firstLast.getFirst().getHostname(), firstLast.getFirst().getSessionId()));
                     }
@@ -115,7 +122,7 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
     }
 
     private Pair getFirstLast(final ITraceRecord traceEvent) {
-        final String sessionId = this.getSessionId(traceEvent);
+        final String sessionId = this.traceIdMap.get(traceEvent.getTraceId());
 
         if (sessionId != null) {
             final List<IMonitoringRecord> records = this.sessionRecords.get(sessionId);
@@ -124,18 +131,6 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
         } else {
             return null;
         }
-    }
-
-    private String getSessionId(final ITraceRecord traceEvent) {
-        for (final Entry<String, Long> entry : this.traceIdMap.entrySet()) {
-            if (entry.getValue() == traceEvent.getTraceId()) {
-                return entry.getKey();
-            }
-        }
-
-        EndSessionDetector.LOGGER.info("TraceId without metadata, needs stashing {} ", traceEvent.getTraceId());
-
-        return null;
     }
 
     public OutputPort<IMonitoringRecord> getOutputPort() {

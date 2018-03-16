@@ -21,14 +21,14 @@ import java.util.stream.Collectors;
 
 import teetime.stage.basic.AbstractTransformation;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.execution.actionscripts.AbstractActionScript;
 import org.iobserve.execution.actionscripts.ActionScriptFactory;
 import org.iobserve.planning.systemadaptation.Action;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This stage executes the ordered adaptation {@link Action}s sequence.
@@ -38,7 +38,7 @@ import org.iobserve.planning.systemadaptation.Action;
  */
 public class AdaptationExecution extends AbstractTransformation<AdaptationData, AdaptationData> {
 
-    protected static final Logger LOG = LogManager.getLogger(AdaptationExecution.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AdaptationExecution.class);
 
     private final IAdaptationEventListener listener;
 
@@ -63,7 +63,7 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
     @Override
     protected void execute(final AdaptationData element) throws Exception {
 
-        AdaptationExecution.LOG.info("Executing adaptation");
+        AdaptationExecution.LOGGER.info("Executing adaptation");
 
         element.setDeployablesFolderURI(this.deployablesFolderURI);
 

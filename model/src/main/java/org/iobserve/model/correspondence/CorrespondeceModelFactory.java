@@ -19,7 +19,7 @@ import java.io.FileInputStream;
 
 import javax.xml.bind.JAXB;
 
-import org.iobserve.analysis.protocom.PcmMapping;
+import org.iobserve.model.protocom.PcmMapping;
 import org.iobserve.model.utils.StringUtils;
 
 /**

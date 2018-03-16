@@ -21,8 +21,8 @@ import teetime.stage.basic.AbstractTransformation;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.PlanningData;
 
 /**

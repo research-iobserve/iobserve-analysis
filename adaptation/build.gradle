@@ -12,8 +12,8 @@ if (group.isEmpty()) {
 
 dependencies {
 	compile project(":adaptationdata")
-    compile project(":analysis")
 	compile project(":service")
+    compile project(":stages")
 
 	clover 'org.openclover:clover:4.2.0'
 
