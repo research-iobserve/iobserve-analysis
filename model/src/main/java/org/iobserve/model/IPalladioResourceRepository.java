@@ -31,50 +31,64 @@ public interface IPalladioResourceRepository {
      * Processing resource type CPU.
      *
      * @return returns cpu resource type
+     * @throws ModelHandlingErrorException
+     *             when something when wrong with the model handling
      */
-    ProcessingResourceType cpu();
+    ProcessingResourceType cpu() throws ModelHandlingErrorException;
 
     /**
      * Processing resource type HDD.
      *
      * @return returns hdd resource type
+     * @throws ModelHandlingErrorException
+     *             when something when wrong with the model handling
      */
-    ProcessingResourceType hdd();
+    ProcessingResourceType hdd() throws ModelHandlingErrorException;
 
     /**
      * Processing resource type delay.
      *
      * @return returns delay resource type
+     * @throws ModelHandlingErrorException
+     *             when something when wrong with the model handling
      */
-    ProcessingResourceType delay();
+    ProcessingResourceType delay() throws ModelHandlingErrorException;
 
     /**
      * Communication link resource type.
      *
      * @return returns link type
+     * @throws ModelHandlingErrorException
+     *             when something when wrong with the model handling
      */
-    CommunicationLinkResourceType lan();
+    CommunicationLinkResourceType lan() throws ModelHandlingErrorException;
 
     /**
      * Scheduling policy processor sharing.
      *
      * @return returns scheduling policy
+     * @throws ModelHandlingErrorException
+     *             when something when wrong with the model handling
      */
-    SchedulingPolicy policyProcessorSharing();
+    SchedulingPolicy policyProcessorSharing() throws ModelHandlingErrorException;
 
     /**
      * Scheduling policy FCFS.
      *
      * @return returns scheduling policy
+     * @throws ModelHandlingErrorException
+     *             when something when wrong with the model handling
      */
-    SchedulingPolicy policyFCFS();
+    SchedulingPolicy policyFCFS() throws ModelHandlingErrorException;
 
     /**
      * Scheduling policy delay.
      *
      * @return returns scheduling policy
+     * @throws ModelHandlingErrorException
+     *             when something when wrong with the model handling
      */
-    SchedulingPolicy policyDelay();
+    SchedulingPolicy policyDelay() throws ModelHandlingErrorException;
 
     /**
      * Hello stranger,
@@ -106,10 +120,13 @@ public interface IPalladioResourceRepository {
          * Technical Debt - to be replaced by DI framework.
          *
          * @return a resource repository
+         * @throws ModelHandlingErrorException
+         *             when the repository is not available
          */
-        public static IPalladioResourceRepository resources() {
+        public static IPalladioResourceRepository resources() throws ModelHandlingErrorException {
             if (INSTANCE.resources == null) {
-                throw new RuntimeException("Palladio resource repository singleton has not been initialized!");
+                throw new ModelHandlingErrorException(
+                        "Palladio resource repository singleton has not been initialized!");
             }
             return INSTANCE.resources;
         }

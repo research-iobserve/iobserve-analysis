@@ -17,6 +17,7 @@ package org.iobserve.model.factory;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.iobserve.model.IPalladioResourceRepository;
+import org.iobserve.model.ModelHandlingErrorException;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceenvironmentcloudFactory;
 import org.palladiosimulator.pcm.core.CoreFactory;
@@ -62,9 +63,11 @@ public final class ResourceEnvironmentCloudFactory {
      * @param container
      *            the container in which to create the processing resource.
      * @return a processing resource specification
+     * @throws ModelHandlingErrorException
+     *             when something when wrong with the model handling
      */
     public static ProcessingResourceSpecification createProcessingResource(final int nrOfCores,
-            final double processingRate, final ResourceContainer container) {
+            final double processingRate, final ResourceContainer container) throws ModelHandlingErrorException {
         final ProcessingResourceSpecification processor = ResourceenvironmentFactory.eINSTANCE
                 .createProcessingResourceSpecification();
         final PCMRandomVariable pcmProcessingRate = CoreFactory.eINSTANCE.createPCMRandomVariable();
@@ -112,9 +115,11 @@ public final class ResourceEnvironmentCloudFactory {
      * @param name
      *            name for the new linking resource
      * @return link instance, already added to the model
+     * @throws ModelHandlingErrorException
+     *             when something when wrong with the model handling
      */
     public static LinkingResource createLinkingResource(final ResourceEnvironment model,
-            final CommunicationLinkResourceSpecification spec, final String name) {
+            final CommunicationLinkResourceSpecification spec, final String name) throws ModelHandlingErrorException {
         final LinkingResource link = ResourceenvironmentFactory.eINSTANCE.createLinkingResource();
 
         if (spec == null) {
@@ -144,10 +149,12 @@ public final class ResourceEnvironmentCloudFactory {
      * @param latency
      *            latency of the link specification
      * @return a communication link resource
+     * @throws ModelHandlingErrorException
+     *             when something when wrong with the model handling
      */
     public static CommunicationLinkResourceSpecification createLinkingResourceSpecification(
             final ResourceEnvironment model, final double throughput, final double failureProbability,
-            final double latency) {
+            final double latency) throws ModelHandlingErrorException {
         final CommunicationLinkResourceSpecification spec = ResourceenvironmentFactory.eINSTANCE
                 .createCommunicationLinkResourceSpecification();
         spec.setCommunicationLinkResourceType_CommunicationLinkResourceSpecification(

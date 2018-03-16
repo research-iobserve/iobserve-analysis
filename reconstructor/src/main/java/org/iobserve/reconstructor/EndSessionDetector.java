@@ -29,17 +29,16 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.common.record.SessionEndEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
+ * Filter collects all events until it receives an EmptyRecord. Then it flushes out all sessions and
+ * adds a proper SessionEndEvent.
+ *
  * @author Reiner Jung
  *
  * @since 0.0.3
  */
 public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EndSessionDetector.class);
 
     private final OutputPort<IMonitoringRecord> outputPort = this.createOutputPort(IMonitoringRecord.class);
 

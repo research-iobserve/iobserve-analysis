@@ -71,6 +71,8 @@ import org.palladiosimulator.pcm.system.SystemFactory;
 import org.palladiosimulator.pcm.system.SystemPackage;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelFactory;
 import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Provides different utilities for the {@link ModelProvider}.
@@ -79,6 +81,8 @@ import org.palladiosimulator.pcm.usagemodel.UsagemodelPackage;
  *
  */
 public final class ModelProviderUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModelProviderUtil.class);
 
     private ModelProviderUtil() {
         // private utility class
@@ -110,7 +114,9 @@ public final class ModelProviderUtil {
                         return node;
                     }
                 } catch (final NotFoundException e) {
-                    // node as already been deleted
+                    ModelProviderUtil.LOGGER.error(
+                            "Tried to delete a relationship which has already been removed. id {} and exception {}",
+                            r.getId(), e);
                 }
             }
         }
@@ -239,7 +245,7 @@ public final class ModelProviderUtil {
             return value.charAt(0);
         } else if (clazz == byte.class) {
             return Byte.parseByte(value);
-        } else if (clazz == short.class) {
+        } else if (clazz == short.class) { // NOPMD short supported by Kieker
             return Short.parseShort(value);
         } else if (clazz == int.class) {
             return Integer.parseInt(value);

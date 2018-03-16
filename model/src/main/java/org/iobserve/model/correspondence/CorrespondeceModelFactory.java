@@ -73,6 +73,7 @@ public final class CorrespondeceModelFactory {
         final PcmMapping mapping = this.getMapping(pathMappingFile);
         final CorrespondenceModelImpl rac = new CorrespondenceModelImpl(mapping);
         rac.initMapping();
+
         return rac;
     }
 

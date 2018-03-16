@@ -8,8 +8,6 @@ dependencies {
 	
 	compile project(":service")
 	compile project(":stages")
-
-	testCompile "junit:junit:4.12"
 }
 
 install {

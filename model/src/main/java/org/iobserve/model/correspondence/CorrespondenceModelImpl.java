@@ -77,7 +77,6 @@ class CorrespondenceModelImpl implements ICorrespondence {
      */
     public CorrespondenceModelImpl(final InputStream mappingFile) {
         this.rawMapping = JAXB.unmarshal(mappingFile, PcmMapping.class);
-        this.initMapping();
     }
 
     /**
