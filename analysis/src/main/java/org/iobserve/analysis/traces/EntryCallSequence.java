@@ -20,19 +20,20 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
-
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.SessionEndEvent;
 import org.iobserve.common.record.SessionStartEvent;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
 /**
- * Represents the TEntryCallSequence Transformation in the paper <i>Run-time Architecture Models for
- * Dynamic Adaptation and Evolution of Cloud Applications</i>.
+ * Represents the TEntryCallSequence Transformation in the paper <i>Run-time
+ * Architecture Models for Dynamic Adaptation and Evolution of Cloud
+ * Applications</i>.
  *
  * @author Robert Heinrich
  * @author Alessandro Guisa
@@ -41,7 +42,6 @@ import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
  * @version 1.0
  */
 public final class EntryCallSequence extends AbstractStage {
-
     /** time until a session expires. */
     private static final long USER_SESSION_EXPIRATIONTIME = 360000000000L;
     /** map of sessions. */
@@ -81,8 +81,8 @@ public final class EntryCallSequence extends AbstractStage {
 
         if (event != null) {
             /**
-             * add the event to the corresponding user session in case the user session is not yet
-             * available, create one.
+             * add the event to the corresponding user session in case the user session is
+             * not yet available, create one.
              */
             final String userSessionId = UserSession.createUserSessionId(event);
             UserSession userSession = this.sessions.get(userSessionId);
@@ -109,7 +109,7 @@ public final class EntryCallSequence extends AbstractStage {
             final UserSession session = this.sessions.get(sessionId);
             final long exitTime = session.getExitTime();
 
-            final boolean isExpired = exitTime + EntryCallSequence.USER_SESSION_EXPIRATIONTIME < timeNow;
+            final boolean isExpired = (exitTime + EntryCallSequence.USER_SESSION_EXPIRATIONTIME) < timeNow;
 
             if (isExpired) {
                 this.userSessionOutputPort.send(session);

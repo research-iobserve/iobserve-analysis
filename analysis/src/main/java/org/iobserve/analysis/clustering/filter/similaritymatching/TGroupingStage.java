@@ -3,10 +3,15 @@ package org.iobserve.analysis.clustering.filter.similaritymatching;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TGroupingStage.class);
+
     private final OutputPort<Integer[][]> outputPort = this.createOutputPort();
 
     private final double similarityRadius;
@@ -46,6 +51,8 @@ public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
         }
 
         this.outputPort.send(aGroups);
+
+        TGroupingStage.LOGGER.debug("Sent grouping to next stage");
     }
 
     private List<Integer> findGroup(final Double[] vector) {

@@ -18,15 +18,20 @@ package org.iobserve.analysis.clustering.filter.similaritymatching;
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
 import org.iobserve.analysis.clustering.behaviormodels.UserSessionToBehaviorModelConverter;
 import org.iobserve.analysis.session.data.UserSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 public class TSessionToModel extends AbstractConsumerStage<UserSession> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TSessionToModel.class);
+
     private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
 
     @Override
     public void execute(final UserSession session) {
+        TSessionToModel.LOGGER.debug("Received Model");
         this.outputPort.send(UserSessionToBehaviorModelConverter.convert(session));
     }
 

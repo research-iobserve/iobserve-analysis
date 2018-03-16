@@ -1,6 +1,8 @@
 package org.iobserve.analysis.clustering.filter.similaritymatching;
 
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
@@ -8,6 +10,8 @@ import teetime.framework.OutputPort;
 
 //<BehaviorModelTable[],List<List<Integer>>>
 public class TModelGeneration extends AbstractStage {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TModelGeneration.class);
+
     private final OutputPort<BehaviorModel[]> outputPort = this.createOutputPort();
     private final InputPort<BehaviorModel[]> modelsInputPort = this.createInputPort(BehaviorModel[].class);
     private final InputPort<Integer[][]> groupsInputPort = this.createInputPort();
@@ -48,6 +52,8 @@ public class TModelGeneration extends AbstractStage {
         /** Clear state */
         this.models = null;
         this.groups = null;
+
+        TModelGeneration.LOGGER.debug("Sent generated models");
     }
 
     public OutputPort<BehaviorModel[]> getOutputPort() {
