@@ -19,6 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+<<<<<<< HEAD
+=======
+import teetime.stage.basic.AbstractTransformation;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+>>>>>>> origin/master
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.evaluation.SystemEvaluation;
@@ -27,8 +34,6 @@ import org.iobserve.execution.actionscripts.ActionScriptFactory;
 import org.iobserve.planning.systemadaptation.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  * This stage executes the ordered adaptation {@link Action}s sequence.

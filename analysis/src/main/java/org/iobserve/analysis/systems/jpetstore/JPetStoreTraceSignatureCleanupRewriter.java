@@ -25,6 +25,10 @@ import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
  */
 public class JPetStoreTraceSignatureCleanupRewriter implements ITraceSignatureCleanupRewriter {
 
+    public JPetStoreTraceSignatureCleanupRewriter() {
+        // empty constructor
+    }
+
     @Override
     public String rewriteClassSignature(final String classSignature) {
         return classSignature;

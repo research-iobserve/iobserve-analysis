@@ -17,6 +17,7 @@ package org.iobserve.stages.general;
 
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
+
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 /**
@@ -41,14 +42,14 @@ public interface IEntryCallTraceMatcher {
 
     /**
      * The matched before event.
-     * 
+     *
      * @return returns the matched before event
      */
     BeforeOperationEvent getBeforeOperationEvent();
 
     /**
      * The matched after event..
-     * 
+     *
      * @return returns the corresponding after event to the matched before event.
      */
     AfterOperationEvent getAfterOperationEvent();

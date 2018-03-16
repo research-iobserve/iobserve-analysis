@@ -30,10 +30,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Reiner Jung
  *
+ * @since 0.0.3
+ *
  */
-public class CommandLineParameterEvaluation {
+public final class CommandLineParameterEvaluation {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandLineParameterEvaluation.class);
+
+    private CommandLineParameterEvaluation() {
+        // private constructor for utility class
+    }
 
     /**
      * Check whether the given handle refers to an existing directory.
@@ -80,15 +86,21 @@ public class CommandLineParameterEvaluation {
      */
     public static boolean isFileReadable(final File file, final String label) throws IOException {
         if (!file.exists()) {
-            CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " does not exist.");
+            if (CommandLineParameterEvaluation.LOGGER.isErrorEnabled()) {
+                CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " does not exist.");
+            }
             return false;
         }
         if (!file.isFile()) {
-            CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " is not a file.");
+            if (CommandLineParameterEvaluation.LOGGER.isErrorEnabled()) {
+                CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " is not a file.");
+            }
             return false;
         }
         if (!file.canRead()) {
-            CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " cannot be read.");
+            if (CommandLineParameterEvaluation.LOGGER.isErrorEnabled()) {
+                CommandLineParameterEvaluation.LOGGER.error(label + " " + file.getCanonicalPath() + " cannot be read.");
+            }
             return false;
         }
 
@@ -108,7 +120,9 @@ public class CommandLineParameterEvaluation {
         try {
             return new URL(urlString);
         } catch (final MalformedURLException e) {
-            CommandLineParameterEvaluation.LOGGER.error(label + " Malformend URL " + urlString);
+            if (CommandLineParameterEvaluation.LOGGER.isErrorEnabled()) {
+                CommandLineParameterEvaluation.LOGGER.error(label + " Malformend URL " + urlString);
+            }
             return null;
         }
 

@@ -36,9 +36,16 @@ public interface ITraceMetadataRewriter {
      * Rewrite a record if necessary.
      *
      * @param connection
+     *            connection used for incoming records
      * @param record
+     *            the incoming record
      * @param loggingTimestamp
+     *            the logging timestamp to be used
      * @param outputPort
+     *            the output port for sending the rewritten record
+     *
+     * @throws IOException
+     *             might occur during connection
      */
     void rewrite(Connection connection, IMonitoringRecord record, long loggingTimestamp,
             OutputPort<IMonitoringRecord> outputPort) throws IOException;

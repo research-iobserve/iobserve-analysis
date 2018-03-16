@@ -32,13 +32,14 @@ import weka.core.Instances;
  */
 public class ClusteringMetrics {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringMetrics.class);
+
     // Distance between the centroids and the assignments of the cluster
     private double sumOfSquaredErrors = 0;
 
     private final Instances centroids;
     private final Instances instances;
     private final int[] assignments;
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClusteringMetrics.class);
 
     /**
      * Construct cluster metrics.

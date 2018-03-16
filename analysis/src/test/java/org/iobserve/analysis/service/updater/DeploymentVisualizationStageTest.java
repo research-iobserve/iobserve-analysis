@@ -45,14 +45,9 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
  * @author Josefine Wegert
  *
  */
-@RunWith(MockitoJUnitRunner.class)
-public class DeploymentVisualizationStageTest {
+@RunWith(MockitoJUnitRunner.class) // NOCS test class does not need constructor
+public class DeploymentVisualizationStageTest { // NOCS test
 
-    /** stage under test. */
-    private DeploymentVisualizationStage deploymentVisualizationStage;
-
-    /** test parameters for stage under test. */
-    private URL changelogURL;
     private static final String OUTPUT_PORT = "9090";
     private static final String OUTPUT_HOSTNAME = "localhost";
     private static final String SYSTEM_ID = "test_systemId";
@@ -62,6 +57,15 @@ public class DeploymentVisualizationStageTest {
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "path.test";
     private static final String DEPLOYMENT_ID = "service-01";
+
+    private static final String TEST_NODE_ID = "test_nodeId";
+
+    /** test correspondent. */
+    private static Correspondent testCorrespondent;
+    private static Optional<Correspondent> optTestCorrespondent;
+
+    /** stage under test. */
+    private DeploymentVisualizationStage deploymentVisualizationStage;
 
     @Mock
     private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
@@ -76,13 +80,8 @@ public class DeploymentVisualizationStageTest {
     /** test event. */
     private PCMDeployedEvent deployedEvent;
 
-    /** test correspondent. */
-    private static Correspondent testCorrespondent;
-    private static Optional<Correspondent> optTestCorrespondent;
-
     /** test resource container. */
     private final List<ResourceContainer> testResourceContainers = new ArrayList<>();
-    private final String testNodeId = "test_nodeId";
     private ResourceContainer testResourceContainer;
 
     /** test assembly context. */
@@ -97,9 +96,9 @@ public class DeploymentVisualizationStageTest {
      *
      */
     @Before
-    public void setup() throws MalformedURLException {
+    public void setUp() throws MalformedURLException {
 
-        this.changelogURL = new URL("http://" + DeploymentVisualizationStageTest.OUTPUT_HOSTNAME + ":"
+        final URL changelogURL = new URL("http://" + DeploymentVisualizationStageTest.OUTPUT_HOSTNAME + ":"
                 + DeploymentVisualizationStageTest.OUTPUT_PORT + "/v1/systems/"
                 + DeploymentVisualizationStageTest.SYSTEM_ID + "/changelogs");
 
@@ -111,7 +110,7 @@ public class DeploymentVisualizationStageTest {
 
         /** test resource container */
         this.testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-        this.testResourceContainer.setId(this.testNodeId);
+        this.testResourceContainer.setId(DeploymentVisualizationStageTest.TEST_NODE_ID);
         this.testResourceContainers.add(this.testResourceContainer);
 
         /** test events */
@@ -145,7 +144,7 @@ public class DeploymentVisualizationStageTest {
                 this.mockedAssemblyContextModelProvider.readOnlyComponentByName(AssemblyContext.class, asmContextName))
                 .thenReturn(this.testAssemblyContexts);
 
-        this.deploymentVisualizationStage = new DeploymentVisualizationStage(this.changelogURL,
+        this.deploymentVisualizationStage = new DeploymentVisualizationStage(changelogURL,
                 DeploymentVisualizationStageTest.SYSTEM_ID, this.mockedResourceContainerModelProvider,
                 this.mockedAssemblyContextModelProvider);
     }

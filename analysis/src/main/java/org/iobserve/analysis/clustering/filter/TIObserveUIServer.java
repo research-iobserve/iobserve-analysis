@@ -113,8 +113,8 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
 
     @Override
     protected void execute(final BehaviorModel behaviorModel) {
-        final ArrayList<ObjectNode> changelogs = new ArrayList<>();
-        final ArrayList<ObjectNode> instanceChangelogs = new ArrayList<>();
+        final List<ObjectNode> changelogs = new ArrayList<>();
+        final List<ObjectNode> instanceChangelogs = new ArrayList<>();
         final String nodeID = this.createBasicChangelogs(changelogs);
         this.postChangelogs(changelogs);
         changelogs.clear();
@@ -285,6 +285,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
             break;
         default:
             changelog.put(TIObserveUIServer.OPERATION, "DELETE");
+            break;
         }
 
         return changelog;
@@ -317,7 +318,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
         final ObjectNode changelog = this.getChangelog(ChangelogType.CREATE);
         changelog.put(TIObserveUIServer.ATTRIBUTE_DATA, group);
 
-        final ArrayList<ObjectNode> list = new ArrayList<>();
+        final List<ObjectNode> list = new ArrayList<>();
         list.add(changelog);
 
         this.postChangelogs(list);
@@ -329,7 +330,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
      * @param changelogs
      *            changelogs
      */
-    private void postChangelogs(final ArrayList<ObjectNode> changelogs) {
+    private void postChangelogs(final List<ObjectNode> changelogs) {
 
         try {
             final String json = this.objectMapper.writeValueAsString(changelogs);
@@ -352,7 +353,7 @@ public class TIObserveUIServer extends AbstractConsumerStage<BehaviorModel> {
 
             con.disconnect();
 
-        } catch (final Exception ex) {
+        } catch (final Exception ex) { // NOCS NOPMD
             ex.printStackTrace();
         }
     }

@@ -32,6 +32,6 @@ public interface ISignatureCreationStrategy {
      *            node
      * @return signature
      */
-    public String getSignature(EntryCallNode node);
+    String getSignature(EntryCallNode node);
 
 }

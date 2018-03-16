@@ -20,6 +20,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import teetime.framework.test.StageTester;
+
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.service.suites.VisualizationHttpTestServer;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -35,8 +37,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
-import teetime.framework.test.StageTester;
-
 /**
  * Tests for {@link AllocationVisualizationStage}.
  *
@@ -44,8 +44,15 @@ import teetime.framework.test.StageTester;
  *
  */
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(MockitoJUnitRunner.class) // NOCS
 public class AllocationVisualizationStageTest {
+
+    private static final String SYSTEM_ID = "test_systemId";
+    private static final String OUTPUT_PORT = "9090";
+    private static final String OUTPUT_HOSTNAME = "localhost";
+
+    /** data for generating test container allocation event. */
+    private static final String SERVICE = "test-service";
 
     /** stage under test. */
     private AllocationVisualizationStage allocationVisualizationStage;
@@ -53,22 +60,14 @@ public class AllocationVisualizationStageTest {
     /** test parameters for stage under test. */
     @Mock
     private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
-    private static final String SYSTEM_ID = "test_systemId";
-    private URL changelogURL;
-    private final String outputPort = "9090";
-    private static final String OUTPUT_HOSTNAME = "localhost";
 
     /** input events. */
     private final List<ResourceContainer> inputEvents = new ArrayList<>();
 
     /** test event. */
 
-    /** data for generating test container allocation event. */
-    private static final String SERVICE = "test-service";
-
     /** list of test resource container. */
     private final List<ResourceContainer> testResourceContainerList = new ArrayList<>();
-    private ResourceContainer testResourceContainer;
 
     /**
      * Initialize test data and stub necessary method calls.
@@ -79,21 +78,21 @@ public class AllocationVisualizationStageTest {
      */
     @Before
     public void setupAndInitServer() throws MalformedURLException {
+        final URL changelogURL = new URL("http://" + AllocationVisualizationStageTest.OUTPUT_HOSTNAME + ":"
+                + AllocationVisualizationStageTest.OUTPUT_PORT + "/v1/systems/"
+                + AllocationVisualizationStageTest.SYSTEM_ID + "/changelogs");
 
-        this.changelogURL = new URL("http://" + AllocationVisualizationStageTest.OUTPUT_HOSTNAME + ":" + this.outputPort
-                + "/v1/systems/" + AllocationVisualizationStageTest.SYSTEM_ID + "/changelogs");
-
-        this.allocationVisualizationStage = new AllocationVisualizationStage(this.changelogURL,
+        this.allocationVisualizationStage = new AllocationVisualizationStage(changelogURL,
                 AllocationVisualizationStageTest.SYSTEM_ID);
 
         /** list of test resource container */
-        this.testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
-        this.testResourceContainer.setEntityName("test_nodeName");
-        this.testResourceContainer.setId("test_nodeId");
-        this.testResourceContainerList.add(this.testResourceContainer);
+        final ResourceContainer testResourceContainer = ResourceenvironmentFactory.eINSTANCE.createResourceContainer();
+        testResourceContainer.setEntityName("test_nodeName");
+        testResourceContainer.setId("test_nodeId");
+        this.testResourceContainerList.add(testResourceContainer);
 
         /** input events */
-        this.inputEvents.add(this.testResourceContainer);
+        this.inputEvents.add(testResourceContainer);
 
         // stubbing
         Mockito.when(this.mockedResourceContainerModelProvider.readOnlyComponentByName(ResourceContainer.class,

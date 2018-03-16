@@ -15,6 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
+import teetime.framework.Configuration;
+import teetime.framework.OutputPort;
+import teetime.stage.basic.distributor.Distributor;
+import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
+import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
+import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
@@ -37,13 +44,6 @@ import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import teetime.framework.Configuration;
-import teetime.framework.OutputPort;
-import teetime.stage.basic.distributor.Distributor;
-import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
-import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 /**
  * This is a generic configuration for all analyses.
@@ -73,6 +73,7 @@ public class AnalysisConfiguration extends Configuration {
      * @param configuration
      *            the configuration parameter
      * @param repositoryModelProvider
+     *            repository model provider
      * @param resourceEnvironmentModelProvider
      *            provider for an environment model
      * @param allocationModelProvider
@@ -80,6 +81,7 @@ public class AnalysisConfiguration extends Configuration {
      * @param systemModelProvider
      *            provider for the system model
      * @param usageModelProvider
+     *            usage model provider
      * @param correspondenceModelProvider
      *            provider for the correspondence model
      * @throws ConfigurationException

@@ -1,18 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'org.iobserve.analysis.service.AnalysisMain'
-
-buildscript {
-    repositories {
-        maven {url "https://maven.eveoh.nl/content/repositories/releases"}
-        maven {url "https://mvnrepository.com/artifact/org.nanohttpd/nanohttpd" }
-    }
-
-    dependencies {
-        classpath "nl.eveoh:gradle-aspectj:1.6"
-    }
-}
+mainClassName = 'org.iobserve.analysis.AnalysisMain'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

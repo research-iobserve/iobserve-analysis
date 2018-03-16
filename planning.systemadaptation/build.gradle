@@ -36,6 +36,7 @@ sourceSets {
 	main {
 		java {
 			srcDir 'src/main/java'
+			srcDir 'src/gen/java'
 		}
 	}
 }

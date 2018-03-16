@@ -31,7 +31,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author Josefine Wegert
  *
  */
-@RunWith(Suite.class)
+@RunWith(Suite.class) // NOCS test
 @SuiteClasses({ CommunicationInstanceServiceTest.class, CommunicationServiceTest.class, NodeServiceTest.class,
         ServiceInstanceServiceTest.class, ServiceServiceTest.class, SystemServiceTest.class })
 public class AllTestsServices {

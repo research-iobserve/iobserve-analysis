@@ -60,16 +60,17 @@ clover {
 }
 
 subprojects {
-	apply plugin: 'java'
-	apply plugin: 'maven'
-	apply plugin: 'eclipse'
-	apply plugin: 'com.bmuschko.clover'
+    apply plugin: 'java'
+    apply plugin: 'maven'
+    apply plugin: 'eclipse'
+    apply plugin: 'com.bmuschko.clover'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     
     version = '0.0.3-SNAPSHOT'
     group = 'org.iobserve'
+
         
 
     clover {
@@ -79,8 +80,7 @@ subprojects {
         }
         compiler {
            debug = true
-    }
-
+        }
     }
 
     // --- quality assurance plugins ---
@@ -102,6 +102,7 @@ subprojects {
 
     apply plugin: 'checkstyle'
     checkstyle {
+        toolVersion = checkstyleVersion
         ignoreFailures = true
         showViolations = false
 	configFile = new File(confDir, "checkstyle-rules.xml")
@@ -342,7 +343,7 @@ def parseCpdReport(File reportFile) {
 			errors++
         }
     } else {
-    	println 'Could not find CPD report file at ' + reportFile
+	println 'Could not find CPD report file at ' + reportFile
     }
     return [errors, warnings, infos]
 }

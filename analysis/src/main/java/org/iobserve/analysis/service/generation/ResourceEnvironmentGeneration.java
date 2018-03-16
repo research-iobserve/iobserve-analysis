@@ -17,16 +17,16 @@ package org.iobserve.analysis.service.generation;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import com.neovisionaries.i18n.CountryCode;
+
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceenvironmentPrivacyFactory;
 
-import com.neovisionaries.i18n.CountryCode;
-
 /**
  * ToDo .
- * 
+ *
  * @author unknown
  *
  */

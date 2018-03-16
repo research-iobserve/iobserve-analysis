@@ -132,15 +132,16 @@ public class DeploymentNode {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("Server: " + this.resourceContainerID);
-        sb.append("\t-- Location: " + this.isoCountryCode);
-        sb.append(" (" + this.getIso3CountryCode() + ")");
-        sb.append("\t-- Name: " + this.getResourceContainerName() + "\n");
+
+        sb.append("Server: ").append(this.resourceContainerID);
+        sb.append("\t-- Location: ").append(this.isoCountryCode);
+        sb.append(" (").append(this.getIso3CountryCode()).append(')');
+        sb.append("\t-- Name: ").append(this.getResourceContainerName()).append('\n');
 
         sb.append("-Comp:\t ID \t\t\tCompPrivayLvl \tPers \tDeP \tAnonym \tComponent Name\n");
 
         for (final ComponentNode component : this.containingComponents) {
-            sb.append("\t" + component.toString());
+            sb.append('\t').append(component.toString());
         }
 
         return sb.toString();

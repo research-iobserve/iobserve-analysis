@@ -32,7 +32,7 @@ import org.palladiosimulator.pcm.core.composition.CompositionFactory;
  * @author Josefine Wegert
  *
  */
-public class CommunicationInstanceServiceTest {
+public class CommunicationInstanceServiceTest { // NOCS test
 
     /** class under test. */
     private CommunicationInstanceService communicationInstanceService;
@@ -52,7 +52,7 @@ public class CommunicationInstanceServiceTest {
      * Prepare test data.
      */
     @Before
-    public void setup() {
+    public void setUp() {
         this.communicationInstanceService = new CommunicationInstanceService();
 
         /** test data */

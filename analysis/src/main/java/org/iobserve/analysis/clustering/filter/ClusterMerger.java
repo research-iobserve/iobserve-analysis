@@ -38,8 +38,13 @@ import weka.core.Instances;
  *
  */
 public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<Instance, Double>>>> {
-    private final OutputPort<Instances> outputPort = this.createOutputPort();
     private static final Logger LOGGER = LoggerFactory.getLogger(ClusterMerger.class);
+
+    private final OutputPort<Instances> outputPort = this.createOutputPort();
+
+    public ClusterMerger() { // NOCS empty constructor
+        // empty constructor
+    }
 
     /*
      * (non-Javadoc)

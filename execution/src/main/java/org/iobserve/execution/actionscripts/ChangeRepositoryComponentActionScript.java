@@ -63,7 +63,7 @@ public class ChangeRepositoryComponentActionScript extends AbstractActionScript 
         builder.append(this.action.getSourceAssemblyContext().getEntityName());
         builder.append("' to component '");
         builder.append(this.action.getNewRepositoryComponent().getEntityName());
-        builder.append("'");
+        builder.append('\'');
         return builder.toString();
     }
 

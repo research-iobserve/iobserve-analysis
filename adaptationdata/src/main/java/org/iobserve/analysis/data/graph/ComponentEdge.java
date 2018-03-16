@@ -15,10 +15,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.data.graph;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
 import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is a model of a fully specified pcm assembly connector for the purpose of privacy
@@ -28,12 +27,13 @@ import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
  */
 public class ComponentEdge {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ComponentEdge.class);
+
     private final String id;
     private final String assemblyConnectorName;
     private final ComponentNode providingNode;
     private final ComponentNode requiringNode;
     private final DataPrivacyLvl privacyLvl;
-    private static final Log LOG = LogFactory.getLog(ComponentEdge.class);
 
     /**
      * The constructor for the edge.
@@ -93,7 +93,10 @@ public class ComponentEdge {
         } else if (firstNode == this.requiringNode) {
             return this.providingNode;
         } else {
-            ComponentEdge.LOG.error("ERROR: no edge partner found for node: " + firstNode.getAssemblyContextID());
+            if (ComponentEdge.LOGGER.isErrorEnabled()) {
+                ComponentEdge.LOGGER
+                        .error("ERROR: no edge partner found for node: " + firstNode.getAssemblyContextID());
+            }
         }
         return null;
     }

@@ -39,7 +39,11 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @author Tobias Pöppke
  *
  */
-public class DesignDecisionModelFactory {
+public final class DesignDecisionModelFactory {
+
+    private DesignDecisionModelFactory() {
+        // private constructor, utility class
+    }
 
     /**
      * Saves the decision space with the specified file name in the given folder.

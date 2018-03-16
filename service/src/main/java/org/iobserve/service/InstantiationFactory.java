@@ -33,9 +33,13 @@ import org.slf4j.LoggerFactory;
  * @since 0.0.2
  *
  */
-public class InstantiationFactory { // NOPMD
+public final class InstantiationFactory { // NOPMD
 
     private static final Logger LOGGER = LoggerFactory.getLogger(InstantiationFactory.class);
+
+    private InstantiationFactory() {
+        // empty private default constructor for factory class
+    }
 
     /**
      * Create a class based on a set of parameters and a signature description.
@@ -60,13 +64,17 @@ public class InstantiationFactory { // NOPMD
             if (implementedInterface.isAssignableFrom(clazz)) {
                 return InstantiationFactory.instantiateClass(implementedInterface, clazz, parameterTypes, parameters);
             } else {
-                InstantiationFactory.LOGGER.error(
-                        "Class '" + className + "' has to implement '" + implementedInterface.getSimpleName() + "'");
+                if (InstantiationFactory.LOGGER.isErrorEnabled()) {
+                    InstantiationFactory.LOGGER.error("Class '" + className + "' has to implement '"
+                            + implementedInterface.getSimpleName() + "'");
+                }
                 throw new ConfigurationException("Requested class does not match interface.");
             }
         } catch (final ClassNotFoundException e) {
-            InstantiationFactory.LOGGER
-                    .error(implementedInterface.getSimpleName() + ": Class '" + className + "' not found", e);
+            if (InstantiationFactory.LOGGER.isErrorEnabled()) {
+                InstantiationFactory.LOGGER
+                        .error(implementedInterface.getSimpleName() + ": Class '" + className + "' not found", e);
+            }
             throw new ConfigurationException(e);
         }
     }

@@ -58,13 +58,14 @@ import org.slf4j.LoggerFactory;
  */
 public class PcmUsageModelBuilder {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PcmUsageModelBuilder.class);
+
     private final List<BranchModel> loopBranchModels;
     private final boolean isClosedWorkloadRequested;
     private final double thinkTime;
     private final List<Map<Integer, ScenarioBehaviour>> branchScenarioBehavioursOfUserGroups;
     private final ICorrespondence correspondenceModel;
     private final RepositoryLookupModelProvider repositoryLookupModel;
-    private static final Logger LOGGER = LoggerFactory.getLogger(PcmUsageModelBuilder.class);
 
     /**
      *
@@ -205,8 +206,10 @@ public class PcmUsageModelBuilder {
                         .getCorrespondent(branchElement.getClassSignature(), operationSplit[operationSplit.length - 1]);
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
-                    PcmUsageModelBuilder.LOGGER.debug("Usage: Found Correspondent: {}",
-                            correspondent.getPcmEntityName() + " " + correspondent.getPcmOperationName());
+                    if (PcmUsageModelBuilder.LOGGER.isDebugEnabled()) {
+                        PcmUsageModelBuilder.LOGGER.debug("Usage: Found Correspondent: {}",
+                                correspondent.getPcmEntityName() + " " + correspondent.getPcmOperationName());
+                    }
                     eSysCall = UsageModelFactory.createEntryLevelSystemCall(this.repositoryLookupModel, correspondent);
                 }
                 if (eSysCall != null) {

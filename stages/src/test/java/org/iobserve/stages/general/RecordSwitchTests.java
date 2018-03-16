@@ -53,7 +53,7 @@ import org.junit.Test;
  * @author Reiner Jung
  *
  */
-public class RecordSwitchTests {
+public class RecordSwitchTests { // NOCS test
 
     private static final long TRACE_ID = 1;
     private static final long THREAD_ID = 2;
@@ -62,8 +62,8 @@ public class RecordSwitchTests {
     private static final String SERVICE = "test-service";
     private static final String CONTEXT = "/path/test";
     private static final String DEPLOYMENT_ID = "service-01";
-    private static final String ADDRESS = "192.168.1.2";
-    private static final short COUNTRY_CODE = 49;
+    private static final String ADDRESS = "192.168.1.2"; // NOPMD
+    private static final short COUNTRY_CODE = 49; // NOPMD
     private static final String URL = "http://" + RecordSwitchTests.HOSTNAME + "/" + RecordSwitchTests.CONTEXT;
     private static final int ORDER_INDEX = 0;
     private static final String OPERATION_SIGNATURE = "a.b.c.d.Class.runTest()";

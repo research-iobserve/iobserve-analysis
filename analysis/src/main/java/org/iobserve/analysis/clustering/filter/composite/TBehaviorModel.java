@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.composite;
 
-import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.data.EntryCallSequenceModel;
-
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
+
+import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
+import org.iobserve.analysis.data.EntryCallSequenceModel;
 
 /**
  *

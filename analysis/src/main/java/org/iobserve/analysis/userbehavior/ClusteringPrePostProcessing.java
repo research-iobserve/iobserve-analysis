@@ -187,7 +187,7 @@ public class ClusteringPrePostProcessing {
                 }
                 instanceNumber++;
             }
-            if (sessions.size() == 0) {
+            if (sessions.isEmpty()) {
                 continue;
             }
             final double relativeFrequencyOfUserGroup = countOfAssigendUserSessions / countOfAbsoluteUserSessions;
@@ -233,9 +233,7 @@ public class ClusteringPrePostProcessing {
     private void calculateTheNumberOfConcurrentUsers(final List<UserSession> sessions,
             final WorkloadIntensity workloadIntensity) {
 
-        int averageNumberOfConcurrentUsers = 0;
-
-        if (sessions.size() < 1) {
+        if (sessions.isEmpty()) {
             workloadIntensity.setMaxNumberOfConcurrentUsers(0);
             workloadIntensity.setAvgNumberOfConcurrentUsers(0);
             return;
@@ -248,7 +246,7 @@ public class ClusteringPrePostProcessing {
         for (int i = 0; i < sessions.size(); i++) {
             final long entryTimeUS = this.getEntryTime(sessions.get(i).getEvents());
             final long exitTimeUS = sessions.get(i).getExitTime();
-            interval += (exitTimeUS - entryTimeUS);
+            interval += exitTimeUS - entryTimeUS;
         }
         final long avgInterval = interval / sessions.size();
 
@@ -257,7 +255,7 @@ public class ClusteringPrePostProcessing {
         final long startTimeOfAllUserSessions = this.getEntryTime(sessions.get(0).getEvents());
         final long endTimeOfAllUserSessions = sessions.get(sessions.size() - 1).getExitTime();
         final long numberOfTimeFrames = Math
-                .round(((endTimeOfAllUserSessions - startTimeOfAllUserSessions) / avgInterval) + 0.5);
+                .round((endTimeOfAllUserSessions - startTimeOfAllUserSessions) / avgInterval + 0.5);
 
         // Set the start and end times and its initial count of each timeframe
         final List<long[]> timeframes = new ArrayList<>();
@@ -278,7 +276,7 @@ public class ClusteringPrePostProcessing {
         for (int i = 0; i < sessions.size(); i++) {
             final long entryTimeUS = this.getEntryTime(sessions.get(i).getEvents());
             for (int j = 0; j < timeframes.size(); j++) {
-                if ((entryTimeUS >= timeframes.get(j)[0]) && (entryTimeUS <= timeframes.get(j)[1])) {
+                if (entryTimeUS >= timeframes.get(j)[0] && entryTimeUS <= timeframes.get(j)[1]) {
                     timeframes.get(j)[2] = timeframes.get(j)[2] + 1;
                     break;
                 }
@@ -290,7 +288,8 @@ public class ClusteringPrePostProcessing {
         for (int j = 0; j < timeframes.size(); j++) {
             numberOfConcurrentUserSessions += timeframes.get(j)[2] * timeframes.get(j)[2];
         }
-        averageNumberOfConcurrentUsers = numberOfConcurrentUserSessions / sessions.size();
+
+        final int averageNumberOfConcurrentUsers = numberOfConcurrentUserSessions / sessions.size();
 
         workloadIntensity.setAvgNumberOfConcurrentUsers(averageNumberOfConcurrentUsers);
     }
@@ -306,11 +305,11 @@ public class ClusteringPrePostProcessing {
     private void calculateInterarrivalTime(final List<UserSession> sessions,
             final WorkloadIntensity workloadIntensity) {
         long interArrivalTime = 0;
-        if (sessions.size() > 0) {
+        if (!sessions.isEmpty()) {
             // sort user sessions
             Collections.sort(sessions, this.sortUserSessionByExitTime);
             long sum = 0;
-            for (int i = 0; i < (sessions.size() - 1); i++) {
+            for (int i = 0; i < sessions.size() - 1; i++) {
                 final long exitTimeU1 = sessions.get(i).getEntryTime();
                 final long exitTimeU2 = sessions.get(i + 1).getEntryTime();
                 sum += exitTimeU2 - exitTimeU1;

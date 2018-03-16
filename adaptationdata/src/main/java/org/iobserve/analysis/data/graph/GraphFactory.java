@@ -21,9 +21,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import kieker.common.logging.Log;
-import kieker.common.logging.LogFactory;
-
 import org.eclipse.emf.common.util.EList;
 import org.iobserve.model.PCMModelHandler;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -35,6 +32,8 @@ import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO add description.
@@ -43,7 +42,7 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPri
  *
  */
 public class GraphFactory {
-    private static final Log LOG = LogFactory.getLog(GraphFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphFactory.class);
 
     private PCMModelHandler modelProvider;
 
@@ -58,6 +57,7 @@ public class GraphFactory {
      * Empty Constructor.
      */
     public GraphFactory() {
+        // state holding graph factory
     }
 
     /**
@@ -84,7 +84,7 @@ public class GraphFactory {
     /*
      * Prepare all data structures.
      */
-    private void init(final PCMModelHandler modelProvider) {
+    private void init(final PCMModelHandler modelProvider) { // NOCS
         this.modelProvider = modelProvider;
 
         this.assemblyContexts = new HashMap<>();
@@ -107,7 +107,9 @@ public class GraphFactory {
             acs.add(assemblyContext.getId());
         }
 
-        GraphFactory.LOG.info("Individual Assembly Contexts found in System Model: " + acs.size());
+        if (GraphFactory.LOGGER.isInfoEnabled()) {
+            GraphFactory.LOGGER.info("Individual Assembly Contexts found in System Model: " + acs.size());
+        }
     }
 
     private void extractAssemblyConnectors(final org.palladiosimulator.pcm.system.System sysModel) {
@@ -139,7 +141,9 @@ public class GraphFactory {
             acs.add(providedACID);
         }
 
-        GraphFactory.LOG.info("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
+        if (GraphFactory.LOGGER.isInfoEnabled()) {
+            GraphFactory.LOGGER.info("Individual Assembly Contexts found in Assembly Connectors: " + acs.size());
+        }
     }
 
     private void updatePrivacyLvl(final AssemblyConnectorPrivacy acp, final DataPrivacyLvl assemblyConnectorPrivacyLvl,
@@ -147,10 +151,11 @@ public class GraphFactory {
         // Check whether the AssemblyContext was found while extracting
         final AssemblyContext assemblyContext = this.assemblyContexts.get(assemblyContextID);
         if (assemblyContext == null) {
-            GraphFactory.LOG.error("The provided AssemblyContext (ID: " + assemblyContextID
-                    + ") form the AssemblyConnectorPrivacy (ID:" + acp.getId() + ") "
-                    + "was not found during the AssemblyContextExtraction");
-
+            if (GraphFactory.LOGGER.isErrorEnabled()) {
+                GraphFactory.LOGGER.error("The provided AssemblyContext (ID: " + assemblyContextID
+                        + ") form the AssemblyConnectorPrivacy (ID:" + acp.getId() + ") "
+                        + "was not found during the AssemblyContextExtraction");
+            }
             this.assemblyContexts.put(assemblyContextID, acp.getProvidingAssemblyContext_AssemblyConnector());
         }
 
@@ -173,8 +178,10 @@ public class GraphFactory {
             if (resourceContainer instanceof ResourceContainerPrivacy) {
                 this.resourceContainers.put(resourceContainer.getId(), (ResourceContainerPrivacy) resourceContainer);
             } else {
-                GraphFactory.LOG.error("A ResourceContainer (ID: " + resourceContainer.getId()
-                        + ") was found which has no privacy extention\n");
+                if (GraphFactory.LOGGER.isErrorEnabled()) {
+                    GraphFactory.LOGGER.error("A ResourceContainer (ID: " + resourceContainer.getId()
+                            + ") was found which has no privacy extention\n");
+                }
             }
         }
     }
@@ -191,15 +198,19 @@ public class GraphFactory {
             boolean correctIDs = true;
             final String resContainerID = resContainer.getId();
             if (!this.resourceContainers.containsKey(resContainerID)) {
-                GraphFactory.LOG.error("A unknown ResourceContainer (ID: " + resContainer.getId()
-                        + ") was found during allocation context analysis.\n");
+                if (GraphFactory.LOGGER.isErrorEnabled()) {
+                    GraphFactory.LOGGER.error("A unknown ResourceContainer (ID: " + resContainer.getId()
+                            + ") was found during allocation context analysis.\n");
+                }
                 correctIDs = false;
             }
 
             final String assemblyContextID = assemblyContext.getId();
             if (!this.assemblyContexts.containsKey(assemblyContextID)) {
-                GraphFactory.LOG.error("An unknown AssemblyContext (ID: " + assemblyContext.getId()
-                        + ") was found during allocation context analysis.\n");
+                if (GraphFactory.LOGGER.isErrorEnabled()) {
+                    GraphFactory.LOGGER.error("An unknown AssemblyContext (ID: " + assemblyContext.getId()
+                            + ") was found during allocation context analysis.\n");
+                }
                 correctIDs = false;
             }
 
@@ -213,8 +224,8 @@ public class GraphFactory {
      * Build Graph Helpers
      */
     private ModelGraph createModelGraph() {
-        final HashMap<String, DeploymentNode> servers = new HashMap<>();
-        final HashMap<String, ComponentNode> components = new HashMap<>();
+        final Map<String, DeploymentNode> servers = new HashMap<>();
+        final Map<String, ComponentNode> components = new HashMap<>();
 
         // Build Servers Nodes
         for (final ResourceContainerPrivacy resContainer : this.resourceContainers.values()) {

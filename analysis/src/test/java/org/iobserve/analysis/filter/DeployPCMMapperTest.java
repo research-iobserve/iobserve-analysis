@@ -26,8 +26,8 @@ import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
-import org.iobserve.model.test.data.CorrespondenceModelData;
-import org.iobserve.model.test.data.ImplementationLevelData;
+import org.iobserve.model.test.data.CorrespondenceModelDataFactory;
+import org.iobserve.model.test.data.ImplementationLevelDataFactory;
 import org.iobserve.model.test.data.ModelLevelData;
 import org.junit.Assert;
 import org.junit.Before;
@@ -45,7 +45,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author Reiner Jung
  *
  */
-@RunWith(PowerMockRunner.class)
+@RunWith(PowerMockRunner.class) // NOCS
 // write all final classes here
 @PrepareForTest(ResourceEnvironmentModelFactory.class)
 public class DeployPCMMapperTest {
@@ -65,8 +65,8 @@ public class DeployPCMMapperTest {
         /** mock for correspondence model */
         DeployPCMMapperTest.mockedCorrespondence = Mockito.mock(ICorrespondence.class);
 
-        DeployPCMMapperTest.inputEvents.add(ImplementationLevelData.SERVLET_DEPLOYED_EVENT);
-        DeployPCMMapperTest.inputEvents.add(ImplementationLevelData.EJB_DEPLOYED_EVENT);
+        DeployPCMMapperTest.inputEvents.add(ImplementationLevelDataFactory.SERVLET_DEPLOYED_EVENT);
+        DeployPCMMapperTest.inputEvents.add(ImplementationLevelDataFactory.EJB_DEPLOYED_EVENT);
 
         DeployPCMMapperTest.pcmDeployedEvents.add(ModelLevelData.PCM_DEPLOYED_EVENT);
         DeployPCMMapperTest.pcmDeployedEvents.add(ModelLevelData.PCM_DEPLOYED_EVENT);
@@ -78,8 +78,8 @@ public class DeployPCMMapperTest {
      */
     @Before
     public void stubMocksNoServletResourceContainer() {
-        Mockito.when(DeployPCMMapperTest.mockedCorrespondence.getCorrespondent(ImplementationLevelData.CONTEXT))
-                .thenReturn(Optional.of(CorrespondenceModelData.CORRESPONDENT));
+        Mockito.when(DeployPCMMapperTest.mockedCorrespondence.getCorrespondent(ImplementationLevelDataFactory.CONTEXT))
+                .thenReturn(Optional.of(CorrespondenceModelDataFactory.CORRESPONDENT));
     }
 
     /**

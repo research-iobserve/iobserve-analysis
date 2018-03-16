@@ -25,7 +25,7 @@ import org.junit.runners.Suite.SuiteClasses;
  * @author jweg
  *
  */
-@RunWith(Suite.class)
+@RunWith(Suite.class) // NOCS
 @SuiteClasses({ AllocationNoResourceContainerTest.class, AllocationResourceContainerTest.class,
         DeployPCMMapperTest.class, DeploymentResourceContainerTest.class, UndeploymentNoResourceContainerTest.class,
         UndeploymentResourceContainerTest.class })

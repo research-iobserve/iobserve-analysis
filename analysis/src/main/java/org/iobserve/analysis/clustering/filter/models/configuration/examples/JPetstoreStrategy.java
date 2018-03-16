@@ -27,6 +27,10 @@ import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentat
  */
 public class JPetstoreStrategy implements IRepresentativeStrategy {
 
+    public JPetstoreStrategy() { // NOCS empty constructor
+        // empty constructor
+    }
+
     @Override
     public Double findRepresentativeCode(final String signature, final List<Double> callInformationCodes) {
         // summing up all values

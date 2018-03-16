@@ -30,7 +30,7 @@ import org.palladiosimulator.pcm.system.SystemFactory;
  * @author Josefine Wegert
  *
  */
-public class SystemServiceTest {
+public class SystemServiceTest { // NOCS test
 
     /** class under test. */
     private SystemService systemService;
@@ -45,7 +45,7 @@ public class SystemServiceTest {
      * Test setup.
      */
     @Before
-    public void setup() {
+    public void setUp() {
 
         this.systemService = new SystemService();
 

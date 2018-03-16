@@ -31,7 +31,7 @@ public class FeatureToggle {
     private String behaviourToggle;
     private boolean dataFlowToggle;
     private boolean geolocationToggle;
-    private boolean SinksToggle;
+    private boolean sinksToggle;
 
     /**
      * Creates FeatureToggle object. Expects boolean for toggles: deployment, undeployment,
@@ -50,11 +50,11 @@ public class FeatureToggle {
         this.behaviourToggle = behaviourToggle;
         this.dataFlowToggle = dataflowToggle;
         this.geolocationToggle = geolocationToggle;
-        this.SinksToggle = sinksToggle;
+        this.sinksToggle = sinksToggle;
     }
 
     // Deployment.
-    public boolean getDeploymentToggle() {
+    public boolean isDeploymentToggle() {
         return this.deploymentToggle;
     }
 
@@ -63,7 +63,7 @@ public class FeatureToggle {
     }
 
     // Undeployment.
-    public boolean getUndeploymentToggle() {
+    public boolean isUndeploymentToggle() {
         return this.undeploymentToggle;
     }
 
@@ -72,7 +72,7 @@ public class FeatureToggle {
     }
 
     // Allocation.
-    public boolean getAllocationToggle() {
+    public boolean isAllocationToggle() {
         return this.allocationToggle;
     }
 
@@ -80,7 +80,7 @@ public class FeatureToggle {
         this.allocationToggle = allocationToggle;
     }
 
-    public boolean getDeallocationToggle() {
+    public boolean isDeallocationToggle() {
         return this.deallocationToggle;
     }
 
@@ -98,7 +98,7 @@ public class FeatureToggle {
     }
 
     // Geolocation.
-    public boolean getGeolocationToggle() {
+    public boolean isGeolocationToggle() {
         return this.geolocationToggle;
     }
 
@@ -107,16 +107,16 @@ public class FeatureToggle {
     }
 
     // Sink.
-    public boolean getSinksToggle() {
-        return this.SinksToggle;
+    public boolean isSinksToggle() {
+        return this.sinksToggle;
     }
 
     public void setSinksToggle(final boolean sinksToggle) {
-        this.SinksToggle = sinksToggle;
+        this.sinksToggle = sinksToggle;
     }
 
     // Dataflow.
-    public boolean getDataFlowToggle() {
+    public boolean isDataFlowToggle() {
         return this.dataFlowToggle;
     }
 

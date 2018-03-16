@@ -29,11 +29,11 @@ import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.factory.AllocationModelFactory;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.test.data.CorrespondenceModelData;
-import org.iobserve.model.test.data.ImplementationLevelData;
+import org.iobserve.model.test.data.CorrespondenceModelDataFactory;
+import org.iobserve.model.test.data.ImplementationLevelDataFactory;
 import org.iobserve.model.test.data.ModelLevelData;
-import org.iobserve.model.test.data.ResourceEnvironmentData;
-import org.iobserve.model.test.data.SystemData;
+import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
+import org.iobserve.model.test.data.SystemDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -57,13 +57,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author Reiner Jung
  *
  */
-@RunWith(PowerMockRunner.class)
+@RunWith(PowerMockRunner.class) // NOCS test
 // write all final classes here
 @PrepareForTest({ ResourceEnvironmentModelFactory.class, AllocationModelFactory.class })
 public class UndeploymentNoResourceContainerTest {
-
-    /** stage under test. */
-    private UndeploymentModelUpdater undeploymentUpdater;
 
     /** mocks. */
     @Mock
@@ -81,11 +78,14 @@ public class UndeploymentNoResourceContainerTest {
     /** test resource container with null value. */
     private static Optional<ResourceContainer> optTestNullResourceContainer;
 
+    /** stage under test. */
+    private UndeploymentModelUpdater undeploymentUpdater;
+
     /**
      * Initialize test events and mock necessary classes.
      */
     @BeforeClass
-    public static void setup() {
+    public static void setUp() {
 
         /** input deployment event */
         UndeploymentNoResourceContainerTest.inputEvents.add(ModelLevelData.PCM_UNDEPLOYED_EVENT);
@@ -124,19 +124,20 @@ public class UndeploymentNoResourceContainerTest {
 
         /** get models */
         Mockito.when(UndeploymentNoResourceContainerTest.mockedCorrespondence
-                .getCorrespondent(ImplementationLevelData.CONTEXT))
-                .thenReturn(Optional.of(CorrespondenceModelData.CORRESPONDENT));
+                .getCorrespondent(ImplementationLevelDataFactory.CONTEXT))
+                .thenReturn(Optional.of(CorrespondenceModelDataFactory.CORRESPONDENT));
 
         Mockito.when(UndeploymentNoResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .readOnlyRootComponent(ResourceEnvironment.class))
-                .thenReturn(ResourceEnvironmentData.RESOURCE_ENVIRONMENT);
+                .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
 
         Mockito.when(UndeploymentNoResourceContainerTest.mockedSystemModelGraphProvider
-                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class)).thenReturn(SystemData.SYSTEM);
+                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class))
+                .thenReturn(SystemDataFactory.SYSTEM);
 
         /** get part of models */
         Mockito.when(ResourceEnvironmentModelFactory.getResourceContainerByName(
-                ResourceEnvironmentData.RESOURCE_ENVIRONMENT, ImplementationLevelData.SERVICE))
+                ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT, ImplementationLevelDataFactory.SERVICE))
                 .thenReturn(UndeploymentNoResourceContainerTest.optTestNullResourceContainer);
 
     }

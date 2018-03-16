@@ -30,7 +30,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class CLIEventListener implements IAdaptationEventListener {
+<<<<<<< HEAD
     private static final Logger LOG = LoggerFactory.getLogger(CLIEventListener.class);
+=======
+    private static final Logger LOGGER = LoggerFactory.getLogger(CLIEventListener.class);
+>>>>>>> origin/master
 
     private final boolean interactiveMode;
 
@@ -55,10 +59,10 @@ public class CLIEventListener implements IAdaptationEventListener {
                             + unsupportedActionsDesc);
         }
 
-        CLIEventListener.LOG.info("The following actions can not be executed automatically:");
-        CLIEventListener.LOG.info(unsupportedActionsDesc);
+        CLIEventListener.LOGGER.info("The following actions can not be executed automatically:");
+        CLIEventListener.LOGGER.info(unsupportedActionsDesc);
 
-        CLIEventListener.LOG.info(
+        CLIEventListener.LOGGER.info(
                 "You will be prompted to execute the tasks manually during the process. Do you want to continue?");
 
         final Scanner scanner = new Scanner(System.in);
@@ -71,12 +75,13 @@ public class CLIEventListener implements IAdaptationEventListener {
 
     @Override
     public void notifyExecutionError(final AbstractActionScript script, final Throwable e) {
-        CLIEventListener.LOG.info("There was an error executing the following script: ");
-        CLIEventListener.LOG.info(script.getDescription());
-        CLIEventListener.LOG.info(e.getMessage());
+        CLIEventListener.LOGGER.info("There was an error executing the following script: ");
+        CLIEventListener.LOGGER.info(script.getDescription());
+        CLIEventListener.LOGGER.info(e.getMessage());
         e.printStackTrace();
-        CLIEventListener.LOG.info("You can manually execute the script and continue or abort the adaptation process.");
-        CLIEventListener.LOG.info("Do you want to continue?");
+        CLIEventListener.LOGGER
+                .info("You can manually execute the script and continue or abort the adaptation process.");
+        CLIEventListener.LOGGER.info("Do you want to continue?");
 
         final Scanner scanner = new Scanner(System.in);
         if (!scanner.nextBoolean()) {

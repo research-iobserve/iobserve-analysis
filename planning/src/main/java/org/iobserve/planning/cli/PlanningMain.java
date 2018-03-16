@@ -42,8 +42,11 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class PlanningMain {
+<<<<<<< HEAD
     private static final Logger LOG = LoggerFactory.getLogger(PlanningMain.class);
 
+=======
+>>>>>>> origin/master
     public static final String INPUT_WORKING_DIR_OPTION = "working-dir";
     public static final String INPUT_WORKING_DIR_OPTION_SHORT = "w";
 
@@ -59,6 +62,8 @@ public final class PlanningMain {
     public static final String LQNS_DIR_OPTION = "lqns-dir";
     public static final String LQNS_DIR_OPTION_SHORT = "l";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlanningMain.class);
+
     private PlanningMain() {
         // Do nothing.
     }
@@ -72,13 +77,17 @@ public final class PlanningMain {
         final CommandLine commandLine;
         try {
             for (final String arg : args) {
-                PlanningMain.LOG.info("arg: " + arg);
+                if (PlanningMain.LOGGER.isInfoEnabled()) {
+                    PlanningMain.LOGGER.info("arg: " + arg);
+                }
             }
             commandLine = parser.parse(PlanningMain.createOptions(), args);
             workingDir = commandLine.getOptionValue(PlanningMain.INPUT_WORKING_DIR_OPTION);
             perOpteryxDir = commandLine.getOptionValue(PlanningMain.PEROPTERYX_DIR_OPTION);
 
-            PlanningMain.LOG.info("Working dir: " + workingDir + ", PerOpteryx dir: " + perOpteryxDir);
+            if (PlanningMain.LOGGER.isInfoEnabled()) {
+                PlanningMain.LOGGER.info("Working dir: " + workingDir + ", PerOpteryx dir: " + perOpteryxDir);
+            }
         } catch (final ParseException exp) {
             // LOG.error("CLI error: " + exp.getMessage());
             final HelpFormatter formatter = new HelpFormatter();
@@ -87,17 +96,21 @@ public final class PlanningMain {
         }
 
         final URI modelURI = URI.createFileURI(workingDir);
-        PlanningMain.LOG.info("modelURI: " + modelURI);
+        if (PlanningMain.LOGGER.isInfoEnabled()) {
+            PlanningMain.LOGGER.info("modelURI: " + modelURI);
+        }
 
         final URI perOpteryxURI = URI.createFileURI(perOpteryxDir);
-        PlanningMain.LOG.info("perOpteryxURI: " + perOpteryxURI);
-
-        PlanningMain.LOG.info("lqnsURI: " + perOpteryxURI);
-
+        if (PlanningMain.LOGGER.isInfoEnabled()) {
+            PlanningMain.LOGGER.info("perOpteryxURI: " + perOpteryxURI);
+            PlanningMain.LOGGER.info("lqnsURI: " + perOpteryxURI);
+        }
         PalladioEclipseEnvironment.INSTANCE.setup();
 
         if (!commandLine.hasOption(PlanningMain.CREATE_RESOURCEENVIRONMENT_OPTION)) {
-            PlanningMain.LOG.info("Executing optimization...");
+            if (PlanningMain.LOGGER.isInfoEnabled()) {
+                PlanningMain.LOGGER.info("Executing optimization...");
+            }
 
             final AdaptationData adaptationData = new AdaptationData();
             adaptationData.setRuntimeModelURI(modelURI);
@@ -125,16 +138,24 @@ public final class PlanningMain {
             // }
 
             if (result == 0) {
-                PlanningMain.LOG.info("Optimization was successful.");
+                if (PlanningMain.LOGGER.isInfoEnabled()) {
+                    PlanningMain.LOGGER.info("Optimization was successful.");
+                }
             } else {
-                PlanningMain.LOG.info("Optimization failed.");
+                if (PlanningMain.LOGGER.isInfoEnabled()) {
+                    PlanningMain.LOGGER.info("Optimization failed.");
+                }
             }
         } else {
-            PlanningMain.LOG.info("Creating ResourceEnvironment...");
+            if (PlanningMain.LOGGER.isInfoEnabled()) {
+                PlanningMain.LOGGER.info("Creating ResourceEnvironment...");
+            }
             final PCMModelHandler modelHandler = new PCMModelHandler(new File(workingDir));
             ModelHelper.fillResourceEnvironmentFromCloudProfile(
                     org.eclipse.emf.common.util.URI.createFileURI(workingDir), modelHandler);
-            PlanningMain.LOG.info("ResourceEnvironment successfully created.");
+            if (PlanningMain.LOGGER.isInfoEnabled()) {
+                PlanningMain.LOGGER.info("ResourceEnvironment successfully created.");
+            }
         }
     }
 

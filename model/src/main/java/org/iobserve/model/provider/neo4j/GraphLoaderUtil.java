@@ -23,11 +23,15 @@ import java.io.File;
  * @author Lars Bluemke
  *
  */
-public class GraphLoaderUtil {
+public final class GraphLoaderUtil {
+
+    private GraphLoaderUtil() {
+        // private constructor, utility class
+    }
 
     /**
      * Returns the highest version number from all passed graph database directories.
-     * 
+     *
      * @param files
      *            The graph database directories
      * @return The highest version number

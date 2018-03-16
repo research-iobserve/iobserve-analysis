@@ -15,13 +15,13 @@
  ***************************************************************************/
 package org.iobserve.execution.configurations;
 
+import teetime.framework.Configuration;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.evaluation.ModelComparer;
 import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.execution.AdaptationExecution;
 import org.iobserve.execution.IAdaptationEventListener;
-
-import teetime.framework.Configuration;
 
 /**
  * Configuration for the stages of the execution service.

@@ -18,6 +18,7 @@ package org.iobserve.monitoring.probe.servlet;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -308,11 +309,11 @@ public class SessionAndTraceRegistrationFilterForJPetstoreAttributeCoding implem
             // if (CTRLINST.isProbeActivated(this.filterOperationSignatureString)) {
 
             String operationSignature;
-            String componentSignature;
+            final String componentSignature;
             final String method;
             final String path;
             final String sessionId;
-            final ArrayList<CallInformation> callInformations = new ArrayList<>();
+            final List<CallInformation> callInformations = new ArrayList<>();
 
             String query = null;
             String[] queryParameters = null;
