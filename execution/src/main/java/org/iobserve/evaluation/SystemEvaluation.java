@@ -17,8 +17,8 @@ package org.iobserve.evaluation;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
-import org.iobserve.analysis.utils.AbstractLinearComposition;
+import org.iobserve.model.snapshot.SnapshotBuilder;
+import org.iobserve.stages.general.AbstractLinearComposition;
 
 /**
  * TODO add description for stage.

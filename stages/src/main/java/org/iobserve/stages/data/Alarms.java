@@ -26,7 +26,7 @@ import java.util.List;
  * @since 0.0.3
  */
 public class Alarms implements IErrorMessages {
-    private List<String> alarms = new ArrayList<>();
+    private List<String> messages = new ArrayList<>();
 
     /**
      * Create an alarm result.
@@ -37,16 +37,16 @@ public class Alarms implements IErrorMessages {
 
     @Override
     public final List<String> getMessages() {
-        return this.alarms;
+        return this.messages;
     }
 
     @Override
     public void setMessages(final List<String> messages) {
-        this.alarms = messages;
+        this.messages = messages;
     }
 
     @Override
     public void addMessage(final String message) {
-        this.alarms.add(message);
+        this.messages.add(message);
     }
 }

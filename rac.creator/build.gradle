@@ -5,8 +5,9 @@ mainClassName='org.iobserve.rac.creator.RacCreatorMain'
 dependencies {
 	clover 'org.openclover:clover:4.2.0'
 
-	compile project(":analysis")
+	compile project(":stages")
 	compile project(":service")
+	compile project(":model")
 	
 	compile 'xml-apis:xml-apis:1.4.01'
 }

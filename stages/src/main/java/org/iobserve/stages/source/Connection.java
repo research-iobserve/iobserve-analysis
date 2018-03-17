@@ -37,8 +37,6 @@ public class Connection {
     private final ReaderRegistry<String> registry = new ReaderRegistry<>();
     /** The connection channel for in and output. */
     private final SocketChannel channel;
-    /** String registy wrapper. */
-    private final IRegistry<String> stringRegistryWrapper;
     /** Byte buffer for reading the channel. */
     private final ByteBuffer buffer;
     /** Deserializer setup. */
@@ -54,9 +52,9 @@ public class Connection {
      */
     public Connection(final SocketChannel channel, final int bufferSize) {
         this.channel = channel;
-        this.stringRegistryWrapper = new GetValueAdapter<>(this.registry);
+        final IRegistry<String> stringRegistryWrapper = new GetValueAdapter<>(this.registry);
         this.buffer = ByteBuffer.allocateDirect(bufferSize);
-        this.deserializer = BinaryValueDeserializer.create(this.buffer, this.stringRegistryWrapper);
+        this.deserializer = BinaryValueDeserializer.create(this.buffer, stringRegistryWrapper);
     }
 
     public ReaderRegistry<String> getRegistry() {

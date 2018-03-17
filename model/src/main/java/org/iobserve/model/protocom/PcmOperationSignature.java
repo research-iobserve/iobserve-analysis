@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.protocom;
+package org.iobserve.model.protocom;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -23,27 +23,26 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * Methods description.
+ * Representing an operation signature mapping between on operation in code and a seff.
  *
  * @author Alessandro Guisa
  *
  */
-@XmlRootElement(name = "CorrespondentMethod")
+@XmlRootElement(name = "OperationSignature")
 @XmlAccessorType(XmlAccessType.PUBLIC_MEMBER)
-@XmlType(name = "CorrespondentMethod", propOrder = { "name", "returnType", "visibilityModifier", "parameters" })
-public class PcmCorrespondentMethod {
+@XmlType(name = "OperationSignature", propOrder = { "name", "seffName", "id" })
+public class PcmOperationSignature {
 
     private String name;
-    private String returnType;
-    private String visibilityModifier;
-    private String parameters;
-    private PcmEntityCorrespondent parent;
+    private String seffName;
+    private String id;
+    private PcmEntity parent;
 
     /**
-     * Empty constructor for entity class.
+     * Default constructor.
      */
-    public PcmCorrespondentMethod() {
-        /* nothing to do here */
+    public PcmOperationSignature() {
+        /* nothing to do */
     }
 
     @XmlElement(name = "Name")
@@ -51,43 +50,34 @@ public class PcmCorrespondentMethod {
         return this.name;
     }
 
-    @XmlElement(name = "ReturnType")
-    public String getReturnType() {
-        return this.returnType;
+    @XmlElement(name = "Id")
+    public String getId() {
+        return this.id;
     }
 
-    @XmlElement(name = "VisibilityModifier")
-    public String getVisibilityModifier() {
-        return this.visibilityModifier;
-    }
-
-    @XmlElement(name = "Parameters")
-    public String getParameters() {
-        return this.parameters;
+    @XmlElement(name = "SeffName")
+    public String getSeffName() {
+        return this.seffName;
     }
 
     @XmlTransient
-    public PcmEntityCorrespondent getParent() {
+    public PcmEntity getParent() {
         return this.parent;
+    }
+
+    public void setSeffName(final String seffName) {
+        this.seffName = seffName;
     }
 
     public void setName(final String name) {
         this.name = name;
     }
 
-    public void setReturnType(final String returnType) {
-        this.returnType = returnType;
+    public void setId(final String id) {
+        this.id = id;
     }
 
-    public void setVisibilityModifier(final String visibilityModifier) {
-        this.visibilityModifier = visibilityModifier;
-    }
-
-    public void setParameters(final String parameters) {
-        this.parameters = parameters;
-    }
-
-    public void setParent(final PcmEntityCorrespondent parent) {
+    public void setParent(final PcmEntity parent) {
         this.parent = parent;
     }
 

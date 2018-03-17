@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.snapshot;
+package org.iobserve.model.snapshot;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,11 +24,11 @@ import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.model.PCMModelHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class creates a copy of the current PCM runtime model. (also called Snapshot) The output
@@ -38,7 +38,7 @@ import org.iobserve.model.PCMModelHandler;
  */
 public class SnapshotBuilder extends AbstractStage {
 
-    protected static final Logger LOGGER = LogManager.getLogger(SnapshotBuilder.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(SnapshotBuilder.class);
 
     private static URI baseSnapshotLocation = null;
     private static CopyOption[] copyOptions = new CopyOption[] { StandardCopyOption.REPLACE_EXISTING,

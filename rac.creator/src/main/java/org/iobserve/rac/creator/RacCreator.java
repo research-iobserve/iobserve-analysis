@@ -31,11 +31,11 @@ import java.util.Set;
 import javax.xml.bind.JAXB;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
-import org.iobserve.analysis.protocom.PcmEntity;
-import org.iobserve.analysis.protocom.PcmEntityCorrespondent;
-import org.iobserve.analysis.protocom.PcmMapping;
-import org.iobserve.analysis.protocom.PcmOperationSignature;
+import org.iobserve.model.protocom.PcmCorrespondentMethod;
+import org.iobserve.model.protocom.PcmEntity;
+import org.iobserve.model.protocom.PcmEntityCorrespondent;
+import org.iobserve.model.protocom.PcmMapping;
+import org.iobserve.model.protocom.PcmOperationSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;

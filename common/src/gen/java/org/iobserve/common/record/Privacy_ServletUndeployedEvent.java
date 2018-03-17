@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,16 +31,13 @@ import org.iobserve.common.record.Privacy;
  * 
  * @since 1.13
  */
-public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent implements Privacy {
-	private static final long serialVersionUID = -8429938424094273587L;
-
+public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent implements Privacy {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_STRING // ServletDescriptor.service
 			 + TYPE_SIZE_STRING // ServletDescriptor.context
 			 + TYPE_SIZE_STRING // ServletDescriptor.deploymentId
-			 + TYPE_SIZE_SHORT // GeoLocation.countryCode
-	;
+			 + TYPE_SIZE_SHORT; // GeoLocation.countryCode
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEventRecord.timestamp
@@ -50,9 +47,9 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 		short.class, // GeoLocation.countryCode
 	};
 	
-	
 	/** default constants. */
 	public static final short COUNTRY_CODE = 49;
+	private static final long serialVersionUID = -8429938424094273587L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -121,6 +118,7 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public Privacy_ServletUndeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
@@ -140,7 +138,7 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 			this.getService(),
 			this.getContext(),
 			this.getDeploymentId(),
-			this.getCountryCode()
+			this.getCountryCode(),
 		};
 	}
 	/**
@@ -152,6 +150,7 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 		stringRegistry.get(this.getContext());
 		stringRegistry.get(this.getDeploymentId());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -164,6 +163,7 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 		serializer.putString(this.getDeploymentId());
 		serializer.putShort(this.getCountryCode());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -204,17 +204,36 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final Privacy_ServletUndeployedEvent castedRecord = (Privacy_ServletUndeployedEvent) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (!this.getService().equals(castedRecord.getService())) return false;
-		if (!this.getContext().equals(castedRecord.getContext())) return false;
-		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
-		if (this.getCountryCode() != castedRecord.getCountryCode()) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (this.getTimestamp() != castedRecord.getTimestamp()) {
+			return false;
+		}
+		if (!this.getService().equals(castedRecord.getService())) {
+			return false;
+		}
+		if (!this.getContext().equals(castedRecord.getContext())) {
+			return false;
+		}
+		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) {
+			return false;
+		}
+		if (this.getCountryCode() != castedRecord.getCountryCode()) {
+			return false;
+		}
+		
 		return true;
 	}
 	
