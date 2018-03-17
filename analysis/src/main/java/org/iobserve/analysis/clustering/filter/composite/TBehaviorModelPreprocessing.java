@@ -15,13 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.composite;
 
-import org.iobserve.analysis.clustering.filter.TBehaviorModelPreperation;
-import org.iobserve.analysis.clustering.filter.TBehaviorModelTableGeneration;
-import org.iobserve.analysis.clustering.filter.TEntryCallSequenceFilter;
-import org.iobserve.analysis.clustering.filter.TInstanceTransformations;
-import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.data.EntryCallSequenceModel;
-
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
@@ -31,6 +24,14 @@ import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import teetime.stage.basic.merger.Merger;
 import teetime.stage.basic.merger.strategy.BlockingBusyWaitingRoundRobinMergerStrategy;
 import teetime.stage.basic.merger.strategy.IMergerStrategy;
+
+import org.iobserve.analysis.clustering.filter.TBehaviorModelPreperation;
+import org.iobserve.analysis.clustering.filter.TBehaviorModelTableGeneration;
+import org.iobserve.analysis.clustering.filter.TEntryCallSequenceFilter;
+import org.iobserve.analysis.clustering.filter.TInstanceTransformations;
+import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
+import org.iobserve.analysis.data.EntryCallSequenceModel;
+
 import weka.core.Instances;
 
 /**
@@ -40,11 +41,7 @@ import weka.core.Instances;
 
 public class TBehaviorModelPreprocessing extends CompositeStage {
 
-    private final Distributor<EntryCallSequenceModel> distributor;
-    private final Merger<Object> merger;
     private final TEntryCallSequenceFilter tEntryCallSequenceFilter;
-    private final TBehaviorModelTableGeneration tBehaviorModelTableGeneration;
-    private final TBehaviorModelPreperation tBehaviorModelPreperation;
 
     private final TInstanceTransformations tInstanceTransformations;
 
@@ -58,26 +55,27 @@ public class TBehaviorModelPreprocessing extends CompositeStage {
 
         this.tEntryCallSequenceFilter = new TEntryCallSequenceFilter(configuration.getModelGenerationFilter());
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
-        this.distributor = new Distributor<>(strategy);
+        final Distributor<EntryCallSequenceModel> distributor = new Distributor<>(strategy);
 
         final IMergerStrategy mergerStrategy = new BlockingBusyWaitingRoundRobinMergerStrategy();
-        this.merger = new Merger<>(mergerStrategy);
+        final Merger<Object> merger = new Merger<>(mergerStrategy);
 
-        this.tBehaviorModelTableGeneration = new TBehaviorModelTableGeneration(
-                configuration.getRepresentativeStrategy(), configuration.keepEmptyTransitions());
+        final TBehaviorModelTableGeneration tBehaviorModelTableGeneration = new TBehaviorModelTableGeneration(
+                configuration.getRepresentativeStrategy(), configuration.isKeepEmptyTransitions());
 
-        this.tBehaviorModelPreperation = new TBehaviorModelPreperation(configuration.keepEmptyTransitions());
+        final TBehaviorModelPreperation tBehaviorModelPreperation = new TBehaviorModelPreperation(
+                configuration.isKeepEmptyTransitions());
 
         this.tInstanceTransformations = new TInstanceTransformations();
 
-        this.connectPorts(this.tEntryCallSequenceFilter.getOutputPort(), this.distributor.getInputPort());
-        this.connectPorts(this.distributor.getNewOutputPort(), this.tBehaviorModelTableGeneration.getInputPort());
-        this.connectPorts(this.distributor.getNewOutputPort(), this.merger.getNewInputPort());
+        this.connectPorts(this.tEntryCallSequenceFilter.getOutputPort(), distributor.getInputPort());
+        this.connectPorts(distributor.getNewOutputPort(), tBehaviorModelTableGeneration.getInputPort());
+        this.connectPorts(distributor.getNewOutputPort(), merger.getNewInputPort());
 
-        this.connectPorts(this.tBehaviorModelTableGeneration.getOutputPort(), this.merger.getNewInputPort());
+        this.connectPorts(tBehaviorModelTableGeneration.getOutputPort(), merger.getNewInputPort());
 
-        this.connectPorts(this.merger.getOutputPort(), this.tBehaviorModelPreperation.getInputPort());
-        this.connectPorts(this.tBehaviorModelPreperation.getOutputPort(), this.tInstanceTransformations.getInputPort());
+        this.connectPorts(merger.getOutputPort(), tBehaviorModelPreperation.getInputPort());
+        this.connectPorts(tBehaviorModelPreperation.getOutputPort(), this.tInstanceTransformations.getInputPort());
 
     }
 

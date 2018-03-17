@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
-import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
@@ -43,8 +40,11 @@ import org.palladiosimulator.pcm.resourcetype.ResourcetypeFactory;
  *
  * @author Lars Bluemke
  *
+ * @since 0.0.2
  */
-public class ResourceEnvironmentModelProviderTest implements IModelProviderTest {
+public class ResourceEnvironmentModelProviderTest implements IModelProviderTest { // NOCS no
+                                                                                  // constructor in
+                                                                                  // test
     private static final File GRAPH_DIR = new File("./testdb");
 
     private static Graph graph = new GraphLoader(ResourceEnvironmentModelProviderTest.GRAPH_DIR)
@@ -200,7 +200,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
                 ResourceEnvironmentModelProviderTest.graph);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
-        List<EObject> readReferencingComponents;
+        final List<EObject> readReferencingComponents;
 
         modelProvider.createComponent(writtenModel);
 
@@ -225,7 +225,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
         final ResourceContainer orderServer = testModelBuilder.getOrderServer();
         final LinkingResource writtenLan1 = testModelBuilder.getLan1();
-        ResourceEnvironment readModel;
+        final ResourceEnvironment readModel;
 
         modelProvider.createComponent(writtenModel);
 

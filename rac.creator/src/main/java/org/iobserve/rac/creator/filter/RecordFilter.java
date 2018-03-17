@@ -20,6 +20,7 @@ import kieker.common.record.flow.trace.operation.AbstractOperationEvent;
 import kieker.common.record.flow.trace.operation.object.AfterOperationObjectEvent;
 import kieker.common.record.flow.trace.operation.object.BeforeOperationObjectEvent;
 import kieker.common.record.flow.trace.operation.object.BeforeOperationObjectInterfaceEvent;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
@@ -32,13 +33,18 @@ import teetime.framework.OutputPort;
 public class RecordFilter extends AbstractConsumerStage<IFlowRecord> {
 
     private static final String ILLEGAL_STRING = "cloud-web-frontend";
+
     private final OutputPort<AbstractOperationEvent> outputPort = this.createOutputPort();
+
+    public RecordFilter() {
+        // empty default constructor
+    }
 
     @Override
     protected void execute(final IFlowRecord element) throws Exception {
         /** only allow the following types to be processed. */
-        if ((element instanceof BeforeOperationObjectInterfaceEvent) || (element instanceof BeforeOperationObjectEvent)
-                || (element instanceof AfterOperationObjectEvent)) {
+        if (element instanceof BeforeOperationObjectInterfaceEvent || element instanceof BeforeOperationObjectEvent
+                || element instanceof AfterOperationObjectEvent) {
             final AbstractOperationEvent event = (AbstractOperationEvent) element;
             if (!event.getClassSignature().contentEquals(RecordFilter.ILLEGAL_STRING)) {
                 this.outputPort.send(event);

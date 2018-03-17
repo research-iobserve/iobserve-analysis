@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://www.iobserve-devops.net)
+ * Copyright 2018 iObserve Project (http://iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@ package org.iobserve.common.record;
 
 import java.nio.BufferOverflowException;
 
+import kieker.common.exception.RecordInstantiationException;
 import org.iobserve.common.record.ServletDescriptor;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
@@ -107,8 +108,9 @@ public class ServletDeployedEvent extends ServletDescriptor implements IDeployed
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
+	 * @throws RecordInstantiationException 
 	 */
-	public ServletDeployedEvent(final IValueDeserializer deserializer) {
+	public ServletDeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
 	}
 	

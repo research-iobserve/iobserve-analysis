@@ -104,7 +104,7 @@ public class RacCreator {
         /** read input. */
         final RepositoryFileReader repositoryFileReader = new RepositoryFileReader(this.repositoryFile);
         final ModelMappingReader modelMappingReader = new ModelMappingReader(this.mappingFile);
-        final Map<Integer, Set<List<String>>> monitoringData = this.readMonitoringData(this.inputPath);
+        final Map<Integer, Set<List<String>>> monitoringData = this.readMonitoringData();
 
         final Map<String, PcmEntity> repositoryMapping = repositoryFileReader.computeMapping();
         final Map<String, String> modelMapping = modelMappingReader.readModelMapping();
@@ -128,8 +128,8 @@ public class RacCreator {
      * @return returns a map of sets of records
      * @throws IOException
      */
-    private Map<Integer, Set<List<String>>> readMonitoringData(final File inputPath) throws IOException {
-        final String filePath = inputPath.getCanonicalPath() + File.separator + RacCreator.KIEKER_INPUT_DAT;
+    private Map<Integer, Set<List<String>>> readMonitoringData() throws IOException {
+        final String filePath = this.inputPath.getCanonicalPath() + File.separator + RacCreator.KIEKER_INPUT_DAT;
         final Map<Integer, Set<List<String>>> localMonitoringData = new HashMap<>();
 
         for (int i = 0; i < 11; i++) {
@@ -147,7 +147,7 @@ public class RacCreator {
                 line = in.readLine();
             }
             in.close();
-        } catch (final Exception e) {
+        } catch (final IOException e) {
             e.printStackTrace();
         }
 
@@ -321,12 +321,10 @@ public class RacCreator {
             final PcmEntityCorrespondent correspondent = new PcmEntityCorrespondent();
             correspondent.setFilePath("No Path");
             correspondent.setProjectName("No Project");
-            try {
-                correspondent.setPackageName(classSignature.substring(0, classSignature.lastIndexOf('.')));
-                correspondent.setUnitName(classSignature.substring(classSignature.lastIndexOf('.') + 1));
-            } catch (final Exception e) {
-                e.printStackTrace();
-            }
+
+            correspondent.setPackageName(classSignature.substring(0, classSignature.lastIndexOf('.')));
+            correspondent.setUnitName(classSignature.substring(classSignature.lastIndexOf('.') + 1));
+
             correspondentMapping.put(classSignature, correspondent);
         }
 
@@ -358,18 +356,14 @@ public class RacCreator {
             } else if (i >= 1 && method.getReturnType() == null) {
                 method.setReturnType(token);
             } else if (i >= 2 && method.getName() == null) {
-                try {
-                    String methodSig = token.substring(0, token.indexOf('('));
+                String methodSig = token.substring(0, token.indexOf('('));
 
-                    methodSig = methodSig.substring(methodSig.lastIndexOf('.') + 1);
-                    if (methodSig.contains("$")) {
-                        methodSig = methodSig.substring(0, methodSig.lastIndexOf('$'));
-                    }
-
-                    method.setName(methodSig);
-                } catch (final Exception e) {
-                    e.printStackTrace();
+                methodSig = methodSig.substring(methodSig.lastIndexOf('.') + 1);
+                if (methodSig.contains("$")) {
+                    methodSig = methodSig.substring(0, methodSig.lastIndexOf('$'));
                 }
+
+                method.setName(methodSig);
             }
         }
 

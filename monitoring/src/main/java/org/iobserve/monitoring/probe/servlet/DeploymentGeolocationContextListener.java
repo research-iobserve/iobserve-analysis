@@ -27,10 +27,18 @@ import org.iobserve.common.record.ServletUndeployedEvent;
  *
  * @author Reiner Jung
  *
+ * @since 0.0.1
  */
 public class DeploymentGeolocationContextListener extends AbstractDeploymentContextListener {
 
     public static final String COUNTRY_CODE = "countryCode";
+
+    /**
+     * Create an deployment geolocation context listener.
+     */
+    public DeploymentGeolocationContextListener() {
+        // empty constructor
+    }
 
     @Override
     protected void triggerDeployedEvent(final ServletContextEvent event) {

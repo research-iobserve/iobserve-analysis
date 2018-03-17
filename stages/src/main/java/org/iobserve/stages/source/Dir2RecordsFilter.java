@@ -46,11 +46,12 @@ import org.slf4j.LoggerFactory;
  */
 public final class Dir2RecordsFilter extends CompositeStage {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Dir2RecordsFilter.class);
+
     private final ClassNameRegistryCreationFilter classNameRegistryCreationFilter;
     private final Merger<IMonitoringRecord> recordMerger;
 
     private ClassNameRegistryRepository classNameRegistryRepository;
-    private static final Logger LOGGER = LoggerFactory.getLogger(Dir2RecordsFilter.class);
 
     /**
      * Default constructor using a new instance of {@link ClassNameRegistryRepository}.
@@ -80,7 +81,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
                 try {
                     return o1.getCanonicalFile().compareTo(o2.getCanonicalFile());
                 } catch (final IOException e) {
-                    Dir2RecordsFilter.LOGGER.error("Exception while getting canonical file name", e);
+                    Dir2RecordsFilter.LOGGER.error("Exception while getting canonical file name", e); // NOPMD
                     return 0;
                 }
             }
@@ -96,8 +97,7 @@ public final class Dir2RecordsFilter extends CompositeStage {
         this.recordMerger = new Merger<>();
 
         // store ports due to readability reasons
-        final OutputPort<File> normalFileOutputPort = fileExtensionSwitch
-                .addFileExtension(FSUtil.NORMAL_FILE_EXTENSION);
+        final OutputPort<File> normalFileOutputPort = fileExtensionSwitch.addFileExtension(FSUtil.DAT_FILE_EXTENSION);
         final OutputPort<File> binFileOutputPort = fileExtensionSwitch
                 .addFileExtension(BinaryCompressionMethod.NONE.getFileExtension());
 

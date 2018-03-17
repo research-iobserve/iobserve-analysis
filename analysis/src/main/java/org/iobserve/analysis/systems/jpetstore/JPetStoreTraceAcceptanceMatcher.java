@@ -26,10 +26,14 @@ import org.iobserve.stages.general.data.EntryCallEvent;
  */
 public class JPetStoreTraceAcceptanceMatcher implements IEntryCallAcceptanceMatcher {
 
+    public JPetStoreTraceAcceptanceMatcher() {
+        // empty constructor
+    }
+
     @Override
     public boolean match(final EntryCallEvent call) {
-        return (this.matchClassSignature(call.getClassSignature())
-                && this.matchOperationSignature(call.getOperationSignature()));
+        return this.matchClassSignature(call.getClassSignature())
+                && this.matchOperationSignature(call.getOperationSignature());
     }
 
     private boolean matchOperationSignature(final String operationSignature) {

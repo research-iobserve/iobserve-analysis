@@ -28,9 +28,9 @@ import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
 
-import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
+import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -64,6 +64,13 @@ public class RacCreatorMain extends AbstractServiceMain<ObservationConfiguration
     @Parameter(names = { "-r",
             "--repository" }, required = true, description = "PCM repository file.", converter = FileConverter.class)
     private File repositoryFile;
+
+    /**
+     * Create a new rac creator.
+     */
+    public RacCreatorMain() {
+        // empty constructor
+    }
 
     /**
      * @param args

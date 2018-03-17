@@ -27,8 +27,8 @@ import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.test.data.ImplementationLevelData;
-import org.iobserve.model.test.data.ResourceEnvironmentData;
+import org.iobserve.model.test.data.ImplementationLevelDataFactory;
+import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -47,22 +47,22 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author jweg
  *
  */
-@RunWith(PowerMockRunner.class)
+@RunWith(PowerMockRunner.class) // NOCS
 // write all final classes here
 @PrepareForTest(ResourceEnvironmentModelFactory.class)
 public class AllocationResourceContainerTest {
 
-    /** stage under test. */
-    private AllocationStage allocationStage;
-
     /** mocks. */
     private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+
+    /** stage under test. */
+    private AllocationStage allocationStage;
 
     /**
      * Initialize test data.
      */
     @BeforeClass
-    public static void setup() {
+    public static void setUp() {
 
         /** input allocation event */
     }
@@ -86,12 +86,14 @@ public class AllocationResourceContainerTest {
 
         Mockito.when(AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .readOnlyRootComponent(ResourceEnvironment.class))
-                .thenReturn(ResourceEnvironmentData.RESOURCE_ENVIRONMENT);
+                .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
 
-        Mockito.when(ResourceEnvironmentModelFactory
-                .getResourceContainerByName(AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
-                        .readOnlyRootComponent(ResourceEnvironment.class), ImplementationLevelData.SERVICE))
-                .thenReturn(Optional.of(ResourceEnvironmentData.RESOURCE_CONTAINER));
+        Mockito.when(
+                ResourceEnvironmentModelFactory.getResourceContainerByName(
+                        AllocationResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
+                                .readOnlyRootComponent(ResourceEnvironment.class),
+                        ImplementationLevelDataFactory.SERVICE))
+                .thenReturn(Optional.of(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER));
     }
 
     /**
@@ -102,7 +104,7 @@ public class AllocationResourceContainerTest {
     public void checkNoAllocationUpdate() {
 
         final List<IAllocationEvent> inputEvents = new ArrayList<>();
-        inputEvents.add(ImplementationLevelData.CONTAINER_ALLOCATION_EVENT);
+        inputEvents.add(ImplementationLevelDataFactory.CONTAINER_ALLOCATION_EVENT);
 
         final List<ResourceContainer> allocationFinishedEvents = new ArrayList<>();
         final List<IAllocationEvent> noAllocationEvents = new ArrayList<>();

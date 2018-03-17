@@ -261,26 +261,10 @@ public final class BranchWithinBranchReference {
                         branchTransitionBehaviourInterior);
                 final Stop stopBranchTransitionInterior = UsageModelFactory.createAddStopAction("",
                         branchTransitionBehaviourInterior);
+
                 lastAction = startBranchTransitionInterior;
-                switch (j) {
-                case 0:
-                    optionCorrespondent = correspondenceModel.getCorrespondent(
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[0],
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0]);
-                    break;
-                case 1:
-                    optionCorrespondent = correspondenceModel.getCorrespondent(
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[3],
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[3]);
-                    break;
-                case 2:
-                    optionCorrespondent = correspondenceModel.getCorrespondent(
-                            ReferenceUsageModelBuilder.CLASS_SIGNATURE[4],
-                            ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Illegal value of model element parameter");
-                }
+                optionCorrespondent = BranchWithinBranchReference.getOptionCorrespondent(correspondenceModel, j);
+
                 if (optionCorrespondent.isPresent()) {
                     final Correspondent correspondent = optionCorrespondent.get();
                     final EntryLevelSystemCall entryLevelSystemCall = UsageModelFactory
@@ -295,6 +279,23 @@ public final class BranchWithinBranchReference {
         }
 
         return usageModel;
+    }
+
+    private static Optional<Correspondent> getOptionCorrespondent(final ICorrespondence correspondenceModel,
+            final int j) {
+        switch (j) {
+        case 0:
+            return correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[0],
+                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[0]);
+        case 1:
+            return correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[3],
+                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[3]);
+        case 2:
+            return correspondenceModel.getCorrespondent(ReferenceUsageModelBuilder.CLASS_SIGNATURE[4],
+                    ReferenceUsageModelBuilder.OPERATION_SIGNATURE[4]);
+        default:
+            throw new IllegalArgumentException("Illegal value of model element parameter");
+        }
     }
 
     /**

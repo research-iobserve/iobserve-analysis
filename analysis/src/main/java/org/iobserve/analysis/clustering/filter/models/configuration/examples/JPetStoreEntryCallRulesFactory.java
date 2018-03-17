@@ -24,11 +24,19 @@ import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenera
  * @author Christoph Dornieden
  *
  */
-public class JPetStoreEntryCallRulesFactory implements IModelGenerationFilterFactory {
+public final class JPetStoreEntryCallRulesFactory implements IModelGenerationFilterFactory {
 
-    @Override
-    public EntryCallFilterRules createFilter() {
-        EntryCallFilterRules modelGenerationFilter;
+    private JPetStoreEntryCallRulesFactory() {
+        // empty constructor
+    }
+
+    /**
+     * Create an entry call filter rule for the JPetStore.
+     *
+     * @return return the filter
+     */
+    public static EntryCallFilterRules createFilter() {
+        final EntryCallFilterRules modelGenerationFilter;
         modelGenerationFilter = new EntryCallFilterRules(true);
         modelGenerationFilter.addFilterRule("(\\w*\\.)*images.*");
         modelGenerationFilter.addFilterRule("(\\w*\\.)*css.*");

@@ -33,13 +33,17 @@ import java.util.stream.Collector;
  */
 public class SingleOrNoneCollector<T> implements Collector<T, SingleOrNoneAccumulator<T>, Optional<T>> {
 
+    public SingleOrNoneCollector() { // NOCS empty constructor
+        // empty constructor
+    }
+
     @Override
     public BiConsumer<SingleOrNoneAccumulator<T>, T> accumulator() {
         return (a, t) -> a.add(t);
     }
 
     @Override
-    public Set<java.util.stream.Collector.Characteristics> characteristics() {
+    public Set<Characteristics> characteristics() {
         return EnumSet.of(Characteristics.UNORDERED);
     }
 

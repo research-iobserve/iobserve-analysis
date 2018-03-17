@@ -34,9 +34,9 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class GraphLoader {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GraphLoader.class);
-
     protected static final String VERSION_PREFIX = "_v";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphLoader.class);
 
     private static final String ALLOCATION_GRAPH_DIR = "allocationmodel";
     private static final String REPOSITORY_GRAPH_DIR = "repositorymodel";

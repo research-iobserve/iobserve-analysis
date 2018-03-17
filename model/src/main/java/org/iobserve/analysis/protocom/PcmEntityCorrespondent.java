@@ -67,19 +67,19 @@ public class PcmEntityCorrespondent {
 
             // build method signature
             builder.append(method.getVisibilityModifier());
-            builder.append(" ");
+            builder.append(' ');
             builder.append(method.getReturnType());
-            builder.append(" ");
+            builder.append(' ');
             builder.append(method.getParent().getPackageName());
-            builder.append(".");
+            builder.append('.');
             builder.append(method.getParent().getUnitName());
-            builder.append(".");
+            builder.append('.');
             builder.append(method.getName());
-            builder.append("(");
+            builder.append('(');
             if (method.getParameters() != null) {
                 builder.append(method.getParameters());
             }
-            builder.append(")");
+            builder.append(')');
             // <exception throws signature> is missing since this.
             // is not retrievable from protocom-generation process so far.
 

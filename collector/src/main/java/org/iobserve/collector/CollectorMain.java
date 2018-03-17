@@ -21,27 +21,25 @@ import java.io.IOException;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
-import com.beust.jcommander.converters.IntegerConverter;
 
 import kieker.common.configuration.Configuration;
 
-import org.iobserve.analysis.ConfigurationException;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
+import org.iobserve.service.CommonConfigurationKeys;
+import org.iobserve.stages.general.ConfigurationException;
 
 /**
- * Collector main class.
+ * The collector allows to collect input from different input sources, including TCP and Kieker
+ * files. In future, we may add a nice mechanism to add other
  *
  * @author Reiner Jung
  */
 public final class CollectorMain extends AbstractServiceMain<SimpleBridgeConfiguration> {
-    @Parameter(names = { "-d",
-            "--data" }, required = true, description = "Output data directory.", converter = FileConverter.class)
-    private File dataLocation;
 
-    @Parameter(names = { "-p",
-            "--port" }, required = true, description = "Input port.", converter = IntegerConverter.class)
-    private Integer inputPort;
+    @Parameter(names = { "-c",
+            "--configuration" }, required = true, description = "Configuration file.", converter = FileConverter.class)
+    private File configurationFile;
 
     /**
      * This is a simple main class which does not need to be instantiated.
@@ -63,18 +61,13 @@ public final class CollectorMain extends AbstractServiceMain<SimpleBridgeConfigu
     @Override
     protected SimpleBridgeConfiguration createConfiguration(final Configuration configuration)
             throws ConfigurationException {
-        try {
-            return new SimpleBridgeConfiguration(this.dataLocation.getCanonicalPath(), this.inputPort);
-        } catch (final IOException e) {
-            throw new ConfigurationException(e);
-        }
+        return new SimpleBridgeConfiguration(configuration);
     }
 
     @Override
     protected boolean checkParameters(final JCommander commander) throws ConfigurationException {
         try {
-            return CommandLineParameterEvaluation.checkDirectory(this.dataLocation, "Output Kieker directory",
-                    commander);
+            return CommandLineParameterEvaluation.isFileReadable(this.configurationFile, "Configuration File");
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }
@@ -82,11 +75,12 @@ public final class CollectorMain extends AbstractServiceMain<SimpleBridgeConfigu
 
     @Override
     protected File getConfigurationFile() {
-        return null;
+        return this.configurationFile;
     }
 
     @Override
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
+        configuration.getStringProperty(CommonConfigurationKeys.SOURCE_STAGE);
         return true;
     }
 

@@ -44,6 +44,8 @@ import org.slf4j.LoggerFactory;
  */
 public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSequenceModel> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(TEntryEventSequence.class);
+
     /** reference to the correspondence model. */
     private final ICorrespondence correspondenceModel;
     /** usage model provider. */
@@ -59,8 +61,6 @@ public final class TEntryEventSequence extends AbstractConsumerStage<EntryCallSe
 
     private final OutputPort<Boolean> outputPortSnapshot;
     private final RepositoryLookupModelProvider repositoryLookupModel;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(TEntryEventSequence.class);
 
     /**
      * Create a entry event sequence filter.

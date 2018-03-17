@@ -22,23 +22,28 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
  * @author Reiner Jung
  *
  */
-public class ModelLevelData {
+public final class ModelLevelData {
 
     public static final PCMDeployedEvent PCM_DEPLOYED_EVENT = ModelLevelData.createPCMDeployedEvent((short) 0);
     public static final PCMDeployedEvent PCM_DEPLOYED_DE_EVENT = ModelLevelData.createPCMDeployedEvent((short) 49);
 
     public static final PCMUndeployedEvent PCM_UNDEPLOYED_EVENT = ModelLevelData.createPCMUndeployedEvent();
 
-    private static PCMDeployedEvent createPCMDeployedEvent(final short countryCode) {
-        final String urlContext = ImplementationLevelData.CONTEXT.replaceAll("\\.", "/");
-        final String url = "http://" + ImplementationLevelData.SERVICE + '/' + urlContext;
+    private ModelLevelData() {
+        // private factory constructor
+    }
 
-        return new PCMDeployedEvent(ImplementationLevelData.SERVICE, CorrespondenceModelData.CORRESPONDENT, url,
-                countryCode);
+    private static PCMDeployedEvent createPCMDeployedEvent(final short countryCode) { // NOPMD
+        final String urlContext = ImplementationLevelDataFactory.CONTEXT.replaceAll("\\.", "/");
+        final String url = "http://" + ImplementationLevelDataFactory.SERVICE + '/' + urlContext;
+
+        return new PCMDeployedEvent(ImplementationLevelDataFactory.SERVICE,
+                CorrespondenceModelDataFactory.CORRESPONDENT, url, countryCode);
     }
 
     private static PCMUndeployedEvent createPCMUndeployedEvent() {
-        return new PCMUndeployedEvent(ImplementationLevelData.SERVICE, CorrespondenceModelData.CORRESPONDENT);
+        return new PCMUndeployedEvent(ImplementationLevelDataFactory.SERVICE,
+                CorrespondenceModelDataFactory.CORRESPONDENT);
     }
 
 }

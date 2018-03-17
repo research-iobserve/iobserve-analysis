@@ -18,12 +18,12 @@ package org.iobserve.analysis.clustering.filter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.clustering.filter.models.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.session.data.UserSession;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * Filters entry-calls from EntryCallSequenceModels.

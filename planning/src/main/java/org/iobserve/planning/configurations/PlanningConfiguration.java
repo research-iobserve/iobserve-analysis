@@ -15,13 +15,13 @@
  ***************************************************************************/
 package org.iobserve.planning.configurations;
 
+import teetime.framework.Configuration;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.planning.CandidateGeneration;
 import org.iobserve.planning.CandidateProcessing;
 import org.iobserve.planning.ModelOptimization;
 import org.iobserve.planning.ModelProcessing;
-
-import teetime.framework.Configuration;
 
 /**
  * Configuration for the stages of the planning service.
@@ -33,7 +33,7 @@ public class PlanningConfiguration extends Configuration {
 
     public PlanningConfiguration(final URI perOpteryxHeadless, final URI lqnsDir) {
 
-        if ((perOpteryxHeadless != null) && (lqnsDir != null)) {
+        if (perOpteryxHeadless != null && lqnsDir != null) {
             // create filters for snapshot planning, evaluation and adaptation
             final CandidateGeneration candidateGenerator = new CandidateGeneration(
                     new ModelProcessing(perOpteryxHeadless, lqnsDir), new ModelOptimization(),

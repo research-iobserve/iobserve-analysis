@@ -43,19 +43,20 @@ import org.slf4j.LoggerFactory;
 
 public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicBehaviorModelTable.class);
+
     /** a map for adding and updating transitions. */
     private final Map<String, Pair<Integer, ArrayList<AggregatedCallInformation>>> signatures;
 
     /** a list for getting transitions. */
-    private final ArrayList<String> inverseSignatures;
+    private final List<String> inverseSignatures;
 
     /** transition matrix. */
-    private final LinkedList<LinkedList<Integer>> transitions;
+    private final LinkedList<LinkedList<Integer>> transitions; // NOPMD NOCS specific interface is
+                                                               // used
 
     /** Aggregation strategy. */
     private final IRepresentativeStrategy strategy;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicBehaviorModelTable.class);
 
     /**
      * advanced constructor.
@@ -103,9 +104,8 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
      * @return index of the signature in the transition table
      */
     private int getSignatureIndex(final String signature) {
-        final Integer index = this.signatures.containsKey(signature) ? this.signatures.get(signature).getFirst()
+        return this.signatures.containsKey(signature) ? this.signatures.get(signature).getFirst()
                 : this.addSignature(signature);
-        return index;
     }
 
     @Override
@@ -123,8 +123,7 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
             if (!this.signatures.containsKey(eventSignature)) {
                 this.addSignature(eventSignature);
             }
-            final ArrayList<AggregatedCallInformation> aggCallInformations = this.signatures.get(eventSignature)
-                    .getSecond();
+            final List<AggregatedCallInformation> aggCallInformations = this.signatures.get(eventSignature).getSecond();
 
             for (final CallInformation newCallInformation : newCallInformations) {
 
@@ -169,7 +168,9 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
         // create a new row in the matrix
         final Integer[] newRowArray = new Integer[1 + size];
         Arrays.fill(newRowArray, AbstractBehaviorModelTable.EMPTY_TRANSITION);
-        final LinkedList<Integer> newRow = new LinkedList<>(Arrays.asList(newRowArray));
+        final LinkedList<Integer> newRow = new LinkedList<>(Arrays.asList(newRowArray)); // NOCS
+                                                                                         // implementation
+                                                                                         // dependency
 
         this.transitions.addLast(newRow);
 
@@ -202,10 +203,7 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
         final Integer[][] fixedTransitions = this.transitions.stream().map(l -> l.stream().toArray(Integer[]::new))
                 .toArray(Integer[][]::new);
 
-        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(fixedSignatures,
-                fixedInverseSignatures, fixedTransitions);
-
-        return fixedBehaviorModelTable;
+        return new BehaviorModelTable(fixedSignatures, fixedInverseSignatures, fixedTransitions);
     }
 
     /**
@@ -245,10 +243,7 @@ public class DynamicBehaviorModelTable extends AbstractBehaviorModelTable {
             }
         }
 
-        final BehaviorModelTable fixedBehaviorModelTable = new BehaviorModelTable(fixedSignatures,
-                fixedInverseSignatures, fixedTransitions);
-
-        return fixedBehaviorModelTable;
+        return new BehaviorModelTable(fixedSignatures, fixedInverseSignatures, fixedTransitions);
     }
 
     @Override

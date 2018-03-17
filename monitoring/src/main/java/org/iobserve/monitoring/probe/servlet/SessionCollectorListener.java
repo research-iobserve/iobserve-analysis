@@ -18,12 +18,12 @@ package org.iobserve.monitoring.probe.servlet;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
-import org.iobserve.common.record.SessionEndEvent;
-import org.iobserve.common.record.SessionStartEvent;
-
 import kieker.monitoring.core.controller.IMonitoringController;
 import kieker.monitoring.core.controller.MonitoringController;
 import kieker.monitoring.timer.ITimeSource;
+
+import org.iobserve.common.record.SessionEndEvent;
+import org.iobserve.common.record.SessionStartEvent;
 
 /**
  * The listener triggers events for session creation and destruction.
@@ -41,6 +41,13 @@ public class SessionCollectorListener implements HttpSessionListener {
     private final IMonitoringController monitoringCtrl = MonitoringController.getInstance();
     /** Kieker time source. */
     private final ITimeSource timeSource = this.monitoringCtrl.getTimeSource();
+
+    /**
+     * Create a session collector listener.
+     */
+    public SessionCollectorListener() {
+        // empty constructor
+    }
 
     @Override
     public void sessionCreated(final HttpSessionEvent event) {

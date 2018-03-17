@@ -30,13 +30,13 @@ import org.iobserve.model.factory.AllocationModelFactory;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.factory.SystemModelFactory;
 import org.iobserve.model.provider.neo4j.ModelProvider;
-import org.iobserve.model.test.data.AllocationData;
-import org.iobserve.model.test.data.AssemblyContextData;
-import org.iobserve.model.test.data.CorrespondenceModelData;
-import org.iobserve.model.test.data.ImplementationLevelData;
+import org.iobserve.model.test.data.AllocationDataFactory;
+import org.iobserve.model.test.data.AssemblyContextDataFactory;
+import org.iobserve.model.test.data.CorrespondenceModelDataFactory;
+import org.iobserve.model.test.data.ImplementationLevelDataFactory;
 import org.iobserve.model.test.data.ModelLevelData;
-import org.iobserve.model.test.data.ResourceEnvironmentData;
-import org.iobserve.model.test.data.SystemData;
+import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
+import org.iobserve.model.test.data.SystemDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,13 +59,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author Reiner Jung
  *
  */
-@RunWith(PowerMockRunner.class)
+@RunWith(PowerMockRunner.class) // NOCS test
 // write all final classes here
 @PrepareForTest({ ResourceEnvironmentModelFactory.class, AllocationModelFactory.class, SystemModelFactory.class })
 public class UndeploymentResourceContainerTest {
-
-    /** stage under test. */
-    private UndeploymentModelUpdater undeploymentUpdater;
 
     /** mocks. */
     @Mock
@@ -76,6 +73,9 @@ public class UndeploymentResourceContainerTest {
     private static ModelProvider<Allocation> mockedAllocationModelGraphProvider;
     @Mock
     private static ICorrespondence mockedCorrespondence;
+
+    /** stage under test. */
+    private UndeploymentModelUpdater undeploymentUpdater;
 
     /**
      * Define the test situation in which the needed {@link ResourceContainer} and
@@ -106,35 +106,36 @@ public class UndeploymentResourceContainerTest {
 
         /** get models */
         Mockito.when(UndeploymentResourceContainerTest.mockedCorrespondence
-                .getCorrespondent(ImplementationLevelData.CONTEXT))
-                .thenReturn(Optional.of(CorrespondenceModelData.CORRESPONDENT));
+                .getCorrespondent(ImplementationLevelDataFactory.CONTEXT))
+                .thenReturn(Optional.of(CorrespondenceModelDataFactory.CORRESPONDENT));
 
         Mockito.when(UndeploymentResourceContainerTest.mockedResourceEnvironmentModelGraphProvider
                 .readOnlyRootComponent(ResourceEnvironment.class))
-                .thenReturn(ResourceEnvironmentData.RESOURCE_ENVIRONMENT);
+                .thenReturn(ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT);
 
         Mockito.when(UndeploymentResourceContainerTest.mockedSystemModelGraphProvider
-                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class)).thenReturn(SystemData.SYSTEM);
+                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class))
+                .thenReturn(SystemDataFactory.SYSTEM);
 
         Mockito.when(UndeploymentResourceContainerTest.mockedAllocationModelGraphProvider
-                .readOnlyRootComponent(Allocation.class)).thenReturn(AllocationData.ALLOCATION);
+                .readOnlyRootComponent(Allocation.class)).thenReturn(AllocationDataFactory.ALLOCATION);
 
         /** get part of models */
         Mockito.when(ResourceEnvironmentModelFactory.getResourceContainerByName(
-                ResourceEnvironmentData.RESOURCE_ENVIRONMENT, ImplementationLevelData.SERVICE))
-                .thenReturn(Optional.of(ResourceEnvironmentData.RESOURCE_CONTAINER));
+                ResourceEnvironmentDataFactory.RESOURCE_ENVIRONMENT, ImplementationLevelDataFactory.SERVICE))
+                .thenReturn(Optional.of(ResourceEnvironmentDataFactory.RESOURCE_CONTAINER));
 
-        Mockito.when(SystemModelFactory.getAssemblyContextByName(SystemData.SYSTEM,
-                AssemblyContextData.ASSEMBLY_CONTEXT_NAME))
-                .thenReturn(Optional.of(AssemblyContextData.ASSEMBLY_CONTEXT));
+        Mockito.when(SystemModelFactory.getAssemblyContextByName(SystemDataFactory.SYSTEM,
+                AssemblyContextDataFactory.ASSEMBLY_CONTEXT_NAME))
+                .thenReturn(Optional.of(AssemblyContextDataFactory.ASSEMBLY_CONTEXT));
 
         /** interaction with graphs */
         PowerMockito.doNothing().when(AllocationModelFactory.class);
-        AllocationModelFactory.removeAllocationContext(AllocationData.ALLOCATION,
-                ResourceEnvironmentData.RESOURCE_CONTAINER, AssemblyContextData.ASSEMBLY_CONTEXT);
+        AllocationModelFactory.removeAllocationContext(AllocationDataFactory.ALLOCATION,
+                ResourceEnvironmentDataFactory.RESOURCE_CONTAINER, AssemblyContextDataFactory.ASSEMBLY_CONTEXT);
 
         Mockito.doNothing().when(UndeploymentResourceContainerTest.mockedAllocationModelGraphProvider)
-                .updateComponent(Allocation.class, AllocationData.ALLOCATION);
+                .updateComponent(Allocation.class, AllocationDataFactory.ALLOCATION);
     }
 
     /**

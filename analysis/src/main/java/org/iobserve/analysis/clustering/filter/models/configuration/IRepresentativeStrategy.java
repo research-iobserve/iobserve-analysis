@@ -34,6 +34,6 @@ public interface IRepresentativeStrategy {
      *            code list of the aggregated information
      * @return most representative code
      */
-    public Double findRepresentativeCode(final String signature, List<Double> callInformationCodes);
+    Double findRepresentativeCode(final String signature, List<Double> callInformationCodes);
 
 }

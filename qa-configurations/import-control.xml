@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE import-control PUBLIC "-//Puppy Crawl//DTD Import Control 1.3//EN" "http://checkstyle.sourceforge.net/dtds/import_control_1_3.dtd">
+<!--  <!DOCTYPE import-control SYSTEM 
+	"./qa-configurations/import_control_1_3.dtd"> -->
+<import-control pkg="org.iobserve">
+	<allow pkg="com"/>
+	<allow pkg="java"/>
+	<allow pkg="javax"/>
+    <allow pkg="kieker"/>
+	<allow pkg="teetime"/>
+
+	<allow pkg="de.uka.ipd.sdq"/>
+
+	<allow pkg="org.apache"/>
+    <allow pkg="org.codehaus"/>
+	<allow pkg="org.eclipse"/>
+    <allow pkg="org.hamcrest"/>
+    <allow pkg="org.junit"/>
+    <allow pkg="org.json"/>
+    <allow pkg="org.mockito"/>
+    <allow pkg="org.neo4j"/>
+	<allow pkg="org.palladiosimulator"/>
+    <allow pkg="org.powermock"/>
+    <allow pkg="org.slf4j"/>
+    <allow pkg="org.w3c.dom"/>
+    <allow pkg="org.xml.sax"/>
+    <allow pkg="fi.iki.elonen"/>
+    <allow pkg="org.jclouds"/>
+
+	<allow pkg="weka"/>
+    
+    <!--  own application -->
+    <allow pkg="org.iobserve"/>
+	<!--  disallow -->
+    <disallow pkg="kieker.common.logging"/>
+    <!-- enforce the use of slf4j -->
+    <disallow class="org.apache.logging.log4j.LogManager"/>
+    <disallow class="org.apache.logging.log4j.Logger"/>
+</import-control>

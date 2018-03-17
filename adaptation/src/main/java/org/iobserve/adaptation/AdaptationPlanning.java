@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import teetime.stage.basic.AbstractTransformation;
+
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.Action;
@@ -30,8 +32,6 @@ import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.TerminateAction;
-
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  * This stage orderes the adaptation {@link Action}s into an executable sequence.
@@ -48,6 +48,10 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
     private Collection<AssemblyContextAction> migrations;
     private Collection<AssemblyContextAction> changes;
     private Collection<AssemblyContextAction> deallocations;
+
+    public AdaptationPlanning() { // NOCS missing comment
+        // empty constructor
+    }
 
     @Override
     protected void execute(final AdaptationData element) throws Exception {
@@ -86,7 +90,7 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
     }
 
     private void printAdaptionSequence(final List<Action> adaptionSteps) {
-        final StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder(50);
         sb.append("Adaption sequence:\n");
 
         for (int i = 0; i < adaptionSteps.size(); i++) {
@@ -97,46 +101,46 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
     }
 
     private String printAction(final Action action) {
-        final StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder(200);
 
         if (action instanceof AcquireAction) {
             final AcquireAction acquire = (AcquireAction) action;
-            sb.append("Acquire:\t" + acquire.getSourceResourceContainer().getEntityName());
-            sb.append("\tID: " + acquire.getSourceResourceContainer().getId());
+            sb.append("Acquire:\t").append(acquire.getSourceResourceContainer().getEntityName());
+            sb.append("\tID: ").append(acquire.getSourceResourceContainer().getId());
 
         } else if (action instanceof TerminateAction) {
             final TerminateAction terminate = (TerminateAction) action;
-            sb.append("Terminate:\t" + terminate.getSourceResourceContainer().getEntityName());
-            sb.append("\tID: " + terminate.getSourceResourceContainer().getId());
+            sb.append("Terminate:\t").append(terminate.getSourceResourceContainer().getEntityName());
+            sb.append("\tID: ").append(terminate.getSourceResourceContainer().getId());
 
         } else if (action instanceof AllocateAction) {
             final AllocateAction allocate = (AllocateAction) action;
-            sb.append("Allocate:\t" + allocate.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: " + allocate.getSourceAssemblyContext().getId());
-            sb.append("\t" + " ------- ");
-            sb.append("\t->\t" + allocate.getNewAllocationContext().getEntityName());
+            sb.append("Allocate:\t").append(allocate.getSourceAssemblyContext().getEntityName());
+            sb.append("\tID: ").append(allocate.getSourceAssemblyContext().getId());
+            sb.append("\t ------- ");
+            sb.append("\t->\t").append(allocate.getNewAllocationContext().getEntityName());
 
         } else if (action instanceof MigrateAction) {
             final MigrateAction migrate = (MigrateAction) action;
-            sb.append("Migrate:\t" + migrate.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: " + migrate.getSourceAssemblyContext().getId());
-            sb.append("\t"
-                    + migrate.getSourceAllocationContext().getResourceContainer_AllocationContext().getEntityName());
-            sb.append("\t->\t"
-                    + migrate.getNewAllocationContext().getResourceContainer_AllocationContext().getEntityName());
+            sb.append("Migrate:\t").append(migrate.getSourceAssemblyContext().getEntityName());
+            sb.append("\tID: ").append(migrate.getSourceAssemblyContext().getId());
+            sb.append('\t').append(
+                    migrate.getSourceAllocationContext().getResourceContainer_AllocationContext().getEntityName());
+            sb.append("\t->\t")
+                    .append(migrate.getNewAllocationContext().getResourceContainer_AllocationContext().getEntityName());
 
         } else if (action instanceof ChangeRepositoryComponentAction) {
             final ChangeRepositoryComponentAction change = (ChangeRepositoryComponentAction) action;
-            sb.append("ChangeComp:\t" + change.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: " + change.getSourceAssemblyContext().getId());
-            sb.append("\t"
-                    + change.getSourceAssemblyContext().getEncapsulatedComponent__AssemblyContext().getEntityName());
-            sb.append("\t->\t" + change.getNewRepositoryComponent().getEntityName());
+            sb.append("ChangeComp:\t").append(change.getSourceAssemblyContext().getEntityName());
+            sb.append("\tID: ").append(change.getSourceAssemblyContext().getId());
+            sb.append('\t').append(
+                    change.getSourceAssemblyContext().getEncapsulatedComponent__AssemblyContext().getEntityName());
+            sb.append("\t->\t").append(change.getNewRepositoryComponent().getEntityName());
 
         } else if (action instanceof DeallocateAction) {
             final DeallocateAction deAllocate = (DeallocateAction) action;
-            sb.append("Deallocate:\t" + deAllocate.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: " + deAllocate.getSourceAssemblyContext().getId());
+            sb.append("Deallocate:\t").append(deAllocate.getSourceAssemblyContext().getEntityName());
+            sb.append("\tID: ").append(deAllocate.getSourceAssemblyContext().getId());
 
         } else {
             sb.append("UNKOWN:\t" + " ------------------------------------ ");

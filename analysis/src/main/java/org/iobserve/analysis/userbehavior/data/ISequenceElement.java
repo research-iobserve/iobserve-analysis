@@ -25,24 +25,24 @@ public interface ISequenceElement {
     /**
      * @return returns the count
      */
-    public int getAbsoluteCount();
+    int getAbsoluteCount();
 
     /**
      * @param absoluteCount
      *            sets the count.
      */
-    public void setAbsoluteCount(int absoluteCount);
+    void setAbsoluteCount(int absoluteCount);
 
     /**
      *
      * @return returns the class signature for the element.
      */
-    public String getClassSignature();
+    String getClassSignature();
 
     /**
      *
      * @return returns the operation signature for the element.
      */
-    public String getOperationSignature();
+    String getOperationSignature();
 
 }

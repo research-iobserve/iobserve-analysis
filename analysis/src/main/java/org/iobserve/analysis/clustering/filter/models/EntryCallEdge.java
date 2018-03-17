@@ -33,8 +33,6 @@ public class EntryCallEdge {
      * constructor.
      */
     public EntryCallEdge() {
-        this.source = null;
-        this.target = null;
         this.calls = 0;
     }
 
@@ -131,11 +129,11 @@ public class EntryCallEdge {
     /**
      * add calls to the edge.
      *
-     * @param calls
+     * @param newCalls
      *            calls
      */
-    public void addCalls(final double calls) {
-        this.calls = this.calls + calls;
+    public void addCalls(final double newCalls) {
+        this.calls = this.calls + newCalls;
         this.calls = this.calls < 0 ? 0 : this.calls;
     }
 

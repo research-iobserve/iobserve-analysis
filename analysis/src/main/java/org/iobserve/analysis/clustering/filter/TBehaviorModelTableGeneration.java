@@ -17,15 +17,15 @@ package org.iobserve.analysis.clustering.filter;
 
 import java.util.List;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.clustering.filter.models.BehaviorModelTable;
 import org.iobserve.analysis.clustering.filter.models.DynamicBehaviorModelTable;
 import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * auxiliary filter to generate the base of the BehaviorModelTable.
@@ -68,7 +68,7 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
 
             EntryCallEvent lastCall = null;
             for (final EntryCallEvent eventCall : entryCalls) {
-                if ((lastCall != null)) {
+                if (lastCall != null) {
                     this.modelTable.addTransition(lastCall, eventCall);
                     this.modelTable.addInformation(eventCall);
 

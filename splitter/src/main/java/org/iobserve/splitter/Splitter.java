@@ -37,8 +37,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Reiner Jung
  *
+ * @since 0.0.2
+ *
  */
 public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Splitter.class);
 
     private final List<OutputPort<IMonitoringRecord>> outputPorts = new ArrayList<>();
 
@@ -48,7 +52,6 @@ public class Splitter extends AbstractConsumerStage<IMonitoringRecord> {
     private int recordCount;
 
     private final String[] hostnames;
-    private static final Logger LOGGER = LoggerFactory.getLogger(Splitter.class);
 
     /**
      * Splitter constructor.

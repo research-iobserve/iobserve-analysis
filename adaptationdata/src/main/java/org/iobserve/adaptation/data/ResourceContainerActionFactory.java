@@ -20,8 +20,8 @@ import org.iobserve.analysis.data.graph.DeploymentNode;
 import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
+import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
 import org.iobserve.planning.systemadaptation.TerminateAction;
-import org.iobserve.planning.systemadaptation.systemadaptationFactory;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -34,7 +34,11 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  *
  * @author Philipp Weimann
  */
-public class ResourceContainerActionFactory extends ActionFactory {
+public final class ResourceContainerActionFactory {
+
+    private ResourceContainerActionFactory() {
+        // private factory constructor
+    }
 
     private static ResourceContainerAction setSourceResourceContainer(final ResourceContainerAction action,
             final String resourceContainerID) {
@@ -53,7 +57,7 @@ public class ResourceContainerActionFactory extends ActionFactory {
      * @return the action
      */
     public static TerminateAction createTerminateAction(final DeploymentNode runtimeServer) {
-        final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
+        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
         final TerminateAction action = factory.createTerminateAction();
 
         ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
@@ -69,7 +73,7 @@ public class ResourceContainerActionFactory extends ActionFactory {
      * @return the action
      */
     public static AcquireAction createAcquireAction(final DeploymentNode reDeploymentServer) {
-        final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
+        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
         final AcquireAction action = factory.createAcquireAction();
 
         final ResourceEnvironment reDeplResEnvModel = ActionFactory.getRedeploymentModels()
@@ -92,7 +96,7 @@ public class ResourceContainerActionFactory extends ActionFactory {
      */
     public static ReplicateAction createReplicateAction(final DeploymentNode runtimeServer,
             final DeploymentNode reDeploymentServer) {
-        final systemadaptationFactory factory = systemadaptationFactory.eINSTANCE;
+        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
         final ReplicateAction action = factory.createReplicateAction();
 
         ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());

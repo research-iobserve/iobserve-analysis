@@ -40,7 +40,7 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
     private static final Logger LOGGER = LoggerFactory.getLogger(TBehaviorModelPreperation.class);
     private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
 
-    private BehaviorModelTable behaviorModelTable = null;
+    private BehaviorModelTable behaviorModelTable;
     private final Set<EntryCallSequenceModel> sequenceModelCache;
 
     private final boolean keepEmptyTransitions;
@@ -53,7 +53,6 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
      */
     public TBehaviorModelPreperation(final boolean keepEmptyTransitions) {
         super();
-        this.behaviorModelTable = null;
         this.sequenceModelCache = new HashSet<>();
         this.keepEmptyTransitions = keepEmptyTransitions;
     }
@@ -118,12 +117,12 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
     /**
      * Execute case object instanceof BehaviorModelTable.
      *
-     * @param behaviorModelTable
+     * @param newBehaviorModelTable
      *            behaviorModelTable
      */
-    private void executeBehaviorModelTable(final BehaviorModelTable behaviorModelTable) {
+    private void executeBehaviorModelTable(final BehaviorModelTable newBehaviorModelTable) {
         if (this.behaviorModelTable == null) {
-            this.behaviorModelTable = behaviorModelTable;
+            this.behaviorModelTable = newBehaviorModelTable;
             this.sequenceModelCache.forEach(this::executeEntryCallSequenceModel);
             this.sequenceModelCache.clear();
         } else {

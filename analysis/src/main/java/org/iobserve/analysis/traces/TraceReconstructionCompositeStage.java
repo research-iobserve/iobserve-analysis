@@ -18,6 +18,7 @@ package org.iobserve.analysis.traces;
 import kieker.common.configuration.Configuration;
 import kieker.common.record.flow.IFlowRecord;
 
+import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
@@ -25,8 +26,7 @@ import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
 import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
 import teetime.util.ConcurrentHashMapWithDefault;
 
-import org.iobserve.analysis.AbstractConfigurableCompositeStage;
-import org.iobserve.analysis.ITraceCompositeStage;
+import org.iobserve.analysis.feature.ITraceCompositeStage;
 
 /**
  * Composite stage to encapsulate trace reconstruction.
@@ -37,8 +37,7 @@ import org.iobserve.analysis.ITraceCompositeStage;
  * @author Reiner Jung
  *
  */
-public class TraceReconstructionCompositeStage extends AbstractConfigurableCompositeStage
-        implements ITraceCompositeStage {
+public class TraceReconstructionCompositeStage extends CompositeStage implements ITraceCompositeStage {
 
     private final TraceReconstructionFilter traceReconstructionFilter;
 
@@ -49,7 +48,6 @@ public class TraceReconstructionCompositeStage extends AbstractConfigurableCompo
      *            configuration object
      */
     public TraceReconstructionCompositeStage(final Configuration configuration) {
-        super(configuration);
         final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<>(
                 EventBasedTraceFactory.INSTANCE);
 

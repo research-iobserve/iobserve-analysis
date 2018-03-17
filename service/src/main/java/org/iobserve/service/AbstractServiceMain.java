@@ -25,7 +25,7 @@ import kieker.monitoring.core.configuration.ConfigurationFactory;
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
-import org.iobserve.analysis.ConfigurationException;
+import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,16 +88,22 @@ public abstract class AbstractServiceMain<T extends Configuration> {
 
                     this.shutdownHook(execution);
 
-                    AbstractServiceMain.LOGGER.debug("Running " + label);
+                    if (AbstractServiceMain.LOGGER.isDebugEnabled()) {
+                        AbstractServiceMain.LOGGER.debug("Running " + label);
+                    }
 
                     execution.executeBlocking();
                     this.shutdownService();
 
-                    AbstractServiceMain.LOGGER.debug("Done");
+                    if (AbstractServiceMain.LOGGER.isDebugEnabled()) {
+                        AbstractServiceMain.LOGGER.debug("Done");
+                    }
                 }
             }
         } else {
-            AbstractServiceMain.LOGGER.error("Configuration Error");
+            if (AbstractServiceMain.LOGGER.isErrorEnabled()) {
+                AbstractServiceMain.LOGGER.error("Configuration Error");
+            }
         }
     }
 
@@ -110,7 +116,7 @@ public abstract class AbstractServiceMain<T extends Configuration> {
                         execution.abortEventually();
                         AbstractServiceMain.this.shutdownService();
                     }
-                } catch (final Exception e) { // NOCS
+                } catch (final Exception e) { // NOCS NOPMD
 
                 }
             }

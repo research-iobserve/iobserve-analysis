@@ -119,7 +119,16 @@ public class AllocationGroupsContainer {
             this.componentName = componentName;
         }
 
-        AllocationGroup addAllocationContext(final String containerIdentifier, final AllocationContext context) {
+        /**
+         * Add an allocation context.
+         *
+         * @param containerIdentifier
+         *            id of the container
+         * @param context
+         *            context of the container
+         * @return an allocation group
+         */
+        public AllocationGroup addAllocationContext(final String containerIdentifier, final AllocationContext context) {
             AllocationGroup group = this.allocationGroupsMap.get(containerIdentifier);
 
             if (group == null) {
@@ -131,7 +140,7 @@ public class AllocationGroupsContainer {
             return group;
         }
 
-        Map<String, AllocationGroup> getAllocationGroups() {
+        public Map<String, AllocationGroup> getAllocationGroups() {
             return this.allocationGroupsMap;
         }
     }

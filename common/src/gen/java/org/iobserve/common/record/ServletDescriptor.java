@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://www.iobserve-devops.net)
+ * Copyright 2018 iObserve Project (http://iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 package org.iobserve.common.record;
 
 
+import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.flow.AbstractEvent;
 import kieker.common.record.io.IValueDeserializer;
 
@@ -84,8 +85,9 @@ public abstract class ServletDescriptor extends AbstractEvent  {
 	/**
 	 * @param deserializer
 	 *            The deserializer to use
+	 * @throws RecordInstantiationException 
 	 */
-	public ServletDescriptor(final IValueDeserializer deserializer) {
+	public ServletDescriptor(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
 		this.service = deserializer.getString();
 		this.context = deserializer.getString();
