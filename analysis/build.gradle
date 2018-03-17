@@ -1,7 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'application'
 
-mainClassName = 'org.iobserve.analysis.service.AnalysisMain'
+mainClassName = 'org.iobserve.analysis.AnalysisMain'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
