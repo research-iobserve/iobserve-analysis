@@ -15,13 +15,20 @@
  ***************************************************************************/
 package org.iobserve.adaptation.drools;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.kie.api.KieServices;
+import org.kie.api.command.Command;
+import org.kie.api.command.KieCommands;
+import org.kie.api.runtime.ExecutionResults;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.StatelessKieSession;
 
 /**
  * A test class.
@@ -42,37 +49,42 @@ public class DroolsTest {
         final KieContainer kContainer = kieServices.getKieClasspathContainer();
 
         // Insert single fact
-        // final StatelessKieSession kSession = kContainer.newStatelessKieSession();
-        // final Applicant applicant = new Applicant("Mr John Smith", 16);
-        // DroolsTest.LOG.debug(applicant.isValid());
-        // kSession.execute(applicant);
-        // DroolsTest.LOG.debug(applicant.isValid());
+        final StatelessKieSession kSession = kContainer.newStatelessKieSession();
+        final Applicant applicant = new Applicant("Mr John Smith", 16);
+        DroolsTest.LOG.debug(applicant.isValid());
+        kSession.execute(applicant);
+        DroolsTest.LOG.debug(applicant.isValid());
 
         // Insert list of facts
-        // final KieCommands kieCommands = kieServices.getCommands();
-        // final List<Command> cmds = new ArrayList<>();
-        // cmds.add(kieCommands.newInsert(new Person("Mr John Smith", 16), "mrSmith", true, null));
-        // cmds.add(kieCommands.newInsert(new Person("Mr John Doe", 16), "mrDoe", true, null));
-        // final ExecutionResults results = kSession.execute(kieCommands.newBatchExecution(cmds));
+        final KieCommands kieCommands = kieServices.getCommands();
+        final List<Command> cmds = new ArrayList<>();
+        cmds.add(kieCommands.newInsert(new Person("Mr John Smith", 16), "mrSmith", true, null));
+        cmds.add(kieCommands.newInsert(new Person("Mr John Doe", 16), "mrDoe", true, null));
+        final ExecutionResults results = kSession.execute(kieCommands.newBatchExecution(cmds));
 
         // Other example
-        // final Person person = new Person("Shamik Mitra", 7);
-        // DroolsTest.LOG.debug(person.getGreet());
-        // kSession.execute(person);
-        // DroolsTest.LOG.debug(person.getGreet());
+        final Person person = new Person("Shamik Mitra", 7);
+        DroolsTest.LOG.debug(person.getGreet());
+        kSession.execute(person);
+        DroolsTest.LOG.debug(person.getGreet());
 
         // Stateful session
         final KieSession kSession2 = kContainer.newKieSession();
 
-        final Person person = new Person("Shamik Mitra", 7);
+        final Person person2 = new Person("Shamik Mitra", 7);
+        final List<Person> persons = new LinkedList<>();
 
-        kSession2.insert(person);
+        kSession2.insert(person2);
+        kSession2.insert(persons);
         kSession2.fireAllRules();
 
-        System.out.println(person.getGreet());
+        System.out.println(person2.getGreet());
         final Collection<? extends Object> objects = kSession2.getObjects();
         for (final Object o : objects) {
             System.out.println(o);
+        }
+        for (final Person p : persons) {
+            System.out.println(p);
         }
     }
 }

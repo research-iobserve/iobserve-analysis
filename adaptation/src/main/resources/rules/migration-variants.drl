@@ -1,0 +1,61 @@
+package org.iobserve.adaptation.drools
+
+import org.iobserve.adaptation.data.AssemblyContextActionFactory
+
+
+# Variant with AdaptationActions from System Adaptation Model
+rule "Create migration action Variant A"
+	salience 3
+when
+	$executionPlan : List()
+    $runComp : RuntimeComponentNode()
+    $redplComp : RedeploymentComponentNode( 
+    		assemblyContextID 					== $nodeA.getAssemblyContextID, 
+    		hostServer.getResourceContainerID() 	!= $nodeA.getHostServer().getResourceContainerID() )
+then
+	$executionPlan.add( AssemblyContextActionFactory.generateMigrateAction(runComp, reDeplComp) );
+end
+
+
+# Variant with individual actions
+rule "Create migration action Variant B "
+	salience 3
+when
+	$executionPlan : List()
+    $runComp : RuntimeComponentNode()
+    $redplComp : RedeploymentComponentNode( 
+    		assemblyContextID 					== $nodeA.getAssemblyContextID, 
+    		hostServer.getResourceContainerID() 	!= $nodeA.getHostServer().getResourceContainerID() )
+then
+	insert ( new Replication ($runComp, $redplComp) )
+	insert ( new Dereplication ($runComp) )
+end
+
+
+# Variant with individual actions
+rule "Replication"
+	salience 4
+when
+	$executionPlan : List()
+    Replication($runComp : runtimeComponent, $redplComp : redeploymentComponent)
+then
+	$executionPlan.add( new DeployInstanceAction($redplComp) )
+	$executionPlan.add( new MigrateStateAction($runComp, $redplComp) )
+	$executionPlan.add( new RerouteConnectionsAction($runComp, $redlComp) )
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
