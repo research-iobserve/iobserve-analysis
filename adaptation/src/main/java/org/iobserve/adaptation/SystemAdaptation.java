@@ -16,7 +16,7 @@
 package org.iobserve.adaptation;
 
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.utils.AbstractLinearComposition;
+import org.iobserve.stages.general.AbstractLinearComposition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -23,10 +23,10 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.iobserve.analysis.data.graph.GraphFactory;
 import org.iobserve.model.PCMModelHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO move class into own project if this is still used. TODO convert to JCommander based program.
@@ -36,7 +36,7 @@ import org.iobserve.model.PCMModelHandler;
  */
 public final class EvaluationGenerationMain {
 
-    private static final Logger LOGGER = LogManager.getLogger(EvaluationGenerationMain.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EvaluationGenerationMain.class);
 
     private EvaluationGenerationMain() {
         // all static class

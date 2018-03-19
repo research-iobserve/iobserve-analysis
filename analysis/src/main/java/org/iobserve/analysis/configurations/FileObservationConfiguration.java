@@ -22,9 +22,9 @@ import kieker.common.configuration.Configuration;
 
 import org.iobserve.analysis.clustering.EAggregationType;
 import org.iobserve.analysis.clustering.EOutputMode;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.snapshot.SnapshotBuilder;
 import org.iobserve.service.source.FileSourceCompositeStage;
 import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;

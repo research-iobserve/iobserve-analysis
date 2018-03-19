@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,18 +31,15 @@ import org.iobserve.common.record.IDeallocationEvent;
  * 
  * @since 0.0.2
  */
-public class ContainerDeallocationEvent extends ContainerEvent implements IDeallocationEvent {
-	private static final long serialVersionUID = 2096939141926232619L;
-
+public class ContainerDeallocationEvent extends ContainerEvent implements IDeallocationEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_STRING // ContainerEvent.url
-	;
+	public static final int SIZE = TYPE_SIZE_STRING; // ContainerEvent.url
 	
 	public static final Class<?>[] TYPES = {
 		String.class, // ContainerEvent.url
 	};
 	
-	
+	private static final long serialVersionUID = 2096939141926232619L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -94,6 +91,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public ContainerDeallocationEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
@@ -108,7 +106,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
-			this.getUrl()
+			this.getUrl(),
 		};
 	}
 	/**
@@ -118,6 +116,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
 		stringRegistry.get(this.getUrl());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -126,6 +125,7 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 		//super.serialize(serializer);
 		serializer.putString(this.getUrl());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -166,13 +166,24 @@ public class ContainerDeallocationEvent extends ContainerEvent implements IDeall
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final ContainerDeallocationEvent castedRecord = (ContainerDeallocationEvent) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (!this.getUrl().equals(castedRecord.getUrl())) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (!this.getUrl().equals(castedRecord.getUrl())) {
+			return false;
+		}
+		
 		return true;
 	}
 	

@@ -25,6 +25,7 @@ import de.uka.ipd.sdq.pcm.designdecision.DegreeOfFreedomInstance;
 import de.uka.ipd.sdq.pcm.designdecision.specific.ResourceContainerReplicationDegree;
 
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.factory.CostModelFactory;
 import org.iobserve.model.factory.ResourceEnvironmentCloudFactory;
@@ -98,14 +99,19 @@ public final class ModelHelper {
      * @return the found linking resource or the newly created one
      */
     public static LinkingResource getInternetLinkingResource(final ResourceEnvironment environment) {
-        LinkingResource linkingResource = null;
         final List<LinkingResource> linkingResources = environment.getLinkingResources__ResourceEnvironment();
 
         final Optional<LinkingResource> internetLink = linkingResources.stream()
                 .filter(link -> link.getEntityName().contains(ModelHelper.INTERNET_LINKING_RESOURCE_NAME)).findFirst();
 
-        linkingResource = internetLink.orElseGet(() -> org.iobserve.model.factory.ResourceEnvironmentCloudFactory
-                .createLinkingResource(environment, null, ModelHelper.INTERNET_LINKING_RESOURCE_NAME));
+        final LinkingResource linkingResource = internetLink.orElseGet(() -> {
+            try {
+                return org.iobserve.model.factory.ResourceEnvironmentCloudFactory.createLinkingResource(environment,
+                        null, ModelHelper.INTERNET_LINKING_RESOURCE_NAME);
+            } catch (final ModelHandlingErrorException e) {
+                return null;
+            }
+        });
 
         return linkingResource;
     }
@@ -123,9 +129,12 @@ public final class ModelHelper {
      * @param containerName
      *            the name of this container
      * @return the newly created resource container
+     * @throws ModelHandlingErrorException
+     *             when something when wrong with the model handling
      */
     public static ResourceContainerCloud createResourceContainerFromVMType(final ResourceEnvironment environment,
-            final CostRepository costRepository, final VMType cloudVM, final String containerName) {
+            final CostRepository costRepository, final VMType cloudVM, final String containerName)
+            throws ModelHandlingErrorException {
         final ResourceContainerCloud container = ResourceEnvironmentCloudFactory.createResourceContainer(environment,
                 containerName);
 
@@ -237,9 +246,11 @@ public final class ModelHelper {
      * @param modelHandler
      *            the model providers with an initialized resource environment, cost model and cloud
      *            profile
+     * @throws ModelHandlingErrorException
+     *             model handling issue
      */
     public static void fillResourceEnvironmentFromCloudProfile(final org.eclipse.emf.common.util.URI writeURI,
-            final PCMModelHandler modelHandler) {
+            final PCMModelHandler modelHandler) throws ModelHandlingErrorException {
         final ResourceEnvironment environment = modelHandler.getResourceEnvironmentModel();
         final CloudProfile cloudProfileModel = modelHandler.getCloudProfileModel();
         final CostRepository costRepositoryModel = modelHandler.getCostModel();
@@ -299,9 +310,11 @@ public final class ModelHelper {
      * @param hostname
      *            the hostname to convert
      * @return the new cloud container or null in case of a problem
+     * @throws ModelHandlingErrorException
+     *             modeling handlign issue
      */
     public static ResourceContainerCloud getResourceContainerFromHostname(final PCMModelHandler modelProviders,
-            final String hostname) {
+            final String hostname) throws ModelHandlingErrorException {
         final String[] nameParts = hostname.split("_");
 
         VMType vmType = null;

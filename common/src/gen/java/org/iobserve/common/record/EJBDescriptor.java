@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,15 +27,13 @@ import kieker.common.record.io.IValueDeserializer;
  * 
  * @since 0.0.2
  */
-public abstract class EJBDescriptor extends AbstractEvent  {
-	private static final long serialVersionUID = -539937375049134834L;
-
-	
+public abstract class EJBDescriptor extends AbstractEvent  {			
 	
 	/** default constants. */
 	public static final String SERVICE = "";
 	public static final String CONTEXT = "";
 	public static final String DEPLOYMENT_ID = "";
+	private static final long serialVersionUID = -539937375049134834L;
 	
 		
 	/** property declarations. */
@@ -86,6 +84,7 @@ public abstract class EJBDescriptor extends AbstractEvent  {
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public EJBDescriptor(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
@@ -111,16 +110,33 @@ public abstract class EJBDescriptor extends AbstractEvent  {
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final EJBDescriptor castedRecord = (EJBDescriptor) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (!this.getService().equals(castedRecord.getService())) return false;
-		if (!this.getContext().equals(castedRecord.getContext())) return false;
-		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (this.getTimestamp() != castedRecord.getTimestamp()) {
+			return false;
+		}
+		if (!this.getService().equals(castedRecord.getService())) {
+			return false;
+		}
+		if (!this.getContext().equals(castedRecord.getContext())) {
+			return false;
+		}
+		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) {
+			return false;
+		}
+		
 		return true;
 	}
 	

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.utils;
+package org.iobserve.stages.general;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;

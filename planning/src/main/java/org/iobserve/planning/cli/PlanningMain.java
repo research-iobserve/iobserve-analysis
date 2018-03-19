@@ -28,6 +28,7 @@ import org.apache.commons.cli.ParseException;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
+import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.planning.environment.PalladioEclipseEnvironment;
 import org.iobserve.planning.utils.ModelHelper;
@@ -63,7 +64,8 @@ public final class PlanningMain {
         // Do nothing.
     }
 
-    public static void main(final String[] args) throws IOException, InitializationException {
+    public static void main(final String[] args)
+            throws IOException, InitializationException, ModelHandlingErrorException {
         final CommandLineParser parser = new DefaultParser();
 
         final String workingDir;

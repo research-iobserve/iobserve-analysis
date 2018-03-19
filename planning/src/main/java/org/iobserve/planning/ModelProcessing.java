@@ -20,18 +20,17 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.factory.DesignDecisionModelFactory;
 import org.iobserve.model.provider.file.AllocationModelHandler;
 import org.iobserve.model.provider.file.CostModelHandler;
 import org.iobserve.model.provider.file.DesignDecisionModelHandler;
 import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
+import org.iobserve.model.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.AllocationGroup;
 import org.iobserve.planning.data.AllocationGroupsContainer;
 import org.iobserve.planning.utils.ModelHelper;
@@ -45,6 +44,8 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.Resourc
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.uka.ipd.sdq.pcm.cost.CostRepository;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
@@ -63,7 +64,7 @@ import teetime.stage.basic.AbstractFilter;
  *
  */
 public class ModelProcessing extends AbstractFilter<File> {
-    public static final Logger LOG = LogManager.getLogger(ModelProcessing.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(ModelProcessing.class);
     public static final String PROCESSED_MODEL_FOLDER = "processedModel";
 
     public static final int POSSIBLE_REPLICAS_OFFSET = 10;
@@ -150,7 +151,11 @@ public class ModelProcessing extends AbstractFilter<File> {
         for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
             final AllocationContext representingContext = allocationGroup.getRepresentingContext();
 
-            this.createResourcesAndReplicationDegrees(this.decisionModel, allocationGroup);
+            try {
+                this.createResourcesAndReplicationDegrees(this.decisionModel, allocationGroup);
+            } catch (final ModelHandlingErrorException e) {
+                ModelProcessing.LOGGER.error("Couldn't create ResourceContainer from VMType.");
+            }
 
             this.allocationModel.getAllocationContexts_Allocation().add(representingContext);
         }
@@ -181,7 +186,7 @@ public class ModelProcessing extends AbstractFilter<File> {
     }
 
     private void createResourcesAndReplicationDegrees(final DecisionSpace decisionSpace,
-            final AllocationGroup allocationGroup) {
+            final AllocationGroup allocationGroup) throws ModelHandlingErrorException {
         final CloudProfile profile = this.cloudProfileModel;
         final ResourceEnvironment environment = this.resourceEnvironmentModel;
         final CostRepository costs = this.costModel;

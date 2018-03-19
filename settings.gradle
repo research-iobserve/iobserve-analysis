@@ -5,6 +5,7 @@ include "common", "monitoring", "model", "stages", "service",
 	"execution",
 	"collector", "splitter", "rac.creator", "replayer",
 	"evaluate-user-behaviors",
+	"reconstructor",
 	"service.privacy.violation"
 
 // Peropteryx integration with goomph

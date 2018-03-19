@@ -17,8 +17,8 @@ package org.iobserve.model.correspondence;
 
 import java.util.function.BiFunction;
 
-import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
-import org.iobserve.analysis.protocom.PcmOperationSignature;
+import org.iobserve.model.protocom.PcmCorrespondentMethod;
+import org.iobserve.model.protocom.PcmOperationSignature;
 import org.iobserve.model.utils.IToBoolBiFunction;
 import org.palladiosimulator.pcm.repository.OperationSignature;
 

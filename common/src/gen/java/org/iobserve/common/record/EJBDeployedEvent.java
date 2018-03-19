@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,15 +31,12 @@ import org.iobserve.common.record.IDeployedEvent;
  * 
  * @since 0.0.2
  */
-public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
-	private static final long serialVersionUID = -5298761021303334329L;
-
+public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_STRING // EJBDescriptor.service
 			 + TYPE_SIZE_STRING // EJBDescriptor.context
-			 + TYPE_SIZE_STRING // EJBDescriptor.deploymentId
-	;
+			 + TYPE_SIZE_STRING; // EJBDescriptor.deploymentId
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEventRecord.timestamp
@@ -48,7 +45,7 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 		String.class, // EJBDescriptor.deploymentId
 	};
 	
-	
+	private static final long serialVersionUID = -5298761021303334329L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -109,6 +106,7 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public EJBDeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
@@ -126,7 +124,7 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 			this.getTimestamp(),
 			this.getService(),
 			this.getContext(),
-			this.getDeploymentId()
+			this.getDeploymentId(),
 		};
 	}
 	/**
@@ -138,6 +136,7 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 		stringRegistry.get(this.getContext());
 		stringRegistry.get(this.getDeploymentId());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -149,6 +148,7 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 		serializer.putString(this.getContext());
 		serializer.putString(this.getDeploymentId());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -189,16 +189,33 @@ public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final EJBDeployedEvent castedRecord = (EJBDeployedEvent) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (!this.getService().equals(castedRecord.getService())) return false;
-		if (!this.getContext().equals(castedRecord.getContext())) return false;
-		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (this.getTimestamp() != castedRecord.getTimestamp()) {
+			return false;
+		}
+		if (!this.getService().equals(castedRecord.getService())) {
+			return false;
+		}
+		if (!this.getContext().equals(castedRecord.getContext())) {
+			return false;
+		}
+		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) {
+			return false;
+		}
+		
 		return true;
 	}
 	
