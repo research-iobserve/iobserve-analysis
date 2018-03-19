@@ -1,0 +1,32 @@
+2018-03-19T16:15:02.262 DEBUG [org.iobserve.service.AbstractServiceMain] - Analysis Service
+2018-03-19T16:15:02.387 DEBUG [kieker.common.logging.LogFactory] - SLF4J
+2018-03-19T16:16:49.236 DEBUG [org.iobserve.stages.general.RecordSwitch:RecordSwitch-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:49.384 DEBUG [teetime.stage.className.ClassNameRegistryCreationFilter:ClassNameRegistryCreationFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:49.399 DEBUG [teetime.stage.io.Directory2FilesFilter:Directory2FilesFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:49.415 DEBUG [teetime.stage.FileExtensionSwitch:FileExtensionSwitch-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:49.478 DEBUG [teetime.stage.io.File2TextLinesFilter:File2TextLinesFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:49.478 DEBUG [teetime.stage.io.filesystem.format.text.file.TextLine2RecordFilter:TextLine2RecordFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:49.493 DEBUG [teetime.stage.io.filesystem.format.binary.file.BinaryFile2RecordFilter:BinaryFile2RecordFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:49.509 DEBUG [teetime.stage.basic.merger.Merger:Merger-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:49.509 DEBUG [teetime.stage.basic.merger.Merger:Merger-0] - numOpenedInputPorts (inc): 2
+2018-03-19T16:16:49.571 DEBUG [teetime.stage.trace.traceReconstruction.TraceReconstructionFilter:TraceReconstructionFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:50.228 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel:TSessionToModel-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:50.581 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TVectorization:TVectorization-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:50.581 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TVectorization:TVectorization-0] - numOpenedInputPorts (inc): 2
+2018-03-19T16:16:50.628 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TGroupingStage:TGroupingStage-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:50.769 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TModelGeneration:TModelGeneration-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:50.769 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TModelGeneration:TModelGeneration-0] - numOpenedInputPorts (inc): 2
+2018-03-19T16:16:50.972 DEBUG [org.iobserve.stages.general.EntryCallStage:EntryCallStage-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:51.222 DEBUG [org.iobserve.analysis.traces.EntryCallSequence:EntryCallSequence-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:51.222 DEBUG [org.iobserve.analysis.traces.EntryCallSequence:EntryCallSequence-0] - numOpenedInputPorts (inc): 2
+2018-03-19T16:16:51.378 DEBUG [org.iobserve.analysis.session.SessionAcceptanceFilter:SessionAcceptanceFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:51.417 DEBUG [org.iobserve.analysis.traces.TraceOperationCleanupFilter:TraceOperationCleanupFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:16:51.542 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionOperationsFilter:TSessionOperationsFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:17:27.082 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.BehaviorModelDecollectorStage:BehaviorModelDecollectorStage-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:17:27.197 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.BehaviorModelSink:BehaviorModelSink-0] - numOpenedInputPorts (inc): 1
+2018-03-19T16:25:31.860 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@75810586 and teetime.framework.InputPort@647fa8
+2018-03-19T16:25:36.452 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@1a7c69ae and teetime.framework.InputPort@3e4f3f3c
+2018-03-19T16:25:36.483 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@4873e893 and teetime.framework.InputPort@31bbd92a
+2018-03-19T16:25:36.514 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@597f84f5 and teetime.framework.InputPort@e1fd839
+2018-03-19T16:25:36.546 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@425c85d1 and teetime.framework.InputPort@6721f943
+2018-03-19T16:25:36.561 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@67efd3dc and teetime.framework.InputPort@413ba0fd

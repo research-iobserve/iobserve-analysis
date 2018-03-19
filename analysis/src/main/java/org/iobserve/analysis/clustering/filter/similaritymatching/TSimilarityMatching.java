@@ -29,6 +29,12 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
+/**
+ * This stage performs Similarity Matching when configured properly
+ *
+ * @author J
+ *
+ */
 @ReceiveUnfilteredConfiguration
 public class TSimilarityMatching extends CompositeStage implements IClassificationStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorCompositeStage.class);
@@ -37,6 +43,14 @@ public class TSimilarityMatching extends CompositeStage implements IClassificati
     private final InputPort<Long> timerInputPort;
     private final OutputPort<BehaviorModel[]> outputPort;
 
+    /**
+     * Constructor
+     * 
+     * @param configuration
+     *
+     * @throws ConfigurationException
+     *             Throws an exception if configuration lacks parameters
+     */
     public TSimilarityMatching(final Configuration configuration) throws ConfigurationException {
         /** Instantiate configurable objects/properties */
 

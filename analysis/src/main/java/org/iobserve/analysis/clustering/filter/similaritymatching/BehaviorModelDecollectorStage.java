@@ -20,6 +20,13 @@ import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+/**
+ * Stage that accepts an array of behavior models and sends them to its output
+ * port individually
+ * 
+ * @author Jannis Kuckei
+ *
+ */
 public class BehaviorModelDecollectorStage extends AbstractConsumerStage<BehaviorModel[]> {
     private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
 

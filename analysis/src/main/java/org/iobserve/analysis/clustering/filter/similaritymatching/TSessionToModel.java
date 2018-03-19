@@ -24,6 +24,12 @@ import org.slf4j.LoggerFactory;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+/**
+ * Converts all arriving user sessions into behaviour models.
+ * 
+ * @author Jannis Kuckei
+ *
+ */
 public class TSessionToModel extends AbstractConsumerStage<UserSession> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TSessionToModel.class);
 

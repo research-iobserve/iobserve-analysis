@@ -27,6 +27,11 @@ import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
+/**
+ * Represents the vectorization phase of Similarity Matching
+ * 
+ * @author Jannis Kuckei
+ */
 public class TVectorization extends AbstractStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(TVectorization.class);
 
@@ -41,6 +46,14 @@ public class TVectorization extends AbstractStage {
     private List<BehaviorModel> models = new ArrayList<>();
     private List<List<Double>> distanceVectors = new ArrayList<>();
 
+    /**
+     * Constructor
+     * 
+     * @param structureMetric
+     *            General distance function based on structure of the behavior model
+     * @param parameterMetric
+     *            Distance function based on call-parameters of behavior model
+     */
     public TVectorization(final IStructureMetricStrategy structureMetric,
             final IParameterMetricStrategy parameterMetric) {
         super();
@@ -81,11 +94,20 @@ public class TVectorization extends AbstractStage {
         }
     }
 
+    /**
+     * Clears inner state of stage to prepare for new models arriving
+     */
     private void clearModels() {
         this.models = new ArrayList<>();
         this.distanceVectors = new ArrayList<>();
     }
 
+    /**
+     * Generates similarity vector for model relative to all currently stored models
+     * 
+     * @param newModel
+     *            The model for which the vector is generated
+     */
     private void vectorizeModel(final BehaviorModel newModel) {
         final List<Double> newDistanceVector = new ArrayList<>();
 

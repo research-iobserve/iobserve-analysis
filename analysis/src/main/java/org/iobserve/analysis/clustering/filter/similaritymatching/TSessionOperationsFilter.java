@@ -21,6 +21,12 @@ import org.iobserve.analysis.session.data.UserSession;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+/**
+ * Stage to filter unwanted events from user session
+ * 
+ * @author Jannis Kuckei
+ *
+ */
 public final class TSessionOperationsFilter extends AbstractConsumerStage<UserSession> {
     private final OutputPort<UserSession> outputPort = this.createOutputPort();
 

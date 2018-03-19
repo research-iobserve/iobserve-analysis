@@ -32,6 +32,13 @@ import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
+/**
+ * Pre-processes monitoring records into user sessions and also provides a timer
+ * stage to generate signals at regular intervals
+ *
+ * @author Jannis Kuckei
+ *
+ */
 public class PreprocessingCompositeStage extends CompositeStage {
     private final InputPort<EventBasedTrace> traceInputPort;
     private final InputPort<ISessionEvent> sessionEventInputPort;
@@ -39,6 +46,15 @@ public class PreprocessingCompositeStage extends CompositeStage {
     private final OutputPort<UserSession> sessionOutputPort;
     private final OutputPort<Long> timerOutputPort;
 
+    /**
+     * Constructor
+     * 
+     * @param traceMatcher
+     * @param entryCallMatcher
+     * @param cleanupRewriter
+     * @param filterRulesFactory
+     * @param triggerInterval
+     */
     public PreprocessingCompositeStage(final IEntryCallTraceMatcher traceMatcher,
             final IEntryCallAcceptanceMatcher entryCallMatcher, final ITraceSignatureCleanupRewriter cleanupRewriter,
             final IModelGenerationFilterFactory filterRulesFactory, final long triggerInterval) {

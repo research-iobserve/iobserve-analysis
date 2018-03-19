@@ -33,6 +33,13 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
+/**
+ * Configurable composite stage combining pre-processing of monitoring records,
+ * aggregation and generation of behavior models, and outputting them into files
+ *
+ * @author Jannis Kuckei
+ *
+ */
 @ReceiveUnfilteredConfiguration
 public class BehaviorCompositeStage extends CompositeStage implements IBehaviorCompositeStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorCompositeStage.class);

@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.traces;
 
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
-
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
+
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 /**
  * Cleanup filter to rewrite class and operation signatures.
@@ -47,8 +47,9 @@ public class TraceOperationCleanupFilter extends AbstractConsumerStage<UserSessi
         for (final EntryCallEvent event : session.getEvents()) {
             event.setClassSignature(this.rewriter.rewriteClassSignature(event.getClassSignature()));
             event.setClassSignature(this.rewriter.rewriteOperationSignature(event.getOperationSignature()));
-
         }
+
+        this.outputPort.send(session);
     }
 
     public OutputPort<UserSession> getOutputPort() {
