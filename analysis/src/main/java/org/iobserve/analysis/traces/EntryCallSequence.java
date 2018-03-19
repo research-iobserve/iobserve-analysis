@@ -94,7 +94,7 @@ public final class EntryCallSequence extends AbstractStage {
             userSession.add(event, true);
         }
 
-        this.removeExpiredSessions();
+        // this.removeExpiredSessions();
     }
 
     /**
