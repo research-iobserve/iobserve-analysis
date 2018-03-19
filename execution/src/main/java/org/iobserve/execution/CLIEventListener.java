@@ -30,11 +30,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class CLIEventListener implements IAdaptationEventListener {
-<<<<<<< HEAD
-    private static final Logger LOG = LoggerFactory.getLogger(CLIEventListener.class);
-=======
     private static final Logger LOGGER = LoggerFactory.getLogger(CLIEventListener.class);
->>>>>>> origin/master
 
     private final boolean interactiveMode;
 

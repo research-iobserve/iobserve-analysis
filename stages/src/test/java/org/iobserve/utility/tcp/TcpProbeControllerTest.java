@@ -18,18 +18,18 @@ package org.iobserve.utility.tcp;
 import java.util.HashMap;
 import java.util.Map;
 
-import kieker.common.logging.Log; // NOCS required die to dependency
-import kieker.common.logging.LogFactory; // NOCS required die to dependency
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.IRecordReceivedListener;
 import kieker.common.record.remotecontrol.ActivationEvent;
 import kieker.common.record.remotecontrol.IRemoteControlEvent;
 import kieker.common.record.tcp.SingleSocketRecordReader;
-
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  * @author Marc Adolf
@@ -37,8 +37,8 @@ import org.junit.Test;
  */
 public class TcpProbeControllerTest {
 
-    private static final Log LOGGER = LogFactory.getLog(TcpProbeControllerTest.class); // NOPMD
-                                                                                       // controller
+    private static final Logger LOGGER = LoggerFactory.getLogger(TcpProbeControllerTest.class); // NOPMD
+    // controller
 
     private static final int BUFFER_SIZE = 65535;
     private static final String ARBITRARY_IP = "90.90.90.90"; // NOPMD do not code IP addresses

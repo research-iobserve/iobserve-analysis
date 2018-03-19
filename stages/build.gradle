@@ -4,11 +4,7 @@ dependencies {
 	clover 'org.openclover:clover:4.2.0'
 	
 	compile project(":common")
-<<<<<<< HEAD
 	compile project(":model")
-	compile project(":planning.systemadaptation")
-=======
->>>>>>> origin/master
 
 	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
 	compile 'com.fasterxml.jackson.core:jackson-databind:2.2.3'

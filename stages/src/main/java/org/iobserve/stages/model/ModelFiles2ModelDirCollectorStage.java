@@ -17,10 +17,9 @@ package org.iobserve.stages.model;
 
 import java.io.File;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.gradle.internal.impldep.org.apache.commons.io.FilenameUtils;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import teetime.stage.basic.AbstractFilter;
 
@@ -34,7 +33,7 @@ import teetime.stage.basic.AbstractFilter;
  *
  */
 public class ModelFiles2ModelDirCollectorStage extends AbstractFilter<File> {
-    private static final Logger LOG = LogManager.getLogger(ModelFiles2ModelDirCollectorStage.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ModelFiles2ModelDirCollectorStage.class);
 
     private boolean receivedAllocationModel = false;
     private final boolean receivedCloudProfileModel = false;
@@ -50,7 +49,8 @@ public class ModelFiles2ModelDirCollectorStage extends AbstractFilter<File> {
     protected void execute(final File modelFile) throws Exception {
         ModelFiles2ModelDirCollectorStage.LOG.debug("Received model file " + modelFile);
 
-        final String modelFileExtension = FilenameUtils.getExtension(modelFile.getName());
+        final String modelFileName = modelFile.getName();
+        final String modelFileExtension = modelFileName.substring(modelFileName.lastIndexOf(".") + 1);
 
         if (modelFileExtension.equals("allocation")) {
             this.receivedAllocationModel = true;

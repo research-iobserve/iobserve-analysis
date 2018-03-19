@@ -42,11 +42,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class PlanningMain {
-<<<<<<< HEAD
-    private static final Logger LOG = LoggerFactory.getLogger(PlanningMain.class);
-
-=======
->>>>>>> origin/master
     public static final String INPUT_WORKING_DIR_OPTION = "working-dir";
     public static final String INPUT_WORKING_DIR_OPTION_SHORT = "w";
 

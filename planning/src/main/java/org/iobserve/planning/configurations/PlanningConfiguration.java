@@ -15,22 +15,16 @@
  ***************************************************************************/
 package org.iobserve.planning.configurations;
 
-<<<<<<< HEAD
 import java.io.File;
 
-=======
-import teetime.framework.Configuration;
-
-import org.eclipse.emf.common.util.URI;
-import org.iobserve.planning.CandidateGeneration;
-import org.iobserve.planning.CandidateProcessing;
->>>>>>> origin/master
 import org.iobserve.planning.ModelOptimization;
 import org.iobserve.planning.ModelProcessing;
 import org.iobserve.stages.model.ModelDir2ModelFilesStage;
 import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
+
+import teetime.framework.Configuration;
 
 /**
  * Configuration for the stages of the planning service.
@@ -79,17 +73,8 @@ public class PlanningConfiguration extends Configuration {
         // null!");
         // }
 
-<<<<<<< HEAD
         this.modelDir2ModelFiles = new ModelDir2ModelFilesStage();
         this.tcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname, adaptationInputPort);
-=======
-        if (perOpteryxHeadless != null && lqnsDir != null) {
-            // create filters for snapshot planning, evaluation and adaptation
-            final CandidateGeneration candidateGenerator = new CandidateGeneration(
-                    new ModelProcessing(perOpteryxHeadless, lqnsDir), new ModelOptimization(),
-                    new CandidateProcessing());
-        }
->>>>>>> origin/master
 
         this.connectPorts(this.tcpReader.getOutputPort(), this.modelFilesCollector.getInputPort());
         this.connectPorts(this.modelFilesCollector.getOutputPort(), this.modelPreProcessor.getInputPort());

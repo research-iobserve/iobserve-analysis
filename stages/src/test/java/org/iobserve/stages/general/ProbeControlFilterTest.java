@@ -18,14 +18,6 @@ package org.iobserve.stages.general;
 import java.util.ArrayList;
 import java.util.List;
 
-import kieker.common.logging.Log; // NOCS test
-import kieker.common.logging.LogFactory; // NOCS test
-import kieker.common.record.IMonitoringRecord;
-import kieker.common.record.IRecordReceivedListener;
-import kieker.common.record.tcp.SingleSocketRecordReader;
-
-import teetime.framework.test.StageTester;
-
 import org.iobserve.stages.data.IErrorMessages;
 import org.iobserve.stages.tcp.ProbeControlFilter;
 import org.iobserve.utility.tcp.events.AbstractTcpControlEvent;
@@ -34,6 +26,13 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.IRecordReceivedListener;
+import kieker.common.record.tcp.SingleSocketRecordReader;
+import teetime.framework.test.StageTester;
 
 /**
  * Tests the different results of the {@link ProbeControlFilter}.
@@ -42,7 +41,7 @@ import org.junit.Test;
  *
  */
 public class ProbeControlFilterTest {
-    private static final Log LOG = LogFactory.getLog(ProbeControlFilterTest.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ProbeControlFilterTest.class);
 
     private static final int BUFFER_SIZE = 65535;
 

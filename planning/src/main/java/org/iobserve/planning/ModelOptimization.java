@@ -15,22 +15,16 @@
  ***************************************************************************/
 package org.iobserve.planning;
 
-<<<<<<< HEAD
 import java.io.File;
 
-import teetime.stage.basic.AbstractFilter;
-=======
 import teetime.stage.basic.AbstractTransformation;
->>>>>>> origin/master
-
-import org.iobserve.planning.data.PlanningData;
 
 /**
  * This class creates potential migration candidates via PerOpteryx. The class is OS independent.
  *
  * @author Philipp Weimann
  */
-public class ModelOptimization extends AbstractFilter<File> {
+public class ModelOptimization extends AbstractTransformation<File, File> {
 
     private static final int EXEC_SUCCESS = 0;
 

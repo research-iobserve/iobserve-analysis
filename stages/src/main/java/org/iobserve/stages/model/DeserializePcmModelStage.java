@@ -19,7 +19,6 @@ import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
-import org.gradle.internal.impldep.org.apache.commons.io.FilenameUtils;
 import org.iobserve.model.provider.file.AllocationModelHandler;
 import org.iobserve.model.provider.file.CloudProfileModelHandler;
 import org.iobserve.model.provider.file.CostModelHandler;
@@ -35,7 +34,7 @@ import teetime.stage.basic.AbstractTransformation;
 /**
  * This stage gets a serialized PCM model's File and loads the model EObject from it. The EObject is
  * provided via the stages output port.
- * 
+ *
  * @author Lars Bluemke
  *
  */
@@ -43,7 +42,8 @@ public class DeserializePcmModelStage extends AbstractTransformation<File, EObje
 
     @Override
     protected void execute(final File modelFile) throws Exception {
-        final String modelFileExtension = FilenameUtils.getExtension(modelFile.getName());
+        final String modelFileName = modelFile.getName();
+        final String modelFileExtension = modelFileName.substring(modelFileName.lastIndexOf(".") + 1);
         EObject model;
 
         if (modelFileExtension.equals(".allocation")) {
