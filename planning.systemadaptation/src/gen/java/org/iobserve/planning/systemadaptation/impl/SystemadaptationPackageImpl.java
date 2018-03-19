@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,107 +19,104 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
+import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
 import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
-import org.iobserve.planning.systemadaptation.TerminateAction;
 import org.palladiosimulator.pcm.PcmPackage;
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
 import org.palladiosimulator.pcm.core.composition.CompositionPackage;
 import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
+import de.uka.ipd.sdq.identifier.IdentifierPackage;
+import de.uka.ipd.sdq.probfunction.ProbfunctionPackage;
+import de.uka.ipd.sdq.stoex.StoexPackage;
+import de.uka.ipd.sdq.units.UnitsPackage;
+
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- *
+ * 
  * @generated
  */
 public class SystemadaptationPackageImpl extends EPackageImpl implements SystemadaptationPackage {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     private EClass systemAdaptationEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     private EClass actionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     private EClass assemblyContextActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     private EClass resourceContainerActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     private EClass changeRepositoryComponentActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
-    private EClass allocateActionEClass = null;
+    private EClass replicateActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
-    private EClass deallocateActionEClass = null;
+    private EClass dereplicateActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     private EClass migrateActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
-    private EClass acquireActionEClass = null;
+    private EClass allocateActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
-    private EClass terminateActionEClass = null;
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    private EClass replicateActionEClass = null;
+    private EClass deallocateActionEClass = null;
 
     /**
      * Creates an instance of the model <b>Package</b>, registered with
@@ -129,7 +126,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
      * Note: the correct way to create the package is via the static factory method {@link #init
      * init()}, which also performs initialization of the package, or returns the registered
      * package, if one already exists. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @see org.eclipse.emf.ecore.EPackage.Registry
      * @see org.iobserve.planning.systemadaptation.SystemadaptationPackage#eNS_URI
      * @see #init()
@@ -141,7 +138,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     private static boolean isInited = false;
@@ -154,7 +151,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
      * This method is used to initialize {@link SystemadaptationPackage#eINSTANCE} when that field
      * is accessed. Clients should not invoke it directly. Instead, they should simply access that
      * field to obtain the package. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @see #eNS_URI
      * @see #createPackageContents()
      * @see #initializePackageContents()
@@ -166,7 +163,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
         }
 
         // Obtain or create and register package
-        final SystemadaptationPackageImpl thesystemadaptationPackage = (SystemadaptationPackageImpl) (EPackage.Registry.INSTANCE
+        final SystemadaptationPackageImpl theSystemadaptationPackage = (SystemadaptationPackageImpl) (EPackage.Registry.INSTANCE
                 .get(SystemadaptationPackage.eNS_URI) instanceof SystemadaptationPackageImpl
                         ? EPackage.Registry.INSTANCE.get(SystemadaptationPackage.eNS_URI)
                         : new SystemadaptationPackageImpl());
@@ -174,25 +171,29 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
         SystemadaptationPackageImpl.isInited = true;
 
         // Initialize simple dependencies
+        IdentifierPackage.eINSTANCE.eClass();
         PcmPackage.eINSTANCE.eClass();
+        ProbfunctionPackage.eINSTANCE.eClass();
+        StoexPackage.eINSTANCE.eClass();
+        UnitsPackage.eINSTANCE.eClass();
 
         // Create package meta-data objects
-        thesystemadaptationPackage.createPackageContents();
+        theSystemadaptationPackage.createPackageContents();
 
         // Initialize created meta-data
-        thesystemadaptationPackage.initializePackageContents();
+        theSystemadaptationPackage.initializePackageContents();
 
         // Mark meta-data to indicate it can't be changed
-        thesystemadaptationPackage.freeze();
+        theSystemadaptationPackage.freeze();
 
         // Update the registry and return the package
-        EPackage.Registry.INSTANCE.put(SystemadaptationPackage.eNS_URI, thesystemadaptationPackage);
-        return thesystemadaptationPackage;
+        EPackage.Registry.INSTANCE.put(SystemadaptationPackage.eNS_URI, theSystemadaptationPackage);
+        return theSystemadaptationPackage;
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
@@ -202,7 +203,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
@@ -212,7 +213,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
@@ -222,7 +223,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
@@ -232,7 +233,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
@@ -242,7 +243,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
@@ -252,7 +253,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
@@ -262,7 +263,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
@@ -272,7 +273,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
@@ -282,7 +283,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
@@ -292,97 +293,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EClass getAllocateAction() {
-        return this.allocateActionEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EReference getAllocateAction_NewAllocationContext() {
-        return (EReference) this.allocateActionEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EClass getDeallocateAction() {
-        return this.deallocateActionEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EReference getDeallocateAction_OldAllocationContext() {
-        return (EReference) this.deallocateActionEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EClass getMigrateAction() {
-        return this.migrateActionEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EReference getMigrateAction_NewAllocationContext() {
-        return (EReference) this.migrateActionEClass.getEStructuralFeatures().get(0);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EReference getMigrateAction_SourceAllocationContext() {
-        return (EReference) this.migrateActionEClass.getEStructuralFeatures().get(1);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EClass getAcquireAction() {
-        return this.acquireActionEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
-     * @generated
-     */
-    @Override
-    public EClass getTerminateAction() {
-        return this.terminateActionEClass;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
@@ -392,47 +303,97 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
-    public EReference getReplicateAction_NewResourceContainer() {
+    public EReference getReplicateAction_NewAllocationContext() {
         return (EReference) this.replicateActionEClass.getEStructuralFeatures().get(0);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
-    public EReference getReplicateAction_SourceAllocationContext() {
-        return (EReference) this.replicateActionEClass.getEStructuralFeatures().get(1);
+    public EClass getDereplicateAction() {
+        return this.dereplicateActionEClass;
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
-    public EReference getReplicateAction_NewAllocationContext() {
-        return (EReference) this.replicateActionEClass.getEStructuralFeatures().get(2);
+    public EReference getDereplicateAction_OldAllocationContext() {
+        return (EReference) this.dereplicateActionEClass.getEStructuralFeatures().get(0);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     @Override
-    public SystemadaptationFactory getsystemadaptationFactory() {
+    public EClass getMigrateAction() {
+        return this.migrateActionEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Override
+    public EReference getMigrateAction_NewAllocationContext() {
+        return (EReference) this.migrateActionEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Override
+    public EReference getMigrateAction_SourceAllocationContext() {
+        return (EReference) this.migrateActionEClass.getEStructuralFeatures().get(1);
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Override
+    public EClass getAllocateAction() {
+        return this.allocateActionEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Override
+    public EClass getDeallocateAction() {
+        return this.deallocateActionEClass;
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Override
+    public SystemadaptationFactory getSystemadaptationFactory() {
         return (SystemadaptationFactory) this.getEFactoryInstance();
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     private boolean isCreated = false;
@@ -440,7 +401,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     /**
      * Creates the meta-model objects for the package. This method is guarded to have no affect on
      * any invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     public void createPackageContents() {
@@ -469,35 +430,27 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
         this.createEReference(this.changeRepositoryComponentActionEClass,
                 SystemadaptationPackage.CHANGE_REPOSITORY_COMPONENT_ACTION__NEW_REPOSITORY_COMPONENT);
 
-        this.allocateActionEClass = this.createEClass(SystemadaptationPackage.ALLOCATE_ACTION);
-        this.createEReference(this.allocateActionEClass,
-                SystemadaptationPackage.ALLOCATE_ACTION__NEW_ALLOCATION_CONTEXT);
+        this.replicateActionEClass = this.createEClass(SystemadaptationPackage.REPLICATE_ACTION);
+        this.createEReference(this.replicateActionEClass,
+                SystemadaptationPackage.REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT);
 
-        this.deallocateActionEClass = this.createEClass(SystemadaptationPackage.DEALLOCATE_ACTION);
-        this.createEReference(this.deallocateActionEClass,
-                SystemadaptationPackage.DEALLOCATE_ACTION__OLD_ALLOCATION_CONTEXT);
+        this.dereplicateActionEClass = this.createEClass(SystemadaptationPackage.DEREPLICATE_ACTION);
+        this.createEReference(this.dereplicateActionEClass,
+                SystemadaptationPackage.DEREPLICATE_ACTION__OLD_ALLOCATION_CONTEXT);
 
         this.migrateActionEClass = this.createEClass(SystemadaptationPackage.MIGRATE_ACTION);
         this.createEReference(this.migrateActionEClass, SystemadaptationPackage.MIGRATE_ACTION__NEW_ALLOCATION_CONTEXT);
         this.createEReference(this.migrateActionEClass,
                 SystemadaptationPackage.MIGRATE_ACTION__SOURCE_ALLOCATION_CONTEXT);
 
-        this.acquireActionEClass = this.createEClass(SystemadaptationPackage.ACQUIRE_ACTION);
+        this.allocateActionEClass = this.createEClass(SystemadaptationPackage.ALLOCATE_ACTION);
 
-        this.terminateActionEClass = this.createEClass(SystemadaptationPackage.TERMINATE_ACTION);
-
-        this.replicateActionEClass = this.createEClass(SystemadaptationPackage.REPLICATE_ACTION);
-        this.createEReference(this.replicateActionEClass,
-                SystemadaptationPackage.REPLICATE_ACTION__NEW_RESOURCE_CONTAINER);
-        this.createEReference(this.replicateActionEClass,
-                SystemadaptationPackage.REPLICATE_ACTION__SOURCE_ALLOCATION_CONTEXT);
-        this.createEReference(this.replicateActionEClass,
-                SystemadaptationPackage.REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT);
+        this.deallocateActionEClass = this.createEClass(SystemadaptationPackage.DEALLOCATE_ACTION);
     }
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     private boolean isInitialized = false;
@@ -505,7 +458,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     /**
      * Complete the initialization of the package and its meta-model. This method is guarded to have
      * no affect on any invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-     *
+     * 
      * @generated
      */
     public void initializePackageContents() {
@@ -537,12 +490,11 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
         this.assemblyContextActionEClass.getESuperTypes().add(this.getAction());
         this.resourceContainerActionEClass.getESuperTypes().add(this.getAction());
         this.changeRepositoryComponentActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
-        this.allocateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
-        this.deallocateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
+        this.replicateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
+        this.dereplicateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
         this.migrateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
-        this.acquireActionEClass.getESuperTypes().add(this.getResourceContainerAction());
-        this.terminateActionEClass.getESuperTypes().add(this.getResourceContainerAction());
-        this.replicateActionEClass.getESuperTypes().add(this.getResourceContainerAction());
+        this.allocateActionEClass.getESuperTypes().add(this.getResourceContainerAction());
+        this.deallocateActionEClass.getESuperTypes().add(this.getResourceContainerAction());
 
         // Initialize classes and features; add operations and parameters
         this.initEClass(this.systemAdaptationEClass, SystemAdaptation.class, "SystemAdaptation",
@@ -586,19 +538,19 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
                 !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED,
                 !EPackageImpl.IS_ORDERED);
 
-        this.initEClass(this.allocateActionEClass, AllocateAction.class, "AllocateAction", !EPackageImpl.IS_ABSTRACT,
+        this.initEClass(this.replicateActionEClass, ReplicateAction.class, "ReplicateAction", !EPackageImpl.IS_ABSTRACT,
                 !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getAllocateAction_NewAllocationContext(), theAllocationPackage.getAllocationContext(),
-                null, "newAllocationContext", null, 1, 1, AllocateAction.class, !EPackageImpl.IS_TRANSIENT,
+        this.initEReference(this.getReplicateAction_NewAllocationContext(), theAllocationPackage.getAllocationContext(),
+                null, "newAllocationContext", null, 1, 1, ReplicateAction.class, !EPackageImpl.IS_TRANSIENT,
                 !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
                 EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
                 !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
-        this.initEClass(this.deallocateActionEClass, DeallocateAction.class, "DeallocateAction",
+        this.initEClass(this.dereplicateActionEClass, DereplicateAction.class, "DereplicateAction",
                 !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getDeallocateAction_OldAllocationContext(),
+        this.initEReference(this.getDereplicateAction_OldAllocationContext(),
                 theAllocationPackage.getAllocationContext(), null, "oldAllocationContext", null, 0, 1,
-                DeallocateAction.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
+                DereplicateAction.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
                 EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
                 !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
@@ -615,32 +567,14 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
                 !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE,
                 EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
 
-        this.initEClass(this.acquireActionEClass, AcquireAction.class, "AcquireAction", !EPackageImpl.IS_ABSTRACT,
+        this.initEClass(this.allocateActionEClass, AllocateAction.class, "AllocateAction", !EPackageImpl.IS_ABSTRACT,
                 !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
-        this.initEClass(this.terminateActionEClass, TerminateAction.class, "TerminateAction", !EPackageImpl.IS_ABSTRACT,
-                !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-
-        this.initEClass(this.replicateActionEClass, ReplicateAction.class, "ReplicateAction", !EPackageImpl.IS_ABSTRACT,
-                !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
-        this.initEReference(this.getReplicateAction_NewResourceContainer(),
-                theResourceenvironmentPackage.getResourceContainer(), null, "newResourceContainer", null, 1, 1,
-                ReplicateAction.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-                EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
-                !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-        this.initEReference(this.getReplicateAction_SourceAllocationContext(),
-                theAllocationPackage.getAllocationContext(), null, "sourceAllocationContext", null, 1, -1,
-                ReplicateAction.class, !EPackageImpl.IS_TRANSIENT, !EPackageImpl.IS_VOLATILE,
-                EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE, EPackageImpl.IS_RESOLVE_PROXIES,
-                !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE, !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
-        this.initEReference(this.getReplicateAction_NewAllocationContext(), theAllocationPackage.getAllocationContext(),
-                null, "newAllocationContext", null, 1, -1, ReplicateAction.class, !EPackageImpl.IS_TRANSIENT,
-                !EPackageImpl.IS_VOLATILE, EPackageImpl.IS_CHANGEABLE, !EPackageImpl.IS_COMPOSITE,
-                EPackageImpl.IS_RESOLVE_PROXIES, !EPackageImpl.IS_UNSETTABLE, EPackageImpl.IS_UNIQUE,
-                !EPackageImpl.IS_DERIVED, EPackageImpl.IS_ORDERED);
+        this.initEClass(this.deallocateActionEClass, DeallocateAction.class, "DeallocateAction",
+                !EPackageImpl.IS_ABSTRACT, !EPackageImpl.IS_INTERFACE, EPackageImpl.IS_GENERATED_INSTANCE_CLASS);
 
         // Create resource
         this.createResource(SystemadaptationPackage.eNS_URI);
     }
 
-} // systemadaptationPackageImpl
+} // SystemadaptationPackageImpl

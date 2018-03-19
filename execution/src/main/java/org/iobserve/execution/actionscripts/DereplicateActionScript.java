@@ -20,7 +20,7 @@ import java.io.IOException;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.execution.utils.ModelHelper;
-import org.iobserve.planning.systemadaptation.ReplicateAction;
+import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.RunScriptOnNodesException;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
@@ -28,36 +28,36 @@ import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
- * Action script for an replication action.
+ * Action script for a dereplication action.
  *
- * This action deploys an assembly context onto a node group. It looks for a script with the name
- * {@link AdaptationData#REPLICATE_SCRIPT_NAME} in the folder
+ * This action undeploys an assembly context off a node group. It looks for a script with the name
+ * {@link AdaptationData#DEREPLICATE_SCRIPT_NAME} in the folder
  * '{$deployablesRepository}/{$assemblyContextComponentName}/' and executes this script on each node
- * of the group to deploy the assembly context.
+ * of the group to undeploy the assembly context.
  *
  * @author Tobias Pöppke
- * @author Lars Blümke (terminology: "allocate" -> "replicate")
+ * @author Lars Blümke (terminology: "deallocate" -> "dereplicate")
  *
  */
-public class ReplicateActionScript extends AbstractActionScript {
-    private final ReplicateAction action;
+public class DereplicateActionScript extends AbstractActionScript {
+    private final DereplicateAction action;
 
     /**
-     * Create a new replicate action script with the given data.
+     * Create a new dereplicate action script with the given data.
      *
      * @param data
      *            the data shared in the adaptation stage
      * @param action
      *            the action item to be executed
      */
-    public ReplicateActionScript(final AdaptationData data, final ReplicateAction action) {
+    public DereplicateActionScript(final AdaptationData data, final DereplicateAction action) {
         super(data);
         this.action = action;
     }
 
     @Override
     public void execute() throws RunScriptOnNodesException, IOException {
-        final ResourceContainer container = this.action.getNewAllocationContext()
+        final ResourceContainer container = this.action.getOldAllocationContext()
                 .getResourceContainer_AllocationContext();
 
         final ResourceContainerCloud cloudContainer = this.getResourceContainerCloud(container);
@@ -65,23 +65,22 @@ public class ReplicateActionScript extends AbstractActionScript {
         final ComputeService client = this.getComputeServiceForContainer(cloudContainer);
         final String assemblyContextName = this.action.getSourceAssemblyContext().getEntityName();
 
-        // If the assembly context has already been allocated on the group, do
+        // If the assembly context has already been deallocated on the group, do
         // nothing
-        if (!this.data.getAllocatedContexts().contains(assemblyContextName)) {
+        if (!this.data.getDeallocatedContexts().contains(assemblyContextName)) {
             client.runScriptOnNodesMatching(node -> node.getGroup().equals(cloudContainer.getGroupName()),
-                    this.getAllocateScript(this.action.getSourceAssemblyContext()));
-            this.data.getAllocatedContexts().add(assemblyContextName);
-            // TODO add possibility to open up ports defined in a config file
+                    this.getDeallocateScript(this.action.getSourceAssemblyContext()));
+            this.data.getDeallocatedContexts().add(assemblyContextName);
         }
     }
 
-    private String getAllocateScript(final AssemblyContext assemblyCtx) throws IOException {
+    private String getDeallocateScript(final AssemblyContext assemblyCtx) throws IOException {
         final String assemblyCtxFolderName = this.getAssemblyContextFolderName(assemblyCtx);
 
-        final URI allocationScriptURI = this.data.getDeployablesFolderURI().appendSegment(assemblyCtxFolderName)
-                .appendSegment(AdaptationData.REPLICATE_SCRIPT_NAME);
+        final URI deallocationScriptURI = this.data.getDeployablesFolderURI().appendSegment(assemblyCtxFolderName)
+                .appendSegment(AdaptationData.DEREPLICATE_SCRIPT_NAME);
 
-        return this.getFileContents(allocationScriptURI);
+        return this.getFileContents(deallocationScriptURI);
     }
 
     @Override
@@ -92,12 +91,12 @@ public class ReplicateActionScript extends AbstractActionScript {
     @Override
     public String getDescription() {
         final ResourceContainerCloud sourceContainer = this.getResourceContainerCloud(
-                this.action.getNewAllocationContext().getResourceContainer_AllocationContext());
+                this.action.getOldAllocationContext().getResourceContainer_AllocationContext());
 
         final StringBuilder builder = new StringBuilder();
-        builder.append("Replicate Action: Replicate assembly context '");
+        builder.append("Dereplicate Action: Dereplicate assembly context '");
         builder.append(this.action.getSourceAssemblyContext().getEntityName());
-        builder.append("' to container of provider '");
+        builder.append("' from container of provider '");
         builder.append(sourceContainer.getInstanceType().getProvider().getName());
         builder.append("' of type '");
         builder.append(sourceContainer.getInstanceType());

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 /**
  * <!-- begin-user-doc --> The <b>Resource </b> associated with the package. <!-- end-user-doc -->
  * 
- * @see org.iobserve.planning.systemadaptation.util.systemadaptationResourceFactoryImpl
+ * @see org.iobserve.planning.systemadaptation.util.SystemadaptationResourceFactoryImpl
  * @generated
  */
-public class systemadaptationResourceImpl extends XMIResourceImpl {
+public class SystemadaptationResourceImpl extends XMIResourceImpl {
     /**
      * Creates an instance of the resource. <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
@@ -32,8 +32,8 @@ public class systemadaptationResourceImpl extends XMIResourceImpl {
      *            the URI of the new resource.
      * @generated
      */
-    public systemadaptationResourceImpl(final URI uri) {
+    public SystemadaptationResourceImpl(final URI uri) {
         super(uri);
     }
 
-} // systemadaptationResourceImpl
+} // SystemadaptationResourceImpl

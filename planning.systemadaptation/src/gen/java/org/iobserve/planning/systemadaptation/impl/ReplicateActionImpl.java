@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,10 @@
  ***************************************************************************/
 package org.iobserve.planning.systemadaptation.impl;
 
-import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EClass;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Replicate Action</b></em>'.
@@ -29,17 +27,13 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl#getNewResourceContainer
- * <em>New Resource Container</em>}</li>
- * <li>{@link org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl#getSourceAllocationContext
- * <em>Source Allocation Context</em>}</li>
  * <li>{@link org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl#getNewAllocationContext
  * <em>New Allocation Context</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class ReplicateActionImpl extends ResourceContainerActionImpl implements ReplicateAction {
+public class ReplicateActionImpl extends AssemblyContextActionImpl implements ReplicateAction {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
@@ -65,8 +59,8 @@ public class ReplicateActionImpl extends ResourceContainerActionImpl implements 
      * @generated
      */
     @Override
-    public ResourceContainer getNewResourceContainer() {
-        return (ResourceContainer) this.eGet(SystemadaptationPackage.Literals.REPLICATE_ACTION__NEW_RESOURCE_CONTAINER,
+    public AllocationContext getNewAllocationContext() {
+        return (AllocationContext) this.eGet(SystemadaptationPackage.Literals.REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT,
                 true);
     }
 
@@ -76,32 +70,8 @@ public class ReplicateActionImpl extends ResourceContainerActionImpl implements 
      * @generated
      */
     @Override
-    public void setNewResourceContainer(final ResourceContainer newNewResourceContainer) {
-        this.eSet(SystemadaptationPackage.Literals.REPLICATE_ACTION__NEW_RESOURCE_CONTAINER, newNewResourceContainer);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public EList<AllocationContext> getSourceAllocationContext() {
-        return (EList<AllocationContext>) this
-                .eGet(SystemadaptationPackage.Literals.REPLICATE_ACTION__SOURCE_ALLOCATION_CONTEXT, true);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public EList<AllocationContext> getNewAllocationContext() {
-        return (EList<AllocationContext>) this
-                .eGet(SystemadaptationPackage.Literals.REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT, true);
+    public void setNewAllocationContext(final AllocationContext newNewAllocationContext) {
+        this.eSet(SystemadaptationPackage.Literals.REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT, newNewAllocationContext);
     }
 
 } // ReplicateActionImpl

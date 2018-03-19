@@ -15,15 +15,11 @@
  ***************************************************************************/
 package org.iobserve.adaptation.data;
 
-import org.iobserve.analysis.data.graph.ComponentNode;
 import org.iobserve.analysis.data.graph.DeploymentNode;
-import org.iobserve.planning.systemadaptation.AcquireAction;
-import org.iobserve.planning.systemadaptation.ReplicateAction;
+import org.iobserve.planning.systemadaptation.AllocateAction;
+import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
-import org.iobserve.planning.systemadaptation.TerminateAction;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
@@ -33,6 +29,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  * this class.
  *
  * @author Philipp Weimann
+ * @author Lars Blümke (terminology: "aquire/terminate" -> "(de-)allocate", removal of resource
+ *         container replication)
  */
 public final class ResourceContainerActionFactory {
 
@@ -50,15 +48,15 @@ public final class ResourceContainerActionFactory {
     }
 
     /**
-     * Create a terminate action.
+     * Create a deallocate action.
      *
      * @param runtimeServer
-     *            the node going to be terminated
+     *            the node going to be deallocated
      * @return the action
      */
-    public static TerminateAction createTerminateAction(final DeploymentNode runtimeServer) {
+    public static DeallocateAction createDeallocateAction(final DeploymentNode runtimeServer) {
         final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
-        final TerminateAction action = factory.createTerminateAction();
+        final DeallocateAction action = factory.createDeallocateAction();
 
         ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
 
@@ -66,59 +64,21 @@ public final class ResourceContainerActionFactory {
     }
 
     /**
-     * Create a acquire action.
+     * Create an allocate action.
      *
      * @param reDeploymentServer
      *            the node where components can be deployed on
      * @return the action
      */
-    public static AcquireAction createAcquireAction(final DeploymentNode reDeploymentServer) {
+    public static AllocateAction createAllocateAction(final DeploymentNode reDeploymentServer) {
         final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
-        final AcquireAction action = factory.createAcquireAction();
+        final AllocateAction action = factory.createAllocateAction();
 
         final ResourceEnvironment reDeplResEnvModel = ActionFactory.getRedeploymentModels()
                 .getResourceEnvironmentModel();
         final ResourceContainer resourceContainer = ActionFactory
                 .getResourceContainer(reDeploymentServer.getResourceContainerID(), reDeplResEnvModel);
         action.setSourceResourceContainer(resourceContainer);
-
-        return action;
-    }
-
-    /**
-     * Create replicate action.
-     *
-     * @param runtimeServer
-     *            source server
-     * @param reDeploymentServer
-     *            target server
-     * @return the action
-     */
-    public static ReplicateAction createReplicateAction(final DeploymentNode runtimeServer,
-            final DeploymentNode reDeploymentServer) {
-        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
-        final ReplicateAction action = factory.createReplicateAction();
-
-        ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
-
-        final Allocation runtimeAllocModel = ActionFactory.getRuntimeModels().getAllocationModel();
-        for (final ComponentNode component : runtimeServer.getContainingComponents()) {
-            final AllocationContext oldAllocationContext = ActionFactory
-                    .getAllocationContext(component.getAllocationContextID(), runtimeAllocModel);
-            action.getSourceAllocationContext().add(oldAllocationContext);
-        }
-
-        final Allocation reDeplAllocModel = ActionFactory.getRedeploymentModels().getAllocationModel();
-        for (final ComponentNode component : reDeploymentServer.getContainingComponents()) {
-            final AllocationContext newAllocationContext = ActionFactory
-                    .getAllocationContext(component.getAllocationContextID(), reDeplAllocModel);
-            action.getSourceAllocationContext().add(newAllocationContext);
-        }
-
-        final ResourceEnvironment resEnvModel = ActionFactory.getRedeploymentModels().getResourceEnvironmentModel();
-        final ResourceContainer newResourceContainer = ActionFactory
-                .getResourceContainer(reDeploymentServer.getResourceContainerID(), resEnvModel);
-        action.setNewResourceContainer(newResourceContainer);
 
         return action;
     }

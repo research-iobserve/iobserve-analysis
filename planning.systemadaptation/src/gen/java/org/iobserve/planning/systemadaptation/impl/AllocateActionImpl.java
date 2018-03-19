@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,14 @@ package org.iobserve.planning.systemadaptation.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
-import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Allocate Action</b></em>'.
  * <!-- end-user-doc -->
- * <p>
- * The following features are implemented:
- * </p>
- * <ul>
- * <li>{@link org.iobserve.planning.systemadaptation.impl.AllocateActionImpl#getNewAllocationContext
- * <em>New Allocation Context</em>}</li>
- * </ul>
  *
  * @generated
  */
-public class AllocateActionImpl extends AssemblyContextActionImpl implements AllocateAction {
+public class AllocateActionImpl extends ResourceContainerActionImpl implements AllocateAction {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
@@ -51,27 +43,6 @@ public class AllocateActionImpl extends AssemblyContextActionImpl implements All
     @Override
     protected EClass eStaticClass() {
         return SystemadaptationPackage.Literals.ALLOCATE_ACTION;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public AllocationContext getNewAllocationContext() {
-        return (AllocationContext) this.eGet(SystemadaptationPackage.Literals.ALLOCATE_ACTION__NEW_ALLOCATION_CONTEXT,
-                true);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public void setNewAllocationContext(final AllocationContext newNewAllocationContext) {
-        this.eSet(SystemadaptationPackage.Literals.ALLOCATE_ACTION__NEW_ALLOCATION_CONTEXT, newNewAllocationContext);
     }
 
 } // AllocateActionImpl

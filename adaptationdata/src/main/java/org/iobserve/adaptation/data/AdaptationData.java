@@ -29,11 +29,12 @@ import org.iobserve.planning.systemadaptation.ResourceContainerAction;
  * This class provides all data required for planning and adapting the system.
  *
  * @author Philipp Weimann
+ * @author Lars Blümke (terminology: (de-)allocate.sh -> (de-)replicate.sh)
  */
 public class AdaptationData {
     public static final String NODE_STARTUP_SCRIPT_NAME = "node_startup.sh";
-    public static final String ALLOCATE_SCRIPT_NAME = "allocate.sh";
-    public static final String DEALLOCATE_SCRIPT_NAME = "deallocate.sh";
+    public static final String REPLICATE_SCRIPT_NAME = "replicate.sh";
+    public static final String DEREPLICATE_SCRIPT_NAME = "dereplicate.sh";
     public static final String PRE_MIGRATE_SCRIPT_NAME = "pre_migrate.sh";
     public static final String POST_MIGRATE_SCRIPT_NAME = "post_migrate.sh";
     public static final String NODE_PRE_TERMINATE_SCRIPT_NAME = "node_pre_terminate.sh";

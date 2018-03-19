@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,16 @@ import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
+import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
-import org.iobserve.planning.systemadaptation.TerminateAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
 
 /**
@@ -39,7 +38,7 @@ import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
  * @see org.iobserve.planning.systemadaptation.SystemadaptationPackage
  * @generated
  */
-public class systemadaptationAdapterFactory extends AdapterFactoryImpl {
+public class SystemadaptationAdapterFactory extends AdapterFactoryImpl {
     /**
      * The cached model package. <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
@@ -52,9 +51,9 @@ public class systemadaptationAdapterFactory extends AdapterFactoryImpl {
      * 
      * @generated
      */
-    public systemadaptationAdapterFactory() {
-        if (systemadaptationAdapterFactory.modelPackage == null) {
-            systemadaptationAdapterFactory.modelPackage = SystemadaptationPackage.eINSTANCE;
+    public SystemadaptationAdapterFactory() {
+        if (SystemadaptationAdapterFactory.modelPackage == null) {
+            SystemadaptationAdapterFactory.modelPackage = SystemadaptationPackage.eINSTANCE;
         }
     }
 
@@ -68,11 +67,11 @@ public class systemadaptationAdapterFactory extends AdapterFactoryImpl {
      */
     @Override
     public boolean isFactoryForType(final Object object) {
-        if (object == systemadaptationAdapterFactory.modelPackage) {
+        if (object == SystemadaptationAdapterFactory.modelPackage) {
             return true;
         }
         if (object instanceof EObject) {
-            return ((EObject) object).eClass().getEPackage() == systemadaptationAdapterFactory.modelPackage;
+            return ((EObject) object).eClass().getEPackage() == SystemadaptationAdapterFactory.modelPackage;
         }
         return false;
     }
@@ -83,65 +82,60 @@ public class systemadaptationAdapterFactory extends AdapterFactoryImpl {
      * 
      * @generated
      */
-    protected systemadaptationSwitch<Adapter> modelSwitch = new systemadaptationSwitch<Adapter>() {
+    protected SystemadaptationSwitch<Adapter> modelSwitch = new SystemadaptationSwitch<Adapter>() {
         @Override
         public Adapter caseSystemAdaptation(final SystemAdaptation object) {
-            return systemadaptationAdapterFactory.this.createSystemAdaptationAdapter();
+            return SystemadaptationAdapterFactory.this.createSystemAdaptationAdapter();
         }
 
         @Override
         public Adapter caseAction(final Action object) {
-            return systemadaptationAdapterFactory.this.createActionAdapter();
+            return SystemadaptationAdapterFactory.this.createActionAdapter();
         }
 
         @Override
         public Adapter caseAssemblyContextAction(final AssemblyContextAction object) {
-            return systemadaptationAdapterFactory.this.createAssemblyContextActionAdapter();
+            return SystemadaptationAdapterFactory.this.createAssemblyContextActionAdapter();
         }
 
         @Override
         public Adapter caseResourceContainerAction(final ResourceContainerAction object) {
-            return systemadaptationAdapterFactory.this.createResourceContainerActionAdapter();
+            return SystemadaptationAdapterFactory.this.createResourceContainerActionAdapter();
         }
 
         @Override
         public Adapter caseChangeRepositoryComponentAction(final ChangeRepositoryComponentAction object) {
-            return systemadaptationAdapterFactory.this.createChangeRepositoryComponentActionAdapter();
-        }
-
-        @Override
-        public Adapter caseAllocateAction(final AllocateAction object) {
-            return systemadaptationAdapterFactory.this.createAllocateActionAdapter();
-        }
-
-        @Override
-        public Adapter caseDeallocateAction(final DeallocateAction object) {
-            return systemadaptationAdapterFactory.this.createDeallocateActionAdapter();
-        }
-
-        @Override
-        public Adapter caseMigrateAction(final MigrateAction object) {
-            return systemadaptationAdapterFactory.this.createMigrateActionAdapter();
-        }
-
-        @Override
-        public Adapter caseAcquireAction(final AcquireAction object) {
-            return systemadaptationAdapterFactory.this.createAcquireActionAdapter();
-        }
-
-        @Override
-        public Adapter caseTerminateAction(final TerminateAction object) {
-            return systemadaptationAdapterFactory.this.createTerminateActionAdapter();
+            return SystemadaptationAdapterFactory.this.createChangeRepositoryComponentActionAdapter();
         }
 
         @Override
         public Adapter caseReplicateAction(final ReplicateAction object) {
-            return systemadaptationAdapterFactory.this.createReplicateActionAdapter();
+            return SystemadaptationAdapterFactory.this.createReplicateActionAdapter();
+        }
+
+        @Override
+        public Adapter caseDereplicateAction(final DereplicateAction object) {
+            return SystemadaptationAdapterFactory.this.createDereplicateActionAdapter();
+        }
+
+        @Override
+        public Adapter caseMigrateAction(final MigrateAction object) {
+            return SystemadaptationAdapterFactory.this.createMigrateActionAdapter();
+        }
+
+        @Override
+        public Adapter caseAllocateAction(final AllocateAction object) {
+            return SystemadaptationAdapterFactory.this.createAllocateActionAdapter();
+        }
+
+        @Override
+        public Adapter caseDeallocateAction(final DeallocateAction object) {
+            return SystemadaptationAdapterFactory.this.createDeallocateActionAdapter();
         }
 
         @Override
         public Adapter defaultCase(final EObject object) {
-            return systemadaptationAdapterFactory.this.createEObjectAdapter();
+            return SystemadaptationAdapterFactory.this.createEObjectAdapter();
         }
     };
 
@@ -234,6 +228,51 @@ public class systemadaptationAdapterFactory extends AdapterFactoryImpl {
 
     /**
      * Creates a new adapter for an object of class
+     * '{@link org.iobserve.planning.systemadaptation.ReplicateAction <em>Replicate Action</em>}'.
+     * <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore
+     * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
+     * end-user-doc -->
+     * 
+     * @return the new adapter.
+     * @see org.iobserve.planning.systemadaptation.ReplicateAction
+     * @generated
+     */
+    public Adapter createReplicateActionAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class
+     * '{@link org.iobserve.planning.systemadaptation.DereplicateAction <em>Dereplicate
+     * Action</em>}'. <!-- begin-user-doc --> This default implementation returns null so that we
+     * can easily ignore cases; it's useful to ignore a case when inheritance will catch all the
+     * cases anyway. <!-- end-user-doc -->
+     * 
+     * @return the new adapter.
+     * @see org.iobserve.planning.systemadaptation.DereplicateAction
+     * @generated
+     */
+    public Adapter createDereplicateActionAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class
+     * '{@link org.iobserve.planning.systemadaptation.MigrateAction <em>Migrate Action</em>}'. <!--
+     * begin-user-doc --> This default implementation returns null so that we can easily ignore
+     * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
+     * end-user-doc -->
+     * 
+     * @return the new adapter.
+     * @see org.iobserve.planning.systemadaptation.MigrateAction
+     * @generated
+     */
+    public Adapter createMigrateActionAdapter() {
+        return null;
+    }
+
+    /**
+     * Creates a new adapter for an object of class
      * '{@link org.iobserve.planning.systemadaptation.AllocateAction <em>Allocate Action</em>}'.
      * <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore
      * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
@@ -263,66 +302,6 @@ public class systemadaptationAdapterFactory extends AdapterFactoryImpl {
     }
 
     /**
-     * Creates a new adapter for an object of class
-     * '{@link org.iobserve.planning.systemadaptation.MigrateAction <em>Migrate Action</em>}'. <!--
-     * begin-user-doc --> This default implementation returns null so that we can easily ignore
-     * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-     * end-user-doc -->
-     * 
-     * @return the new adapter.
-     * @see org.iobserve.planning.systemadaptation.MigrateAction
-     * @generated
-     */
-    public Adapter createMigrateActionAdapter() {
-        return null;
-    }
-
-    /**
-     * Creates a new adapter for an object of class
-     * '{@link org.iobserve.planning.systemadaptation.AcquireAction <em>Acquire Action</em>}'. <!--
-     * begin-user-doc --> This default implementation returns null so that we can easily ignore
-     * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-     * end-user-doc -->
-     * 
-     * @return the new adapter.
-     * @see org.iobserve.planning.systemadaptation.AcquireAction
-     * @generated
-     */
-    public Adapter createAcquireActionAdapter() {
-        return null;
-    }
-
-    /**
-     * Creates a new adapter for an object of class
-     * '{@link org.iobserve.planning.systemadaptation.TerminateAction <em>Terminate Action</em>}'.
-     * <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore
-     * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-     * end-user-doc -->
-     * 
-     * @return the new adapter.
-     * @see org.iobserve.planning.systemadaptation.TerminateAction
-     * @generated
-     */
-    public Adapter createTerminateActionAdapter() {
-        return null;
-    }
-
-    /**
-     * Creates a new adapter for an object of class
-     * '{@link org.iobserve.planning.systemadaptation.ReplicateAction <em>Replicate Action</em>}'.
-     * <!-- begin-user-doc --> This default implementation returns null so that we can easily ignore
-     * cases; it's useful to ignore a case when inheritance will catch all the cases anyway. <!--
-     * end-user-doc -->
-     * 
-     * @return the new adapter.
-     * @see org.iobserve.planning.systemadaptation.ReplicateAction
-     * @generated
-     */
-    public Adapter createReplicateActionAdapter() {
-        return null;
-    }
-
-    /**
      * Creates a new adapter for the default case. <!-- begin-user-doc --> This default
      * implementation returns null. <!-- end-user-doc -->
      * 
@@ -333,4 +312,4 @@ public class systemadaptationAdapterFactory extends AdapterFactoryImpl {
         return null;
     }
 
-} // systemadaptationAdapterFactory
+} // SystemadaptationAdapterFactory

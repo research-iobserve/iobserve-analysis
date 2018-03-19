@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,16 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
-import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
+import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
-import org.iobserve.planning.systemadaptation.TerminateAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
 
@@ -47,10 +46,10 @@ public class SystemadaptationFactoryImpl extends EFactoryImpl implements Systema
      */
     public static SystemadaptationFactory init() {
         try {
-            final SystemadaptationFactory thesystemadaptationFactory = (SystemadaptationFactory) EPackage.Registry.INSTANCE
+            final SystemadaptationFactory theSystemadaptationFactory = (SystemadaptationFactory) EPackage.Registry.INSTANCE
                     .getEFactory(SystemadaptationPackage.eNS_URI);
-            if (thesystemadaptationFactory != null) {
-                return thesystemadaptationFactory;
+            if (theSystemadaptationFactory != null) {
+                return theSystemadaptationFactory;
             }
         } catch (final Exception exception) {
             EcorePlugin.INSTANCE.log(exception);
@@ -85,18 +84,16 @@ public class SystemadaptationFactoryImpl extends EFactoryImpl implements Systema
             return this.createResourceContainerAction();
         case SystemadaptationPackage.CHANGE_REPOSITORY_COMPONENT_ACTION:
             return this.createChangeRepositoryComponentAction();
+        case SystemadaptationPackage.REPLICATE_ACTION:
+            return this.createReplicateAction();
+        case SystemadaptationPackage.DEREPLICATE_ACTION:
+            return this.createDereplicateAction();
+        case SystemadaptationPackage.MIGRATE_ACTION:
+            return this.createMigrateAction();
         case SystemadaptationPackage.ALLOCATE_ACTION:
             return this.createAllocateAction();
         case SystemadaptationPackage.DEALLOCATE_ACTION:
             return this.createDeallocateAction();
-        case SystemadaptationPackage.MIGRATE_ACTION:
-            return this.createMigrateAction();
-        case SystemadaptationPackage.ACQUIRE_ACTION:
-            return this.createAcquireAction();
-        case SystemadaptationPackage.TERMINATE_ACTION:
-            return this.createTerminateAction();
-        case SystemadaptationPackage.REPLICATE_ACTION:
-            return this.createReplicateAction();
         default:
             throw new IllegalArgumentException("The class '" + eClass.getName() + "' is not a valid classifier");
         }
@@ -163,6 +160,39 @@ public class SystemadaptationFactoryImpl extends EFactoryImpl implements Systema
      * @generated
      */
     @Override
+    public ReplicateAction createReplicateAction() {
+        final ReplicateActionImpl replicateAction = new ReplicateActionImpl();
+        return replicateAction;
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Override
+    public DereplicateAction createDereplicateAction() {
+        final DereplicateActionImpl dereplicateAction = new DereplicateActionImpl();
+        return dereplicateAction;
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Override
+    public MigrateAction createMigrateAction() {
+        final MigrateActionImpl migrateAction = new MigrateActionImpl();
+        return migrateAction;
+    }
+
+    /**
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * 
+     * @generated
+     */
+    @Override
     public AllocateAction createAllocateAction() {
         final AllocateActionImpl allocateAction = new AllocateActionImpl();
         return allocateAction;
@@ -185,51 +215,7 @@ public class SystemadaptationFactoryImpl extends EFactoryImpl implements Systema
      * @generated
      */
     @Override
-    public MigrateAction createMigrateAction() {
-        final MigrateActionImpl migrateAction = new MigrateActionImpl();
-        return migrateAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public AcquireAction createAcquireAction() {
-        final AcquireActionImpl acquireAction = new AcquireActionImpl();
-        return acquireAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public TerminateAction createTerminateAction() {
-        final TerminateActionImpl terminateAction = new TerminateActionImpl();
-        return terminateAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public ReplicateAction createReplicateAction() {
-        final ReplicateActionImpl replicateAction = new ReplicateActionImpl();
-        return replicateAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public SystemadaptationPackage getsystemadaptationPackage() {
+    public SystemadaptationPackage getSystemadaptationPackage() {
         return (SystemadaptationPackage) this.getEPackage();
     }
 
@@ -244,4 +230,4 @@ public class SystemadaptationFactoryImpl extends EFactoryImpl implements Systema
         return SystemadaptationPackage.eINSTANCE;
     }
 
-} // systemadaptationFactoryImpl
+} // SystemadaptationFactoryImpl

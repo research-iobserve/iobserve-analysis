@@ -22,27 +22,38 @@ import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.execution.utils.ModelHelper;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.jclouds.compute.ComputeService;
-import org.jclouds.compute.RunScriptOnNodesException;
+import org.jclouds.compute.RunNodesException;
+import org.jclouds.compute.domain.NodeMetadata;
+import org.jclouds.compute.domain.OsFamily;
+import org.jclouds.compute.domain.Template;
+import org.jclouds.compute.domain.TemplateBuilder;
+import org.jclouds.compute.options.TemplateOptions;
+import org.jclouds.compute.options.TemplateOptions.Builder;
+import org.jclouds.scriptbuilder.domain.Statement;
+import org.jclouds.scriptbuilder.statements.login.AdminAccess;
+import org.palladiosimulator.pcm.cloud.pcmcloud.cloudprofile.VMType;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.Iterables;
 
 /**
- * Action script for an allocation action.
- *
- * This action deploys an assembly context onto a node group. It looks for a script with the name
- * {@link AdaptationData#ALLOCATE_SCRIPT_NAME} in the folder
- * '{$deployablesRepository}/{$assemblyContextComponentName}/' and executes this script on each node
- * of the group to deploy the assembly context.
+ * Action script for allocating a new cloud resource container.
  *
  * @author Tobias Pöppke
+ * @author Lars Blümke (terminology: "aquire" -> "allocate")
  *
+ * @since 0.0.2
  */
 public class AllocateActionScript extends AbstractActionScript {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AllocateActionScript.class);
+
     private final AllocateAction action;
 
     /**
-     * Create a new allocate action script with the given data.
+     * Create a new acquire action script with the given data.
      *
      * @param data
      *            the data shared in the adaptation stage
@@ -55,32 +66,61 @@ public class AllocateActionScript extends AbstractActionScript {
     }
 
     @Override
-    public void execute() throws RunScriptOnNodesException, IOException {
-        final ResourceContainer container = this.action.getNewAllocationContext()
-                .getResourceContainer_AllocationContext();
+    public void execute() throws RunNodesException {
+        final ResourceContainer container = this.action.getSourceResourceContainer();
 
         final ResourceContainerCloud cloudContainer = this.getResourceContainerCloud(container);
 
         final ComputeService client = this.getComputeServiceForContainer(cloudContainer);
-        final String assemblyContextName = this.action.getSourceAssemblyContext().getEntityName();
 
-        // If the assembly context has already been allocated on the group, do
-        // nothing
-        if (!this.data.getAllocatedContexts().contains(assemblyContextName)) {
-            client.runScriptOnNodesMatching(node -> node.getGroup().equals(cloudContainer.getGroupName()),
-                    this.getAllocateScript(this.action.getSourceAssemblyContext()));
-            this.data.getAllocatedContexts().add(assemblyContextName);
-            // TODO add possibility to open up ports defined in a config file
-        }
+        final TemplateBuilder templateBuilder = client.templateBuilder();
+
+        final VMType instanceType = cloudContainer.getInstanceType();
+
+        templateBuilder.hardwareId(instanceType.getName());
+        templateBuilder.locationId(instanceType.getLocation());
+        // TODO maybe make this configurable
+        templateBuilder.osFamily(OsFamily.UBUNTU);
+
+        final Statement setupAdminInstructions = AdminAccess.standard();
+
+        // Necessary to set hostname to allow mapping for later events
+        final TemplateOptions options = Builder.runScript(setupAdminInstructions)
+                .runScript(AllocateActionScript.getChangeHostnameScript(cloudContainer))
+                .runScript(this.getStartupScript());
+        templateBuilder.options(options);
+
+        final Template template = templateBuilder.build();
+
+        final String groupName = ModelHelper.getGroupName(cloudContainer);
+
+        final NodeMetadata node = Iterables.getOnlyElement(client.createNodesInGroup(groupName, 1, template));
+
+        AllocateActionScript.LOGGER.info(
+                String.format("Allocated node for resource container '%s'. NodeID: %s, Hostname: %s, Adresses: %s",
+                        cloudContainer.getEntityName(), node.getId(), node.getHostname(),
+                        Iterables.concat(node.getPrivateAddresses(), node.getPublicAddresses())));
+
+        // TODO write resource container to original model to enable mapping
+
     }
 
-    private String getAllocateScript(final AssemblyContext assemblyCtx) throws IOException {
-        final String assemblyCtxFolderName = this.getAssemblyContextFolderName(assemblyCtx);
+    private static String getChangeHostnameScript(final ResourceContainerCloud cloudContainer) {
+        // This only works on a *nix OS and is valid until rebooting the node
+        return String.format("hostname %s", cloudContainer.getEntityName());
+    }
 
-        final URI allocationScriptURI = this.data.getDeployablesFolderURI().appendSegment(assemblyCtxFolderName)
-                .appendSegment(AdaptationData.ALLOCATE_SCRIPT_NAME);
+    private String getStartupScript() {
+        final URI nodeStartupScriptURI = this.data.getDeployablesFolderURI()
+                .appendSegment(AdaptationData.NODE_STARTUP_SCRIPT_NAME);
 
-        return this.getFileContents(allocationScriptURI);
+        try {
+            return this.getFileContents(nodeStartupScriptURI);
+        } catch (final IOException e) {
+            // No script found, so we can not execute anything
+            AllocateActionScript.LOGGER.warn("Could not find script for node startup. No script will be executed.");
+            return "";
+        }
     }
 
     @Override
@@ -90,22 +130,18 @@ public class AllocateActionScript extends AbstractActionScript {
 
     @Override
     public String getDescription() {
-        final ResourceContainerCloud sourceContainer = this.getResourceContainerCloud(
-                this.action.getNewAllocationContext().getResourceContainer_AllocationContext());
+        final ResourceContainerCloud container = this
+                .getResourceContainerCloud(this.action.getSourceResourceContainer());
 
         final StringBuilder builder = new StringBuilder();
-        builder.append("Allocate Action: Allocate assembly context '");
-        builder.append(this.action.getSourceAssemblyContext().getEntityName());
-        builder.append("' to container of provider '");
-        builder.append(sourceContainer.getInstanceType().getProvider().getName());
+        builder.append("Allocate Action: Allocate container from provider '");
+        builder.append(container.getInstanceType().getProvider().getName());
         builder.append("' of type '");
-        builder.append(sourceContainer.getInstanceType());
+        builder.append(container.getInstanceType());
         builder.append("' in location '");
-        builder.append(sourceContainer.getInstanceType().getLocation());
-        builder.append("' with name '");
-        builder.append(ModelHelper.getGroupName(sourceContainer));
+        builder.append(container.getInstanceType().getLocation());
         builder.append('\'');
         return builder.toString();
-    }
 
+    }
 }

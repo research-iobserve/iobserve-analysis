@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import teetime.stage.basic.AbstractTransformation;
-
 import org.iobserve.adaptation.data.ActionFactory;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.adaptation.data.AssemblyContextActionFactory;
@@ -31,11 +29,13 @@ import org.iobserve.adaptation.data.ResourceContainerActionFactory;
 import org.iobserve.analysis.data.graph.ComponentNode;
 import org.iobserve.analysis.data.graph.DeploymentNode;
 import org.iobserve.analysis.data.graph.ModelGraph;
-import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.Action;
+import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
+import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
-import org.iobserve.planning.systemadaptation.TerminateAction;
+
+import teetime.stage.basic.AbstractTransformation;
 
 /**
  * This class is the inital phase of the adaption filter stage. It compares a runtime PCM to a
@@ -43,6 +43,8 @@ import org.iobserve.planning.systemadaptation.TerminateAction;
  * towards the redeployment model.
  *
  * @author Philipp Weimann
+ * @author Lars Blümke (terminology: "(de-)allocate" -> "(de-)replicate", "aquire/terminate" ->
+ *         "(de-)allocate")
  *
  */
 public class AdaptationCalculation extends AbstractTransformation<AdaptationData, AdaptationData> {
@@ -110,8 +112,8 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
             final ComponentNode runComp = this.runtimeComponentNodes.get(reDeplComp.getAssemblyContextID());
 
             if (runComp == null) {
-                // Allocate, since ID does not yet exits
-                final AssemblyContextAction action = AssemblyContextActionFactory.generateAllocateAction(runComp,
+                // Replicate, since ID does not yet exits
+                final AssemblyContextAction action = AssemblyContextActionFactory.generateReplicateAction(runComp,
                         reDeplComp);
                 this.acActions.add(action);
             } else if (!runComp.equals(reDeplComp)) {
@@ -136,7 +138,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 
         for (final ComponentNode runComp : this.runtimeComponentNodes.values()) {
             // AssemblyContext does not exist anymore in redeployment model!
-            final AssemblyContextAction action = AssemblyContextActionFactory.generateDeallocateAction(runComp);
+            final AssemblyContextAction action = AssemblyContextActionFactory.generateDereplicateAction(runComp);
             this.acActions.add(action);
         }
     }
@@ -153,7 +155,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 
             if (runServer == null) {
                 // It is an so far unused server!
-                final AcquireAction action = ResourceContainerActionFactory.createAcquireAction(reDeplServer);
+                final AllocateAction action = ResourceContainerActionFactory.createAllocateAction(reDeplServer);
                 this.rcActions.add(action);
             } else {
                 // Server was and is still in use
@@ -163,7 +165,7 @@ public class AdaptationCalculation extends AbstractTransformation<AdaptationData
 
         for (final DeploymentNode runServer : this.runtimeDeploymentNodes.values()) {
             // AssemblyContext does not exist anymore in redeployment model!
-            final TerminateAction action = ResourceContainerActionFactory.createTerminateAction(runServer);
+            final DeallocateAction action = ResourceContainerActionFactory.createDeallocateAction(runServer);
             this.rcActions.add(action);
         }
     }

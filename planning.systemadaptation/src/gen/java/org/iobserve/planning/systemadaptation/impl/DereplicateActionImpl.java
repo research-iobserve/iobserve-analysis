@@ -16,30 +16,30 @@
 package org.iobserve.planning.systemadaptation.impl;
 
 import org.eclipse.emf.ecore.EClass;
-import org.iobserve.planning.systemadaptation.AssemblyContextAction;
+import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model object '<em><b>Assembly Context
+ * <!-- begin-user-doc --> An implementation of the model object '<em><b>Dereplicate
  * Action</b></em>'. <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.iobserve.planning.systemadaptation.impl.AssemblyContextActionImpl#getSourceAssemblyContext
- * <em>Source Assembly Context</em>}</li>
+ * <li>{@link org.iobserve.planning.systemadaptation.impl.DereplicateActionImpl#getOldAllocationContext
+ * <em>Old Allocation Context</em>}</li>
  * </ul>
  *
  * @generated
  */
-public class AssemblyContextActionImpl extends ActionImpl implements AssemblyContextAction {
+public class DereplicateActionImpl extends AssemblyContextActionImpl implements DereplicateAction {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
      * @generated
      */
-    protected AssemblyContextActionImpl() {
+    protected DereplicateActionImpl() {
         super();
     }
 
@@ -50,7 +50,7 @@ public class AssemblyContextActionImpl extends ActionImpl implements AssemblyCon
      */
     @Override
     protected EClass eStaticClass() {
-        return SystemadaptationPackage.Literals.ASSEMBLY_CONTEXT_ACTION;
+        return SystemadaptationPackage.Literals.DEREPLICATE_ACTION;
     }
 
     /**
@@ -59,9 +59,9 @@ public class AssemblyContextActionImpl extends ActionImpl implements AssemblyCon
      * @generated
      */
     @Override
-    public AssemblyContext getSourceAssemblyContext() {
-        return (AssemblyContext) this
-                .eGet(SystemadaptationPackage.Literals.ASSEMBLY_CONTEXT_ACTION__SOURCE_ASSEMBLY_CONTEXT, true);
+    public AllocationContext getOldAllocationContext() {
+        return (AllocationContext) this
+                .eGet(SystemadaptationPackage.Literals.DEREPLICATE_ACTION__OLD_ALLOCATION_CONTEXT, true);
     }
 
     /**
@@ -70,9 +70,8 @@ public class AssemblyContextActionImpl extends ActionImpl implements AssemblyCon
      * @generated
      */
     @Override
-    public void setSourceAssemblyContext(final AssemblyContext newSourceAssemblyContext) {
-        this.eSet(SystemadaptationPackage.Literals.ASSEMBLY_CONTEXT_ACTION__SOURCE_ASSEMBLY_CONTEXT,
-                newSourceAssemblyContext);
+    public void setOldAllocationContext(final AllocationContext newOldAllocationContext) {
+        this.eSet(SystemadaptationPackage.Literals.DEREPLICATE_ACTION__OLD_ALLOCATION_CONTEXT, newOldAllocationContext);
     }
 
-} // AssemblyContextActionImpl
+} // DereplicateActionImpl

@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,33 @@ public interface SystemadaptationFactory extends EFactory {
     ChangeRepositoryComponentAction createChangeRepositoryComponentAction();
 
     /**
+     * Returns a new object of class '<em>Replicate Action</em>'. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     * 
+     * @return a new object of class '<em>Replicate Action</em>'.
+     * @generated
+     */
+    ReplicateAction createReplicateAction();
+
+    /**
+     * Returns a new object of class '<em>Dereplicate Action</em>'. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     * 
+     * @return a new object of class '<em>Dereplicate Action</em>'.
+     * @generated
+     */
+    DereplicateAction createDereplicateAction();
+
+    /**
+     * Returns a new object of class '<em>Migrate Action</em>'. <!-- begin-user-doc --> <!--
+     * end-user-doc -->
+     * 
+     * @return a new object of class '<em>Migrate Action</em>'.
+     * @generated
+     */
+    MigrateAction createMigrateAction();
+
+    /**
      * Returns a new object of class '<em>Allocate Action</em>'. <!-- begin-user-doc --> <!--
      * end-user-doc -->
      * 
@@ -96,47 +123,11 @@ public interface SystemadaptationFactory extends EFactory {
     DeallocateAction createDeallocateAction();
 
     /**
-     * Returns a new object of class '<em>Migrate Action</em>'. <!-- begin-user-doc --> <!--
-     * end-user-doc -->
-     * 
-     * @return a new object of class '<em>Migrate Action</em>'.
-     * @generated
-     */
-    MigrateAction createMigrateAction();
-
-    /**
-     * Returns a new object of class '<em>Acquire Action</em>'. <!-- begin-user-doc --> <!--
-     * end-user-doc -->
-     * 
-     * @return a new object of class '<em>Acquire Action</em>'.
-     * @generated
-     */
-    AcquireAction createAcquireAction();
-
-    /**
-     * Returns a new object of class '<em>Terminate Action</em>'. <!-- begin-user-doc --> <!--
-     * end-user-doc -->
-     * 
-     * @return a new object of class '<em>Terminate Action</em>'.
-     * @generated
-     */
-    TerminateAction createTerminateAction();
-
-    /**
-     * Returns a new object of class '<em>Replicate Action</em>'. <!-- begin-user-doc --> <!--
-     * end-user-doc -->
-     * 
-     * @return a new object of class '<em>Replicate Action</em>'.
-     * @generated
-     */
-    ReplicateAction createReplicateAction();
-
-    /**
      * Returns the package supported by this factory. <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
      * @return the package supported by this factory.
      * @generated
      */
-    SystemadaptationPackage getsystemadaptationPackage();
+    SystemadaptationPackage getSystemadaptationPackage();
 
-} // systemadaptationFactory
+} // SystemadaptationFactory

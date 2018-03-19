@@ -24,21 +24,21 @@ import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.RunScriptOnNodesException;
 import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.ResourceContainerCloud;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Action script for a deallocation action.
- *
- * This action undeploys an assembly context off a node group. It looks for a script with the name
- * {@link AdaptationData#DEALLOCATE_SCRIPT_NAME} in the folder
- * '{$deployablesRepository}/{$assemblyContextComponentName}/' and executes this script on each node
- * of the group to undeploy the assembly context.
+ * Action script for deallocating a group of cloud resource containers.
  *
  * @author Tobias Pöppke
+ * @author Lars Blümke (terminology: "terminate" -> "deallocate")
  *
+ * @since 0.0.2
  */
 public class DeallocateActionScript extends AbstractActionScript {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DeallocateActionScript.class);
+
     private final DeallocateAction action;
 
     /**
@@ -55,31 +55,33 @@ public class DeallocateActionScript extends AbstractActionScript {
     }
 
     @Override
-    public void execute() throws RunScriptOnNodesException, IOException {
-        final ResourceContainer container = this.action.getOldAllocationContext()
-                .getResourceContainer_AllocationContext();
+    public void execute() throws RunScriptOnNodesException {
+        final ResourceContainer container = this.action.getSourceResourceContainer();
 
         final ResourceContainerCloud cloudContainer = this.getResourceContainerCloud(container);
 
         final ComputeService client = this.getComputeServiceForContainer(cloudContainer);
-        final String assemblyContextName = this.action.getSourceAssemblyContext().getEntityName();
 
-        // If the assembly context has already been deallocated on the group, do
-        // nothing
-        if (!this.data.getDeallocatedContexts().contains(assemblyContextName)) {
+        // If the container group has already been terminated, do nothing
+        if (!this.data.getTerminatedGroups().contains(ModelHelper.getGroupName(cloudContainer))) {
             client.runScriptOnNodesMatching(node -> node.getGroup().equals(cloudContainer.getGroupName()),
-                    this.getDeallocateScript(this.action.getSourceAssemblyContext()));
-            this.data.getDeallocatedContexts().add(assemblyContextName);
+                    this.getScript(AdaptationData.NODE_PRE_TERMINATE_SCRIPT_NAME));
+            client.destroyNodesMatching(node -> node.getGroup().equals(cloudContainer.getGroupName()));
+            this.data.getTerminatedGroups().add(cloudContainer.getGroupName());
         }
     }
 
-    private String getDeallocateScript(final AssemblyContext assemblyCtx) throws IOException {
-        final String assemblyCtxFolderName = this.getAssemblyContextFolderName(assemblyCtx);
+    private String getScript(final String scriptName) {
+        final URI terminationScriptURI = this.data.getDeployablesFolderURI().appendSegment(scriptName);
 
-        final URI deallocationScriptURI = this.data.getDeployablesFolderURI().appendSegment(assemblyCtxFolderName)
-                .appendSegment(AdaptationData.DEALLOCATE_SCRIPT_NAME);
-
-        return this.getFileContents(deallocationScriptURI);
+        try {
+            return this.getFileContents(terminationScriptURI);
+        } catch (final IOException e) {
+            // No script found, so we can not execute anything
+            DeallocateActionScript.LOGGER
+                    .warn("Could not find script for node deallocation. No script will be executed.");
+            return "";
+        }
     }
 
     @Override
@@ -89,21 +91,18 @@ public class DeallocateActionScript extends AbstractActionScript {
 
     @Override
     public String getDescription() {
-        final ResourceContainerCloud sourceContainer = this.getResourceContainerCloud(
-                this.action.getOldAllocationContext().getResourceContainer_AllocationContext());
+        final ResourceContainerCloud container = this
+                .getResourceContainerCloud(this.action.getSourceResourceContainer());
 
         final StringBuilder builder = new StringBuilder();
-        builder.append("Deallocate Action: Deallocate assembly context '");
-        builder.append(this.action.getSourceAssemblyContext().getEntityName());
-        builder.append("' from container of provider '");
-        builder.append(sourceContainer.getInstanceType().getProvider().getName());
+        builder.append("Deallocate Action: Deallocate container group from provider '");
+        builder.append(container.getInstanceType().getProvider().getName());
         builder.append("' of type '");
-        builder.append(sourceContainer.getInstanceType());
+        builder.append(container.getInstanceType());
         builder.append("' in location '");
-        builder.append(sourceContainer.getInstanceType().getLocation());
+        builder.append(container.getInstanceType().getLocation());
         builder.append("' with name '");
-        builder.append(ModelHelper.getGroupName(sourceContainer));
-        builder.append('\'');
+        builder.append(ModelHelper.getGroupName(container));
         return builder.toString();
     }
 

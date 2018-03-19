@@ -16,11 +16,11 @@
 package org.iobserve.adaptation.data;
 
 import org.iobserve.analysis.data.graph.ComponentNode;
-import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
-import org.iobserve.planning.systemadaptation.DeallocateAction;
+import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
+import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
@@ -33,6 +33,7 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
  * this class.
  *
  * @author Philipp Weimann
+ * @author Lars Blümke (terminology: "(de-)allocate" -> "(de-)replicate")
  */
 public final class AssemblyContextActionFactory {
 
@@ -99,15 +100,15 @@ public final class AssemblyContextActionFactory {
     }
 
     /**
-     * Create a deallocation action.
+     * Create a dereplication action.
      *
      * @param runtimeNode
      *            node to be deallocated
-     * @return returns the deallocation action
+     * @return returns the dereplication action
      */
-    public static DeallocateAction generateDeallocateAction(final ComponentNode runtimeNode) {
+    public static DereplicateAction generateDereplicateAction(final ComponentNode runtimeNode) {
         final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
-        final DeallocateAction action = factory.createDeallocateAction();
+        final DereplicateAction action = factory.createDereplicateAction();
 
         AssemblyContextActionFactory.setSourceAssemblyContext(action, runtimeNode.getAssemblyContextID());
 
@@ -119,18 +120,18 @@ public final class AssemblyContextActionFactory {
     }
 
     /**
-     * Create an allocation action.
+     * Create an replication action.
      *
      * @param runtimeNode
-     *            node to be allocated
+     *            node to be replicated
      * @param reDeploymentNode
-     *            node to be deployed
-     * @return returns the allocation action
+     *            target node of replication
+     * @return returns the replication action
      */
-    public static AllocateAction generateAllocateAction(final ComponentNode runtimeNode,
+    public static ReplicateAction generateReplicateAction(final ComponentNode runtimeNode,
             final ComponentNode reDeploymentNode) {
         final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
-        final AllocateAction action = factory.createAllocateAction();
+        final ReplicateAction action = factory.createReplicateAction();
 
         // Allcotaion has no runtime component
         // AssemblyContextActionFactory.setSourceAssemblyContext(action,

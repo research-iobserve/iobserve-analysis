@@ -33,6 +33,7 @@
       <!-- @generated systemadaptation -->
       <parser
             type="systemadaptation"
-            class="org.iobserve.planning.systemadaptation.util.systemadaptationResourceFactoryImpl"/>
+            class="org.iobserve.planning.systemadaptation.util.SystemadaptationResourceFactoryImpl"/>
    </extension>
+
 </plugin>

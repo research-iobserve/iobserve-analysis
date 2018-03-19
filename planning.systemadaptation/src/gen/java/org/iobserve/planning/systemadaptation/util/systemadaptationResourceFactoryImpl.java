@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,16 +23,16 @@ import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
  * <!-- begin-user-doc --> The <b>Resource Factory</b> associated with the package. <!--
  * end-user-doc -->
  * 
- * @see org.iobserve.planning.systemadaptation.util.systemadaptationResourceImpl
+ * @see org.iobserve.planning.systemadaptation.util.SystemadaptationResourceImpl
  * @generated
  */
-public class systemadaptationResourceFactoryImpl extends ResourceFactoryImpl {
+public class SystemadaptationResourceFactoryImpl extends ResourceFactoryImpl {
     /**
      * Creates an instance of the resource factory. <!-- begin-user-doc --> <!-- end-user-doc -->
      * 
      * @generated
      */
-    public systemadaptationResourceFactoryImpl() {
+    public SystemadaptationResourceFactoryImpl() {
         super();
     }
 
@@ -43,8 +43,8 @@ public class systemadaptationResourceFactoryImpl extends ResourceFactoryImpl {
      */
     @Override
     public Resource createResource(final URI uri) {
-        final Resource result = new systemadaptationResourceImpl(uri);
+        final Resource result = new SystemadaptationResourceImpl(uri);
         return result;
     }
 
-} // systemadaptationResourceFactoryImpl
+} // SystemadaptationResourceFactoryImpl

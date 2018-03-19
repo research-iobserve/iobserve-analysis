@@ -16,14 +16,13 @@
 package org.iobserve.execution.actionscripts;
 
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.planning.systemadaptation.AcquireAction;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
+import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
-import org.iobserve.planning.systemadaptation.TerminateAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +30,8 @@ import org.slf4j.LoggerFactory;
  * A factory for constructing execution scripts from adaptation actions.
  *
  * @author Tobias Pöppke
+ * @author Lars Blümke (terminology: "(de-)allocate" -> "(de-)replicate", "aquire/terminate" ->
+ *         "(de-)allocate", removal of resource container replication)
  *
  * @since 0.0.2
  */
@@ -61,18 +62,16 @@ public class ActionScriptFactory {
     public AbstractActionScript getExecutionScript(final Action action) throws IllegalArgumentException {
         if (action instanceof ChangeRepositoryComponentAction) {
             return this.createChangeRepositoryComponentActionScript((ChangeRepositoryComponentAction) action);
+        } else if (action instanceof ReplicateAction) {
+            return this.createReplicateActionScript((ReplicateAction) action);
+        } else if (action instanceof DereplicateAction) {
+            return this.createDereplicateActionScript((DereplicateAction) action);
+        } else if (action instanceof MigrateAction) {
+            return this.createMigrateActionScript((MigrateAction) action);
         } else if (action instanceof AllocateAction) {
             return this.createAllocateActionScript((AllocateAction) action);
         } else if (action instanceof DeallocateAction) {
             return this.createDeallocateActionScript((DeallocateAction) action);
-        } else if (action instanceof MigrateAction) {
-            return this.createMigrateActionScript((MigrateAction) action);
-        } else if (action instanceof AcquireAction) {
-            return this.createAcquireActionScript((AcquireAction) action);
-        } else if (action instanceof TerminateAction) {
-            return this.createTerminateActionScript((TerminateAction) action);
-        } else if (action instanceof ReplicateAction) {
-            return this.createReplicateActionScript((ReplicateAction) action);
         } else {
             final String errorMsg = String.format(
                     "Could not create action script for adaptationAction '%s', no suitable class could be found",
@@ -82,28 +81,24 @@ public class ActionScriptFactory {
         }
     }
 
-    private AbstractActionScript createReplicateActionScript(final ReplicateAction adaptationAction) {
-        return new ReplicateActionScript(this.data, adaptationAction);
-    }
-
-    private AbstractActionScript createTerminateActionScript(final TerminateAction adaptationAction) {
-        return new TerminateActionScript(this.data, adaptationAction);
-    }
-
-    private AbstractActionScript createAcquireActionScript(final AcquireAction adaptationAction) {
-        return new AcquireActionScript(this.data, adaptationAction);
-    }
-
-    private AbstractActionScript createMigrateActionScript(final MigrateAction adaptationAction) {
-        return new MigrateActionScript(this.data, adaptationAction);
-    }
-
     private AbstractActionScript createDeallocateActionScript(final DeallocateAction adaptationAction) {
         return new DeallocateActionScript(this.data, adaptationAction);
     }
 
     private AbstractActionScript createAllocateActionScript(final AllocateAction adaptationAction) {
         return new AllocateActionScript(this.data, adaptationAction);
+    }
+
+    private AbstractActionScript createMigrateActionScript(final MigrateAction adaptationAction) {
+        return new MigrateActionScript(this.data, adaptationAction);
+    }
+
+    private AbstractActionScript createDereplicateActionScript(final DereplicateAction adaptationAction) {
+        return new DereplicateActionScript(this.data, adaptationAction);
+    }
+
+    private AbstractActionScript createReplicateActionScript(final ReplicateAction adaptationAction) {
+        return new ReplicateActionScript(this.data, adaptationAction);
     }
 
     private AbstractActionScript createChangeRepositoryComponentActionScript(
