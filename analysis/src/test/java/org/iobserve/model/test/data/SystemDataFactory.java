@@ -24,9 +24,13 @@ import org.palladiosimulator.pcm.system.SystemFactory;
  * @author Reiner Jung
  *
  */
-public class SystemDataFactory {
+public final class SystemDataFactory {
 
     public static final System SYSTEM = SystemDataFactory.createSystem();
+    
+    private SystemDataFactory() {
+    	// private empty constructor for factory
+    }
 
     private static System createSystem() {
         return SystemFactory.eINSTANCE.createSystem();

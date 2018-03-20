@@ -87,6 +87,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
         /** process configuration parameter. */
         this.modelInitDirectory = new File(configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_INIT_DIRECTORY));
+                
         this.modelDatabaseDirectory = new File(
                 configuration.getStringProperty(ConfigurationKeys.PCM_MODEL_DB_DIRECTORY));
 
