@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * This class contains a model for privacy analysis purposes.
  *
  * @author Philipp Weimann
+ * @author Lars Bluemke (added revision for drools rule matching)
  *
  */
 public class ModelGraph {
@@ -35,6 +36,7 @@ public class ModelGraph {
     private final Set<DeploymentNode> servers;
     private final Set<ComponentNode> components;
     private final PCMModelHandler pcmModels;
+    private final ModelGraphRevision revision;
 
     /**
      * Create a model graph.
@@ -45,12 +47,15 @@ public class ModelGraph {
      *            list of component nodes
      * @param pcmModels
      *            all PCM models TODO only use those models which are really necessary
+     * @param revision
+     *            the model graph's revision
      */
     public ModelGraph(final Collection<DeploymentNode> servers, final Collection<ComponentNode> components,
-            final PCMModelHandler pcmModels) {
+            final PCMModelHandler pcmModels, final ModelGraphRevision revision) {
         this.servers = new HashSet<>(servers);
         this.components = new HashSet<>(components);
         this.pcmModels = pcmModels;
+        this.revision = revision;
         // this.printGraph();
     }
 
@@ -82,6 +87,13 @@ public class ModelGraph {
      */
     public PCMModelHandler getPcmModels() {
         return this.pcmModels;
+    }
+
+    /**
+     * @return the revision of the model graph
+     */
+    public ModelGraphRevision getRevision() {
+        return this.revision;
     }
 
     /**

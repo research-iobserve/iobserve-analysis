@@ -25,6 +25,7 @@ import com.neovisionaries.i18n.CountryCode;
  * analysis.
  *
  * @author Philipp Weimann
+ * @author Lars Bluemke (added revision for drools rule matching)
  */
 public class DeploymentNode {
 
@@ -33,6 +34,8 @@ public class DeploymentNode {
     private final int isoCountryCode;
 
     private final Set<ComponentNode> containingComponents;
+
+    private final ModelGraphRevision revision;
 
     /**
      * The constructor.
@@ -43,12 +46,15 @@ public class DeploymentNode {
      *            name of the resource container
      * @param isoCountryCode
      *            the (iso) country code of the country the resource container is located in
+     * @param revision
+     *            the model graph's revision
      */
     public DeploymentNode(final String resourceContainerID, final String resourceContainerName,
-            final int isoCountryCode) {
+            final int isoCountryCode, final ModelGraphRevision revision) {
         this.resourceContainerID = resourceContainerID;
         this.resourceContainerName = resourceContainerName;
         this.isoCountryCode = isoCountryCode;
+        this.revision = revision;
 
         this.containingComponents = new HashSet<>();
     }
@@ -107,6 +113,13 @@ public class DeploymentNode {
     }
 
     /**
+     * @return the model graph's revision
+     */
+    public ModelGraphRevision getRevision() {
+        return this.revision;
+    }
+
+    /**
      * Compute hash code.
      *
      * @return returns the hash code
@@ -122,7 +135,7 @@ public class DeploymentNode {
             final DeploymentNode compObj = (DeploymentNode) obj;
             if (this.resourceContainerID.equals(compObj.resourceContainerID)
                     && this.resourceContainerName.equals(compObj.resourceContainerName)
-                    && this.isoCountryCode == compObj.isoCountryCode) {
+                    && (this.isoCountryCode == compObj.isoCountryCode)) {
                 return true;
             }
         }

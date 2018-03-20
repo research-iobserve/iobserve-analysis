@@ -36,10 +36,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * TODO add description.
+ * Factory class to create a model graph which is a simple, more direct representation of the
+ * host-component-allocation structure from the PCM model.
  *
- * @author unknown
- *
+ * @author Philipp Weimann
+ * @author Lars Bluemke (added revision for drools rule matching)
  */
 public class GraphFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphFactory.class);
@@ -69,7 +70,8 @@ public class GraphFactory {
      * @throws Exception
      *             on error
      */
-    public ModelGraph buildGraph(final PCMModelHandler modelHandler) throws Exception {
+    public ModelGraph buildGraph(final PCMModelHandler modelHandler, final ModelGraphRevision revision)
+            throws Exception {
         this.init(modelHandler);
 
         this.extractAssemblyContexts(this.modelProvider.getSystemModel());
@@ -78,7 +80,7 @@ public class GraphFactory {
         this.adaptPrivacyLvl();
         this.extractAllocations(this.modelProvider.getAllocationModel());
 
-        return this.createModelGraph();
+        return this.createModelGraph(revision);
     }
 
     /*
@@ -223,14 +225,14 @@ public class GraphFactory {
     /*
      * Build Graph Helpers
      */
-    private ModelGraph createModelGraph() {
+    private ModelGraph createModelGraph(final ModelGraphRevision revision) {
         final Map<String, DeploymentNode> servers = new HashMap<>();
         final Map<String, ComponentNode> components = new HashMap<>();
 
         // Build Servers Nodes
         for (final ResourceContainerPrivacy resContainer : this.resourceContainers.values()) {
             final DeploymentNode server = new DeploymentNode(resContainer.getId(), resContainer.getEntityName(),
-                    resContainer.getGeolocation());
+                    resContainer.getGeolocation(), revision);
             servers.put(resContainer.getId(), server);
         }
 
@@ -241,7 +243,8 @@ public class GraphFactory {
             final DataPrivacyLvl acPrivacyLvl = this.assemblyContextPrivacyLvl.get(ac.getId());
 
             final ComponentNode component = new ComponentNode(ac.getId(), ac.getEntityName(), acPrivacyLvl, hostServer,
-                    ac.getEncapsulatedComponent__AssemblyContext().getId(), this.assemblyID2allocID.get(ac.getId()));
+                    ac.getEncapsulatedComponent__AssemblyContext().getId(), this.assemblyID2allocID.get(ac.getId()),
+                    revision);
             hostServer.addComponent(component);
 
             components.put(ac.getId(), component);
@@ -256,12 +259,12 @@ public class GraphFactory {
             final ComponentNode reqNode = components.get(reqACID);
 
             final ComponentEdge edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode,
-                    acp.getPrivacyLevel());
+                    acp.getPrivacyLevel(), revision);
 
             provNode.addCommunicationEdge(edge);
             reqNode.addCommunicationEdge(edge);
         }
 
-        return new ModelGraph(servers.values(), components.values(), this.modelProvider);
+        return new ModelGraph(servers.values(), components.values(), this.modelProvider, revision);
     }
 }

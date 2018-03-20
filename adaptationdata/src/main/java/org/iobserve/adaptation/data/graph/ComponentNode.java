@@ -24,6 +24,7 @@ import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
  * This class is a model of a fully specified pcm component for the purpose of privacy analysis.
  *
  * @author Philipp Weimann
+ * @author Lars Bluemke (added revision for drools rule matching)
  */
 public class ComponentNode {
 
@@ -34,6 +35,7 @@ public class ComponentNode {
     private DataPrivacyLvl privacyLvl;
     private final DeploymentNode hostServer;
     private final Set<ComponentEdge> edges;
+    private final ModelGraphRevision revision;
 
     /**
      * The constructor.
@@ -50,15 +52,20 @@ public class ComponentNode {
      *            id of the repository component
      * @param allocationContextID
      *            id of the allocation context
+     * @param revision
+     *            the model graph's revision
      */
     public ComponentNode(final String assemblyContextID, final String assemblyName, final DataPrivacyLvl privacyLvl,
-            final DeploymentNode hostContext, final String repositoryComponentID, final String allocationContextID) {
+            final DeploymentNode hostContext, final String repositoryComponentID, final String allocationContextID,
+            final ModelGraphRevision revision) {
         this.assemblyContextID = assemblyContextID;
         this.assemblyName = assemblyName;
         this.repositoryComponentID = repositoryComponentID;
         this.allocationContextID = allocationContextID;
         this.privacyLvl = privacyLvl;
         this.hostServer = hostContext;
+        this.revision = revision;
+
         this.edges = new LinkedHashSet<>();
     }
 
@@ -132,6 +139,13 @@ public class ComponentNode {
      */
     public ComponentEdge[] getEdges() {
         return this.edges.toArray(new ComponentEdge[this.edges.size()]);
+    }
+
+    /**
+     * @return the model graph's revision
+     */
+    public ModelGraphRevision getRevision() {
+        return this.revision;
     }
 
     /**

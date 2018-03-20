@@ -20,6 +20,7 @@ import java.io.File;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.adaptation.data.graph.GraphFactory;
 import org.iobserve.adaptation.data.graph.ModelGraph;
+import org.iobserve.adaptation.data.graph.ModelGraphRevision;
 import org.iobserve.model.PCMModelHandler;
 
 import teetime.stage.basic.AbstractFilter;
@@ -39,8 +40,10 @@ public class ModelGraphCreator extends AbstractFilter<AdaptationData> {
         final File runtimeModelDir = new File(adaptationData.getRuntimeModelURI().toFileString());
         final File redeploymentModelDir = new File(adaptationData.getReDeploymentURI().toFileString());
 
-        final ModelGraph runtimeModelGraph = factory.buildGraph(new PCMModelHandler(runtimeModelDir));
-        final ModelGraph redeploymentModelGraph = factory.buildGraph(new PCMModelHandler(redeploymentModelDir));
+        final ModelGraph runtimeModelGraph = factory.buildGraph(new PCMModelHandler(runtimeModelDir),
+                ModelGraphRevision.RUNTIME);
+        final ModelGraph redeploymentModelGraph = factory.buildGraph(new PCMModelHandler(redeploymentModelDir),
+                ModelGraphRevision.REDEPLOYMENT);
 
         adaptationData.setRuntimeGraph(runtimeModelGraph);
         adaptationData.setReDeploymentGraph(redeploymentModelGraph);

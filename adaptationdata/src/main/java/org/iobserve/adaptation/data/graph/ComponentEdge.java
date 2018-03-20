@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
  * analysis.
  *
  * @author Philipp Weimann
+ * @author Lars Bluemke (added revision for drools rule matching)
+ * 
  */
 public class ComponentEdge {
 
@@ -34,6 +36,7 @@ public class ComponentEdge {
     private final ComponentNode providingNode;
     private final ComponentNode requiringNode;
     private final DataPrivacyLvl privacyLvl;
+    private final ModelGraphRevision revision;
 
     /**
      * The constructor for the edge.
@@ -48,14 +51,17 @@ public class ComponentEdge {
      *            the edges requiring component
      * @param privacyLvl
      *            the edges DataPrivacyLvl
+     * @param revision
+     *            the model graph's revision
      */
     public ComponentEdge(final String id, final String assemblyConnectorName, final ComponentNode providingNode,
-            final ComponentNode requiringNode, final DataPrivacyLvl privacyLvl) {
+            final ComponentNode requiringNode, final DataPrivacyLvl privacyLvl, final ModelGraphRevision revision) {
         this.id = id;
         this.assemblyConnectorName = assemblyConnectorName;
         this.providingNode = providingNode;
         this.requiringNode = requiringNode;
         this.privacyLvl = privacyLvl;
+        this.revision = revision;
     }
 
     /**
@@ -109,6 +115,13 @@ public class ComponentEdge {
     }
 
     /**
+     * @return the model graph's revision
+     */
+    public ModelGraphRevision getRevision() {
+        return this.revision;
+    }
+
+    /**
      * Compute hash code.
      *
      * @return returns the hash code
@@ -123,7 +136,7 @@ public class ComponentEdge {
         if (obj instanceof ComponentEdge) {
             final ComponentEdge compObj = (ComponentEdge) obj;
             if (this.id.equals(compObj.id) && this.assemblyConnectorName.equals(compObj.assemblyConnectorName)
-                    && this.privacyLvl == compObj.privacyLvl
+                    && (this.privacyLvl == compObj.privacyLvl)
                     && this.providingNode.getAssemblyContextID()
                             .contentEquals(compObj.providingNode.getAssemblyContextID())
                     && this.requiringNode.getAssemblyContextID()

@@ -24,6 +24,7 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.iobserve.adaptation.data.graph.GraphFactory;
+import org.iobserve.adaptation.data.graph.ModelGraphRevision;
 import org.iobserve.model.PCMModelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public final class EvaluationGenerationMain {
 
                     final PCMModelHandler modelProviders = new PCMModelHandler(model);
                     final GraphFactory graphFactory = new GraphFactory();
-                    graphFactory.buildGraph(modelProviders);
+                    graphFactory.buildGraph(modelProviders, ModelGraphRevision.RUNTIME);
                 }
                 if (commandLine.hasOption("m")) {
                     EvaluationGenerationMain.clearDirectory(commandLine.getOptionValue("o"));
@@ -70,7 +71,7 @@ public final class EvaluationGenerationMain {
 
                     final PCMModelHandler modelProviers = new PCMModelHandler(model);
                     final GraphFactory graphFactory = new GraphFactory();
-                    graphFactory.buildGraph(modelProviers);
+                    graphFactory.buildGraph(modelProviers, ModelGraphRevision.RUNTIME);
                 }
             }
         } catch (final Exception e) { // NOCS NOPMD
