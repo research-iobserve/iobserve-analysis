@@ -18,7 +18,6 @@ package org.iobserve.stages.source;
 import java.util.Date;
 
 import teetime.framework.AbstractProducerStage;
-import teetime.framework.OutputPort;
 
 /**
  * This approach will not provide exact intervals, as thread switches and other effects will add to
@@ -30,8 +29,6 @@ import teetime.framework.OutputPort;
 public class TimeTriggerFilter extends AbstractProducerStage<Long> {
 
     private final long interval;
-
-    private final OutputPort<Long> outputPort = this.createOutputPort();
 
     /**
      * Create a time trigger filter with an trigger interval in milliseconds.
