@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.planning;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.utils.AbstractLinearComposition;
+import org.iobserve.stages.general.AbstractLinearComposition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class encapsulates the system planning filter in the teetime framework. It generates and
@@ -31,7 +31,7 @@ import org.iobserve.analysis.utils.AbstractLinearComposition;
  */
 public class CandidateGeneration extends AbstractLinearComposition<URI, AdaptationData> {
 
-    protected static final Logger LOG = LogManager.getLogger(CandidateGeneration.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(CandidateGeneration.class);
 
     /**
      * The constructor for the model creation part.

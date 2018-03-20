@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,15 +31,12 @@ import org.iobserve.common.record.IUndeployedEvent;
  * 
  * @since 0.0.2
  */
-public class ServletUndeployedEvent extends ServletDescriptor implements IUndeployedEvent {
-	private static final long serialVersionUID = -1583363720229385908L;
-
+public class ServletUndeployedEvent extends ServletDescriptor implements IUndeployedEvent {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_STRING // ServletDescriptor.service
 			 + TYPE_SIZE_STRING // ServletDescriptor.context
-			 + TYPE_SIZE_STRING // ServletDescriptor.deploymentId
-	;
+			 + TYPE_SIZE_STRING; // ServletDescriptor.deploymentId
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEventRecord.timestamp
@@ -48,7 +45,7 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 		String.class, // ServletDescriptor.deploymentId
 	};
 	
-	
+	private static final long serialVersionUID = -1583363720229385908L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -109,6 +106,7 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public ServletUndeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
@@ -126,7 +124,7 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 			this.getTimestamp(),
 			this.getService(),
 			this.getContext(),
-			this.getDeploymentId()
+			this.getDeploymentId(),
 		};
 	}
 	/**
@@ -138,6 +136,7 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 		stringRegistry.get(this.getContext());
 		stringRegistry.get(this.getDeploymentId());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -149,6 +148,7 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 		serializer.putString(this.getContext());
 		serializer.putString(this.getDeploymentId());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -189,16 +189,33 @@ public class ServletUndeployedEvent extends ServletDescriptor implements IUndepl
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final ServletUndeployedEvent castedRecord = (ServletUndeployedEvent) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (!this.getService().equals(castedRecord.getService())) return false;
-		if (!this.getContext().equals(castedRecord.getContext())) return false;
-		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (this.getTimestamp() != castedRecord.getTimestamp()) {
+			return false;
+		}
+		if (!this.getService().equals(castedRecord.getService())) {
+			return false;
+		}
+		if (!this.getContext().equals(castedRecord.getContext())) {
+			return false;
+		}
+		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) {
+			return false;
+		}
+		
 		return true;
 	}
 	

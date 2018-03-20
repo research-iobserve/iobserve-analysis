@@ -15,10 +15,10 @@
  ***************************************************************************/
 package org.iobserve.adaptation;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.utils.AbstractLinearComposition;
+import org.iobserve.stages.general.AbstractLinearComposition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class encapsulates the system adaption filter in the teetime framework. It contains the
@@ -28,7 +28,7 @@ import org.iobserve.analysis.utils.AbstractLinearComposition;
  */
 public class SystemAdaptation extends AbstractLinearComposition<AdaptationData, AdaptationData> {
 
-    protected static final Logger LOG = LogManager.getLogger(SystemAdaptation.class);
+    protected static final Logger LOG = LoggerFactory.getLogger(SystemAdaptation.class);
 
     /**
      * This class encapsulates the major system adaption filter stage.
