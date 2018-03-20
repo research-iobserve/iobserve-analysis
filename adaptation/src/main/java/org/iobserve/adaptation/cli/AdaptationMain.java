@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.adaptation.cli;
 
-import org.iobserve.adaptation.configurations.AdaptationConfiguration;
+import org.iobserve.adaptation.configurations.AdaptationConfigurationDebug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ public class AdaptationMain {
     }
 
     private void run() {
-        final Execution<AdaptationConfiguration> execution = new Execution<>(new AdaptationConfiguration());
+        final Execution<AdaptationConfigurationDebug> execution = new Execution<>(new AdaptationConfigurationDebug());
 
         this.shutdownHook(execution);
 

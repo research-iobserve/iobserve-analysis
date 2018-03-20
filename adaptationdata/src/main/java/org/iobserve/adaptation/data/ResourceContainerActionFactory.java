@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.adaptation.data;
 
-import org.iobserve.analysis.data.graph.DeploymentNode;
+import org.iobserve.adaptation.data.graph.DeploymentNode;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;

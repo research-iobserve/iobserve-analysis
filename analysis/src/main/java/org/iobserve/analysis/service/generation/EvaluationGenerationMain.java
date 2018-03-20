@@ -23,7 +23,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.iobserve.analysis.data.graph.GraphFactory;
+import org.iobserve.adaptation.data.graph.GraphFactory;
 import org.iobserve.model.PCMModelHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

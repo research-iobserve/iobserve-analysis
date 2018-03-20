@@ -19,8 +19,8 @@ import java.io.File;
 
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.analysis.data.graph.GraphFactory;
-import org.iobserve.analysis.data.graph.ModelGraph;
+import org.iobserve.adaptation.data.graph.GraphFactory;
+import org.iobserve.adaptation.data.graph.ModelGraph;
 import org.iobserve.model.PCMModelHandler;
 
 import teetime.stage.basic.AbstractTransformation;
