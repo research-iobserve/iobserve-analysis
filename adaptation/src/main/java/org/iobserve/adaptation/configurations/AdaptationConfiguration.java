@@ -17,7 +17,7 @@ package org.iobserve.adaptation.configurations;
 
 import java.io.File;
 
-import org.iobserve.adaptation.stages.AdaptationDataCreator;
+import org.iobserve.adaptation.data.stages.AdaptationDataCreator;
 import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 
