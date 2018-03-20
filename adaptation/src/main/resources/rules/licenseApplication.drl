@@ -1,4 +1,4 @@
-package org.iobserve.adaptation.drools
+package org.iobserve.adaptation.droolsstages
 
 
 rule "Is of valid age"

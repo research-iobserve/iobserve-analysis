@@ -17,10 +17,10 @@ package org.iobserve.adaptation.configurations;
 
 import java.io.File;
 
-import org.iobserve.adaptation.AdaptationCalculation;
-import org.iobserve.adaptation.AdaptationPlanning;
-import org.iobserve.adaptation.SystemAdaptation;
 import org.iobserve.adaptation.cli.ModelFileSink;
+import org.iobserve.adaptation.legacystages.AdaptationCalculation;
+import org.iobserve.adaptation.legacystages.AdaptationPlanning;
+import org.iobserve.adaptation.legacystages.SystemAdaptation;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 
 import teetime.framework.Configuration;

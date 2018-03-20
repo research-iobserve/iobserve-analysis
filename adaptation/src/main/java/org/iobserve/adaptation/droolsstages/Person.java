@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.drools;
+package org.iobserve.adaptation.droolsstages;
 
 /**
  * A person for testing.
@@ -25,10 +25,16 @@ public class Person {
     private String name;
     private int time;
     private String greet;
+    private Coolness coolness;
+
+    public enum Coolness {
+        COOL, UNCOOL
+    }
 
     public Person(final String name, final int time) {
         this.name = name;
         this.time = time;
+        this.coolness = Coolness.COOL;
     }
 
     public String getGreet() {
@@ -53,6 +59,14 @@ public class Person {
 
     public void setTime(final int time) {
         this.time = time;
+    }
+
+    public Coolness getCoolness() {
+        return this.coolness;
+    }
+
+    public void setCoolness(final Coolness coolness) {
+        this.coolness = coolness;
     }
 
     public static String test(final String s) {

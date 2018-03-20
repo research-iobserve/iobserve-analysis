@@ -1,4 +1,4 @@
-package org.iobserve.adaptation.drools
+package org.iobserve.adaptation.droolsstages
 
 import java.util.LinkedList
 import org.iobserve.adaptation.data.AssemblyContextActionFactory
@@ -24,7 +24,8 @@ end
 
 rule "Good Night"
 when
-	person: Person(time >= 16, time <= 24)
+	person: Person(time >= 16, time <= 24, coolness == Coolness.COOL)
 then
+	System.out.println(person.getName() + " is super cool");
 	person.setGreet("Good Night " + person.getName());
 end

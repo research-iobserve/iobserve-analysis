@@ -14,7 +14,7 @@
  * limitations under the License.
  ***************************************************************************/
 
-package org.iobserve.adaptation;
+package org.iobserve.adaptation.legacystages;
 
 import java.util.HashMap;
 import java.util.HashSet;
