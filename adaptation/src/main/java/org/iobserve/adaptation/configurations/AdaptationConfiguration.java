@@ -17,10 +17,8 @@ package org.iobserve.adaptation.configurations;
 
 import java.io.File;
 
-import org.iobserve.adaptation.AdaptationCalculation;
-import org.iobserve.adaptation.AdaptationPlanning;
-import org.iobserve.adaptation.SystemAdaptation;
-import org.iobserve.adaptation.cli.ModelFileSink;
+import org.iobserve.adaptation.stages.AdaptationDataCreator;
+import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 
 import teetime.framework.Configuration;
@@ -33,21 +31,29 @@ import teetime.framework.Configuration;
  */
 public class AdaptationConfiguration extends Configuration {
 
-    public AdaptationConfiguration() {
-        final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(),
-                new AdaptationPlanning());
+    public AdaptationConfiguration(final int runtimeModelInputPort, final int redeploymentModelInputPort,
+            final File runtimeModelDirectory, final File redeploymentModelDirectory) {
 
-        // TODO for lbl: Implement a way to pass data to the following stages
-        // Path Adaptation => Execution
-        // this.connectPorts(systemAdaptor.getOutputPort(), adaptationExecution.getInputPort());
+        final SingleConnectionTcpReaderStage runtimeModelReader = new SingleConnectionTcpReaderStage(
+                runtimeModelInputPort, runtimeModelDirectory);
+        final SingleConnectionTcpReaderStage redeploymentModelReader = new SingleConnectionTcpReaderStage(
+                runtimeModelInputPort, runtimeModelDirectory);
 
-        // Debugging
-        final SingleConnectionTcpReaderStage modelReader = new SingleConnectionTcpReaderStage(12346,
-                new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/working-dir-adaptation"));
+        final ModelFiles2ModelDirCollectorStage runtimeModelCollector = new ModelFiles2ModelDirCollectorStage();
+        final ModelFiles2ModelDirCollectorStage redeploymentModelCollector = new ModelFiles2ModelDirCollectorStage();
 
-        final ModelFileSink modelProducerSink = new ModelFileSink();
+        final AdaptationDataCreator adaptationDataCreator = new AdaptationDataCreator();
 
-        this.connectPorts(modelReader.getOutputPort(), modelProducerSink.getInputPort());
+        // more filters to come...
+
+        this.connectPorts(runtimeModelReader.getOutputPort(), runtimeModelCollector.getInputPort());
+        this.connectPorts(redeploymentModelReader.getOutputPort(), redeploymentModelCollector.getInputPort());
+        this.connectPorts(runtimeModelCollector.getOutputPort(), adaptationDataCreator.getRuntimeModelInputPort());
+        this.connectPorts(redeploymentModelCollector.getOutputPort(),
+                adaptationDataCreator.getRedeploymentModelInputPort());
+
+        // to be continued...
+
     }
 
 }
