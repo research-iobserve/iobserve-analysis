@@ -26,7 +26,7 @@ import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenera
  */
 public final class JPetStoreEntryCallRulesFactory implements IModelGenerationFilterFactory {
 
-    private JPetStoreEntryCallRulesFactory() {
+    public JPetStoreEntryCallRulesFactory() {
         // empty constructor
     }
 

@@ -49,6 +49,8 @@ public class TraceOperationCleanupFilter extends AbstractConsumerStage<UserSessi
             event.setClassSignature(this.rewriter.rewriteOperationSignature(event.getOperationSignature()));
 
         }
+        
+        this.outputPort.send(session);
     }
 
     public OutputPort<UserSession> getOutputPort() {

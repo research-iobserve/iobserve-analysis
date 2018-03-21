@@ -15,7 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
+import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.feature.IGeoLocationCompositeStage;
+import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
+import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
+import org.iobserve.stages.general.IEntryCallTraceMatcher;
 
 /**
  *
@@ -34,7 +38,10 @@ public final class ConfigurationKeys {
     /** Set whether container management shall be activated. BOOLEAN */
     public static final String CONTAINER_MANAGEMENT = ConfigurationKeys.PREFIX + "container.management.analysis";
 
-    /** Set whether container management visualization sinks shall be created. STRING ARRAY */
+    /**
+     * Set whether container management visualization sinks shall be created. STRING
+     * ARRAY
+     */
     public static final String CONTAINER_MANAGEMENT_SINK = ConfigurationKeys.PREFIX + "container.management.sink";
 
     /** Visualization. */
@@ -99,6 +106,67 @@ public final class ConfigurationKeys {
     public static final String BEHAVIOR_VARIANCE_OF_USER_GROUPS = ConfigurationKeys.PREFIX
             + "behavior.variance.of.user.groups";
 
+    /** Set trace matcher required for EntryCallStage. STRING */
+    public static final String TRACE_MATCHER = ConfigurationKeys.PREFIX + "behavior."
+            + IEntryCallTraceMatcher.class.getSimpleName();
+
+    /** Set acceptance matcher required for SessionAcceptanceFilter. STRING */
+    public static final String ENTRY_CALL_ACCEPTANCE_MATCHER = ConfigurationKeys.PREFIX + "behavior."
+            + IEntryCallAcceptanceMatcher.class.getSimpleName();
+
+    /** Set cleanup rewriter required for TraceOperationCleanupFilter. STRING */
+    public static final String CLEANUP_REWRITER = ConfigurationKeys.PREFIX + "behavior."
+            + ITraceSignatureCleanupRewriter.class.getSimpleName();
+
+    /**
+     * Set entry call filter rules factory required for TSessionOperationsFilter.
+     * STRING
+     */
+    public static final String ENTRY_CALL_FILTER_RULES_FACTORY = ConfigurationKeys.PREFIX + "behavior."
+            + IModelGenerationFilterFactory.class.getSimpleName();
+
+    /** Set time interval required for TimeTriggerFilter. LONG */
+    public static final String TRIGGER_INTERVAL = ConfigurationKeys.PREFIX + "behavior." + "triggerInterval";
+
+    /**
+     * Set classification stage (IClassificationStage) used in
+     * BehaviorCompositeStage STRING
+     */
+    /*public static final String CLASSIFICATION_STAGE = ConfigurationKeys.PREFIX + "behavior."
+            + IClassificationStage.class.getSimpleName();
+
+    /**
+     * Set behaviour model sink base url to configure file writing directory STRING
+     */
+    public static final String SINK_BASE_URL = ConfigurationKeys.PREFIX + "behavior.sink.baseUrl";
+
+    /**
+     * Specific to Similarity Matching
+     */
+
+    /**
+     * Set parameter metric strategy STRING
+     */
+    /*public static final String SIM_MATCH_PARAMETER_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
+            + IParameterMetricStrategy.class.getSimpleName();
+
+    /**
+     * Set structure metric strategy STRING
+     */
+   /* public static final String SIM_MATCH_STRUCTURE_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
+            + IStructureMetricStrategy.class.getSimpleName();
+
+    /**
+     * Set model generation strategy STRING
+     */
+    /*public static final String SIM_MATCH_MODEL_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
+            + IModelGenerationStrategy.class.getSimpleName();
+
+    /**
+     * Set similarity radius DOUBLE
+     */
+    public static final String SIM_MATCH_RADIUS = ConfigurationKeys.PREFIX + "behavior.sm.radius";
+
     /**
      * Model.
      */
@@ -106,6 +174,14 @@ public final class ConfigurationKeys {
     public static final String PCM_MODEL_DB_DIRECTORY = ConfigurationKeys.PREFIX + "model.pcm.directory.db";
 
     public static final String PCM_MODEL_INIT_DIRECTORY = ConfigurationKeys.PREFIX + "model.pcm.directory.init";
+
+	public static final String KEEP_EMPTY_TRANS = ConfigurationKeys.PREFIX + "behavior.preprocess.keepEmpty";
+	
+	public static final String MIN_SIZE = ConfigurationKeys.PREFIX + "behavior.preprocess.minSize";
+	
+	public static final String KEEP_TIME = ConfigurationKeys.PREFIX + "behavior.preprocess.keepTime";
+	
+	
 
     /**
      * Factory, do not instantiate.

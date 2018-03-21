@@ -19,7 +19,10 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.session.data.UserSession;
+import org.iobserve.analysis.traces.EntryCallSequence;
 import org.iobserve.stages.general.data.EntryCallEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests whether a trace contains only operations which are considered valid trace elements. In
@@ -29,9 +32,10 @@ import org.iobserve.stages.general.data.EntryCallEvent;
  *
  */
 public class SessionAcceptanceFilter extends AbstractConsumerStage<UserSession> {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(SessionAcceptanceFilter.class);
     private final OutputPort<UserSession> outputPort = this.createOutputPort();
     private final IEntryCallAcceptanceMatcher matcher;
+    private int cnt = 0;
 
     /**
      * Create an acceptance filter with an external matcher.
@@ -50,8 +54,14 @@ public class SessionAcceptanceFilter extends AbstractConsumerStage<UserSession> 
                 return;
             }
         }
-
+        cnt++;
         this.outputPort.send(session);
+    }
+    
+    @Override
+    public void onTerminating() {
+    	SessionAcceptanceFilter.LOGGER.debug("Sent " + cnt + " sessions.");
+        super.onTerminating();
     }
 
     public OutputPort<UserSession> getOutputPort() {

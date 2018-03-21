@@ -38,6 +38,7 @@ public class TimeTriggerFilter extends AbstractProducerStage<Long> {
      */
     public TimeTriggerFilter(final long interval) {
         this.interval = interval;
+        this.isActive();
     }
 
     @Override

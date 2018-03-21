@@ -27,6 +27,7 @@ public interface IModelGenerationFilterFactory {
      *
      * @return specific {@link EntryCallFilterRules}
      */
+		
     static EntryCallFilterRules createFilter() {
         return null;
     }

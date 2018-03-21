@@ -24,11 +24,14 @@ import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.clustering.birch.BuildCFTree;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.SessionEndEvent;
 import org.iobserve.common.record.SessionStartEvent;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Represents the TEntryCallSequence Transformation in the paper <i>Run-time Architecture Models for
@@ -41,7 +44,7 @@ import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
  * @version 1.0
  */
 public final class EntryCallSequence extends AbstractStage {
-
+	private static final Logger LOGGER = LoggerFactory.getLogger(EntryCallSequence.class);
     /** time until a session expires. */
     private static final long USER_SESSION_EXPIRATIONTIME = 360000000000L;
     /** map of sessions. */
@@ -94,7 +97,7 @@ public final class EntryCallSequence extends AbstractStage {
             userSession.add(event, true);
         }
 
-        this.removeExpiredSessions();
+        //this.removeExpiredSessions();
     }
 
     /**
@@ -116,6 +119,7 @@ public final class EntryCallSequence extends AbstractStage {
                 sessionsToRemove.add(sessionId);
             }
         }
+        //EntryCallSequence.LOGGER.debug("Removing " + sessionsToRemove.size() + " expired sessions.");
         for (final String sessionId : sessionsToRemove) {
             this.sessions.remove(sessionId);
         }
@@ -123,6 +127,7 @@ public final class EntryCallSequence extends AbstractStage {
 
     @Override
     public void onTerminating() {
+    	EntryCallSequence.LOGGER.debug("About to send " + this.sessions.size() + " user sessions.");
         for (final UserSession session : this.sessions.values()) {
             this.userSessionOutputPort.send(session);
         }

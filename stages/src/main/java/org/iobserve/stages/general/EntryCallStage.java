@@ -26,6 +26,8 @@ import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //TODO: this filter must be reworked to support plain and extended records, Maybe code from earlier versions can be useful.
 
@@ -47,7 +49,10 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
 
     /** output port. */
     private final OutputPort<PayloadAwareEntryCallEvent> outputPort = this.createOutputPort();
-
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntryCallStage.class);
+    private int counter = 0;
+    private int sent = 0;
     /**
      * Entry call filter.
      *
@@ -66,18 +71,27 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
      */
     @Override
     protected void execute(final EventBasedTrace event) {
+    	counter++;
         for (final AbstractTraceEvent traceEvent : event.getTraceEvents()) {
             if (traceEvent instanceof BeforeOperationEvent) {
                 final BeforeOperationEvent beforeEvent = (BeforeOperationEvent) traceEvent;
 
                 if (this.matcher.stateMatch(event, beforeEvent)) {
                     this.outputPort.send(this.createEntryCall(event.getTraceMetaData()));
+                    sent++;
                     return;
                 }
             }
         }
     }
 
+    @Override
+    public void onTerminating() {
+    	EntryCallStage.LOGGER.debug("Received " + counter + " events.");
+    	EntryCallStage.LOGGER.debug("Sent " + sent + " events.");
+        super.onTerminating();
+    }
+    
     private PayloadAwareEntryCallEvent createEntryCall(final TraceMetadata traceMetaData) {
 
         final BeforeOperationEvent beforeOperationEvent = this.matcher.getBeforeOperationEvent();
