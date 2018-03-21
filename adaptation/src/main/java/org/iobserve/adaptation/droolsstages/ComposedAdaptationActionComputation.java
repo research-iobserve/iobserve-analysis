@@ -68,6 +68,8 @@ public class ComposedAdaptationActionComputation extends AbstractTransformation<
         for (final Action a : composedAdaptationActions) {
             System.out.println(a);
         }
+
+        this.outputPort.send(composedAdaptationActions);
     }
 
     private void addToWorkingMemoryInserts(final List<Command<?>> inserts, final Set<?> graphComponents) {

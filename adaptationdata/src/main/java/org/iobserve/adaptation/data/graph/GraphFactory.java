@@ -32,6 +32,7 @@ import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
+import org.palladiosimulator.pcm.system.System;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +41,8 @@ import org.slf4j.LoggerFactory;
  * host-component-allocation structure from the PCM model.
  *
  * @author Philipp Weimann
- * @author Lars Bluemke (added revision for drools rule matching)
+ * @author Lars Bluemke (added revision for drools rule matching, added buildGraph with model
+ *         instances for testing)
  */
 public class GraphFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphFactory.class);
@@ -62,7 +64,7 @@ public class GraphFactory {
     }
 
     /**
-     * Build a graph based on the given model provides.
+     * Build a graph based on the given model providers.
      *
      * @param modelHandler
      *            object containing all model providers
@@ -79,6 +81,33 @@ public class GraphFactory {
         this.extractResourceContainers(this.modelProvider.getResourceEnvironmentModel());
         this.adaptPrivacyLvl();
         this.extractAllocations(this.modelProvider.getAllocationModel());
+
+        return this.createModelGraph(revision);
+    }
+
+    /**
+     * Build a graph based on the given models. Note: As this method does not take a model provider
+     * as an argument the created graph's getPcmModels() method will return null;
+     *
+     * @param systemModel
+     *            a system model instance
+     * @param resourceEnvironmentModel
+     *            a resource environment model instance
+     * @param allocationModel
+     *            an allocation model instance
+     * @return returns the model graph for this
+     * @throws Exception
+     *             on error
+     */
+    public ModelGraph buildGraph(final System systemModel, final ResourceEnvironment resourceEnvironmentModel,
+            final Allocation allocationModel, final ModelGraphRevision revision) throws Exception {
+        this.init(null);
+
+        this.extractAssemblyContexts(systemModel);
+        this.extractAssemblyConnectors(systemModel);
+        this.extractResourceContainers(resourceEnvironmentModel);
+        this.adaptPrivacyLvl();
+        this.extractAllocations(allocationModel);
 
         return this.createModelGraph(revision);
     }

@@ -1,0 +1,30 @@
+package org.iobserve.adaptation.droolsstages
+
+import java.util.LinkedList
+import org.iobserve.adaptation.data.AssemblyContextActionFactory
+import org.iobserve.adaptation.data.graph.ComponentNode
+import org.iobserve.adaptation.data.graph.DeploymentNode
+import org.iobserve.adaptation.data.graph.ModelGraphRevision
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// ASSEMBLY CONTEXT ACTION RULES                                                                                      //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+rule "Create replication action"
+when
+	$composedAdaptationActions : LinkedList()
+    $redplNode : ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT)
+    not $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME, 
+    		assemblyContextID == $redplNode.getAssemblyContextID )
+then
+    $composedAdaptationActions.add(AssemblyContextActionFactory.generateReplicateAction($runtimeNode, $redplNode);
+end
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RESOURCE CONTAINER ACTION RULES                                                                                    //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
