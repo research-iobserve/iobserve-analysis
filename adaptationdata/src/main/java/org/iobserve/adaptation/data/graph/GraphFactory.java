@@ -27,6 +27,7 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.compositionprivacy.AssemblyConnectorPrivacy;
 import org.palladiosimulator.pcm.compositionprivacy.DataPrivacyLvl;
+import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.Connector;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -51,9 +52,9 @@ public class GraphFactory {
 
     private Map<String, AssemblyContext> assemblyContexts;
     private Map<String, DataPrivacyLvl> assemblyContextPrivacyLvl;
-    private Map<String, ResourceContainerPrivacy> resourceContainers;
+    private Map<String, ResourceContainer> resourceContainers;
     private Map<String, String> ac2rcMap;
-    private Map<String, AssemblyConnectorPrivacy> assemblyConnectors;
+    private Map<String, AssemblyConnector> assemblyConnectors;
     private Map<String, String> assemblyID2allocID;
 
     /**
@@ -150,26 +151,33 @@ public class GraphFactory {
             if (connector instanceof AssemblyConnectorPrivacy) {
                 final AssemblyConnectorPrivacy acp = (AssemblyConnectorPrivacy) connector;
                 this.assemblyConnectors.put(connector.getId(), acp);
+            } else if ((connector instanceof AssemblyConnector)) {
+                final AssemblyConnector acp = (AssemblyConnector) connector;
+                this.assemblyConnectors.put(connector.getId(), acp);
+                GraphFactory.LOGGER.warn(
+                        "An AssemblyContext (ID: " + acp.getId() + ") was found which has no privacy extention\n");
             }
         }
     }
 
     private void adaptPrivacyLvl() {
-        final Collection<AssemblyConnectorPrivacy> acps = this.assemblyConnectors.values();
+        final Collection<AssemblyConnector> acps = this.assemblyConnectors.values();
 
         final Set<String> acs = new HashSet<>();
 
-        for (final AssemblyConnectorPrivacy acp : acps) {
-            final DataPrivacyLvl assemblyConnectorPrivacyLvl = acp.getPrivacyLevel();
+        for (final AssemblyConnector acp : acps) {
+            if (acp instanceof AssemblyConnectorPrivacy) {
+                final DataPrivacyLvl assemblyConnectorPrivacyLvl = ((AssemblyConnectorPrivacy) acp).getPrivacyLevel();
 
-            final String providedACID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
-            final String requiredACID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
+                final String providedACID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
+                final String requiredACID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
 
-            this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, providedACID);
-            this.updatePrivacyLvl(acp, assemblyConnectorPrivacyLvl, requiredACID);
+                this.updatePrivacyLvl((AssemblyConnectorPrivacy) acp, assemblyConnectorPrivacyLvl, providedACID);
+                this.updatePrivacyLvl((AssemblyConnectorPrivacy) acp, assemblyConnectorPrivacyLvl, requiredACID);
 
-            acs.add(requiredACID);
-            acs.add(providedACID);
+                acs.add(requiredACID);
+                acs.add(providedACID);
+            }
         }
 
         if (GraphFactory.LOGGER.isInfoEnabled()) {
@@ -206,14 +214,11 @@ public class GraphFactory {
     private void extractResourceContainers(final ResourceEnvironment resEnvModel) {
         final EList<ResourceContainer> newResourceContainers = resEnvModel.getResourceContainer_ResourceEnvironment();
         for (final ResourceContainer resourceContainer : newResourceContainers) {
-            if (resourceContainer instanceof ResourceContainerPrivacy) {
-                this.resourceContainers.put(resourceContainer.getId(), (ResourceContainerPrivacy) resourceContainer);
-            } else {
-                if (GraphFactory.LOGGER.isErrorEnabled()) {
-                    GraphFactory.LOGGER.error("A ResourceContainer (ID: " + resourceContainer.getId()
-                            + ") was found which has no privacy extention\n");
-                }
+            if (!(resourceContainer instanceof ResourceContainerPrivacy)) {
+                GraphFactory.LOGGER.warn("A ResourceContainer (ID: " + resourceContainer.getId()
+                        + ") was found which has no privacy extention\n");
             }
+            this.resourceContainers.put(resourceContainer.getId(), resourceContainer);
         }
     }
 
@@ -259,9 +264,15 @@ public class GraphFactory {
         final Map<String, ComponentNode> components = new HashMap<>();
 
         // Build Servers Nodes
-        for (final ResourceContainerPrivacy resContainer : this.resourceContainers.values()) {
-            final DeploymentNode server = new DeploymentNode(resContainer.getId(), resContainer.getEntityName(),
-                    resContainer.getGeolocation(), revision);
+        for (final ResourceContainer resContainer : this.resourceContainers.values()) {
+            final DeploymentNode server;
+            if (resContainer instanceof ResourceContainerPrivacy) {
+                server = new DeploymentNode(resContainer.getId(), resContainer.getEntityName(),
+                        ((ResourceContainerPrivacy) resContainer).getGeolocation(), revision);
+            } else {
+                server = new DeploymentNode(resContainer.getId(), resContainer.getEntityName(), 0, revision);
+            }
+
             servers.put(resContainer.getId(), server);
         }
 
@@ -280,16 +291,20 @@ public class GraphFactory {
         }
 
         // Set Edges
-        for (final AssemblyConnectorPrivacy acp : this.assemblyConnectors.values()) {
+        for (final AssemblyConnector acp : this.assemblyConnectors.values()) {
             final String provACID = acp.getProvidingAssemblyContext_AssemblyConnector().getId();
             final String reqACID = acp.getRequiringAssemblyContext_AssemblyConnector().getId();
 
             final ComponentNode provNode = components.get(provACID);
             final ComponentNode reqNode = components.get(reqACID);
 
-            final ComponentEdge edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode,
-                    acp.getPrivacyLevel(), revision);
-
+            final ComponentEdge edge;
+            if (acp instanceof AssemblyConnectorPrivacy) {
+                edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode,
+                        ((AssemblyConnectorPrivacy) acp).getPrivacyLevel(), revision);
+            } else {
+                edge = new ComponentEdge(acp.getId(), acp.getEntityName(), provNode, reqNode, null, revision);
+            }
             provNode.addCommunicationEdge(edge);
             reqNode.addCommunicationEdge(edge);
         }
