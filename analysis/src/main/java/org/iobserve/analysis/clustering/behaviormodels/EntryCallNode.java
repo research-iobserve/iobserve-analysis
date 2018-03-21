@@ -17,11 +17,13 @@ package org.iobserve.analysis.clustering.behaviormodels;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Represents the an entry call.
  *
  * @author Christoph Dornieden
+ * @author Jannis Kuckei
  *
  */
 
@@ -48,8 +50,8 @@ public class EntryCallNode {
 
     }
 
-    public Map<String, CallInformation> getEntryCallInformation() {
-        return this.entryCallInformation;
+    public CallInformation[] getEntryCallInformation() {
+        return this.entryCallInformation.values().toArray(new CallInformation[this.entryCallInformation.size()]);
     }
 
     public void setSignature(final String signature) {
@@ -67,8 +69,10 @@ public class EntryCallNode {
      * @param callInformations
      *            callInformations
      */
-    public void mergeInformation(final Map<String, CallInformation> callInformations) {
-        callInformations.values().stream().forEach(this::mergeInformation);
+    public void mergeInformation(final CallInformation[] callInformations) {
+        for (final CallInformation info : callInformations) {
+            this.mergeInformation(info);
+        }
     }
 
     /**
@@ -87,6 +91,21 @@ public class EntryCallNode {
         } else {
             match.addCount(callInformation.getCount());
         }
+    }
+
+    /**
+     * Finds call information with a specific signature and parameter and returns an
+     * Optional of it
+     *
+     * @param signature
+     *            The signature of the call information
+     * @param parameter
+     *            The parameter of the call information
+     * @return Returns an Optional of the search result
+     */
+    public Optional<CallInformation> findCallInformation(final String signature, final String parameter) {
+        final CallInformation result = this.entryCallInformation.get(signature + parameter);
+        return Optional.ofNullable(result);
     }
 
     /*

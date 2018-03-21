@@ -1,32 +1,418 @@
-2018-03-19T16:15:02.262 DEBUG [org.iobserve.service.AbstractServiceMain] - Analysis Service
-2018-03-19T16:15:02.387 DEBUG [kieker.common.logging.LogFactory] - SLF4J
-2018-03-19T16:16:49.236 DEBUG [org.iobserve.stages.general.RecordSwitch:RecordSwitch-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:49.384 DEBUG [teetime.stage.className.ClassNameRegistryCreationFilter:ClassNameRegistryCreationFilter-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:49.399 DEBUG [teetime.stage.io.Directory2FilesFilter:Directory2FilesFilter-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:49.415 DEBUG [teetime.stage.FileExtensionSwitch:FileExtensionSwitch-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:49.478 DEBUG [teetime.stage.io.File2TextLinesFilter:File2TextLinesFilter-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:49.478 DEBUG [teetime.stage.io.filesystem.format.text.file.TextLine2RecordFilter:TextLine2RecordFilter-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:49.493 DEBUG [teetime.stage.io.filesystem.format.binary.file.BinaryFile2RecordFilter:BinaryFile2RecordFilter-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:49.509 DEBUG [teetime.stage.basic.merger.Merger:Merger-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:49.509 DEBUG [teetime.stage.basic.merger.Merger:Merger-0] - numOpenedInputPorts (inc): 2
-2018-03-19T16:16:49.571 DEBUG [teetime.stage.trace.traceReconstruction.TraceReconstructionFilter:TraceReconstructionFilter-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:50.228 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel:TSessionToModel-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:50.581 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TVectorization:TVectorization-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:50.581 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TVectorization:TVectorization-0] - numOpenedInputPorts (inc): 2
-2018-03-19T16:16:50.628 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TGroupingStage:TGroupingStage-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:50.769 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TModelGeneration:TModelGeneration-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:50.769 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TModelGeneration:TModelGeneration-0] - numOpenedInputPorts (inc): 2
-2018-03-19T16:16:50.972 DEBUG [org.iobserve.stages.general.EntryCallStage:EntryCallStage-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:51.222 DEBUG [org.iobserve.analysis.traces.EntryCallSequence:EntryCallSequence-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:51.222 DEBUG [org.iobserve.analysis.traces.EntryCallSequence:EntryCallSequence-0] - numOpenedInputPorts (inc): 2
-2018-03-19T16:16:51.378 DEBUG [org.iobserve.analysis.session.SessionAcceptanceFilter:SessionAcceptanceFilter-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:51.417 DEBUG [org.iobserve.analysis.traces.TraceOperationCleanupFilter:TraceOperationCleanupFilter-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:16:51.542 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionOperationsFilter:TSessionOperationsFilter-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:17:27.082 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.BehaviorModelDecollectorStage:BehaviorModelDecollectorStage-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:17:27.197 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.BehaviorModelSink:BehaviorModelSink-0] - numOpenedInputPorts (inc): 1
-2018-03-19T16:25:31.860 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@75810586 and teetime.framework.InputPort@647fa8
-2018-03-19T16:25:36.452 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@1a7c69ae and teetime.framework.InputPort@3e4f3f3c
-2018-03-19T16:25:36.483 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@4873e893 and teetime.framework.InputPort@31bbd92a
-2018-03-19T16:25:36.514 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@597f84f5 and teetime.framework.InputPort@e1fd839
-2018-03-19T16:25:36.546 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@425c85d1 and teetime.framework.InputPort@6721f943
-2018-03-19T16:25:36.561 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@67efd3dc and teetime.framework.InputPort@413ba0fd
+2018-03-21T17:53:53.571 DEBUG [org.iobserve.service.AbstractServiceMain] - Analysis Service
+2018-03-21T17:53:53.717 DEBUG [kieker.common.logging.LogFactory] - SLF4J
+2018-03-21T17:56:24.606 DEBUG [org.iobserve.stages.general.RecordSwitch:RecordSwitch-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:24.750 DEBUG [teetime.stage.className.ClassNameRegistryCreationFilter:ClassNameRegistryCreationFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:24.796 DEBUG [teetime.stage.io.Directory2FilesFilter:Directory2FilesFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:24.812 DEBUG [teetime.stage.FileExtensionSwitch:FileExtensionSwitch-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:24.953 DEBUG [teetime.stage.io.File2TextLinesFilter:File2TextLinesFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:24.953 DEBUG [teetime.stage.io.filesystem.format.text.file.TextLine2RecordFilter:TextLine2RecordFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:24.968 DEBUG [teetime.stage.io.filesystem.format.binary.file.BinaryFile2RecordFilter:BinaryFile2RecordFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:25.015 DEBUG [teetime.stage.basic.merger.Merger:Merger-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:25.015 DEBUG [teetime.stage.basic.merger.Merger:Merger-0] - numOpenedInputPorts (inc): 2
+2018-03-21T17:56:25.187 DEBUG [teetime.stage.trace.traceReconstruction.TraceReconstructionFilter:TraceReconstructionFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:25.578 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel:TSessionToModel-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:25.593 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TVectorization:TVectorization-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:25.593 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TVectorization:TVectorization-0] - numOpenedInputPorts (inc): 2
+2018-03-21T17:56:25.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TGroupingStage:TGroupingStage-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:25.701 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TModelGeneration:TModelGeneration-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:25.701 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TModelGeneration:TModelGeneration-0] - numOpenedInputPorts (inc): 2
+2018-03-21T17:56:25.779 DEBUG [org.iobserve.stages.general.EntryCallStage:EntryCallStage-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:26.014 DEBUG [org.iobserve.analysis.traces.EntryCallSequence:EntryCallSequence-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:26.014 DEBUG [org.iobserve.analysis.traces.EntryCallSequence:EntryCallSequence-0] - numOpenedInputPorts (inc): 2
+2018-03-21T17:56:26.061 DEBUG [org.iobserve.analysis.session.SessionAcceptanceFilter:SessionAcceptanceFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:26.143 DEBUG [org.iobserve.analysis.traces.TraceOperationCleanupFilter:TraceOperationCleanupFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:26.248 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionOperationsFilter:TSessionOperationsFilter-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:26.530 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.BehaviorModelDecollectorStage:BehaviorModelDecollectorStage-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:26.545 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.BehaviorModelSink:BehaviorModelSink-0] - numOpenedInputPorts (inc): 1
+2018-03-21T17:56:27.432 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@62695c6f and teetime.framework.InputPort@53e1bb5
+2018-03-21T17:56:27.432 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@75d687f4 and teetime.framework.InputPort@6aba6ba2
+2018-03-21T17:56:27.432 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@2d9bef1a and teetime.framework.InputPort@6c33347a
+2018-03-21T17:56:27.432 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@710d941 and teetime.framework.InputPort@75810586
+2018-03-21T17:56:27.432 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@3898a61c and teetime.framework.InputPort@39c3ba9f
+2018-03-21T17:56:27.448 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@67a98b01 and teetime.framework.InputPort@1a7c69ae
+2018-03-21T17:56:27.604 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (bounded) teetime.framework.OutputPort@3f75ee1a and teetime.framework.InputPort@75f99df0
+2018-03-21T17:56:27.604 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@402caee4 and teetime.framework.InputPort@50b99dc5
+2018-03-21T17:56:27.604 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (bounded) teetime.framework.OutputPort@2b38e1af and teetime.framework.InputPort@e4631a2
+2018-03-21T17:56:27.604 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@4fa75310 and teetime.framework.InputPort@237ef6d2
+2018-03-21T17:56:27.604 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@606b84b7 and teetime.framework.InputPort@15217479
+2018-03-21T17:56:27.604 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (bounded) teetime.framework.OutputPort@2f54b848 and teetime.framework.InputPort@85c34b
+2018-03-21T17:56:27.604 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (bounded) teetime.framework.OutputPort@3d506de6 and teetime.framework.InputPort@729dabfc
+2018-03-21T17:56:27.620 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@22fa7601 and teetime.framework.InputPort@74a68615
+2018-03-21T17:56:27.620 INFO  [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Unconnected port teetime.framework.OutputPort@293559fe in stage RecordSwitch-0
+2018-03-21T17:56:27.620 INFO  [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Unconnected port teetime.framework.OutputPort@741db675 in stage RecordSwitch-0
+2018-03-21T17:56:27.620 INFO  [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Unconnected port teetime.framework.OutputPort@5269c89 in stage RecordSwitch-0
+2018-03-21T17:56:27.620 INFO  [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Unconnected port teetime.framework.OutputPort@45f03416 in stage RecordSwitch-0
+2018-03-21T17:56:27.620 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@5fbed755 and teetime.framework.InputPort@6ecddaff
+2018-03-21T17:56:27.620 INFO  [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Unconnected port teetime.framework.OutputPort@2ad903b4 in stage RecordSwitch-0
+2018-03-21T17:56:27.620 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@e953145 and teetime.framework.InputPort@6cb34780
+2018-03-21T17:56:27.620 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@99a9edc and teetime.framework.InputPort@7fe35728
+2018-03-21T17:56:27.620 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@cf700f4 and teetime.framework.InputPort@69484c55
+2018-03-21T17:56:27.620 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@74973f0b and teetime.framework.InputPort@5f16ef28
+2018-03-21T17:56:27.620 INFO  [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Unconnected port teetime.framework.OutputPort@424b0289 in stage FileExtensionSwitch-0
+2018-03-21T17:56:27.620 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@3cdc6d85 and teetime.framework.InputPort@26997fdd
+2018-03-21T17:56:27.620 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@7b3c8e14 and teetime.framework.InputPort@245374b3
+2018-03-21T17:56:27.620 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@30ffa5f7 and teetime.framework.InputPort@f36b9b7
+2018-03-21T17:56:27.620 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@e801154 and teetime.framework.InputPort@34c1fa32
+2018-03-21T17:56:27.620 DEBUG [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Connected (unsynch) teetime.framework.OutputPort@52aed71c and teetime.framework.InputPort@6985b711
+2018-03-21T17:56:27.620 INFO  [teetime.framework.scheduling.pushpullmodel.A3PipeInstantiation] - Unconnected port teetime.framework.OutputPort@108b77a6 in stage TraceReconstructionFilter-0
+2018-03-21T17:56:27.667 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TModelGeneration] - Executing runnable stage...
+2018-03-21T17:56:27.667 DEBUG [teetime.stage.InitialElementProducer] - Executing runnable stage...
+2018-03-21T17:56:27.667 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TVectorization] - Executing runnable stage...
+2018-03-21T17:56:27.667 DEBUG [org.iobserve.stages.source.TimeTriggerFilter] - Executing runnable stage...
+2018-03-21T17:56:27.667 INFO  [teetime.framework.Execution] - Using scheduler: teetime.framework.scheduling.pushpullmodel.PushPullScheduling@62684c68
+2018-03-21T17:56:27.682 WARN  [org.iobserve.analysis.session.SessionAcceptanceFilter:SessionAcceptanceFilter-0] - Received more than one signal - teetime.framework.signal.ValidatingSignal@39ea77f6 - from input port: teetime.framework.InputPort@6c33347a
+2018-03-21T17:56:27.682 WARN  [org.iobserve.stages.general.RecordSwitch:RecordSwitch-0] - Received more than one signal - teetime.framework.signal.ValidatingSignal@39ea77f6 - from input port: teetime.framework.InputPort@6cb34780
+2018-03-21T17:56:27.714 DEBUG [org.iobserve.service.AbstractServiceMain] - Running analysis
+2018-03-21T17:56:27.964 INFO  [org.iobserve.stages.general.RecordSwitch] - Kieker Metadata
+2018-03-21T17:56:27.964 INFO  [org.iobserve.stages.general.RecordSwitch] - controller name   KIEKER
+2018-03-21T17:56:27.964 INFO  [org.iobserve.stages.general.RecordSwitch] - experiment id     1
+2018-03-21T17:56:27.964 INFO  [org.iobserve.stages.general.RecordSwitch] - hostname          stockholm
+2018-03-21T17:56:27.964 INFO  [org.iobserve.stages.general.RecordSwitch] - logging timestamp 1521221048740783462
+2018-03-21T17:56:27.964 INFO  [org.iobserve.stages.general.RecordSwitch] - number of records 0
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - size              37
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - time offset       0
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - unit              NANOSECONDS
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - version           1.14-SNAPSHOT
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - Kieker Metadata
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - controller name   KIEKER-LIVEDEMO
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - experiment id     1
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - hostname          KIEKER-DEMO-SRV
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - logging timestamp 1521221048976281217
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - number of records 1
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - size              37
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - time offset       0
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - unit              NANOSECONDS
+2018-03-21T17:56:27.979 INFO  [org.iobserve.stages.general.RecordSwitch] - version           1.10
+2018-03-21T17:56:27.979 ERROR [org.iobserve.stages.general.RecordSwitch] - Configuration error: New unknown event type kieker.common.record.system.CPUUtilizationRecord.
+2018-03-21T17:56:27.979 ERROR [org.iobserve.stages.general.RecordSwitch] - Configuration error: New unknown event type kieker.common.record.system.MemSwapUsageRecord.
+2018-03-21T17:56:27.979 ERROR [org.iobserve.stages.general.RecordSwitch] - Configuration error: New unknown event type kieker.common.record.system.DiskUsageRecord.
+2018-03-21T17:56:27.995 ERROR [org.iobserve.stages.general.RecordSwitch] - Configuration error: New unknown event type kieker.common.record.system.LoadAverageRecord.
+2018-03-21T17:56:27.995 ERROR [org.iobserve.stages.general.RecordSwitch] - Configuration error: New unknown event type kieker.common.record.jvm.GCRecord.
+2018-03-21T17:56:27.995 ERROR [org.iobserve.stages.general.RecordSwitch] - Configuration error: New unknown event type kieker.common.record.jvm.ThreadsStatusRecord.
+2018-03-21T17:56:28.010 ERROR [org.iobserve.stages.general.RecordSwitch] - Configuration error: New unknown event type kieker.common.record.jvm.ClassLoadingRecord.
+2018-03-21T17:56:28.010 ERROR [org.iobserve.stages.general.RecordSwitch] - Configuration error: New unknown event type kieker.common.record.jvm.CompilationRecord.
+2018-03-21T17:56:28.010 ERROR [org.iobserve.stages.general.RecordSwitch] - Configuration error: New unknown event type kieker.common.record.jvm.MemoryRecord.
+2018-03-21T17:56:28.042 ERROR [org.iobserve.stages.general.RecordSwitch] - Configuration error: New unknown event type kieker.common.record.system.NetworkUtilizationRecord.
+2018-03-21T17:56:28.565 ERROR [org.iobserve.stages.general.RecordSwitch] - Configuration error: New unknown event type kieker.common.record.controlflow.OperationExecutionRecord.
+2018-03-21T17:56:28.703 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:29.094 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:29.281 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 1000.
+2018-03-21T17:56:29.359 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:29.500 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:29.578 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:29.684 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:29.699 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 2000.
+2018-03-21T17:56:29.840 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:29.949 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:29.996 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:30.059 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 3000.
+2018-03-21T17:56:30.168 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:30.215 ERROR [org.iobserve.stages.general.RecordSwitch] - Event occurances 1000 of unknown eventtype kieker.common.record.controlflow.OperationExecutionRecord.
+2018-03-21T17:56:30.231 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:30.277 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:30.293 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 4000.
+2018-03-21T17:56:30.324 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:30.371 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:30.402 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:30.496 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 5000.
+2018-03-21T17:56:30.512 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:30.621 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.086 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.117 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.117 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 6000.
+2018-03-21T17:56:31.195 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.274 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.289 ERROR [org.iobserve.stages.general.RecordSwitch] - Event occurances 2000 of unknown eventtype kieker.common.record.controlflow.OperationExecutionRecord.
+2018-03-21T17:56:31.320 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.336 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 7000.
+2018-03-21T17:56:31.352 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.445 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.477 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.524 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 8000.
+2018-03-21T17:56:31.524 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.586 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.602 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.633 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.686 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 9000.
+2018-03-21T17:56:31.702 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.764 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.780 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.795 ERROR [org.iobserve.stages.general.RecordSwitch] - Event occurances 3000 of unknown eventtype kieker.common.record.controlflow.OperationExecutionRecord.
+2018-03-21T17:56:31.811 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 10000.
+2018-03-21T17:56:31.811 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.874 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.889 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.952 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 11000.
+2018-03-21T17:56:31.952 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:31.967 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.045 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.061 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.061 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 12000.
+2018-03-21T17:56:32.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.124 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.139 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.139 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.170 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.186 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.202 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 13000.
+2018-03-21T17:56:32.202 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.217 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.405 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.420 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.436 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.436 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.452 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.499 ERROR [org.iobserve.stages.general.RecordSwitch] - Event occurances 4000 of unknown eventtype kieker.common.record.controlflow.OperationExecutionRecord.
+2018-03-21T17:56:32.499 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.499 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 14000.
+2018-03-21T17:56:32.514 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.514 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.545 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.561 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.561 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.577 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.639 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.643 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.658 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 15000.
+2018-03-21T17:56:32.658 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.658 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.721 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.737 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.737 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.752 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.752 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.768 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.768 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.768 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 16000.
+2018-03-21T17:56:32.783 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.783 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.799 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.799 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.815 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.815 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.815 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.830 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.830 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.830 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 17000.
+2018-03-21T17:56:32.846 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.846 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.862 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.862 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.862 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.877 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.893 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.893 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.893 ERROR [org.iobserve.stages.general.RecordSwitch] - Event occurances 1000 of unknown eventtype kieker.common.record.jvm.GCRecord.
+2018-03-21T17:56:32.893 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 18000.
+2018-03-21T17:56:32.908 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.908 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.924 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.924 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.924 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.940 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.940 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.955 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 19000.
+2018-03-21T17:56:32.955 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.971 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.971 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.987 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:32.987 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.040 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.052 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.064 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.066 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 20000.
+2018-03-21T17:56:33.069 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.115 ERROR [org.iobserve.stages.general.RecordSwitch] - Event occurances 5000 of unknown eventtype kieker.common.record.controlflow.OperationExecutionRecord.
+2018-03-21T17:56:33.115 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.147 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.147 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.209 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.225 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.225 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 21000.
+2018-03-21T17:56:33.240 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.240 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.272 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.475 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.525 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.541 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 22000.
+2018-03-21T17:56:33.541 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.541 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.588 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.588 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.603 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.619 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.916 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 23000.
+2018-03-21T17:56:33.921 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.937 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.952 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:33.983 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.015 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 24000.
+2018-03-21T17:56:34.062 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.093 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.093 ERROR [org.iobserve.stages.general.RecordSwitch] - Event occurances 6000 of unknown eventtype kieker.common.record.controlflow.OperationExecutionRecord.
+2018-03-21T17:56:34.140 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.140 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 25000.
+2018-03-21T17:56:34.155 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.202 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.233 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.249 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 26000.
+2018-03-21T17:56:34.249 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.280 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.296 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.358 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.374 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 27000.
+2018-03-21T17:56:34.374 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.390 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.421 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.437 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.437 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 28000.
+2018-03-21T17:56:34.452 ERROR [org.iobserve.stages.general.RecordSwitch] - Event occurances 7000 of unknown eventtype kieker.common.record.controlflow.OperationExecutionRecord.
+2018-03-21T17:56:34.452 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.499 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.515 DEBUG [org.iobserve.stages.general.RecordSwitch] - Records processed 29000.
+2018-03-21T17:56:34.515 INFO  [org.iobserve.stages.general.RecordSwitch] - Records processed in total 29431.
+2018-03-21T17:56:34.515 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.515 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.515 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.515 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.515 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.515 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.530 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.530 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.530 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.530 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.530 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.577 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.577 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.577 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.577 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.577 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.577 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.577 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.577 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.593 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.593 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.593 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.593 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.593 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.593 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.593 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.593 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.609 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.624 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.640 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.640 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.640 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.640 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:34.640 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.984 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:35.998 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.014 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.030 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.030 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.030 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.030 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.030 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.030 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.030 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.030 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.030 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TSessionToModel] - Received Model
+2018-03-21T17:56:36.077 DEBUG [teetime.stage.InitialElementProducer] - Finished runnable stage. (InitialElementProducer-0)
+2018-03-21T17:56:47.725 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TVectorization] - Sending vectors and models to next stage (max. parameter radius: 10.4, max structure radius: 1.8535353535353534
+2018-03-21T17:56:47.977 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TGroupingStage] - Sent grouping to next stage
+2018-03-21T17:56:50.759 DEBUG [org.iobserve.analysis.clustering.filter.similaritymatching.TModelGeneration] - Sent 123 generated models

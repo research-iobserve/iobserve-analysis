@@ -22,6 +22,12 @@ import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
+/**
+ * Class providing method to convert UserSession to BehaviorModel objects
+ *
+ * @author Jannis Kuckei
+ *
+ */
 public class UserSessionToBehaviorModelConverter {
     public static BehaviorModel convert(final UserSession session) {
         final BehaviorModel model = new BehaviorModel();

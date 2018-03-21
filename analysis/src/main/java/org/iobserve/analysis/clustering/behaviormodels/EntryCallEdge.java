@@ -19,7 +19,7 @@ package org.iobserve.analysis.clustering.behaviormodels;
  * Represents the transition between an entry call.
  *
  * @author Christoph Dornieden
- *
+ * @author Jannis Kuckei
  */
 
 public class EntryCallEdge {

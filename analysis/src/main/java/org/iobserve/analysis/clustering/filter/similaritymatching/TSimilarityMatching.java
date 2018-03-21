@@ -45,7 +45,7 @@ public class TSimilarityMatching extends CompositeStage implements IClassificati
 
     /**
      * Constructor
-     * 
+     *
      * @param configuration
      *
      * @throws ConfigurationException
@@ -85,17 +85,25 @@ public class TSimilarityMatching extends CompositeStage implements IClassificati
                 .create(IModelGenerationStrategy.class, modelStrategyClassName, null);
 
         /** For TGroupingStage */
-        final double similarityRadius = configuration.getDoubleProperty(ConfigurationKeys.SIM_MATCH_RADIUS, -1);
-        if (similarityRadius < 0) {
-            TSimilarityMatching.LOGGER.error("Initialization incomplete: No similarity radius specified.");
-            throw new ConfigurationException("Initialization incomplete: No similarity radius specified.");
+        final double parameterSimilarityRadius = configuration
+                .getDoubleProperty(ConfigurationKeys.SIM_MATCH_RADIUS_PARAMS, -1);
+        if (parameterSimilarityRadius < 0) {
+            TSimilarityMatching.LOGGER.error("Initialization incomplete: No parameter similarity radius specified.");
+            throw new ConfigurationException("Initialization incomplete: No parameter similarity radius specified.");
+        }
+
+        final double structureSimilarityRadius = configuration
+                .getDoubleProperty(ConfigurationKeys.SIM_MATCH_RADIUS_STRUCTURE, -1);
+        if (structureSimilarityRadius < 0) {
+            TSimilarityMatching.LOGGER.error("Initialization incomplete: No structure similarity radius specified.");
+            throw new ConfigurationException("Initialization incomplete: No structure similarity radius specified.");
         }
 
         /** Create individual stages */
         final TSessionToModel sessionToModel = new TSessionToModel();
         final TVectorization vectorization = new TVectorization(structureMetric, parameterMetric);
         vectorization.declareActive();
-        final TGroupingStage groupingStage = new TGroupingStage(similarityRadius);
+        final TGroupingStage groupingStage = new TGroupingStage(structureSimilarityRadius, parameterSimilarityRadius);
         final TModelGeneration modelGeneration = new TModelGeneration(modelGenerationStrategy);
         modelGeneration.declareActive();
 

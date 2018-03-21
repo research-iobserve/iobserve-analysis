@@ -20,6 +20,8 @@ import java.util.HashMap;
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
 import org.iobserve.analysis.clustering.behaviormodels.CallInformation;
 import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parameter distance function for JPetStore application
@@ -28,11 +30,14 @@ import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
  *
  */
 public class JPetStoreParameterMetric implements IParameterMetricStrategy {
-    private HashMap<String, String> productTable;
-    private HashMap<String, String> categoryTable;
+    private static final Logger LOGGER = LoggerFactory.getLogger(JPetStoreParameterMetric.class);
+
+    private final HashMap<String, String> productTable;
+    private final HashMap<String, String> categoryTable;
 
     public JPetStoreParameterMetric() {
         // Fill product associations
+        this.productTable = new HashMap<>();
         this.productTable.put("EST-1", "FI-SW-01");
         this.productTable.put("EST-2", "FI-SW-01");
         this.productTable.put("EST-3", "FI-SW-02");
@@ -63,21 +68,45 @@ public class JPetStoreParameterMetric implements IParameterMetricStrategy {
         this.productTable.put("EST-28", "K9-RT-01");
 
         // Fill category associations
+        this.categoryTable = new HashMap<>();
         this.categoryTable.put("FI", "FISH");
         this.categoryTable.put("K9", "DOGS");
         this.categoryTable.put("RP", "REPTILES");
         this.categoryTable.put("AV", "BIRDS");
-        this.categoryTable.put("FL", "FISH");
+        this.categoryTable.put("FL", "CATS");
     }
 
     @Override
     public double getDistance(final BehaviorModel a, final BehaviorModel b) {
-        return 0;
+        // If a node is not shared by the other behavior model, it will be compared to
+        // this empty dummy node
+        final EntryCallNode dummyNode = new EntryCallNode();
+        double distance = 0;
+        double comparisons = 0;
+
+        EntryCallNode matchingNode;
+        for (final EntryCallNode nodeA : a.getNodes()) {
+            matchingNode = b.findNode(nodeA.getSignature()).orElse(dummyNode);
+            distance += this.getNodeDistance(nodeA, matchingNode);
+            comparisons++;
+        }
+
+        // Some nodes in model b will still be unmatched. We compare all the nodes of b
+        // for which we cannot find matches with the dummy node.
+        for (final EntryCallNode nodeB : b.getNodes()) {
+            matchingNode = b.findNode(nodeB.getSignature()).orElse(null);
+            if (matchingNode == null) { // We already compared it in the first loop if it's not null
+                distance += this.getNodeDistance(nodeB, dummyNode);
+                comparisons++;
+            }
+        }
+
+        return comparisons > 0 ? distance / comparisons : 0;
     }
 
     private double getNodeDistance(final EntryCallNode nodeA, final EntryCallNode nodeB) {
-        final CallInformation[] ciA = (CallInformation[]) nodeA.getEntryCallInformation().values().toArray();
-        final CallInformation[] ciB = (CallInformation[]) nodeB.getEntryCallInformation().values().toArray();
+        final CallInformation[] ciA = nodeA.getEntryCallInformation();
+        final CallInformation[] ciB = nodeB.getEntryCallInformation();
 
         // Distance is none if both have no call info
         if ((ciA.length == 0) && (ciB.length == 0)) {
@@ -90,9 +119,14 @@ public class JPetStoreParameterMetric implements IParameterMetricStrategy {
         // one of these arrays ahs to contain at least one item due to previous
         // condition.
         final CallInformation sample = ciA.length > 0 ? ciA[0] : ciB[0];
-        final boolean comparingItems = sample.getInformationSignature() == "itemId";
-        final boolean comparingProducts = sample.getInformationSignature() == "productId";
-        final boolean comparingCategories = sample.getInformationSignature() == "categoryId";
+        final boolean comparingItems = sample.getInformationSignature().equals("itemId");
+        final boolean comparingProducts = sample.getInformationSignature().equals("productId");
+        final boolean comparingCategories = sample.getInformationSignature().equals("categoryId");
+
+        // Return if unknown information signature
+        if (!(comparingItems || comparingProducts || comparingCategories)) {
+            return 0;
+        }
 
         // Match equal call info (all types)
         for (int a = 0; a < ciA.length; a++) {
@@ -152,7 +186,7 @@ public class JPetStoreParameterMetric implements IParameterMetricStrategy {
         for (final CallInformation c : ciA) {
             remainingA += c.getCount();
         }
-        for (final CallInformation c : ciA) {
+        for (final CallInformation c : ciB) {
             remainingB += c.getCount();
         }
         final int remainingDiff = Math.abs(remainingA - remainingB);
@@ -165,21 +199,21 @@ public class JPetStoreParameterMetric implements IParameterMetricStrategy {
     }
 
     private void matchCounts(final int a, final int b, final CallInformation[] ciA, final CallInformation[] ciB) {
-        final int countDiff = Math.abs(ciA[a].getCount() - ciB[b].getCount());
+        final int countShared = Math.min(ciA[a].getCount(), ciB[b].getCount());
         ciA[a] = new CallInformation(ciA[a].getInformationSignature(), ciA[a].getInformationParameter(),
-                ciA[a].getCount() - countDiff);
+                ciA[a].getCount() - countShared);
         ciB[b] = new CallInformation(ciB[b].getInformationSignature(), ciB[b].getInformationParameter(),
-                ciB[b].getCount() - countDiff);
+                ciB[b].getCount() - countShared);
     }
 
     private boolean hasSameProduct(final CallInformation a, final CallInformation b) {
-        return this.productTable.getOrDefault(a.getInformationParameter(), "X") == this.productTable
-                .getOrDefault(b.getInformationParameter(), "Y");
+        return this.productTable.getOrDefault(a.getInformationParameter(), "X")
+                .equals(this.productTable.getOrDefault(b.getInformationParameter(), "Y"));
     }
 
     private boolean hasSameCategory(final CallInformation a, final CallInformation b) {
         String productA, productB;
-        if (a.getInformationSignature() == "itemId") {
+        if (a.getInformationSignature().equals("itemId")) {
             productA = this.productTable.get(a.getInformationParameter());
             productB = this.productTable.get(b.getInformationParameter());
         } else {
@@ -187,6 +221,7 @@ public class JPetStoreParameterMetric implements IParameterMetricStrategy {
             productB = b.getInformationParameter();
         }
 
-        return this.categoryTable.get(productA.substring(0, 3)) == this.categoryTable.get(productB.substring(0, 3));
+        return this.categoryTable.getOrDefault(productA.substring(0, 2), "X")
+                .equals(this.categoryTable.getOrDefault(productB.substring(0, 2), "Y"));
     }
 }

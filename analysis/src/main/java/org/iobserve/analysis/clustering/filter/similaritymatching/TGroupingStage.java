@@ -35,9 +35,10 @@ public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
 
     private final OutputPort<Integer[][]> outputPort = this.createOutputPort();
 
-    private final double similarityRadius;
+    private final double structureSimilarityRadius;
+    private final double parameterSimilarityRadius;
 
-    private final List<List<Integer>> groups = new ArrayList<>();
+    private List<List<Integer>> groups = new ArrayList<>();
 
     private Double[][] vectors;
 
@@ -48,11 +49,11 @@ public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
      *            The similarity radius specifies how similar two model's vectors
      *            have to be to get aggregated into the same group
      */
-    public TGroupingStage(final double similarityRadius) {
+    public TGroupingStage(final double structureSimilarityRadius, final double parameterSimilarityRadius) {
         super();
 
-        // TODO: check arg validity (non-negative)
-        this.similarityRadius = similarityRadius;
+        this.structureSimilarityRadius = structureSimilarityRadius;
+        this.parameterSimilarityRadius = parameterSimilarityRadius;
     }
 
     @Override
@@ -75,8 +76,11 @@ public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
         final Integer[][] aGroups = new Integer[this.groups.size()][];
         int i = 0;
         for (final List<Integer> g : this.groups) {
-            aGroups[++i] = g.toArray(new Integer[g.size()]);
+            aGroups[i++] = g.toArray(new Integer[g.size()]);
         }
+
+        /** Clear state */
+        this.groups = new ArrayList();
 
         this.outputPort.send(aGroups);
 
@@ -111,7 +115,7 @@ public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
 
     /**
      * Checks if two vectors are considered similar
-     * 
+     *
      * @param a
      *
      * @param b
@@ -122,7 +126,10 @@ public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
     private boolean match(final Double[] a, final Double[] b) {
         /** a and b should always have same length */
         for (int i = 0; i < a.length; i++) {
-            if (Math.abs(a[i] - b[i]) >= this.similarityRadius) {
+            // Use structure similarity radius for even entries, parameter radius for odd
+            // entries
+            final double radius = (i % 2) == 0 ? this.structureSimilarityRadius : this.parameterSimilarityRadius;
+            if (Math.abs(a[i] - b[i]) >= radius) {
                 return false;
             }
         }

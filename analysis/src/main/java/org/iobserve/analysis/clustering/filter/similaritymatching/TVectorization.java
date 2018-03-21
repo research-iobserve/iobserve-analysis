@@ -29,7 +29,7 @@ import teetime.framework.OutputPort;
 
 /**
  * Represents the vectorization phase of Similarity Matching
- * 
+ *
  * @author Jannis Kuckei
  */
 public class TVectorization extends AbstractStage {
@@ -46,9 +46,12 @@ public class TVectorization extends AbstractStage {
     private List<BehaviorModel> models = new ArrayList<>();
     private List<List<Double>> distanceVectors = new ArrayList<>();
 
+    private double maximumStructureDistance = 0;
+    private double maximumParameterDistance = 0;
+
     /**
      * Constructor
-     * 
+     *
      * @param structureMetric
      *            General distance function based on structure of the behavior model
      * @param parameterMetric
@@ -72,25 +75,27 @@ public class TVectorization extends AbstractStage {
             this.models.add(model);
         }
 
-        if (timestamp != null) {
+        if ((timestamp != null) && (this.models.size() > 1)) {
             /** Convert vectors from List<List<Double>> to Double[][] */
             final Double[][] vectorArray = new Double[this.distanceVectors.size()][];
             int i = 0;
             for (final List<Double> v : this.distanceVectors) {
-                vectorArray[++i] = v.toArray(new Double[v.size()]);
+                vectorArray[i++] = v.toArray(new Double[v.size()]);
             }
 
             /** Convert models from list to array */
             final BehaviorModel[] modelsArray = this.models.toArray(new BehaviorModel[this.models.size()]);
 
             /** Send both */
+            TVectorization.LOGGER.debug(
+                    "Sending vectors and models to next stage (max. parameter radius: {}, max structure radius: {}",
+                    this.maximumParameterDistance, this.maximumStructureDistance);
             this.vectorsOutputPort.send(vectorArray);
             this.modelsOutputPort.send(modelsArray);
 
             /** Clear state to prepare for arrival of new sessions */
             this.clearModels();
 
-            TVectorization.LOGGER.debug("Sent vectors and models to next stage");
         }
     }
 
@@ -100,11 +105,13 @@ public class TVectorization extends AbstractStage {
     private void clearModels() {
         this.models = new ArrayList<>();
         this.distanceVectors = new ArrayList<>();
+        this.maximumStructureDistance = 0;
+        this.maximumParameterDistance = 0;
     }
 
     /**
      * Generates similarity vector for model relative to all currently stored models
-     * 
+     *
      * @param newModel
      *            The model for which the vector is generated
      */
@@ -119,6 +126,9 @@ public class TVectorization extends AbstractStage {
 
             final double structureDistance = this.structureMetric.getDistance(model, newModel);
             final double parameterDistance = this.parameterMetric.getDistance(model, newModel);
+
+            this.maximumStructureDistance = Math.max(structureDistance, this.maximumStructureDistance);
+            this.maximumParameterDistance = Math.max(parameterDistance, this.maximumParameterDistance);
 
             newDistanceVector.add(structureDistance);
             newDistanceVector.add(parameterDistance);

@@ -25,7 +25,7 @@ import teetime.framework.OutputPort;
 
 /**
  * Represents the model generation phase of Similarity Matching
- * 
+ *
  * @author Jannis Kuckei
  *
  */
@@ -42,7 +42,7 @@ public class TModelGeneration extends AbstractStage {
 
     /**
      * Constructor
-     * 
+     *
      * @param modelGenerationStrategy
      *            A strategy that generates a representative model from an array of
      *            models
@@ -53,8 +53,16 @@ public class TModelGeneration extends AbstractStage {
 
     @Override
     protected void execute() {
-        this.models = this.modelsInputPort.receive();
-        this.groups = this.groupsInputPort.receive();
+        final BehaviorModel[] models = this.modelsInputPort.receive();
+        final Integer[][] groups = this.groupsInputPort.receive();
+
+        if (models != null) {
+            this.models = models;
+        }
+
+        if (groups != null) {
+            this.groups = groups;
+        }
 
         if ((this.models == null) || (this.groups == null)) {
             return;
@@ -71,16 +79,15 @@ public class TModelGeneration extends AbstractStage {
 
             /** Find representative model with strategy */
             representativeModels[i] = this.modelGenerationStrategy.generateModel(groupModels);
-            representativeModels[i].setName("Representative Model of group #" + i);
+            representativeModels[i].setName("model_" + i);
         }
 
         this.outputPort.send(representativeModels);
+        TModelGeneration.LOGGER.debug("Sent {} generated models", representativeModels.length);
 
         /** Clear state */
         this.models = null;
         this.groups = null;
-
-        TModelGeneration.LOGGER.debug("Sent generated models");
     }
 
     public OutputPort<BehaviorModel[]> getOutputPort() {

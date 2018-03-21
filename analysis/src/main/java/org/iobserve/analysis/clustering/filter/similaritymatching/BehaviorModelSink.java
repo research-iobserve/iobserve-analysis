@@ -20,7 +20,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.TBehaviorModelVisualization;
 import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCreationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +37,7 @@ import teetime.framework.AbstractConsumerStage;
  */
 public class BehaviorModelSink extends AbstractConsumerStage<BehaviorModel> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TBehaviorModelVisualization.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelSink.class);
 
     private final ObjectMapper objectMapper;
 
@@ -59,8 +58,8 @@ public class BehaviorModelSink extends AbstractConsumerStage<BehaviorModel> {
 
     @Override
     protected void execute(final BehaviorModel model) throws IOException {
-        final String filename = this.baseUrl + model.getName();
-        BehaviorModelSink.LOGGER.info("Write models to {}", filename);
+        final String filename = this.baseUrl + model.getName() + ".txt";
+        // BehaviorModelSink.LOGGER.info("Write models to {}", filename);
         final FileWriter fw = new FileWriter(filename);
         final BufferedWriter bw = new BufferedWriter(fw);
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);

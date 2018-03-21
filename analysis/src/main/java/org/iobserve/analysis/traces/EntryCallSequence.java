@@ -25,8 +25,6 @@ import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.SessionEndEvent;
 import org.iobserve.common.record.SessionStartEvent;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
@@ -44,7 +42,6 @@ import teetime.framework.OutputPort;
  * @version 1.0
  */
 public final class EntryCallSequence extends AbstractStage {
-    private static final Logger LOGGER = LoggerFactory.getLogger(EntryCallSequence.class);
     /** time until a session expires. */
     private static final long USER_SESSION_EXPIRATIONTIME = 360000000000L;
     /** map of sessions. */
@@ -67,17 +64,13 @@ public final class EntryCallSequence extends AbstractStage {
     protected void execute() {
         final ISessionEvent sessionEvent = this.sessionEventInputPort.receive();
         if (sessionEvent != null) {
-            EntryCallSequence.LOGGER.debug("Got session event");
             if (sessionEvent instanceof SessionStartEvent) {
-                EntryCallSequence.LOGGER.debug("--> SessionStartEvent");
                 this.sessions.put(UserSession.createUserSessionId(sessionEvent),
                         new UserSession(sessionEvent.getHostname(), sessionEvent.getSessionId()));
             }
             if (sessionEvent instanceof SessionEndEvent) {
-                EntryCallSequence.LOGGER.debug("--> SessionEndEvent");
                 final UserSession session = this.sessions.get(UserSession.createUserSessionId(sessionEvent));
                 if (session != null) {
-                    EntryCallSequence.LOGGER.debug("Sent session");
                     this.userSessionOutputPort.send(session);
                     this.sessions.remove(sessionEvent.getSessionId());
                 }

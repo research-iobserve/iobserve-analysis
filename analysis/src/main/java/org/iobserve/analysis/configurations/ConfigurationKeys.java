@@ -167,9 +167,14 @@ public final class ConfigurationKeys {
             + IModelGenerationStrategy.class.getSimpleName();
 
     /**
-     * Set similarity radius DOUBLE
+     * Set parameter similarity radius DOUBLE
      */
-    public static final String SIM_MATCH_RADIUS = ConfigurationKeys.PREFIX + "behavior.sm.radius";
+    public static final String SIM_MATCH_RADIUS_PARAMS = ConfigurationKeys.PREFIX + "behavior.sm.parameters.radius";
+
+    /**
+     * Set structure similarity radius DOUBLE
+     */
+    public static final String SIM_MATCH_RADIUS_STRUCTURE = ConfigurationKeys.PREFIX + "behavior.sm.structure.radius";
 
     /**
      * Model.

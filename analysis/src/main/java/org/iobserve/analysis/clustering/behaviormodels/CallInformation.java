@@ -15,6 +15,12 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.behaviormodels;
 
+/**
+ * Represents single and multiple call information
+ *
+ * @author Jannis Kuckei
+ *
+ */
 public class CallInformation {
     private String informationSignature;
     private String informationParameter;

@@ -17,14 +17,22 @@ package org.iobserve.analysis.clustering.behaviormodels;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Represents the user Behavior of a user or a group of users.
  *
  * @author Christoph Dornieden
+ * @author Jannis Kuckei
  *
  */
 public class BehaviorModel {
+    /**
+     * Edges are stored in a map where they key is the signature of the source and
+     * target, separated by the following string (models can later be stored as
+     * JSON, this is for readability reasons)
+     */
+    private static String EDGE_KEY_SEPARATOR = "->";
     /** unique name to identify the model. */
     private String name;
     /** all nodes of the behavior graph. */
@@ -41,11 +49,11 @@ public class BehaviorModel {
     }
 
     public EntryCallNode[] getNodes() {
-        return (EntryCallNode[]) this.nodes.values().toArray();
+        return this.nodes.values().toArray(new EntryCallNode[this.nodes.size()]);
     }
 
     public EntryCallEdge[] getEdges() {
-        return (EntryCallEdge[]) this.edges.values().toArray();
+        return this.edges.values().toArray(new EntryCallEdge[this.edges.size()]);
     }
 
     public String getName() {
@@ -63,7 +71,8 @@ public class BehaviorModel {
      *            the edge to be added to the model
      */
     public void addEdge(final EntryCallEdge edge) {
-        final String key = edge.getSource().toString() + edge.getTarget().toString();
+        final String key = edge.getSource().getSignature() + BehaviorModel.EDGE_KEY_SEPARATOR
+                + edge.getTarget().getSignature();
         final EntryCallEdge matchedEdge = this.edges.get(key);
 
         if (matchedEdge == null) {
@@ -87,7 +96,7 @@ public class BehaviorModel {
      *         else
      */
     public EntryCallNode addNode(final EntryCallNode node) {
-        final String key = node.toString();
+        final String key = node.getSignature();
         final EntryCallNode matchingNode = this.nodes.get(key);
 
         if (matchingNode == null) {
@@ -99,4 +108,31 @@ public class BehaviorModel {
         }
     }
 
+    /**
+     * Finds a node with a specific signature and returns an Optional of it
+     *
+     * @param signature
+     *            The signature of the node to find
+     * @return Returns an optional with the search result
+     */
+    public Optional<EntryCallNode> findNode(final String signature) {
+        final EntryCallNode result = this.nodes.get(signature);
+        return Optional.ofNullable(result);
+    }
+
+    /**
+     * Finds an edge using the signature of its source and target node and returns
+     * an Optional of it
+     *
+     * @param sourceSignature
+     *            The signature of the edge's source node
+     * @param targetSignature
+     *            The signature of the edge's target node
+     * @return Returns an optional with the search result
+     */
+    public Optional<EntryCallEdge> findEdge(final String sourceSignature, final String targetSignature) {
+        final EntryCallEdge result = this.edges
+                .get(sourceSignature + BehaviorModel.EDGE_KEY_SEPARATOR + targetSignature);
+        return Optional.ofNullable(result);
+    }
 }

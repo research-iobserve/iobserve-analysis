@@ -16,16 +16,52 @@
 package org.iobserve.analysis.clustering.filter.similaritymatching;
 
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
+import org.iobserve.analysis.clustering.behaviormodels.EntryCallEdge;
+import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
 
 /**
  * Structure distance function for behavior models
- * 
+ *
  * @author Jannis Kuckei
  *
  */
 public class GeneralStructureMetric implements IStructureMetricStrategy {
     @Override
     public double getDistance(final BehaviorModel a, final BehaviorModel b) {
-        return 0;
+        /** Calculate node distance */
+
+        // Get amount of shared nodes
+        double sharedNodes = 0;
+        for (final EntryCallNode nodeA : a.getNodes()) {
+            for (final EntryCallNode nodeB : b.getNodes()) {
+                if (nodeA.equals(nodeB)) {
+                    sharedNodes++;
+                    break; // There cannot be multiple nodes with the same signature in a model
+                }
+            }
+        }
+        final double nodesInA = a.getNodes().length;
+        final double nodesInB = b.getNodes().length;
+        final double nodeDistance = (2 * ((nodesInA + nodesInB) - sharedNodes)) / (nodesInA + nodesInB);
+
+        /** Calculate edge distance */
+        // Get amount of shared egdges, count an edge with edge number n as n individual
+        // edges
+        double sharedEdges = 0;
+        for (final EntryCallEdge edgeA : a.getEdges()) {
+            for (final EntryCallEdge edgeB : b.getEdges()) {
+                if (edgeA.equals(edgeB)) {
+                    sharedEdges += Math.min(edgeA.getCalls(), edgeB.getCalls());
+                    break; // There cannot be multiple edge instances with the same source and target nodes
+                           // in a model
+                }
+            }
+        }
+        final double edgesInA = a.getEdges().length;
+        final double edgesInB = b.getEdges().length;
+        final double edgeDistance = (2 * ((edgesInA + edgesInB) - sharedEdges)) / (edgesInA + edgesInB);
+
+        // Return average of edge/node distance
+        return (edgeDistance + nodeDistance) / 2;
     }
 }
