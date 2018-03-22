@@ -40,10 +40,13 @@ public class TimeTriggerFilter extends AbstractProducerStage<Long> {
         this.interval = interval;
     }
 
+    // TODO: Generalize for experiments (continuous execution vs. sending a single signal and
+    // terminating)
     @Override
     protected void execute() throws Exception {
         Thread.sleep(this.interval);
         this.outputPort.send(new Date().getTime());
+        this.workCompleted();
     }
 
 }
