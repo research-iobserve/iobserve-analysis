@@ -17,7 +17,6 @@ package org.iobserve.adaptation.data.stages;
 
 import java.io.File;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 
 import teetime.framework.AbstractProducerStage;
@@ -42,12 +41,12 @@ public class ModelCollector extends AbstractProducerStage<AdaptationData> {
 
         if (this.runtimeModelDir == null) {
             this.runtimeModelDir = this.runtimeModelDirInputPort.receive();
-            adaptationData.setRuntimeModelURI(URI.createFileURI(this.runtimeModelDir.getAbsolutePath()));
+            adaptationData.setRuntimeModelDir(this.runtimeModelDir);
         }
 
         if (this.redeploymentModelDir == null) {
             this.redeploymentModelDir = this.redeploymentModelDirInputPort.receive();
-            adaptationData.setReDeploymentURI(URI.createFileURI(this.redeploymentModelDir.getAbsolutePath()));
+            adaptationData.setReDeploymentModelDir(this.redeploymentModelDir);
         }
 
         if ((this.runtimeModelDir != null) && (this.redeploymentModelDir != null)) {

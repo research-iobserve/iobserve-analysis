@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.adaptation.droolsstages;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -57,10 +56,8 @@ public class ComposedAdaptationActionComputation extends AbstractTransformation<
         final List<Action> composedAdaptationActions = new ArrayList<>();
 
         // Set up ActionFactory because the rule engine will invoke it
-        ActionFactory
-                .setRuntimeModels(new PCMModelHandler(new File(adaptationData.getRuntimeModelURI().toFileString())));
-        ActionFactory.setRedeploymentModels(
-                new PCMModelHandler(new File(adaptationData.getReDeploymentURI().toFileString())));
+        ActionFactory.setRuntimeModels(new PCMModelHandler(adaptationData.getRuntimeModelDir()));
+        ActionFactory.setRedeploymentModels(new PCMModelHandler(adaptationData.getReDeploymentModelDir()));
 
         // Add empty list of composed adaptation actions (will be filled by rule engine)
         workingMemoryInserts.add(this.kieCommands.newInsert(composedAdaptationActions));

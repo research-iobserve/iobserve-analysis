@@ -15,9 +15,8 @@
  ***************************************************************************/
 package org.iobserve.execution.actionscripts;
 
-import java.io.IOException;
+import java.io.File;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.execution.utils.ModelHelper;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
@@ -72,11 +71,9 @@ public class DeallocateActionScript extends AbstractActionScript {
     }
 
     private String getScript(final String scriptName) {
-        final URI terminationScriptURI = this.data.getDeployablesFolderURI().appendSegment(scriptName);
-
         try {
-            return this.getFileContents(terminationScriptURI);
-        } catch (final IOException e) {
+            return this.data.getDeployablesDir() + File.separator + scriptName;
+        } catch (final NullPointerException e) {
             // No script found, so we can not execute anything
             DeallocateActionScript.LOGGER
                     .warn("Could not find script for node deallocation. No script will be executed.");

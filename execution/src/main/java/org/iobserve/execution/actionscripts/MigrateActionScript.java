@@ -15,9 +15,8 @@
  ***************************************************************************/
 package org.iobserve.execution.actionscripts;
 
-import java.io.IOException;
+import java.io.File;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.execution.utils.ModelHelper;
 import org.iobserve.planning.systemadaptation.MigrateAction;
@@ -89,14 +88,14 @@ public class MigrateActionScript extends AbstractActionScript {
     private String getScript(final String scriptName, final AssemblyContext assemblyCtx) {
         final String assemblyCtxFolderName = this.getAssemblyContextFolderName(assemblyCtx);
 
-        final URI scriptURI = this.data.getDeployablesFolderURI().appendSegment(assemblyCtxFolderName)
-                .appendSegment(scriptName);
+        final String scriptURI = this.data.getDeployablesDir() + File.separator + assemblyCtxFolderName + File.separator
+                + scriptName;
         try {
-            return this.getFileContents(scriptURI);
-        } catch (final IOException e) {
+            return scriptURI;
+        } catch (final NullPointerException e) {
             // No script found, so we can not execute anything
-            MigrateActionScript.LOGGER.warn(
-                    String.format("Could not find script '%s'. No script will be executed.", scriptURI.toFileString()));
+            MigrateActionScript.LOGGER
+                    .warn(String.format("Could not find script '%s'. No script will be executed.", scriptURI));
             return "";
         }
     }

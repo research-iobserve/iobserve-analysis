@@ -15,13 +15,14 @@
  ***************************************************************************/
 package org.iobserve.execution.configurations;
 
-import teetime.framework.Configuration;
+import java.io.File;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.evaluation.ModelComparer;
 import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.execution.AdaptationExecution;
 import org.iobserve.execution.IAdaptationEventListener;
+
+import teetime.framework.Configuration;
 
 /**
  * Configuration for the stages of the execution service.
@@ -31,7 +32,7 @@ import org.iobserve.execution.IAdaptationEventListener;
  */
 public class ExecutionConfiguration extends Configuration {
 
-    public ExecutionConfiguration(final IAdaptationEventListener eventListener, final URI deployablesFolder) {
+    public ExecutionConfiguration(final IAdaptationEventListener eventListener, final File deployablesFolder) {
 
         // There is an AdaptionEventListener class, but in the previous implementation null was
         // used instead.

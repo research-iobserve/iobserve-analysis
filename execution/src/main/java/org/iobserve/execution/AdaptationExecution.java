@@ -15,13 +15,11 @@
  ***************************************************************************/
 package org.iobserve.execution;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import teetime.stage.basic.AbstractTransformation;
-
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.execution.actionscripts.AbstractActionScript;
@@ -29,6 +27,8 @@ import org.iobserve.execution.actionscripts.ActionScriptFactory;
 import org.iobserve.planning.systemadaptation.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import teetime.stage.basic.AbstractTransformation;
 
 /**
  * This stage executes the ordered adaptation {@link Action}s sequence.
@@ -42,7 +42,7 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 
     private final IAdaptationEventListener listener;
 
-    private final URI deployablesFolderURI;
+    private final File deployablesDir;
 
     /**
      * Create a new adaptation execution stage with the given event listener for events generated
@@ -55,9 +55,9 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
      * @param deployablesFolderURI
      *            Uri to the folder of deployables
      */
-    public AdaptationExecution(final IAdaptationEventListener listener, final URI deployablesFolderURI) {
+    public AdaptationExecution(final IAdaptationEventListener listener, final File deployablesDir) {
         this.listener = listener;
-        this.deployablesFolderURI = deployablesFolderURI;
+        this.deployablesDir = deployablesDir;
     }
 
     @Override
@@ -65,7 +65,7 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
 
         AdaptationExecution.LOGGER.info("Executing adaptation");
 
-        element.setDeployablesFolderURI(this.deployablesFolderURI);
+        element.setDeployablesDir(this.deployablesDir);
 
         final List<AbstractActionScript> notAutoSupported = new ArrayList<>();
         final List<AbstractActionScript> actionScripts = new ArrayList<>();

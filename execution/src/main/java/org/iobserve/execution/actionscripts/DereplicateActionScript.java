@@ -15,9 +15,9 @@
  ***************************************************************************/
 package org.iobserve.execution.actionscripts;
 
+import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.execution.utils.ModelHelper;
 import org.iobserve.planning.systemadaptation.DereplicateAction;
@@ -77,10 +77,8 @@ public class DereplicateActionScript extends AbstractActionScript {
     private String getDeallocateScript(final AssemblyContext assemblyCtx) throws IOException {
         final String assemblyCtxFolderName = this.getAssemblyContextFolderName(assemblyCtx);
 
-        final URI deallocationScriptURI = this.data.getDeployablesFolderURI().appendSegment(assemblyCtxFolderName)
-                .appendSegment(AdaptationData.DEREPLICATE_SCRIPT_NAME);
-
-        return this.getFileContents(deallocationScriptURI);
+        return this.data.getDeployablesDir() + File.separator + assemblyCtxFolderName + File.separator
+                + AdaptationData.DEREPLICATE_SCRIPT_NAME;
     }
 
     @Override

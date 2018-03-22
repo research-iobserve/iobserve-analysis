@@ -15,9 +15,9 @@
  ***************************************************************************/
 package org.iobserve.execution.actionscripts;
 
+import java.io.File;
 import java.io.IOException;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.execution.utils.ModelHelper;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
@@ -78,10 +78,8 @@ public class ReplicateActionScript extends AbstractActionScript {
     private String getAllocateScript(final AssemblyContext assemblyCtx) throws IOException {
         final String assemblyCtxFolderName = this.getAssemblyContextFolderName(assemblyCtx);
 
-        final URI allocationScriptURI = this.data.getDeployablesFolderURI().appendSegment(assemblyCtxFolderName)
-                .appendSegment(AdaptationData.REPLICATE_SCRIPT_NAME);
-
-        return this.getFileContents(allocationScriptURI);
+        return this.data.getDeployablesDir() + File.separator + assemblyCtxFolderName + File.separator
+                + AdaptationData.REPLICATE_SCRIPT_NAME;
     }
 
     @Override

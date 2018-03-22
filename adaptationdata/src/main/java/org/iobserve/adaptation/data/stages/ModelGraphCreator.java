@@ -37,8 +37,8 @@ public class ModelGraphCreator extends AbstractFilter<AdaptationData> {
     protected void execute(final AdaptationData adaptationData) throws Exception {
         final GraphFactory factory = new GraphFactory();
 
-        final File runtimeModelDir = new File(adaptationData.getRuntimeModelURI().toFileString());
-        final File redeploymentModelDir = new File(adaptationData.getReDeploymentURI().toFileString());
+        final File runtimeModelDir = adaptationData.getRuntimeModelDir();
+        final File redeploymentModelDir = adaptationData.getReDeploymentModelDir();
 
         final ModelGraph runtimeModelGraph = factory.buildGraph(new PCMModelHandler(runtimeModelDir),
                 ModelGraphRevision.RUNTIME);

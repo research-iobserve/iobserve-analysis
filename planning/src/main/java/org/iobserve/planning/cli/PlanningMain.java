@@ -92,9 +92,9 @@ public final class PlanningMain {
             return;
         }
 
-        final URI modelURI = URI.createFileURI(workingDir);
+        final File modelDir = new File(workingDir);
         if (PlanningMain.LOGGER.isInfoEnabled()) {
-            PlanningMain.LOGGER.info("modelURI: " + modelURI);
+            PlanningMain.LOGGER.info("modelDir: " + modelDir);
         }
 
         final URI perOpteryxURI = URI.createFileURI(perOpteryxDir);
@@ -110,7 +110,7 @@ public final class PlanningMain {
             }
 
             final AdaptationData adaptationData = new AdaptationData();
-            adaptationData.setRuntimeModelURI(modelURI);
+            adaptationData.setRuntimeModelDir(modelDir);
 
             // TODO: removed by lbl during refactoring of planning
             // final PlanningData planningData = new PlanningData();

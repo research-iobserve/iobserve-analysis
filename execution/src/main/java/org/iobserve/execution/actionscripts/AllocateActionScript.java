@@ -15,9 +15,8 @@
  ***************************************************************************/
 package org.iobserve.execution.actionscripts;
 
-import java.io.IOException;
+import java.io.File;
 
-import org.eclipse.emf.common.util.URI;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.execution.utils.ModelHelper;
 import org.iobserve.planning.systemadaptation.AllocateAction;
@@ -111,12 +110,10 @@ public class AllocateActionScript extends AbstractActionScript {
     }
 
     private String getStartupScript() {
-        final URI nodeStartupScriptURI = this.data.getDeployablesFolderURI()
-                .appendSegment(AdaptationData.NODE_STARTUP_SCRIPT_NAME);
-
         try {
-            return this.getFileContents(nodeStartupScriptURI);
-        } catch (final IOException e) {
+            return this.data.getDeployablesDir().getAbsolutePath() + File.separator
+                    + AdaptationData.NODE_STARTUP_SCRIPT_NAME;
+        } catch (final NullPointerException e) {
             // No script found, so we can not execute anything
             AllocateActionScript.LOGGER.warn("Could not find script for node startup. No script will be executed.");
             return "";
