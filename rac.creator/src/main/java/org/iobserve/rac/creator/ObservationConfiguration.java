@@ -21,6 +21,8 @@ import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import kieker.common.record.flow.IFlowRecord;
+
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
 import teetime.stage.className.ClassNameRegistryRepository;
@@ -31,7 +33,7 @@ import org.iobserve.rac.creator.filter.PcmCorrespondentMethodStage;
 import org.iobserve.rac.creator.filter.RACWriter;
 import org.iobserve.rac.creator.filter.RecordFilter;
 import org.iobserve.rac.creator.filter.UniqueFilter;
-import org.iobserve.stages.general.RecordSwitch;
+import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.source.Dir2RecordsFilter;
 import org.xml.sax.SAXException;
 
@@ -48,7 +50,7 @@ public class ObservationConfiguration extends Configuration {
      * record switch filter. Is required to be global so we can cheat and get measurements from the
      * filter.
      */
-    protected final RecordSwitch recordSwitch;
+    protected final DynamicEventDispatcher eventDispatcher;
 
     private final InitialElementProducer<File> files;
     private final Dir2RecordsFilter reader;
@@ -96,7 +98,8 @@ public class ObservationConfiguration extends Configuration {
         /** configure filter. */
         this.files = new InitialElementProducer<>(inputPath);
         this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
-        this.recordSwitch = new RecordSwitch();
+        this.eventDispatcher = new DynamicEventDispatcher(true, true, false);
+        this.eventDispatcher.registerOutput(IFlowRecord.class);
         this.filter = new RecordFilter();
         this.pcmCorrespondentMethodStage = new PcmCorrespondentMethodStage();
         this.doAllfilter = new DoAllFilter(repository, modelMapping);
@@ -108,8 +111,8 @@ public class ObservationConfiguration extends Configuration {
 
         /** connections. */
         this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
-        this.connectPorts(this.reader.getOutputPort(), this.recordSwitch.getInputPort());
-        this.connectPorts(this.recordSwitch.getFlowOutputPort(), this.filter.getInputPort());
+        this.connectPorts(this.reader.getOutputPort(), this.eventDispatcher.getInputPort());
+        this.connectPorts(this.eventDispatcher.getOutputPort(IFlowRecord.class), this.filter.getInputPort());
         this.connectPorts(this.filter.getOutputPort(), this.pcmCorrespondentMethodStage.getInputPort());
         this.connectPorts(this.pcmCorrespondentMethodStage.getOutputPort(), this.doAllfilter.getInputPort());
         this.connectPorts(this.doAllfilter.getRACOutputPort(), this.racWriter.getInputPort());
@@ -119,8 +122,8 @@ public class ObservationConfiguration extends Configuration {
         this.connectPorts(this.unmappedUnique.getOutputPort(), this.unmappedWriter.getInputPort());
     }
 
-    public RecordSwitch getRecordSwitch() {
-        return this.recordSwitch;
+    public DynamicEventDispatcher getEventDispatcher() {
+        return this.eventDispatcher;
     }
 
 }
