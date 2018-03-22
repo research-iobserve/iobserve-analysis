@@ -53,7 +53,7 @@ import org.junit.Test;
  * @author Reiner Jung
  *
  */
-public class RecordSwitchTests { // NOCS test
+public class DynamicEventDispatcherTest { // NOCS test
 
     private static final long TRACE_ID = 1;
     private static final long THREAD_ID = 2;
@@ -64,7 +64,8 @@ public class RecordSwitchTests { // NOCS test
     private static final String DEPLOYMENT_ID = "service-01";
     private static final String ADDRESS = "192.168.1.2"; // NOPMD
     private static final short COUNTRY_CODE = 49; // NOPMD
-    private static final String URL = "http://" + RecordSwitchTests.HOSTNAME + "/" + RecordSwitchTests.CONTEXT;
+    private static final String URL = "http://" + DynamicEventDispatcherTest.HOSTNAME + "/"
+            + DynamicEventDispatcherTest.CONTEXT;
     private static final int ORDER_INDEX = 0;
     private static final String OPERATION_SIGNATURE = "a.b.c.d.Class.runTest()";
     private static final String CLASS_SIGNATURE = "a.b.c.d.Class";
@@ -91,7 +92,8 @@ public class RecordSwitchTests { // NOCS test
     private final List<TraceMetadata> traceMetadataRecords = new ArrayList<>();
     private final List<KiekerMetadataRecord> kiekerMetadataRecords = new ArrayList<>();
     private final List<IMonitoringRecord> otherRecords = new ArrayList<>();
-    private long time = 0;
+
+    private long time;
 
     /**
      * Initialize the record switch test setup.
@@ -99,60 +101,63 @@ public class RecordSwitchTests { // NOCS test
     @Before
     public void initializeRecordSwitch() {
 
-        this.kiekerMetadataRecords.add(new KiekerMetadataRecord(RecordSwitchTests.VERSION,
-                RecordSwitchTests.CONTROLLER_NAME, RecordSwitchTests.HOSTNAME, RecordSwitchTests.EXPERIMENT_ID,
-                RecordSwitchTests.DEBUG_MODE, RecordSwitchTests.TIME_OFFSET, RecordSwitchTests.TIME_UNIT,
-                RecordSwitchTests.NUMBER_OF_RECORDS));
+        this.kiekerMetadataRecords.add(
+                new KiekerMetadataRecord(DynamicEventDispatcherTest.VERSION, DynamicEventDispatcherTest.CONTROLLER_NAME,
+                        DynamicEventDispatcherTest.HOSTNAME, DynamicEventDispatcherTest.EXPERIMENT_ID,
+                        DynamicEventDispatcherTest.DEBUG_MODE, DynamicEventDispatcherTest.TIME_OFFSET,
+                        DynamicEventDispatcherTest.TIME_UNIT, DynamicEventDispatcherTest.NUMBER_OF_RECORDS));
 
         /** allocation. */
-        this.allocationRecords.add(new ContainerAllocationEvent(RecordSwitchTests.URL));
+        this.allocationRecords.add(new ContainerAllocationEvent(DynamicEventDispatcherTest.URL));
 
         /** declare deployment records. */
-        this.deploymentRecords.add(new ServletDeployedEvent(this.time++, RecordSwitchTests.SERVICE,
-                RecordSwitchTests.CONTEXT, RecordSwitchTests.DEPLOYMENT_ID));
-        this.deploymentRecords.add(new EJBDeployedEvent(this.time++, RecordSwitchTests.SERVICE,
-                RecordSwitchTests.CONTEXT, RecordSwitchTests.DEPLOYMENT_ID));
+        this.deploymentRecords.add(new ServletDeployedEvent(this.time++, DynamicEventDispatcherTest.SERVICE,
+                DynamicEventDispatcherTest.CONTEXT, DynamicEventDispatcherTest.DEPLOYMENT_ID));
+        this.deploymentRecords.add(new EJBDeployedEvent(this.time++, DynamicEventDispatcherTest.SERVICE,
+                DynamicEventDispatcherTest.CONTEXT, DynamicEventDispatcherTest.DEPLOYMENT_ID));
 
         /** geolocation. */
-        this.geolocationRecords.add(new ServerGeoLocation(this.time++, RecordSwitchTests.COUNTRY_CODE,
-                RecordSwitchTests.HOSTNAME, RecordSwitchTests.ADDRESS));
+        this.geolocationRecords.add(new ServerGeoLocation(this.time++, DynamicEventDispatcherTest.COUNTRY_CODE,
+                DynamicEventDispatcherTest.HOSTNAME, DynamicEventDispatcherTest.ADDRESS));
 
         /** session event (start). */
-        final SessionStartEvent sessionStartEvent = new SessionStartEvent(this.time++, RecordSwitchTests.HOSTNAME,
-                RecordSwitchTests.SESSION_ID);
+        final SessionStartEvent sessionStartEvent = new SessionStartEvent(this.time++,
+                DynamicEventDispatcherTest.HOSTNAME, DynamicEventDispatcherTest.SESSION_ID);
         this.sessionEventRecords.add(sessionStartEvent);
 
         /** start trace. */
-        final TraceMetadata traceMetadata = new TraceMetadata(RecordSwitchTests.TRACE_ID, RecordSwitchTests.THREAD_ID,
-                RecordSwitchTests.SESSION_ID, RecordSwitchTests.HOSTNAME, 0, -1);
+        final TraceMetadata traceMetadata = new TraceMetadata(DynamicEventDispatcherTest.TRACE_ID,
+                DynamicEventDispatcherTest.THREAD_ID, DynamicEventDispatcherTest.SESSION_ID,
+                DynamicEventDispatcherTest.HOSTNAME, 0, -1);
         this.traceMetadataRecords.add(traceMetadata);
         this.flowRecords.add(traceMetadata);
 
         /** flow record. */
-        this.flowRecords
-                .add(new BeforeOperationEvent(this.time++, RecordSwitchTests.TRACE_ID, RecordSwitchTests.ORDER_INDEX,
-                        RecordSwitchTests.OPERATION_SIGNATURE, RecordSwitchTests.CLASS_SIGNATURE));
-        this.flowRecords
-                .add(new AfterOperationEvent(this.time++, RecordSwitchTests.TRACE_ID, RecordSwitchTests.ORDER_INDEX + 1,
-                        RecordSwitchTests.OPERATION_SIGNATURE, RecordSwitchTests.CLASS_SIGNATURE));
+        this.flowRecords.add(new BeforeOperationEvent(this.time++, DynamicEventDispatcherTest.TRACE_ID,
+                DynamicEventDispatcherTest.ORDER_INDEX, DynamicEventDispatcherTest.OPERATION_SIGNATURE,
+                DynamicEventDispatcherTest.CLASS_SIGNATURE));
+        this.flowRecords.add(new AfterOperationEvent(this.time++, DynamicEventDispatcherTest.TRACE_ID,
+                DynamicEventDispatcherTest.ORDER_INDEX + 1, DynamicEventDispatcherTest.OPERATION_SIGNATURE,
+                DynamicEventDispatcherTest.CLASS_SIGNATURE));
 
         /** session event (end). */
-        final SessionEndEvent sessionEndEvent = new SessionEndEvent(this.time++, RecordSwitchTests.HOSTNAME,
-                RecordSwitchTests.SESSION_ID);
+        final SessionEndEvent sessionEndEvent = new SessionEndEvent(this.time++, DynamicEventDispatcherTest.HOSTNAME,
+                DynamicEventDispatcherTest.SESSION_ID);
         this.sessionEventRecords.add(sessionEndEvent);
 
         /** declare undeployment records. */
-        this.undeploymentRecords.add(new ServletUndeployedEvent(this.time++, RecordSwitchTests.SERVICE,
-                RecordSwitchTests.CONTEXT, RecordSwitchTests.DEPLOYMENT_ID));
-        this.undeploymentRecords.add(new EJBUndeployedEvent(this.time++, RecordSwitchTests.SERVICE,
-                RecordSwitchTests.CONTEXT, RecordSwitchTests.DEPLOYMENT_ID));
+        this.undeploymentRecords.add(new ServletUndeployedEvent(this.time++, DynamicEventDispatcherTest.SERVICE,
+                DynamicEventDispatcherTest.CONTEXT, DynamicEventDispatcherTest.DEPLOYMENT_ID));
+        this.undeploymentRecords.add(new EJBUndeployedEvent(this.time++, DynamicEventDispatcherTest.SERVICE,
+                DynamicEventDispatcherTest.CONTEXT, DynamicEventDispatcherTest.DEPLOYMENT_ID));
 
         /** allocation. */
-        this.deallocationRecords.add(new ContainerDeallocationEvent(RecordSwitchTests.URL));
+        this.deallocationRecords.add(new ContainerDeallocationEvent(DynamicEventDispatcherTest.URL));
 
         /** other records. */
-        this.otherRecords.add(new GCRecord(this.time++, RecordSwitchTests.HOSTNAME, RecordSwitchTests.VM_NAME,
-                RecordSwitchTests.GC_NAME, RecordSwitchTests.COLLECTION_COUNT, RecordSwitchTests.COLLECTION_TIME_MS));
+        this.otherRecords.add(new GCRecord(this.time++, DynamicEventDispatcherTest.HOSTNAME,
+                DynamicEventDispatcherTest.VM_NAME, DynamicEventDispatcherTest.GC_NAME,
+                DynamicEventDispatcherTest.COLLECTION_COUNT, DynamicEventDispatcherTest.COLLECTION_TIME_MS));
 
         /** declare all input record types. */
         this.inputRecords.addAll(this.kiekerMetadataRecords);
@@ -181,7 +186,7 @@ public class RecordSwitchTests { // NOCS test
      */
     @Test
     public void checkLogCounting() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
+        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
 
         final List<IMonitoringRecord> thousandRecords = new ArrayList<>();
 
@@ -189,9 +194,9 @@ public class RecordSwitchTests { // NOCS test
             thousandRecords.addAll(this.otherRecords);
         }
 
-        StageTester.test(recordSwitch).and().send(thousandRecords).to(recordSwitch.getInputPort()).start();
+        StageTester.test(eventDispatcher).and().send(thousandRecords).to(eventDispatcher.getInputPort()).start();
 
-        Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(thousandRecords.size()));
+        Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(thousandRecords.size()));
     }
 
     /**
@@ -199,11 +204,11 @@ public class RecordSwitchTests { // NOCS test
      */
     @Test
     public void checkRecordCount() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
+        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
 
-        StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).start();
+        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).start();
 
-        Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(this.inputRecords.size()));
     }
 
     /**
@@ -211,14 +216,15 @@ public class RecordSwitchTests { // NOCS test
      */
     @Test
     public void checkDeploymentDetection() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
+        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
+        eventDispatcher.registerOutput(IDeployedEvent.class);
 
         final List<IDeployedEvent> localDeploymentRecords = new ArrayList<>();
 
-        StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(localDeploymentRecords).from(recordSwitch.getDeployedOutputPort()).start();
+        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).and()
+                .receive(localDeploymentRecords).from(eventDispatcher.getOutputPort(IDeployedEvent.class)).start();
 
-        Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(this.inputRecords.size()));
         Assert.assertEquals("Wrong number of deployments", this.deploymentRecords.size(),
                 localDeploymentRecords.size());
     }
@@ -228,14 +234,15 @@ public class RecordSwitchTests { // NOCS test
      */
     @Test
     public void checkSesionEventDetection() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
+        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
+        eventDispatcher.registerOutput(ISessionEvent.class);
 
         final List<ISessionEvent> localSessionEventRecords = new ArrayList<>();
 
-        StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(localSessionEventRecords).from(recordSwitch.getSessionEventOutputPort()).start();
+        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).and()
+                .receive(localSessionEventRecords).from(eventDispatcher.getOutputPort(ISessionEvent.class)).start();
 
-        Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(this.inputRecords.size()));
         Assert.assertEquals("Wrong number of session events", this.sessionEventRecords.size(),
                 localSessionEventRecords.size());
     }
@@ -245,14 +252,15 @@ public class RecordSwitchTests { // NOCS test
      */
     @Test
     public void checkUndeploymentDetection() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
+        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
+        eventDispatcher.registerOutput(IUndeployedEvent.class);
 
         final List<IUndeployedEvent> localUndeploymentRecords = new ArrayList<>();
 
-        StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(localUndeploymentRecords).from(recordSwitch.getUndeployedOutputPort()).start();
+        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).and()
+                .receive(localUndeploymentRecords).from(eventDispatcher.getOutputPort(IUndeployedEvent.class)).start();
 
-        Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(this.inputRecords.size()));
         Assert.assertEquals("Wrong number of undeployments", this.undeploymentRecords.size(),
                 localUndeploymentRecords.size());
     }
@@ -262,14 +270,15 @@ public class RecordSwitchTests { // NOCS test
      */
     @Test
     public void checkAllocationDetection() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
+        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
+        eventDispatcher.registerOutput(IAllocationEvent.class);
 
         final List<IAllocationEvent> localAllocationRecords = new ArrayList<>();
 
-        StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(localAllocationRecords).from(recordSwitch.getAllocationOutputPort()).start();
+        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).and()
+                .receive(localAllocationRecords).from(eventDispatcher.getOutputPort(IAllocationEvent.class)).start();
 
-        Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(this.inputRecords.size()));
         Assert.assertEquals("Wrong number of allocations", this.allocationRecords.size(),
                 localAllocationRecords.size());
     }
@@ -279,14 +288,16 @@ public class RecordSwitchTests { // NOCS test
      */
     @Test
     public void checkDeallocationDetection() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
+        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
+        eventDispatcher.registerOutput(IDeallocationEvent.class);
 
         final List<IDeallocationEvent> localDeallocationRecords = new ArrayList<>();
 
-        StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(localDeallocationRecords).from(recordSwitch.getDeallocationOutputPort()).start();
+        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).and()
+                .receive(localDeallocationRecords).from(eventDispatcher.getOutputPort(IDeallocationEvent.class))
+                .start();
 
-        Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(this.inputRecords.size()));
         Assert.assertEquals("Wrong number of deallocations", this.deallocationRecords.size(),
                 localDeallocationRecords.size());
     }
@@ -296,14 +307,15 @@ public class RecordSwitchTests { // NOCS test
      */
     @Test
     public void checkFlowRecordsDetection() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
+        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
+        eventDispatcher.registerOutput(IFlowRecord.class);
 
         final List<IFlowRecord> localFlowRecords = new ArrayList<>();
 
-        StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(localFlowRecords).from(recordSwitch.getFlowOutputPort()).start();
+        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).and()
+                .receive(localFlowRecords).from(eventDispatcher.getOutputPort(IFlowRecord.class)).start();
 
-        Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(this.inputRecords.size()));
         Assert.assertEquals("Mismatch in flow events.", this.flowRecords.size() + this.geolocationRecords.size(),
                 localFlowRecords.size());
     }
@@ -313,14 +325,15 @@ public class RecordSwitchTests { // NOCS test
      */
     @Test
     public void checkTraceMetadataDetection() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
+        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
+        eventDispatcher.registerOutput(TraceMetadata.class);
 
         final List<TraceMetadata> localTraceMetadataRecords = new ArrayList<>();
 
-        StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(localTraceMetadataRecords).from(recordSwitch.getTraceMetadataOutputPort()).start();
+        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).and()
+                .receive(localTraceMetadataRecords).from(eventDispatcher.getOutputPort(TraceMetadata.class)).start();
 
-        Assert.assertThat((int) recordSwitch.getRecordCount(), Is.is(this.inputRecords.size()));
+        Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(this.inputRecords.size()));
         Assert.assertEquals("Wrong number of trace metadata", this.traceMetadataRecords.size(),
                 localTraceMetadataRecords.size());
     }
@@ -331,7 +344,14 @@ public class RecordSwitchTests { // NOCS test
      */
     @Test
     public void checkKiekerMetadataAndOtherRecordsIgnored() {
-        final RecordSwitch recordSwitch = new RecordSwitch();
+        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
+        eventDispatcher.registerOutput(IDeallocationEvent.class);
+        eventDispatcher.registerOutput(IAllocationEvent.class);
+        eventDispatcher.registerOutput(IDeployedEvent.class);
+        eventDispatcher.registerOutput(IUndeployedEvent.class);
+        eventDispatcher.registerOutput(IFlowRecord.class);
+        eventDispatcher.registerOutput(ISessionEvent.class);
+        eventDispatcher.registerOutput(TraceMetadata.class);
 
         final List<IDeallocationEvent> localDeallocationRecords = new ArrayList<>();
         final List<IAllocationEvent> localAllocationRecords = new ArrayList<>();
@@ -341,16 +361,17 @@ public class RecordSwitchTests { // NOCS test
         final List<ISessionEvent> localSessionEventRecords = new ArrayList<>();
         final List<TraceMetadata> localTraceMetadataRecords = new ArrayList<>();
 
-        StageTester.test(recordSwitch).and().send(this.inputRecords).to(recordSwitch.getInputPort()).and()
-                .receive(localDeallocationRecords).from(recordSwitch.getDeallocationOutputPort()).and()
-                .receive(localAllocationRecords).from(recordSwitch.getAllocationOutputPort()).and()
-                .receive(localDeploymentRecords).from(recordSwitch.getDeployedOutputPort()).and()
-                .receive(localUndeploymentRecords).from(recordSwitch.getUndeployedOutputPort()).and()
-                .receive(localFlowRecords).from(recordSwitch.getFlowOutputPort()).and()
-                .receive(localSessionEventRecords).from(recordSwitch.getSessionEventOutputPort()).and()
-                .receive(localTraceMetadataRecords).from(recordSwitch.getTraceMetadataOutputPort()).start();
+        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).and()
+                .receive(localDeallocationRecords).from(eventDispatcher.getOutputPort(IDeallocationEvent.class)).and()
+                .receive(localAllocationRecords).from(eventDispatcher.getOutputPort(IAllocationEvent.class)).and()
+                .receive(localDeploymentRecords).from(eventDispatcher.getOutputPort(IDeployedEvent.class)).and()
+                .receive(localUndeploymentRecords).from(eventDispatcher.getOutputPort(IUndeployedEvent.class)).and()
+                .receive(localFlowRecords).from(eventDispatcher.getOutputPort(IFlowRecord.class)).and()
+                .receive(localSessionEventRecords).from(eventDispatcher.getOutputPort(ISessionEvent.class)).and()
+                .receive(localTraceMetadataRecords).from(eventDispatcher.getOutputPort(TraceMetadata.class)).start();
         /** Got all records. */
-        Assert.assertEquals("Number of records did not match", recordSwitch.getRecordCount(), this.inputRecords.size());
+        Assert.assertEquals("Number of records did not match", eventDispatcher.getEventCount(),
+                this.inputRecords.size());
         /** Test completeness of output. */
 
         Assert.assertEquals("Wrong number of deallocations", this.deallocationRecords.size(),

@@ -24,7 +24,6 @@ import kieker.common.record.flow.trace.TraceMetadata;
 import teetime.framework.AbstractConsumerStage;
 
 import org.iobserve.model.provider.neo4j.IModelProvider;
-import org.iobserve.stages.general.RecordSwitch;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;

@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRecord> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(RecordSwitch.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicEventDispatcher.class);
 
     private static final int LOOP_COUNT = 1000;
 
