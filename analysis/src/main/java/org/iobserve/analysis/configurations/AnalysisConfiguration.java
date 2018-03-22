@@ -196,8 +196,8 @@ public class AnalysisConfiguration extends Configuration {
             /** connect ports. */
             this.connectPorts(this.allocationStage.getAllocationNotifyOutputPort(),
                     containerManagementSinksStage.getAllocationInputPort());
-            // this.connectPorts(this.deallocation.getAllocationNotifyOutputPort(),
-            // containerManagementSinksStage.getDeallocationInputPort());
+            this.connectPorts(this.deallocationStage.getDeallocationNotifyOutputPort(),
+                    containerManagementSinksStage.getDeallocationInputPort());
             this.connectPorts(this.deploymentStage.getDeployedOutputPort(),
                     containerManagementSinksStage.getDeployedInputPort());
             this.connectPorts(this.undeploymentStage.getUndeployedOutputPort(),
@@ -206,8 +206,8 @@ public class AnalysisConfiguration extends Configuration {
             /** In case of multiple outputs, we require distributors. */
             final Distributor<ResourceContainer> allocationDistributor = new Distributor<>(
                     new CopyByReferenceStrategy());
-            // final Distributor<ResourceContainer> deallocationDistributor = new Distributor<>(
-            // new CopyByReferenceStrategy());
+            final Distributor<ResourceContainer> deallocationDistributor = new Distributor<>(
+                    new CopyByReferenceStrategy());
             final Distributor<PCMDeployedEvent> deploymentDistributor = new Distributor<>(
                     new CopyByReferenceStrategy());
             final Distributor<PCMUndeployedEvent> undeploymentDistributor = new Distributor<>(
@@ -216,8 +216,8 @@ public class AnalysisConfiguration extends Configuration {
             /** link distributor to container management. */
             this.connectPorts(this.allocationStage.getAllocationNotifyOutputPort(),
                     allocationDistributor.getInputPort());
-            // this.connectPorts(this.deallocation.getAllocationNotifyOutputPort(),
-            // allocationDistributor.getInputPort());
+            this.connectPorts(this.deallocationStage.getDeallocationNotifyOutputPort(),
+                    deallocationDistributor.getInputPort());
             this.connectPorts(this.deploymentStage.getDeployedOutputPort(), deploymentDistributor.getInputPort());
             this.connectPorts(this.undeploymentStage.getUndeployedOutputPort(), undeploymentDistributor.getInputPort());
 
@@ -229,8 +229,8 @@ public class AnalysisConfiguration extends Configuration {
                 /** connect ports. */
                 this.connectPorts(allocationDistributor.getNewOutputPort(),
                         containerManagementSinksStage.getAllocationInputPort());
-                // this.connectPorts(deallocationDistributor.getNewOutputPort(),
-                // containerManagementSinksStage.getDeallocationInputPort());
+                this.connectPorts(deallocationDistributor.getNewOutputPort(),
+                        containerManagementSinksStage.getDeallocationInputPort());
                 this.connectPorts(deploymentDistributor.getNewOutputPort(),
                         containerManagementSinksStage.getDeployedInputPort());
                 this.connectPorts(undeploymentDistributor.getNewOutputPort(),

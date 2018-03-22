@@ -15,10 +15,16 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment;
 
+import java.net.URL;
+import java.util.Optional;
+
 import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 import org.iobserve.common.record.IDeallocationEvent;
+import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.provider.neo4j.IModelProvider;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 
 /**
@@ -30,6 +36,11 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent> {
 
     private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
+
+    /** Relay allocation event. */
+    private final OutputPort<IDeallocationEvent> deallocationOutputPort = this.createOutputPort();
+    /** notify that the allocation was successful port, sends ResourceContainer. */
+    private final OutputPort<ResourceContainer> deallocationNotifyOutputPort = this.createOutputPort();
 
     /**
      * Create a stage managing deallocation.
@@ -43,7 +54,43 @@ public class DeallocationStage extends AbstractConsumerStage<IDeallocationEvent>
 
     @Override
     protected void execute(final IDeallocationEvent event) throws Exception {
-        // TODO implement deallocation
+        final URL url = new URL(event.toArray()[0].toString());
+        final String hostName = url.getHost();
+
+        final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory
+                .getResourceContainerByName(
+                        this.resourceEnvironmentModelProvider.readOnlyRootComponent(ResourceEnvironment.class),
+                        hostName);
+
+        if (resourceContainer.isPresent()) {
+            /** new provider: update the resource environment graph. */
+            final ResourceEnvironment resourceEnvironmentModelGraph = this.resourceEnvironmentModelProvider
+                    .readOnlyRootComponent(ResourceEnvironment.class);
+            resourceEnvironmentModelGraph.getResourceContainer_ResourceEnvironment().remove(resourceContainer.get());
+            this.resourceEnvironmentModelProvider.updateComponent(ResourceEnvironment.class,
+                    resourceEnvironmentModelGraph);
+
+            /** signal allocation update. */
+            this.deallocationNotifyOutputPort.send(resourceContainer.get());
+            this.deallocationOutputPort.send(event);
+        } else {
+            /** error deallocation already happened. */
+            this.logger.error("ResourceContainer %s is missing." + hostName);
+        }
+    }
+
+    /**
+     * @return the allocationOutputPort
+     */
+    public OutputPort<IDeallocationEvent> getDeallocationOutputPort() {
+        return this.deallocationOutputPort;
+    }
+
+    /**
+     * @return allocationFinishedOutputPort
+     */
+    public OutputPort<ResourceContainer> getDeallocationNotifyOutputPort() {
+        return this.deallocationNotifyOutputPort;
     }
 
 }

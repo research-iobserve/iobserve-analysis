@@ -308,6 +308,11 @@ public class DynamicEventDispatcherTest { // NOCS test
     @Test
     public void checkFlowRecordsDetection() {
         final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
+        eventDispatcher.registerOutput(IDeallocationEvent.class);
+        eventDispatcher.registerOutput(IAllocationEvent.class);
+        eventDispatcher.registerOutput(IDeployedEvent.class);
+        eventDispatcher.registerOutput(IUndeployedEvent.class);
+        eventDispatcher.registerOutput(ISessionEvent.class);
         eventDispatcher.registerOutput(IFlowRecord.class);
 
         final List<IFlowRecord> localFlowRecords = new ArrayList<>();
@@ -349,9 +354,9 @@ public class DynamicEventDispatcherTest { // NOCS test
         eventDispatcher.registerOutput(IAllocationEvent.class);
         eventDispatcher.registerOutput(IDeployedEvent.class);
         eventDispatcher.registerOutput(IUndeployedEvent.class);
-        eventDispatcher.registerOutput(IFlowRecord.class);
         eventDispatcher.registerOutput(ISessionEvent.class);
         eventDispatcher.registerOutput(TraceMetadata.class);
+        eventDispatcher.registerOutput(IFlowRecord.class);
 
         final List<IDeallocationEvent> localDeallocationRecords = new ArrayList<>();
         final List<IAllocationEvent> localAllocationRecords = new ArrayList<>();
@@ -382,7 +387,9 @@ public class DynamicEventDispatcherTest { // NOCS test
                 localDeploymentRecords.size());
         Assert.assertEquals("Wrong number of undeployments", this.undeploymentRecords.size(),
                 localUndeploymentRecords.size());
-        Assert.assertEquals("Wrong number of flow records", this.flowRecords.size() + this.geolocationRecords.size(),
+        Assert.assertEquals(
+                "Wrong number of flow records", this.flowRecords.size()
+                        - 1 /* TraceMetadata goes to a different port. */ + this.geolocationRecords.size(),
                 localFlowRecords.size());
         Assert.assertEquals("Wrong number of session events", this.sessionEventRecords.size(),
                 localSessionEventRecords.size());

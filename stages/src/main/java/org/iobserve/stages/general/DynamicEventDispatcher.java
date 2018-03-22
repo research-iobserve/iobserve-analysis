@@ -15,7 +15,8 @@
  ***************************************************************************/
 package org.iobserve.stages.general;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -40,8 +41,12 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
 
     private static final int LOOP_COUNT = 1000;
 
-    /** Internal map for class types and their corresponding output ports. */
-    private final Map<Class<? extends IMonitoringRecord>, OutputPort<? extends IMonitoringRecord>> outputPortMap = new HashMap<>();
+    /** Internal list for class types. */
+    private final List<Class<? extends IMonitoringRecord>> classTypeList = new ArrayList<>();
+
+    /** Internal list output ports. */
+    private final List<OutputPort<? extends IMonitoringRecord>> outputPortList = new ArrayList<>();
+
     private final boolean countEvents;
     private long eventCount;
 
@@ -76,9 +81,7 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
             this.eventCount++;
         }
 
-        @SuppressWarnings("unchecked")
-        final OutputPort<IMonitoringRecord> selectedOutputPort = (OutputPort<IMonitoringRecord>) this.outputPortMap
-                .get(event.getClass());
+        final OutputPort<IMonitoringRecord> selectedOutputPort = this.selectOutputPort(event.getClass());
         if (selectedOutputPort != null) {
             selectedOutputPort.send(event);
         } else {
@@ -103,6 +106,23 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
         }
     }
 
+    @SuppressWarnings("unchecked")
+    private OutputPort<IMonitoringRecord> selectOutputPort(final Class<? extends IMonitoringRecord> clazz) {
+        System.err.println("clazz " + clazz.getCanonicalName());
+        for (int i = 0; i < this.classTypeList.size(); i++) {
+            final Class<? extends IMonitoringRecord> type = this.classTypeList.get(i);
+            System.err.println("type " + type.getCanonicalName());
+            if (type.isAssignableFrom(clazz)) {
+                System.err.println("++ match ++");
+                return (OutputPort<IMonitoringRecord>) this.outputPortList.get(i);
+            }
+        }
+
+        System.err.println("-- no match --");
+
+        return null;
+    }
+
     /**
      * Register a new type to automatically create a new output port.
      *
@@ -110,7 +130,8 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
      *            record event type
      */
     public void registerOutput(final Class<? extends IMonitoringRecord> type) {
-        this.outputPortMap.put(type, this.createOutputPort(type));
+        this.classTypeList.add(type);
+        this.outputPortList.add(this.createOutputPort(type));
     }
 
     /**
@@ -126,7 +147,14 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
      */
     @SuppressWarnings("unchecked")
     public <T extends IMonitoringRecord> OutputPort<T> getOutputPort(final Class<T> type) {
-        return (OutputPort<T>) this.outputPortMap.get(type);
+        for (int i = 0; i < this.classTypeList.size(); i++) {
+            final Class<? extends IMonitoringRecord> classType = this.classTypeList.get(i);
+            if (classType == type) {
+                return (OutputPort<T>) this.outputPortList.get(i);
+            }
+        }
+
+        return null;
     }
 
     public long getEventCount() {
