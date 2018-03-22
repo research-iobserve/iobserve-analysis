@@ -37,7 +37,6 @@ import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.source.Dir2RecordsFilter;
 import org.xml.sax.SAXException;
 
-// TODO complete this class. This configuration is incomplete as the read Kieker data is not further
 /**
  * processed.
  *
@@ -51,23 +50,6 @@ public class ObservationConfiguration extends Configuration {
      * filter.
      */
     protected final DynamicEventDispatcher eventDispatcher;
-
-    private final InitialElementProducer<File> files;
-    private final Dir2RecordsFilter reader;
-    private final RecordFilter filter;
-    private final DoAllFilter doAllfilter;
-
-    private final ListWriter mappedWriter;
-
-    private final ListWriter unmappedWriter;
-
-    private final RACWriter racWriter;
-
-    private final PcmCorrespondentMethodStage pcmCorrespondentMethodStage;
-
-    private final UniqueFilter unmappedUnique;
-
-    private final UniqueFilter mappedUnique;
 
     /**
      * Create a configuration with a ASCII file reader.
@@ -96,30 +78,30 @@ public class ObservationConfiguration extends Configuration {
             final File racFile) throws ParserConfigurationException, SAXException, IOException {
 
         /** configure filter. */
-        this.files = new InitialElementProducer<>(inputPath);
-        this.reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
+        final InitialElementProducer<File> files = new InitialElementProducer<>(inputPath);
+        final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
         this.eventDispatcher = new DynamicEventDispatcher(true, true, false);
         this.eventDispatcher.registerOutput(IFlowRecord.class);
-        this.filter = new RecordFilter();
-        this.pcmCorrespondentMethodStage = new PcmCorrespondentMethodStage();
-        this.doAllfilter = new DoAllFilter(repository, modelMapping);
-        this.mappedWriter = new ListWriter(mappedClassesFile);
-        this.unmappedWriter = new ListWriter(unmappedClassesFile);
-        this.racWriter = new RACWriter(racFile);
-        this.mappedUnique = new UniqueFilter();
-        this.unmappedUnique = new UniqueFilter();
+        final RecordFilter filter = new RecordFilter();
+        final PcmCorrespondentMethodStage pcmCorrespondentMethodStage = new PcmCorrespondentMethodStage();
+        final DoAllFilter doAllfilter = new DoAllFilter(repository, modelMapping);
+        final ListWriter mappedWriter = new ListWriter(mappedClassesFile);
+        final ListWriter unmappedWriter = new ListWriter(unmappedClassesFile);
+        final RACWriter racWriter = new RACWriter(racFile);
+        final UniqueFilter mappedUnique = new UniqueFilter();
+        final UniqueFilter unmappedUnique = new UniqueFilter();
 
         /** connections. */
-        this.connectPorts(this.files.getOutputPort(), this.reader.getInputPort());
-        this.connectPorts(this.reader.getOutputPort(), this.eventDispatcher.getInputPort());
-        this.connectPorts(this.eventDispatcher.getOutputPort(IFlowRecord.class), this.filter.getInputPort());
-        this.connectPorts(this.filter.getOutputPort(), this.pcmCorrespondentMethodStage.getInputPort());
-        this.connectPorts(this.pcmCorrespondentMethodStage.getOutputPort(), this.doAllfilter.getInputPort());
-        this.connectPorts(this.doAllfilter.getRACOutputPort(), this.racWriter.getInputPort());
-        this.connectPorts(this.doAllfilter.getMappedOutputPort(), this.mappedUnique.getInputPort());
-        this.connectPorts(this.doAllfilter.getUnmappedOutputPort(), this.unmappedUnique.getInputPort());
-        this.connectPorts(this.mappedUnique.getOutputPort(), this.mappedWriter.getInputPort());
-        this.connectPorts(this.unmappedUnique.getOutputPort(), this.unmappedWriter.getInputPort());
+        this.connectPorts(files.getOutputPort(), reader.getInputPort());
+        this.connectPorts(reader.getOutputPort(), this.eventDispatcher.getInputPort());
+        this.connectPorts(this.eventDispatcher.getOutputPort(IFlowRecord.class), filter.getInputPort());
+        this.connectPorts(filter.getOutputPort(), pcmCorrespondentMethodStage.getInputPort());
+        this.connectPorts(pcmCorrespondentMethodStage.getOutputPort(), doAllfilter.getInputPort());
+        this.connectPorts(doAllfilter.getRACOutputPort(), racWriter.getInputPort());
+        this.connectPorts(doAllfilter.getMappedOutputPort(), mappedUnique.getInputPort());
+        this.connectPorts(doAllfilter.getUnmappedOutputPort(), unmappedUnique.getInputPort());
+        this.connectPorts(mappedUnique.getOutputPort(), mappedWriter.getInputPort());
+        this.connectPorts(unmappedUnique.getOutputPort(), unmappedWriter.getInputPort());
     }
 
     public DynamicEventDispatcher getEventDispatcher() {

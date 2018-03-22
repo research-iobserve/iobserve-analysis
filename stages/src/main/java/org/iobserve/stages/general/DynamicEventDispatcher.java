@@ -108,17 +108,12 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
 
     @SuppressWarnings("unchecked")
     private OutputPort<IMonitoringRecord> selectOutputPort(final Class<? extends IMonitoringRecord> clazz) {
-        System.err.println("clazz " + clazz.getCanonicalName());
         for (int i = 0; i < this.classTypeList.size(); i++) {
             final Class<? extends IMonitoringRecord> type = this.classTypeList.get(i);
-            System.err.println("type " + type.getCanonicalName());
             if (type.isAssignableFrom(clazz)) {
-                System.err.println("++ match ++");
                 return (OutputPort<IMonitoringRecord>) this.outputPortList.get(i);
             }
         }
-
-        System.err.println("-- no match --");
 
         return null;
     }
@@ -149,7 +144,7 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
     public <T extends IMonitoringRecord> OutputPort<T> getOutputPort(final Class<T> type) {
         for (int i = 0; i < this.classTypeList.size(); i++) {
             final Class<? extends IMonitoringRecord> classType = this.classTypeList.get(i);
-            if (classType == type) {
+            if (classType.equals(type)) {
                 return (OutputPort<T>) this.outputPortList.get(i);
             }
         }
