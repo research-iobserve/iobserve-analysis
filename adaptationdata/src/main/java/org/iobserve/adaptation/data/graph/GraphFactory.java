@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Philipp Weimann
  * @author Lars Bluemke (added revision for drools rule matching, added buildGraph with model
- *         instances for testing)
+ *         instances for testing, enabled use of models other than pcm privacy models)
  */
 public class GraphFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphFactory.class);

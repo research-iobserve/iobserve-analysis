@@ -1,6 +1,6 @@
 package org.iobserve.adaptation.droolsstages
 
-import java.util.LinkedList
+import java.util.ArrayList
 import org.iobserve.adaptation.data.AssemblyContextActionFactory
 import org.iobserve.adaptation.data.graph.ComponentNode
 import org.iobserve.adaptation.data.graph.DeploymentNode
@@ -13,12 +13,17 @@ import org.iobserve.adaptation.data.graph.ModelGraphRevision
 
 rule "Create replication action"
 when
-	$composedAdaptationActions : LinkedList()
+	$composedAdaptationActions : ArrayList()
+    
     $redplNode : ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT)
-    not $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME, 
-    		assemblyContextID == $redplNode.getAssemblyContextID )
+    
+    not ComponentNode(revision == ModelGraphRevision.RUNTIME, assemblyContextID == $redplNode.getAssemblyContextID())
+    
+    $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME, 
+    		repositoryComponentID == $redplNode.getRepositoryComponentID()) 
 then
-    $composedAdaptationActions.add(AssemblyContextActionFactory.generateReplicateAction($runtimeNode, $redplNode);
+	System.out.println("Found a replication!");
+    $composedAdaptationActions.add(AssemblyContextActionFactory.generateReplicateAction($runtimeNode, $redplNode));
 end
 
 

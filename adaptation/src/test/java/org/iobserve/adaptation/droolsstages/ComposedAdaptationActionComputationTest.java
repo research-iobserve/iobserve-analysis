@@ -15,18 +15,22 @@
  ***************************************************************************/
 package org.iobserve.adaptation.droolsstages;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.iobserve.adaptation.data.AdaptationData;
+import org.iobserve.adaptation.data.AssemblyContextActionFactory;
 import org.iobserve.adaptation.data.graph.ComponentNode;
 import org.iobserve.adaptation.data.graph.GraphFactory;
 import org.iobserve.adaptation.data.graph.ModelGraph;
 import org.iobserve.adaptation.data.graph.ModelGraphRevision;
 import org.iobserve.planning.systemadaptation.Action;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import teetime.framework.test.StageTester;
 
 /**
  * Test cases for the rule based computation of composed adaptation actions.
@@ -42,11 +46,11 @@ public class ComposedAdaptationActionComputationTest {
     private AdaptationTestModel redeploymentModel;
 
     @Before
-    public void initializePcmModels() {
+    public void initializePcmModels() throws CloneNotSupportedException {
         this.runtimeModel = new AdaptationTestModel();
-        this.redeploymentModel = new AdaptationTestModel();
+        this.redeploymentModel = (AdaptationTestModel) this.runtimeModel.getCopyWithSameIds();
 
-        // this.composedActionComputation = new ComposedAdaptationActionComputation();
+        this.composedActionComputation = new ComposedAdaptationActionComputation();
     }
 
     @Test
@@ -54,25 +58,24 @@ public class ComposedAdaptationActionComputationTest {
         final AdaptationData adaptationData;
         final ComponentNode runtimeNode;
         final ComponentNode redeploymentNode;
-        final List<Action> expectedOutput = new LinkedList<>();
+        final List<Action> expectedOutput = new ArrayList<>();
 
-        this.redeploymentModel.replicateCompBToRc2();
+        // Perform replication
+        this.redeploymentModel.replicateCompB11ToRc2();
         adaptationData = this.createAdaptationData(this.runtimeModel, this.redeploymentModel);
 
-        // StageTester.test(this.composedActionComputation).and().send(adaptationData)
-        // .to(this.composedActionComputation.getInputPort()).and().start();
+        // Execute stage
+        StageTester.test(this.composedActionComputation).and().send(adaptationData)
+                .to(this.composedActionComputation.getInputPort()).and().start();
 
-        runtimeNode = this.findComponentNode("acxt_b", adaptationData.getRuntimeGraph().getComponents());
-        redeploymentNode = this.findComponentNode("acxt_b", adaptationData.getReDeploymentGraph().getComponents());
+        // Create expected output
+        runtimeNode = this.findComponentNode(this.runtimeModel.getAcxt_b11().getId(),
+                adaptationData.getRuntimeGraph().getComponents());
+        redeploymentNode = this.findComponentNode(this.redeploymentModel.getAcxt_b12().getId(),
+                adaptationData.getReDeploymentGraph().getComponents());
+        expectedOutput.add(AssemblyContextActionFactory.generateReplicateAction(runtimeNode, redeploymentNode));
 
-        System.out.println(runtimeNode);
-        System.out.println(redeploymentNode);
-
-        // expectedOutput.add(AssemblyContextActionFactory.generateReplicateAction(runtimeNode,
-        // redeploymentNode));
-        // Assert.assertThat(this.composedActionComputation.getOutputPort(),
-        // StageTester.produces(expectedOutput));
-
+        Assert.assertThat(this.composedActionComputation.getOutputPort(), StageTester.produces(expectedOutput));
     }
 
     private AdaptationData createAdaptationData(final AdaptationTestModel runtimeModel,
@@ -81,9 +84,10 @@ public class ComposedAdaptationActionComputationTest {
         final GraphFactory graphFactory = new GraphFactory();
 
         final ModelGraph runtimeModelGraph = graphFactory.buildGraph(runtimeModel.getSystem(),
-                runtimeModel.getResourceEnvironment(), runtimeModel.getAllocation(), ModelGraphRevision.RUNTIME);
-        final ModelGraph redeploymentModelGraph = graphFactory.buildGraph(runtimeModel.getSystem(),
-                runtimeModel.getResourceEnvironment(), runtimeModel.getAllocation(), ModelGraphRevision.REDEPLOYMENT);
+                runtimeModel.getResEnvironment(), runtimeModel.getAllocation(), ModelGraphRevision.RUNTIME);
+        final ModelGraph redeploymentModelGraph = graphFactory.buildGraph(redeploymentModel.getSystem(),
+                redeploymentModel.getResEnvironment(), redeploymentModel.getAllocation(),
+                ModelGraphRevision.REDEPLOYMENT);
 
         adaptationData.setRuntimeGraph(runtimeModelGraph);
         adaptationData.setReDeploymentGraph(redeploymentModelGraph);
@@ -92,6 +96,13 @@ public class ComposedAdaptationActionComputationTest {
     }
 
     private ComponentNode findComponentNode(final String assemblyContextID, final Set<ComponentNode> componentNodes) {
+
+        for (final ComponentNode node : componentNodes) {
+            if (node.getAssemblyContextID().equals(assemblyContextID)) {
+                return node;
+            }
+        }
+
         return null;
     }
 }

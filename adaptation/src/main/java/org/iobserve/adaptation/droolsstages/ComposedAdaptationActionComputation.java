@@ -15,12 +15,15 @@
  ***************************************************************************/
 package org.iobserve.adaptation.droolsstages;
 
-import java.util.LinkedList;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.iobserve.adaptation.data.ActionFactory;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.adaptation.data.graph.ModelGraph;
+import org.iobserve.model.PCMModelHandler;
 import org.iobserve.planning.systemadaptation.Action;
 import org.kie.api.KieServices;
 import org.kie.api.command.Command;
@@ -50,8 +53,14 @@ public class ComposedAdaptationActionComputation extends AbstractTransformation<
     protected void execute(final AdaptationData adaptationData) throws Exception {
         final ModelGraph runtimeGraph = adaptationData.getRuntimeGraph();
         final ModelGraph redeploymentGraph = adaptationData.getReDeploymentGraph();
-        final List<Command<?>> workingMemoryInserts = new LinkedList<>();
-        final List<Action> composedAdaptationActions = new LinkedList<>();
+        final List<Command<?>> workingMemoryInserts = new ArrayList<>();
+        final List<Action> composedAdaptationActions = new ArrayList<>();
+
+        // Set up ActionFactory because the rule engine will invoke it
+        ActionFactory
+                .setRuntimeModels(new PCMModelHandler(new File(adaptationData.getRuntimeModelURI().toFileString())));
+        ActionFactory.setRedeploymentModels(
+                new PCMModelHandler(new File(adaptationData.getReDeploymentURI().toFileString())));
 
         // Add empty list of composed adaptation actions (will be filled by rule engine)
         workingMemoryInserts.add(this.kieCommands.newInsert(composedAdaptationActions));
