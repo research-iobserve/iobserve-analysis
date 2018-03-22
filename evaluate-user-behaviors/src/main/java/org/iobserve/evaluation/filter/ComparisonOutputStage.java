@@ -20,17 +20,18 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import teetime.framework.AbstractConsumerStage;
-
-import org.iobserve.analysis.clustering.filter.models.CallInformation;
-import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
-import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
+import org.iobserve.analysis.clustering.behaviormodels.CallInformation;
+import org.iobserve.analysis.clustering.behaviormodels.EntryCallEdge;
+import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
 import org.iobserve.evaluation.data.ComparisonResult;
 import org.iobserve.evaluation.data.NodeDifference;
+
+import teetime.framework.AbstractConsumerStage;
 
 /**
  * Sync all incoming records with a Kieker writer to a text file log.
@@ -70,10 +71,10 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         writer.write("CP;" + this.outputFile.getName() + ";" + baselineNodeCount + ";" + baselineEdgeCount + ";"
                 + testModelNodeCount + ";" + testModelEdgeCount + ";" + missingNodeCount + ";" + additionalNodeCount
                 + ";" + missingEdgeCount + ";" + additionalEdgeCount + ";"
-                + (double) missingNodeCount / (double) baselineNodeCount + ";"
-                + (double) additionalNodeCount / (double) baselineNodeCount + ";"
-                + (double) missingEdgeCount / (double) baselineEdgeCount + ";"
-                + (double) additionalEdgeCount / (double) baselineEdgeCount + "\n");
+                + ((double) missingNodeCount / (double) baselineNodeCount) + ";"
+                + ((double) additionalNodeCount / (double) baselineNodeCount) + ";"
+                + ((double) missingEdgeCount / (double) baselineEdgeCount) + ";"
+                + ((double) additionalEdgeCount / (double) baselineEdgeCount) + "\n");
 
         final List<EntryCallNode> allNodes = this.createAllNodesList(result.getBaselineNodes(),
                 result.getTestModelNodes());
@@ -199,7 +200,7 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         for (final EntryCallNode referenceNode : allNodes) {
             final EntryCallNode printNode = this.findNode(selectedNodes, referenceNode);
             if (printNode != null) {
-                final Set<CallInformation> allEntryCallInformation = this.generateAllEntryCallInformationList(
+                final CallInformation[] allEntryCallInformation = this.generateAllEntryCallInformationList(
                         referenceNode.getEntryCallInformation(), printNode.getEntryCallInformation());
                 writer.write(prefix + printNode.getSignature().substring(18) + "\n");
                 this.generateCallInformation(writer, prefix + "\t", allEntryCallInformation,
@@ -210,15 +211,15 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         }
     }
 
-    private Set<CallInformation> generateAllEntryCallInformationList(final Set<CallInformation> entryCallInformation,
-            final Set<CallInformation> supplementalCallInfo) {
+    private CallInformation[] generateAllEntryCallInformationList(final CallInformation[] entryCallInformation,
+            final CallInformation[] supplementalCallInfo) {
         final Set<CallInformation> allEntryCallInformation = new HashSet<>();
-        allEntryCallInformation.addAll(entryCallInformation);
+        allEntryCallInformation.addAll(Arrays.asList(entryCallInformation));
         for (final CallInformation information : supplementalCallInfo) {
             boolean exists = false;
             for (final CallInformation referenceInfo : allEntryCallInformation) {
                 if (referenceInfo.getInformationSignature().equals(information.getInformationSignature())
-                        && referenceInfo.getInformationCode() == information.getInformationCode()) {
+                        && referenceInfo.getInformationParameter().equals(information.getInformationParameter())) {
                     exists = true;
                 }
             }
@@ -227,27 +228,27 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
             }
         }
 
-        return allEntryCallInformation;
+        return allEntryCallInformation.toArray(new CallInformation[allEntryCallInformation.size()]);
     }
 
     private void generateCallInformation(final BufferedWriter writer, final String prefix,
-            final Set<CallInformation> allEntryCallInformation, final Set<CallInformation> entryCallInformation)
+            final CallInformation[] allEntryCallInformation, final CallInformation[] entryCallInformation)
             throws IOException {
 
         for (final CallInformation information : allEntryCallInformation) {
             if (this.isContainedIn(entryCallInformation, information)) {
-                writer.write(
-                        prefix + information.getInformationSignature() + "=" + information.getInformationCode() + "\n");
+                writer.write(prefix + information.getInformationSignature() + "="
+                        + information.getInformationParameter() + "\n");
             } else {
                 writer.write(prefix + information.getInformationSignature() + "---\n");
             }
         }
     }
 
-    private boolean isContainedIn(final Set<CallInformation> entryCallInformation, final CallInformation information) {
+    private boolean isContainedIn(final CallInformation[] entryCallInformation, final CallInformation information) {
         for (final CallInformation referenceInfo : entryCallInformation) {
             if (referenceInfo.getInformationSignature().equals(information.getInformationSignature())
-                    && referenceInfo.getInformationCode() == information.getInformationCode()) {
+                    && referenceInfo.getInformationParameter().equals(information.getInformationParameter())) {
                 return true;
             }
         }
