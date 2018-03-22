@@ -16,21 +16,21 @@
 package org.iobserve.evaluation.filter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
-import teetime.framework.test.StageTester;
-
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.CallInformation;
-import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
-import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
+import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
+import org.iobserve.analysis.clustering.behaviormodels.CallInformation;
+import org.iobserve.analysis.clustering.behaviormodels.EntryCallEdge;
+import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
 import org.iobserve.evaluation.data.ComparisonResult;
 import org.iobserve.evaluation.data.NodeDifference;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import teetime.framework.test.StageTester;
 
 /**
  * Test the model comparison stage.
@@ -60,8 +60,8 @@ public class ModelComparisonStageTest { // NOCS no constructor for tests
     public void setUp() {
         this.expectedResult.setAdditionalEdgeCount(1);
         this.expectedResult.getAdditionalNodes().add(this.nodeDtest);
-        this.expectedResult.getBaselineEdges().addAll(this.referenceModel.getEdges());
-        this.expectedResult.getBaselineNodes().addAll(this.referenceModel.getNodes());
+        this.expectedResult.getBaselineEdges().addAll(Arrays.asList(this.referenceModel.getEdges()));
+        this.expectedResult.getBaselineNodes().addAll(Arrays.asList(this.referenceModel.getNodes()));
         this.expectedResult.setMissingEdgeCount(1);
         this.expectedResult.getMissingNodes().add(this.nodeC);
 
@@ -77,8 +77,8 @@ public class ModelComparisonStageTest { // NOCS no constructor for tests
         this.expectedResult.getNodeDifferences().add(nodeDiff);
 
         this.expectedResult.getSimilarNodes().add(this.nodeB);
-        this.expectedResult.getTestModelEdges().addAll(this.testModel.getEdges());
-        this.expectedResult.getTestModelNodes().addAll(this.testModel.getNodes());
+        this.expectedResult.getTestModelEdges().addAll(Arrays.asList(this.testModel.getEdges()));
+        this.expectedResult.getTestModelNodes().addAll(Arrays.asList(this.testModel.getNodes()));
     }
 
     private BehaviorModel createTestModel() {
@@ -256,25 +256,25 @@ public class ModelComparisonStageTest { // NOCS no constructor for tests
         }
     }
 
-    private void checkInformationEqual(final Set<CallInformation> actualInfo, final Set<CallInformation> expectedInfo,
+    private void checkInformationEqual(final CallInformation[] actualInfo, final CallInformation[] expectedInfo,
             final String label) {
         this.checkInformationEqualCheck(actualInfo, expectedInfo, label, "actual but not in expected");
         this.checkInformationEqualCheck(expectedInfo, actualInfo, label, "expected but not in actual");
     }
 
-    private void checkInformationEqualCheck(final Set<CallInformation> leftInfo, final Set<CallInformation> rightInfo,
+    private void checkInformationEqualCheck(final CallInformation[] leftInfo, final CallInformation[] rightInfo,
             final String label, final String direction) {
         for (final CallInformation left : leftInfo) {
             boolean match = false;
             for (final CallInformation right : rightInfo) {
-                if (left.getInformationCode() == right.getInformationCode()
+                if (left.getInformationParameter().equals(right.getInformationParameter())
                         && left.getInformationSignature().equals(right.getInformationSignature())) {
                     match = true;
                     break;
                 }
             }
             Assert.assertTrue(label + ": Annotated information is present in " + direction + " model. Missing element "
-                    + left.getInformationSignature() + " " + left.getInformationCode(), match);
+                    + left.getInformationSignature() + " " + left.getInformationParameter(), match);
         }
     }
 
@@ -289,14 +289,14 @@ public class ModelComparisonStageTest { // NOCS no constructor for tests
         for (final CallInformation left : leftInfo) {
             boolean match = false;
             for (final CallInformation right : rightInfo) {
-                if (left.getInformationCode() == right.getInformationCode()
+                if (left.getInformationParameter().equals(right.getInformationParameter())
                         && left.getInformationSignature().equals(right.getInformationSignature())) {
                     match = true;
                     break;
                 }
             }
             Assert.assertTrue(label + ": Annotated information is present in " + direction + " model. Missing element "
-                    + left.getInformationSignature() + " " + left.getInformationCode(), match);
+                    + left.getInformationSignature() + " " + left.getInformationParameter(), match);
         }
     }
 
