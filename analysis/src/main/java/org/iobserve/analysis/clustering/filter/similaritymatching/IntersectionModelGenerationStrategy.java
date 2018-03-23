@@ -24,7 +24,7 @@ import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
 
 /**
  * Represents the intersection model generation strategy
- * 
+ *
  * @author Jannis Kuckei
  *
  */
@@ -56,7 +56,7 @@ public class IntersectionModelGenerationStrategy implements IModelGenerationStra
                 final int edgeCount = (int) Math.min(edgeA.getCalls(), matchingEdge.get().getCalls());
                 final EntryCallEdge newEdge = new EntryCallEdge(newSource, newTarget, edgeCount);
 
-                result.addEdge(newEdge);
+                result.addEdge(newEdge, false);
             }
         }
 

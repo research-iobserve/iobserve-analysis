@@ -17,17 +17,20 @@ package org.iobserve.evaluation;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.stages.general.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
-
-import org.iobserve.service.AbstractServiceMain;
-import org.iobserve.stages.general.ConfigurationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import teetime.framework.ExecutionException;
 
 /**
  * Collector main class.
@@ -64,7 +67,15 @@ public final class EvaluationMain extends AbstractServiceMain<EvaluationConfigur
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        new EvaluationMain().run("Evaluation of behavior models.", "evaluation", args);
+        try {
+            new EvaluationMain().run("Evaluation of behavior models.", "evaluation", args);
+        } catch (final ExecutionException ex) {
+            final Map<Thread, List<Exception>> exceptions = ex.getThrownExceptions();
+            for (final Thread th : exceptions.keySet()) {
+                EvaluationMain.LOGGER
+                        .error("Exception in thread " + th.getName() + ": " + exceptions.get(th).toString());
+            }
+        }
     }
 
     @Override

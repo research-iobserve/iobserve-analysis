@@ -90,6 +90,7 @@ public class TVectorization extends AbstractStage {
             TVectorization.LOGGER.debug(
                     "Sending vectors and models to next stage (max. parameter radius: {}, max structure radius: {}",
                     this.maximumParameterDistance, this.maximumStructureDistance);
+            TVectorization.LOGGER.debug(this.vectorsAsJSON());
             this.vectorsOutputPort.send(vectorArray);
             this.modelsOutputPort.send(modelsArray);
 
@@ -141,6 +142,24 @@ public class TVectorization extends AbstractStage {
         newDistanceVector.add(0.0);
 
         this.distanceVectors.add(newDistanceVector);
+    }
+
+    private String vectorsAsJSON() {
+        String json = "[";
+
+        final Iterator<List<Double>> vectorIterator = this.distanceVectors.iterator();
+        while (vectorIterator.hasNext()) {
+            final List<Double> v = vectorIterator.next();
+            final Iterator<Double> componentIterator = v.iterator();
+            String vecString = "[";
+            while (componentIterator.hasNext()) {
+                final Double d = componentIterator.next();
+                vecString += d + (componentIterator.hasNext() ? ", " : "]");
+            }
+            json += vecString + (vectorIterator.hasNext() ? ", " : "]");
+        }
+
+        return json;
     }
 
     public InputPort<BehaviorModel> getModelInputPort() {

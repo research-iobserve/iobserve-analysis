@@ -17,10 +17,11 @@ package org.iobserve.analysis.clustering.filter.similaritymatching;
 
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
 import org.iobserve.analysis.clustering.behaviormodels.EntryCallEdge;
+import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
 
 /**
  * Generates representative models by joining them together
- * 
+ *
  * @author Jannis Kuckei
  *
  */
@@ -30,11 +31,13 @@ public class UnionModelGenerationStrategy implements IModelGenerationStrategy {
     public BehaviorModel generateModel(final BehaviorModel[] models) {
         final BehaviorModel newModel = new BehaviorModel();
 
-        /** Magic happens here */
         for (final BehaviorModel model : models) {
-            /** Adding edges will also add nodes of edges */
+            /** We add nodes first so we don't get duplicate nodes from the same model */
+            for (final EntryCallNode node : model.getNodes()) {
+                newModel.addNode(node, true);
+            }
             for (final EntryCallEdge edge : model.getEdges()) {
-                newModel.addEdge(edge);
+                newModel.addEdge(edge, false);
             }
         }
 

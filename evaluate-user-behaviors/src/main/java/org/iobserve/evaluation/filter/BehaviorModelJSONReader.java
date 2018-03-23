@@ -19,7 +19,9 @@ import java.io.File;
 
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import teetime.framework.AbstractProducerStage;
 
@@ -47,7 +49,24 @@ public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel
     protected void execute() throws Exception {
         final ObjectMapper mapper = new ObjectMapper();
 
-        final BehaviorModel model = mapper.readValue(this.inputFile, BehaviorModel.class);
+        final BehaviorModel model = new BehaviorModel();
+        /** Have to read the model by hand */
+        final JsonNode tree = mapper.readTree(this.inputFile);
+        if (!(tree instanceof ObjectNode)) {
+            throw new Exception("Wrong format");
+        }
+        final ObjectNode modelNode = (ObjectNode) tree;
+
+        // Read name
+        final JsonNode name = modelNode.findValue("name");
+        if (name.isTextual()) {
+            model.setName(name.textValue());
+        }
+
+        final JsonNode nodesList = modelNode.findValue("nodes");
+        if (nodesList.isArray()) {
+
+        }
 
         this.outputPort.send(model);
 

@@ -69,15 +69,18 @@ public class BehaviorModel {
      *
      * @param edge
      *            the edge to be added to the model
+     * @param mergeNodes
+     *            If true, will merge already existing nodes. Otherwise, it will
+     *            ignore them.
      */
-    public void addEdge(final EntryCallEdge edge) {
+    public void addEdge(final EntryCallEdge edge, final boolean mergeNodes) {
         final String key = edge.getSource().getSignature() + BehaviorModel.EDGE_KEY_SEPARATOR
                 + edge.getTarget().getSignature();
         final EntryCallEdge matchedEdge = this.edges.get(key);
 
         if (matchedEdge == null) {
-            final EntryCallNode source = this.addNode(edge.getSource());
-            final EntryCallNode target = this.addNode(edge.getTarget());
+            final EntryCallNode source = this.addNode(edge.getSource(), mergeNodes);
+            final EntryCallNode target = this.addNode(edge.getTarget(), mergeNodes);
 
             edge.setSource(source);
             edge.setTarget(target);
@@ -92,10 +95,13 @@ public class BehaviorModel {
      *
      * @param node
      *            node
+     * @param merge
+     *            If true, will merge call information with already existing node.
+     *            If false, will have no side effects.
      * @return input node if no node with the same signature is added, merged node
      *         else
      */
-    public EntryCallNode addNode(final EntryCallNode node) {
+    public EntryCallNode addNode(final EntryCallNode node, final boolean merge) {
         final String key = node.getSignature();
         final EntryCallNode matchingNode = this.nodes.get(key);
 
@@ -103,7 +109,9 @@ public class BehaviorModel {
             this.nodes.put(key, node);
             return node;
         } else {
-            matchingNode.mergeInformation(node.getEntryCallInformation());
+            if (merge) {
+                matchingNode.mergeInformation(node.getEntryCallInformation());
+            }
             return matchingNode;
         }
     }
