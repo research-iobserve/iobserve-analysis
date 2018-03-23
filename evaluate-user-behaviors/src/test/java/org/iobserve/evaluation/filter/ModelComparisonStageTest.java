@@ -84,21 +84,21 @@ public class ModelComparisonStageTest { // NOCS no constructor for tests
     private BehaviorModel createTestModel() {
         final BehaviorModel model = new BehaviorModel();
 
-        model.addNode(this.nodeAtest);
-        model.addNode(this.nodeBtest);
-        model.addNode(this.nodeDtest);
+        model.addNode(this.nodeAtest, false);
+        model.addNode(this.nodeBtest, false);
+        model.addNode(this.nodeDtest, false);
 
         final EntryCallEdge edgeAB = new EntryCallEdge(this.nodeAtest, this.nodeBtest);
         edgeAB.addCalls(4);
-        model.addEdge(edgeAB);
+        model.addEdge(edgeAB, false);
 
         final EntryCallEdge edgeBA = new EntryCallEdge(this.nodeBtest, this.nodeAtest);
         edgeBA.addCalls(3);
-        model.addEdge(edgeBA);
+        model.addEdge(edgeBA, false);
 
         final EntryCallEdge edgeBD = new EntryCallEdge(this.nodeBtest, this.nodeDtest);
         edgeBA.addCalls(1);
-        model.addEdge(edgeBD);
+        model.addEdge(edgeBD, false);
 
         return model;
     }
@@ -106,21 +106,21 @@ public class ModelComparisonStageTest { // NOCS no constructor for tests
     private BehaviorModel createReferenceModel() {
         final BehaviorModel model = new BehaviorModel();
 
-        model.addNode(this.nodeA);
-        model.addNode(this.nodeB);
-        model.addNode(this.nodeC);
+        model.addNode(this.nodeA, false);
+        model.addNode(this.nodeB, false);
+        model.addNode(this.nodeC, false);
 
         final EntryCallEdge edgeAB = new EntryCallEdge(this.nodeA, this.nodeB);
         edgeAB.addCalls(4);
-        model.addEdge(edgeAB);
+        model.addEdge(edgeAB, false);
 
         final EntryCallEdge edgeBA = new EntryCallEdge(this.nodeB, this.nodeA);
         edgeBA.addCalls(3);
-        model.addEdge(edgeBA);
+        model.addEdge(edgeBA, false);
 
         final EntryCallEdge edgeBC = new EntryCallEdge(this.nodeB, this.nodeC);
         edgeBA.addCalls(1);
-        model.addEdge(edgeBC);
+        model.addEdge(edgeBC, false);
 
         return model;
     }

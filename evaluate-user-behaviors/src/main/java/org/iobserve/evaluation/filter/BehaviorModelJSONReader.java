@@ -16,11 +16,16 @@
 package org.iobserve.evaluation.filter;
 
 import java.io.File;
+import java.util.Iterator;
 
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
+import org.iobserve.analysis.clustering.behaviormodels.CallInformation;
+import org.iobserve.analysis.clustering.behaviormodels.EntryCallEdge;
+import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import teetime.framework.AbstractProducerStage;
@@ -58,14 +63,44 @@ public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel
         final ObjectNode modelNode = (ObjectNode) tree;
 
         // Read name
-        final JsonNode name = modelNode.findValue("name");
+        final JsonNode name = modelNode.get("name");
         if (name.isTextual()) {
             model.setName(name.textValue());
         }
 
-        final JsonNode nodesList = modelNode.findValue("nodes");
-        if (nodesList.isArray()) {
+        // Read nodes
+        final JsonNode nodesNode = modelNode.get("nodes");
+        if (nodesNode.isArray()) {
+            final ArrayNode nodesArray = (ArrayNode) nodesNode;
+            final Iterator<JsonNode> nodesIter = nodesArray.elements();
+            while (nodesIter.hasNext()) {
+                final EntryCallNode newECNode = new EntryCallNode();
+                final ObjectNode node = (ObjectNode) nodesIter.next();
+                newECNode.setSignature(node.get("signature").textValue());
 
+                final ArrayNode callInfos = (ArrayNode) node.get("entryCallInformation");
+                final Iterator<JsonNode> callInfoIter = callInfos.elements();
+                while (callInfoIter.hasNext()) {
+                    final ObjectNode ciNode = (ObjectNode) callInfoIter.next();
+                    final CallInformation info = new CallInformation(ciNode.get("informationSignature").textValue(),
+                            ciNode.get("informationCode").textValue(), ciNode.get("count").asInt());
+                    newECNode.mergeInformation(info);
+                }
+
+                model.addNode(newECNode, false);
+            }
+        }
+
+        final ArrayNode edgesNode = (ArrayNode) modelNode.findValue("edges");
+        final Iterator<JsonNode> edgesIter = edgesNode.elements();
+        while (edgesIter.hasNext()) {
+            final ObjectNode edge = (ObjectNode) edgesIter.next();
+            final ObjectNode source = (ObjectNode) edge.get("source");
+            final ObjectNode target = (ObjectNode) edge.get("target");
+            final EntryCallNode sourceECNode = model.findNode(source.get("signature").textValue()).get();
+            final EntryCallNode targetECNode = model.findNode(target.get("signature").textValue()).get();
+            final EntryCallEdge newECEdge = new EntryCallEdge(sourceECNode, targetECNode, edge.get("calls").asInt());
+            model.addEdge(newECEdge, false);
         }
 
         this.outputPort.send(model);
