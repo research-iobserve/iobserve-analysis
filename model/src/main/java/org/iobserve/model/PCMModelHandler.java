@@ -47,23 +47,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  * @author Robert Heinrich
  * @author Alessandro Giusa
  */
-public final class PCMModelHandler {
-
-    public static final String ALLOCATION_SUFFIX = "allocation";
-
-    public static final String CLOUD_PROFILE_SUFFIX = "cloudprofile";
-
-    public static final String COST_SUFFIX = "cost";
-
-    public static final String DESIGN_DECISION_SUFFIX = "designdecision";
-
-    public static final String REPOSITORY_SUFFIX = "repository";
-
-    public static final String RESOURCE_ENVIRONMENT_SUFFIX = "resourceenvironment";
-
-    public static final String SYSTEM_SUFFIX = "system";
-
-    public static final String USAGE_MODEL_SUFFIX = "usagemodel";
+public final class PCMModelHandler implements IPCMModelHandler {
 
     private static final String CORRESPONDENCE_SUFFIX = "rac";
 
@@ -118,82 +102,90 @@ public final class PCMModelHandler {
         }
     }
 
-    /**
-     * @return allocation model
+    /* (non-Javadoc)
+     * @see org.iobserve.model.IPCMModelHandler#getAllocationModel()
      */
+    @Override
     public Allocation getAllocationModel() {
         return this.allocationModel;
     }
 
-    /**
-     * @return resource environment model
+    /* (non-Javadoc)
+     * @see org.iobserve.model.IPCMModelHandler#getResourceEnvironmentModel()
      */
+    @Override
     public ResourceEnvironment getResourceEnvironmentModel() {
         return this.resourceEnvironmentModel;
     }
 
-    /**
-     * @return system model
+    /* (non-Javadoc)
+     * @see org.iobserve.model.IPCMModelHandler#getSystemModel()
      */
+    @Override
     public System getSystemModel() {
         return this.systemModel;
     }
 
-    /**
-     * @return usage model
+    /* (non-Javadoc)
+     * @see org.iobserve.model.IPCMModelHandler#getUsageModel()
      */
+    @Override
     public UsageModel getUsageModel() {
         return this.usageModel;
     }
 
-    /**
-     * @return correspondence model
+    /* (non-Javadoc)
+     * @see org.iobserve.model.IPCMModelHandler#getCorrespondenceModel()
      */
+    @Override
     public ICorrespondence getCorrespondenceModel() {
         return this.correspondenceModel;
     }
 
-    /**
-     * @return repository model provider
+    /* (non-Javadoc)
+     * @see org.iobserve.model.IPCMModelHandler#getRepositoryModel()
      */
+    @Override
     public Repository getRepositoryModel() {
         return this.repositoryModel;
     }
 
-    /**
-     * @return cloud profile model provider
+    /* (non-Javadoc)
+     * @see org.iobserve.model.IPCMModelHandler#getCloudProfileModel()
      */
+    @Override
     public CloudProfile getCloudProfileModel() {
         return this.cloudProfileModel;
     }
 
-    /**
-     * @return cost model
+    /* (non-Javadoc)
+     * @see org.iobserve.model.IPCMModelHandler#getCostModel()
      */
+    @Override
     public CostRepository getCostModel() {
         return this.costModel;
     }
 
-    /**
-     * @return design decision model
+    /* (non-Javadoc)
+     * @see org.iobserve.model.IPCMModelHandler#getDesignDecisionModel()
      */
+    @Override
     public DecisionSpace getDesignDecisionModel() {
         return this.designDecisionModel;
     }
 
-    /**
-     * @return QML declarations model provider
+    /* (non-Javadoc)
+     * @see org.iobserve.model.IPCMModelHandler#getQMLDeclarationsModel()
      */
+    @Override
     public QMLDeclarations getQMLDeclarationsModel() {
         return this.qmlDeclarationsModel;
     }
 
-    /**
-     * Saves all currently available models in this provider into the snapshot location.
-     *
-     * @param fileLocationURI
-     *            the location directory for the snapshot
+    /* (non-Javadoc)
+     * @see org.iobserve.model.IPCMModelHandler#save(org.eclipse.emf.common.util.URI)
      */
+    @Override
     public void save(final URI fileLocationURI) {
         new AllocationModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.ALLOCATION_SUFFIX),
                 this.allocationModel);
