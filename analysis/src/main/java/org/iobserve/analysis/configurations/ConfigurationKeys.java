@@ -180,7 +180,14 @@ public final class ConfigurationKeys {
 	public static final String MIN_SIZE = ConfigurationKeys.PREFIX + "behavior.preprocess.minSize";
 	
 	public static final String KEEP_TIME = ConfigurationKeys.PREFIX + "behavior.preprocess.keepTime";
-	
+
+	public static final String LEAF_TH = ConfigurationKeys.PREFIX + "behavior.birch.leafThreshold";
+
+	public static final String MAX_LEAF_SIZE = ConfigurationKeys.PREFIX + "behavior.birch.maxLeafSize";
+
+	public static final String MAX_NODE_SIZE = ConfigurationKeys.PREFIX + "behavior.birch.maxNodeSize";
+
+	public static final String MAX_LEAF_ENTRIES = ConfigurationKeys.PREFIX + "behavior.birch.maxLeafEntries";
 	
 
     /**
