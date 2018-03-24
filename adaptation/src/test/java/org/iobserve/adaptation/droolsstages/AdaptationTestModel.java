@@ -53,20 +53,18 @@ public class AdaptationTestModel {
     // Repository components
     private final Repository repository = RepositoryFactory.eINSTANCE.createRepository();
     private final BasicComponent comp_a = RepositoryFactory.eINSTANCE.createBasicComponent();
-    private final BasicComponent comp_b1 = RepositoryFactory.eINSTANCE.createBasicComponent();
-    private final BasicComponent comp_b2 = RepositoryFactory.eINSTANCE.createBasicComponent();
+    private final BasicComponent comp_bx = RepositoryFactory.eINSTANCE.createBasicComponent();
+    private final BasicComponent comp_by = RepositoryFactory.eINSTANCE.createBasicComponent();
     private final OperationProvidedRole providedRole = RepositoryFactory.eINSTANCE.createOperationProvidedRole();
     private final OperationRequiredRole requiredRole = RepositoryFactory.eINSTANCE.createOperationRequiredRole();
 
     // System components
     private final System system = SystemFactory.eINSTANCE.createSystem();
     private final AssemblyContext acxt_a = CompositionFactory.eINSTANCE.createAssemblyContext();
-    private final AssemblyContext acxt_b11 = CompositionFactory.eINSTANCE.createAssemblyContext();
-    private final AssemblyContext acxt_b12 = CompositionFactory.eINSTANCE.createAssemblyContext();
+    private final AssemblyContext acxt_b1 = CompositionFactory.eINSTANCE.createAssemblyContext();
     private final AssemblyContext acxt_b2 = CompositionFactory.eINSTANCE.createAssemblyContext();
 
-    private final AssemblyConnector aconn_ab11 = CompositionFactory.eINSTANCE.createAssemblyConnector();
-    private final AssemblyConnector aconn_ab12 = CompositionFactory.eINSTANCE.createAssemblyConnector();
+    private final AssemblyConnector aconn_ab1 = CompositionFactory.eINSTANCE.createAssemblyConnector();
     private final AssemblyConnector aconn_ab2 = CompositionFactory.eINSTANCE.createAssemblyConnector();
 
     // Resource environment components
@@ -80,9 +78,8 @@ public class AdaptationTestModel {
     // Allocation components
     private final Allocation allocation = AllocationFactory.eINSTANCE.createAllocation();
     private final AllocationContext alcxt_arc1 = AllocationFactory.eINSTANCE.createAllocationContext();
-    private final AllocationContext alcxt_b11rc1 = AllocationFactory.eINSTANCE.createAllocationContext();
-    private final AllocationContext alcxt_b12rc2 = AllocationFactory.eINSTANCE.createAllocationContext();
-    private final AllocationContext alcxt_b2rc1 = AllocationFactory.eINSTANCE.createAllocationContext();
+    private final AllocationContext alcxt_b1rc1 = AllocationFactory.eINSTANCE.createAllocationContext();
+    private final AllocationContext alcxt_b2rc2 = AllocationFactory.eINSTANCE.createAllocationContext();
 
     /**
      * Creates a new TestModelBuilder and initializes the test models.
@@ -98,19 +95,19 @@ public class AdaptationTestModel {
         // Repository
         this.repository.setEntityName("repository");
         this.repository.getComponents__Repository().add(this.comp_a);
-        this.repository.getComponents__Repository().add(this.comp_b1);
-        this.repository.getComponents__Repository().add(this.comp_b2);
+        this.repository.getComponents__Repository().add(this.comp_bx);
+        this.repository.getComponents__Repository().add(this.comp_by);
 
         // Components
         this.comp_a.setEntityName("comp_a");
         this.comp_a.getRequiredRoles_InterfaceRequiringEntity().add(this.requiredRole);
         this.comp_a.setRepository__RepositoryComponent(this.repository);
-        this.comp_b1.setEntityName("comp_b1");
-        this.comp_b1.getProvidedRoles_InterfaceProvidingEntity().add(this.providedRole);
-        this.comp_b1.setRepository__RepositoryComponent(this.repository);
-        this.comp_b2.setEntityName("comp_b2");
-        this.comp_b2.getProvidedRoles_InterfaceProvidingEntity().add(this.providedRole);
-        this.comp_b2.setRepository__RepositoryComponent(this.repository);
+        this.comp_bx.setEntityName("comp_bx");
+        this.comp_bx.getProvidedRoles_InterfaceProvidingEntity().add(this.providedRole);
+        this.comp_bx.setRepository__RepositoryComponent(this.repository);
+        this.comp_by.setEntityName("comp_by");
+        this.comp_by.getProvidedRoles_InterfaceProvidingEntity().add(this.providedRole);
+        this.comp_by.setRepository__RepositoryComponent(this.repository);
 
         // Roles
         this.providedRole.setEntityName("providedRole");
@@ -121,35 +118,26 @@ public class AdaptationTestModel {
         // System
         this.system.setEntityName("system");
         this.system.getAssemblyContexts__ComposedStructure().add(this.acxt_a);
-        this.system.getAssemblyContexts__ComposedStructure().add(this.acxt_b11);
-        this.system.getConnectors__ComposedStructure().add(this.aconn_ab11);
-        // We don't add acxt_b12, acxt_b2 and aconn_ab12, aconn_ab2 yet!
+        this.system.getAssemblyContexts__ComposedStructure().add(this.acxt_b1);
+        this.system.getConnectors__ComposedStructure().add(this.aconn_ab1);
+        // We don't add acxt_b2 and aconn_ab2 yet!
 
         // Assembly contexts
         this.acxt_a.setEntityName("acxt_a");
         this.acxt_a.setEncapsulatedComponent__AssemblyContext(this.comp_a);
 
-        this.acxt_b11.setEntityName("acxt_b11");
-        this.acxt_b11.setEncapsulatedComponent__AssemblyContext(this.comp_b1);
-
-        this.acxt_b12.setEntityName("acxt_b12");
-        this.acxt_b12.setEncapsulatedComponent__AssemblyContext(this.comp_b1);
+        this.acxt_b1.setEntityName("acxt_b1");
+        this.acxt_b1.setEncapsulatedComponent__AssemblyContext(this.comp_bx);
 
         this.acxt_b2.setEntityName("acxt_b2");
-        this.acxt_b2.setEncapsulatedComponent__AssemblyContext(this.comp_b2);
+        this.acxt_b2.setEncapsulatedComponent__AssemblyContext(this.comp_bx);
 
         // Assembly connectors
-        this.aconn_ab11.setEntityName("aconn_ab11");
-        this.aconn_ab11.setProvidedRole_AssemblyConnector(this.providedRole);
-        this.aconn_ab11.setRequiredRole_AssemblyConnector(this.requiredRole);
-        this.aconn_ab11.setProvidingAssemblyContext_AssemblyConnector(this.acxt_b11);
-        this.aconn_ab11.setRequiringAssemblyContext_AssemblyConnector(this.acxt_a);
-
-        this.aconn_ab12.setEntityName("aconn_ab12");
-        this.aconn_ab12.setProvidedRole_AssemblyConnector(this.providedRole);
-        this.aconn_ab12.setRequiredRole_AssemblyConnector(this.requiredRole);
-        this.aconn_ab12.setProvidingAssemblyContext_AssemblyConnector(this.acxt_b12);
-        this.aconn_ab12.setRequiringAssemblyContext_AssemblyConnector(this.acxt_a);
+        this.aconn_ab1.setEntityName("aconn_ab1");
+        this.aconn_ab1.setProvidedRole_AssemblyConnector(this.providedRole);
+        this.aconn_ab1.setRequiredRole_AssemblyConnector(this.requiredRole);
+        this.aconn_ab1.setProvidingAssemblyContext_AssemblyConnector(this.acxt_b1);
+        this.aconn_ab1.setRequiringAssemblyContext_AssemblyConnector(this.acxt_a);
 
         this.aconn_ab2.setEntityName("aconn_ab2");
         this.aconn_ab2.setProvidedRole_AssemblyConnector(this.providedRole);
@@ -174,7 +162,6 @@ public class AdaptationTestModel {
         this.rc_2.setResourceEnvironment_ResourceContainer(this.resEnvironment);
 
         this.rc_3.setEntityName("rc_3");
-        this.rc_3.setResourceEnvironment_ResourceContainer(this.resEnvironment);
 
         // Linking resource
         this.lr_rc1rc2.setEntityName("lr_rc1rc2");
@@ -183,7 +170,6 @@ public class AdaptationTestModel {
         this.lr_rc1rc2.getConnectedResourceContainers_LinkingResource().add(this.rc_2);
 
         this.lr_rc2rc3.setEntityName("lr_rc2rc3");
-        this.lr_rc2rc3.setResourceEnvironment_LinkingResource(this.resEnvironment);
         this.lr_rc2rc3.getConnectedResourceContainers_LinkingResource().add(this.rc_2);
         this.lr_rc2rc3.getConnectedResourceContainers_LinkingResource().add(this.rc_3);
     }
@@ -194,8 +180,8 @@ public class AdaptationTestModel {
         this.allocation.setSystem_Allocation(this.system);
         this.allocation.setTargetResourceEnvironment_Allocation(this.resEnvironment);
         this.allocation.getAllocationContexts_Allocation().add(this.alcxt_arc1);
-        this.allocation.getAllocationContexts_Allocation().add(this.alcxt_b11rc1);
-        // We don't add alcxt_b12rc2 and alcxt_b2rc1 yet!
+        this.allocation.getAllocationContexts_Allocation().add(this.alcxt_b1rc1);
+        // We don't add alcxt_b2rc1 yet!
 
         // Allocation contexts
         this.alcxt_arc1.setEntityName("alcxt_arc1");
@@ -203,20 +189,15 @@ public class AdaptationTestModel {
         this.alcxt_arc1.setResourceContainer_AllocationContext(this.rc_1);
         this.alcxt_arc1.setAllocation_AllocationContext(this.allocation);
 
-        this.alcxt_b11rc1.setEntityName("alcxt_b11rc1");
-        this.alcxt_b11rc1.setAssemblyContext_AllocationContext(this.acxt_b11);
-        this.alcxt_b11rc1.setResourceContainer_AllocationContext(this.rc_1);
-        this.alcxt_b11rc1.setAllocation_AllocationContext(this.allocation);
+        this.alcxt_b1rc1.setEntityName("alcxt_b11rc1");
+        this.alcxt_b1rc1.setAssemblyContext_AllocationContext(this.acxt_b1);
+        this.alcxt_b1rc1.setResourceContainer_AllocationContext(this.rc_1);
+        this.alcxt_b1rc1.setAllocation_AllocationContext(this.allocation);
 
-        this.alcxt_b12rc2.setEntityName("alcxt_b12rc2");
-        this.alcxt_b12rc2.setAssemblyContext_AllocationContext(this.acxt_b12);
-        this.alcxt_b12rc2.setResourceContainer_AllocationContext(this.rc_2);
-        this.alcxt_b12rc2.setAllocation_AllocationContext(this.allocation);
-
-        this.alcxt_b2rc1.setEntityName("alcxt_b2rc1");
-        this.alcxt_b2rc1.setAssemblyContext_AllocationContext(this.acxt_b2);
-        this.alcxt_b2rc1.setResourceContainer_AllocationContext(this.rc_1);
-        this.alcxt_b2rc1.setAllocation_AllocationContext(this.allocation);
+        this.alcxt_b2rc2.setEntityName("alcxt_b12rc2");
+        this.alcxt_b2rc2.setAssemblyContext_AllocationContext(this.acxt_b2);
+        this.alcxt_b2rc2.setResourceContainer_AllocationContext(this.rc_2);
+        this.alcxt_b2rc2.setAllocation_AllocationContext(this.allocation);
     }
 
     public Repository getRepository() {
@@ -239,12 +220,12 @@ public class AdaptationTestModel {
         return this.comp_a;
     }
 
-    public BasicComponent getComp_b1() {
-        return this.comp_b1;
+    public BasicComponent getComp_bx() {
+        return this.comp_bx;
     }
 
-    public BasicComponent getComp_b2() {
-        return this.comp_b2;
+    public BasicComponent getComp_by() {
+        return this.comp_by;
     }
 
     public OperationProvidedRole getProvidedRole() {
@@ -259,24 +240,16 @@ public class AdaptationTestModel {
         return this.acxt_a;
     }
 
-    public AssemblyContext getAcxt_b11() {
-        return this.acxt_b11;
-    }
-
-    public AssemblyContext getAcxt_b12() {
-        return this.acxt_b12;
+    public AssemblyContext getAcxt_b1() {
+        return this.acxt_b1;
     }
 
     public AssemblyContext getAcxt_b2() {
         return this.acxt_b2;
     }
 
-    public AssemblyConnector getAconn_ab11() {
-        return this.aconn_ab11;
-    }
-
-    public AssemblyConnector getAconn_ab12() {
-        return this.aconn_ab12;
+    public AssemblyConnector getAconn_ab1() {
+        return this.aconn_ab1;
     }
 
     public AssemblyConnector getAconn_ab2() {
@@ -307,57 +280,45 @@ public class AdaptationTestModel {
         return this.alcxt_arc1;
     }
 
-    public AllocationContext getAlcxt_b11rc1() {
-        return this.alcxt_b11rc1;
+    public AllocationContext getAlcxt_b1rc1() {
+        return this.alcxt_b1rc1;
     }
 
-    public AllocationContext getAlcxt_b12rc2() {
-        return this.alcxt_b12rc2;
-    }
-
-    public AllocationContext getAlcxt_b2rc1() {
-        return this.alcxt_b2rc1;
+    public AllocationContext getAlcxt_b2rc2() {
+        return this.alcxt_b2rc2;
     }
 
     /**
      * Replicate component instance b11 to rc2 (creating b12 instance there)
      */
     public void replicateCompB11ToRc2() {
-        this.system.getAssemblyContexts__ComposedStructure().add(this.acxt_b12);
-        this.system.getConnectors__ComposedStructure().add(this.aconn_ab12);
-        this.allocation.getAllocationContexts_Allocation().add(this.alcxt_b12rc2);
+        this.system.getAssemblyContexts__ComposedStructure().add(this.acxt_b2);
+        this.system.getConnectors__ComposedStructure().add(this.aconn_ab2);
+        this.allocation.getAllocationContexts_Allocation().add(this.alcxt_b2rc2);
     }
 
     /**
      * Dereplicate component instance b12 from rc2
      */
     public void dereplicateCompB12fromRc2() {
-        this.system.getAssemblyContexts__ComposedStructure().remove(this.acxt_b12);
-        this.system.getConnectors__ComposedStructure().remove(this.aconn_ab12);
-        this.allocation.getAllocationContexts_Allocation().remove(this.alcxt_b12rc2);
+        this.system.getAssemblyContexts__ComposedStructure().remove(this.acxt_b2);
+        this.system.getConnectors__ComposedStructure().remove(this.aconn_ab2);
+        this.allocation.getAllocationContexts_Allocation().remove(this.alcxt_b2rc2);
     }
 
     /**
-     * Migrate component instance b from rc1 (where it's called b11) to rc2 (where it's called b12)
+     * Migrate allocation context b11 from rc1 to rc2
      */
     public void migrateCompB1ToRc2() {
-        this.replicateCompB11ToRc2();
-        this.system.getAssemblyContexts__ComposedStructure().remove(this.acxt_b11);
-        this.system.getConnectors__ComposedStructure().remove(this.aconn_ab11);
-        this.allocation.getAllocationContexts_Allocation().remove(this.alcxt_b11rc1);
+        this.alcxt_b1rc1.setEntityName("alcxt_b11rc2");
+        this.alcxt_b1rc1.setResourceContainer_AllocationContext(this.rc_2);
     }
 
     /**
      * Replace component instance of b1 with equivalent of b2
      */
-    public void changeRepositoryCompB1ToCompB2() {
-        this.system.getAssemblyContexts__ComposedStructure().remove(this.acxt_b11);
-        this.system.getConnectors__ComposedStructure().remove(this.aconn_ab11);
-        this.allocation.getAllocationContexts_Allocation().remove(this.alcxt_b11rc1);
-
-        this.system.getAssemblyContexts__ComposedStructure().add(this.acxt_b2);
-        this.system.getConnectors__ComposedStructure().add(this.aconn_ab2);
-        this.allocation.getAllocationContexts_Allocation().add(this.alcxt_b2rc1);
+    public void changeRepositoryCompBxToCompBy() {
+        this.acxt_b1.setEncapsulatedComponent__AssemblyContext(this.comp_by);
     }
 
     /**
@@ -365,7 +326,9 @@ public class AdaptationTestModel {
      */
     public void allocateResourceContainerR3() {
         this.resEnvironment.getResourceContainer_ResourceEnvironment().add(this.rc_3);
+        this.rc_3.setResourceEnvironment_ResourceContainer(this.resEnvironment);
         this.resEnvironment.getLinkingResources__ResourceEnvironment().add(this.lr_rc2rc3);
+        this.lr_rc2rc3.setResourceEnvironment_LinkingResource(this.resEnvironment);
     }
 
     /**
@@ -379,7 +342,7 @@ public class AdaptationTestModel {
     /**
      * Create a deep copy of the test models where all components still have the same id. (Using
      * clone() still referenced the same components which was a problem during testing.)
-     * 
+     *
      * @return
      */
     public Object getCopyWithSameIds() {
@@ -388,19 +351,17 @@ public class AdaptationTestModel {
         // Repository components
         modelCopy.getRepository().setId(this.repository.getId());
         modelCopy.getComp_a().setId(this.comp_a.getId());
-        modelCopy.getComp_b1().setId(this.comp_b1.getId());
-        modelCopy.getComp_b2().setId(this.comp_b2.getId());
+        modelCopy.getComp_bx().setId(this.comp_bx.getId());
+        modelCopy.getComp_by().setId(this.comp_by.getId());
         modelCopy.getProvidedRole().setId(this.providedRole.getId());
         modelCopy.getRequiredRole().setId(this.requiredRole.getId());
 
         // System components
         modelCopy.getSystem().setId(this.system.getId());
         modelCopy.getAcxt_a().setId(this.acxt_a.getId());
-        modelCopy.getAcxt_b11().setId(this.acxt_b11.getId());
-        modelCopy.getAcxt_b12().setId(this.acxt_b12.getId());
+        modelCopy.getAcxt_b1().setId(this.acxt_b1.getId());
         modelCopy.getAcxt_b2().setId(this.acxt_b2.getId());
-        modelCopy.getAconn_ab11().setId(this.aconn_ab11.getId());
-        modelCopy.getAconn_ab12().setId(this.aconn_ab12.getId());
+        modelCopy.getAconn_ab1().setId(this.aconn_ab1.getId());
         modelCopy.getAconn_ab2().setId(this.aconn_ab2.getId());
 
         // Resource environment components
@@ -413,9 +374,8 @@ public class AdaptationTestModel {
         // Allocation components
         modelCopy.getAllocation().setId(this.allocation.getId());
         modelCopy.getAlcxt_arc1().setId(this.alcxt_arc1.getId());
-        modelCopy.getAlcxt_b11rc1().setId(this.alcxt_b11rc1.getId());
-        modelCopy.getAlcxt_b12rc2().setId(this.alcxt_b12rc2.getId());
-        modelCopy.getAlcxt_b2rc1().setId(this.alcxt_b2rc1.getId());
+        modelCopy.getAlcxt_b1rc1().setId(this.alcxt_b1rc1.getId());
+        modelCopy.getAlcxt_b2rc2().setId(this.alcxt_b2rc2.getId());
 
         return modelCopy;
     }

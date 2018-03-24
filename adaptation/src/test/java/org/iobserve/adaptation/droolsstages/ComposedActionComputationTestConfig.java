@@ -17,24 +17,27 @@ package org.iobserve.adaptation.droolsstages;
 
 import java.util.List;
 
-import org.iobserve.adaptation.data.ExecutionPlan;
+import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.Action;
 
-import teetime.stage.basic.AbstractTransformation;
+import teetime.framework.Configuration;
+import teetime.framework.test.StageTester;
+import teetime.stage.CollectorSink;
+import teetime.stage.InitialElementProducer;
 
 /**
- * Receives a list of composed adaptation actions and computes the required atomic adaptation
- * actions - the execution plan - which is passed to the output port.
+ * Test configuration for {@link ComposedActionComputationTest}. As the output of that stage
+ * contains EObjects we could not use teetime's {@link StageTester} api because the ids of actual
+ * and expected Objects always differed.
  *
  * @author Lars Bluemke
  *
  */
-public class AtomicAdaptationActionComputation extends AbstractTransformation<List<Action>, ExecutionPlan> {
+public class ComposedActionComputationTestConfig extends Configuration {
 
-    @Override
-    protected void execute(final List<Action> element) throws Exception {
-        // TODO Auto-generated method stub
-
+    public ComposedActionComputationTestConfig(final InitialElementProducer<AdaptationData> producer,
+            final ComposedActionComputation composedActionComputation, final CollectorSink<List<Action>> collector) {
+        this.connectPorts(producer.getOutputPort(), composedActionComputation.getInputPort());
+        this.connectPorts(composedActionComputation.getOutputPort(), collector.getInputPort());
     }
-
 }

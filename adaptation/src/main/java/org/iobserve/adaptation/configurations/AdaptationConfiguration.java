@@ -37,7 +37,7 @@ public class AdaptationConfiguration extends Configuration {
         final SingleConnectionTcpReaderStage runtimeModelReader = new SingleConnectionTcpReaderStage(
                 runtimeModelInputPort, runtimeModelDirectory);
         final SingleConnectionTcpReaderStage redeploymentModelReader = new SingleConnectionTcpReaderStage(
-                runtimeModelInputPort, runtimeModelDirectory);
+                redeploymentModelInputPort, redeploymentModelDirectory);
 
         final ModelFiles2ModelDirCollectorStage runtimeModelCollector = new ModelFiles2ModelDirCollectorStage();
         final ModelFiles2ModelDirCollectorStage redeploymentModelCollector = new ModelFiles2ModelDirCollectorStage();

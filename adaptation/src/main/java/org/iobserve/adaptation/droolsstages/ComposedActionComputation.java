@@ -23,6 +23,7 @@ import org.iobserve.adaptation.data.ActionFactory;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.adaptation.data.graph.ModelGraph;
 import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.PCMModelHandlerMockup;
 import org.iobserve.planning.systemadaptation.Action;
 import org.kie.api.KieServices;
 import org.kie.api.command.Command;
@@ -40,13 +41,43 @@ import teetime.stage.basic.AbstractTransformation;
  * @author Lars Bluemke
  *
  */
-public class ComposedAdaptationActionComputation extends AbstractTransformation<AdaptationData, List<Action>> {
+public class ComposedActionComputation extends AbstractTransformation<AdaptationData, List<Action>> {
     static final String ADAPTATION_ACTION_LIST_ID = "composedAdaptationActions";
 
     final KieServices kieServices = KieServices.Factory.get();
     final KieContainer kContainer = this.kieServices.getKieClasspathContainer();
     final StatelessKieSession kSession = this.kContainer.newStatelessKieSession();
     final KieCommands kieCommands = this.kieServices.getCommands();
+
+    final boolean isTestRun;
+
+    /**
+     * Creates a new instance of this filter.
+     */
+    public ComposedActionComputation() {
+        this.isTestRun = false;
+    }
+
+    /**
+     * Creates a new instance of this filter. This constructor is intended for testing and
+     * initializes a {@link PCMModelProviderMockup} for the action creation which does not read the
+     * models from the file system.
+     *
+     * @param runtimeTestModel
+     *            test runtime model
+     * @param redeploymentTestModel
+     *            test redeployment model
+     */
+    public ComposedActionComputation(final AdaptationTestModel runtimeTestModel,
+            final AdaptationTestModel redeploymentTestModel) {
+        this.isTestRun = true;
+        ActionFactory.setRuntimeModels(new PCMModelHandlerMockup(runtimeTestModel.getAllocation(),
+                runtimeTestModel.getResEnvironment(), runtimeTestModel.getSystem(), null, null,
+                runtimeTestModel.getRepository(), null, null, null, null));
+        ActionFactory.setRedeploymentModels(new PCMModelHandlerMockup(redeploymentTestModel.getAllocation(),
+                redeploymentTestModel.getResEnvironment(), redeploymentTestModel.getSystem(), null, null,
+                redeploymentTestModel.getRepository(), null, null, null, null));
+    }
 
     @Override
     protected void execute(final AdaptationData adaptationData) throws Exception {
@@ -56,8 +87,10 @@ public class ComposedAdaptationActionComputation extends AbstractTransformation<
         final List<Action> composedAdaptationActions = new ArrayList<>();
 
         // Set up ActionFactory because the rule engine will invoke it
-        ActionFactory.setRuntimeModels(new PCMModelHandler(adaptationData.getRuntimeModelDir()));
-        ActionFactory.setRedeploymentModels(new PCMModelHandler(adaptationData.getReDeploymentModelDir()));
+        if (!this.isTestRun) {
+            ActionFactory.setRuntimeModels(new PCMModelHandler(adaptationData.getRuntimeModelDir()));
+            ActionFactory.setRedeploymentModels(new PCMModelHandler(adaptationData.getReDeploymentModelDir()));
+        }
 
         // Add empty list of composed adaptation actions (will be filled by rule engine)
         workingMemoryInserts.add(this.kieCommands.newInsert(composedAdaptationActions));
@@ -70,10 +103,6 @@ public class ComposedAdaptationActionComputation extends AbstractTransformation<
 
         // Execute rule engine which will add actions to composedAdaptationActions
         this.kSession.execute(this.kieCommands.newBatchExecution(workingMemoryInserts));
-
-        for (final Action a : composedAdaptationActions) {
-            System.out.println(a);
-        }
 
         this.outputPort.send(composedAdaptationActions);
     }

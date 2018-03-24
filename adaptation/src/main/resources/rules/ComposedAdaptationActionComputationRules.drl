@@ -2,6 +2,7 @@ package org.iobserve.adaptation.droolsstages
 
 import java.util.ArrayList
 import org.iobserve.adaptation.data.AssemblyContextActionFactory
+import org.iobserve.adaptation.data.ResourceContainerActionFactory
 import org.iobserve.adaptation.data.graph.ComponentNode
 import org.iobserve.adaptation.data.graph.DeploymentNode
 import org.iobserve.adaptation.data.graph.ModelGraphRevision
@@ -12,6 +13,7 @@ import org.iobserve.adaptation.data.graph.ModelGraphRevision
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 rule "Create replication action"
+	salience 0
 when
 	$composedAdaptationActions : ArrayList()
     
@@ -27,9 +29,80 @@ then
 end
 
 
+rule "Create dereplication action"
+	salience 0
+when
+	$composedAdaptationActions : ArrayList()
+    
+    $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
+    
+    not ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, assemblyContextID == $runtimeNode.getAssemblyContextID())
+then
+	System.out.println("Found a dereplication!");
+    $composedAdaptationActions.add(AssemblyContextActionFactory.generateDereplicateAction($runtimeNode));
+end
+
+
+rule "Create migration action"
+	salience 0
+when
+	$composedAdaptationActions : ArrayList()
+    
+    $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
+    
+    $redplNode : ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
+    		assemblyContextID == $runtimeNode.getAssemblyContextID(),
+    		hostServer.getResourceContainerID() != $runtimeNode.getHostServer().getResourceContainerID())
+then
+	System.out.println("Found a migration! " +  $runtimeNode.getAssemblyName() + "@" + $runtimeNode.getHostServer().getResourceContainerName() +
+	" - " + $redplNode.getAssemblyName() + "@" + $redplNode.getHostServer().getResourceContainerName());
+    $composedAdaptationActions.add(AssemblyContextActionFactory.generateMigrateAction($runtimeNode, $redplNode));
+end
+
+rule "Create change repository action"
+	salience 0
+when
+	$composedAdaptationActions : ArrayList()
+    
+    $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
+    
+    $redplNode : ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
+    		assemblyContextID == $runtimeNode.getAssemblyContextID(), 
+    		repositoryComponentID != $runtimeNode.getRepositoryComponentID())
+then
+	System.out.println("Found a change of repository component!");
+    $composedAdaptationActions.add(AssemblyContextActionFactory
+    		.generateChangeRepositoryComponentAction($runtimeNode, $redplNode));
+end
 
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RESOURCE CONTAINER ACTION RULES                                                                                    //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+rule "Create allocation action"
+	salience 1
+when
+	$composedAdaptationActions : ArrayList()
+    
+    $redplNode : DeploymentNode(revision == ModelGraphRevision.REDEPLOYMENT)
+    
+    not DeploymentNode(revision == ModelGraphRevision.RUNTIME, resourceContainerID == $redplNode.getResourceContainerID)
+then
+	System.out.println("Found an allocation! " + $redplNode.getResourceContainerName());
+    $composedAdaptationActions.add(ResourceContainerActionFactory.createAllocateAction($redplNode));
+end
+
+rule "Create deallocation action"
+	salience -1
+when
+	$composedAdaptationActions : ArrayList()
+    
+    $runtimeNode : DeploymentNode(revision == ModelGraphRevision.RUNTIME)
+    
+    not DeploymentNode(revision == ModelGraphRevision.REDEPLOYMENT, resourceContainerID == $runtimeNode.getResourceContainerID)
+then
+	System.out.println("Found a deallocation! " + $runtimeNode.getResourceContainerName());
+    $composedAdaptationActions.add(ResourceContainerActionFactory.createDeallocateAction($runtimeNode));
+end
