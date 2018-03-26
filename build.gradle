@@ -111,15 +111,15 @@ subprojects {
 	configDir = new File(confDir)
     }
 
-    // apply plugin: 'findbugs'
-    // findbugs {	
-    //    toolVersion = fbVersion
-    //    ignoreFailures = true
-    //    effort = "max"
-    //    reportLevel = "low"
+    apply plugin: 'findbugs'
+     findbugs {	
+        toolVersion = fbVersion
+        ignoreFailures = true
+        effort = "max"
+        reportLevel = "low"
 
-    //    excludeFilter = resolveRelativeToParent(dirConfig, 'fb-filter.xml')
-    //}
+        //excludeFilter = resolveRelativeToParent(dirConfig, 'fb-filter.xml')
+    }
 
     tasks.withType(Pmd) {
         reports {
