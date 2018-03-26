@@ -51,7 +51,6 @@ public class Leaf extends AbstractNode {
 	}
 	
 	private Leaf split() {
-		System.out.println("leaf is too large!");
 		ProximityMatrix pm = new ProximityMatrix(this.entries);
 		///cfs that are closer to farthest one move to the new leaf, the rest stays put
 		Leaf second = new Leaf();
@@ -63,6 +62,7 @@ public class Leaf extends AbstractNode {
 		this.entries.removeAll(second.entries);
 		this.updateSum();
 		second.updateSum();
+		
 		return second;
 	}
 	

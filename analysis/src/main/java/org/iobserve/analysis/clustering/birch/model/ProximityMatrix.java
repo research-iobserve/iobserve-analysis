@@ -13,7 +13,8 @@ public class ProximityMatrix {
 
 	public ProximityMatrix(List<ClusteringFeature> cfs) {
 		this.n = cfs.size();
-		assert(n > 0);
+		//if(n <= 0);
+			//System.out.println(cfs.size());
 		this.matrix = new double[n][n];
 		double max = 0.0;
 		double min = Double.MAX_VALUE;

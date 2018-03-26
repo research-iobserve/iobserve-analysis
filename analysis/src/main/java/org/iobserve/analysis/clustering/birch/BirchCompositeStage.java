@@ -16,6 +16,9 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.birch;
 
+import org.iobserve.analysis.clustering.filter.EMClassification;
+import org.iobserve.analysis.clustering.filter.TBehaviorModelVisualization;
+import org.iobserve.analysis.clustering.filter.XMeansClassification;
 import org.iobserve.analysis.clustering.filter.models.configuration.GetLastXSignatureStrategy;
 import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
@@ -108,7 +111,14 @@ public class BirchCompositeStage extends CompositeStage implements IBehaviorComp
             BirchCompositeStage.LOGGER.error("Initialization incomplete: No time trigger interval specified.");
             throw new ConfigurationException("Initialization incomplete: No time trigger interval specified.");
         }
-
+        /** Get base URL for BehaviourVisualization */
+        final String visualizationURL = 
+        		configuration.getStringProperty(ConfigurationKeys.BEHAVIOR_VISUALIZATION_URL);
+        if (visualizationURL.isEmpty()) {
+            BirchCompositeStage.LOGGER.error("Initialization incomplete: No sink visualization URL specified.");
+            throw new ConfigurationException("Initialization incomplete: No sink visualization URL specified.");
+        }
+        
         /** Get base URL for BehaviourModelSink */
         final String baseURL = configuration.getStringProperty(ConfigurationKeys.SINK_BASE_URL);
         if (baseURL.isEmpty()) {
@@ -165,23 +175,39 @@ public class BirchCompositeStage extends CompositeStage implements IBehaviorComp
             throw new ConfigurationException("Initialization incomplete: No max number of leaf entries specified.");
         }
         
+		final int expectedNumberOfClusters= configuration.getIntProperty(ConfigurationKeys.EXP_NUM_OF_CLUSTERS, -1);
+        if (expectedNumberOfClusters < 0) {
+            BirchCompositeStage.LOGGER.error("Initialization incomplete: No expected numbers of clusters specified.");
+            throw new ConfigurationException("Initialization incomplete: No expected numbers of clusters specified.");
+        }
+        
+		final boolean useClusterNumberMetric = configuration.getBooleanProperty(ConfigurationKeys.USE_CNM, true);
+		
         /** Todo: incoperate to config */
 		final IRepresentativeStrategy representativeStrategy = new JPetstoreStrategy();
 		
 		final boolean keepEmptyTransitions = configuration.getBooleanProperty(ConfigurationKeys.KEEP_EMPTY_TRANS, true);
         
-        
         /** Create remaining stages and connect them */
         final PreprocessingCompositeStage preStage = new PreprocessingCompositeStage(traceMatcher, entryCallMatcher,
                 cleanupRewriter, filterRulesFactory, triggerInterval);
         
+//        final XMeansClassification classificationStage = new XMeansClassification(keepTime, minCollectionSize, 
+//        		representativeStrategy, keepEmptyTransitions, leafThresholdValue, maxLeafSize, maxNodeSize,
+//        		maxLeafEntries);
+        
+//        final EMClassification classificationStage = new EMClassification(keepTime, minCollectionSize, 
+//        		representativeStrategy, keepEmptyTransitions, leafThresholdValue, maxLeafSize, maxNodeSize,
+//        		maxLeafEntries);
         final BirchClassificaton classificationStage = new BirchClassificaton(keepTime, minCollectionSize, 
         		representativeStrategy, keepEmptyTransitions, leafThresholdValue, maxLeafSize, maxNodeSize,
-        		maxLeafEntries);
+        		maxLeafEntries, expectedNumberOfClusters, useClusterNumberMetric);
         /// Jannis spezifisch?
 //        final BehaviorModelCompositeSinkStage sinkStage = new BehaviorModelCompositeSinkStage(baseURL);
         BehaviorModelSink sinkStage = new BehaviorModelSink(baseURL, 
         		new GetLastXSignatureStrategy(Integer.MAX_VALUE));
+//        TBehaviorModelVisualization sinkStage = new TBehaviorModelVisualization(visualizationURL, 
+//        		new GetLastXSignatureStrategy(Integer.MAX_VALUE));
 
         
         this.eventBasedTraceInputPort = preStage.getTraceInputPort();

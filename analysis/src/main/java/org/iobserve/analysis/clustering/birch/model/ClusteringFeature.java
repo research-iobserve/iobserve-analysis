@@ -2,6 +2,8 @@ package org.iobserve.analysis.clustering.birch.model;
 
 import java.util.List;
 
+import weka.core.Instance;
+
 public class ClusteringFeature {
 
 	public int Number;
@@ -12,6 +14,18 @@ public class ClusteringFeature {
 		this.Number = 0;
 		this.linearSum = new double[n];
 		this.squareSum = new double[n];
+	}
+	
+	public ClusteringFeature(Instance instance) {
+		this.Number = 1;
+		this.linearSum = new double[instance.numAttributes()];
+		this.squareSum = new double[instance.numAttributes()];
+		
+	    	for(int i = 0; i < instance.numAttributes(); i++) {
+	    		this.linearSum[i] = instance.value(i);
+	    		this.squareSum[i] = this.linearSum[i] * this.linearSum[i];
+	    		//BuildCFTree.LOGGER.debug(vector[i].toString());
+	    	}
 	}
 	
 	public ClusteringFeature(int number, double[] linearSum, double[] squareSum) {
@@ -66,8 +80,31 @@ public class ClusteringFeature {
 		}
 	}
 	
-	///based on D0 (euclidian distance)
 	public double compare(ClusteringFeature cf) {
+		final int dimension = this.linearSum.length;
+		double[] alpha = new double[dimension];
+		double[] beta = new double[dimension];
+		double[] gamma = new double[dimension];
+		double res = 0;
+		
+		for(int i = 0; i < this.linearSum.length; i++) {
+			alpha[i] = (this.linearSum[i] + cf.linearSum[i]) / (this.Number + cf.Number);
+			beta[i] = this.linearSum[i]  / this.Number;
+			gamma[i] = cf.linearSum[i]  / cf.Number;
+		}
+		
+		for(int i = 0; i < this.linearSum.length; i++) {
+			res += 2.0 * this.linearSum[i] * (beta[i] - alpha[i])
+				+  2.0 * cf.linearSum[i] * (gamma[i] - alpha[i])
+				+ (cf.Number + this.Number) * alpha[i] * alpha[i] 
+						- this.Number * beta[i] * beta[i] - cf.Number * gamma[i] * gamma[i];
+		}
+
+		return Math.sqrt(res);
+	}
+	
+	///based on D0 (euclidian distance)
+	public double compareD0(ClusteringFeature cf) {
 		double res = 0;
 		for(int i = 0; i < this.linearSum.length; i++) {
 			res += Math.pow((this.linearSum[i] / (1.0 * this.Number)) - (cf.linearSum[i] / (1.0 * cf.Number)), 2.0);
@@ -82,7 +119,7 @@ public class ClusteringFeature {
 		
 		for(int i = 0; i < this.linearSum.length; i++) {
 			square += this.squareSum[i] * cf.Number + cf.squareSum[i] * this.Number;
-			linear += this.linearSum[i] * this.linearSum[i]; 
+			linear += this.linearSum[i] * cf.linearSum[i]; 
 		}
 			return Math.sqrt((square - 2.0 * linear) 
 				/ (this.Number * cf.Number));
@@ -104,7 +141,8 @@ public class ClusteringFeature {
 		for(int i = 0; i < this.linearSum.length; i++) {
 			res += 2.0 * this.linearSum[i] * (beta[i] - alpha[i])
 				+  2.0 * cf.linearSum[i] * (gamma[i] - alpha[i])
-				+ alpha[i] * alpha[i] - beta[i] * beta[i] - gamma[i] * gamma[i];
+				+ (cf.Number + this.Number) * alpha[i] * alpha[i] 
+						- this.Number * beta[i] * beta[i] - cf.Number * gamma[i] * gamma[i];
 		}
 
 		return Math.sqrt(res);
@@ -112,7 +150,20 @@ public class ClusteringFeature {
 	
 	public boolean isBelowThreshold(double t) {
 		//System.out.println("is " + this.getDiameter() + " < " + t);
-		return (this.getDiameter() < t);
+		return (this.getDiameter() <= t);
+	}
+	
+	public double getSquareSumError() {
+		double sse = 0.0;
+		for(int i = 0; i < this.linearSum.length; i++) {
+			sse += this.squareSum[i] - 2.0 * this.linearSum[i] * this.linearSum[i] / this.Number 
+					+ this.Number * Math.pow(this.linearSum[i] / this.Number, 2); 
+		}
+		return sse;
+	}
+	
+	public double getRadius() {
+		return Math.sqrt(this.getSquareSumError() / this.Number);
 	}
 	
 	public double getDiameter() {

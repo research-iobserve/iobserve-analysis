@@ -22,7 +22,8 @@ public class BirchClustering extends CompositeStage {
     private final OutputPort<Instances> outputPort;
 	
 	public BirchClustering(final double leafThresholdValue, final int maxLeafSize, 
-			final int maxNodeSize, final int maxLeafEntries) {
+			final int maxNodeSize, final int maxLeafEntries, 
+			int expectedNumberOfClusters, boolean useClusterNumberMetric) {
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         final Distributor<Instances> distributor = new Distributor<>(strategy);
         final IMergerStrategy mergerStrategy = new BlockingBusyWaitingRoundRobinMergerStrategy();
@@ -30,7 +31,8 @@ public class BirchClustering extends CompositeStage {
         final BuildCFTree buildCFTree = new BuildCFTree(leafThresholdValue, maxLeafSize, maxNodeSize);
         final RebuildTree rebuildTree = new RebuildTree(maxLeafEntries);
         final ClusterOnTree clusterOnTree = new ClusterOnTree();
-        final ClusterSelection clusterSelection = new ClusterSelection();
+        final ClusterSelection clusterSelection = 
+        		new ClusterSelection(expectedNumberOfClusters, useClusterNumberMetric);
         final Refinement refinement = new Refinement();
         
         this.inputPort = distributor.getInputPort();

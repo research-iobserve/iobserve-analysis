@@ -188,6 +188,10 @@ public final class ConfigurationKeys {
 	public static final String MAX_NODE_SIZE = ConfigurationKeys.PREFIX + "behavior.birch.maxNodeSize";
 
 	public static final String MAX_LEAF_ENTRIES = ConfigurationKeys.PREFIX + "behavior.birch.maxLeafEntries";
+
+	public static final String EXP_NUM_OF_CLUSTERS = ConfigurationKeys.PREFIX + "behavior.birch.expectedNumberOfClusters";
+
+	public static final String USE_CNM = ConfigurationKeys.PREFIX + "behavior.birch.useClusterNumberMetric";
 	
 
     /**

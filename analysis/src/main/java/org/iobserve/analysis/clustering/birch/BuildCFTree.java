@@ -58,20 +58,23 @@ public class BuildCFTree extends AbstractConsumerStage<Instances> {
     	this.instances = instances;
     	
     	if(this.tree == null)
-    		this.tree = new CFTree(2.0, 5, 5, instances.numAttributes());
+    		this.tree = new CFTree(this.threshold, this.maxLeafSize, this.maxNodeSize, instances.numAttributes());
     	   	
     	//BuildCFTree.LOGGER.debug("Number of instances: " + instances.numAttributes());
     	//BuildCFTree.LOGGER.debug("First instance: ");
+    	BuildCFTree.LOGGER.debug("Start building tree...");
     	for(int j = 0; j < instances.numInstances(); j++) {
-    		Double[] vector = new Double[instances.numAttributes()];
-	    	for(int i = 0; i < instances.numAttributes(); i++) {
-	    		vector[i] = instances.instance(j).value(i);
-	    		//BuildCFTree.LOGGER.debug(vector[i].toString());
-	    	}
-	    	ClusteringFeature cf = new ClusteringFeature(vector);
+//    		Double[] vector = new Double[instances.numAttributes()];
+//	    	for(int i = 0; i < instances.numAttributes(); i++) {
+//	    		vector[i] = instances.instance(j).value(i);
+//	    		//BuildCFTree.LOGGER.debug(vector[i].toString());
+//	    	}
+//	    	ClusteringFeature cf = new ClusteringFeature(vector);
+    		ClusteringFeature cf = new ClusteringFeature(instances.instance(j));
 	    	this.tree.insert(cf);
     	}
     	this.tree.updateLeafChain();
+    	BuildCFTree.LOGGER.debug("Done building tree.");
     }
 
     /*

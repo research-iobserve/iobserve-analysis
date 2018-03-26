@@ -53,8 +53,10 @@ public class Node extends AbstractNode {
 //			System.out.println("Yes, refinement merge commencing...");
 			ProximityMatrix pm = new ProximityMatrix(this.getEntries());
 			if(!pm.isClosestPair(this.entries.indexOf(split), this.entries.indexOf(origin))) {
-				if(this.entries.get(pm.closest1).refinementMerge(this.entries.get(pm.closest2)) == 1)
+				if(this.entries.get(pm.closest1).refinementMerge(this.entries.get(pm.closest2)) == 1) {
 					this.entries.remove(pm.closest2); //closest2 has been absorbed by closest1
+				}
+
 			}
 		}	
 		return Optional.empty();
@@ -81,7 +83,7 @@ public class Node extends AbstractNode {
 	}
 	
 	private Node split() {
-		System.out.println("node is too large!");
+//		System.out.println("node is too large!");
 		ProximityMatrix pm = new ProximityMatrix(this.getEntries());
 		///cfs that are closer to farthest one move to the new leaf, the rest stays put
 		Node second = new Node();

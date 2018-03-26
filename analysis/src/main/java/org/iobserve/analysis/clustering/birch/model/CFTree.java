@@ -22,7 +22,7 @@ public class CFTree {
 		///Egal ob Leaf oder Node: Nach Insert müssen möglicherweise zwei Nodes in einer Node zusammengefasst werden
 		Optional<AbstractNode> split = this.root.insert(cf);
 		if(split.isPresent()) {
-			System.out.println("Split reached root");
+//			System.out.println("Split reached root");
 			Node newRoot = new Node();
 			newRoot.entries.add(this.root);
 			newRoot.entries.add(split.get());
@@ -60,7 +60,7 @@ public class CFTree {
 //		System.out.println("newClosestPath:");
 //		System.out.println(ncp.toString());
 		//Insert in ncp if further ahead and there is place
-		if(ncp.compareTo(newCurrentPath) < 0 && canFit) {
+		if(ncp.compareTo(newCurrentPath) <= 0 && canFit) {
 			//System.out.println("newClosestPath comes first:");
 			//assert(!lf.insert(cf).isPresent());
 			lf.insert(cf);
@@ -143,7 +143,7 @@ public class CFTree {
 	
 	//Leaf at root
 	if (path.size() == 0) {
-		System.out.println("Spezialfall: Tree = Leaf");
+		//System.out.println("Spezialfall: Tree = Leaf");
 		ncp.addFinalNode(this.root);
 		return ncp;
 	}

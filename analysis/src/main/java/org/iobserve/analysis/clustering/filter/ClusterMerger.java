@@ -71,7 +71,7 @@ public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<
                 result.add(instance);
             }
         }
-        this.printInstances(result);
+        //this.printInstances(result);
         this.outputPort.send(result);
     }
 

@@ -35,7 +35,6 @@ public class SessionAcceptanceFilter extends AbstractConsumerStage<UserSession> 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SessionAcceptanceFilter.class);
     private final OutputPort<UserSession> outputPort = this.createOutputPort();
     private final IEntryCallAcceptanceMatcher matcher;
-    private int cnt = 0;
 
     /**
      * Create an acceptance filter with an external matcher.
@@ -54,15 +53,9 @@ public class SessionAcceptanceFilter extends AbstractConsumerStage<UserSession> 
                 return;
             }
         }
-        cnt++;
         this.outputPort.send(session);
     }
-    
-    @Override
-    public void onTerminating() {
-    	SessionAcceptanceFilter.LOGGER.debug("Sent " + cnt + " sessions.");
-        super.onTerminating();
-    }
+
 
     public OutputPort<UserSession> getOutputPort() {
         return this.outputPort;

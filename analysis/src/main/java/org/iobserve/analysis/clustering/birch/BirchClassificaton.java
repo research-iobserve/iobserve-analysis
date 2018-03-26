@@ -60,13 +60,13 @@ public class BirchClassificaton extends CompositeStage {
     public BirchClassificaton(final long keepTime, final int minCollectionSize, 
     		final IRepresentativeStrategy representativeStrategy, final boolean keepEmptyTransitions,
     		final double leafThresholdValue, final int maxLeafSize, final int maxNodeSize,
-    		final int maxLeafEntries) {
+    		final int maxLeafEntries, int expectedNumberOfClusters, boolean useClusterNumberMetric) {
 
         SessionsToInstances sessionsToInstances = new SessionsToInstances(keepTime, minCollectionSize, 
         		representativeStrategy, keepEmptyTransitions);
         BirchClustering birchClustering = new BirchClustering(leafThresholdValue, maxLeafSize,
-        		maxNodeSize, maxLeafEntries);
-        TBehaviorModelCreation tBehaviorModelCreation = new TBehaviorModelCreation("cdor-");   
+        		maxNodeSize, maxLeafEntries, expectedNumberOfClusters, useClusterNumberMetric);
+        TBehaviorModelCreation tBehaviorModelCreation = new TBehaviorModelCreation("birch-");   
 
         
         this.sessionInputPort = sessionsToInstances.getSessionInputPort();

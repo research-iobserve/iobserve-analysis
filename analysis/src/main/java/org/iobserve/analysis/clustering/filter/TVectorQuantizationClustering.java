@@ -52,7 +52,7 @@ public class TVectorQuantizationClustering extends AbstractConsumerStage<Instanc
     @Override
     protected void execute(final Instances instances) {
         final Optional<ClusteringResults> clusteringResults = this.clustering.clusterInstances(instances);
-        clusteringResults.ifPresent(this::printInstances);
+        //clusteringResults.ifPresent(this::printInstances);
         clusteringResults
                 .ifPresent(results -> this.getOutputPort().send(results.getClusteringMetrics().getCentroids()));
 

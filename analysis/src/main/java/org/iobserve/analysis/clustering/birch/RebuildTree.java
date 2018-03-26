@@ -34,7 +34,7 @@ public class RebuildTree extends AbstractConsumerStage<CFTree> {
 		RebuildTree.LOGGER.debug("Leaf entries: " + tree.getNumberOfLeafEntries());
 		if(tree.getNumberOfLeafEntries() > maxLeafEntries) {
 			RebuildTree.LOGGER.debug(tree.getNumberOfLeafEntries() + " entries. Only " + maxLeafEntries + "allowed!");
-			double newTheshold = Math.max(tree.getAvgMinimalLeafDistance(), AbstractNode.MERGE_THRESHOLD * 1.2);
+			double newTheshold = Math.max(tree.getAvgMinimalLeafDistance(), AbstractNode.MERGE_THRESHOLD * 1.10);
 			RebuildTree.LOGGER.debug("Rebuilding tree with threshold = " + newTheshold);
             CFTree newTree = tree.rebuild(newTheshold);
 			//RebuildTree.LOGGER.debug("Rebuilt tree = " + newTree.toString());
