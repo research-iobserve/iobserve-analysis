@@ -22,6 +22,7 @@ import java.util.Set;
 import org.iobserve.adaptation.data.ActionFactory;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.adaptation.data.graph.ModelGraph;
+import org.iobserve.adaptation.testmodel.AdaptationTestModel;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.PCMModelHandlerMockup;
 import org.iobserve.planning.systemadaptation.Action;

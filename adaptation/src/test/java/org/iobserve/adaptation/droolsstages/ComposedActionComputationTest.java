@@ -27,6 +27,7 @@ import org.iobserve.adaptation.data.graph.DeploymentNode;
 import org.iobserve.adaptation.data.graph.GraphFactory;
 import org.iobserve.adaptation.data.graph.ModelGraph;
 import org.iobserve.adaptation.data.graph.ModelGraphRevision;
+import org.iobserve.adaptation.testmodel.AdaptationTestModel;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;

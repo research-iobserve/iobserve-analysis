@@ -38,82 +38,79 @@ import org.palladiosimulator.pcm.repository.RepositoryPackage;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 import de.uka.ipd.sdq.identifier.IdentifierPackage;
-import de.uka.ipd.sdq.probfunction.ProbfunctionPackage;
-import de.uka.ipd.sdq.stoex.StoexPackage;
-import de.uka.ipd.sdq.units.UnitsPackage;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
- * 
+ *
  * @generated
  */
 public class SystemadaptationPackageImpl extends EPackageImpl implements SystemadaptationPackage {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private EClass systemAdaptationEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private EClass actionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private EClass assemblyContextActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private EClass resourceContainerActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private EClass changeRepositoryComponentActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private EClass replicateActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private EClass dereplicateActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private EClass migrateActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private EClass allocateActionEClass = null;
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private EClass deallocateActionEClass = null;
@@ -126,7 +123,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
      * Note: the correct way to create the package is via the static factory method {@link #init
      * init()}, which also performs initialization of the package, or returns the registered
      * package, if one already exists. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see org.eclipse.emf.ecore.EPackage.Registry
      * @see org.iobserve.planning.systemadaptation.SystemadaptationPackage#eNS_URI
      * @see #init()
@@ -138,7 +135,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private static boolean isInited = false;
@@ -151,7 +148,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
      * This method is used to initialize {@link SystemadaptationPackage#eINSTANCE} when that field
      * is accessed. Clients should not invoke it directly. Instead, they should simply access that
      * field to obtain the package. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @see #eNS_URI
      * @see #createPackageContents()
      * @see #initializePackageContents()
@@ -173,9 +170,6 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
         // Initialize simple dependencies
         IdentifierPackage.eINSTANCE.eClass();
         PcmPackage.eINSTANCE.eClass();
-        ProbfunctionPackage.eINSTANCE.eClass();
-        StoexPackage.eINSTANCE.eClass();
-        UnitsPackage.eINSTANCE.eClass();
 
         // Create package meta-data objects
         theSystemadaptationPackage.createPackageContents();
@@ -193,7 +187,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -203,7 +197,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -213,7 +207,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -223,7 +217,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -233,7 +227,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -243,7 +237,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -253,7 +247,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -263,7 +257,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -273,7 +267,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -283,7 +277,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -293,7 +287,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -303,7 +297,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -313,7 +307,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -323,7 +317,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -333,7 +327,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -343,7 +337,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -353,7 +347,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -363,7 +357,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -373,7 +367,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -383,7 +377,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     @Override
@@ -393,7 +387,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private boolean isCreated = false;
@@ -401,7 +395,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     /**
      * Creates the meta-model objects for the package. This method is guarded to have no affect on
      * any invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     public void createPackageContents() {
@@ -450,7 +444,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     private boolean isInitialized = false;
@@ -458,7 +452,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     /**
      * Complete the initialization of the package and its meta-model. This method is guarded to have
      * no affect on any invocation but its first. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     *
      * @generated
      */
     public void initializePackageContents() {
