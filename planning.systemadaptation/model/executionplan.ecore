@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="executionplan" nsURI="http://iobserve.org/ExecutionPlan" nsPrefix="org.iobserve">
+  <eClassifiers xsi:type="ecore:EClass" name="ExecutionPlan"/>
+  <eClassifiers xsi:type="ecore:EClass" name="Action"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AssemblyContextAction" eSuperTypes="#//Action">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceAssemblyContext"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//core/composition/AssemblyContext"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="ResourceContainerAction" eSuperTypes="#//Action">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceResourceContainer"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="DeployACAction" eSuperTypes="#//AssemblyContextAction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetResourceContainer"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="UndeployACAction" eSuperTypes="#//AssemblyContextAction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceResourceContainer"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"/>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="MigrateACStateAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConnectACAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="BlockACRequestsAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DisconnectACAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="FinishACAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AllocateRCAction" eSuperTypes="#//ResourceContainerAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DeallocateRCAction" eSuperTypes="#//ResourceContainerAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConnectRCAction" eSuperTypes="#//ResourceContainerAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DisconnectRCAction" eSuperTypes="#//ResourceContainerAction"/>
+</ecore:EPackage>
