@@ -23,7 +23,8 @@ import org.iobserve.common.record.ServletDeployedEvent;
  * @author Reiner Jung
  *
  */
-public class ImplementationLevelDataFactory {
+public final class ImplementationLevelDataFactory {
+	
     public static final long DEPLOY_TIME = 1;
     public static final String SERVICE = "test-service";
     public static final String CONTEXT = "/path/test";
@@ -38,6 +39,10 @@ public class ImplementationLevelDataFactory {
     public static final ContainerAllocationEvent CONTAINER_ALLOCATION_EVENT = ImplementationLevelDataFactory
             .createContainerAllocationEvent();
 
+    private ImplementationLevelDataFactory() {
+    	// empty final constructor for factory
+    }
+    
     private static ServletDeployedEvent createServletDeployedEvent() {
         return new ServletDeployedEvent(ImplementationLevelDataFactory.DEPLOY_TIME, ImplementationLevelDataFactory.SERVICE,
                 ImplementationLevelDataFactory.CONTEXT, ImplementationLevelDataFactory.DEPLOYMENT_ID);
