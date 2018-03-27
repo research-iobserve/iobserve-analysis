@@ -25,7 +25,8 @@ import org.iobserve.adaptation.data.graph.ModelGraph;
 import org.iobserve.adaptation.testmodel.AdaptationTestModel;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.PCMModelHandlerMockup;
-import org.iobserve.planning.systemadaptation.Action;
+import org.iobserve.planning.systemadaptation.SystemAdaptation;
+import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
 import org.kie.api.KieServices;
 import org.kie.api.command.Command;
 import org.kie.api.command.KieCommands;
@@ -42,7 +43,7 @@ import teetime.stage.basic.AbstractTransformation;
  * @author Lars Bluemke
  *
  */
-public class ComposedActionComputation extends AbstractTransformation<AdaptationData, List<Action>> {
+public class ComposedActionComputation extends AbstractTransformation<AdaptationData, SystemAdaptation> {
     static final String ADAPTATION_ACTION_LIST_ID = "composedAdaptationActions";
 
     final KieServices kieServices = KieServices.Factory.get();
@@ -85,7 +86,7 @@ public class ComposedActionComputation extends AbstractTransformation<Adaptation
         final ModelGraph runtimeGraph = adaptationData.getRuntimeGraph();
         final ModelGraph redeploymentGraph = adaptationData.getReDeploymentGraph();
         final List<Command<?>> workingMemoryInserts = new ArrayList<>();
-        final List<Action> composedAdaptationActions = new ArrayList<>();
+        final SystemAdaptation systemAdaptationModel = SystemadaptationFactory.eINSTANCE.createSystemAdaptation();
 
         // Set up ActionFactory because the rule engine will invoke it
         if (!this.isTestRun) {
@@ -94,7 +95,7 @@ public class ComposedActionComputation extends AbstractTransformation<Adaptation
         }
 
         // Add empty list of composed adaptation actions (will be filled by rule engine)
-        workingMemoryInserts.add(this.kieCommands.newInsert(composedAdaptationActions));
+        workingMemoryInserts.add(this.kieCommands.newInsert(systemAdaptationModel));
 
         // Add component nodes and deployment nodes of runtime and redeployment model graph
         this.addToWorkingMemoryInserts(workingMemoryInserts, runtimeGraph.getComponents());
@@ -105,7 +106,7 @@ public class ComposedActionComputation extends AbstractTransformation<Adaptation
         // Execute rule engine which will add actions to composedAdaptationActions
         this.kSession.execute(this.kieCommands.newBatchExecution(workingMemoryInserts));
 
-        this.outputPort.send(composedAdaptationActions);
+        this.outputPort.send(systemAdaptationModel);
     }
 
     private void addToWorkingMemoryInserts(final List<Command<?>> inserts, final Set<?> graphComponents) {

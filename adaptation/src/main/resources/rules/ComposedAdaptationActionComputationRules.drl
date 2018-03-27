@@ -1,11 +1,11 @@
 package org.iobserve.adaptation.droolsstages
 
-import java.util.ArrayList
 import org.iobserve.adaptation.data.AssemblyContextActionFactory
 import org.iobserve.adaptation.data.ResourceContainerActionFactory
 import org.iobserve.adaptation.data.graph.ComponentNode
 import org.iobserve.adaptation.data.graph.DeploymentNode
 import org.iobserve.adaptation.data.graph.ModelGraphRevision
+import org.iobserve.planning.systemadaptation.SystemAdaptation
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@ import org.iobserve.adaptation.data.graph.ModelGraphRevision
 rule "Create replication action"
 	salience 0
 when
-	$composedAdaptationActions : ArrayList()
+	$systemAdaptationModel : SystemAdaptation()
     
     $redplNode : ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT)
     
@@ -25,28 +25,31 @@ when
     		repositoryComponentID == $redplNode.getRepositoryComponentID()) 
 then
 	System.out.println("Found a replication!");
-    $composedAdaptationActions.add(AssemblyContextActionFactory.generateReplicateAction($runtimeNode, $redplNode));
+    $systemAdaptationModel.getActions()
+    		.add(AssemblyContextActionFactory.generateReplicateAction($runtimeNode, $redplNode));
 end
 
 
 rule "Create dereplication action"
 	salience 0
 when
-	$composedAdaptationActions : ArrayList()
+	$systemAdaptationModel : SystemAdaptation()
     
     $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
     
-    not ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, assemblyContextID == $runtimeNode.getAssemblyContextID())
+    not ComponentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
+    		assemblyContextID == $runtimeNode.getAssemblyContextID())
 then
 	System.out.println("Found a dereplication!");
-    $composedAdaptationActions.add(AssemblyContextActionFactory.generateDereplicateAction($runtimeNode));
+    $systemAdaptationModel.getActions()
+    		.add(AssemblyContextActionFactory.generateDereplicateAction($runtimeNode));
 end
 
 
 rule "Create migration action"
 	salience 0
 when
-	$composedAdaptationActions : ArrayList()
+	$systemAdaptationModel : SystemAdaptation()
     
     $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
     
@@ -54,15 +57,17 @@ when
     		assemblyContextID == $runtimeNode.getAssemblyContextID(),
     		hostServer.getResourceContainerID() != $runtimeNode.getHostServer().getResourceContainerID())
 then
-	System.out.println("Found a migration! " +  $runtimeNode.getAssemblyName() + "@" + $runtimeNode.getHostServer().getResourceContainerName() +
-	" - " + $redplNode.getAssemblyName() + "@" + $redplNode.getHostServer().getResourceContainerName());
-    $composedAdaptationActions.add(AssemblyContextActionFactory.generateMigrateAction($runtimeNode, $redplNode));
+	System.out.println("Found a migration! " +  $runtimeNode.getAssemblyName() + "@"
+		 + $runtimeNode.getHostServer().getResourceContainerName() + " - " + $redplNode.getAssemblyName()
+		 	 + "@" + $redplNode.getHostServer().getResourceContainerName());
+    $systemAdaptationModel.getActions()
+    		.add(AssemblyContextActionFactory.generateMigrateAction($runtimeNode, $redplNode));
 end
 
 rule "Create change repository action"
 	salience 0
 when
-	$composedAdaptationActions : ArrayList()
+	$systemAdaptationModel : SystemAdaptation()
     
     $runtimeNode : ComponentNode(revision == ModelGraphRevision.RUNTIME)
     
@@ -71,7 +76,7 @@ when
     		repositoryComponentID != $runtimeNode.getRepositoryComponentID())
 then
 	System.out.println("Found a change of repository component!");
-    $composedAdaptationActions.add(AssemblyContextActionFactory
+    $systemAdaptationModel.getActions().add(AssemblyContextActionFactory
     		.generateChangeRepositoryComponentAction($runtimeNode, $redplNode));
 end
 
@@ -84,25 +89,26 @@ end
 rule "Create allocation action"
 	salience 1
 when
-	$composedAdaptationActions : ArrayList()
+	$systemAdaptationModel : SystemAdaptation()
     
     $redplNode : DeploymentNode(revision == ModelGraphRevision.REDEPLOYMENT)
     
     not DeploymentNode(revision == ModelGraphRevision.RUNTIME, resourceContainerID == $redplNode.getResourceContainerID)
 then
 	System.out.println("Found an allocation! " + $redplNode.getResourceContainerName());
-    $composedAdaptationActions.add(ResourceContainerActionFactory.createAllocateAction($redplNode));
+    $systemAdaptationModel.getActions().add(ResourceContainerActionFactory.createAllocateAction($redplNode));
 end
 
 rule "Create deallocation action"
 	salience -1
 when
-	$composedAdaptationActions : ArrayList()
+	$systemAdaptationModel : SystemAdaptation()
     
     $runtimeNode : DeploymentNode(revision == ModelGraphRevision.RUNTIME)
     
-    not DeploymentNode(revision == ModelGraphRevision.REDEPLOYMENT, resourceContainerID == $runtimeNode.getResourceContainerID)
+    not DeploymentNode(revision == ModelGraphRevision.REDEPLOYMENT, 
+    	resourceContainerID == $runtimeNode.getResourceContainerID)
 then
 	System.out.println("Found a deallocation! " + $runtimeNode.getResourceContainerName());
-    $composedAdaptationActions.add(ResourceContainerActionFactory.createDeallocateAction($runtimeNode));
+    $systemAdaptationModel.getActions().add(ResourceContainerActionFactory.createDeallocateAction($runtimeNode));
 end

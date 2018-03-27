@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.adaptation.droolsstages;
 
-import java.util.List;
 import java.util.Set;
 
 import org.hamcrest.Matchers;
@@ -28,13 +27,13 @@ import org.iobserve.adaptation.data.graph.GraphFactory;
 import org.iobserve.adaptation.data.graph.ModelGraph;
 import org.iobserve.adaptation.data.graph.ModelGraphRevision;
 import org.iobserve.adaptation.testmodel.AdaptationTestModel;
-import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
+import org.iobserve.planning.systemadaptation.SystemAdaptation;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -69,7 +68,7 @@ public class ComposedActionComputationTest {
         final AdaptationData adaptationData;
         final ComponentNode runtimeNode;
         final ComponentNode redeploymentNode;
-        final List<Action> actualOutput;
+        final SystemAdaptation actualOutput;
         final ReplicateAction actualAction;
         final ReplicateAction expectedAction;
 
@@ -87,10 +86,10 @@ public class ComposedActionComputationTest {
         // Execute stage
         actualOutput = this.executeStage(adaptationData);
 
-        Assert.assertThat(actualOutput.size(), Matchers.is(1));
-        Assert.assertTrue(actualOutput.get(0) instanceof ReplicateAction);
+        Assert.assertThat(actualOutput.getActions().size(), Matchers.is(1));
+        Assert.assertTrue(actualOutput.getActions().get(0) instanceof ReplicateAction);
 
-        actualAction = (ReplicateAction) actualOutput.get(0);
+        actualAction = (ReplicateAction) actualOutput.getActions().get(0);
 
         Assert.assertThat(actualAction.getNewAllocationContext(),
                 Matchers.is(expectedAction.getNewAllocationContext()));
@@ -103,7 +102,7 @@ public class ComposedActionComputationTest {
     public void testDereplicationRule() throws Exception {
         final AdaptationData adaptationData;
         final ComponentNode runtimeNode;
-        final List<Action> actualOutput;
+        final SystemAdaptation actualOutput;
         final DereplicateAction actualAction;
         final DereplicateAction expectedAction;
 
@@ -119,10 +118,10 @@ public class ComposedActionComputationTest {
         // Execute stage
         actualOutput = this.executeStage(adaptationData);
 
-        Assert.assertThat(actualOutput.size(), Matchers.is(1));
-        Assert.assertTrue(actualOutput.get(0) instanceof DereplicateAction);
+        Assert.assertThat(actualOutput.getActions().size(), Matchers.is(1));
+        Assert.assertTrue(actualOutput.getActions().get(0) instanceof DereplicateAction);
 
-        actualAction = (DereplicateAction) actualOutput.get(0);
+        actualAction = (DereplicateAction) actualOutput.getActions().get(0);
 
         Assert.assertThat(actualAction.getOldAllocationContext(),
                 Matchers.is(expectedAction.getOldAllocationContext()));
@@ -136,7 +135,7 @@ public class ComposedActionComputationTest {
         final AdaptationData adaptationData;
         final ComponentNode runtimeNode;
         final ComponentNode redeploymentNode;
-        final List<Action> actualOutput;
+        final SystemAdaptation actualOutput;
         final MigrateAction actualAction;
         final MigrateAction expectedAction;
 
@@ -154,10 +153,10 @@ public class ComposedActionComputationTest {
         // Execute stage
         actualOutput = this.executeStage(adaptationData);
 
-        Assert.assertThat(actualOutput.size(), Matchers.is(1));
-        Assert.assertTrue(actualOutput.get(0) instanceof MigrateAction);
+        Assert.assertThat(actualOutput.getActions().size(), Matchers.is(1));
+        Assert.assertTrue(actualOutput.getActions().get(0) instanceof MigrateAction);
 
-        actualAction = (MigrateAction) actualOutput.get(0);
+        actualAction = (MigrateAction) actualOutput.getActions().get(0);
 
         Assert.assertThat(actualAction.getNewAllocationContext(),
                 Matchers.is(expectedAction.getNewAllocationContext()));
@@ -173,7 +172,7 @@ public class ComposedActionComputationTest {
         final AdaptationData adaptationData;
         final ComponentNode runtimeNode;
         final ComponentNode redeploymentNode;
-        final List<Action> actualOutput;
+        final SystemAdaptation actualOutput;
         final ChangeRepositoryComponentAction actualAction;
         final ChangeRepositoryComponentAction expectedAction;
 
@@ -192,10 +191,10 @@ public class ComposedActionComputationTest {
         // Execute stage
         actualOutput = this.executeStage(adaptationData);
 
-        Assert.assertThat(actualOutput.size(), Matchers.is(1));
-        Assert.assertTrue(actualOutput.get(0) instanceof ChangeRepositoryComponentAction);
+        Assert.assertThat(actualOutput.getActions().size(), Matchers.is(1));
+        Assert.assertTrue(actualOutput.getActions().get(0) instanceof ChangeRepositoryComponentAction);
 
-        actualAction = (ChangeRepositoryComponentAction) actualOutput.get(0);
+        actualAction = (ChangeRepositoryComponentAction) actualOutput.getActions().get(0);
 
         Assert.assertThat(actualAction.getNewRepositoryComponent(),
                 Matchers.is(expectedAction.getNewRepositoryComponent()));
@@ -208,7 +207,7 @@ public class ComposedActionComputationTest {
     public void testAllocateRule() throws Exception {
         final AdaptationData adaptationData;
         final DeploymentNode redeploymentNode;
-        final List<Action> actualOutput;
+        final SystemAdaptation actualOutput;
         final AllocateAction actualAction;
         final AllocateAction expectedAction;
 
@@ -224,10 +223,10 @@ public class ComposedActionComputationTest {
         // Execute stage
         actualOutput = this.executeStage(adaptationData);
 
-        Assert.assertThat(actualOutput.size(), Matchers.is(1));
-        Assert.assertTrue(actualOutput.get(0) instanceof AllocateAction);
+        Assert.assertThat(actualOutput.getActions().size(), Matchers.is(1));
+        Assert.assertTrue(actualOutput.getActions().get(0) instanceof AllocateAction);
 
-        actualAction = (AllocateAction) actualOutput.get(0);
+        actualAction = (AllocateAction) actualOutput.getActions().get(0);
 
         Assert.assertThat(actualAction.getResourceContainer(), Matchers.is(expectedAction.getResourceContainer()));
         Assert.assertThat(actualAction.getSourceResourceContainer(),
@@ -238,7 +237,7 @@ public class ComposedActionComputationTest {
     public void testDeallocateRule() throws Exception {
         final AdaptationData adaptationData;
         final DeploymentNode runtimeNode;
-        final List<Action> actualOutput;
+        final SystemAdaptation actualOutput;
         final DeallocateAction actualAction;
         final DeallocateAction expectedAction;
 
@@ -254,10 +253,10 @@ public class ComposedActionComputationTest {
         // Execute stage
         actualOutput = this.executeStage(adaptationData);
 
-        Assert.assertThat(actualOutput.size(), Matchers.is(1));
-        Assert.assertTrue(actualOutput.get(0) instanceof DeallocateAction);
+        Assert.assertThat(actualOutput.getActions().size(), Matchers.is(1));
+        Assert.assertTrue(actualOutput.getActions().get(0) instanceof DeallocateAction);
 
-        actualAction = (DeallocateAction) actualOutput.get(0);
+        actualAction = (DeallocateAction) actualOutput.getActions().get(0);
 
         Assert.assertThat(actualAction.getResourceContainer(), Matchers.is(expectedAction.getResourceContainer()));
         Assert.assertThat(actualAction.getSourceResourceContainer(),
@@ -305,11 +304,11 @@ public class ComposedActionComputationTest {
         return null;
     }
 
-    private List<Action> executeStage(final AdaptationData adaptationData) {
+    private SystemAdaptation executeStage(final AdaptationData adaptationData) {
         final InitialElementProducer<AdaptationData> producer = new InitialElementProducer<>(adaptationData);
         final ComposedActionComputation composedActionComputation = new ComposedActionComputation(this.runtimeModel,
                 this.redeploymentModel);
-        final CollectorSink<List<Action>> collector = new CollectorSink<>();
+        final CollectorSink<SystemAdaptation> collector = new CollectorSink<>();
         final ComposedActionComputationTestConfig configuration = new ComposedActionComputationTestConfig(producer,
                 composedActionComputation, collector);
         final Execution<ComposedActionComputationTestConfig> execution = new Execution<>(configuration);

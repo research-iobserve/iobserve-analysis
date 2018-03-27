@@ -15,10 +15,8 @@
  ***************************************************************************/
 package org.iobserve.adaptation.droolsstages;
 
-import java.util.List;
-
 import org.iobserve.adaptation.data.ExecutionPlan;
-import org.iobserve.planning.systemadaptation.Action;
+import org.iobserve.planning.systemadaptation.SystemAdaptation;
 
 import teetime.stage.basic.AbstractTransformation;
 
@@ -29,10 +27,10 @@ import teetime.stage.basic.AbstractTransformation;
  * @author Lars Bluemke
  *
  */
-public class AtomicActionComputation extends AbstractTransformation<List<Action>, ExecutionPlan> {
+public class AtomicActionComputation extends AbstractTransformation<SystemAdaptation, ExecutionPlan> {
 
     @Override
-    protected void execute(final List<Action> element) throws Exception {
+    protected void execute(final SystemAdaptation systemAdaptationModel) throws Exception {
         // TODO Auto-generated method stub
 
     }

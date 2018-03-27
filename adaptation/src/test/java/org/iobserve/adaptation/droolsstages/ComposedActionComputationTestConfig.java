@@ -15,10 +15,8 @@
  ***************************************************************************/
 package org.iobserve.adaptation.droolsstages;
 
-import java.util.List;
-
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.planning.systemadaptation.Action;
+import org.iobserve.planning.systemadaptation.SystemAdaptation;
 
 import teetime.framework.Configuration;
 import teetime.framework.test.StageTester;
@@ -36,7 +34,8 @@ import teetime.stage.InitialElementProducer;
 public class ComposedActionComputationTestConfig extends Configuration {
 
     public ComposedActionComputationTestConfig(final InitialElementProducer<AdaptationData> producer,
-            final ComposedActionComputation composedActionComputation, final CollectorSink<List<Action>> collector) {
+            final ComposedActionComputation composedActionComputation,
+            final CollectorSink<SystemAdaptation> collector) {
         this.connectPorts(producer.getOutputPort(), composedActionComputation.getInputPort());
         this.connectPorts(composedActionComputation.getOutputPort(), collector.getInputPort());
     }
