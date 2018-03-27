@@ -18,8 +18,6 @@ package org.iobserve.stages.general;
 import java.util.ArrayList;
 import java.util.List;
 
-import kieker.common.logging.Log; // NOCS test
-import kieker.common.logging.LogFactory; // NOCS test
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.IRecordReceivedListener;
 import kieker.common.record.tcp.SingleSocketRecordReader;
@@ -34,6 +32,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests the different results of the {@link ProbeControlFilter}.
@@ -42,7 +42,7 @@ import org.junit.Test;
  *
  */
 public class ProbeControlFilterTest {
-    private static final Log LOG = LogFactory.getLog(ProbeControlFilterTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProbeControlFilterTest.class);
 
     private static final int BUFFER_SIZE = 65535;
 
@@ -78,7 +78,7 @@ public class ProbeControlFilterTest {
             ProbeControlFilterTest.port++;
 
             this.tcpReader = new SingleSocketRecordReader(ProbeControlFilterTest.port,
-                    ProbeControlFilterTest.BUFFER_SIZE, ProbeControlFilterTest.LOG, listener);
+                    ProbeControlFilterTest.BUFFER_SIZE, ProbeControlFilterTest.LOGGER, listener);
             new Thread(this.tcpReader).start();
 
             this.probeControlFilter = new ProbeControlFilter();

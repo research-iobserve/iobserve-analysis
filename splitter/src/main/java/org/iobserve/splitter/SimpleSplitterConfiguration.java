@@ -20,12 +20,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
 import kieker.monitoring.core.configuration.ConfigurationKeys;
 import kieker.monitoring.writer.filesystem.FileWriter;
 
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
-import teetime.stage.className.ClassNameRegistryRepository;
 
 import org.iobserve.stages.sink.DataDumpStage;
 import org.iobserve.stages.source.Dir2RecordsFilter;

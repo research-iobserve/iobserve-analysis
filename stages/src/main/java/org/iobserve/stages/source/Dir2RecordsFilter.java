@@ -19,23 +19,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryCreationFilter;
+import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
+import kieker.analysisteetime.plugin.reader.filesystem.format.binary.file.BinaryFile2RecordFilter;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.util.filesystem.BinaryCompressionMethod;
 import kieker.common.util.filesystem.FSUtil;
+
 import teetime.framework.AbstractStage;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 import teetime.stage.FileExtensionSwitch;
 import teetime.stage.basic.merger.Merger;
-import teetime.stage.className.ClassNameRegistryCreationFilter;
-import teetime.stage.className.ClassNameRegistryRepository;
 import teetime.stage.io.Directory2FilesFilter;
-import teetime.stage.io.filesystem.format.binary.file.BinaryFile2RecordFilter;
-import teetime.stage.io.filesystem.format.text.file.DatFile2RecordFilter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /** Note: This is a temporary measure, the real filter is available in teetime/kieker. */
 /**
@@ -87,7 +87,8 @@ public final class Dir2RecordsFilter extends CompositeStage {
 
         final FileExtensionSwitch fileExtensionSwitch = new FileExtensionSwitch();
 
-        final DatFile2RecordFilter datFile2RecordFilter = new DatFile2RecordFilter(this.classNameRegistryRepository);
+        final DatFileToRecordStage datFile2RecordFilter = new DatFileToRecordStage(this.classNameRegistryRepository,
+                "UTF-8");
         final BinaryFile2RecordFilter binaryFile2RecordFilter = new BinaryFile2RecordFilter(
                 this.classNameRegistryRepository);
 
