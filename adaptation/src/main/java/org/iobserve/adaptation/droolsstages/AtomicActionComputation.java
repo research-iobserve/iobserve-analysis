@@ -15,14 +15,14 @@
  ***************************************************************************/
 package org.iobserve.adaptation.droolsstages;
 
-import org.iobserve.adaptation.data.ExecutionPlan;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
 
 import teetime.stage.basic.AbstractTransformation;
 
 /**
- * Receives a list of composed adaptation actions and computes the required atomic adaptation
- * actions - the execution plan - which is passed to the output port.
+ * Receives a {@link SystemAdaptation} model containing a list of composed adaptation actions and
+ * computes the required atomic adaptation actions - the execution plan - which is passed to the
+ * output port.
  *
  * @author Lars Bluemke
  *

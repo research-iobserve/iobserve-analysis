@@ -37,8 +37,9 @@ import teetime.stage.basic.AbstractTransformation;
 
 /**
  * Receives an AdaptationData record containing the runtime model graph as well as the redeployment
- * model graph. Inserts both graphs into the drools rule engine and receives a list of composed
- * (high-level) adaptation actions which is passed to the output port.
+ * model graph. Inserts both graphs into the drools rule engine and receives a
+ * {@link SystemAdaptation} model containing a list of composed (high-level) adaptation actions
+ * which is passed to the output port.
  *
  * @author Lars Bluemke
  *
