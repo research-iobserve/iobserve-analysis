@@ -124,6 +124,7 @@ subprojects {
 
     repositories {
 		mavenLocal()
+		maven {url project.properties['api.baseline']}
 		mavenCentral()
 		jcenter()
 		maven {url "https://repo.eclipse.org/content/groups/releases/" }
@@ -139,7 +140,6 @@ subprojects {
 		maven {url "http://mvnrepository.com/artifact/commons-daemon/commons-daemon"}
 		maven {url "http://mvnrepository.com/artifact/commons-cli/commons-cli"}
 		maven {url "https://mvnrepository.com/artifact/org.antlr/antlr-runtime"}
-		maven {url project.properties['api.baseline']}
     }
 
     ext {

@@ -186,8 +186,9 @@ public class DatFileToRecordStage extends AbstractTransformation<File, IMonitori
             }
             final long loggingTimestamp = deserializer.getLong();
             final IRecordFactory<? extends IMonitoringRecord> recordFactory = this.recordFactories.get(classname);
-
-            this.outputPort.send(recordFactory.create(deserializer));
+            final IMonitoringRecord event = recordFactory.create(deserializer);
+            event.setLoggingTimestamp(loggingTimestamp);
+            this.outputPort.send(event);
             this.charBuffer.clear();
         }
     }
