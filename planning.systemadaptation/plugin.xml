@@ -36,4 +36,12 @@
             class="org.iobserve.planning.systemadaptation.util.SystemadaptationResourceFactoryImpl"/>
    </extension>
 
+   <extension point="org.eclipse.emf.ecore.generated_package">
+      <!-- @generated executionplan -->
+      <package
+            uri="http://iobserve.org/ExecutionPlan"
+            class="org.iobserve.adaptation.executionplan.ExecutionplanPackage"
+            genModel="model/executionplan.genmodel"/>
+   </extension>
+
 </plugin>

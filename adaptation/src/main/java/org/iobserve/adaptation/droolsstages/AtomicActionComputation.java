@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.adaptation.droolsstages;
 
+import org.iobserve.adaptation.executionplan.ExecutionPlan;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
 
 import teetime.stage.basic.AbstractTransformation;
