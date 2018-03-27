@@ -23,8 +23,8 @@ import javax.xml.bind.JAXB;
 
 import teetime.framework.AbstractConsumerStage;
 
-import org.iobserve.analysis.protocom.PcmEntity;
-import org.iobserve.analysis.protocom.PcmMapping;
+import org.iobserve.model.protocom.PcmEntity;
+import org.iobserve.model.protocom.PcmMapping;
 
 /**
  *

@@ -65,7 +65,7 @@ public class ProbeControlFilterTest {
      * Setup the test.
      */
     @Before
-    public void testSetup() {
+    public void setUp() {
         synchronized (this) {
             final IRecordReceivedListener listener = new IRecordReceivedListener() {
 
@@ -90,7 +90,7 @@ public class ProbeControlFilterTest {
      */
     @Test
     public void getValidControlEventTest() {
-        final String ip = "127.0.0.1";
+        final String ip = "127.0.0.1"; // NOPMD localhost is required here
         final String hostname = "test.host";
         final AbstractTcpControlEvent controlEvent = new TcpActivationControlEvent(ip, ProbeControlFilterTest.port,
                 hostname, ProbeControlFilterTest.PATTERN);
@@ -110,7 +110,7 @@ public class ProbeControlFilterTest {
      */
     @Test(timeout = 300)
     public void getInvalidControlEventTest() {
-        final String ip = "1.2.3.4";
+        final String ip = "1.2.3.4"; // NOPMD fake ip as string is necessary
         final String hostname = "test.host";
         final AbstractTcpControlEvent controlEvent = new TcpActivationControlEvent(ip, ProbeControlFilterTest.port,
                 hostname, ProbeControlFilterTest.PATTERN);

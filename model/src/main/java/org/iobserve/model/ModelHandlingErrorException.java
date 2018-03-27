@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,4 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.snapshot;
+package org.iobserve.model;
+
+/**
+ * Initialization errors in the model handling parts.
+ *
+ * @author Reiner Jung
+ *
+ * @since 0.0.3
+ */
+public class ModelHandlingErrorException extends Exception {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = 8505613165688151864L;
+
+    /**
+     * Create an exception.
+     *
+     * @param message
+     *            message to be displayed
+     */
+    public ModelHandlingErrorException(final String message) {
+        super(message);
+    }
+
+}

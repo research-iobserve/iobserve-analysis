@@ -37,8 +37,7 @@ import org.slf4j.LoggerFactory;
  */
 public class TcpProbeControllerTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TcpProbeControllerTest.class); // NOPMD
-    // controller
+    private static final Logger LOGGER = LoggerFactory.getLogger(TcpProbeControllerTest.class);
 
     private static final int BUFFER_SIZE = 65535;
     private static final String ARBITRARY_IP = "90.90.90.90"; // NOPMD do not code IP addresses

@@ -26,13 +26,14 @@ import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.iobserve.analysis.snapshot.SnapshotBuilder;
+import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.factory.DesignDecisionModelFactory;
 import org.iobserve.model.provider.file.AllocationModelHandler;
 import org.iobserve.model.provider.file.CostModelHandler;
 import org.iobserve.model.provider.file.DesignDecisionModelHandler;
 import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
+import org.iobserve.model.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.AllocationGroup;
 import org.iobserve.planning.data.AllocationGroupsContainer;
 import org.iobserve.planning.data.PlanningData;
@@ -108,8 +109,10 @@ public class ModelTransformer {
      *             if an error occured while saving the models
      * @throws InitializationException
      *             if an error occurred during snapshot generation
+     * @throws ModelHandlingErrorException
+     *             model handling error
      */
-    public void transformModel() throws IOException, InitializationException {
+    public void transformModel() throws IOException, InitializationException, ModelHandlingErrorException {
         this.initModelTransformation();
         this.clearUnneededElements();
         this.rebuildEnvironment();
@@ -149,7 +152,7 @@ public class ModelTransformer {
         this.clearCloudResourcesFromResourceEnv();
     }
 
-    private void rebuildEnvironment() {
+    private void rebuildEnvironment() throws ModelHandlingErrorException {
         for (final AllocationGroup allocationGroup : this.originalAllocationGroups.getAllocationGroups()) {
             final AllocationContext representingContext = allocationGroup.getRepresentingContext();
 
@@ -183,7 +186,8 @@ public class ModelTransformer {
                 this.resourceEnvironmentModel);
     }
 
-    private void createResourcesAndReplicationDegrees(final AllocationGroup allocationGroup) {
+    private void createResourcesAndReplicationDegrees(final AllocationGroup allocationGroup)
+            throws ModelHandlingErrorException {
         final CloudProfile profile = this.cloudProfileModel;
         final ResourceEnvironment environment = this.resourceEnvironmentModel;
         final CostRepository costs = this.costModel;

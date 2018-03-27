@@ -19,7 +19,7 @@ import java.io.FileInputStream;
 
 import javax.xml.bind.JAXB;
 
-import org.iobserve.analysis.protocom.PcmMapping;
+import org.iobserve.model.protocom.PcmMapping;
 import org.iobserve.model.utils.StringUtils;
 
 /**
@@ -73,6 +73,7 @@ public final class CorrespondeceModelFactory {
         final PcmMapping mapping = this.getMapping(pathMappingFile);
         final CorrespondenceModelImpl rac = new CorrespondenceModelImpl(mapping);
         rac.initMapping();
+
         return rac;
     }
 

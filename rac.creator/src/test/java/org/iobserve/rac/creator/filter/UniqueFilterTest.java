@@ -27,6 +27,7 @@ import org.junit.Test;
 /**
  * @author Reiner Jung
  *
+ * @since 0.0.1
  */
 public class UniqueFilterTest { // NOCS test does not need default constructor
 
