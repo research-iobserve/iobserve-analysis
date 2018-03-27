@@ -29,6 +29,7 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.common.record.SessionEndEvent;
+import org.iobserve.common.record.SessionStartEvent;
 
 /**
  * Filter collects all events until it receives an EmptyRecord. Then it flushes out all sessions and
@@ -50,7 +51,9 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
 
     @Override
     protected void execute(final IMonitoringRecord event) throws Exception {
-        if (event instanceof TraceMetadata) {
+        if (event instanceof SessionStartEvent) {
+            this.receiveSessionStartEvent((SessionStartEvent) event);
+        } else if (event instanceof TraceMetadata) {
             this.receiveTraceMetadata((TraceMetadata) event);
         } else if (event instanceof ITraceRecord) {
             this.receiveTraceRecord((ITraceRecord) event);
@@ -61,11 +64,23 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
         this.allRecords.add(event);
     }
 
+    private void receiveSessionStartEvent(final SessionStartEvent event) {
+        List<IMonitoringRecord> recordList = this.sessionRecords.get(event.getSessionId());
+        if (recordList == null) { /** new session. */
+            recordList = new ArrayList<>();
+        }
+        recordList.add(event);
+        this.sessionRecords.put(event.getSessionId(), recordList);
+    }
+
     private void receiveTraceMetadata(final TraceMetadata traceMetadata) {
         if (this.traceIdMap.get(traceMetadata.getTraceId()) == null) {
             this.traceIdMap.put(traceMetadata.getTraceId(), traceMetadata.getSessionId());
 
-            final List<IMonitoringRecord> recordList = new ArrayList<>();
+            List<IMonitoringRecord> recordList = this.sessionRecords.get(traceMetadata.getSessionId());
+            if (recordList == null) {
+                recordList = new ArrayList<>();
+            }
             recordList.add(traceMetadata);
 
             /** copy stash. */
@@ -110,8 +125,16 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
 
                 if (firstLast != null) {
                     if (firstLast.getLast() == traceEvent) {
-                        this.outputPort.send(new SessionEndEvent(firstLast.getLast().getLoggingTimestamp(),
-                                firstLast.getFirst().getHostname(), firstLast.getFirst().getSessionId()));
+                        if (firstLast.getFirst() instanceof SessionStartEvent) {
+                            final SessionStartEvent sessionStartEvent = (SessionStartEvent) firstLast.getFirst();
+                            this.outputPort.send(new SessionEndEvent(firstLast.getLast().getLoggingTimestamp(),
+                                    sessionStartEvent.getHostname(), sessionStartEvent.getSessionId()));
+                        } else if (firstLast.getFirst() instanceof TraceMetadata) {
+                            final TraceMetadata metadata = (TraceMetadata) firstLast.getFirst();
+                            this.outputPort.send(new SessionEndEvent(firstLast.getLast().getLoggingTimestamp(),
+                                    metadata.getHostname(), metadata.getSessionId()));
+                        }
+
                     }
                 }
             } else {
@@ -126,7 +149,7 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
         if (sessionId != null) {
             final List<IMonitoringRecord> records = this.sessionRecords.get(sessionId);
 
-            return new Pair((TraceMetadata) records.get(0), (ITraceRecord) records.get(records.size() - 1));
+            return new Pair(records.get(0), (ITraceRecord) records.get(records.size() - 1));
         } else {
             return null;
         }

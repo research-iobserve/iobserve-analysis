@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.reconstructor;
 
+import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.ITraceRecord;
-import kieker.common.record.flow.trace.TraceMetadata;
 
 /**
  * @author Reiner Jung
@@ -24,16 +24,16 @@ import kieker.common.record.flow.trace.TraceMetadata;
  */
 public class Pair {
 
-    private final TraceMetadata first;
+    private final IMonitoringRecord first;
 
     private final ITraceRecord last;
 
-    public Pair(final TraceMetadata first, final ITraceRecord last) {
+    public Pair(final IMonitoringRecord first, final ITraceRecord last) {
         this.first = first;
         this.last = last;
     }
 
-    public final TraceMetadata getFirst() {
+    public final IMonitoringRecord getFirst() {
         return this.first;
     }
 
