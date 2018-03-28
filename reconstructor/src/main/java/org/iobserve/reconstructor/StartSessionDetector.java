@@ -18,13 +18,12 @@ package org.iobserve.reconstructor;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.iobserve.common.record.SessionStartEvent;
+
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
-
-import org.iobserve.common.record.SessionStartEvent;
 
 /**
  * The filter detects when a new session is created and synthesizes and SessionStart event before
@@ -45,7 +44,9 @@ public class StartSessionDetector extends AbstractConsumerStage<IMonitoringRecor
 
     @Override
     protected void execute(final IMonitoringRecord event) throws Exception {
-        if (event instanceof TraceMetadata) {
+        if (event instanceof SessionStartEvent) {
+            this.sessionRegister.add(((SessionStartEvent) event).getSessionId());
+        } else if (event instanceof TraceMetadata) {
             final TraceMetadata traceMetadata = (TraceMetadata) event;
             if (!this.sessionRegister.stream().anyMatch(key -> key.equals(traceMetadata.getSessionId()))) {
                 this.sessionRegister.add(traceMetadata.getSessionId());
