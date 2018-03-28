@@ -43,10 +43,11 @@ import teetime.stage.util.MappingException;
  */
 public class DatFileToRecordStage extends AbstractTransformation<File, IMonitoringRecord> {
 
+    private static final int BUFFER_SIZE = 10240;
     private final String charset;
     private final ClassNameRegistryRepository classNameRegistryRepository;
     private final CachedRecordFactoryCatalog recordFactories = CachedRecordFactoryCatalog.getInstance();
-    private final CharBuffer charBuffer = CharBuffer.allocate(100);
+    private final CharBuffer charBuffer = CharBuffer.allocate(DatFileToRecordStage.BUFFER_SIZE);
 
     /**
      * Create a dat file to record stage.
@@ -104,17 +105,17 @@ public class DatFileToRecordStage extends AbstractTransformation<File, IMonitori
      */
     private void processInputChannel(final ClassNameRegistry classNameRegistry, final InputStream inputStream)
             throws IOException, MappingException, MonitoringRecordException, UnknownRecordTypeException {
-        final byte[] buffer = new byte[1024];
+        final byte[] buffer = new byte[DatFileToRecordStage.BUFFER_SIZE];
 
         boolean endOfFile = false;
         int offset = 0;
         while (!endOfFile) {
-            final int numOfReadBytes = inputStream.read(buffer, offset, 100 - offset);
+            final int numOfReadBytes = inputStream.read(buffer, offset, DatFileToRecordStage.BUFFER_SIZE - offset);
             if (numOfReadBytes == -1) { /** end of line. */
                 endOfFile = true;
             } else {
                 final int numOfBufferedBytes = numOfReadBytes + offset;
-                final int mark = this.readLoop(classNameRegistry, buffer, offset, numOfBufferedBytes);
+                final int mark = this.processBuffer(classNameRegistry, buffer, offset, numOfBufferedBytes);
                 /** move remaining left. */
                 for (int j = mark + 1; j < numOfBufferedBytes; j++) {
                     buffer[j - mark - 1] = buffer[j];
@@ -148,7 +149,7 @@ public class DatFileToRecordStage extends AbstractTransformation<File, IMonitori
      * @throws UnknownRecordTypeException
      *             record type is unknown
      */
-    private int readLoop(final ClassNameRegistry classNameRegistry, final byte[] buffer, final int offset,
+    private int processBuffer(final ClassNameRegistry classNameRegistry, final byte[] buffer, final int offset,
             final int numOfBufferedBytes)
             throws MappingException, MonitoringRecordException, UnknownRecordTypeException {
         int i = offset;
