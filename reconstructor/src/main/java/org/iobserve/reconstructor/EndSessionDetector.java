@@ -118,6 +118,7 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
                 this.outputPort.send(event);
             }
         }
+        this.allRecords.clear();
     }
 
     private Pair getFirstLast(final ITraceRecord traceEvent) {
