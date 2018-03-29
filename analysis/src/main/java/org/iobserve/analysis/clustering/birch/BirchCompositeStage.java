@@ -16,6 +16,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.birch;
 
+import org.iobserve.analysis.clustering.birch.model.ICFComparisonStrategy;
 import org.iobserve.analysis.clustering.filter.EMClassification;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelVisualization;
 import org.iobserve.analysis.clustering.filter.XMeansClassification;
@@ -195,13 +196,19 @@ public class BirchCompositeStage extends CompositeStage implements IBehaviorComp
 //        final XMeansClassification classificationStage = new XMeansClassification(keepTime, minCollectionSize, 
 //        		representativeStrategy, keepEmptyTransitions, leafThresholdValue, maxLeafSize, maxNodeSize,
 //        		maxLeafEntries);
+        final String clusterComparisonStrategyClassName = configuration
+                .getStringProperty(ConfigurationKeys.CLUSTER_METRIC_STRATEGY);
+        BirchCompositeStage.LOGGER.error("clusterComparisonStrategyClassName: " + clusterComparisonStrategyClassName);
+        final ICFComparisonStrategy clusterComparisonStrategy = InstantiationFactory
+                .create(ICFComparisonStrategy.class, clusterComparisonStrategyClassName, null);
         
 //        final EMClassification classificationStage = new EMClassification(keepTime, minCollectionSize, 
 //        		representativeStrategy, keepEmptyTransitions, leafThresholdValue, maxLeafSize, maxNodeSize,
 //        		maxLeafEntries);
         final BirchClassificaton classificationStage = new BirchClassificaton(keepTime, minCollectionSize, 
         		representativeStrategy, keepEmptyTransitions, leafThresholdValue, maxLeafSize, maxNodeSize,
-        		maxLeafEntries, expectedNumberOfClusters, useClusterNumberMetric);
+        		maxLeafEntries, expectedNumberOfClusters, useClusterNumberMetric,
+        		clusterComparisonStrategy);
         /// Jannis spezifisch?
 //        final BehaviorModelCompositeSinkStage sinkStage = new BehaviorModelCompositeSinkStage(baseURL);
         BehaviorModelSink sinkStage = new BehaviorModelSink(baseURL, 

@@ -21,6 +21,7 @@ import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.clustering.birch.model.CFTree;
 import org.iobserve.analysis.clustering.birch.model.ClusteringFeature;
+import org.iobserve.analysis.clustering.birch.model.ICFComparisonStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,15 +43,18 @@ public class BuildCFTree extends AbstractConsumerStage<Instances> {
 	private double threshold;
     private int maxLeafSize;
     private int maxNodeSize;
+    private ICFComparisonStrategy clusterComparisonStrategy;
 
     /**
      * constructor.
      */
-    public BuildCFTree(double threshold, int maxLeafSize, int maxNodeSize) {
+    public BuildCFTree(double threshold, int maxLeafSize, int maxNodeSize,
+    		ICFComparisonStrategy clusterComparisonStrategy) {
 		super();
 		this.threshold = threshold;
 		this.maxLeafSize = maxLeafSize;
 		this.maxNodeSize = maxNodeSize;
+		this.clusterComparisonStrategy = clusterComparisonStrategy;
 	}
 
     @Override
@@ -58,18 +62,25 @@ public class BuildCFTree extends AbstractConsumerStage<Instances> {
     	this.instances = instances;
     	
     	if(this.tree == null)
-    		this.tree = new CFTree(this.threshold, this.maxLeafSize, this.maxNodeSize, instances.numAttributes());
+    		this.tree = new CFTree(this.threshold, this.maxLeafSize, this.maxNodeSize, 
+    				instances.numAttributes(), this.clusterComparisonStrategy);
     	   	
     	//BuildCFTree.LOGGER.debug("Number of instances: " + instances.numAttributes());
     	//BuildCFTree.LOGGER.debug("First instance: ");
     	BuildCFTree.LOGGER.debug("Start building tree...");
+    	for(int i = 0; i < instances.numAttributes(); i++) {
+    		BuildCFTree.LOGGER.debug(instances.attribute(i).toString());
+    	}
     	for(int j = 0; j < instances.numInstances(); j++) {
-//    		Double[] vector = new Double[instances.numAttributes()];
-//	    	for(int i = 0; i < instances.numAttributes(); i++) {
-//	    		vector[i] = instances.instance(j).value(i);
-//	    		//BuildCFTree.LOGGER.debug(vector[i].toString());
-//	    	}
-//	    	ClusteringFeature cf = new ClusteringFeature(vector);
+    		Double[] vector = new Double[instances.numAttributes()];
+    		if(j == 5 || j == 25 || j == 50 || j == 75 || j == 100) {
+    	    	BuildCFTree.LOGGER.debug("Random vector:");
+    	    	for(int i = 0; i < instances.numAttributes(); i++) {
+    	    		vector[i] = instances.instance(j).value(i);
+    	    		BuildCFTree.LOGGER.debug(vector[i].toString());
+    	    	}	
+    		}
+
     		ClusteringFeature cf = new ClusteringFeature(instances.instance(j));
 	    	this.tree.insert(cf);
     	}

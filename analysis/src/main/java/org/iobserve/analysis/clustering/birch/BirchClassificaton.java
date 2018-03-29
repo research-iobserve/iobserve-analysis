@@ -23,6 +23,7 @@ import teetime.stage.basic.merger.Merger;
 import teetime.stage.basic.merger.strategy.BlockingBusyWaitingRoundRobinMergerStrategy;
 import teetime.stage.basic.merger.strategy.IMergerStrategy;
 
+import org.iobserve.analysis.clustering.birch.model.ICFComparisonStrategy;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelCreation;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelPreperation;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelTableGeneration;
@@ -60,12 +61,14 @@ public class BirchClassificaton extends CompositeStage {
     public BirchClassificaton(final long keepTime, final int minCollectionSize, 
     		final IRepresentativeStrategy representativeStrategy, final boolean keepEmptyTransitions,
     		final double leafThresholdValue, final int maxLeafSize, final int maxNodeSize,
-    		final int maxLeafEntries, int expectedNumberOfClusters, boolean useClusterNumberMetric) {
+    		final int maxLeafEntries, int expectedNumberOfClusters, boolean useClusterNumberMetric, 
+    		ICFComparisonStrategy clusterComparisonStrategy) {
 
         SessionsToInstances sessionsToInstances = new SessionsToInstances(keepTime, minCollectionSize, 
         		representativeStrategy, keepEmptyTransitions);
         BirchClustering birchClustering = new BirchClustering(leafThresholdValue, maxLeafSize,
-        		maxNodeSize, maxLeafEntries, expectedNumberOfClusters, useClusterNumberMetric);
+        		maxNodeSize, maxLeafEntries, expectedNumberOfClusters, useClusterNumberMetric, 
+        		clusterComparisonStrategy);
         TBehaviorModelCreation tBehaviorModelCreation = new TBehaviorModelCreation("birch-");   
 
         

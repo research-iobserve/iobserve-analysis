@@ -1,5 +1,6 @@
 package org.iobserve.analysis.clustering.birch;
 
+import org.iobserve.analysis.clustering.birch.model.ICFComparisonStrategy;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelCreation;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.common.record.ISessionEvent;
@@ -23,12 +24,14 @@ public class BirchClustering extends CompositeStage {
 	
 	public BirchClustering(final double leafThresholdValue, final int maxLeafSize, 
 			final int maxNodeSize, final int maxLeafEntries, 
-			int expectedNumberOfClusters, boolean useClusterNumberMetric) {
+			int expectedNumberOfClusters, boolean useClusterNumberMetric,
+			ICFComparisonStrategy clusterComparisonStrategy) {
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         final Distributor<Instances> distributor = new Distributor<>(strategy);
         final IMergerStrategy mergerStrategy = new BlockingBusyWaitingRoundRobinMergerStrategy();
         final Merger<Object> merger = new Merger<>(mergerStrategy);
-        final BuildCFTree buildCFTree = new BuildCFTree(leafThresholdValue, maxLeafSize, maxNodeSize);
+        final BuildCFTree buildCFTree = new BuildCFTree(leafThresholdValue, maxLeafSize, 
+        		maxNodeSize, clusterComparisonStrategy);
         final RebuildTree rebuildTree = new RebuildTree(maxLeafEntries);
         final ClusterOnTree clusterOnTree = new ClusterOnTree();
         final ClusterSelection clusterSelection = 

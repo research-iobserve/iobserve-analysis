@@ -1,26 +1,41 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.clustering.birch;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.clustering.birch.model.CFTree;
 import org.iobserve.analysis.clustering.birch.model.ClusteringFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import scala.reflect.internal.Trees.This;
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.TreeMap;
-
 public class ClusterOnTree extends AbstractConsumerStage<CFTree> {
-	private List<ClusteringFeature> clusterList;
     private static final Logger LOGGER = LoggerFactory.getLogger(ClusterOnTree.class);
-    private final OutputPort<List<ClusteringFeature>> outputPort = this.createOutputPort();	
     
+	private List<ClusteringFeature> clusterList;
+    private final OutputPort<List<ClusteringFeature>> outputPort = this.createOutputPort();	
+
 	@Override
-	protected void execute(CFTree tree) throws Exception {
+	protected void execute(final CFTree tree) throws Exception {
 		// Alle Cfs des Baums in Liste
 		ClusterOnTree.LOGGER.debug("Received tree with...");
 		this.clusterList = tree.getLeafEntries();
@@ -33,7 +48,7 @@ public class ClusterOnTree extends AbstractConsumerStage<CFTree> {
 		neighborChain.add(new ClusteringFeature(0));
 		neighborChain.add(clusterList.get(0));
 		
-		while(clusterList.size() > 1) {
+		while (clusterList.size() > 1) {
 		//(new Scanner(System.in)).nextLine();
 //		ClusterOnTree.LOGGER.debug(this.clusterList.size() + " Cluster");
 //		ClusterOnTree.LOGGER.debug("Initial i = " + i);
@@ -53,26 +68,29 @@ public class ClusterOnTree extends AbstractConsumerStage<CFTree> {
 //		ClusterOnTree.LOGGER.debug(this.clusterList.size() + " Cluster");
 		this.clusterList.remove(neighborChain.get(i - 1));
 //		ClusterOnTree.LOGGER.debug(this.clusterList.size() + " Cluster");
-		this.clusterList.add(new ClusteringFeature(neighborChain.get(i), neighborChain.get(i-1)));
+		this.clusterList.add(new ClusteringFeature(neighborChain.get(i), neighborChain.get(i - 1)));
 //		ClusterOnTree.LOGGER.debug(this.clusterList.size() + " Cluster");
 		
-		if(i > 3)
+		if (i > 3) {
 			i -= 3;
-		else
-			i = 1;
-		neighborChain = neighborChain.subList(0, i+1);
+		} else {
+			i = 1;	
+		}
+
+		neighborChain = neighborChain.subList(0, i + 1);
 		}
 	}
 
 
 
-	private ClusteringFeature getNearestNeighbor(ClusteringFeature clusteringFeature) {
-		TreeMap<Double, ClusteringFeature> ranking = new TreeMap<>();
+	private ClusteringFeature getNearestNeighbor(final ClusteringFeature clusteringFeature) {
+		final   NavigableMap<Double, ClusteringFeature> ranking = new TreeMap<>();
 		//List<ClusteringFeature> neighbors = this.clusterList.stream().filter(!cf -> cf.equals(clusteringFeature)).
 		
 		for (ClusteringFeature cf : this.clusterList) {
-			if(!cf.equals(clusteringFeature))
+			if (!cf.equals(clusteringFeature)) {
 				ranking.put(clusteringFeature.compare(cf), cf);
+			}
 		}
 		final ClusteringFeature nearestNeighbor = ranking.firstEntry().getValue();
 //		ClusterOnTree.LOGGER.debug("Ranking of NN: ");

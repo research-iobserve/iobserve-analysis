@@ -1,3 +1,18 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.clustering.birch;
 
 import java.util.ArrayList;
@@ -8,24 +23,29 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.iobserve.analysis.clustering.birch.model.ClusteringFeature;
-import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-public class ClusterSelection extends AbstractConsumerStage<List<ClusteringFeature>> {
+import org.iobserve.analysis.clustering.birch.model.ClusteringFeature;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+
+
+public class ClusterSelection extends AbstractConsumerStage<List<ClusteringFeature>> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClusterSelection.class);
 	private final OutputPort<List<ClusteringFeature>> outputPort = this.createOutputPort();
 	private int expectedNumberOfClusters = 1;
-	private final ArrayList<List<ClusteringFeature>> list = new ArrayList<>();
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClusterSelection.class);
-    private final TreeMap<Double, Double> evaluationGraph = new TreeMap<>();
+	private final List<List<ClusteringFeature>> list = new ArrayList<>();
+    private final SortedMap<Double, Double> evaluationGraph = new TreeMap<>();
     private final boolean useClusterNumberMetric;
    
-	public ClusterSelection(int expectedNumberOfClusters, boolean useClusterNumberMetric) {
+	/**Constructor for the ClusterSelection Stage.
+	 * @param expectedNumberOfClusters the expected number of clusters
+	 * @param useClusterNumberMetric flag whether to use the expectedNumberOfClusters or use the internal 
+	 * algorithm to select a clustering
+	 */
+	public ClusterSelection(final int expectedNumberOfClusters, final boolean useClusterNumberMetric) {
 		this.useClusterNumberMetric = useClusterNumberMetric;
 		this.expectedNumberOfClusters = expectedNumberOfClusters;
 	}
@@ -76,7 +96,6 @@ public class ClusterSelection extends AbstractConsumerStage<List<ClusteringFeatu
 				clustering -> clustering.size() == this.expectedNumberOfClusters).findFirst();
 		if(result.isPresent())
 			this.outputPort.send(result.get());
-		this.outputPort.send(result.get());
 	}
 	
 	private double calculateClusterMetricRadius(List<ClusteringFeature> cluster) {
@@ -118,6 +137,7 @@ public class ClusterSelection extends AbstractConsumerStage<List<ClusteringFeatu
 	}
 	
 	private int calculateClusterNumber() {
+		int i = 0;
 		if(this.evaluationGraph.size() < 4) {
 			return (this.evaluationGraph.size() + 1) / 2;
 		} else {
@@ -125,17 +145,20 @@ public class ClusterSelection extends AbstractConsumerStage<List<ClusteringFeatu
 				int lastKnee = 0;
 				int currentKnee = this.evaluationGraph.size();
 			do {
+				i++;
 				lastKnee = currentKnee;
 				currentKnee = LMethod(cutOff);
 				cutOff = currentKnee * 2.0;
 			} while(currentKnee >= lastKnee);
+			ClusterSelection.LOGGER.debug("LMETHOD: Number of iterations: " + i) ;
+			ClusterSelection.LOGGER.debug("LMETHOD: CutOff " + ((int) cutOff)) ;
 			return currentKnee;
 		}
 	}
 	
 	
 	
-	private double calculateRMSE(Set<Entry<Double, Double>> graph) {
+	private double calculateRMSE(final Set<Entry<Double, Double>> graph) {
 		double avgMetric = 0;
 		double avgSize = 0;
 		double rmse = 0;

@@ -14,40 +14,17 @@
  * limitations under the License.
  ***************************************************************************/
 package org.iobserve.analysis.clustering.birch.model;
-
-import java.util.List;
-import java.util.Optional;
-
 /**
- * General node in CFTree.
- * @author melf
+ * This strategy compares clustering features by the
+ * variance increase distance metric D4
+ * @author Melf Lorenzen
  *
  */
-abstract class AbstractNode {
-	protected static int dimension;
-	protected static int nodeSizeConstraint;
-	protected static int leafSizeConstraint;
-	protected static double mergeThreshold;
-		
-	abstract ClusteringFeature getCF();
-	
-	abstract Optional<AbstractNode> insert(ClusteringFeature cf);
-	
-	abstract List<AbstractNode> getChildren();
-	
-	abstract int space();
-	
-	abstract int size();
+public class CFCompareD4Strategy implements ICFComparisonStrategy{
 
-    abstract void resplit(AbstractNode child);
+		@Override
+		public double getDistance(final ClusteringFeature cf1, final ClusteringFeature cf2) {
+			return cf1.compareD4(cf2);
+		}
 
-	abstract boolean refinementMerge(AbstractNode child);
-
-	abstract Optional<AbstractNode> getNextLevel();
-	
-	abstract Optional<AbstractNode> getChild(int i);
-	
-	abstract int getClosestChildIndex(ClusteringFeature cf);
-	
-	abstract void updateSum();
-}
+	}

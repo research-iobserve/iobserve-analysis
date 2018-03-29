@@ -1,18 +1,56 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.clustering.birch.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NavigableMap;
 import java.util.Optional;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
-public class Leaf extends AbstractNode {
-
-	ArrayList<ClusteringFeature> entries;
-	
+/**
+ * Class for the leafs of CFTree.
+ * @author Melf Lorenzen
+ *
+ */
+class Leaf extends AbstractNode {
+	private ClusteringFeature clusteringFeature;
+	private List<ClusteringFeature> entries;
 	private Leaf prev;
-
 	private Leaf next;
+	
+	public Leaf(final int n) {
+		this.clusteringFeature = new ClusteringFeature(n);
+		this.entries = new ArrayList<ClusteringFeature>();
+	}
+	
+	public Leaf() {
+		this.clusteringFeature = new ClusteringFeature(AbstractNode.dimension);
+		this.entries = new ArrayList<ClusteringFeature>();
+	}
+	
+	public Leaf(final Leaf lf) {
+		this.clusteringFeature = new ClusteringFeature(AbstractNode.dimension);
+		this.entries = new ArrayList<ClusteringFeature>();
+		this.clusteringFeature.add(lf.clusteringFeature);
+	}
+	
+	public List<ClusteringFeature> getEntries() {
+		return entries;
+	}
 	
 	public int getSize() {
 		return this.entries.size();
@@ -22,7 +60,7 @@ public class Leaf extends AbstractNode {
 		return prev;
 	}
 
-	public void setPrev(Leaf prev) {
+	public void setPrev(final Leaf prev) {
 		this.prev = prev;
 	}
 
@@ -30,32 +68,17 @@ public class Leaf extends AbstractNode {
 		return next;
 	}
 
-	public void setNext(Leaf next) {
+	public void setNext(final Leaf next) {
 		this.next = next;
 	}
 
-	public Leaf(int n) {
-		this.cf = new ClusteringFeature(n);
-		this.entries = new ArrayList<ClusteringFeature>();
-	}
-	
-	public Leaf() {
-		this.cf = new ClusteringFeature(AbstractNode.DIMENSION);
-		this.entries = new ArrayList<ClusteringFeature>();
-	}
-	
-	public Leaf(Leaf lf) {
-		this.cf = new ClusteringFeature(AbstractNode.DIMENSION);
-		this.entries = new ArrayList<ClusteringFeature>();
-		this.cf.add(lf.cf);
-	}
-	
+
 	private Leaf split() {
-		ProximityMatrix pm = new ProximityMatrix(this.entries);
+		final ProximityMatrix pm = new ProximityMatrix(this.entries);
 		///cfs that are closer to farthest one move to the new leaf, the rest stays put
-		Leaf second = new Leaf();
-		for(int i=0; i<pm.n; i++) {
-			if(pm.matrix[pm.farthest1][i] < pm.matrix[pm.farthest2][i]) {
+		final Leaf second = new Leaf();
+		for (int i = 0; i < this.entries.size(); i++) {
+			if (pm.getMatrix()[pm.getFarthestPair()[0]][i] < pm.getMatrix()[pm.getFarthestPair()[1]][i]) {
 				second.entries.add(this.entries.get(i));
 			}
 		}
@@ -66,70 +89,65 @@ public class Leaf extends AbstractNode {
 		return second;
 	}
 	
-	public Optional<AbstractNode> insert(ClusteringFeature cf) {
+	@Override
+	Optional<AbstractNode> insert(final ClusteringFeature cf) {
 		
 		
-		TreeMap<Double, ClusteringFeature> ranking = new TreeMap<Double, ClusteringFeature>();
+		final NavigableMap<Double, ClusteringFeature> ranking = new TreeMap<Double, ClusteringFeature>();
 		
-		this.cf.add(cf);
+		this.clusteringFeature.add(cf);
 		
 		for (ClusteringFeature entry : this.entries) {
 		    ranking.put(entry.compare(cf), entry);
-//		    System.out.println(entry.compare(cf));
 		}
 		
-		if(!ranking.isEmpty()) {		
-			ClusteringFeature closest = ranking.firstEntry().getValue();
-			ClusteringFeature merge = new ClusteringFeature(closest, cf);
-//			System.out.println("merge: " + merge.toString());
-//			System.out.println("Merge Diameter: " + merge.getDiameter());
+		if (!ranking.isEmpty()) {		
+			final ClusteringFeature closest = ranking.firstEntry().getValue();
+			final ClusteringFeature merge = new ClusteringFeature(closest, cf);
 			///Merge the Clustering Features if the threshold requirements remains satisfied
-			if(merge.isBelowThreshold(MERGE_THRESHOLD)) {
-//				System.out.println("Merging");
+			if (merge.isBelowThreshold(AbstractNode.mergeThreshold)) {
 				closest.add(cf);
-			}
-			else {
+			} else {
 				// If merge is not possible, add the Clustering Feature to the leaf
-//					System.out.println("Adding because MT was exceeded");
-					return(this.addEntry(cf));
+					return (this.addEntry(cf));
 			}
-		}
-		else {
+		} else {
 		// If Leaf is empty, simply add
-//			System.out.println("Leaf empty: Adding");
-			return(this.addEntry(cf));
+			return (this.addEntry(cf));
 		}
 		
 		return Optional.empty();
 	}
 	
-	private Optional<AbstractNode> addEntry(ClusteringFeature cf) {
+	private Optional<AbstractNode> addEntry(final ClusteringFeature cf) {
 		this.entries.add(cf);
 			
 		///Split the leaf if size is too large
-		if(this.entries.size() > LEAF_SIZE_CONSTRAINT) {
+		if (this.entries.size() > AbstractNode.leafSizeConstraint) {
 			return Optional.of(this.split());
 		}
 		return Optional.empty();
 	}
 	
-	public String toString(){
-		String res = "L{" + this.entries.size() + ": " + this.cf.toString() + "}";
-		for(ClusteringFeature cf : this.entries)
+	@Override
+	public String toString() {
+		String res = "L{" + this.entries.size() + ": " + this.clusteringFeature.toString() + "}";
+		for (ClusteringFeature cf : this.entries) {
 			res += "  [" + cf.toString() + "]  ";
+		}
 		return res;
 	}
 
 	
-	public void updateSum() {
-		this.cf = this.sum();
+	void updateSum() {
+		this.clusteringFeature = this.sum();
 	}
 	
 	/* Sums up the node's members */
-	public ClusteringFeature sum() {
-		double[] ls = new double[this.cf.linearSum.length];
-		double[] ss = new double[this.cf.linearSum.length];
-		ClusteringFeature ncf = new ClusteringFeature(0, ls, ss);
+	ClusteringFeature sum() {
+		final double[] ls = new double[this.clusteringFeature.getDimension()];
+		final double[] ss = new double[this.clusteringFeature.getDimension()];
+		final ClusteringFeature ncf = new ClusteringFeature(0, ls, ss);
 		for (ClusteringFeature cf : this.entries) {
 			ncf.add(cf);
 		}
@@ -142,39 +160,41 @@ public class Leaf extends AbstractNode {
 	}
 
 
-	public int space() {
-		return LEAF_SIZE_CONSTRAINT - this.size();
+	int space() {
+		return AbstractNode.leafSizeConstraint - this.size();
 	}
 
 
-	public int size() {
+	int size() {
 		return this.entries.size();
 	}
 
 
-	public void resplit(AbstractNode  child) {
-		Leaf leaf = (Leaf) child;
+	void resplit(final AbstractNode  child) {
+		final Leaf leaf = (Leaf) child;
 		this.entries.addAll(leaf.entries);
 		leaf.entries.clear();
-		ProximityMatrix pm = new ProximityMatrix(this.entries);
+		final ProximityMatrix pm = new ProximityMatrix(this.entries);
 		///cfs that are closer to farthest one move to the new leaf, the rest stays put
-		for(int i=0; i<pm.n; i++) {
-			if(pm.matrix[pm.farthest1][i] < pm.matrix[pm.farthest2][i]) {
+		for (int i = 0; i < this.entries.size(); i++) {
+			if (pm.getMatrix()[pm.getFarthestPair()[0]][i] < pm.getMatrix()[pm.getFarthestPair()[1]][i]) {
 				leaf.entries.add(this.entries.get(i));
 			}
 		}
 		this.entries.removeAll(leaf.entries);
-		if(this.space() < 0) {
-			List<ClusteringFeature> spillover = new ArrayList<ClusteringFeature>();
-			for(int i = LEAF_SIZE_CONSTRAINT; i < this.size(); i++)
-					spillover.add(this.entries.get(i));
+		if (this.space() < 0) {
+			final List<ClusteringFeature> spillover = new ArrayList<ClusteringFeature>();
+			for (int i = AbstractNode.leafSizeConstraint; i < this.size(); i++) {
+				spillover.add(this.entries.get(i));
+			}
 			this.entries.removeAll(spillover);
 			leaf.entries.addAll(spillover);
 		}
-		if(leaf.space() < 0) {
-			List<ClusteringFeature> spillover = new ArrayList<ClusteringFeature>();
-			for(int i = LEAF_SIZE_CONSTRAINT; i < leaf.size(); i++)
-					spillover.add(leaf.entries.get(i));
+		if (leaf.space() < 0) {
+			final List<ClusteringFeature> spillover = new ArrayList<ClusteringFeature>();
+			for (int i = AbstractNode.leafSizeConstraint; i < leaf.size(); i++) {
+				spillover.add(leaf.entries.get(i));
+			}
 			leaf.entries.removeAll(spillover);
 			this.entries.addAll(spillover);
 		}
@@ -183,77 +203,71 @@ public class Leaf extends AbstractNode {
 
 
 	@Override
-	public int refinementMerge(AbstractNode child) {
-		// The two nodes are too large to be merged
-//		System.out.println("Refinement merge on...");
-//		System.out.println(this.toString());
-//		System.out.println(child.toString());
-		
+	boolean refinementMerge(final AbstractNode child) {	
 		if (child.space() < this.size()) {
 			this.resplit(child);
-			return 0;
+			return false;
 		} else {
 			this.entries.addAll(((Leaf) child).entries);
-			this.cf.add(child.cf);
+			this.clusteringFeature.add(child.getCF());
 		}
-		return 1;
+		return true;
 	}
 
 
 	@Override
-	public Optional<AbstractNode> getNextLevel() {
+	Optional<AbstractNode> getNextLevel() {
 		return Optional.empty();
 	}
 
 
 	@Override
-	public Optional<AbstractNode> getChild(int i) {
+	Optional<AbstractNode> getChild(final int i) {
 		return Optional.empty();
 	}
 
 
 	@Override
-	public int getClosestChildIndex(ClusteringFeature cf) {
+	int getClosestChildIndex(final ClusteringFeature cf) {
 		return -1;
 	}
 
-	public void removeFirst() {
+	void removeFirst() {
 		this.entries.remove(0);
 	}
 
-	public boolean testInsert(ClusteringFeature cf) {
-		TreeMap<Double, ClusteringFeature> ranking = new TreeMap<Double, ClusteringFeature>();
+	boolean testInsert(final ClusteringFeature cf) {
+		final NavigableMap<Double, ClusteringFeature> ranking = new TreeMap<Double, ClusteringFeature>();
 			
 		for (ClusteringFeature entry : this.entries) {
 		    ranking.put(entry.compare(cf), entry);
-//		    System.out.println(entry.compare(cf));
 		}
 		
-		if(!ranking.isEmpty()) {		
-			ClusteringFeature closest = ranking.firstEntry().getValue();
-			ClusteringFeature merge = new ClusteringFeature(closest, cf);
-//			System.out.println("merge: " + merge.toString());
-//			System.out.println("Merge Diameter: " + merge.getDiameter());
+		if (!ranking.isEmpty()) {		
+			final ClusteringFeature closest = ranking.firstEntry().getValue();
+			final ClusteringFeature merge = new ClusteringFeature(closest, cf);
 			///Merge the Clustering Features if the threshold requirements remains satisfied
-			if(merge.isBelowThreshold(MERGE_THRESHOLD)) {
+			if (merge.isBelowThreshold(AbstractNode.mergeThreshold)) {
 				return true;
-			}
-			else {
+			} else {
 				// If merge is not possible, add the Clustering Feature to the leaf
-					//System.out.println("Adding because MT was exceeded");
-					return this.entries.size() < LEAF_SIZE_CONSTRAINT;
+					return this.entries.size() < AbstractNode.leafSizeConstraint;
 			}
-		}
-		else {
+		} else {
 		// If Leaf is empty, simply add
-			return(true);
+			return (true);
 		}
 
 	}
 
-	public double getMinimalLeafDistance() {
-		ProximityMatrix pm = new ProximityMatrix(this.entries);
-		return pm.matrix[pm.closest1][pm.closest2];
+	double getMinimalLeafDistance() {
+		final ProximityMatrix pm = new ProximityMatrix(this.entries);
+		return pm.getMatrix()[pm.getClosestPair()[0]][pm.getClosestPair()[1]];
+	}
+
+	@Override
+	ClusteringFeature getCF() {
+		return this.clusteringFeature;
 	}
 
 }

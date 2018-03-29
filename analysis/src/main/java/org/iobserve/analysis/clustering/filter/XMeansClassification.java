@@ -31,7 +31,7 @@ public class XMeansClassification  extends CompositeStage {
 	        SessionsToInstances sessionsToInstances = new SessionsToInstances(keepTime, minCollectionSize, 
 	        		representativeStrategy, keepEmptyTransitions);
 	        TVectorQuantizationClustering tVectorQuantizationClustering = new 
-	        		TVectorQuantizationClustering(new XMeansClustering(6, 3, new ManhattanDistance()));
+	        		TVectorQuantizationClustering(new XMeansClustering(maxLeafSize, maxNodeSize, new ManhattanDistance()));
 	        TBehaviorModelCreation tBehaviorModelCreation = new TBehaviorModelCreation("XM-");   
 
 	        

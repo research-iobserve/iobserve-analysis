@@ -192,6 +192,8 @@ public final class ConfigurationKeys {
 	public static final String EXP_NUM_OF_CLUSTERS = ConfigurationKeys.PREFIX + "behavior.birch.expectedNumberOfClusters";
 
 	public static final String USE_CNM = ConfigurationKeys.PREFIX + "behavior.birch.useClusterNumberMetric";
+
+	public static final String CLUSTER_METRIC_STRATEGY = ConfigurationKeys.PREFIX + "behavior.birch.clusterMetricStrategy";
 	
 
     /**

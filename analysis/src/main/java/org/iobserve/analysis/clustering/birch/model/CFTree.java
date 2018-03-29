@@ -1,32 +1,57 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.clustering.birch.model;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Represents a Clustering Feature tree composed of AbstractNodes.
+ * Acts as a face for the package.
+ * @author Melf Lorenzen
+ *
+ */
 public class CFTree {
 	
-	public AbstractNode root;
+	private AbstractNode root;
 	
 	
-	public CFTree(double t, int leafSizeConstraint,
-			int nodeSizeConstraint, int dimension) {
+	public CFTree(final double t, final int leafSizeConstraint,
+			final int nodeSizeConstraint, final int dimension, final ICFComparisonStrategy strategy) {
 		this.root = new Leaf(dimension);
-		AbstractNode.DIMENSION = dimension;
-		AbstractNode.LEAF_SIZE_CONSTRAINT = leafSizeConstraint;
-		AbstractNode.MERGE_THRESHOLD = t;
-		AbstractNode.NODE_SIZE_CONSTRAINT = nodeSizeConstraint;
+		ClusteringFeature.setMetric(strategy);
+		AbstractNode.dimension = dimension;
+		AbstractNode.leafSizeConstraint = leafSizeConstraint;
+		AbstractNode.mergeThreshold = t;
+		AbstractNode.nodeSizeConstraint = nodeSizeConstraint;
 	}
-
-	public void insert(ClusteringFeature cf) {
-		///Egal ob Leaf oder Node: Nach Insert müssen möglicherweise zwei Nodes in einer Node zusammengefasst werden
-		Optional<AbstractNode> split = this.root.insert(cf);
-		if(split.isPresent()) {
-//			System.out.println("Split reached root");
-			Node newRoot = new Node();
-			newRoot.entries.add(this.root);
-			newRoot.entries.add(split.get());
-			newRoot.cf = newRoot.sum();
+	
+	CFTree(final double t, final int dimension) {
+		this.root = new Leaf(dimension);
+		AbstractNode.mergeThreshold = t;
+	}
+	
+	public void insert(final ClusteringFeature cf) {
+		final Optional<AbstractNode> split = this.root.insert(cf);
+		if (split.isPresent()) {
+			final Node newRoot = new Node();
+			newRoot.addChild(this.root);
+			newRoot.addChild(split.get());
+			newRoot.sum();
 			this.root = newRoot;
 		}
 		
@@ -37,100 +62,75 @@ public class CFTree {
 	 * @param cf ClusteringFeature being moved
 	 * @param newCurrentPath the default location in the new tree
 	 */
-	private void move(ClusteringFeature cf, Path newCurrentPath) {
+	private void move(final ClusteringFeature cf, final Path newCurrentPath) {
 		
 		//Find newClosestPath
 		AbstractNode node = this.root;
-		Path ncp = new Path();
+		final Path ncp = new Path();
 		int index = node.getClosestChildIndex(cf);
 		
-		while(index >= 0) {
-//			System.out.println(this.toString());
+		while (index >= 0) {
 			ncp.add(index, node);
 			node = node.getChild(index).get();
 			index = node.getClosestChildIndex(cf); 
 		}
 		ncp.addFinalNode(node);
 		
-		Leaf lf = ncp.getLeaf();
-		boolean canFit = lf.testInsert(cf);
-//		System.out.println("Can fit? " + canFit);
-//		System.out.println("newCurrentPath:");
-//		System.out.println(newCurrentPath.toString());
-//		System.out.println("newClosestPath:");
-//		System.out.println(ncp.toString());
+		final Leaf lf = ncp.getLeaf();
+		final boolean canFit = lf.testInsert(cf);
 		//Insert in ncp if further ahead and there is place
-		if(ncp.compareTo(newCurrentPath) <= 0 && canFit) {
-			//System.out.println("newClosestPath comes first:");
-			//assert(!lf.insert(cf).isPresent());
+		if (ncp.compareTo(newCurrentPath) <= 0 && canFit) {
 			lf.insert(cf);
 			ncp.update();
 		} else {
-			//System.out.println("Inserting in newCurrentPath ");
-			//assert(!newCurrentPath.getLeaf().insert(cf).isPresent());
 			newCurrentPath.getLeaf().insert(cf);
 			newCurrentPath.update();
-			
 		}
 		
 	}
 	
-	public CFTree rebuild(double newThreshold) {
-		CFTree newTree = new CFTree(newThreshold, AbstractNode.LEAF_SIZE_CONSTRAINT, AbstractNode.NODE_SIZE_CONSTRAINT, AbstractNode.DIMENSION);
+	/**
+	 * Rebuilds a new tree with higher merge threshold and moves
+	 * the leaf entries over to the new tree.
+	 * The old tree will be empty after rebuilding
+	 * @param newThreshold the merge threshold of the new tree
+	 * @return the rebuilt tree
+	 */
+	public CFTree rebuild(final double newThreshold) {
+		final CFTree newTree = new CFTree(newThreshold, AbstractNode.dimension);
 		
-		Path path = this.getLeftMostPath();
+		final Path path = this.getLeftMostPath();
 		Path ncp;
 		
-		while(!path.isEmpty()) {
-//			System.out.println("addPath Stuff...");
+		while (!path.isEmpty()) {
 			ncp = newTree.addPath(path);
-//			System.out.println("Path, ncp:");
-//			System.out.println(path.toString());
-//			System.out.println(ncp.toString());
-			Leaf leaf = path.getLeaf();
+			final Leaf leaf = path.getLeaf();
 			
-//			System.out.println("Tree after adding Path");
-//			System.out.println(newTree.toString());
-			
-			for(ClusteringFeature cf : leaf.entries) {
-//				System.out.println("moving");				
+			for (ClusteringFeature cf : leaf.getEntries()) {			
 				newTree.move(cf, ncp);
-			}
-//			System.out.println("Tree after moving entries");
-//			System.out.println(newTree.toString());
-			
-			
+			}		
 			newTree.cleanUp(ncp);
-			
-//			System.out.println("Tree after moving and cleanup:");
-//			System.out.println(newTree.toString());
 			path.next();
-//			System.out.println("Old Tree after navigating to next path");
-//			System.out.println(this.toString());
-			
 		}
-		
 		newTree.updateLeafChain();
 		return newTree;
 	}
 	
 	
 	/** Removes empty nodes along the path
-	 * @param path
+	 * @param path path that needs cleaning
 	 */
-	private void cleanUp(Path path) {
+	private void cleanUp(final Path path) {
 		int i = path.size() - 1;
 		
-////		System.out.println("ncp before getting leaf:");
-//		System.out.println(path.toString());
-		Leaf leaf = path.getLeaf();
+		final Leaf leaf = path.getLeaf();
 		boolean isEmpty = leaf.size() == 0;
 		i--;
 		
-		while(i >= 0 && isEmpty) {
-			Node current = (Node) path.nodes.get(i);
+		while (i >= 0 && isEmpty) {
+			final Node current = (Node) path.getNodes().get(i);
 			current.removeLast();
-			isEmpty = current.entries.size() == 0;
+			isEmpty = current.size() == 0;
 			i--;
 		}	
 	}
@@ -138,50 +138,39 @@ public class CFTree {
 	/** Adds the the path to the new Tree
 	 * @param path the path to add
 	 */
-	private Path addPath(Path path) {
-	Path ncp = new Path();
+	private Path addPath(final Path path) {
+	final Path ncp = new Path();
 	
 	//Leaf at root
 	if (path.size() == 0) {
-		//System.out.println("Spezialfall: Tree = Leaf");
 		ncp.addFinalNode(this.root);
 		return ncp;
 	}
 	
 	// nicht leer => ist root eine Node? nein => zur node machen
-	if(this.root.getChildren().size() == 0) {
+	if (this.root.getChildren().size() == 0) {
 		this.root = new Node();
 	}
 	
 	Node node = (Node) this.root;
-	//Schleife: Ist aktueller Index in aktueller Node vorhanden => ja, runtergehen, nein => erzeugen, runtergehen
-	for(int i = 0; i < path.size() - 1; i++) {
-		if(node.size() <= path.indices.get(i)) {
-			Node add = new Node(path.nodes.get(i+1));
+	for (int i = 0; i < path.size() - 1; i++) {
+		if (node.size() <= path.getIndices().get(i)) {
+			final Node add = new Node(path.getNodes().get(i + 1));
 			ncp.add(node.size(), node);
-			node.entries.add(add);
+			node.addChild(add);
 			node = add;
 		} else {
-//			System.out.println("Index: " + i);
-//			System.out.println("Pfad: " + path.toString());
-//			System.out.println(path.indices.get(i));
-			ncp.add(path.indices.get(i), node);
-			node = (Node) node.getChild(path.indices.get(i)).get();
+			ncp.add(path.getIndices().get(i), node);
+			node = (Node) node.getChild(path.getIndices().get(i)).get();
 		} 
-		// Spezialfall Blatt
 	}
-	//System.out.println("Node size " + node.size() + " <= " + path.indices);
-	if(node.size() <= path.indices.get(path.size() - 1)) {	
-//		System.out.println("new leaf");
-		Leaf add = new Leaf(path.getLeaf());
+	if (node.size() <= path.getIndices().get(path.size() - 1)) {	
+		final Leaf add = new Leaf(path.getLeaf());
 		ncp.add(node.size(), node);
-		node.entries.add(add);
+		node.addChild(add);
 		ncp.addFinalNode(add);
 	} else {
-//		System.out.println("Index: " + (path.size() - 1));
-//		System.out.println("Pfad: " + path.toString());
-//		System.out.println(path.indices.get(path.size() - 1));
-		Leaf lf = (Leaf) node.getChild(path.indices.get(path.size() - 1)).get();
+		final Leaf lf = (Leaf) node.getChild(path.getIndices().get(path.size() - 1)).get();
 		ncp.add(node.size(), node);
 		ncp.addFinalNode(lf);
 	}
@@ -189,12 +178,11 @@ public class CFTree {
 	return ncp;
 	}
 
-	public Path getLeftMostPath() {
-		// Pfad leer = Root = Blatt
-		Path p = new Path();
+	Path getLeftMostPath() {
+		final Path p = new Path();
 		AbstractNode current = this.root;
 		Optional<AbstractNode> next = current.getNextLevel();
-		while(next.isPresent()) {
+		while (next.isPresent()) {
 			p.add(0, current);
 			current = next.get();
 			next = current.getNextLevel();
@@ -207,32 +195,32 @@ public class CFTree {
 	/** Updates the references at leaf level to 
 	 * include their two neighboring leafs
 	 */
-	public void updateLeafChain() {
-		Path path = this.getLeftMostPath();
+	void updateLeafChain() {
+		final Path path = this.getLeftMostPath();
 		Leaf last = path.getLeaf();
 		Leaf current;
 		path.moveRight();
-		int i = 0;
-		while(path.size() > 0) { // path size == 0 => no more leafs in tree
-			//System.out.println("Leaf Chain size "  + i);
+		while (path.size() > 0) { // path size == 0 => no more leafs in tree
 			current = path.getLeaf();
 			last.setNext(current);
 			current.setPrev(last);
 			path.moveRight();
 			last = current;
-			i++;
 		}
 	}
 	
+	/** Returns all the trees leaf entries in a list
+	 * @return list of the tree's leaf entries
+	 */
 	public List<ClusteringFeature> getLeafEntries() {
-		List<ClusteringFeature> leafEntries = new ArrayList<ClusteringFeature>();
+		final List<ClusteringFeature> leafEntries = new ArrayList<ClusteringFeature>();
 		
 		Leaf lf = this.getLeftMostPath().getLeaf();
-		leafEntries.addAll(lf.entries);
+		leafEntries.addAll(lf.getEntries());
 		
-		while(lf.getNext() != null) {
+		while (lf.getNext() != null) {
 			lf = lf.getNext();
-			leafEntries.addAll(lf.entries);
+			leafEntries.addAll(lf.getEntries());
 		}
 		
 		
@@ -240,40 +228,45 @@ public class CFTree {
 		
 	}
 	
+	/** Calculates the tree average minimal 
+	 * distance between leaf entries
+	 * @return the avg minimal leaf distance
+	 */
 	public double getAvgMinimalLeafDistance() {
 		Leaf lf = this.getLeftMostPath().getLeaf();
 		int cnt = 1;
 		double addedMinDistance = lf.getMinimalLeafDistance();
-		while(lf.getNext() != null) {
+		while (lf.getNext() != null) {
 			lf = lf.getNext();
-			cnt ++;
+			cnt++;
 			addedMinDistance += lf.getMinimalLeafDistance();
 			
 		}
 		return addedMinDistance / (cnt * 1.0);
 	}
 	
-	public int getNumberOfLeafEntries() {
+	int getNumberOfLeafEntries() {
 		Leaf lf = this.getLeftMostPath().getLeaf();
 		int cnt = lf.getSize();
-		while(lf.getNext() != null) {
+		while (lf.getNext() != null) {
 			lf = lf.getNext();
 			cnt += lf.getSize();
 		}
 		return cnt;
 	}
 	
+	@Override
 	public String toString() {
 		String treeRepresentation = "";
-		//ArrayList<ICFNode> allNodes = new ArrayList<ICFNode> ();
-		ArrayList<AbstractNode> currentLevel = new ArrayList<> ();
-		ArrayList<AbstractNode> nextLevel = new ArrayList<> ();
+		final List<AbstractNode> currentLevel = new ArrayList<>();
+		final List<AbstractNode> nextLevel = new ArrayList<>();
 		currentLevel.add(this.root);
-		while(!currentLevel.isEmpty()) {
-			for(AbstractNode n : currentLevel)
+		while (!currentLevel.isEmpty()) {
+			for (AbstractNode n : currentLevel) {
 				treeRepresentation += n.toString() + "  <>   ";
+			}
 			treeRepresentation += "\n";
-			for(AbstractNode n : currentLevel) {
+			for (AbstractNode n : currentLevel) {
 				nextLevel.addAll(n.getChildren()); 
 			}
 			
