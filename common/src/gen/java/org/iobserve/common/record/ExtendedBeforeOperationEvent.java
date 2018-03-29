@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (https://iobserve-devops.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@ import kieker.common.exception.RecordInstantiationException;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IUserInformation;
 
 /**
  * @author Christoph Dornieden
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
  * @since 0.0.2
  */
@@ -147,16 +146,6 @@ public class ExtendedBeforeOperationEvent extends BeforeOperationEvent implement
 			this.getInformations(),
 		};
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getOperationSignature());
-		stringRegistry.get(this.getClassSignature());
-		stringRegistry.get(this.getInformations());
-	}
-	
 	/**
 	 * {@inheritDoc}
 	 */
