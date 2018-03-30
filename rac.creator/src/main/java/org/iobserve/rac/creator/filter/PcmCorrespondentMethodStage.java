@@ -36,6 +36,9 @@ public class PcmCorrespondentMethodStage extends AbstractConsumerStage<AbstractO
 
     private final OutputPort<ClassAndMethod> outputPort = this.createOutputPort();
 
+    /**
+     * Create a PCM correspondent method stage.
+     */
     public PcmCorrespondentMethodStage() {
         // empty default constructor
     }
