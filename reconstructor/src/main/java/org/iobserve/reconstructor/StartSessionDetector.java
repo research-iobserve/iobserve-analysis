@@ -18,12 +18,13 @@ package org.iobserve.reconstructor;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.iobserve.common.record.SessionStartEvent;
-
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.iobserve.common.record.SessionStartEvent;
 
 /**
  * The filter detects when a new session is created and synthesizes and SessionStart event before
