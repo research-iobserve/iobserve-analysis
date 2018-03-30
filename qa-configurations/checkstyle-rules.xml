@@ -9,8 +9,7 @@
 
 	<!-- http://checkstyle.sourceforge.net/config_filters.html#SuppressionFilter -->
 	<module name="SuppressionFilter">
-    	<!-- <property name="file" value="${config_loc}/suppressions.xml"/> -->
-    	<property name="file" value="/media/melf/92CA8992CA8972F1/iObserve/iobserve-analysis/qa-configurations/pmdrules.xml"/>
+    	<property name="file" value="${config_loc}/suppressions.xml"/>
 	</module>
 
 	<!-- If you set the basedir property below, then all reported file names 
@@ -1125,3 +1124,4 @@
 	</module>
 
 </module>
+
