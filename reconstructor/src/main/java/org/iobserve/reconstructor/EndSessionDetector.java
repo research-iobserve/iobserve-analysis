@@ -23,7 +23,6 @@ import java.util.Map;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.flow.ITraceRecord;
 import kieker.common.record.flow.trace.TraceMetadata;
-import kieker.common.record.misc.EmptyRecord;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -54,11 +53,15 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
             this.receiveTraceMetadata((TraceMetadata) event);
         } else if (event instanceof ITraceRecord) {
             this.receiveTraceRecord((ITraceRecord) event);
-        } else if (event instanceof EmptyRecord) {
-            this.flushAllRecords();
         }
 
         this.allRecords.add(event);
+    }
+
+    @Override
+    protected void onTerminating() {
+        this.flushAllRecords();
+        super.onTerminating();
     }
 
     private void receiveTraceMetadata(final TraceMetadata traceMetadata) {
@@ -118,6 +121,7 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
                 this.outputPort.send(event);
             }
         }
+        this.allRecords.clear();
     }
 
     private Pair getFirstLast(final ITraceRecord traceEvent) {
