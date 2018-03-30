@@ -55,10 +55,16 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
         } else if (event instanceof ITraceRecord) {
             this.receiveTraceRecord((ITraceRecord) event);
         } else if (event instanceof EmptyRecord) {
-            this.flushAllRecords();
+            // this.flushAllRecords();
         }
 
         this.allRecords.add(event);
+    }
+
+    @Override
+    protected void onTerminating() {
+        this.flushAllRecords();
+        super.onTerminating();
     }
 
     private void receiveTraceMetadata(final TraceMetadata traceMetadata) {
