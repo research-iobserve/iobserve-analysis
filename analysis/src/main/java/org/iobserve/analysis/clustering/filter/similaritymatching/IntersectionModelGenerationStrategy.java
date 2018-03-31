@@ -65,6 +65,7 @@ public class IntersectionModelGenerationStrategy implements IModelGenerationStra
 
     private EntryCallNode intersectNode(final EntryCallNode a, final EntryCallNode b) {
         final EntryCallNode result = new EntryCallNode();
+        result.setSignature(a.getSignature());
 
         Optional<CallInformation> matchingInfo;
         for (final CallInformation infoA : a.getEntryCallInformation()) {

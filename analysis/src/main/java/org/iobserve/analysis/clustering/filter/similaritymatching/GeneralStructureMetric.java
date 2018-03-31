@@ -42,14 +42,18 @@ public class GeneralStructureMetric implements IStructureMetricStrategy {
         }
         final double nodesInA = a.getNodes().length;
         final double nodesInB = b.getNodes().length;
-        final double nodeDistance = (2 * ((nodesInA + nodesInB) - sharedNodes)) / (nodesInA + nodesInB);
+        final double nodeDistance = ((nodesInA + nodesInB) - sharedNodes) / (nodesInA + nodesInB);
 
         /** Calculate edge distance */
         // Get amount of shared egdges, count an edge with edge number n as n individual
         // edges
+        double edgesInA = 0;
+        double edgesInB = 0;
         double sharedEdges = 0;
         for (final EntryCallEdge edgeA : a.getEdges()) {
+            edgesInA += edgeA.getCalls();
             for (final EntryCallEdge edgeB : b.getEdges()) {
+                edgesInB += edgeB.getCalls();
                 if (edgeA.equals(edgeB)) {
                     sharedEdges += Math.min(edgeA.getCalls(), edgeB.getCalls());
                     break; // There cannot be multiple edge instances with the same source and target nodes
@@ -57,9 +61,8 @@ public class GeneralStructureMetric implements IStructureMetricStrategy {
                 }
             }
         }
-        final double edgesInA = a.getEdges().length;
-        final double edgesInB = b.getEdges().length;
-        final double edgeDistance = (2 * ((edgesInA + edgesInB) - sharedEdges)) / (edgesInA + edgesInB);
+
+        final double edgeDistance = ((edgesInA + edgesInB) - sharedEdges) / (edgesInA + edgesInB);
 
         // Return average of edge/node distance
         return (edgeDistance + nodeDistance) / 2;

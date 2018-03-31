@@ -87,10 +87,10 @@ public class TVectorization extends AbstractStage {
             final BehaviorModel[] modelsArray = this.models.toArray(new BehaviorModel[this.models.size()]);
 
             /** Send both */
+            TVectorization.LOGGER.debug(this.vectorsAsJSON());
             TVectorization.LOGGER.debug(
                     "Sending vectors and models to next stage (max. parameter radius: {}, max structure radius: {}",
                     this.maximumParameterDistance, this.maximumStructureDistance);
-            TVectorization.LOGGER.debug(this.vectorsAsJSON());
             this.vectorsOutputPort.send(vectorArray);
             this.modelsOutputPort.send(modelsArray);
 

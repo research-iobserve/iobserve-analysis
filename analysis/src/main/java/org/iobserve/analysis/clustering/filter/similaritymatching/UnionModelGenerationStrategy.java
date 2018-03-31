@@ -15,7 +15,10 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.filter.similaritymatching;
 
+import java.util.Optional;
+
 import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
+import org.iobserve.analysis.clustering.behaviormodels.CallInformation;
 import org.iobserve.analysis.clustering.behaviormodels.EntryCallEdge;
 import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
 
@@ -34,10 +37,42 @@ public class UnionModelGenerationStrategy implements IModelGenerationStrategy {
         for (final BehaviorModel model : models) {
             /** We add nodes first so we don't get duplicate nodes from the same model */
             for (final EntryCallNode node : model.getNodes()) {
-                newModel.addNode(node, true);
+                final Optional<EntryCallNode> matchingNode = newModel.findNode(node.getSignature());
+
+                if (matchingNode.isPresent()) {
+                    Optional<CallInformation> matchingInfo;
+                    for (final CallInformation info : node.getEntryCallInformation()) {
+                        matchingInfo = matchingNode.get().findCallInformation(info.getInformationSignature(),
+                                info.getInformationParameter());
+                        if (matchingInfo.isPresent()) {
+                            final int newCount = Math.max(info.getCount(), matchingInfo.get().getCount());
+                            matchingInfo.get().setCount(newCount);
+                        } else {
+                            matchingNode.get().mergeInformation(new CallInformation(info.getInformationSignature(),
+                                    info.getInformationParameter(), info.getCount()));
+                        }
+                    }
+                } else {
+                    // Copy node and add it
+                    final EntryCallNode newNode = new EntryCallNode();
+                    newNode.setSignature(node.getSignature());
+                    for (final CallInformation info : node.getEntryCallInformation()) {
+                        final CallInformation newInfo = new CallInformation(info.getInformationSignature(),
+                                info.getInformationParameter(), info.getCount());
+                        newNode.mergeInformation(newInfo);
+                    }
+                    newModel.addNode(newNode, false);
+                }
+
             }
             for (final EntryCallEdge edge : model.getEdges()) {
-                newModel.addEdge(edge, false);
+                final Optional<EntryCallEdge> matchingEdge = newModel.findEdge(edge.getSource().getSignature(),
+                        edge.getTarget().getSignature());
+                if (matchingEdge.isPresent()) {
+                    matchingEdge.get().setCalls(Math.max(matchingEdge.get().getCalls(), edge.getCalls()));
+                } else {
+                    newModel.addEdge(new EntryCallEdge(edge.getSource(), edge.getTarget(), edge.getCalls()), false);
+                }
             }
         }
 

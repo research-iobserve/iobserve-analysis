@@ -43,7 +43,7 @@ public class UserSessionToBehaviorModelConverter {
         while (iterator.hasNext()) {
             currentNode = UserSessionToBehaviorModelConverter.createNode((PayloadAwareEntryCallEvent) iterator.next());
 
-            /** addEdge will automatically add nodes to model as well */
+            model.addNode(currentNode, true);
             model.addEdge(new EntryCallEdge(lastNode, currentNode), false);
             lastNode = currentNode;
         }

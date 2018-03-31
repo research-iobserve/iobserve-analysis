@@ -84,7 +84,7 @@ public class TGroupingStage extends AbstractConsumerStage<Double[][]> {
 
         this.outputPort.send(aGroups);
 
-        TGroupingStage.LOGGER.debug("Sent grouping to next stage");
+        TGroupingStage.LOGGER.debug("Sent {} groups to next stage", aGroups.length);
     }
 
     /**

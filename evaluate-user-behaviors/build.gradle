@@ -1,7 +1,15 @@
+// SHADOW
+apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'application'
 apply plugin: 'java'
 
 mainClassName='org.iobserve.evaluation.EvaluationMain'
+
+buildscript {
+  repositories {
+    jcenter()
+  }
+}
 
 dependencies {
 	clover 'org.openclover:clover:4.2.0'
@@ -10,6 +18,12 @@ dependencies {
 	compile project(":service")
 
 	testCompile "junit:junit:4.12"
+}
+
+// SHADOW
+shadowJar {
+   zip64 = true
+   mainClassName = 'org.iobserve.evaluation.EvaluationMain'
 }
 
 clover {
