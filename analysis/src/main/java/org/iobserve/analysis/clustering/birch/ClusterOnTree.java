@@ -42,7 +42,6 @@ public class ClusterOnTree extends AbstractConsumerStage<CFTree> {
 		ClusterOnTree.LOGGER.debug(this.clusterList.size() + " elements.");
 		List<ClusteringFeature> neighborChain = new ArrayList<>();
 
-		// Olsons Algo ausführen
 		int i = 1;
 
 		neighborChain.add(new ClusteringFeature(0));

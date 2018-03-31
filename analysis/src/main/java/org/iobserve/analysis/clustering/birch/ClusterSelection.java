@@ -103,8 +103,8 @@ public class ClusterSelection extends AbstractConsumerStage<List<ClusteringFeatu
 		double cnt = 0.0;
 		
 		for(ClusteringFeature cf : cluster) {
-			sum += cf.Number * Math.pow(cf.getRadius(), 2);
-			cnt += cf.Number;
+			sum += cf.getNumber() * Math.pow(cf.getRadius(), 2);
+			cnt += cf.getNumber();
 		}
 			
 		return cnt != 0.0 ? sum/cnt : 0;
@@ -115,8 +115,8 @@ public class ClusterSelection extends AbstractConsumerStage<List<ClusteringFeatu
 		double cnt = 0.0;
 		
 		for(ClusteringFeature cf : cluster) {
-			sum += (cf.Number * (cf.Number - 1)) * Math.pow(cf.getDiameter(), 2);
-			cnt += (cf.Number * (cf.Number - 1));
+			sum += (cf.getNumber() * (cf.getNumber() - 1)) * Math.pow(cf.getDiameter(), 2);
+			cnt += (cf.getNumber() * (cf.getNumber() - 1));
 		}
 			
 		return cnt != 0.0 ? sum/cnt : 0;

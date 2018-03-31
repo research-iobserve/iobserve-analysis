@@ -18,6 +18,7 @@ package org.iobserve.stages.general;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import kieker.common.record.IMonitoringRecord;
@@ -49,9 +50,11 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
 
     private final boolean countEvents;
     private long eventCount;
+    private int sent = 0;
 
     /** internal map to collect unknown record types. */
     private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<>();
+    private final Map<Class<? extends IMonitoringRecord>, Integer> sentPerRecord = new ConcurrentHashMap<>();
 
     private final boolean reportUnknown;
 
@@ -83,6 +86,17 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
 
         final OutputPort<IMonitoringRecord> selectedOutputPort = this.selectOutputPort(event.getClass());
         if (selectedOutputPort != null) {
+//        	sent++;
+//            DynamicEventDispatcher.LOGGER.debug(this.sentPerRecord.toString());
+//            DynamicEventDispatcher.LOGGER.debug(event.getClass().toString());
+//        	int cnt = 0;
+//            for (Entry<Class<? extends IMonitoringRecord>, Integer> en : this.sentPerRecord.entrySet()) {
+//            	if(en.getKey().isAssignableFrom(event.getClass())) {
+//            		en.setValue(en.getValue() + 1);
+//            		cnt++;
+//            	}
+//                DynamicEventDispatcher.LOGGER.debug(cnt + " matching outputs.");
+//            }
             selectedOutputPort.send(event);
         } else {
             if (this.outputOther) {
@@ -126,6 +140,7 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
      */
     public void registerOutput(final Class<? extends IMonitoringRecord> type) {
         this.classTypeList.add(type);
+//        this.sentPerRecord.put(type, 0);
         this.outputPortList.add(this.createOutputPort(type));
     }
 
@@ -159,6 +174,8 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
     @Override
     public void onTerminating() {
         DynamicEventDispatcher.LOGGER.info("Records processed in total {}.", this.eventCount);
+//        DynamicEventDispatcher.LOGGER.info("Records sent in total {}.", this.sent);
+//        DynamicEventDispatcher.LOGGER.info(this.sentPerRecord.toString());
         super.onTerminating();
     }
 

@@ -54,7 +54,9 @@ public final class EntryCallSequence extends AbstractStage {
 
     private final InputPort<PayloadAwareEntryCallEvent> entryCallInputPort = this.createInputPort();
     private final InputPort<ISessionEvent> sessionEventInputPort = this.createInputPort();
-
+    private int cntOverall = 0;
+    private int cntSE = 0;
+    private int cntPAECE = 0;
     /**
      * Create this filter.
      *
@@ -66,7 +68,9 @@ public final class EntryCallSequence extends AbstractStage {
     @Override
     protected void execute() {
         final ISessionEvent sessionEvent = this.sessionEventInputPort.receive();
+        cntOverall++;
         if (sessionEvent != null) {
+        	cntSE++;
             if (sessionEvent instanceof SessionStartEvent) {
                 this.sessions.put(UserSession.createUserSessionId(sessionEvent),
                         new UserSession(sessionEvent.getHostname(), sessionEvent.getSessionId()));
@@ -83,6 +87,7 @@ public final class EntryCallSequence extends AbstractStage {
         final PayloadAwareEntryCallEvent event = this.entryCallInputPort.receive();
 
         if (event != null) {
+        	cntPAECE++;
             /**
              * add the event to the corresponding user session in case the user session is not yet
              * available, create one.
@@ -127,6 +132,9 @@ public final class EntryCallSequence extends AbstractStage {
 
     @Override
     public void onTerminating() {
+    	EntryCallSequence.LOGGER.debug("Received " + cntOverall + " events.");
+    	EntryCallSequence.LOGGER.debug(cntSE + " SessionEvents were not null.");
+    	EntryCallSequence.LOGGER.debug(cntPAECE + " cntPAECE were not null.");
     	EntryCallSequence.LOGGER.debug("About to send " + this.sessions.size() + " user sessions.");
         for (final UserSession session : this.sessions.values()) {
             this.userSessionOutputPort.send(session);

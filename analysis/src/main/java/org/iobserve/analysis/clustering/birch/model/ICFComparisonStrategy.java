@@ -21,7 +21,7 @@ package org.iobserve.analysis.clustering.birch.model;
  * @author Melf Lorenzen
  *
  */
-interface ICFComparisonStrategy {
+public interface ICFComparisonStrategy {
 
 	double getDistance(final ClusteringFeature cf1, final ClusteringFeature cf2);
 }

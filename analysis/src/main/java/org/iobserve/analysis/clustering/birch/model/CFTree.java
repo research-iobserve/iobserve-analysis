@@ -195,7 +195,7 @@ public class CFTree {
 	/** Updates the references at leaf level to 
 	 * include their two neighboring leafs
 	 */
-	void updateLeafChain() {
+	public void updateLeafChain() {
 		final Path path = this.getLeftMostPath();
 		Leaf last = path.getLeaf();
 		Leaf current;
@@ -245,7 +245,7 @@ public class CFTree {
 		return addedMinDistance / (cnt * 1.0);
 	}
 	
-	int getNumberOfLeafEntries() {
+	public int getNumberOfLeafEntries() {
 		Leaf lf = this.getLeftMostPath().getLeaf();
 		int cnt = lf.getSize();
 		while (lf.getNext() != null) {
@@ -255,6 +255,27 @@ public class CFTree {
 		return cnt;
 	}
 	
+	public int getDimension() {
+		return AbstractNode.dimension;
+	}
+
+	public int getNodeSizeConstraint() {
+		return AbstractNode.nodeSizeConstraint;
+	}
+
+	public int getLeafSizeConstraint() {
+		return AbstractNode.leafSizeConstraint;
+	}
+
+	public double getMergeThreshold() {
+		return AbstractNode.mergeThreshold;
+	}
+	
+	
+	public AbstractNode getRootStringRepresentation() {
+		return root;
+	}
+
 	@Override
 	public String toString() {
 		String treeRepresentation = "";

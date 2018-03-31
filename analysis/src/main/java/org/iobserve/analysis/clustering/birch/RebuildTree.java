@@ -2,11 +2,7 @@ package org.iobserve.analysis.clustering.birch;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
-import weka.core.Instances;
 
-import java.util.Scanner;
-
-import org.iobserve.analysis.clustering.birch.model.AbstractNode;
 import org.iobserve.analysis.clustering.birch.model.CFTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,15 +22,15 @@ public class RebuildTree extends AbstractConsumerStage<CFTree> {
 	@Override
 	protected void execute(CFTree tree) throws Exception {
 		RebuildTree.LOGGER.debug("Following tree up for potential rebuilding");
-		RebuildTree.LOGGER.debug("Dimension: " + AbstractNode.DIMENSION);
-		RebuildTree.LOGGER.debug("Max node entries: " + AbstractNode.NODE_SIZE_CONSTRAINT);
-		RebuildTree.LOGGER.debug("Max leaf entries: " + AbstractNode.LEAF_SIZE_CONSTRAINT);
-		RebuildTree.LOGGER.debug("Merge threshold: " + AbstractNode.MERGE_THRESHOLD);
-		RebuildTree.LOGGER.debug("Root: " + tree.root.toString());
+		RebuildTree.LOGGER.debug("Dimension: " + tree.getDimension());
+		RebuildTree.LOGGER.debug("Max node entries: " + tree.getNodeSizeConstraint());
+		RebuildTree.LOGGER.debug("Max leaf entries: " + tree.getLeafSizeConstraint());
+		RebuildTree.LOGGER.debug("Merge threshold: " + tree.getMergeThreshold());
+		RebuildTree.LOGGER.debug("Root: " + tree.getRootStringRepresentation());
 		RebuildTree.LOGGER.debug("Leaf entries: " + tree.getNumberOfLeafEntries());
 		if(tree.getNumberOfLeafEntries() > maxLeafEntries) {
 			RebuildTree.LOGGER.debug(tree.getNumberOfLeafEntries() + " entries. Only " + maxLeafEntries + "allowed!");
-			double newTheshold = Math.max(tree.getAvgMinimalLeafDistance(), AbstractNode.MERGE_THRESHOLD * 1.10);
+			double newTheshold = Math.max(tree.getAvgMinimalLeafDistance(), tree.getMergeThreshold() * 1.10);
 			RebuildTree.LOGGER.debug("Rebuilding tree with threshold = " + newTheshold);
             CFTree newTree = tree.rebuild(newTheshold);
 			//RebuildTree.LOGGER.debug("Rebuilt tree = " + newTree.toString());

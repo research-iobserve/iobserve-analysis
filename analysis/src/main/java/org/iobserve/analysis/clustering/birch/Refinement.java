@@ -73,7 +73,7 @@ public class Refinement extends AbstractConsumerStage<Object> {
 			//find cfs NN in clustering
 			TreeMap<Double, ClusteringFeature> ranking = new TreeMap<>();
 			for (ClusteringFeature centroid : this.clustering) {
-					ranking.put(centroid.compareD0(cf), centroid);
+					ranking.put(centroid.compare(cf), centroid);
 			}
 			ClusteringFeature nearestNeighbor = ranking.firstEntry().getValue();
 			//add to correct bucket

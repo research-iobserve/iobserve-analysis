@@ -24,20 +24,20 @@ import weka.core.Instance;
  * @author Melf Lorenzen
  *
  */
-class ClusteringFeature {
+public class ClusteringFeature {
 
 	private static ICFComparisonStrategy metric = new CFCompareD2Strategy();
 	private int number;
 	private double[] linearSum;
 	private double[] squareSum;
 	
-	ClusteringFeature(final int n) {
+	public ClusteringFeature(final int n) {
 		this.number = 0;
 		this.linearSum = new double[n];
 		this.squareSum = new double[n];
 	}
 	
-	ClusteringFeature(final Instance instance) {
+	public ClusteringFeature(final Instance instance) {
 		this.number = 1;
 		this.linearSum = new double[instance.numAttributes()];
 		this.squareSum = new double[instance.numAttributes()];
@@ -48,14 +48,14 @@ class ClusteringFeature {
 	    	}
 	}
 	
-	ClusteringFeature(final int number, final double[] linearSum, final double[] squareSum) {
+	public ClusteringFeature(final int number, final double[] linearSum, final double[] squareSum) {
 		this.number = number;
 		this.linearSum = linearSum;
 		this.squareSum = squareSum;
 	}
 	
 	
-	ClusteringFeature(final Double[] linearSum) {
+	public ClusteringFeature(final Double[] linearSum) {
 		this.number = 1;
 		
 		final int  n = linearSum.length;
@@ -85,11 +85,11 @@ class ClusteringFeature {
 		}
 	}
 	
-	int getDimension() {
+	public int getDimension() {
 		return this.linearSum.length;
 	}
 	
-	void add(final ClusteringFeature cf) {
+	public void add(final ClusteringFeature cf) {
 		this.number += cf.number;
 		
 		final int  n = linearSum.length;
@@ -100,7 +100,7 @@ class ClusteringFeature {
 		}
 	}
 	
-	double compare(final ClusteringFeature cf) {
+	public double compare(final ClusteringFeature cf) {
 		return ClusteringFeature.metric.getDistance(this, cf);
 	}
 	
@@ -153,7 +153,7 @@ class ClusteringFeature {
 		return (this.getDiameter() <= t);
 	}
 	
-	double getSquareSumError() {
+	public double getSquareSumError() {
 		double sse = 0.0;
 		for (int i = 0; i < this.linearSum.length; i++) {
 			sse += this.squareSum[i] - 2.0 * this.linearSum[i] * this.linearSum[i] / this.number 
@@ -162,11 +162,11 @@ class ClusteringFeature {
 		return sse;
 	}
 	
-	double getRadius() {
+	public double getRadius() {
 		return Math.sqrt(this.getSquareSumError() / this.number);
 	}
 	
-	double getDiameter() {
+	public double getDiameter() {
 		if (this.number <= 1) {
 			return 0.0;
 		}
@@ -182,7 +182,7 @@ class ClusteringFeature {
 				/ (this.number * (this.number - 1.0)));
 	}
 	
-	double[] getCentroid() {
+	public double[] getCentroid() {
 		final double[] centroid = new double[this.getDimension()];
 		for (int i = 0; i < centroid.length; i++) {
 			centroid[i] = this.linearSum[i] / (1.0 * this.number);
@@ -191,7 +191,10 @@ class ClusteringFeature {
 	}
 	
 	
-	
+	public int getNumber() {
+		return number;
+	}
+
 	public static void setMetric(final ICFComparisonStrategy metric) {
 		ClusteringFeature.metric = metric;
 	}

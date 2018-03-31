@@ -17,6 +17,10 @@ package teetime.stage.trace.traceReconstruction;
 
 import java.util.concurrent.TimeUnit;
 
+import org.iobserve.analysis.configurations.AnalysisConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import kieker.common.record.flow.IFlowRecord;
 
 import teetime.framework.AbstractConsumerStage;
@@ -34,14 +38,14 @@ public class TraceReconstructionFilter extends AbstractConsumerStage<IFlowRecord
 
     private final OutputPort<EventBasedTrace> traceValidOutputPort = this.createOutputPort();
     private final OutputPort<EventBasedTrace> traceInvalidOutputPort = this.createOutputPort();
-
+    
+    
     private TimeUnit timeunit;
     private long maxTraceDuration = Long.MAX_VALUE;
     private long maxTraceTimeout = Long.MAX_VALUE;
     private long maxEncounteredLoggingTimestamp = -1;
 
     private final TraceReconstructor reconstructor;
-
     /**
      * Reconstruct traces filter.
      * 

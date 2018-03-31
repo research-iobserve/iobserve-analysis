@@ -262,6 +262,7 @@ public class AnalysisConfiguration extends Configuration {
                     .getTraceValidOutputPort();
 
             /** Connect ports. */
+            this.eventDispatcher.registerOutput(ISessionEvent.class);
             this.eventDispatcher.registerOutput(IFlowRecord.class);
             this.connectPorts(this.eventDispatcher.getOutputPort(IFlowRecord.class),
                     traceReconstructionStage.getInputPort());
@@ -314,7 +315,7 @@ public class AnalysisConfiguration extends Configuration {
             final IBehaviorCompositeStage behavior = InstantiationFactory
                     .createWithConfiguration(IBehaviorCompositeStage.class, behaviorClustringClassName, configuration);
 
-            this.eventDispatcher.registerOutput(ISessionEvent.class);
+            //this.eventDispatcher.registerOutput(ISessionEvent.class);
             this.connectPorts(eventBasedTraceOutputPort, behavior.getEventBasedTracePort());
             this.connectPorts(this.eventDispatcher.getOutputPort(ISessionEvent.class),
                     behavior.getSessionEventInputPort());

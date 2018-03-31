@@ -49,5 +49,6 @@ abstract class AbstractNode {
 	
 	abstract int getClosestChildIndex(ClusteringFeature cf);
 	
-	abstract void updateSum();
+	abstract void updateSum();	
+	
 }
