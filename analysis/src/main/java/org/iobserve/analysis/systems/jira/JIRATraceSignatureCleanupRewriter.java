@@ -13,29 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.clustering.filter.models.configuration.examples;
+package org.iobserve.analysis.systems.jira;
 
-import java.util.List;
-
-import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
+import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
 
 /**
- * strategy to find the representative of a list of call-informations returns the first
- * call-information of the list.
+ * Performs cleanup operations on class and operation signatures for the JPetStore application.
  *
- * @author Christoph Dornieden
+ * @author Reiner Jung
  *
- * @deprecated 0.0.3
  */
-@Deprecated
-public class FirstCallInformationCodeStrategy implements IRepresentativeStrategy {
+public class JIRATraceSignatureCleanupRewriter implements ITraceSignatureCleanupRewriter {
 
-    public FirstCallInformationCodeStrategy() { // NOCS empty constructor
+    public JIRATraceSignatureCleanupRewriter() {
         // empty constructor
     }
 
     @Override
-    public Double findRepresentativeCode(final String signature, final List<Double> callInformationCodes) {
-        return callInformationCodes.isEmpty() ? 1.0 : callInformationCodes.get(0);
+    public String rewriteClassSignature(final String classSignature) {
+        return classSignature;
     }
+
+    @Override
+    public String rewriteOperationSignature(final String operationSignature) {
+        return operationSignature;
+    }
+
 }

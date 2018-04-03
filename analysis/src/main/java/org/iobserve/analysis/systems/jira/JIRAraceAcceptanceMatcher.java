@@ -13,27 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.clustering.filter.models.configuration.examples;
+package org.iobserve.analysis.systems.jira;
 
-import java.util.List;
-
-import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
+import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
- * strategy to find the representative of a list of callinformations for jPetstore.
+ * Matches if a given call is valid in context of the user behavior analysis for the JPetStore.
  *
- * @author Christoph Dornieden
+ * @author Reiner Jung
  *
  */
-public class JPetstoreStrategy implements IRepresentativeStrategy {
+public class JIRAraceAcceptanceMatcher implements IEntryCallAcceptanceMatcher {
 
-    public JPetstoreStrategy() { // NOCS empty constructor
+    public JIRAraceAcceptanceMatcher() {
         // empty constructor
     }
 
     @Override
-    public Double findRepresentativeCode(final String signature, final List<Double> callInformationCodes) {
-        // summing up all values
-        return callInformationCodes.stream().reduce(0.0, (a, b) -> a + b);
+    public boolean match(final EntryCallEvent call) {
+        return this.matchClassSignature(call.getClassSignature())
+                && this.matchOperationSignature(call.getOperationSignature());
     }
+
+    private boolean matchOperationSignature(final String operationSignature) {
+        return true;
+    }
+
+    private boolean matchClassSignature(final String classSignature) {
+        return true;
+    }
+
 }

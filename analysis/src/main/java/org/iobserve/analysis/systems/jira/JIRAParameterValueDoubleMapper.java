@@ -13,29 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.clustering.filter.models.configuration.examples;
+package org.iobserve.analysis.systems.jira;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
+import org.iobserve.analysis.clustering.filter.models.IParameterValueDoubleMapper;
 
 /**
- * strategy to find the representative of a list of call-informations returns the first
- * call-information of the list.
+ * This class maps parameter values to numbers reflecting the dissimilarity of the elements. The
+ * mapping reflects the JPetStore.
  *
- * @author Christoph Dornieden
+ * @author Reiner Jung
  *
- * @deprecated 0.0.3
  */
-@Deprecated
-public class FirstCallInformationCodeStrategy implements IRepresentativeStrategy {
+public class JIRAParameterValueDoubleMapper implements IParameterValueDoubleMapper {
 
-    public FirstCallInformationCodeStrategy() { // NOCS empty constructor
-        // empty constructor
+    private final Map<String, Map<String, Double>> valueMap = new HashMap<>();
+
+    /**
+     * Constructor of the value double mapper.
+     */
+    public JIRAParameterValueDoubleMapper() {
+
     }
 
     @Override
-    public Double findRepresentativeCode(final String signature, final List<Double> callInformationCodes) {
-        return callInformationCodes.isEmpty() ? 1.0 : callInformationCodes.get(0);
+    public double mapValue(final String parameter, final String value) {
+        return this.valueMap.get(parameter).get(value);
     }
+
 }
