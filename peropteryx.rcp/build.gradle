@@ -330,30 +330,30 @@ dependencies {
 	
 	testCompile "junit:junit:${VER_JUNIT}"
 
-	runtime 'com.diffplug.osgi:com.diffplug.osgi.extension.sun.misc:0.0.0'
+	//runtime 'com.diffplug.osgi:com.diffplug.osgi.extension.sun.misc:0.0.0'
 	
 	
-	runtime 'eclipse-deps:org.eclipse.emf.ecore.xmi:+'
-	runtime 'eclipse-deps:org.eclipse.jdt.core:+'
+	//runtime 'eclipse-deps:org.eclipse.emf.ecore.xmi:+'
+	//runtime 'eclipse-deps:org.eclipse.jdt.core:+'
 	
 	runtimeDeps.each {
-		runtime "extra:${it}:+"
+		//runtime "extra:${it}:+"
 	}
 
 	// additional runtime deps (not added automatically by "add required")
-	runtime 'extra:org.antlr.runtime:3.2.0.v201101311130'
-	runtime 'extra:org.eclipse.equinox.ds:1.5.0.v20170307-1429'
+	//runtime 'extra:org.antlr.runtime:3.2.0.v201101311130'
+	//runtime 'extra:org.eclipse.equinox.ds:1.5.0.v20170307-1429'
 	
-	runtime 'extra:de.uka.ipd.sdq.codegen.simucontroller:4.1.0.201709290901'
-	runtime 'extra:org.eclipse.pde.core:3.11.100.v20170517-0724'
-	runtime 'extra:org.eclipse.wst.server.core:1.10.0.v201705172051'
-	runtime 'extra:org.palladiosimulator.simulizar:2.1.0.201709282222'
-	runtime 'extra:org.palladiosimulator.simulizar.action:1.0.0.201709282222'
-	runtime 'extra:org.palladiosimulator.simulizar.action.edit:1.0.0.201709282222'
-	runtime 'extra:org.palladiosimulator.simulizar.reconfiguration.storydiagram:1.0.0.201709282222'
+	//runtime 'extra:de.uka.ipd.sdq.codegen.simucontroller:4.1.0.201709290901'
+	//runtime 'extra:org.eclipse.pde.core:3.11.100.v20170517-0724'
+	//runtime 'extra:org.eclipse.wst.server.core:1.10.0.v201705172051'
+	//runtime 'extra:org.palladiosimulator.simulizar:2.1.0.201709282222'
+	//runtime 'extra:org.palladiosimulator.simulizar.action:1.0.0.201709282222'
+	//runtime 'extra:org.palladiosimulator.simulizar.action.edit:1.0.0.201709282222'
+	//runtime 'extra:org.palladiosimulator.simulizar.reconfiguration.storydiagram:1.0.0.201709282222'
 	
 	// runtime dependencies added by "add required" after the previous deps have been added manually
-	runtime 'extra:org.apache.felix.scr:2.0.10.v20170501-2007'
+	//runtime 'extra:org.apache.felix.scr:2.0.10.v20170501-2007'
 	//runtime 'extra:
 	//wrc.dom.svg
 	//w3c.dom.smil

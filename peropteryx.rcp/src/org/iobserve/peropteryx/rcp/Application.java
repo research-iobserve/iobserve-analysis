@@ -1,5 +1,7 @@
 package org.iobserve.peropteryx.rcp;
 
+import java.util.Map;
+
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -31,7 +33,6 @@ import de.uka.ipd.sdq.dsexplore.launch.DSELaunch;
  */
 public class Application implements IApplication {
 
-
     public static final String INPUT_WORKING_DIR_OPTION = "working-dir";
     public static final String INPUT_WORKING_DIR_OPTION_SHORT = "w";
 
@@ -52,6 +53,12 @@ public class Application implements IApplication {
             final CommandLine commandLine = parser.parse(Application.createOptions(), args);
             final String workingDir = commandLine.getOptionValue(Application.INPUT_WORKING_DIR_OPTION);
 
+            ///
+            final Map<String, String> env = System.getenv();
+            for (final String envName : env.keySet()) {
+                System.out.format("%s=%s%n", envName, env.get(envName));
+            }
+            ///
             this.launchPeropteryx(workingDir);
         } catch (final ParseException exp) {
             final HelpFormatter formatter = new HelpFormatter();
@@ -122,8 +129,7 @@ public class Application implements IApplication {
                 "Working directory containing the model files. Note that the files may be changed in the process.");
         workDirOption.setRequired(true);
 
-        final Option productOption = new Option(Application.INPUT_PRODUCT_OPTION, true,
-                "Eclipse product description");
+        final Option productOption = new Option(Application.INPUT_PRODUCT_OPTION, true, "Eclipse product description");
 
         final Option helpOption = new Option("h", "help", false, "Show usage information");
 
