@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.adaptation.stages;
 
-import org.iobserve.adaptation.executionplan.ExecutionPlan;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
 
 import teetime.stage.basic.AbstractTransformation;
@@ -28,7 +27,7 @@ import teetime.stage.basic.AbstractTransformation;
  * @author Lars Bluemke
  *
  */
-public class AtomicActionComputation extends AbstractTransformation<SystemAdaptation, ExecutionPlan> {
+public class AtomicActionComputation extends AbstractTransformation<SystemAdaptation, Object> {
 
     @Override
     protected void execute(final SystemAdaptation systemAdaptationModel) throws Exception {

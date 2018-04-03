@@ -1,4 +1,4 @@
-package org.iobserve.adaptation.droolsstages
+package org.iobserve.adaptation.stages
 
 import java.util.LinkedList
 import org.iobserve.adaptation.data.AssemblyContextActionFactory
