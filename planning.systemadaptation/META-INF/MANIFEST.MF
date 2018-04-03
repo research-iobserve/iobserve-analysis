@@ -7,9 +7,6 @@ Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.iobserve.adaptation.executionplan,
- org.iobserve.adaptation.executionplan.impl,
- org.iobserve.adaptation.executionplan.util
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
  de.uka.ipd.sdq.identifier;visibility:=reexport,
