@@ -13,36 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.droolsstages;
+package org.iobserve.adaptation.stages;
 
 /**
- * A person for testing.
- *
+ * An applicant for testing.
+ * 
  * @author Lars Bluemke
  *
  */
-public class Person {
+public class Applicant {
     private String name;
-    private int time;
-    private String greet;
-    private Coolness coolness;
+    private int age;
+    private boolean valid;
 
-    public enum Coolness {
-        COOL, UNCOOL
-    }
-
-    public Person(final String name, final int time) {
+    public Applicant(final String name, final int age) {
         this.name = name;
-        this.time = time;
-        this.coolness = Coolness.COOL;
-    }
-
-    public String getGreet() {
-        return this.greet;
-    }
-
-    public void setGreet(final String greet) {
-        this.greet = greet;
+        this.age = age;
+        this.valid = true;
     }
 
     public String getName() {
@@ -53,23 +40,19 @@ public class Person {
         this.name = name;
     }
 
-    public int getTime() {
-        return this.time;
+    public int getAge() {
+        return this.age;
     }
 
-    public void setTime(final int time) {
-        this.time = time;
+    public void setAge(final int age) {
+        this.age = age;
     }
 
-    public Coolness getCoolness() {
-        return this.coolness;
+    public boolean isValid() {
+        return this.valid;
     }
 
-    public void setCoolness(final Coolness coolness) {
-        this.coolness = coolness;
-    }
-
-    public static String test(final String s) {
-        return "hello " + s;
+    public void setValid(final boolean valid) {
+        this.valid = valid;
     }
 }

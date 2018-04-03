@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.droolsstages;
+package org.iobserve.adaptation.stages;
 
 import org.iobserve.adaptation.executionplan.ExecutionPlan;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;

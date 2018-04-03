@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.adaptation.droolsstages;
+package org.iobserve.adaptation.stages;
 
 import org.iobserve.adaptation.data.AdaptationData;
+import org.iobserve.adaptation.stages.ComposedActionComputation;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
 
 import teetime.framework.Configuration;
