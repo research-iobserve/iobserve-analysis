@@ -43,6 +43,12 @@ public final class EvaluationGenerationMain {
         // all static class
     }
 
+    /**
+     * main routine.
+     *
+     * @param args
+     *            program arguments
+     */
     public static void main(final String[] args) {
 
         final CommandLineParser parser = new DefaultParser();

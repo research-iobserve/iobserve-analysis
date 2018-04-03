@@ -21,11 +21,11 @@ import java.util.Collection;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
 import kieker.common.record.flow.IFlowRecord;
 
 import teetime.framework.Configuration;
 import teetime.stage.InitialElementProducer;
-import teetime.stage.className.ClassNameRegistryRepository;
 
 import org.iobserve.rac.creator.filter.DoAllFilter;
 import org.iobserve.rac.creator.filter.ListWriter;

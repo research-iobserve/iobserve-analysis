@@ -45,7 +45,9 @@ public class StartSessionDetector extends AbstractConsumerStage<IMonitoringRecor
 
     @Override
     protected void execute(final IMonitoringRecord event) throws Exception {
-        if (event instanceof TraceMetadata) {
+        if (event instanceof SessionStartEvent) {
+            this.sessionRegister.add(((SessionStartEvent) event).getSessionId());
+        } else if (event instanceof TraceMetadata) {
             final TraceMetadata traceMetadata = (TraceMetadata) event;
             if (!this.sessionRegister.stream().anyMatch(key -> key.equals(traceMetadata.getSessionId()))) {
                 this.sessionRegister.add(traceMetadata.getSessionId());
