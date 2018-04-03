@@ -64,8 +64,7 @@ public class ExecutionWrapper extends AbstractExecutionWrapper {
     }
 
     private boolean isWindows() {
-        final boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-        return isWindows;
+        return System.getProperty("os.name").startsWith("Windows");
     }
 
     @Override

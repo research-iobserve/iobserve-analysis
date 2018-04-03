@@ -17,12 +17,12 @@ package org.iobserve.planning.cli;
 
 import java.io.File;
 
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
+
 import org.iobserve.planning.configurations.PlanningConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
 
 /**
  * Main class for iObserve's adaptation service.
@@ -34,12 +34,14 @@ public class PlanningMainDebug {
 
     private static final Logger LOG = LoggerFactory.getLogger(PlanningMainDebug.class);
 
-    private final int planningInputPort = 12349;
-    private final File modelDirectory = new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/working-dir-planning");
-    private final File perOpteryxHeadless = new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/imaginaryPath/PO");
-    private final File lqnsDir = new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/imaginaryPath/LQNS");
-    private final String adaptationHostname = "localhost";
-    private final int adaptationInputPort = 12346;
+    private static final int PLANNING_INPUT_PORT = 12349;
+    private static final String ADAPTATION_HOST_NAME = "localhost";
+    private static final int ADAPTATION_INPUT_PORT = 12346;
+
+    private static final File MODEL_DIR = new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/working-dir-planning");
+    private static final File PO_HEADLESS_DIR = new File(
+            "/Users/LarsBlumke/Documents/CAU/Masterarbeit/imaginaryPath/PO");
+    private static final File LQNS_DIR = new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/imaginaryPath/LQNS");
 
     public static void main(final String[] args) {
         new PlanningMainDebug().run();
@@ -48,8 +50,9 @@ public class PlanningMainDebug {
 
     private void run() {
         final Execution<PlanningConfiguration> execution = new Execution<>(
-                new PlanningConfiguration(this.planningInputPort, this.modelDirectory, this.perOpteryxHeadless,
-                        this.lqnsDir, this.adaptationHostname, this.adaptationInputPort));
+                new PlanningConfiguration(PlanningMainDebug.PLANNING_INPUT_PORT, PlanningMainDebug.MODEL_DIR,
+                        PlanningMainDebug.PO_HEADLESS_DIR, PlanningMainDebug.LQNS_DIR,
+                        PlanningMainDebug.ADAPTATION_HOST_NAME, PlanningMainDebug.ADAPTATION_INPUT_PORT));
 
         this.shutdownHook(execution);
 
@@ -64,20 +67,12 @@ public class PlanningMainDebug {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    synchronized (execution) {
-                        execution.abortEventually();
-                        PlanningMainDebug.this.shutdownService();
-                    }
-                } catch (final Exception e) { // NOCS
-
+                synchronized (execution) {
+                    execution.abortEventually();
                 }
             }
         }));
 
     }
 
-    protected void shutdownService() {
-        // TODO serialize PCM models.
-    }
 }

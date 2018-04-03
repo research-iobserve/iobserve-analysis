@@ -17,6 +17,8 @@ package org.iobserve.execution.actionscripts;
 
 import java.io.File;
 
+import com.google.common.collect.Iterables;
+
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.execution.utils.ModelHelper;
 import org.iobserve.planning.systemadaptation.AllocateAction;
@@ -35,8 +37,6 @@ import org.palladiosimulator.pcm.cloud.pcmcloud.resourceenvironmentcloud.Resourc
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.collect.Iterables;
 
 /**
  * Action script for allocating a new cloud resource container.

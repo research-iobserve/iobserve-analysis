@@ -17,13 +17,13 @@ package org.iobserve.adaptation.configurations;
 
 import java.io.File;
 
+import teetime.framework.Configuration;
+
 import org.iobserve.adaptation.cli.ModelFileSink;
 import org.iobserve.adaptation.legacystages.AdaptationCalculation;
 import org.iobserve.adaptation.legacystages.AdaptationPlanning;
 import org.iobserve.adaptation.legacystages.SystemAdaptation;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
-
-import teetime.framework.Configuration;
 
 /**
  * Configuration for the stages of the adaptation service.
@@ -34,10 +34,9 @@ import teetime.framework.Configuration;
 public class AdaptationConfigurationDebug extends Configuration {
 
     public AdaptationConfigurationDebug() {
-        final SystemAdaptation systemAdaptor = new SystemAdaptation(new AdaptationCalculation(),
-                new AdaptationPlanning());
+        new SystemAdaptation(new AdaptationCalculation(), new AdaptationPlanning());
 
-        // TODO for lbl: Implement a way to pass data to the following stages
+        // Implement a way to pass data to the following stages
         // Path Adaptation => Execution
         // this.connectPorts(systemAdaptor.getOutputPort(), adaptationExecution.getInputPort());
 

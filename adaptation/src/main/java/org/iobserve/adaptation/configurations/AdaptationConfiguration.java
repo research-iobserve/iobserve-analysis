@@ -17,11 +17,11 @@ package org.iobserve.adaptation.configurations;
 
 import java.io.File;
 
+import teetime.framework.Configuration;
+
 import org.iobserve.adaptation.data.stages.AdaptationDataCreator;
 import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
-
-import teetime.framework.Configuration;
 
 /**
  * Configuration for the stages of the adaptation service.

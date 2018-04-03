@@ -17,14 +17,14 @@ package org.iobserve.planning.configurations;
 
 import java.io.File;
 
+import teetime.framework.Configuration;
+
 import org.iobserve.planning.ModelOptimization;
 import org.iobserve.planning.ModelProcessing;
 import org.iobserve.stages.model.ModelDir2ModelFilesStage;
 import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
-
-import teetime.framework.Configuration;
 
 /**
  * Configuration for the stages of the planning service.
@@ -33,13 +33,6 @@ import teetime.framework.Configuration;
  *
  */
 public class PlanningConfiguration extends Configuration {
-
-    private final SingleConnectionTcpReaderStage tcpReader;
-    private final ModelFiles2ModelDirCollectorStage modelFilesCollector;
-    private final ModelProcessing modelPreProcessor;
-    private final ModelOptimization modelOptimizer;
-    private final ModelDir2ModelFilesStage modelDir2ModelFiles;
-    private final SingleConnectionTcpWriterStage tcpWriter;
 
     /**
      * Creates a new instance of this class.
@@ -60,26 +53,33 @@ public class PlanningConfiguration extends Configuration {
     public PlanningConfiguration(final int planningInputPort, final File modelDirectory, final File perOpteryxHeadless,
             final File lqnsDir, final String adaptationHostname, final int adaptationInputPort) {
 
-        this.tcpReader = new SingleConnectionTcpReaderStage(planningInputPort, modelDirectory);
-        this.modelFilesCollector = new ModelFiles2ModelDirCollectorStage();
-        this.modelPreProcessor = new ModelProcessing();
+        final SingleConnectionTcpReaderStage tcpReader;
+        final ModelFiles2ModelDirCollectorStage modelFilesCollector;
+        final ModelProcessing modelPreProcessor;
+        final ModelOptimization modelOptimizer;
+        final ModelDir2ModelFilesStage modelDir2ModelFiles;
+        final SingleConnectionTcpWriterStage tcpWriter;
 
-        // TODO: Only removed for debugging
+        tcpReader = new SingleConnectionTcpReaderStage(planningInputPort, modelDirectory);
+        modelFilesCollector = new ModelFiles2ModelDirCollectorStage();
+        modelPreProcessor = new ModelProcessing();
+
+        // Only removed for debugging
         // if ((perOpteryxHeadless != null) && (lqnsDir != null)) {
-        this.modelOptimizer = new ModelOptimization(perOpteryxHeadless, lqnsDir);
+        modelOptimizer = new ModelOptimization(perOpteryxHeadless, lqnsDir);
         // } else {
         // throw new IllegalArgumentException(
         // "Failed to initialize ModelProcessing. Path to PerOpteryx or LQN solver must not be
         // null!");
         // }
 
-        this.modelDir2ModelFiles = new ModelDir2ModelFilesStage();
-        this.tcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname, adaptationInputPort);
+        modelDir2ModelFiles = new ModelDir2ModelFilesStage();
+        tcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname, adaptationInputPort);
 
-        this.connectPorts(this.tcpReader.getOutputPort(), this.modelFilesCollector.getInputPort());
-        this.connectPorts(this.modelFilesCollector.getOutputPort(), this.modelPreProcessor.getInputPort());
-        this.connectPorts(this.modelPreProcessor.getOutputPort(), this.modelOptimizer.getInputPort());
-        this.connectPorts(this.modelOptimizer.getOutputPort(), this.modelDir2ModelFiles.getInputPort());
-        this.connectPorts(this.modelDir2ModelFiles.getOutputPort(), this.tcpWriter.getInputPort());
+        this.connectPorts(tcpReader.getOutputPort(), modelFilesCollector.getInputPort());
+        this.connectPorts(modelFilesCollector.getOutputPort(), modelPreProcessor.getInputPort());
+        this.connectPorts(modelPreProcessor.getOutputPort(), modelOptimizer.getInputPort());
+        this.connectPorts(modelOptimizer.getOutputPort(), modelDir2ModelFiles.getInputPort());
+        this.connectPorts(modelDir2ModelFiles.getOutputPort(), tcpWriter.getInputPort());
     }
 }

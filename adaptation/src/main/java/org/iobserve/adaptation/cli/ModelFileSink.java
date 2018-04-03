@@ -17,16 +17,11 @@ package org.iobserve.adaptation.cli;
 
 import java.io.File;
 
+import teetime.framework.AbstractConsumerStage;
+
 import org.iobserve.model.PCMModelHandler;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.system.System;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import teetime.framework.AbstractConsumerStage;
 
 /**
  * Only for debugging.
@@ -44,11 +39,11 @@ public class ModelFileSink extends AbstractConsumerStage<File> {
 
         final PCMModelHandler modelHandler = new PCMModelHandler(ModelFileSink.PCM_MODELS_DIRECTORY);
 
-        final Repository repositoryModel = modelHandler.getRepositoryModel();
-        final UsageModel usageModel = modelHandler.getUsageModel();
-        final System systemModel = modelHandler.getSystemModel();
-        final ResourceEnvironment resourceEnvironmentModel = modelHandler.getResourceEnvironmentModel();
-        final Allocation allocationModel = modelHandler.getAllocationModel();
+        modelHandler.getRepositoryModel();
+        modelHandler.getUsageModel();
+        modelHandler.getSystemModel();
+        modelHandler.getResourceEnvironmentModel();
+        modelHandler.getAllocationModel();
 
         ModelFileSink.LOG.debug("I'm done");
     }

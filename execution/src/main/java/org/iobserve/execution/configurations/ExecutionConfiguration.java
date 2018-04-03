@@ -17,12 +17,12 @@ package org.iobserve.execution.configurations;
 
 import java.io.File;
 
+import teetime.framework.Configuration;
+
 import org.iobserve.evaluation.ModelComparer;
 import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.execution.AdaptationExecution;
 import org.iobserve.execution.IAdaptationEventListener;
-
-import teetime.framework.Configuration;
 
 /**
  * Configuration for the stages of the execution service.
@@ -37,8 +37,8 @@ public class ExecutionConfiguration extends Configuration {
         // There is an AdaptionEventListener class, but in the previous implementation null was
         // used instead.
         if (deployablesFolder != null) {
-            final AdaptationExecution adaptationExecution = new AdaptationExecution(eventListener, deployablesFolder);
-            final SystemEvaluation systemEvaluator = new SystemEvaluation(new ModelComparer());
+            new AdaptationExecution(eventListener, deployablesFolder);
+            new SystemEvaluation(new ModelComparer());
         }
 
     }

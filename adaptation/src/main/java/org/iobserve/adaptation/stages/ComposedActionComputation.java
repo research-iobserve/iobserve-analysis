@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import teetime.stage.basic.AbstractTransformation;
+
 import org.iobserve.adaptation.data.ActionFactory;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.adaptation.data.graph.ModelGraph;
@@ -33,8 +35,6 @@ import org.kie.api.command.KieCommands;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.StatelessKieSession;
 
-import teetime.stage.basic.AbstractTransformation;
-
 /**
  * Receives an AdaptationData record containing the runtime model graph as well as the redeployment
  * model graph. Inserts both graphs into the drools rule engine and receives a
@@ -45,14 +45,12 @@ import teetime.stage.basic.AbstractTransformation;
  *
  */
 public class ComposedActionComputation extends AbstractTransformation<AdaptationData, SystemAdaptation> {
-    static final String ADAPTATION_ACTION_LIST_ID = "composedAdaptationActions";
+    private final KieServices kieServices = KieServices.Factory.get();
+    private final KieContainer kContainer = this.kieServices.getKieClasspathContainer();
+    private final StatelessKieSession kSession = this.kContainer.newStatelessKieSession();
+    private final KieCommands kieCommands = this.kieServices.getCommands();
 
-    final KieServices kieServices = KieServices.Factory.get();
-    final KieContainer kContainer = this.kieServices.getKieClasspathContainer();
-    final StatelessKieSession kSession = this.kContainer.newStatelessKieSession();
-    final KieCommands kieCommands = this.kieServices.getCommands();
-
-    final boolean isTestRun;
+    private final boolean isTestRun;
 
     /**
      * Creates a new instance of this filter.

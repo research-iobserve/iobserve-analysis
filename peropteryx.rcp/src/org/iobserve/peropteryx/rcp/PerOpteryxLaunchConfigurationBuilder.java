@@ -1,9 +1,29 @@
+/***************************************************************************
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.peropteryx.rcp;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import de.uka.ipd.sdq.dsexplore.launch.DSEConstantsContainer;
+import de.uka.ipd.sdq.dsexplore.launch.DSEConstantsContainer.QualityAttribute;
+import de.uka.ipd.sdq.simucomframework.SimuComConfig;
+import de.uka.ipd.sdq.simulation.AbstractSimulationConfig;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
@@ -24,11 +44,6 @@ import org.palladiosimulator.recorderframework.edp2.config.AbstractEDP2RecorderC
 import org.palladiosimulator.recorderframework.utils.RecorderExtensionHelper;
 import org.palladiosimulator.reliability.MarkovEvaluationType;
 import org.palladiosimulator.solver.runconfig.MessageStrings;
-
-import de.uka.ipd.sdq.dsexplore.launch.DSEConstantsContainer;
-import de.uka.ipd.sdq.dsexplore.launch.DSEConstantsContainer.QualityAttribute;
-import de.uka.ipd.sdq.simucomframework.SimuComConfig;
-import de.uka.ipd.sdq.simulation.AbstractSimulationConfig;
 
 /**
  * This class programmatically configures PerOpteryx. In the native PerOpteryx plugin, these
@@ -85,6 +100,7 @@ public final class PerOpteryxLaunchConfigurationBuilder {
      *            The PCM model directory
      * @return The launch configuration
      * @throws CoreException
+     *             when creating or saving the launch configuration fails
      */
     public static ILaunchConfiguration getDefaultLaunchConfiguration(final String projectModelDir,
             final String sourceModelDir) throws CoreException {
@@ -114,7 +130,6 @@ public final class PerOpteryxLaunchConfigurationBuilder {
         workingCopy.setAttributes(attr);
 
         final ILaunchConfiguration launchConfig = workingCopy.doSave();
-
 
         return launchConfig;
     }

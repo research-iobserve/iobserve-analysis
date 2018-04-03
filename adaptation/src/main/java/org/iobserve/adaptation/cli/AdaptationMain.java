@@ -15,12 +15,12 @@
  ***************************************************************************/
 package org.iobserve.adaptation.cli;
 
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
+
 import org.iobserve.adaptation.configurations.AdaptationConfigurationDebug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
 
 /**
  * Main class for iObserve's adaptation service.
@@ -53,13 +53,9 @@ public class AdaptationMain {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    synchronized (execution) {
-                        execution.abortEventually();
-                        AdaptationMain.this.shutdownService();
-                    }
-                } catch (final Exception e) { // NOCS
-
+                synchronized (execution) {
+                    execution.abortEventually();
+                    AdaptationMain.this.shutdownService();
                 }
             }
         }));
@@ -67,6 +63,6 @@ public class AdaptationMain {
     }
 
     protected void shutdownService() {
-        // TODO serialize PCM models.
+        // serialize PCM models.
     }
 }

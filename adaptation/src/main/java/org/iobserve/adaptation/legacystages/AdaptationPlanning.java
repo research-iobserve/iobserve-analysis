@@ -20,6 +20,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import teetime.stage.basic.AbstractTransformation;
+
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
@@ -30,8 +32,6 @@ import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
-
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  * This stage orderes the adaptation {@link Action}s into an executable sequence.

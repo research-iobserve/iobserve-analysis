@@ -15,12 +15,12 @@
  ***************************************************************************/
 package org.iobserve.execution.cli;
 
+import teetime.framework.Configuration;
+import teetime.framework.Execution;
+
 import org.iobserve.execution.configurations.ExecutionConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import teetime.framework.Configuration;
-import teetime.framework.Execution;
 
 /**
  * Main class for iObserve's execution service.
@@ -53,13 +53,9 @@ public class ExecutionMain {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    synchronized (execution) {
-                        execution.abortEventually();
-                        ExecutionMain.this.shutdownService();
-                    }
-                } catch (final Exception e) { // NOCS
-
+                synchronized (execution) {
+                    execution.abortEventually();
+                    ExecutionMain.this.shutdownService();
                 }
             }
         }));

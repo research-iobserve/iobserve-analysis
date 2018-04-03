@@ -26,10 +26,10 @@ import teetime.stage.basic.AbstractTransformation;
  */
 public class ModelOptimization extends AbstractTransformation<File, File> {
 
-    private static final int EXEC_SUCCESS = 0;
+    // private static final int EXEC_SUCCESS = 0;
 
-    private final File perOpteryxDir;
-    private final File lqnsDir;
+    // private final File perOpteryxDir;
+    // private final File lqnsDir;
 
     /**
      * Creates a new model Optimization stage. The location of executables of PerOpteryx and the
@@ -41,8 +41,8 @@ public class ModelOptimization extends AbstractTransformation<File, File> {
      *            directory for layered queuing networks
      */
     public ModelOptimization(final File perOpteryxDir, final File lqnsDir) {
-        this.perOpteryxDir = perOpteryxDir;
-        this.lqnsDir = lqnsDir;
+        // this.perOpteryxDir = perOpteryxDir;
+        // this.lqnsDir = lqnsDir;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class ModelOptimization extends AbstractTransformation<File, File> {
         // // adaptationData.setReDeploymentURI(URI.createFileURI(uriString));
         // }
 
-        // TODO: Execute PerOpteryx here
+        // Execute PerOpteryx here
 
         // dead code.. what was the purpose?
         this.outputPort.send(modelDirectory);

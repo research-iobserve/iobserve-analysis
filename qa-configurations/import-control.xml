@@ -17,8 +17,10 @@
     <allow pkg="org.hamcrest"/>
     <allow pkg="org.junit"/>
     <allow pkg="org.json"/>
+    <allow pkg="org.kie"/>
     <allow pkg="org.mockito"/>
     <allow pkg="org.neo4j"/>
+    <allow pkg="org.osgi"/>
 	<allow pkg="org.palladiosimulator"/>
     <allow pkg="org.powermock"/>
     <allow pkg="org.slf4j"/>

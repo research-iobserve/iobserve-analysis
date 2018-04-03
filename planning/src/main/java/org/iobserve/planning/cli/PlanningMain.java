@@ -148,8 +148,7 @@ public final class PlanningMain {
                 PlanningMain.LOGGER.info("Creating ResourceEnvironment...");
             }
             final PCMModelHandler modelHandler = new PCMModelHandler(new File(workingDir));
-            ModelHelper.fillResourceEnvironmentFromCloudProfile(
-                    org.eclipse.emf.common.util.URI.createFileURI(workingDir), modelHandler);
+            ModelHelper.fillResourceEnvironmentFromCloudProfile(URI.createFileURI(workingDir), modelHandler);
             if (PlanningMain.LOGGER.isInfoEnabled()) {
                 PlanningMain.LOGGER.info("ResourceEnvironment successfully created.");
             }

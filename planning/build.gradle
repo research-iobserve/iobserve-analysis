@@ -23,13 +23,6 @@ dependencies {
     compile 'org.glassfish:javax.json:1.0.4'
     compile 'commons-io:commons-io:2.5'
     compile 'org.json:json:20170516'
-    
-	compile 'org.eclipse.platform:org.eclipse.debug.core:3.11.0'
-	compile 'org.eclipse.pde:org.eclipse.pde.core:3.11.100'
-	compile 'org.eclipse.pde:org.eclipse.pde.ui:3.10.51'
-
-
-    
 
     // https://mvnrepository.com/artifact/com.sun.net.httpserver/http
     testCompile 'com.sun.net.httpserver:http:20070405'

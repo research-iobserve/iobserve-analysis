@@ -15,6 +15,10 @@
  ***************************************************************************/
 package org.iobserve.model;
 
+import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarations;
+import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -23,10 +27,6 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarations;
-import de.uka.ipd.sdq.pcm.cost.CostRepository;
-import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 
 /**
  * A mockup of the regular PCMModelHandler for testing purposes. Instead of having to read the

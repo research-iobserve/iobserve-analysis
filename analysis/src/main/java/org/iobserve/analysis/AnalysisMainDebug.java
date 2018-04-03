@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import teetime.framework.Configuration;
 import teetime.framework.Execution;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main class for mocking iObserve's analysis service.

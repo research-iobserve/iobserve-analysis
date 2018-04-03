@@ -69,13 +69,16 @@ public class GraphFactory {
      *
      * @param modelHandler
      *            object containing all model providers
+     * @param revision
+     *            the graph's revision
      * @return returns the model graph for this
      * @throws Exception
      *             on error
      */
     public ModelGraph buildGraph(final PCMModelHandler modelHandler, final ModelGraphRevision revision)
             throws Exception {
-        this.init(modelHandler);
+        this.modelProvider = modelHandler;
+        this.init();
 
         this.extractAssemblyContexts(this.modelProvider.getSystemModel());
         this.extractAssemblyConnectors(this.modelProvider.getSystemModel());
@@ -96,13 +99,15 @@ public class GraphFactory {
      *            a resource environment model instance
      * @param allocationModel
      *            an allocation model instance
+     * @param revision
+     *            the graph's revision
      * @return returns the model graph for this
      * @throws Exception
      *             on error
      */
     public ModelGraph buildGraph(final System systemModel, final ResourceEnvironment resourceEnvironmentModel,
             final Allocation allocationModel, final ModelGraphRevision revision) throws Exception {
-        this.init(null);
+        this.init();
 
         this.extractAssemblyContexts(systemModel);
         this.extractAssemblyConnectors(systemModel);
@@ -116,9 +121,7 @@ public class GraphFactory {
     /*
      * Prepare all data structures.
      */
-    private void init(final PCMModelHandler modelProvider) { // NOCS
-        this.modelProvider = modelProvider;
-
+    private void init() {
         this.assemblyContexts = new HashMap<>();
         this.assemblyContextPrivacyLvl = new HashMap<>();
         this.assemblyConnectors = new HashMap<>();
@@ -130,7 +133,7 @@ public class GraphFactory {
     /*
      * Extract Information Helpers
      */
-    private void extractAssemblyContexts(final org.palladiosimulator.pcm.system.System sysModel) {
+    private void extractAssemblyContexts(final System sysModel) {
         final EList<AssemblyContext> newAssemblyContexts = sysModel.getAssemblyContexts__ComposedStructure();
         final Set<String> acs = new HashSet<>();
 
@@ -144,7 +147,7 @@ public class GraphFactory {
         }
     }
 
-    private void extractAssemblyConnectors(final org.palladiosimulator.pcm.system.System sysModel) {
+    private void extractAssemblyConnectors(final System sysModel) {
         final EList<Connector> newConnectors = sysModel.getConnectors__ComposedStructure();
 
         for (final Connector connector : newConnectors) {
@@ -154,8 +157,10 @@ public class GraphFactory {
             } else if ((connector instanceof AssemblyConnector)) {
                 final AssemblyConnector acp = (AssemblyConnector) connector;
                 this.assemblyConnectors.put(connector.getId(), acp);
-                GraphFactory.LOGGER.warn(
-                        "An AssemblyContext (ID: " + acp.getId() + ") was found which has no privacy extention\n");
+                if (GraphFactory.LOGGER.isWarnEnabled()) {
+                    GraphFactory.LOGGER.warn(
+                            "An AssemblyContext (ID: " + acp.getId() + ") was found which has no privacy extention\n");
+                }
             }
         }
     }
@@ -214,7 +219,7 @@ public class GraphFactory {
     private void extractResourceContainers(final ResourceEnvironment resEnvModel) {
         final EList<ResourceContainer> newResourceContainers = resEnvModel.getResourceContainer_ResourceEnvironment();
         for (final ResourceContainer resourceContainer : newResourceContainers) {
-            if (!(resourceContainer instanceof ResourceContainerPrivacy)) {
+            if (!(resourceContainer instanceof ResourceContainerPrivacy) && GraphFactory.LOGGER.isWarnEnabled()) {
                 GraphFactory.LOGGER.warn("A ResourceContainer (ID: " + resourceContainer.getId()
                         + ") was found which has no privacy extention\n");
             }

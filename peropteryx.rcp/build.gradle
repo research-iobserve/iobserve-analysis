@@ -336,9 +336,9 @@ dependencies {
 	//runtime 'eclipse-deps:org.eclipse.emf.ecore.xmi:+'
 	//runtime 'eclipse-deps:org.eclipse.jdt.core:+'
 	
-	runtimeDeps.each {
+	//runtimeDeps.each {
 		//runtime "extra:${it}:+"
-	}
+	//}
 
 	// additional runtime deps (not added automatically by "add required")
 	//runtime 'extra:org.antlr.runtime:3.2.0.v201101311130'
@@ -359,9 +359,9 @@ dependencies {
 	//w3c.dom.smil
 	//w3c.dom.events
 
-	additionalRuntimeDeps.each {
-		runtime "extra:${it}:+"
-	}	
+	//additionalRuntimeDeps.each {
+		//runtime "extra:${it}:+"
+	//}	
 				
 
 }

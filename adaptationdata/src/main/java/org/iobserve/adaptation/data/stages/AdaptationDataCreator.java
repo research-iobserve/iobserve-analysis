@@ -17,11 +17,11 @@ package org.iobserve.adaptation.data.stages;
 
 import java.io.File;
 
-import org.iobserve.adaptation.data.AdaptationData;
-
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
+
+import org.iobserve.adaptation.data.AdaptationData;
 
 /**
  * Receives directories to the runtime model as well as the redeployment model and initializes the

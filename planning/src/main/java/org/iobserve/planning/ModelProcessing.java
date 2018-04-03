@@ -20,9 +20,15 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+
+import teetime.stage.basic.AbstractFilter;
+
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.iobserve.model.IPCMModelHandler;
 import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.factory.DesignDecisionModelFactory;
@@ -47,10 +53,6 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.uka.ipd.sdq.pcm.cost.CostRepository;
-import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
-import teetime.stage.basic.AbstractFilter;
-
 /**
  * Stage for processing the PCM model before the model is used in PerOpteryx for generating
  * adaptation candidates. This stage performs the grouping of allocation contexts into allocation
@@ -70,16 +72,12 @@ public class ModelProcessing extends AbstractFilter<File> {
     public static final int POSSIBLE_REPLICAS_OFFSET = 10;
     public static final int POSSIBLE_REPLICAS_FACTOR = 1;
 
-    private PCMModelHandler originalModelHandler;
-    private PCMModelHandler processedModelHandler;
-
     private AllocationGroupsContainer originalAllocationGroups;
     private Allocation allocationModel;
     private CloudProfile cloudProfileModel;
     private CostRepository costModel;
     private ResourceEnvironment resourceEnvironmentModel;
     private DecisionSpace decisionModel;
-    private DecisionSpace decisionSpace;
 
     private URI processedModelDir;
 
@@ -114,31 +112,35 @@ public class ModelProcessing extends AbstractFilter<File> {
 
     private void initModelTransformation(final File originalModelDirectory)
             throws IOException, InitializationException {
+        PCMModelHandler originalModelHandler;
+        PCMModelHandler processedModelHandler;
+        DecisionSpace decisionSpace;
+
         final URI originalModelDirectoryUri = URI.createFileURI(originalModelDirectory.getAbsolutePath());
 
-        this.originalModelHandler = new PCMModelHandler(originalModelDirectory);
+        originalModelHandler = new PCMModelHandler(originalModelDirectory);
         this.processedModelDir = originalModelDirectoryUri.appendSegment(ModelProcessing.PROCESSED_MODEL_FOLDER);
 
         SnapshotBuilder.setBaseSnapshotURI(originalModelDirectoryUri);
 
         final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER,
-                this.originalModelHandler);
+                originalModelHandler);
         snapshotBuilder.createSnapshot();
 
-        this.processedModelHandler = new PCMModelHandler(new File(this.processedModelDir.toFileString()));
+        processedModelHandler = new PCMModelHandler(new File(this.processedModelDir.toFileString()));
 
-        this.allocationModel = this.processedModelHandler.getAllocationModel();
-        this.cloudProfileModel = this.processedModelHandler.getCloudProfileModel();
-        this.costModel = this.processedModelHandler.getCostModel();
-        this.resourceEnvironmentModel = this.processedModelHandler.getResourceEnvironmentModel();
-        this.decisionModel = this.processedModelHandler.getDesignDecisionModel();
-        this.decisionSpace = this.processedModelHandler.getDesignDecisionModel();
+        this.allocationModel = processedModelHandler.getAllocationModel();
+        this.cloudProfileModel = processedModelHandler.getCloudProfileModel();
+        this.costModel = processedModelHandler.getCostModel();
+        this.resourceEnvironmentModel = processedModelHandler.getResourceEnvironmentModel();
+        this.decisionModel = processedModelHandler.getDesignDecisionModel();
+        decisionSpace = processedModelHandler.getDesignDecisionModel();
 
-        if (this.decisionSpace == null) {
-            this.decisionSpace = DesignDecisionModelFactory.createDecisionSpace("processedDecision");
+        if (decisionSpace == null) {
+            decisionSpace = DesignDecisionModelFactory.createDecisionSpace("processedDecision");
         }
 
-        final Allocation originalAllocation = this.originalModelHandler.getAllocationModel();
+        final Allocation originalAllocation = originalModelHandler.getAllocationModel();
 
         this.originalAllocationGroups = new AllocationGroupsContainer(originalAllocation);
     }
@@ -175,13 +177,14 @@ public class ModelProcessing extends AbstractFilter<File> {
 
     private void saveModels() {
         new DesignDecisionModelHandler().save(
-                this.processedModelDir.appendFileExtension(PCMModelHandler.DESIGN_DECISION_SUFFIX), this.decisionModel);
-        new AllocationModelHandler().save(this.processedModelDir.appendFileExtension(PCMModelHandler.ALLOCATION_SUFFIX),
-                this.allocationModel);
-        new CostModelHandler().save(this.processedModelDir.appendFileExtension(PCMModelHandler.COST_SUFFIX),
+                this.processedModelDir.appendFileExtension(IPCMModelHandler.DESIGN_DECISION_SUFFIX),
+                this.decisionModel);
+        new AllocationModelHandler().save(
+                this.processedModelDir.appendFileExtension(IPCMModelHandler.ALLOCATION_SUFFIX), this.allocationModel);
+        new CostModelHandler().save(this.processedModelDir.appendFileExtension(IPCMModelHandler.COST_SUFFIX),
                 this.costModel);
         new ResourceEnvironmentModelHandler().save(
-                this.processedModelDir.appendFileExtension(PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX),
+                this.processedModelDir.appendFileExtension(IPCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX),
                 this.resourceEnvironmentModel);
     }
 
@@ -222,8 +225,8 @@ public class ModelProcessing extends AbstractFilter<File> {
                 if (cloudResource instanceof VMType) {
                     final VMType cloudVM = (VMType) cloudResource;
 
-                    String degreeName;
-                    ResourceContainerCloud createdContainer;
+                    String degreeName; // NOCS
+                    ResourceContainerCloud createdContainer; // NOCS
                     if (this.isSameVMType(cloudVM, representingContainer)) {
                         createdContainer = representingContainer;
                         degreeName = String.format("%s_ReplicationDegree", allocationGroup.getName());

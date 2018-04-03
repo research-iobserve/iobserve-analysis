@@ -15,9 +15,14 @@
  ***************************************************************************/
 package org.iobserve.adaptation.stages;
 
-import org.iobserve.planning.systemadaptation.SystemAdaptation;
+import java.util.ArrayList;
+import java.util.List;
 
 import teetime.stage.basic.AbstractTransformation;
+
+import org.iobserve.adaptation.util.AtomicActionFactory;
+import org.iobserve.planning.systemadaptation.Action;
+import org.iobserve.planning.systemadaptation.SystemAdaptation;
 
 /**
  * Receives a {@link SystemAdaptation} model containing a list of composed adaptation actions and
@@ -27,12 +32,17 @@ import teetime.stage.basic.AbstractTransformation;
  * @author Lars Bluemke
  *
  */
-public class AtomicActionComputation extends AbstractTransformation<SystemAdaptation, Object> {
+public class AtomicActionComputation extends AbstractTransformation<SystemAdaptation, List<Object>> {
 
     @Override
     protected void execute(final SystemAdaptation systemAdaptationModel) throws Exception {
-        // TODO Auto-generated method stub
+        final List<Object> executionPlan = new ArrayList<>();
 
+        for (final Action composedAction : systemAdaptationModel.getActions()) {
+            AtomicActionFactory.generateAtomicActions(composedAction, executionPlan);
+        }
+
+        this.outputPort.send(executionPlan);
     }
 
 }

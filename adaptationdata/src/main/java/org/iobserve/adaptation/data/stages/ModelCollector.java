@@ -17,10 +17,10 @@ package org.iobserve.adaptation.data.stages;
 
 import java.io.File;
 
-import org.iobserve.adaptation.data.AdaptationData;
-
 import teetime.framework.AbstractProducerStage;
 import teetime.framework.InputPort;
+
+import org.iobserve.adaptation.data.AdaptationData;
 
 /**
  * Collects the runtime model as well as the redeployment model and adds them to the AdaptationData.
@@ -32,27 +32,31 @@ public class ModelCollector extends AbstractProducerStage<AdaptationData> {
 
     private final InputPort<File> runtimeModelDirInputPort = this.createInputPort();
     private final InputPort<File> redeploymentModelDirInputPort = this.createInputPort();
-    private File runtimeModelDir = null;
-    private File redeploymentModelDir = null;
+    private File runtimeModelDir;
+    private File redeploymentModelDir;
+    private boolean receivedRuntimeModel;
+    private boolean receivedRedeploymentModel;
 
     @Override
     protected void execute() throws Exception {
         final AdaptationData adaptationData = new AdaptationData();
 
-        if (this.runtimeModelDir == null) {
+        if (!this.receivedRuntimeModel) {
+            this.receivedRuntimeModel = true;
             this.runtimeModelDir = this.runtimeModelDirInputPort.receive();
             adaptationData.setRuntimeModelDir(this.runtimeModelDir);
         }
 
-        if (this.redeploymentModelDir == null) {
+        if (!this.receivedRedeploymentModel) {
+            this.receivedRedeploymentModel = true;
             this.redeploymentModelDir = this.redeploymentModelDirInputPort.receive();
             adaptationData.setReDeploymentModelDir(this.redeploymentModelDir);
         }
 
-        if ((this.runtimeModelDir != null) && (this.redeploymentModelDir != null)) {
+        if (this.receivedRuntimeModel && this.receivedRedeploymentModel) {
             this.getOutputPort().send(adaptationData);
-            this.runtimeModelDir = null;
-            this.redeploymentModelDir = null;
+            this.receivedRuntimeModel = false;
+            this.receivedRedeploymentModel = false;
         }
 
     }

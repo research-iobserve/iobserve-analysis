@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import teetime.stage.basic.AbstractTransformation;
+
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.execution.actionscripts.AbstractActionScript;
@@ -27,8 +29,6 @@ import org.iobserve.execution.actionscripts.ActionScriptFactory;
 import org.iobserve.planning.systemadaptation.Action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  * This stage executes the ordered adaptation {@link Action}s sequence.
@@ -99,7 +99,7 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
             actionScripts.forEach(script -> {
                 try {
                     script.execute();
-                } catch (final Exception e) {
+                } catch (final Exception e) { // NOCS
                     if (this.listener == null) {
                         throw new IllegalStateException("Could not execute action script '" + script.getDescription()
                                 + "' automatically and no listener was present. Aborting!");

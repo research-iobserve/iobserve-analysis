@@ -16,13 +16,6 @@
 package org.iobserve.planning;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.debug.core.DebugPlugin;
-import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.ILaunchConfigurationType;
-import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
-import org.eclipse.debug.core.ILaunchManager;
-import org.eclipse.debug.core.Launch;
 
 /**
  * Main class for debugging.
@@ -30,7 +23,11 @@ import org.eclipse.debug.core.Launch;
  * @author Lars Bluemke
  *
  */
-public class PlanningMainDebug {
+public final class PerOpteryxDebugStart {
+
+    private PerOpteryxDebugStart() {
+
+    }
 
     public static void main(final String[] args) throws CoreException {
         // final ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
@@ -67,12 +64,15 @@ public class PlanningMainDebug {
         // final IProduct product = workspaceProductModel.getProduct();
         // new LaunchAction(product, productFile.getFullPath().toOSString(), mode).run();
 
-        ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
-        ILaunchConfiguration launchConfiguration = launchManager.getLaunchConfiguration("peropteryx.rcp (1)");
-        ILaunchConfigurationWorkingCopy launchConfigWorkingCopy = launchConfiguration.getWorkingCopy();
-//        launchConfigWorkingCopy.setAttributes(launchAttributes); // launchAttributes is a Map<String,String>
-//        ILaunchConfiguration newLaunchConfig = launchConfigWorkingCopy.doSave();
-        launchConfigWorkingCopy.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor(), true);
+        // ILaunchManager launchManager = DebugPlugin.getDefault().getLaunchManager();
+        // ILaunchConfiguration launchConfiguration =
+        // launchManager.getLaunchConfiguration("peropteryx.rcp (1)");
+        // ILaunchConfigurationWorkingCopy launchConfigWorkingCopy =
+        // launchConfiguration.getWorkingCopy();
+        //// launchConfigWorkingCopy.setAttributes(launchAttributes); // launchAttributes is a
+        // Map<String,String>
+        //// ILaunchConfiguration newLaunchConfig = launchConfigWorkingCopy.doSave();
+        // launchConfigWorkingCopy.launch(ILaunchManager.RUN_MODE, new NullProgressMonitor(), true);
     }
 
 }

@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import teetime.stage.basic.AbstractTransformation;
+
 import org.iobserve.adaptation.data.ActionFactory;
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.adaptation.data.AssemblyContextActionFactory;
@@ -34,8 +36,6 @@ import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
-
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  * This class is the inital phase of the adaption filter stage. It compares a runtime PCM to a

@@ -13,27 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis;
-
-import teetime.framework.Configuration;
-
-import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
-
-/**
- * Configuration for the stages of the adaptation service.
- *
- * @author Lars Bluemke
- *
- */
-public class AnalysisMainDebugConfiguration extends Configuration {
-
-    public AnalysisMainDebugConfiguration() {
-
-        // Debugging
-        final AnalysisMainDebugModelProducer modelProducer = new AnalysisMainDebugModelProducer();
-        final SingleConnectionTcpWriterStage modelWriter = new SingleConnectionTcpWriterStage("localhost", 12349);
-
-        this.connectPorts(modelProducer.getOutputPort(), modelWriter.getInputPort());
-    }
-
-}
+package org.iobserve.peropteryx.rcp;
