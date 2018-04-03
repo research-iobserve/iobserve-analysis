@@ -16,7 +16,8 @@
 package org.iobserve.analysis.clustering.filter.models.configuration;
 
 /**
- * Interface for factories creating {@link EntryCallFilterRules}.
+ * Interface for factories creating {@link EntryCallFilterRules}. Necessary to
+ * be instantiable so different versions can be used depending on configuration.
  *
  * @author Christoph Dornieden
  *
@@ -27,7 +28,5 @@ public interface IModelGenerationFilterFactory {
      *
      * @return specific {@link EntryCallFilterRules}
      */
-    static EntryCallFilterRules createFilter() {
-        return null;
-    }
+    public EntryCallFilterRules createFilter();
 }

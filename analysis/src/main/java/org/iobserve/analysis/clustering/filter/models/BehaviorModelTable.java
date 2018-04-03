@@ -279,4 +279,24 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
         return string;
     }
 
+    /**
+     * @return the signatures
+     */
+    public Map<String, Pair<Integer, AggregatedCallInformation[]>> getSignatures() {
+        return signatures;
+    }
+
+    /**
+     * @return the inverseSignatures
+     */
+    public String[] getInverseSignatures() {
+        return inverseSignatures;
+    }
+
+    /**
+     * @return the transitions
+     */
+    public Integer[][] getTransitions() {
+        return transitions;
+    }
 }

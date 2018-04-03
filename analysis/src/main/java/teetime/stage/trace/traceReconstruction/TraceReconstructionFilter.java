@@ -44,7 +44,7 @@ public class TraceReconstructionFilter extends AbstractConsumerStage<IFlowRecord
 
     /**
      * Reconstruct traces filter.
-     * 
+     *
      * @param traceId2trace
      *            trace id to trace map
      */
