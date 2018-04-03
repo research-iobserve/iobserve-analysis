@@ -17,7 +17,7 @@ package org.iobserve.analysis.systems.jpetstore;
 
 import java.util.List;
 
-import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
+import org.iobserve.analysis.behavior.filter.models.configuration.IRepresentativeStrategy;
 
 /**
  * strategy to find the representative of a list of callinformations for jPetstore.

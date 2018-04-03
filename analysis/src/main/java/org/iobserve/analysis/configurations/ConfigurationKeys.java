@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
-import org.iobserve.analysis.clustering.filter.similaritymatching.IClassificationStage;
-import org.iobserve.analysis.clustering.filter.similaritymatching.IModelGenerationStrategy;
-import org.iobserve.analysis.clustering.filter.similaritymatching.IParameterMetricStrategy;
-import org.iobserve.analysis.clustering.filter.similaritymatching.IStructureMetricStrategy;
+import org.iobserve.analysis.behavior.filter.models.configuration.IModelGenerationFilterFactory;
+import org.iobserve.analysis.behavior.filter.similaritymatching.IClassificationStage;
+import org.iobserve.analysis.behavior.filter.similaritymatching.IModelGenerationStrategy;
+import org.iobserve.analysis.behavior.filter.similaritymatching.IParameterMetricStrategy;
+import org.iobserve.analysis.behavior.filter.similaritymatching.IStructureMetricStrategy;
 import org.iobserve.analysis.feature.IGeoLocationCompositeStage;
 import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;

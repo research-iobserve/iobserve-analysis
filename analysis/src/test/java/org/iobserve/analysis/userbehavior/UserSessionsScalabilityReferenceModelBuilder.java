@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
@@ -49,7 +49,7 @@ public final class UserSessionsScalabilityReferenceModelBuilder {
     public static ReferenceElements getIncreasingUserSessionsScalabilityReferenceModel(final int numberOfUserSessions) {
 
         final ReferenceElements testElements = new ReferenceElements();
-        final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
+        final UserSessionCollectionModel entryCallSequenceModel = new UserSessionCollectionModel(
                 TestHelper.getUserSessions(numberOfUserSessions));
 
         int entryTime = 1;

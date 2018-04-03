@@ -22,9 +22,9 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import org.iobserve.analysis.clustering.filter.TBehaviorModelVisualization;
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.behavior.filter.TBehaviorModelVisualization;
+import org.iobserve.analysis.behavior.filter.models.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

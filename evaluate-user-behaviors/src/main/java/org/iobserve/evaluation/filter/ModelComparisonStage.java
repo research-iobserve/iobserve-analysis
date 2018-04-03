@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
-import org.iobserve.analysis.clustering.behaviormodels.CallInformation;
-import org.iobserve.analysis.clustering.behaviormodels.EntryCallEdge;
-import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 import org.iobserve.evaluation.data.ComparisonResult;
 import org.iobserve.evaluation.data.NodeDifference;
 

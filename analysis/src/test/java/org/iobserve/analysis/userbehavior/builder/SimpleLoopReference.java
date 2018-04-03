@@ -18,7 +18,7 @@ package org.iobserve.analysis.userbehavior.builder;
 import java.io.IOException;
 import java.util.Optional;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -80,7 +80,7 @@ public final class SimpleLoopReference {
         final int loopCount = TestHelper.getRandomInteger(5, 2);
         final int numberOfIteratedCalls = TestHelper.getRandomInteger(5, 1);
 
-        final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
+        final UserSessionCollectionModel entryCallSequenceModel = new UserSessionCollectionModel(
                 TestHelper.getUserSessions(numberOfConcurrentUsers));
         final ReferenceElements referenceElements = new ReferenceElements();
 

@@ -15,8 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.systems.jpetstore;
 
-import org.iobserve.analysis.clustering.filter.models.configuration.EntryCallFilterRules;
-import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
+import org.iobserve.analysis.behavior.filter.models.configuration.EntryCallFilterRules;
+import org.iobserve.analysis.behavior.filter.models.configuration.IModelGenerationFilterFactory;
 
 /**
  * Factory for creating a filter for JPetStore call events.

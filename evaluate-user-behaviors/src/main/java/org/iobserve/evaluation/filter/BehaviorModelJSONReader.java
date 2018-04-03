@@ -18,17 +18,17 @@ package org.iobserve.evaluation.filter;
 import java.io.File;
 import java.util.Iterator;
 
-import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
-import org.iobserve.analysis.clustering.behaviormodels.CallInformation;
-import org.iobserve.analysis.clustering.behaviormodels.EntryCallEdge;
-import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import teetime.framework.AbstractProducerStage;
+
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 
 /**
  * Read a JSON serialized behavior model.
