@@ -17,9 +17,11 @@ package org.iobserve.common.record;
 
 
 import kieker.common.exception.RecordInstantiationException;
-import kieker.common.record.flow.AbstractEvent;
+import kieker.common.record.AbstractMonitoringRecord;
+import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 
+import org.iobserve.common.record.IEvent;
 
 /**
  * @author Reiner Jung
@@ -27,16 +29,17 @@ import kieker.common.record.io.IValueDeserializer;
  * 
  * @since 0.0.2
  */
-public abstract class EJBDescriptor extends AbstractEvent  {			
+public abstract class EJBDescriptor extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent {			
 	
 	/** default constants. */
 	public static final String SERVICE = "";
 	public static final String CONTEXT = "";
 	public static final String DEPLOYMENT_ID = "";
-	private static final long serialVersionUID = -539937375049134834L;
+	private static final long serialVersionUID = 9148679872745615076L;
 	
 		
 	/** property declarations. */
+	private final long timestamp;
 	private final String service;
 	private final String context;
 	private final String deploymentId;
@@ -54,7 +57,7 @@ public abstract class EJBDescriptor extends AbstractEvent  {
 	 *            deploymentId
 	 */
 	public EJBDescriptor(final long timestamp, final String service, final String context, final String deploymentId) {
-		super(timestamp);
+		this.timestamp = timestamp;
 		this.service = service == null?"":service;
 		this.context = context == null?"":context;
 		this.deploymentId = deploymentId == null?"":deploymentId;
@@ -73,7 +76,8 @@ public abstract class EJBDescriptor extends AbstractEvent  {
 	 */
 	@Deprecated
 	protected EJBDescriptor(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		super(values, valueTypes);
+		AbstractMonitoringRecord.checkArray(values, valueTypes);
+		this.timestamp = (Long) values[0];
 		this.service = (String) values[1];
 		this.context = (String) values[2];
 		this.deploymentId = (String) values[3];
@@ -87,7 +91,7 @@ public abstract class EJBDescriptor extends AbstractEvent  {
 	 *            when the record could not be deserialized
 	 */
 	public EJBDescriptor(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		super(deserializer);
+		this.timestamp = deserializer.getLong();
 		this.service = deserializer.getString();
 		this.context = deserializer.getString();
 		this.deploymentId = deserializer.getString();
@@ -139,6 +143,11 @@ public abstract class EJBDescriptor extends AbstractEvent  {
 		
 		return true;
 	}
+	
+	public final long getTimestamp() {
+		return this.timestamp;
+	}
+	
 	
 	public final String getService() {
 		return this.service;

@@ -49,6 +49,8 @@ import org.iobserve.service.privacy.violation.filter.ProbeMapper;
 import org.iobserve.service.privacy.violation.filter.WarnSink;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.EntryCallStage;
+import org.iobserve.stages.general.IEventMatcher;
+import org.iobserve.stages.general.ImplementsEventMatcher;
 import org.iobserve.stages.source.MultipleConnectionTcpReaderStage;
 import org.iobserve.stages.source.NoneTraceMetadataRewriter;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -97,12 +99,21 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
         /** instantiating filters. */
         final MultipleConnectionTcpReaderStage reader = new MultipleConnectionTcpReaderStage(inputPort,
                 PrivacyViolationDetectionConfiguration.BUFFER_SIZE, new NoneTraceMetadataRewriter());
-        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(true, true, false);
-        eventDispatcher.registerOutput(IDeployedEvent.class);
-        eventDispatcher.registerOutput(IUndeployedEvent.class);
-        eventDispatcher.registerOutput(IAllocationEvent.class);
-        eventDispatcher.registerOutput(IDeallocationEvent.class);
-        eventDispatcher.registerOutput(IFlowRecord.class);
+
+        final IEventMatcher<IDeployedEvent> deployedEventMatcher = new ImplementsEventMatcher<>(IDeployedEvent.class,
+                null);
+        final IEventMatcher<IUndeployedEvent> undeployedEventMatcher = new ImplementsEventMatcher<>(
+                IUndeployedEvent.class, deployedEventMatcher);
+
+        final IEventMatcher<IAllocationEvent> allocationEventMatcher = new ImplementsEventMatcher<>(
+                IAllocationEvent.class, undeployedEventMatcher);
+        final IEventMatcher<IDeallocationEvent> deallocationEventMatcher = new ImplementsEventMatcher<>(
+                IDeallocationEvent.class, allocationEventMatcher);
+
+        final IEventMatcher<IFlowRecord> flowMatcher = new ImplementsEventMatcher<>(IFlowRecord.class,
+                deallocationEventMatcher);
+
+        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(flowMatcher, true, true, false);
 
         /** allocation. */
         final AllocationStage allocationStage = new AllocationStage(resourceEnvironmentModelProvider);
@@ -142,12 +153,9 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
 
                 /** connect ports. */
                 this.connectPorts(reader.getOutputPort(), eventDispatcher.getInputPort());
-                this.connectPorts(eventDispatcher.getOutputPort(IDeployedEvent.class),
-                        deploymentStage.getDeployedInputPort());
-                this.connectPorts(eventDispatcher.getOutputPort(IUndeployedEvent.class),
-                        undeploymentStage.getUndeployedInputPort());
-                this.connectPorts(eventDispatcher.getOutputPort(IAllocationEvent.class),
-                        allocationStage.getInputPort());
+                this.connectPorts(deployedEventMatcher.getOutputPort(), deploymentStage.getDeployedInputPort());
+                this.connectPorts(undeployedEventMatcher.getOutputPort(), undeploymentStage.getUndeployedInputPort());
+                this.connectPorts(allocationEventMatcher.getOutputPort(), allocationStage.getInputPort());
 
                 this.connectPorts(deploymentStage.getDeployedOutputPort(), geoLocation.getInputPort());
                 this.connectPorts(geoLocation.getOutputPort(), privacyWarner.getDeployedInputPort());
@@ -158,8 +166,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
                 this.connectPorts(probeMapper.getOutputPort(), probeController.getInputPort());
                 this.connectPorts(privacyWarner.getWarningsOutputPort(), warnSink.getInputPort());
 
-                this.connectPorts(eventDispatcher.getOutputPort(IFlowRecord.class),
-                        traceReconstructionFilter.getInputPort());
+                this.connectPorts(flowMatcher.getOutputPort(), traceReconstructionFilter.getInputPort());
                 this.connectPorts(traceReconstructionFilter.getTraceValidOutputPort(), entryCallStage.getInputPort());
                 this.connectPorts(entryCallStage.getOutputPort(), entryEventMapperStage.getInputPort());
                 this.connectPorts(entryEventMapperStage.getOutputPort(), dataFlowDetectionStage.getInputPort());
