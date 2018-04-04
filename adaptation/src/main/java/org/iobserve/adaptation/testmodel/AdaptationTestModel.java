@@ -216,15 +216,15 @@ public class AdaptationTestModel {
         return this.allocation;
     }
 
-    public BasicComponent getcompA() {
+    public BasicComponent getCompA() {
         return this.compA;
     }
 
-    public BasicComponent getcompBx() {
+    public BasicComponent getCompBx() {
         return this.compBx;
     }
 
-    public BasicComponent getcompBy() {
+    public BasicComponent getCompBy() {
         return this.compBy;
     }
 
@@ -236,55 +236,55 @@ public class AdaptationTestModel {
         return this.requiredRole;
     }
 
-    public AssemblyContext getacxtA() {
+    public AssemblyContext getAcxtA() {
         return this.acxtA;
     }
 
-    public AssemblyContext getacxtB1() {
+    public AssemblyContext getAcxtB1() {
         return this.acxtB1;
     }
 
-    public AssemblyContext getacxtB2() {
+    public AssemblyContext getAcxtB2() {
         return this.acxtB2;
     }
 
-    public AssemblyConnector getaconnAB1() {
+    public AssemblyConnector getAconnAB1() {
         return this.aconnAB1;
     }
 
-    public AssemblyConnector getaconnAB2() {
+    public AssemblyConnector getAconnAB2() {
         return this.aconnAB2;
     }
 
-    public ResourceContainer getrc1() {
+    public ResourceContainer getRc1() {
         return this.rc1;
     }
 
-    public ResourceContainer getrc2() {
+    public ResourceContainer getRc2() {
         return this.rc2;
     }
 
-    public ResourceContainer getrc3() {
+    public ResourceContainer getRc3() {
         return this.rc3;
     }
 
-    public LinkingResource getlrRc1Rc2() {
+    public LinkingResource getLrRc1Rc2() {
         return this.lrRc1Rc2;
     }
 
-    public LinkingResource getlrRc2Rc3() {
+    public LinkingResource getLrRc2Rc3() {
         return this.lrRc2Rc3;
     }
 
-    public AllocationContext getalcxtArc1() {
+    public AllocationContext getAlcxtArc1() {
         return this.alcxtArc1;
     }
 
-    public AllocationContext getalcxtB1Rc1() {
+    public AllocationContext getAlcxtB1Rc1() {
         return this.alcxtB1Rc1;
     }
 
-    public AllocationContext getalcxtB2Rc2() {
+    public AllocationContext getAlcxtB2Rc2() {
         return this.alcxtB2Rc2;
     }
 
@@ -350,32 +350,32 @@ public class AdaptationTestModel {
 
         // Repository components
         modelCopy.getRepository().setId(this.repository.getId());
-        modelCopy.getcompA().setId(this.compA.getId());
-        modelCopy.getcompBx().setId(this.compBx.getId());
-        modelCopy.getcompBy().setId(this.compBy.getId());
+        modelCopy.getCompA().setId(this.compA.getId());
+        modelCopy.getCompBx().setId(this.compBx.getId());
+        modelCopy.getCompBy().setId(this.compBy.getId());
         modelCopy.getProvidedRole().setId(this.providedRole.getId());
         modelCopy.getRequiredRole().setId(this.requiredRole.getId());
 
         // System components
         modelCopy.getSystem().setId(this.system.getId());
-        modelCopy.getacxtA().setId(this.acxtA.getId());
-        modelCopy.getacxtB1().setId(this.acxtB1.getId());
-        modelCopy.getacxtB2().setId(this.acxtB2.getId());
-        modelCopy.getaconnAB1().setId(this.aconnAB1.getId());
-        modelCopy.getaconnAB2().setId(this.aconnAB2.getId());
+        modelCopy.getAcxtA().setId(this.acxtA.getId());
+        modelCopy.getAcxtB1().setId(this.acxtB1.getId());
+        modelCopy.getAcxtB2().setId(this.acxtB2.getId());
+        modelCopy.getAconnAB1().setId(this.aconnAB1.getId());
+        modelCopy.getAconnAB2().setId(this.aconnAB2.getId());
 
         // Resource environment components
-        modelCopy.getrc1().setId(this.rc1.getId());
-        modelCopy.getrc2().setId(this.rc2.getId());
-        modelCopy.getrc3().setId(this.rc3.getId());
-        modelCopy.getlrRc1Rc2().setId(this.lrRc1Rc2.getId());
-        modelCopy.getlrRc2Rc3().setId(this.lrRc2Rc3.getId());
+        modelCopy.getRc1().setId(this.rc1.getId());
+        modelCopy.getRc2().setId(this.rc2.getId());
+        modelCopy.getRc3().setId(this.rc3.getId());
+        modelCopy.getLrRc1Rc2().setId(this.lrRc1Rc2.getId());
+        modelCopy.getLrRc2Rc3().setId(this.lrRc2Rc3.getId());
 
         // Allocation components
         modelCopy.getAllocation().setId(this.allocation.getId());
-        modelCopy.getalcxtArc1().setId(this.alcxtArc1.getId());
-        modelCopy.getalcxtB1Rc1().setId(this.alcxtB1Rc1.getId());
-        modelCopy.getalcxtB2Rc2().setId(this.alcxtB2Rc2.getId());
+        modelCopy.getAlcxtArc1().setId(this.alcxtArc1.getId());
+        modelCopy.getAlcxtB1Rc1().setId(this.alcxtB1Rc1.getId());
+        modelCopy.getAlcxtB2Rc2().setId(this.alcxtB2Rc2.getId());
 
         return modelCopy;
     }

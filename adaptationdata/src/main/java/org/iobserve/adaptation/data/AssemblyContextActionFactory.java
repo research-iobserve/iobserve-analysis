@@ -26,6 +26,7 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.repository.RepositoryComponent;
+import org.palladiosimulator.pcm.system.System;
 
 /**
  * This class provides a factory for system adaption Actions. It provides all basic functions.
@@ -43,7 +44,7 @@ public final class AssemblyContextActionFactory {
 
     private static AssemblyContextAction setSourceAssemblyContext(final AssemblyContextAction action,
             final String assemblyContextID) {
-        final org.palladiosimulator.pcm.system.System systemModel = ActionFactory.getRuntimeModels().getSystemModel();
+        final System systemModel = ActionFactory.getRuntimeModels().getSystemModel();
         final AssemblyContext assemblyContext = ActionFactory.getAssemblyContext(assemblyContextID, systemModel);
         action.setSourceAssemblyContext(assemblyContext);
         return action;
@@ -137,8 +138,7 @@ public final class AssemblyContextActionFactory {
         // AssemblyContextActionFactory.setSourceAssemblyContext(action,
         // runtimeNode.getAssemblyContextID());
 
-        final org.palladiosimulator.pcm.system.System reDeplSystem = ActionFactory.getRedeploymentModels()
-                .getSystemModel();
+        final System reDeplSystem = ActionFactory.getRedeploymentModels().getSystemModel();
         action.setSourceAssemblyContext(
                 ActionFactory.getAssemblyContext(reDeploymentNode.getAssemblyContextID(), reDeplSystem));
 

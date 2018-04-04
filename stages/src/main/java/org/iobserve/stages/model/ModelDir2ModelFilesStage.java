@@ -19,9 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
@@ -29,6 +26,9 @@ import teetime.stage.FileExtensionSwitch;
 import teetime.stage.basic.merger.Merger;
 import teetime.stage.basic.merger.strategy.NonBlockingFiniteRoundRobinStrategy;
 import teetime.stage.io.Directory2FilesFilter;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Reads the PCM model files from a directory passed to this stages' input port and passes them to
@@ -42,13 +42,14 @@ public class ModelDir2ModelFilesStage extends CompositeStage {
     private static final Logger LOG = LoggerFactory.getLogger(ModelDir2ModelFilesStage.class);
 
     private final Directory2FilesFilter directory2FilesFilter;
-    private final FileExtensionSwitch fileExtensionSwitch;
     private final Merger<File> merger;
 
     /**
      * Creates a new instance of this class.
      */
     public ModelDir2ModelFilesStage() {
+        // Filter only PCM model files from directory
+        final FileExtensionSwitch fileExtensionSwitch = new FileExtensionSwitch();
 
         this.directory2FilesFilter = new Directory2FilesFilter(new Comparator<File>() {
             @Override
@@ -62,24 +63,21 @@ public class ModelDir2ModelFilesStage extends CompositeStage {
             }
         });
 
-        // Filter only PCM model files from directory
-        this.fileExtensionSwitch = new FileExtensionSwitch();
-
-        final OutputPort<File> allocationOutputPort = this.fileExtensionSwitch.addFileExtension(".allocation");
-        final OutputPort<File> cloudprofileOutputPort = this.fileExtensionSwitch.addFileExtension(".cloudprofile");
-        final OutputPort<File> costOutputPort = this.fileExtensionSwitch.addFileExtension(".cost");
-        final OutputPort<File> designdecisionOutputPort = this.fileExtensionSwitch.addFileExtension(".designdecision");
-        final OutputPort<File> qmldeclarationOutputPort = this.fileExtensionSwitch.addFileExtension(".qmldeclarations");
-        final OutputPort<File> repositoryOutputPort = this.fileExtensionSwitch.addFileExtension(".repository");
-        final OutputPort<File> resourceenvironmentOutputPort = this.fileExtensionSwitch
+        final OutputPort<File> allocationOutputPort = fileExtensionSwitch.addFileExtension(".allocation");
+        final OutputPort<File> cloudprofileOutputPort = fileExtensionSwitch.addFileExtension(".cloudprofile");
+        final OutputPort<File> costOutputPort = fileExtensionSwitch.addFileExtension(".cost");
+        final OutputPort<File> designdecisionOutputPort = fileExtensionSwitch.addFileExtension(".designdecision");
+        final OutputPort<File> qmldeclarationOutputPort = fileExtensionSwitch.addFileExtension(".qmldeclarations");
+        final OutputPort<File> repositoryOutputPort = fileExtensionSwitch.addFileExtension(".repository");
+        final OutputPort<File> resourceenvironmentOutputPort = fileExtensionSwitch
                 .addFileExtension(".resourceenvironment");
-        final OutputPort<File> systemOutputPort = this.fileExtensionSwitch.addFileExtension(".system");
-        final OutputPort<File> usagemodelOutputPort = this.fileExtensionSwitch.addFileExtension(".usagemodel");
+        final OutputPort<File> systemOutputPort = fileExtensionSwitch.addFileExtension(".system");
+        final OutputPort<File> usagemodelOutputPort = fileExtensionSwitch.addFileExtension(".usagemodel");
 
         this.merger = new Merger<>(new NonBlockingFiniteRoundRobinStrategy());
 
         // Connect sub-stages
-        this.connectPorts(this.directory2FilesFilter.getOutputPort(), this.fileExtensionSwitch.getInputPort());
+        this.connectPorts(this.directory2FilesFilter.getOutputPort(), fileExtensionSwitch.getInputPort());
 
         this.connectPorts(allocationOutputPort, this.merger.getNewInputPort());
         this.connectPorts(cloudprofileOutputPort, this.merger.getNewInputPort());

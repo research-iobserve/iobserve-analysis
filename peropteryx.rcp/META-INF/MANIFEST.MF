@@ -4,7 +4,7 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: peropteryx.rcp;singleton:=true
 Bundle-Vendor: iObserve
-Bundle-Version: 0.0.3.I201804031823
+Bundle-Version: 0.0.3.I201804041106
 Export-Package: org.iobserve.planning.peropteryx.rcp;version="0.0.3"
 Import-Package: de.uka.ipd.sdq.dsexplore.launch,de.uka.ipd.sdq.simucom
  framework,org.apache.commons.cli;version="[1.2,2)",org.eclipse.core.r

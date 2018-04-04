@@ -23,10 +23,10 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
+import teetime.framework.AbstractProducerStage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import teetime.framework.AbstractProducerStage;
 
 /**
  * Reader for PCM model files passed between the different iObserve services via TCP.
@@ -63,12 +63,17 @@ public class SingleConnectionTcpReaderStage extends AbstractProducerStage<File> 
         serverSocket.socket().bind(new InetSocketAddress(this.inputPort));
 
         while (this.isActive()) {
-            SingleConnectionTcpReaderStage.LOGGER.debug("Listening at port " + this.inputPort);
+            if (SingleConnectionTcpReaderStage.LOGGER.isDebugEnabled()) {
+                SingleConnectionTcpReaderStage.LOGGER.debug("Listening at port " + this.inputPort);
+            }
 
             final SocketChannel socketChannel = serverSocket.accept();
             final ByteBuffer buffer = ByteBuffer.allocate(SingleConnectionTcpReaderStage.BUFFER_SIZE);
 
-            SingleConnectionTcpReaderStage.LOGGER.debug("Connection from " + socketChannel.getRemoteAddress().toString());
+            if (SingleConnectionTcpReaderStage.LOGGER.isDebugEnabled()) {
+                SingleConnectionTcpReaderStage.LOGGER
+                        .debug("Connection from " + socketChannel.getRemoteAddress().toString());
+            }
 
             // Read file name length
             socketChannel.read(buffer);
@@ -91,7 +96,9 @@ public class SingleConnectionTcpReaderStage extends AbstractProducerStage<File> 
             }
 
             final String filename = new String(nameBytes, SingleConnectionTcpReaderStage.ENCODING);
-            SingleConnectionTcpReaderStage.LOGGER.debug("Received filename=" + filename);
+            if (SingleConnectionTcpReaderStage.LOGGER.isDebugEnabled()) {
+                SingleConnectionTcpReaderStage.LOGGER.debug("Received filename=" + filename);
+            }
 
             buffer.compact();
 
@@ -107,7 +114,9 @@ public class SingleConnectionTcpReaderStage extends AbstractProducerStage<File> 
                 buffer.compact();
             }
 
-            SingleConnectionTcpReaderStage.LOGGER.debug("File received, closing channel.");
+            if (SingleConnectionTcpReaderStage.LOGGER.isDebugEnabled()) {
+                SingleConnectionTcpReaderStage.LOGGER.debug("File received, closing channel.");
+            }
             modelAccessFile.close();
             socketChannel.close();
 

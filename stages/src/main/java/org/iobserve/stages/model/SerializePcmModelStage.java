@@ -17,6 +17,12 @@ package org.iobserve.stages.model;
 
 import java.io.File;
 
+import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarations;
+import de.uka.ipd.sdq.pcm.cost.CostRepository;
+import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
+
+import teetime.stage.basic.AbstractTransformation;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.iobserve.model.provider.file.AllocationModelHandler;
@@ -34,11 +40,6 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
-
-import de.uka.ipd.sdq.dsexplore.qml.declarations.QMLDeclarations.QMLDeclarations;
-import de.uka.ipd.sdq.pcm.cost.CostRepository;
-import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
-import teetime.stage.basic.AbstractTransformation;
 
 /**
  * This stage gets a PCM model EObject and serializes it in a File. The file is provided via the
@@ -68,7 +69,7 @@ public class SerializePcmModelStage extends AbstractTransformation<EObject, File
     @Override
     protected void execute(final EObject model) throws Exception {
         final String filePathPrefix = this.modelDirectory.getAbsolutePath() + File.separator + this.modelName;
-        String filePath;
+        final String filePath;
 
         if (model instanceof Allocation) {
             filePath = filePathPrefix + ".allocation";

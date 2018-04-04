@@ -22,10 +22,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.SocketChannel;
 
+import teetime.framework.AbstractConsumerStage;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import teetime.framework.AbstractConsumerStage;
 
 /**
  * Writer for PCM model files passed between the different iObserve services via TCP.
@@ -82,7 +82,9 @@ public class SingleConnectionTcpWriterStage extends AbstractConsumerStage<File> 
             fileBuffer.compact();
         }
 
-        SingleConnectionTcpWriterStage.LOG.debug("File sent, closing channel.");
+        if (SingleConnectionTcpWriterStage.LOG.isDebugEnabled()) {
+            SingleConnectionTcpWriterStage.LOG.debug("File sent, closing channel.");
+        }
 
         socketChannel.close();
         modelAccessFile.close();
