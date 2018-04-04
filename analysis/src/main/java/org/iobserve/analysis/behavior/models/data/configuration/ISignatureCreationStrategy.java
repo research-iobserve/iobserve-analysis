@@ -13,30 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.behavior;
+package org.iobserve.analysis.behavior.models.data.configuration;
 
-import java.util.Optional;
-
-import org.iobserve.analysis.behavior.filter.VectorQuantizationClusteringStage;
-import org.iobserve.analysis.behavior.karlsruhe.data.ClusteringResults;
-
-import weka.core.Instances;
+import org.iobserve.analysis.behavior.models.basic.EntryCallNode;
 
 /**
- * interface for a clustering usable by {@link VectorQuantizationClusteringStage}.
+ * interface for the creation strategy of a signature from a {@link EntryCallNode}.
  *
- * @author Christoph Dornieden
+ * @author Christop Dornieden
  *
  */
-public interface IVectorQuantizationClustering extends IClustering {
+public interface ISignatureCreationStrategy {
+
     /**
-     * get cluster centers of all clusters.
+     * create a signature from an entry {@link EntryCallNode}.
      *
-     * @param instances
-     *            instances to be clustered
-     * @return cluster centers as instances
+     * @param node
+     *            node
+     * @return signature
      */
-    @Override
-    Optional<ClusteringResults> clusterInstances(Instances instances);
+    String getSignature(EntryCallNode node);
 
 }

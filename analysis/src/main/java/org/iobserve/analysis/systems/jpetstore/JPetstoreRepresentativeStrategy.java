@@ -15,34 +15,25 @@
  ***************************************************************************/
 package org.iobserve.analysis.systems.jpetstore;
 
-import org.iobserve.analysis.behavior.models.data.configuration.EntryCallFilterRules;
-import org.iobserve.analysis.behavior.models.data.configuration.IModelGenerationFilterFactory;
+import java.util.List;
+
+import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
 
 /**
- * Factory for creating a filter for JPetStore call events.
+ * strategy to find the representative of a list of callinformations for jPetstore.
  *
  * @author Christoph Dornieden
  *
  */
-public final class JPetStoreEntryCallRulesFactory implements IModelGenerationFilterFactory {
+public class JPetstoreRepresentativeStrategy implements IRepresentativeStrategy {
 
-    public JPetStoreEntryCallRulesFactory() {
+    public JPetstoreRepresentativeStrategy() { // NOCS empty constructor
         // empty constructor
     }
 
-    /**
-     * Create an entry call filter rule for the JPetStore.
-     *
-     * @return return the filter
-     */
     @Override
-    public EntryCallFilterRules createFilter() {
-        final EntryCallFilterRules modelGenerationFilter;
-        modelGenerationFilter = new EntryCallFilterRules(true);
-        modelGenerationFilter.addFilterRule("(\\w*\\.)*images.*");
-        modelGenerationFilter.addFilterRule("(\\w*\\.)*css.*");
-
-        return modelGenerationFilter;
+    public Double findRepresentativeCode(final String signature, final List<Double> callInformationCodes) {
+        // summing up all values
+        return callInformationCodes.stream().reduce(0.0, (a, b) -> a + b);
     }
-
 }

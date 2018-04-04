@@ -13,30 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.behavior;
-
-import java.util.Optional;
-
-import org.iobserve.analysis.behavior.filter.VectorQuantizationClusteringStage;
-import org.iobserve.analysis.behavior.karlsruhe.data.ClusteringResults;
-
-import weka.core.Instances;
+package org.iobserve.analysis.behavior.models.data.configuration;
 
 /**
- * interface for a clustering usable by {@link VectorQuantizationClusteringStage}.
+ * Interface for factories creating {@link EntryCallFilterRules}. Necessary to
+ * be instantiable so different versions can be used depending on configuration.
  *
  * @author Christoph Dornieden
  *
  */
-public interface IVectorQuantizationClustering extends IClustering {
+public interface IModelGenerationFilterFactory {
     /**
-     * get cluster centers of all clusters.
+     * create a {@link EntryCallFilterRules}.
      *
-     * @param instances
-     *            instances to be clustered
-     * @return cluster centers as instances
+     * @return specific {@link EntryCallFilterRules}
      */
-    @Override
-    Optional<ClusteringResults> clusterInstances(Instances instances);
-
+    public EntryCallFilterRules createFilter();
 }

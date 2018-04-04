@@ -13,30 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.behavior;
+package org.iobserve.analysis.behavior.models.data.configuration;
 
-import java.util.Optional;
-
-import org.iobserve.analysis.behavior.filter.VectorQuantizationClusteringStage;
-import org.iobserve.analysis.behavior.karlsruhe.data.ClusteringResults;
-
-import weka.core.Instances;
+import java.util.List;
 
 /**
- * interface for a clustering usable by {@link VectorQuantizationClusteringStage}.
+ * strategy to find the representative of a list of call informations.
  *
  * @author Christoph Dornieden
  *
  */
-public interface IVectorQuantizationClustering extends IClustering {
+public interface IRepresentativeStrategy {
+
     /**
-     * get cluster centers of all clusters.
+     * Find the representatives of all given callInformationCodes.
      *
-     * @param instances
-     *            instances to be clustered
-     * @return cluster centers as instances
+     * @param signature
+     *            signature of the aggregated call information
+     * @param callInformationCodes
+     *            code list of the aggregated information
+     * @return most representative code
      */
-    @Override
-    Optional<ClusteringResults> clusterInstances(Instances instances);
+    Double findRepresentativeCode(final String signature, List<Double> callInformationCodes);
 
 }

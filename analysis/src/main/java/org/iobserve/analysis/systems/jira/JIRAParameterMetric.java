@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,32 +15,20 @@
  ***************************************************************************/
 package org.iobserve.analysis.systems.jira;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.iobserve.analysis.behavior.models.data.IParameterValueDoubleMapper;
+import org.iobserve.analysis.behavior.clustering.similaritymatching.IParameterMetric;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 
 /**
- * This class maps parameter values to numbers reflecting the dissimilarity of the elements. The
- * mapping reflects the JPetStore.
- *
+ * Compute the distance between two JIRA behavior models based on parameters.
+ * 
  * @author Reiner Jung
  *
  */
-public class JIRAParameterValueDoubleMapper implements IParameterValueDoubleMapper {
-
-    private final Map<String, Map<String, Double>> valueMap = new HashMap<>();
-
-    /**
-     * Constructor of the value double mapper.
-     */
-    public JIRAParameterValueDoubleMapper() {
-
-    }
+public class JIRAParameterMetric implements IParameterMetric {
 
     @Override
-    public double mapValue(final String parameter, final String value) {
-        return this.valueMap.get(parameter).get(value);
+    public double getDistance(final BehaviorModel a, final BehaviorModel b) {
+        return 0;
     }
 
 }

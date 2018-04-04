@@ -22,7 +22,7 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.eclipse.net4j.util.collection.Pair;
-import org.iobserve.analysis.behavior.filter.xmeans.XMeansClustering;
+import org.iobserve.analysis.behavior.clustering.xmeans.XMeansClustering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

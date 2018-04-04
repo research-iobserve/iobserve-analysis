@@ -13,30 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.behavior;
-
-import java.util.Optional;
-
-import org.iobserve.analysis.behavior.filter.VectorQuantizationClusteringStage;
-import org.iobserve.analysis.behavior.karlsruhe.data.ClusteringResults;
-
-import weka.core.Instances;
+package org.iobserve.analysis.behavior.models.data;
 
 /**
- * interface for a clustering usable by {@link VectorQuantizationClusteringStage}.
+ * Maps string values for parameters to double values usable in clustering algorithms.
  *
- * @author Christoph Dornieden
+ * @author Reiner Jung
  *
  */
-public interface IVectorQuantizationClustering extends IClustering {
-    /**
-     * get cluster centers of all clusters.
-     *
-     * @param instances
-     *            instances to be clustered
-     * @return cluster centers as instances
-     */
-    @Override
-    Optional<ClusteringResults> clusterInstances(Instances instances);
+public interface IParameterValueDoubleMapper {
 
+    /**
+     * Return a double value depending on the parameter and string value.
+     *
+     * @param parameter
+     *            name of a request parameter
+     * @param value
+     *            value of the request parameter
+     *
+     * @return double number representing the value
+     */
+    double mapValue(String parameter, String value);
 }

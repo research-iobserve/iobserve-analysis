@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
-import org.iobserve.analysis.behavior.filter.models.configuration.IModelGenerationFilterFactory;
-import org.iobserve.analysis.behavior.filter.similaritymatching.IClassificationStage;
-import org.iobserve.analysis.behavior.filter.similaritymatching.IModelGenerationStrategy;
-import org.iobserve.analysis.behavior.filter.similaritymatching.IParameterMetricStrategy;
-import org.iobserve.analysis.behavior.filter.similaritymatching.IStructureMetricStrategy;
+import org.iobserve.analysis.behavior.clustering.similaritymatching.IClassificationStage;
+import org.iobserve.analysis.behavior.clustering.similaritymatching.IModelGenerationStrategy;
+import org.iobserve.analysis.behavior.clustering.similaritymatching.IParameterMetric;
+import org.iobserve.analysis.behavior.clustering.similaritymatching.IStructureMetricStrategy;
+import org.iobserve.analysis.behavior.models.data.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.feature.IGeoLocationCompositeStage;
 import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
@@ -152,7 +152,7 @@ public final class ConfigurationKeys {
      * Set parameter metric strategy STRING
      */
     public static final String SIM_MATCH_PARAMETER_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
-            + IParameterMetricStrategy.class.getSimpleName();
+            + IParameterMetric.class.getSimpleName();
 
     /**
      * Set structure metric strategy STRING

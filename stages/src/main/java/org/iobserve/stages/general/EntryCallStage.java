@@ -20,10 +20,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
-import org.iobserve.common.record.ExtendedAfterOperationEvent;
-import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,9 +30,14 @@ import kieker.common.record.flow.trace.AbstractTraceEvent;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+
+import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
+import org.iobserve.common.record.ExtendedAfterOperationEvent;
+import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 
 //TODO: this filter must be reworked to support plain and extended records, Maybe code from earlier versions can be useful.
 

@@ -3,10 +3,12 @@ buildscript {
         mavenCentral()
         mavenLocal()
         jcenter()
+        maven { url "https://plugins.gradle.org/m2/" } // shadow
     }
 
     dependencies {
         classpath 'com.bmuschko:gradle-clover-plugin:2.2.0'
+        classpath "com.github.jengelman.gradle.plugins:shadow:2.0.3"
     }
 }
 

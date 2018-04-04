@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.behavior.filter.models.configuration.EntryCallFilterRules;
+import org.iobserve.analysis.behavior.models.data.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.session.data.UserSession;
 
