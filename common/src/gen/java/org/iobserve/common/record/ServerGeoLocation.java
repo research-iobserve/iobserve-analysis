@@ -18,10 +18,13 @@ package org.iobserve.common.record;
 import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
-import kieker.common.record.flow.AbstractEvent;
+import kieker.common.record.AbstractMonitoringRecord;
+import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
+import kieker.common.util.registry.IRegistry;
 
+import org.iobserve.common.record.IEvent;
 import org.iobserve.common.record.GeoLocation;
 
 /**
@@ -30,15 +33,15 @@ import org.iobserve.common.record.GeoLocation;
  * 
  * @since 0.0.2
  */
-public class ServerGeoLocation extends AbstractEvent implements GeoLocation {			
+public class ServerGeoLocation extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent, GeoLocation {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_SHORT // GeoLocation.countryCode
 			 + TYPE_SIZE_STRING // ServerGeoLocation.hostname
 			 + TYPE_SIZE_STRING; // ServerGeoLocation.address
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEventRecord.timestamp
+		long.class, // IEvent.timestamp
 		short.class, // GeoLocation.countryCode
 		String.class, // ServerGeoLocation.hostname
 		String.class, // ServerGeoLocation.address
@@ -48,7 +51,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	public static final short COUNTRY_CODE = 49;
 	public static final String HOSTNAME = "";
 	public static final String ADDRESS = "";
-	private static final long serialVersionUID = -9109740651531232541L;
+	private static final long serialVersionUID = -8861531009608180516L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -59,6 +62,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	};
 	
 	/** property declarations. */
+	private final long timestamp;
 	private final short countryCode;
 	private final String hostname;
 	private final String address;
@@ -76,7 +80,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 *            address
 	 */
 	public ServerGeoLocation(final long timestamp, final short countryCode, final String hostname, final String address) {
-		super(timestamp);
+		this.timestamp = timestamp;
 		this.countryCode = countryCode;
 		this.hostname = hostname == null?"":hostname;
 		this.address = address == null?"":address;
@@ -93,7 +97,8 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 */
 	@Deprecated
 	public ServerGeoLocation(final Object[] values) { // NOPMD (direct store of values)
-		super(values, TYPES);
+		AbstractMonitoringRecord.checkArray(values, TYPES);
+		this.timestamp = (Long) values[0];
 		this.countryCode = (Short) values[1];
 		this.hostname = (String) values[2];
 		this.address = (String) values[3];
@@ -111,7 +116,8 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 */
 	@Deprecated
 	protected ServerGeoLocation(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		super(values, valueTypes);
+		AbstractMonitoringRecord.checkArray(values, valueTypes);
+		this.timestamp = (Long) values[0];
 		this.countryCode = (Short) values[1];
 		this.hostname = (String) values[2];
 		this.address = (String) values[3];
@@ -125,7 +131,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 *            when the record could not be deserialized
 	 */
 	public ServerGeoLocation(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		super(deserializer);
+		this.timestamp = deserializer.getLong();
 		this.countryCode = deserializer.getShort();
 		this.hostname = deserializer.getString();
 		this.address = deserializer.getString();
@@ -227,6 +233,11 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		
 		return true;
 	}
+	
+	public final long getTimestamp() {
+		return this.timestamp;
+	}
+	
 	
 	public final short getCountryCode() {
 		return this.countryCode;
