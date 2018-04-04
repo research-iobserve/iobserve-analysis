@@ -15,11 +15,10 @@
  ***************************************************************************/
 package org.iobserve.adaptation.stages;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import teetime.stage.basic.AbstractTransformation;
 
+import org.iobserve.adaptation.executionplan.ExecutionPlan;
+import org.iobserve.adaptation.executionplan.ExecutionplanFactory;
 import org.iobserve.adaptation.util.AtomicActionFactory;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
@@ -32,11 +31,11 @@ import org.iobserve.planning.systemadaptation.SystemAdaptation;
  * @author Lars Bluemke
  *
  */
-public class AtomicActionComputation extends AbstractTransformation<SystemAdaptation, List<Object>> {
+public class AtomicActionComputation extends AbstractTransformation<SystemAdaptation, ExecutionPlan> {
 
     @Override
     protected void execute(final SystemAdaptation systemAdaptationModel) throws Exception {
-        final List<Object> executionPlan = new ArrayList<>();
+        final ExecutionPlan executionPlan = ExecutionplanFactory.eINSTANCE.createExecutionPlan();
 
         for (final Action composedAction : systemAdaptationModel.getActions()) {
             AtomicActionFactory.generateAtomicActions(composedAction, executionPlan);

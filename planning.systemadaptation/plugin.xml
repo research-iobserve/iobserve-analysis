@@ -44,4 +44,11 @@
             genModel="model/executionplan.genmodel"/>
    </extension>
 
+   <extension point="org.eclipse.emf.ecore.extension_parser">
+      <!-- @generated executionplan -->
+      <parser
+            type="executionplan"
+            class="org.iobserve.adaptation.executionplan.util.ExecutionplanResourceFactoryImpl"/>
+   </extension>
+
 </plugin>

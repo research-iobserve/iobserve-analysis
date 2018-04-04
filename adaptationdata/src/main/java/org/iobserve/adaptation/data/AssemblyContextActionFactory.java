@@ -134,10 +134,6 @@ public final class AssemblyContextActionFactory {
         final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
         final ReplicateAction action = factory.createReplicateAction();
 
-        // Allcotaion has no runtime component
-        // AssemblyContextActionFactory.setSourceAssemblyContext(action,
-        // runtimeNode.getAssemblyContextID());
-
         final System reDeplSystem = ActionFactory.getRedeploymentModels().getSystemModel();
         action.setSourceAssemblyContext(
                 ActionFactory.getAssemblyContext(reDeploymentNode.getAssemblyContextID(), reDeplSystem));
@@ -145,6 +141,7 @@ public final class AssemblyContextActionFactory {
         final Allocation reDeplAllocation = ActionFactory.getRedeploymentModels().getAllocationModel();
         action.setNewAllocationContext(
                 ActionFactory.getAllocationContext(reDeploymentNode.getAllocationContextID(), reDeplAllocation));
+
         return action;
     }
 }

@@ -15,6 +15,7 @@
  ***************************************************************************/
 package org.iobserve.adaptation.util;
 
+import org.iobserve.adaptation.executionplan.ExecutionPlan;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
@@ -34,7 +35,7 @@ public final class AtomicActionFactory {
     private AtomicActionFactory() {
     }
 
-    public static void generateAtomicActions(final Action action, final Object executionPlan) {
+    public static void generateAtomicActions(final Action action, final ExecutionPlan executionPlan) {
         if (action instanceof ReplicateAction) {
             AtomicActionFactory.generateAtomicActions((ReplicateAction) action, executionPlan);
         } else if (action instanceof DereplicateAction) {
@@ -50,30 +51,22 @@ public final class AtomicActionFactory {
         }
     }
 
-    public static void generateAtomicActions(final ReplicateAction action, final Object executionPlan) {
+    public static void generateAtomicActions(final ReplicateAction action, final ExecutionPlan executionPlan) {
         // Deploy new component instance
+        action.getSourceAssemblyContext();
+        action.getNewAllocationContext();
         // Migrate state
         // Connect replication
     }
 
-    public static void generateAtomicActions(final DereplicateAction action, final Object executionPlan) {
+    public static void generateAtomicActions(final DereplicateAction action, final ExecutionPlan executionPlan) {
         // Block incoming requests
         // Finish running transactions
         // Disconnect component instance
         // Undeploy component instance
     }
 
-    public static void generateAtomicActions(final MigrateAction action, final Object executionPlan) {
-        // Deploy new component instance
-        // Migrate state
-        // Connect replication
-        // Block incoming requests
-        // Finish running transactions
-        // Disconnect component instance
-        // Undeploy component instance
-    }
-
-    public static void generateAtomicActions(final ChangeRepositoryComponentAction action, final Object executionPlan) {
+    public static void generateAtomicActions(final MigrateAction action, final ExecutionPlan executionPlan) {
         // Deploy new component instance
         // Migrate state
         // Connect replication
@@ -83,12 +76,23 @@ public final class AtomicActionFactory {
         // Undeploy component instance
     }
 
-    public static void generateAtomicActions(final AllocateAction action, final Object executionPlan) {
+    public static void generateAtomicActions(final ChangeRepositoryComponentAction action,
+            final ExecutionPlan executionPlan) {
+        // Deploy new component instance
+        // Migrate state
+        // Connect replication
+        // Block incoming requests
+        // Finish running transactions
+        // Disconnect component instance
+        // Undeploy component instance
+    }
+
+    public static void generateAtomicActions(final AllocateAction action, final ExecutionPlan executionPlan) {
         // Allocate Node
         // Connect Node
     }
 
-    public static void generateAtomicActions(final DeallocateAction action, final Object executionPlan) {
+    public static void generateAtomicActions(final DeallocateAction action, final ExecutionPlan executionPlan) {
         // Disconnect Node
         // Deallocate Node
     }

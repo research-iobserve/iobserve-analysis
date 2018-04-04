@@ -7,28 +7,34 @@
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="Action"/>
   <eClassifiers xsi:type="ecore:EClass" name="AssemblyContextAction" eSuperTypes="#//Action">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceAssemblyContext"
-        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//core/composition/AssemblyContext"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetAllocationContext"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ResourceContainerAction" eSuperTypes="#//Action">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceResourceContainer"
-        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"/>
-  </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="DeployComponentAction" eSuperTypes="#//AssemblyContextAction">
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetResourceContainer"
         eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="UndeployComponentAction" eSuperTypes="#//AssemblyContextAction">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceResourceContainer"
-        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DeployComponentAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="UndeployComponentAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="MigrateComponentStateAction" eSuperTypes="#//AssemblyContextAction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="sourceAllocationContext"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="MigrateComponentStateAction" eSuperTypes="#//AssemblyContextAction"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ConnectComponentAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConnectComponentAction" eSuperTypes="#//AssemblyContextAction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetConnectors" upperBound="-1"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//core/composition/AssemblyConnector"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="BlockRequestsToComponentAction" eSuperTypes="#//AssemblyContextAction"/>
-  <eClassifiers xsi:type="ecore:EClass" name="DisconnectComponentAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DisconnectComponentAction" eSuperTypes="#//AssemblyContextAction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetConnectors" upperBound="-1"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//core/composition/AssemblyConnector"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="FinishComponentAction" eSuperTypes="#//AssemblyContextAction"/>
   <eClassifiers xsi:type="ecore:EClass" name="AllocateNodeAction" eSuperTypes="#//ResourceContainerAction"/>
   <eClassifiers xsi:type="ecore:EClass" name="DeallocateNodeAction" eSuperTypes="#//ResourceContainerAction"/>
-  <eClassifiers xsi:type="ecore:EClass" name="ConnectNodeAction" eSuperTypes="#//ResourceContainerAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="ConnectNodeAction" eSuperTypes="#//ResourceContainerAction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetConnectors" upperBound="-1"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/LinkingResource"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DisconnectNodeAction" eSuperTypes="#//ResourceContainerAction"/>
 </ecore:EPackage>

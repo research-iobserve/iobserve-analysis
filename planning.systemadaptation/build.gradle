@@ -20,7 +20,10 @@ dependencies {
     compile 'org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.12.0+'
     compile 'org.eclipse.emf:org.eclipse.emf.ecore:2.12.0+'
     
-    compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201511050934'
+    compile 'extra:de.uka.ipd.sdq.identifier:2.1.0.201611171324'
+    compile 'extra:de.uka.ipd.sdq.probfunction:2.1.1.201611171324'
+    compile 'extra:de.uka.ipd.sdq.stoex:2.2.0.201611171324'
+    compile 'extra:de.uka.ipd.sdq.units:2.1.1.201611171324'
     compile 'extra:org.palladiosimulator.pcm:4.0.2+'
 }
 
