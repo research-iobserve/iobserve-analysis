@@ -15,8 +15,6 @@
  ***************************************************************************/
 package org.iobserve.peropteryx.rcp;
 
-import java.util.Map;
-
 import de.uka.ipd.sdq.dsexplore.launch.DSELaunch;
 
 import org.apache.commons.cli.BasicParser;
@@ -72,12 +70,6 @@ public class Application implements IApplication {
             final CommandLine commandLine = parser.parse(Application.createOptions(), args);
             final String workingDir = commandLine.getOptionValue(Application.INPUT_WORKING_DIR_OPTION);
 
-            ///
-            final Map<String, String> env = System.getenv();
-            for (final String envName : env.keySet()) {
-                System.out.format("%s=%s%n", envName, env.get(envName));
-            }
-            ///
             this.launchPeropteryx(workingDir);
         } catch (final ParseException exp) {
             final HelpFormatter formatter = new HelpFormatter();
