@@ -544,7 +544,7 @@ configure(subprojects.findAll(IS_PLUGIN)) {
 		'Require-Capability': 'osgi.ee;filter:="(&(osgi.ee=JavaSE)(version=1.8))"',
 		'Bundle-Vendor': 'iObserve',
 		'Bundle-License': "http://www.apache.org/licenses/LICENSE-2.0",
-		'Export-Package': 'org.iobserve.planning.peropteryx.rcp'
+		'Export-Package': 'org.iobserve.peropteryx.rcp'
 	)
 
 	//////////////////////
