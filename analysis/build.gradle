@@ -1,5 +1,5 @@
 // SHADOW
-apply plugin: 'com.github.johnrengelman.shadow'
+//apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 apply plugin: 'application'
 
@@ -20,10 +20,10 @@ buildscript {
 }
 
 // SHADOW
-shadowJar {
-   zip64 = true
-   mainClassName = 'org.iobserve.analysis.AnalysisMain'
-}
+//shadowJar {
+//   zip64 = true
+//   mainClassName = 'org.iobserve.analysis.AnalysisMain'
+//}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8

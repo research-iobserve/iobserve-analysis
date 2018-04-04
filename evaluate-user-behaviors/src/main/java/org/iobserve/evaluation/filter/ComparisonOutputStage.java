@@ -25,13 +25,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import teetime.framework.AbstractConsumerStage;
+
 import org.iobserve.analysis.behavior.models.extended.CallInformation;
 import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
 import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 import org.iobserve.evaluation.data.ComparisonResult;
 import org.iobserve.evaluation.data.NodeDifference;
-
-import teetime.framework.AbstractConsumerStage;
 
 /**
  * Sync all incoming records with a Kieker writer to a text file log.
@@ -71,10 +71,10 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
         writer.write("CP;" + this.outputFile.getName() + ";" + baselineNodeCount + ";" + baselineEdgeCount + ";"
                 + testModelNodeCount + ";" + testModelEdgeCount + ";" + missingNodeCount + ";" + additionalNodeCount
                 + ";" + missingEdgeCount + ";" + additionalEdgeCount + ";"
-                + ((double) missingNodeCount / (double) baselineNodeCount) + ";"
-                + ((double) additionalNodeCount / (double) baselineNodeCount) + ";"
-                + ((double) missingEdgeCount / (double) baselineEdgeCount) + ";"
-                + ((double) additionalEdgeCount / (double) baselineEdgeCount) + "\n");
+                + (double) missingNodeCount / (double) baselineNodeCount + ";"
+                + (double) additionalNodeCount / (double) baselineNodeCount + ";"
+                + (double) missingEdgeCount / (double) baselineEdgeCount + ";"
+                + (double) additionalEdgeCount / (double) baselineEdgeCount + "\n");
 
         final List<EntryCallNode> allNodes = this.createAllNodesList(result.getBaselineNodes(),
                 result.getTestModelNodes());

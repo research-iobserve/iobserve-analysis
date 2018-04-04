@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
         mavenLocal()
         jcenter()
-        maven { url "https://plugins.gradle.org/m2/" } // shadow
+        // maven { url "https://plugins.gradle.org/m2/" } // shadow
     }
 
     dependencies {
@@ -28,6 +28,14 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'com.bmuschko.clover'
+
+
+tasks.withType(GroovyCompile) {
+    configure(groovyOptions.forkOptions) {
+        memoryMaximumSize = '1g'
+        jvmArgs = ['-XX:MaxPermSize=512m', '-Xms512m', '-Xmx1g']
+    }
+}
 
 def confDir = "${project.rootDir}/qa-configurations"
 

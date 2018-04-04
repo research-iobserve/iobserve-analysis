@@ -54,7 +54,6 @@ public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel
     protected void execute() throws Exception {
         final ObjectMapper mapper = new ObjectMapper();
 
-        final BehaviorModel model = new BehaviorModel();
         /** Have to read the model by hand */
         final JsonNode tree = mapper.readTree(this.inputFile);
         if (!(tree instanceof ObjectNode)) {
@@ -62,7 +61,9 @@ public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel
         }
         final ObjectNode modelNode = (ObjectNode) tree;
 
-        // Read name
+        final BehaviorModel model = new BehaviorModel();
+
+        /** Read name. */
         final JsonNode name = modelNode.get("name");
         if (name.isTextual()) {
             model.setName(name.textValue());

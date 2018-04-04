@@ -19,16 +19,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import teetime.framework.AbstractStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.iobserve.analysis.behavior.models.extended.CallInformation;
 import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
 import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 import org.iobserve.evaluation.data.ComparisonResult;
 import org.iobserve.evaluation.data.NodeDifference;
-
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
 
 /**
  * Compare two behavior models and compute their differences.
@@ -74,7 +74,7 @@ public class ModelComparisonStage extends AbstractStage {
             this.testModel = this.testModelInputPort.receive();
         }
         /** We still have to check both, as there could be nothing a both ports. */
-        if ((this.referenceModel != null) && (this.testModel != null)) {
+        if (this.referenceModel != null && this.testModel != null) {
             final ComparisonResult result = new ComparisonResult();
 
             result.getBaselineNodes().addAll(Arrays.asList(this.referenceModel.getNodes()));
