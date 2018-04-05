@@ -8,7 +8,7 @@ import org.eclipse.emf.ecore.EClass;
 import org.iobserve.adaptation.executionplan.DisconnectComponentAction;
 import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
 
-import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * <!-- begin-user-doc -->
@@ -18,7 +18,8 @@ import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.adaptation.executionplan.impl.DisconnectComponentActionImpl#getTargetConnectors <em>Target Connectors</em>}</li>
+ *   <li>{@link org.iobserve.adaptation.executionplan.impl.DisconnectComponentActionImpl#getProvidingAllocationContexts <em>Providing Allocation Contexts</em>}</li>
+ *   <li>{@link org.iobserve.adaptation.executionplan.impl.DisconnectComponentActionImpl#getRequiringAllocationContexts <em>Requiring Allocation Contexts</em>}</li>
  * </ul>
  *
  * @generated
@@ -49,8 +50,18 @@ public class DisconnectComponentActionImpl extends AssemblyContextActionImpl imp
      * @generated
      */
     @SuppressWarnings("unchecked")
-    public EList<AssemblyConnector> getTargetConnectors() {
-        return (EList<AssemblyConnector>)eGet(ExecutionplanPackage.Literals.DISCONNECT_COMPONENT_ACTION__TARGET_CONNECTORS, true);
+    public EList<AllocationContext> getProvidingAllocationContexts() {
+        return (EList<AllocationContext>)eGet(ExecutionplanPackage.Literals.DISCONNECT_COMPONENT_ACTION__PROVIDING_ALLOCATION_CONTEXTS, true);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    @SuppressWarnings("unchecked")
+    public EList<AllocationContext> getRequiringAllocationContexts() {
+        return (EList<AllocationContext>)eGet(ExecutionplanPackage.Literals.DISCONNECT_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS, true);
     }
 
 } //DisconnectComponentActionImpl

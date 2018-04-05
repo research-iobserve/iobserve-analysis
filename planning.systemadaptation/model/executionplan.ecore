@@ -21,13 +21,20 @@
         eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ConnectComponentAction" eSuperTypes="#//AssemblyContextAction">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="targetConnectors" upperBound="-1"
-        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//core/composition/AssemblyConnector"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="providingAllocationContexts"
+        upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="requiringAllocationContexts"
+        upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="BlockRequestsToComponentAction" eSuperTypes="#//AssemblyContextAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="BlockRequestsToComponentAction" eSuperTypes="#//AssemblyContextAction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="requiringAllocationContexts"
+        upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
+  </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DisconnectComponentAction" eSuperTypes="#//AssemblyContextAction">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="targetConnectors" upperBound="-1"
-        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//core/composition/AssemblyConnector"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="providingAllocationContexts"
+        upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
+    <eStructuralFeatures xsi:type="ecore:EReference" name="requiringAllocationContexts"
+        upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="FinishComponentAction" eSuperTypes="#//AssemblyContextAction"/>
   <eClassifiers xsi:type="ecore:EClass" name="AllocateNodeAction" eSuperTypes="#//ResourceContainerAction"/>
@@ -36,5 +43,8 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetConnectors" upperBound="-1"
         eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/LinkingResource"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="DisconnectNodeAction" eSuperTypes="#//ResourceContainerAction"/>
+  <eClassifiers xsi:type="ecore:EClass" name="DisconnectNodeAction" eSuperTypes="#//ResourceContainerAction">
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetConnectors" upperBound="-1"
+        eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/LinkingResource"/>
+  </eClassifiers>
 </ecore:EPackage>

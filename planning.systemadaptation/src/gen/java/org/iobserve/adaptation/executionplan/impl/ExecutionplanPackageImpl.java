@@ -37,9 +37,6 @@ import org.iobserve.adaptation.executionplan.UndeployComponentAction;
 import org.palladiosimulator.pcm.PcmPackage;
 
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
-
-import org.palladiosimulator.pcm.core.composition.CompositionPackage;
-
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
@@ -335,8 +332,17 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getConnectComponentAction_TargetConnectors() {
+    public EReference getConnectComponentAction_ProvidingAllocationContexts() {
         return (EReference)connectComponentActionEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getConnectComponentAction_RequiringAllocationContexts() {
+        return (EReference)connectComponentActionEClass.getEStructuralFeatures().get(1);
     }
 
     /**
@@ -353,6 +359,15 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
      * <!-- end-user-doc -->
      * @generated
      */
+    public EReference getBlockRequestsToComponentAction_RequiringAllocationContexts() {
+        return (EReference)blockRequestsToComponentActionEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public EClass getDisconnectComponentAction() {
         return disconnectComponentActionEClass;
     }
@@ -362,8 +377,17 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getDisconnectComponentAction_TargetConnectors() {
+    public EReference getDisconnectComponentAction_ProvidingAllocationContexts() {
         return (EReference)disconnectComponentActionEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
+    public EReference getDisconnectComponentAction_RequiringAllocationContexts() {
+        return (EReference)disconnectComponentActionEClass.getEStructuralFeatures().get(1);
     }
 
     /**
@@ -425,6 +449,15 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
      * <!-- end-user-doc -->
      * @generated
      */
+    public EReference getDisconnectNodeAction_TargetConnectors() {
+        return (EReference)disconnectNodeActionEClass.getEStructuralFeatures().get(0);
+    }
+
+    /**
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @generated
+     */
     public ExecutionplanFactory getExecutionplanFactory() {
         return (ExecutionplanFactory)getEFactoryInstance();
     }
@@ -467,12 +500,15 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
         createEReference(migrateComponentStateActionEClass, MIGRATE_COMPONENT_STATE_ACTION__SOURCE_ALLOCATION_CONTEXT);
 
         connectComponentActionEClass = createEClass(CONNECT_COMPONENT_ACTION);
-        createEReference(connectComponentActionEClass, CONNECT_COMPONENT_ACTION__TARGET_CONNECTORS);
+        createEReference(connectComponentActionEClass, CONNECT_COMPONENT_ACTION__PROVIDING_ALLOCATION_CONTEXTS);
+        createEReference(connectComponentActionEClass, CONNECT_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS);
 
         blockRequestsToComponentActionEClass = createEClass(BLOCK_REQUESTS_TO_COMPONENT_ACTION);
+        createEReference(blockRequestsToComponentActionEClass, BLOCK_REQUESTS_TO_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS);
 
         disconnectComponentActionEClass = createEClass(DISCONNECT_COMPONENT_ACTION);
-        createEReference(disconnectComponentActionEClass, DISCONNECT_COMPONENT_ACTION__TARGET_CONNECTORS);
+        createEReference(disconnectComponentActionEClass, DISCONNECT_COMPONENT_ACTION__PROVIDING_ALLOCATION_CONTEXTS);
+        createEReference(disconnectComponentActionEClass, DISCONNECT_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS);
 
         finishComponentActionEClass = createEClass(FINISH_COMPONENT_ACTION);
 
@@ -484,6 +520,7 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
         createEReference(connectNodeActionEClass, CONNECT_NODE_ACTION__TARGET_CONNECTORS);
 
         disconnectNodeActionEClass = createEClass(DISCONNECT_NODE_ACTION);
+        createEReference(disconnectNodeActionEClass, DISCONNECT_NODE_ACTION__TARGET_CONNECTORS);
     }
 
     /**
@@ -512,7 +549,6 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
         // Obtain other dependent packages
         AllocationPackage theAllocationPackage = (AllocationPackage)EPackage.Registry.INSTANCE.getEPackage(AllocationPackage.eNS_URI);
         ResourceenvironmentPackage theResourceenvironmentPackage = (ResourceenvironmentPackage)EPackage.Registry.INSTANCE.getEPackage(ResourceenvironmentPackage.eNS_URI);
-        CompositionPackage theCompositionPackage = (CompositionPackage)EPackage.Registry.INSTANCE.getEPackage(CompositionPackage.eNS_URI);
 
         // Create type parameters
 
@@ -553,12 +589,15 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
         initEReference(getMigrateComponentStateAction_SourceAllocationContext(), theAllocationPackage.getAllocationContext(), null, "sourceAllocationContext", null, 0, 1, MigrateComponentStateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(connectComponentActionEClass, ConnectComponentAction.class, "ConnectComponentAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getConnectComponentAction_TargetConnectors(), theCompositionPackage.getAssemblyConnector(), null, "targetConnectors", null, 0, -1, ConnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getConnectComponentAction_ProvidingAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "providingAllocationContexts", null, 0, -1, ConnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getConnectComponentAction_RequiringAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "requiringAllocationContexts", null, 0, -1, ConnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(blockRequestsToComponentActionEClass, BlockRequestsToComponentAction.class, "BlockRequestsToComponentAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getBlockRequestsToComponentAction_RequiringAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "requiringAllocationContexts", null, 0, -1, BlockRequestsToComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(disconnectComponentActionEClass, DisconnectComponentAction.class, "DisconnectComponentAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getDisconnectComponentAction_TargetConnectors(), theCompositionPackage.getAssemblyConnector(), null, "targetConnectors", null, 0, -1, DisconnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getDisconnectComponentAction_ProvidingAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "providingAllocationContexts", null, 0, -1, DisconnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getDisconnectComponentAction_RequiringAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "requiringAllocationContexts", null, 0, -1, DisconnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(finishComponentActionEClass, FinishComponentAction.class, "FinishComponentAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
@@ -570,6 +609,7 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
         initEReference(getConnectNodeAction_TargetConnectors(), theResourceenvironmentPackage.getLinkingResource(), null, "targetConnectors", null, 0, -1, ConnectNodeAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(disconnectNodeActionEClass, DisconnectNodeAction.class, "DisconnectNodeAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEReference(getDisconnectNodeAction_TargetConnectors(), theResourceenvironmentPackage.getLinkingResource(), null, "targetConnectors", null, 0, -1, DisconnectNodeAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         // Create resource
         createResource(eNS_URI);

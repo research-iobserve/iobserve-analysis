@@ -4,7 +4,7 @@ package org.iobserve.adaptation.executionplan;
 
 import org.eclipse.emf.common.util.EList;
 
-import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * <!-- begin-user-doc -->
@@ -15,7 +15,8 @@ import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.adaptation.executionplan.DisconnectComponentAction#getTargetConnectors <em>Target Connectors</em>}</li>
+ *   <li>{@link org.iobserve.adaptation.executionplan.DisconnectComponentAction#getProvidingAllocationContexts <em>Providing Allocation Contexts</em>}</li>
+ *   <li>{@link org.iobserve.adaptation.executionplan.DisconnectComponentAction#getRequiringAllocationContexts <em>Requiring Allocation Contexts</em>}</li>
  * </ul>
  *
  * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getDisconnectComponentAction()
@@ -24,19 +25,35 @@ import org.palladiosimulator.pcm.core.composition.AssemblyConnector;
  */
 public interface DisconnectComponentAction extends AssemblyContextAction {
     /**
-     * Returns the value of the '<em><b>Target Connectors</b></em>' reference list.
-     * The list contents are of type {@link org.palladiosimulator.pcm.core.composition.AssemblyConnector}.
+     * Returns the value of the '<em><b>Providing Allocation Contexts</b></em>' reference list.
+     * The list contents are of type {@link org.palladiosimulator.pcm.allocation.AllocationContext}.
      * <!-- begin-user-doc -->
      * <p>
-     * If the meaning of the '<em>Target Connectors</em>' reference list isn't clear,
+     * If the meaning of the '<em>Providing Allocation Contexts</em>' reference list isn't clear,
      * there really should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
-     * @return the value of the '<em>Target Connectors</em>' reference list.
-     * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getDisconnectComponentAction_TargetConnectors()
+     * @return the value of the '<em>Providing Allocation Contexts</em>' reference list.
+     * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getDisconnectComponentAction_ProvidingAllocationContexts()
      * @model
      * @generated
      */
-    EList<AssemblyConnector> getTargetConnectors();
+    EList<AllocationContext> getProvidingAllocationContexts();
+
+    /**
+     * Returns the value of the '<em><b>Requiring Allocation Contexts</b></em>' reference list.
+     * The list contents are of type {@link org.palladiosimulator.pcm.allocation.AllocationContext}.
+     * <!-- begin-user-doc -->
+     * <p>
+     * If the meaning of the '<em>Requiring Allocation Contexts</em>' reference list isn't clear,
+     * there really should be more of a description here...
+     * </p>
+     * <!-- end-user-doc -->
+     * @return the value of the '<em>Requiring Allocation Contexts</em>' reference list.
+     * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getDisconnectComponentAction_RequiringAllocationContexts()
+     * @model
+     * @generated
+     */
+    EList<AllocationContext> getRequiringAllocationContexts();
 
 } // DisconnectComponentAction
