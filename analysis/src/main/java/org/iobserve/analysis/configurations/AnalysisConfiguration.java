@@ -125,6 +125,11 @@ public class AnalysisConfiguration extends Configuration {
         }
     }
 
+    public AnalysisConfiguration(final kieker.common.configuration.Configuration configuration)
+            throws ConfigurationException {
+        this(configuration, null, null, null, null, null, null);
+    }
+
     /**
      * Create all stages necessary for the container management.
      *

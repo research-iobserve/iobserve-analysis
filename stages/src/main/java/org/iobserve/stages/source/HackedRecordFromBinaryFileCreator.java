@@ -162,11 +162,18 @@ public class HackedRecordFromBinaryFileCreator {
                                                                   // arrays are used and the buffer
                                                                   // does not hold the complete
                                                                   // record.
-                    HackedRecordFromBinaryFileCreator.LOGGER.warn("Failed to create: {}", recordClassName, ex);
+                    HackedRecordFromBinaryFileCreator.LOGGER.warn("Failed to create: {} error {}", recordClassName, ex);
                     // incomplete record, move back
                     this.buffer.reset();
                     this.buffer.compact();
                     return null;
+                } catch (final BufferUnderflowException ex) {
+                    HackedRecordFromBinaryFileCreator.LOGGER.warn("Failed to create: {} error {}", recordClassName, ex);
+                    // incomplete record, move back
+                    this.buffer.reset();
+                    this.buffer.compact();
+                    return null;
+
                 }
             }
         }

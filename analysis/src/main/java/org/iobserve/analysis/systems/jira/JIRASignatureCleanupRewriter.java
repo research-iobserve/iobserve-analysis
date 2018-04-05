@@ -15,33 +15,28 @@
  ***************************************************************************/
 package org.iobserve.analysis.systems.jira;
 
-import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
-import org.iobserve.stages.general.data.EntryCallEvent;
+import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
 
 /**
- * Matches if a given call is valid in context of the user behavior analysis for the JPetStore.
+ * Performs cleanup operations on class and operation signatures for the JPetStore application.
  *
  * @author Reiner Jung
  *
  */
-public class JIRAraceAcceptanceMatcher implements IEntryCallAcceptanceMatcher {
+public class JIRASignatureCleanupRewriter implements ITraceSignatureCleanupRewriter {
 
-    public JIRAraceAcceptanceMatcher() {
+    public JIRASignatureCleanupRewriter() {
         // empty constructor
     }
 
     @Override
-    public boolean match(final EntryCallEvent call) {
-        return this.matchClassSignature(call.getClassSignature())
-                && this.matchOperationSignature(call.getOperationSignature());
+    public String rewriteClassSignature(final String classSignature) {
+        return classSignature;
     }
 
-    private boolean matchOperationSignature(final String operationSignature) {
-        return true;
-    }
-
-    private boolean matchClassSignature(final String classSignature) {
-        return true;
+    @Override
+    public String rewriteOperationSignature(final String operationSignature) {
+        return operationSignature;
     }
 
 }

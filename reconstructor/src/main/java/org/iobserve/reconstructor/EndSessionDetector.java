@@ -114,9 +114,9 @@ public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord>
             metadata.setTimestamp(event.getLoggingTimestamp());
             final SessionEntry sessionEntry = this.sessionMap.get(metadata.getSessionId());
             sessionEntry.setTimestamp(metadata.getTimestamp());
-        } else {
-            EndSessionDetector.LOGGER.error("Event has no trace {} {}", event.getClass(), event.toString());
-        }
+        } //else {
+            //EndSessionDetector.LOGGER.error("Event has no trace {} {}", event.getClass(), event.toString());
+        //}
     }
 
     public OutputPort<IMonitoringRecord> getOutputPort() {

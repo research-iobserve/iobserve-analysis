@@ -15,6 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis.behavior.clustering.similaritymatching;
 
+import kieker.common.configuration.Configuration;
+import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
+
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.iobserve.analysis.configurations.ConfigurationKeys;
 import org.iobserve.analysis.session.data.UserSession;
@@ -22,12 +29,6 @@ import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import kieker.common.configuration.Configuration;
-import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
-import teetime.framework.CompositeStage;
-import teetime.framework.InputPort;
-import teetime.framework.OutputPort;
 
 /**
  * This stage performs Similarity Matching when configured properly
@@ -37,7 +38,7 @@ import teetime.framework.OutputPort;
  */
 @ReceiveUnfilteredConfiguration
 public class SimilarityMatchingStage extends CompositeStage implements IClassificationStage {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorCompositeStage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimilarityMatchingStage.class);
 
     private final InputPort<UserSession> sessionInputPort;
     private final InputPort<Long> timerInputPort;
@@ -88,14 +89,16 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
         final double parameterSimilarityRadius = configuration
                 .getDoubleProperty(ConfigurationKeys.SIM_MATCH_RADIUS_PARAMS, -1);
         if (parameterSimilarityRadius < 0) {
-            SimilarityMatchingStage.LOGGER.error("Initialization incomplete: No parameter similarity radius specified.");
+            SimilarityMatchingStage.LOGGER
+                    .error("Initialization incomplete: No parameter similarity radius specified.");
             throw new ConfigurationException("Initialization incomplete: No parameter similarity radius specified.");
         }
 
         final double structureSimilarityRadius = configuration
                 .getDoubleProperty(ConfigurationKeys.SIM_MATCH_RADIUS_STRUCTURE, -1);
         if (structureSimilarityRadius < 0) {
-            SimilarityMatchingStage.LOGGER.error("Initialization incomplete: No structure similarity radius specified.");
+            SimilarityMatchingStage.LOGGER
+                    .error("Initialization incomplete: No structure similarity radius specified.");
             throw new ConfigurationException("Initialization incomplete: No structure similarity radius specified.");
         }
 
@@ -103,8 +106,10 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
         final SessionToModelTransformation sessionToModel = new SessionToModelTransformation();
         final VectorizationStage vectorization = new VectorizationStage(structureMetric, parameterMetric);
         vectorization.declareActive();
-        final GroupingBehaviorStage groupingStage = new GroupingBehaviorStage(structureSimilarityRadius, parameterSimilarityRadius);
-        final ModelGenerationTransformation modelGeneration = new ModelGenerationTransformation(modelGenerationStrategy);
+        final GroupingBehaviorStage groupingStage = new GroupingBehaviorStage(structureSimilarityRadius,
+                parameterSimilarityRadius);
+        final ModelGenerationTransformation modelGeneration = new ModelGenerationTransformation(
+                modelGenerationStrategy);
         modelGeneration.declareActive();
 
         /** Connect ports */

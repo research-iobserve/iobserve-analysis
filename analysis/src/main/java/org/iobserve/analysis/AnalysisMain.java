@@ -17,7 +17,6 @@ package org.iobserve.analysis;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.beust.jcommander.JCommander;
@@ -28,19 +27,9 @@ import kieker.common.configuration.Configuration;
 
 import org.iobserve.analysis.configurations.AnalysisConfiguration;
 import org.iobserve.analysis.configurations.ConfigurationKeys;
-import org.iobserve.model.PCMModelHandler;
-import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.provider.neo4j.Graph;
-import org.iobserve.model.provider.neo4j.GraphLoader;
-import org.iobserve.model.provider.neo4j.IModelProvider;
-import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
-import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.repository.Repository;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * Main class for starting the iObserve application.
@@ -100,7 +89,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
                     commander)
                     && CommandLineParameterEvaluation.checkDirectory(this.modelDatabaseDirectory,
                             "PCM database directory", commander)
-                    && this.containerManagementVisualizationBaseUrl != null;
+                    && (this.containerManagementVisualizationBaseUrl != null);
         } catch (final IOException e) {
             return false;
         }
@@ -111,67 +100,82 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
             throws ConfigurationException {
 
         /** Configure model handling. */
-        // old model providers without neo4j
-        final PCMModelHandler modelFileHandler = new PCMModelHandler(this.modelInitDirectory);
+        // // old model providers without neo4j
+        // final PCMModelHandler modelFileHandler = new PCMModelHandler(this.modelInitDirectory);
+        //
+        // final ICorrespondence correspondenceModel = modelFileHandler.getCorrespondenceModel();
+        //
+        // /** initialize neo4j graphs. */
+        // final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
+        //
+        // Graph repositoryModelGraph =
+        // graphLoader.initializeRepositoryModelGraph(modelFileHandler.getRepositoryModel());
+        // Graph resourceEnvironmentGraph = graphLoader
+        // .initializeResourceEnvironmentModelGraph(modelFileHandler.getResourceEnvironmentModel());
+        // Graph allocationModelGraph =
+        // graphLoader.initializeAllocationModelGraph(modelFileHandler.getAllocationModel());
+        // Graph systemModelGraph =
+        // graphLoader.initializeSystemModelGraph(modelFileHandler.getSystemModel());
+        // Graph usageModelGraph =
+        // graphLoader.initializeUsageModelGraph(modelFileHandler.getUsageModel());
+        //
+        // /** load neo4j graphs. */
+        // repositoryModelGraph = graphLoader.createRepositoryModelGraph();
+        // resourceEnvironmentGraph = graphLoader.createResourceEnvironmentModelGraph();
+        // allocationModelGraph = graphLoader.createAllocationModelGraph();
+        // systemModelGraph = graphLoader.createSystemModelGraph();
+        // usageModelGraph = graphLoader.createUsageModelGraph();
+        //
+        // /** new graphModelProvider. */
+        // final IModelProvider<Repository> repositoryModelProvider = new
+        // ModelProvider<>(repositoryModelGraph);
+        // final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new
+        // ModelProvider<>(
+        // resourceEnvironmentGraph);
+        // final IModelProvider<Allocation> allocationModelProvider = new
+        // ModelProvider<>(allocationModelGraph);
+        // final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider = new
+        // ModelProvider<>(
+        // systemModelGraph);
+        // final IModelProvider<UsageModel> usageModelProvider = new
+        // ModelProvider<>(usageModelGraph);
+        //
+        // // get systemId
+        // final org.palladiosimulator.pcm.system.System systemModel = systemModelProvider
+        // .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
+        //
+        // final String systemId = systemModel.getId();
 
-        final ICorrespondence correspondenceModel = modelFileHandler.getCorrespondenceModel();
+        // try {
+        // /** URLs for sending updates to the deployment visualization. */
+        // // TODO this should be moved to the visualization sinks
+        // final String[] sinks =
+        // configuration.getStringArrayProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_SINK,
+        // ",");
+        //
+        // if (sinks.length > 0) {
+        // final InitializeDeploymentVisualization deploymentVisualization = new
+        // InitializeDeploymentVisualization(
+        // this.containerManagementVisualizationBaseUrl, systemId, allocationModelProvider,
+        // systemModelProvider, resourceEnvironmentModelProvider);
+        //
+        // deploymentVisualization.initialize();
+        // }
 
-        /** initialize neo4j graphs. */
-        final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
+        return new AnalysisConfiguration(configuration); // , repositoryModelProvider,
+                                                         // resourceEnvironmentModelProvider,
+        // allocationModelProvider, systemModelProvider, usageModelProvider,
+        // correspondenceModel);
 
-        Graph repositoryModelGraph = graphLoader.initializeRepositoryModelGraph(modelFileHandler.getRepositoryModel());
-        Graph resourceEnvironmentGraph = graphLoader
-                .initializeResourceEnvironmentModelGraph(modelFileHandler.getResourceEnvironmentModel());
-        Graph allocationModelGraph = graphLoader.initializeAllocationModelGraph(modelFileHandler.getAllocationModel());
-        Graph systemModelGraph = graphLoader.initializeSystemModelGraph(modelFileHandler.getSystemModel());
-        Graph usageModelGraph = graphLoader.initializeUsageModelGraph(modelFileHandler.getUsageModel());
-
-        /** load neo4j graphs. */
-        repositoryModelGraph = graphLoader.createRepositoryModelGraph();
-        resourceEnvironmentGraph = graphLoader.createResourceEnvironmentModelGraph();
-        allocationModelGraph = graphLoader.createAllocationModelGraph();
-        systemModelGraph = graphLoader.createSystemModelGraph();
-        usageModelGraph = graphLoader.createUsageModelGraph();
-
-        /** new graphModelProvider. */
-        final IModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
-        final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
-                resourceEnvironmentGraph);
-        final IModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
-        final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider = new ModelProvider<>(
-                systemModelGraph);
-        final IModelProvider<UsageModel> usageModelProvider = new ModelProvider<>(usageModelGraph);
-
-        // get systemId
-        final org.palladiosimulator.pcm.system.System systemModel = systemModelProvider
-                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
-
-        final String systemId = systemModel.getId();
-
-        try {
-            /** URLs for sending updates to the deployment visualization. */
-            // TODO this should be moved to the visualization sinks
-            final String[] sinks = configuration.getStringArrayProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_SINK,
-                    ",");
-
-            if (sinks.length > 0) {
-                final InitializeDeploymentVisualization deploymentVisualization = new InitializeDeploymentVisualization(
-                        this.containerManagementVisualizationBaseUrl, systemId, allocationModelProvider,
-                        systemModelProvider, resourceEnvironmentModelProvider);
-
-                deploymentVisualization.initialize();
-            }
-
-            return new AnalysisConfiguration(configuration, repositoryModelProvider, resourceEnvironmentModelProvider,
-                    allocationModelProvider, systemModelProvider, usageModelProvider, correspondenceModel);
-
-        } catch (final MalformedURLException e) {
-            AbstractServiceMain.LOGGER.error("URL construction for deployment visualization failed.", e);
-            return null;
-        } catch (final IOException e) {
-            AbstractServiceMain.LOGGER.error("Deployment visualization could not connect to visualization service.", e);
-            return null;
-        }
+        // } catch (final MalformedURLException e) {
+        // AbstractServiceMain.LOGGER.error("URL construction for deployment visualization failed.",
+        // e);
+        // return null;
+        // } catch (final IOException e) {
+        // AbstractServiceMain.LOGGER.error("Deployment visualization could not connect to
+        // visualization service.", e);
+        // return null;
+        // }
     }
 
     @Override

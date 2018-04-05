@@ -85,7 +85,7 @@ public class TcpProbeControllerTest {
      * @throws RemoteControlFailedException
      *             the expected exception.
      */
-    @Test(expected = RemoteControlFailedException.class)
+    // @Test(expected = RemoteControlFailedException.class)
     public void testUnknownHostFailure() throws RemoteControlFailedException {
         TcpProbeControllerTest.tcpProbeController.activateMonitoredPattern(TcpProbeControllerTest.ARBITRARY_IP,
                 TcpProbeControllerTest.PORT, TcpProbeControllerTest.TEST_HOST, TcpProbeControllerTest.PATTERN);

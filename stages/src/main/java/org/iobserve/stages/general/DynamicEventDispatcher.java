@@ -67,7 +67,9 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
     public DynamicEventDispatcher(final IEventMatcher<? extends Object> rootEventMatcher, final boolean countEvents,
             final boolean reportUnknown, final boolean outputOther) {
         this.rootEventMatcher = rootEventMatcher;
-        this.assignPorts(rootEventMatcher);
+        if (rootEventMatcher != null) {
+            this.assignPorts(rootEventMatcher);
+        }
         this.countEvents = countEvents;
         this.reportUnknown = reportUnknown;
         this.outputOther = outputOther;
@@ -101,7 +103,7 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
                 } else {
                     hits++;
                     this.unknownRecords.put(className, hits);
-                    if (hits % DynamicEventDispatcher.LOOP_COUNT == 0) {
+                    if ((hits % DynamicEventDispatcher.LOOP_COUNT) == 0) {
                         DynamicEventDispatcher.LOGGER.warn("Event occurances {} of unknown eventtype {}.", hits,
                                 className);
                     }

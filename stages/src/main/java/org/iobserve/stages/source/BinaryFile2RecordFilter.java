@@ -40,6 +40,8 @@ public class BinaryFile2RecordFilter extends AbstractConsumerStage<File> {
 
     private static final int MB = 1024 * 1024;
 
+    private static final String BIN = ".bin";
+
     private final OutputPort<IMonitoringRecord> outputPort = this.createOutputPort();
 
     private HackedRecordFromBinaryFileCreator recordFromBinaryFileCreator;
@@ -80,9 +82,11 @@ public class BinaryFile2RecordFilter extends AbstractConsumerStage<File> {
         final String name = binaryFile.getName();
         final String extension = name.substring(name.lastIndexOf('.'));
 
-        final XZDecompressionMethod method;
+        final IDecompressionMethod method;
         if (BinaryFile2RecordFilter.XZ.equals(extension)) {
             method = new XZDecompressionMethod();
+        } else if (BinaryFile2RecordFilter.BIN.equals(extension)) {
+            method = new NoneDecompressionMethod();
         } else {
             throw new ConfigurationException("unsupported compression.");
         }
