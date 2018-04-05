@@ -36,7 +36,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * of the group to undeploy the assembly context.
  *
  * @author Tobias Pöppke
- * @author Lars Blümke (terminology: "deallocate" -> "dereplicate")
+ * @author Lars Blümke (Refactoring of system adaptation model: terminology: "deallocate" ->
+ *         "dereplicate", changes to sources and targets of actions)
  *
  */
 public class DereplicateActionScript extends AbstractActionScript {
@@ -57,19 +58,21 @@ public class DereplicateActionScript extends AbstractActionScript {
 
     @Override
     public void execute() throws RunScriptOnNodesException, IOException {
-        final ResourceContainer container = this.action.getOldAllocationContext()
+        final ResourceContainer container = this.action.getTargetAllocationContext()
                 .getResourceContainer_AllocationContext();
 
         final ResourceContainerCloud cloudContainer = this.getResourceContainerCloud(container);
 
         final ComputeService client = this.getComputeServiceForContainer(cloudContainer);
-        final String assemblyContextName = this.action.getSourceAssemblyContext().getEntityName();
+        final String assemblyContextName = this.action.getTargetAllocationContext()
+                .getAssemblyContext_AllocationContext().getEntityName();
 
         // If the assembly context has already been deallocated on the group, do
         // nothing
         if (!this.data.getDeallocatedContexts().contains(assemblyContextName)) {
             client.runScriptOnNodesMatching(node -> node.getGroup().equals(cloudContainer.getGroupName()),
-                    this.getDeallocateScript(this.action.getSourceAssemblyContext()));
+                    this.getDeallocateScript(
+                            this.action.getTargetAllocationContext().getAssemblyContext_AllocationContext()));
             this.data.getDeallocatedContexts().add(assemblyContextName);
         }
     }
@@ -88,20 +91,20 @@ public class DereplicateActionScript extends AbstractActionScript {
 
     @Override
     public String getDescription() {
-        final ResourceContainerCloud sourceContainer = this.getResourceContainerCloud(
-                this.action.getOldAllocationContext().getResourceContainer_AllocationContext());
+        final ResourceContainerCloud targetContainer = this.getResourceContainerCloud(
+                this.action.getTargetAllocationContext().getResourceContainer_AllocationContext());
 
         final StringBuilder builder = new StringBuilder();
         builder.append("Dereplicate Action: Dereplicate assembly context '");
-        builder.append(this.action.getSourceAssemblyContext().getEntityName());
+        builder.append(this.action.getTargetAllocationContext().getAssemblyContext_AllocationContext().getEntityName());
         builder.append("' from container of provider '");
-        builder.append(sourceContainer.getInstanceType().getProvider().getName());
+        builder.append(targetContainer.getInstanceType().getProvider().getName());
         builder.append("' of type '");
-        builder.append(sourceContainer.getInstanceType());
+        builder.append(targetContainer.getInstanceType());
         builder.append("' in location '");
-        builder.append(sourceContainer.getInstanceType().getLocation());
+        builder.append(targetContainer.getInstanceType().getLocation());
         builder.append("' with name '");
-        builder.append(ModelHelper.getGroupName(sourceContainer));
+        builder.append(ModelHelper.getGroupName(targetContainer));
         builder.append('\'');
         return builder.toString();
     }

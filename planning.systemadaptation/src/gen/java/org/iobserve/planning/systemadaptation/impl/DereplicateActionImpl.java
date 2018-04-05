@@ -18,25 +18,16 @@ package org.iobserve.planning.systemadaptation.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
-import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Dereplicate
  * Action</b></em>'. <!-- end-user-doc -->
- * <p>
- * The following features are implemented:
- * </p>
- * <ul>
- * <li>{@link org.iobserve.planning.systemadaptation.impl.DereplicateActionImpl#getOldAllocationContext
- * <em>Old Allocation Context</em>}</li>
- * </ul>
  *
  * @generated
  */
 public class DereplicateActionImpl extends AssemblyContextActionImpl implements DereplicateAction {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     protected DereplicateActionImpl() {
@@ -45,33 +36,11 @@ public class DereplicateActionImpl extends AssemblyContextActionImpl implements 
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     protected EClass eStaticClass() {
         return SystemadaptationPackage.Literals.DEREPLICATE_ACTION;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public AllocationContext getOldAllocationContext() {
-        return (AllocationContext) this
-                .eGet(SystemadaptationPackage.Literals.DEREPLICATE_ACTION__OLD_ALLOCATION_CONTEXT, true);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public void setOldAllocationContext(final AllocationContext newOldAllocationContext) {
-        this.eSet(SystemadaptationPackage.Literals.DEREPLICATE_ACTION__OLD_ALLOCATION_CONTEXT, newOldAllocationContext);
     }
 
 } // DereplicateActionImpl

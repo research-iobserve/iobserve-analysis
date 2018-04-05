@@ -27,8 +27,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl#getNewAllocationContext
- * <em>New Allocation Context</em>}</li>
+ *   <li>{@link org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl#getSourceAllocationContext <em>Source Allocation Context</em>}</li>
  * </ul>
  *
  * @generated
@@ -36,7 +35,6 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 public class ReplicateActionImpl extends AssemblyContextActionImpl implements ReplicateAction {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     protected ReplicateActionImpl() {
@@ -45,7 +43,6 @@ public class ReplicateActionImpl extends AssemblyContextActionImpl implements Re
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -54,24 +51,21 @@ public class ReplicateActionImpl extends AssemblyContextActionImpl implements Re
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public AllocationContext getNewAllocationContext() {
-        return (AllocationContext) this.eGet(SystemadaptationPackage.Literals.REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT,
-                true);
+    public AllocationContext getSourceAllocationContext() {
+        return (AllocationContext)eGet(SystemadaptationPackage.Literals.REPLICATE_ACTION__SOURCE_ALLOCATION_CONTEXT, true);
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public void setNewAllocationContext(final AllocationContext newNewAllocationContext) {
-        this.eSet(SystemadaptationPackage.Literals.REPLICATE_ACTION__NEW_ALLOCATION_CONTEXT, newNewAllocationContext);
+    public void setSourceAllocationContext(AllocationContext newSourceAllocationContext) {
+        eSet(SystemadaptationPackage.Literals.REPLICATE_ACTION__SOURCE_ALLOCATION_CONTEXT, newSourceAllocationContext);
     }
 
 } // ReplicateActionImpl

@@ -37,8 +37,9 @@ import org.iobserve.planning.systemadaptation.ResourceContainerAction;
  * This stage orderes the adaptation {@link Action}s into an executable sequence.
  *
  * @author Philipp Weimann
- * @author Lars Blümke (terminology: "(de-)allocate" -> "(de-)replicate", "aquire/terminate" ->
- *         "(de-)allocate")
+ * @author Lars Blümke (Refactoring of system adaptation model: terminology: "(de-)allocate" ->
+ *         "(de-)replicate", "aquire/terminate" -> "(de-)allocate", changes to sources and targets
+ *         of actions)
  *
  */
 public class AdaptationPlanning extends AbstractTransformation<AdaptationData, AdaptationData> {
@@ -108,42 +109,51 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 
         if (action instanceof AllocateAction) {
             final AllocateAction allocate = (AllocateAction) action;
-            sb.append("Acquire:\t").append(allocate.getSourceResourceContainer().getEntityName());
-            sb.append("\tID: ").append(allocate.getSourceResourceContainer().getId());
+            sb.append("Allocate:\t").append(allocate.getTargetResourceContainer().getEntityName());
+            sb.append("\tID: ").append(allocate.getTargetResourceContainer().getId());
 
         } else if (action instanceof DeallocateAction) {
             final DeallocateAction deallocate = (DeallocateAction) action;
-            sb.append("Terminate:\t").append(deallocate.getSourceResourceContainer().getEntityName());
-            sb.append("\tID: ").append(deallocate.getSourceResourceContainer().getId());
+            sb.append("Deallocate:\t").append(deallocate.getTargetResourceContainer().getEntityName());
+            sb.append("\tID: ").append(deallocate.getTargetResourceContainer().getId());
 
         } else if (action instanceof ReplicateAction) {
             final ReplicateAction replicate = (ReplicateAction) action;
-            sb.append("Allocate:\t").append(replicate.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: ").append(replicate.getSourceAssemblyContext().getId());
+            sb.append("Replicate:\t").append(
+                    replicate.getSourceAllocationContext().getAssemblyContext_AllocationContext().getEntityName());
+            sb.append("\tID: ")
+                    .append(replicate.getSourceAllocationContext().getAssemblyContext_AllocationContext().getId());
             sb.append("\t ------- ");
-            sb.append("\t->\t").append(replicate.getNewAllocationContext().getEntityName());
+            sb.append("\t->\t").append(replicate.getTargetAllocationContext().getEntityName());
 
         } else if (action instanceof MigrateAction) {
             final MigrateAction migrate = (MigrateAction) action;
-            sb.append("Migrate:\t").append(migrate.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: ").append(migrate.getSourceAssemblyContext().getId());
+            sb.append("Migrate:\t").append(
+                    migrate.getSourceAllocationContext().getAssemblyContext_AllocationContext().getEntityName());
+            sb.append("\tID: ")
+                    .append(migrate.getSourceAllocationContext().getAssemblyContext_AllocationContext().getId());
             sb.append('\t').append(
                     migrate.getSourceAllocationContext().getResourceContainer_AllocationContext().getEntityName());
-            sb.append("\t->\t")
-                    .append(migrate.getNewAllocationContext().getResourceContainer_AllocationContext().getEntityName());
+            sb.append("\t->\t").append(
+                    migrate.getTargetAllocationContext().getResourceContainer_AllocationContext().getEntityName());
 
         } else if (action instanceof ChangeRepositoryComponentAction) {
             final ChangeRepositoryComponentAction change = (ChangeRepositoryComponentAction) action;
-            sb.append("ChangeComp:\t").append(change.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: ").append(change.getSourceAssemblyContext().getId());
-            sb.append('\t').append(
-                    change.getSourceAssemblyContext().getEncapsulatedComponent__AssemblyContext().getEntityName());
-            sb.append("\t->\t").append(change.getNewRepositoryComponent().getEntityName());
+            sb.append("ChangeComp:\t")
+                    .append(change.getTargetAllocationContext().getAssemblyContext_AllocationContext().getEntityName());
+            sb.append("\tID: ")
+                    .append(change.getTargetAllocationContext().getAssemblyContext_AllocationContext().getId());
+            sb.append('\t').append(change.getSourceAllocationContext().getAssemblyContext_AllocationContext()
+                    .getEncapsulatedComponent__AssemblyContext().getEntityName());
+            sb.append("\t->\t").append(change.getTargetAllocationContext().getAssemblyContext_AllocationContext()
+                    .getEncapsulatedComponent__AssemblyContext().getEntityName());
 
         } else if (action instanceof DereplicateAction) {
             final DereplicateAction dereplicate = (DereplicateAction) action;
-            sb.append("Deallocate:\t").append(dereplicate.getSourceAssemblyContext().getEntityName());
-            sb.append("\tID: ").append(dereplicate.getSourceAssemblyContext().getId());
+            sb.append("Dereplicate:\t").append(
+                    dereplicate.getTargetAllocationContext().getAssemblyContext_AllocationContext().getEntityName());
+            sb.append("\tID: ")
+                    .append(dereplicate.getTargetAllocationContext().getAssemblyContext_AllocationContext().getId());
 
         } else {
             sb.append("UNKOWN:\t" + " ------------------------------------ ");

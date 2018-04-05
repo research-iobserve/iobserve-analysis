@@ -29,8 +29,7 @@ import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.iobserve.planning.systemadaptation.impl.SystemAdaptationImpl#getActions
- * <em>Actions</em>}</li>
+ *   <li>{@link org.iobserve.planning.systemadaptation.impl.SystemAdaptationImpl#getActions <em>Actions</em>}</li>
  * </ul>
  *
  * @generated
@@ -38,7 +37,6 @@ import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
 public class SystemAdaptationImpl extends MinimalEObjectImpl.Container implements SystemAdaptation {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     protected SystemAdaptationImpl() {
@@ -47,7 +45,6 @@ public class SystemAdaptationImpl extends MinimalEObjectImpl.Container implement
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -57,7 +54,6 @@ public class SystemAdaptationImpl extends MinimalEObjectImpl.Container implement
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -67,13 +63,12 @@ public class SystemAdaptationImpl extends MinimalEObjectImpl.Container implement
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     @SuppressWarnings("unchecked")
     public EList<Action> getActions() {
-        return (EList<Action>) this.eGet(SystemadaptationPackage.Literals.SYSTEM_ADAPTATION__ACTIONS, true);
+        return (EList<Action>)eGet(SystemadaptationPackage.Literals.SYSTEM_ADAPTATION__ACTIONS, true);
     }
 
 } // SystemAdaptationImpl

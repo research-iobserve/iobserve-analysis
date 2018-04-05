@@ -18,7 +18,7 @@ package org.iobserve.planning.systemadaptation.impl;
 import org.eclipse.emf.ecore.EClass;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
-import org.palladiosimulator.pcm.repository.RepositoryComponent;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Change Repository Component
@@ -27,8 +27,7 @@ import org.palladiosimulator.pcm.repository.RepositoryComponent;
  * The following features are implemented:
  * </p>
  * <ul>
- * <li>{@link org.iobserve.planning.systemadaptation.impl.ChangeRepositoryComponentActionImpl#getNewRepositoryComponent
- * <em>New Repository Component</em>}</li>
+ *   <li>{@link org.iobserve.planning.systemadaptation.impl.ChangeRepositoryComponentActionImpl#getSourceAllocationContext <em>Source Allocation Context</em>}</li>
  * </ul>
  *
  * @generated
@@ -37,7 +36,6 @@ public class ChangeRepositoryComponentActionImpl extends AssemblyContextActionIm
         implements ChangeRepositoryComponentAction {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     protected ChangeRepositoryComponentActionImpl() {
@@ -46,7 +44,6 @@ public class ChangeRepositoryComponentActionImpl extends AssemblyContextActionIm
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -55,25 +52,21 @@ public class ChangeRepositoryComponentActionImpl extends AssemblyContextActionIm
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public RepositoryComponent getNewRepositoryComponent() {
-        return (RepositoryComponent) this.eGet(
-                SystemadaptationPackage.Literals.CHANGE_REPOSITORY_COMPONENT_ACTION__NEW_REPOSITORY_COMPONENT, true);
+    public AllocationContext getSourceAllocationContext() {
+        return (AllocationContext)eGet(SystemadaptationPackage.Literals.CHANGE_REPOSITORY_COMPONENT_ACTION__SOURCE_ALLOCATION_CONTEXT, true);
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public void setNewRepositoryComponent(final RepositoryComponent newNewRepositoryComponent) {
-        this.eSet(SystemadaptationPackage.Literals.CHANGE_REPOSITORY_COMPONENT_ACTION__NEW_REPOSITORY_COMPONENT,
-                newNewRepositoryComponent);
+    public void setSourceAllocationContext(AllocationContext newSourceAllocationContext) {
+        eSet(SystemadaptationPackage.Literals.CHANGE_REPOSITORY_COMPONENT_ACTION__SOURCE_ALLOCATION_CONTEXT, newSourceAllocationContext);
     }
 
 } // ChangeRepositoryComponentActionImpl

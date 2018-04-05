@@ -22,14 +22,13 @@ import org.eclipse.emf.ecore.resource.impl.ResourceFactoryImpl;
 /**
  * <!-- begin-user-doc --> The <b>Resource Factory</b> associated with the package. <!--
  * end-user-doc -->
- * 
  * @see org.iobserve.planning.systemadaptation.util.SystemadaptationResourceImpl
  * @generated
  */
 public class SystemadaptationResourceFactoryImpl extends ResourceFactoryImpl {
     /**
-     * Creates an instance of the resource factory. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Creates an instance of the resource factory.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
     public SystemadaptationResourceFactoryImpl() {
@@ -37,13 +36,13 @@ public class SystemadaptationResourceFactoryImpl extends ResourceFactoryImpl {
     }
 
     /**
-     * Creates an instance of the resource. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Creates an instance of the resource.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
     @Override
-    public Resource createResource(final URI uri) {
-        final Resource result = new SystemadaptationResourceImpl(uri);
+    public Resource createResource(URI uri) {
+        Resource result = new SystemadaptationResourceImpl(uri);
         return result;
     }
 

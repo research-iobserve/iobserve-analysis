@@ -42,7 +42,8 @@ import org.slf4j.LoggerFactory;
  * Action script for allocating a new cloud resource container.
  *
  * @author Tobias Pöppke
- * @author Lars Blümke (terminology: "aquire" -> "allocate")
+ * @author Lars Blümke (Refactoring of system adaptation model: terminology: "acquire" ->
+ *         "allocate", changes to sources and targets of actions)
  *
  * @since 0.0.2
  */
@@ -66,7 +67,7 @@ public class AllocateActionScript extends AbstractActionScript {
 
     @Override
     public void execute() throws RunNodesException {
-        final ResourceContainer container = this.action.getSourceResourceContainer();
+        final ResourceContainer container = this.action.getTargetResourceContainer();
 
         final ResourceContainerCloud cloudContainer = this.getResourceContainerCloud(container);
 
@@ -128,7 +129,7 @@ public class AllocateActionScript extends AbstractActionScript {
     @Override
     public String getDescription() {
         final ResourceContainerCloud container = this
-                .getResourceContainerCloud(this.action.getSourceResourceContainer());
+                .getResourceContainerCloud(this.action.getTargetResourceContainer());
 
         final StringBuilder builder = new StringBuilder();
         builder.append("Allocate Action: Allocate container from provider '");

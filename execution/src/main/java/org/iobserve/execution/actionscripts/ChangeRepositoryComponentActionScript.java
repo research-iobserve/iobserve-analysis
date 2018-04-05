@@ -25,6 +25,8 @@ import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
  * operator interaction.
  *
  * @author Tobias Pöppke
+ * @author Lars Blümke (Refactoring of system adaptation model: changes to sources and targets of
+ *         actions)
  *
  */
 public class ChangeRepositoryComponentActionScript extends AbstractActionScript {
@@ -60,9 +62,10 @@ public class ChangeRepositoryComponentActionScript extends AbstractActionScript 
     public String getDescription() {
         final StringBuilder builder = new StringBuilder();
         builder.append("Change repository component Action: Change repository component of assembly context '");
-        builder.append(this.action.getSourceAssemblyContext().getEntityName());
+        builder.append(this.action.getSourceAllocationContext().getAssemblyContext_AllocationContext().getEntityName());
         builder.append("' to component '");
-        builder.append(this.action.getNewRepositoryComponent().getEntityName());
+        builder.append(this.action.getTargetAllocationContext().getAssemblyContext_AllocationContext()
+                .getEncapsulatedComponent__AssemblyContext().getEntityName());
         builder.append('\'');
         return builder.toString();
     }

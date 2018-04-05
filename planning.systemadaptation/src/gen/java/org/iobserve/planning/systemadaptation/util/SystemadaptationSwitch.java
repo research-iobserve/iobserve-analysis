@@ -36,177 +36,125 @@ import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
  * each class of the model, starting with the actual class of the object and proceeding up the
  * inheritance hierarchy until a non-null result is returned, which is the result of the switch.
  * <!-- end-user-doc -->
- * 
  * @see org.iobserve.planning.systemadaptation.SystemadaptationPackage
  * @generated
  */
 public class SystemadaptationSwitch<T> extends Switch<T> {
     /**
-     * The cached model package <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The cached model package
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
     protected static SystemadaptationPackage modelPackage;
 
     /**
-     * Creates an instance of the switch. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Creates an instance of the switch.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated
      */
     public SystemadaptationSwitch() {
-        if (SystemadaptationSwitch.modelPackage == null) {
-            SystemadaptationSwitch.modelPackage = SystemadaptationPackage.eINSTANCE;
+        if (modelPackage == null) {
+            modelPackage = SystemadaptationPackage.eINSTANCE;
         }
     }
 
     /**
-     * Checks whether this is a switch for the given package. <!-- begin-user-doc --> <!--
+     * Checks whether this is a switch for the given package.
+     * <!-- begin-user-doc --> <!--
      * end-user-doc -->
-     * 
-     * @param ePackage
-     *            the package in question.
+     * @param ePackage the package in question.
      * @return whether this is a switch for the given package.
      * @generated
      */
     @Override
-    protected boolean isSwitchFor(final EPackage ePackage) {
-        return ePackage == SystemadaptationSwitch.modelPackage;
+    protected boolean isSwitchFor(EPackage ePackage) {
+        return ePackage == modelPackage;
     }
 
     /**
-     * Calls <code>caseXXX</code> for each class of the model until one returns a non null result;
-     * it yields that result. <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Calls <code>caseXXX</code> for each class of the model until one returns a non null result; it yields that result.
+     * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @return the first non-null result returned by a <code>caseXXX</code> call.
      * @generated
      */
     @Override
-    protected T doSwitch(final int classifierID, final EObject theEObject) {
+    protected T doSwitch(int classifierID, EObject theEObject) {
         switch (classifierID) {
-        case SystemadaptationPackage.SYSTEM_ADAPTATION: {
-            final SystemAdaptation systemAdaptation = (SystemAdaptation) theEObject;
-            T result = this.caseSystemAdaptation(systemAdaptation);
-            if (result == null) {
-                result = this.defaultCase(theEObject);
+            case SystemadaptationPackage.SYSTEM_ADAPTATION: {
+                SystemAdaptation systemAdaptation = (SystemAdaptation)theEObject;
+                T result = caseSystemAdaptation(systemAdaptation);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
             }
-            return result;
-        }
-        case SystemadaptationPackage.ACTION: {
-            final Action action = (Action) theEObject;
-            T result = this.caseAction(action);
-            if (result == null) {
-                result = this.defaultCase(theEObject);
+            case SystemadaptationPackage.ACTION: {
+                Action action = (Action)theEObject;
+                T result = caseAction(action);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
             }
-            return result;
-        }
-        case SystemadaptationPackage.ASSEMBLY_CONTEXT_ACTION: {
-            final AssemblyContextAction assemblyContextAction = (AssemblyContextAction) theEObject;
-            T result = this.caseAssemblyContextAction(assemblyContextAction);
-            if (result == null) {
-                result = this.caseAction(assemblyContextAction);
+            case SystemadaptationPackage.ASSEMBLY_CONTEXT_ACTION: {
+                AssemblyContextAction assemblyContextAction = (AssemblyContextAction)theEObject;
+                T result = caseAssemblyContextAction(assemblyContextAction);
+                if (result == null) result = caseAction(assemblyContextAction);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
             }
-            if (result == null) {
-                result = this.defaultCase(theEObject);
+            case SystemadaptationPackage.RESOURCE_CONTAINER_ACTION: {
+                ResourceContainerAction resourceContainerAction = (ResourceContainerAction)theEObject;
+                T result = caseResourceContainerAction(resourceContainerAction);
+                if (result == null) result = caseAction(resourceContainerAction);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
             }
-            return result;
-        }
-        case SystemadaptationPackage.RESOURCE_CONTAINER_ACTION: {
-            final ResourceContainerAction resourceContainerAction = (ResourceContainerAction) theEObject;
-            T result = this.caseResourceContainerAction(resourceContainerAction);
-            if (result == null) {
-                result = this.caseAction(resourceContainerAction);
+            case SystemadaptationPackage.CHANGE_REPOSITORY_COMPONENT_ACTION: {
+                ChangeRepositoryComponentAction changeRepositoryComponentAction = (ChangeRepositoryComponentAction)theEObject;
+                T result = caseChangeRepositoryComponentAction(changeRepositoryComponentAction);
+                if (result == null) result = caseAssemblyContextAction(changeRepositoryComponentAction);
+                if (result == null) result = caseAction(changeRepositoryComponentAction);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
             }
-            if (result == null) {
-                result = this.defaultCase(theEObject);
+            case SystemadaptationPackage.REPLICATE_ACTION: {
+                ReplicateAction replicateAction = (ReplicateAction)theEObject;
+                T result = caseReplicateAction(replicateAction);
+                if (result == null) result = caseAssemblyContextAction(replicateAction);
+                if (result == null) result = caseAction(replicateAction);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
             }
-            return result;
-        }
-        case SystemadaptationPackage.CHANGE_REPOSITORY_COMPONENT_ACTION: {
-            final ChangeRepositoryComponentAction changeRepositoryComponentAction = (ChangeRepositoryComponentAction) theEObject;
-            T result = this.caseChangeRepositoryComponentAction(changeRepositoryComponentAction);
-            if (result == null) {
-                result = this.caseAssemblyContextAction(changeRepositoryComponentAction);
+            case SystemadaptationPackage.DEREPLICATE_ACTION: {
+                DereplicateAction dereplicateAction = (DereplicateAction)theEObject;
+                T result = caseDereplicateAction(dereplicateAction);
+                if (result == null) result = caseAssemblyContextAction(dereplicateAction);
+                if (result == null) result = caseAction(dereplicateAction);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
             }
-            if (result == null) {
-                result = this.caseAction(changeRepositoryComponentAction);
+            case SystemadaptationPackage.MIGRATE_ACTION: {
+                MigrateAction migrateAction = (MigrateAction)theEObject;
+                T result = caseMigrateAction(migrateAction);
+                if (result == null) result = caseAssemblyContextAction(migrateAction);
+                if (result == null) result = caseAction(migrateAction);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
             }
-            if (result == null) {
-                result = this.defaultCase(theEObject);
+            case SystemadaptationPackage.ALLOCATE_ACTION: {
+                AllocateAction allocateAction = (AllocateAction)theEObject;
+                T result = caseAllocateAction(allocateAction);
+                if (result == null) result = caseResourceContainerAction(allocateAction);
+                if (result == null) result = caseAction(allocateAction);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
             }
-            return result;
-        }
-        case SystemadaptationPackage.REPLICATE_ACTION: {
-            final ReplicateAction replicateAction = (ReplicateAction) theEObject;
-            T result = this.caseReplicateAction(replicateAction);
-            if (result == null) {
-                result = this.caseAssemblyContextAction(replicateAction);
+            case SystemadaptationPackage.DEALLOCATE_ACTION: {
+                DeallocateAction deallocateAction = (DeallocateAction)theEObject;
+                T result = caseDeallocateAction(deallocateAction);
+                if (result == null) result = caseResourceContainerAction(deallocateAction);
+                if (result == null) result = caseAction(deallocateAction);
+                if (result == null) result = defaultCase(theEObject);
+                return result;
             }
-            if (result == null) {
-                result = this.caseAction(replicateAction);
-            }
-            if (result == null) {
-                result = this.defaultCase(theEObject);
-            }
-            return result;
-        }
-        case SystemadaptationPackage.DEREPLICATE_ACTION: {
-            final DereplicateAction dereplicateAction = (DereplicateAction) theEObject;
-            T result = this.caseDereplicateAction(dereplicateAction);
-            if (result == null) {
-                result = this.caseAssemblyContextAction(dereplicateAction);
-            }
-            if (result == null) {
-                result = this.caseAction(dereplicateAction);
-            }
-            if (result == null) {
-                result = this.defaultCase(theEObject);
-            }
-            return result;
-        }
-        case SystemadaptationPackage.MIGRATE_ACTION: {
-            final MigrateAction migrateAction = (MigrateAction) theEObject;
-            T result = this.caseMigrateAction(migrateAction);
-            if (result == null) {
-                result = this.caseAssemblyContextAction(migrateAction);
-            }
-            if (result == null) {
-                result = this.caseAction(migrateAction);
-            }
-            if (result == null) {
-                result = this.defaultCase(theEObject);
-            }
-            return result;
-        }
-        case SystemadaptationPackage.ALLOCATE_ACTION: {
-            final AllocateAction allocateAction = (AllocateAction) theEObject;
-            T result = this.caseAllocateAction(allocateAction);
-            if (result == null) {
-                result = this.caseResourceContainerAction(allocateAction);
-            }
-            if (result == null) {
-                result = this.caseAction(allocateAction);
-            }
-            if (result == null) {
-                result = this.defaultCase(theEObject);
-            }
-            return result;
-        }
-        case SystemadaptationPackage.DEALLOCATE_ACTION: {
-            final DeallocateAction deallocateAction = (DeallocateAction) theEObject;
-            T result = this.caseDeallocateAction(deallocateAction);
-            if (result == null) {
-                result = this.caseResourceContainerAction(deallocateAction);
-            }
-            if (result == null) {
-                result = this.caseAction(deallocateAction);
-            }
-            if (result == null) {
-                result = this.defaultCase(theEObject);
-            }
-            return result;
-        }
-        default:
-            return this.defaultCase(theEObject);
+            default: return defaultCase(theEObject);
         }
     }
 
@@ -214,14 +162,12 @@ public class SystemadaptationSwitch<T> extends Switch<T> {
      * Returns the result of interpreting the object as an instance of '<em>System Adaptation</em>'.
      * <!-- begin-user-doc --> This implementation returns null; returning a non-null result will
      * terminate the switch. <!-- end-user-doc -->
-     * 
-     * @param object
-     *            the target of the switch.
+     * @param object the target of the switch.
      * @return the result of interpreting the object as an instance of '<em>System Adaptation</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseSystemAdaptation(final SystemAdaptation object) {
+    public T caseSystemAdaptation(SystemAdaptation object) {
         return null;
     }
 
@@ -236,55 +182,46 @@ public class SystemadaptationSwitch<T> extends Switch<T> {
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseAction(final Action object) {
+    public T caseAction(Action object) {
         return null;
     }
 
     /**
-     * Returns the result of interpreting the object as an instance of '<em>Assembly Context
-     * Action</em>'. <!-- begin-user-doc --> This implementation returns null; returning a non-null
+     * Returns the result of interpreting the object as an instance of '<em>Assembly Context Action</em>'.
+     * <!-- begin-user-doc --> This implementation returns null; returning a non-null
      * result will terminate the switch. <!-- end-user-doc -->
-     * 
-     * @param object
-     *            the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Assembly Context
-     *         Action</em>'.
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Assembly Context Action</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseAssemblyContextAction(final AssemblyContextAction object) {
+    public T caseAssemblyContextAction(AssemblyContextAction object) {
         return null;
     }
 
     /**
-     * Returns the result of interpreting the object as an instance of '<em>Resource Container
-     * Action</em>'. <!-- begin-user-doc --> This implementation returns null; returning a non-null
+     * Returns the result of interpreting the object as an instance of '<em>Resource Container Action</em>'.
+     * <!-- begin-user-doc --> This implementation returns null; returning a non-null
      * result will terminate the switch. <!-- end-user-doc -->
-     * 
-     * @param object
-     *            the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Resource Container
-     *         Action</em>'.
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Resource Container Action</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseResourceContainerAction(final ResourceContainerAction object) {
+    public T caseResourceContainerAction(ResourceContainerAction object) {
         return null;
     }
 
     /**
-     * Returns the result of interpreting the object as an instance of '<em>Change Repository
-     * Component Action</em>'. <!-- begin-user-doc --> This implementation returns null; returning a
+     * Returns the result of interpreting the object as an instance of '<em>Change Repository Component Action</em>'.
+     * <!-- begin-user-doc --> This implementation returns null; returning a
      * non-null result will terminate the switch. <!-- end-user-doc -->
-     * 
-     * @param object
-     *            the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Change Repository
-     *         Component Action</em>'.
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Change Repository Component Action</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseChangeRepositoryComponentAction(final ChangeRepositoryComponentAction object) {
+    public T caseChangeRepositoryComponentAction(ChangeRepositoryComponentAction object) {
         return null;
     }
 
@@ -292,30 +229,25 @@ public class SystemadaptationSwitch<T> extends Switch<T> {
      * Returns the result of interpreting the object as an instance of '<em>Replicate Action</em>'.
      * <!-- begin-user-doc --> This implementation returns null; returning a non-null result will
      * terminate the switch. <!-- end-user-doc -->
-     * 
-     * @param object
-     *            the target of the switch.
+     * @param object the target of the switch.
      * @return the result of interpreting the object as an instance of '<em>Replicate Action</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseReplicateAction(final ReplicateAction object) {
+    public T caseReplicateAction(ReplicateAction object) {
         return null;
     }
 
     /**
-     * Returns the result of interpreting the object as an instance of '<em>Dereplicate
-     * Action</em>'. <!-- begin-user-doc --> This implementation returns null; returning a non-null
+     * Returns the result of interpreting the object as an instance of '<em>Dereplicate Action</em>'.
+     * <!-- begin-user-doc --> This implementation returns null; returning a non-null
      * result will terminate the switch. <!-- end-user-doc -->
-     * 
-     * @param object
-     *            the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Dereplicate
-     *         Action</em>'.
+     * @param object the target of the switch.
+     * @return the result of interpreting the object as an instance of '<em>Dereplicate Action</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseDereplicateAction(final DereplicateAction object) {
+    public T caseDereplicateAction(DereplicateAction object) {
         return null;
     }
 
@@ -323,14 +255,12 @@ public class SystemadaptationSwitch<T> extends Switch<T> {
      * Returns the result of interpreting the object as an instance of '<em>Migrate Action</em>'.
      * <!-- begin-user-doc --> This implementation returns null; returning a non-null result will
      * terminate the switch. <!-- end-user-doc -->
-     * 
-     * @param object
-     *            the target of the switch.
+     * @param object the target of the switch.
      * @return the result of interpreting the object as an instance of '<em>Migrate Action</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseMigrateAction(final MigrateAction object) {
+    public T caseMigrateAction(MigrateAction object) {
         return null;
     }
 
@@ -338,14 +268,12 @@ public class SystemadaptationSwitch<T> extends Switch<T> {
      * Returns the result of interpreting the object as an instance of '<em>Allocate Action</em>'.
      * <!-- begin-user-doc --> This implementation returns null; returning a non-null result will
      * terminate the switch. <!-- end-user-doc -->
-     * 
-     * @param object
-     *            the target of the switch.
+     * @param object the target of the switch.
      * @return the result of interpreting the object as an instance of '<em>Allocate Action</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseAllocateAction(final AllocateAction object) {
+    public T caseAllocateAction(AllocateAction object) {
         return null;
     }
 
@@ -353,14 +281,12 @@ public class SystemadaptationSwitch<T> extends Switch<T> {
      * Returns the result of interpreting the object as an instance of '<em>Deallocate Action</em>'.
      * <!-- begin-user-doc --> This implementation returns null; returning a non-null result will
      * terminate the switch. <!-- end-user-doc -->
-     * 
-     * @param object
-     *            the target of the switch.
+     * @param object the target of the switch.
      * @return the result of interpreting the object as an instance of '<em>Deallocate Action</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseDeallocateAction(final DeallocateAction object) {
+    public T caseDeallocateAction(DeallocateAction object) {
         return null;
     }
 
@@ -376,7 +302,7 @@ public class SystemadaptationSwitch<T> extends Switch<T> {
      * @generated
      */
     @Override
-    public T defaultCase(final EObject object) {
+    public T defaultCase(EObject object) {
         return null;
     }
 

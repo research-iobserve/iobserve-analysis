@@ -40,6 +40,8 @@ import org.slf4j.LoggerFactory;
  * group to complete the migration.
  *
  * @author Tobias Pöppke
+ * @author Lars Blümke (Refactoring of system adaptation model: changes to sources and targets of
+ *         actions)
  *
  * @since 0.0.2
  */
@@ -65,21 +67,24 @@ public class MigrateActionScript extends AbstractActionScript {
     public void execute() throws RunScriptOnNodesException {
         final ResourceContainer sourceContainer = this.action.getSourceAllocationContext()
                 .getResourceContainer_AllocationContext();
-        final ResourceContainer targetContainer = this.action.getNewAllocationContext()
+        final ResourceContainer targetContainer = this.action.getTargetAllocationContext()
                 .getResourceContainer_AllocationContext();
 
         final ResourceContainerCloud sourceCloudContainer = this.getResourceContainerCloud(sourceContainer);
         final ResourceContainerCloud targetCloudContainer = this.getResourceContainerCloud(targetContainer);
 
         final ComputeService client = this.getComputeServiceForContainer(sourceCloudContainer);
-        final String assemblyContextName = this.action.getSourceAssemblyContext().getEntityName();
+        final String assemblyContextName = this.action.getTargetAllocationContext()
+                .getAssemblyContext_AllocationContext().getEntityName();
 
         // If the assembly context has already been migrated, do nothing
         if (!this.data.getMigratedContexts().contains(assemblyContextName)) {
             client.runScriptOnNodesMatching(node -> node.getGroup().equals(sourceCloudContainer.getGroupName()),
-                    this.getScript(AdaptationData.PRE_MIGRATE_SCRIPT_NAME, this.action.getSourceAssemblyContext()));
+                    this.getScript(AdaptationData.PRE_MIGRATE_SCRIPT_NAME,
+                            this.action.getTargetAllocationContext().getAssemblyContext_AllocationContext()));
             client.runScriptOnNodesMatching(node -> node.getGroup().equals(targetCloudContainer.getGroupName()),
-                    this.getScript(AdaptationData.POST_MIGRATE_SCRIPT_NAME, this.action.getSourceAssemblyContext()));
+                    this.getScript(AdaptationData.POST_MIGRATE_SCRIPT_NAME,
+                            this.action.getTargetAllocationContext().getAssemblyContext_AllocationContext()));
             // TODO add possibility to open up ports defined in a config file
             this.data.getMigratedContexts().add(assemblyContextName);
         }
@@ -110,11 +115,11 @@ public class MigrateActionScript extends AbstractActionScript {
         final ResourceContainerCloud sourceContainer = this.getResourceContainerCloud(
                 this.action.getSourceAllocationContext().getResourceContainer_AllocationContext());
         final ResourceContainerCloud targetContainer = this.getResourceContainerCloud(
-                this.action.getNewAllocationContext().getResourceContainer_AllocationContext());
+                this.action.getTargetAllocationContext().getResourceContainer_AllocationContext());
 
         final StringBuilder builder = new StringBuilder();
         builder.append("Migrate Action: Migrate assembly context '");
-        builder.append(this.action.getSourceAssemblyContext().getEntityName());
+        builder.append(this.action.getTargetAllocationContext().getAssemblyContext_AllocationContext().getEntityName());
         builder.append("' from container of provider '");
         builder.append(sourceContainer.getInstanceType().getProvider().getName());
         builder.append("' of type '");

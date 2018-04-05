@@ -19,25 +19,16 @@ import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
  * <!-- begin-user-doc --> An implementation of the model object '<em><b>Action</b></em>'. <!--
  * end-user-doc -->
- * <p>
- * The following features are implemented:
- * </p>
- * <ul>
- * <li>{@link org.iobserve.planning.systemadaptation.impl.ActionImpl#getResourceContainer
- * <em>Resource Container</em>}</li>
- * </ul>
  *
  * @generated
  */
 public class ActionImpl extends MinimalEObjectImpl.Container implements Action {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     protected ActionImpl() {
@@ -46,7 +37,6 @@ public class ActionImpl extends MinimalEObjectImpl.Container implements Action {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
@@ -56,32 +46,11 @@ public class ActionImpl extends MinimalEObjectImpl.Container implements Action {
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
     protected int eStaticFeatureCount() {
         return 0;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public ResourceContainer getResourceContainer() {
-        return (ResourceContainer) this.eGet(SystemadaptationPackage.Literals.ACTION__RESOURCE_CONTAINER, true);
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
-     * @generated
-     */
-    @Override
-    public void setResourceContainer(final ResourceContainer newResourceContainer) {
-        this.eSet(SystemadaptationPackage.Literals.ACTION__RESOURCE_CONTAINER, newResourceContainer);
     }
 
 } // ActionImpl

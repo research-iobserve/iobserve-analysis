@@ -36,7 +36,8 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * of the group to deploy the assembly context.
  *
  * @author Tobias Pöppke
- * @author Lars Blümke (terminology: "allocate" -> "replicate")
+ * @author Lars Blümke (Refactoring of system adaptation model: terminology: "allocate" ->
+ *         "replicate", changes to sources and targets of actions)
  *
  */
 public class ReplicateActionScript extends AbstractActionScript {
@@ -57,19 +58,21 @@ public class ReplicateActionScript extends AbstractActionScript {
 
     @Override
     public void execute() throws RunScriptOnNodesException, IOException {
-        final ResourceContainer container = this.action.getNewAllocationContext()
+        final ResourceContainer container = this.action.getTargetAllocationContext()
                 .getResourceContainer_AllocationContext();
 
         final ResourceContainerCloud cloudContainer = this.getResourceContainerCloud(container);
 
         final ComputeService client = this.getComputeServiceForContainer(cloudContainer);
-        final String assemblyContextName = this.action.getSourceAssemblyContext().getEntityName();
+        final String assemblyContextName = this.action.getTargetAllocationContext()
+                .getAssemblyContext_AllocationContext().getEntityName();
 
         // If the assembly context has already been allocated on the group, do
         // nothing
         if (!this.data.getAllocatedContexts().contains(assemblyContextName)) {
             client.runScriptOnNodesMatching(node -> node.getGroup().equals(cloudContainer.getGroupName()),
-                    this.getAllocateScript(this.action.getSourceAssemblyContext()));
+                    this.getAllocateScript(
+                            this.action.getTargetAllocationContext().getAssemblyContext_AllocationContext()));
             this.data.getAllocatedContexts().add(assemblyContextName);
             // TODO add possibility to open up ports defined in a config file
         }
@@ -89,20 +92,20 @@ public class ReplicateActionScript extends AbstractActionScript {
 
     @Override
     public String getDescription() {
-        final ResourceContainerCloud sourceContainer = this.getResourceContainerCloud(
-                this.action.getNewAllocationContext().getResourceContainer_AllocationContext());
+        final ResourceContainerCloud targetContainer = this.getResourceContainerCloud(
+                this.action.getTargetAllocationContext().getResourceContainer_AllocationContext());
 
         final StringBuilder builder = new StringBuilder();
         builder.append("Replicate Action: Replicate assembly context '");
-        builder.append(this.action.getSourceAssemblyContext().getEntityName());
+        builder.append(this.action.getSourceAllocationContext().getAssemblyContext_AllocationContext().getEntityName());
         builder.append("' to container of provider '");
-        builder.append(sourceContainer.getInstanceType().getProvider().getName());
+        builder.append(targetContainer.getInstanceType().getProvider().getName());
         builder.append("' of type '");
-        builder.append(sourceContainer.getInstanceType());
+        builder.append(targetContainer.getInstanceType());
         builder.append("' in location '");
-        builder.append(sourceContainer.getInstanceType().getLocation());
+        builder.append(targetContainer.getInstanceType().getLocation());
         builder.append("' with name '");
-        builder.append(ModelHelper.getGroupName(sourceContainer));
+        builder.append(ModelHelper.getGroupName(targetContainer));
         builder.append('\'');
         return builder.toString();
     }

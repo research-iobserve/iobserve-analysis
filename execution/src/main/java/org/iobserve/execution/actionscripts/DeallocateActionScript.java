@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
  * Action script for deallocating a group of cloud resource containers.
  *
  * @author Tobias Pöppke
- * @author Lars Blümke (terminology: "terminate" -> "deallocate")
+ * @author Lars Blümke (Refactoring of system adaptation model: terminology: "terminate" ->
+ *         "deallocate", changes to sources and targets of actions)
  *
  * @since 0.0.2
  */
@@ -55,7 +56,7 @@ public class DeallocateActionScript extends AbstractActionScript {
 
     @Override
     public void execute() throws RunScriptOnNodesException {
-        final ResourceContainer container = this.action.getSourceResourceContainer();
+        final ResourceContainer container = this.action.getTargetResourceContainer();
 
         final ResourceContainerCloud cloudContainer = this.getResourceContainerCloud(container);
 
@@ -89,7 +90,7 @@ public class DeallocateActionScript extends AbstractActionScript {
     @Override
     public String getDescription() {
         final ResourceContainerCloud container = this
-                .getResourceContainerCloud(this.action.getSourceResourceContainer());
+                .getResourceContainerCloud(this.action.getTargetResourceContainer());
 
         final StringBuilder builder = new StringBuilder();
         builder.append("Deallocate Action: Deallocate container group from provider '");

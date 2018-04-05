@@ -53,8 +53,6 @@ public final class AtomicActionFactory {
 
     public static void generateAtomicActions(final ReplicateAction action, final ExecutionPlan executionPlan) {
         // Deploy new component instance
-        action.getSourceAssemblyContext();
-        action.getNewAllocationContext();
         // Migrate state
         // Connect replication
     }

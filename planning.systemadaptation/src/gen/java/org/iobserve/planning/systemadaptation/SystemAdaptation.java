@@ -26,8 +26,7 @@ import org.eclipse.emf.ecore.EObject;
  * The following features are supported:
  * </p>
  * <ul>
- * <li>{@link org.iobserve.planning.systemadaptation.SystemAdaptation#getActions
- * <em>Actions</em>}</li>
+ *   <li>{@link org.iobserve.planning.systemadaptation.SystemAdaptation#getActions <em>Actions</em>}</li>
  * </ul>
  *
  * @see org.iobserve.planning.systemadaptation.SystemadaptationPackage#getSystemAdaptation()

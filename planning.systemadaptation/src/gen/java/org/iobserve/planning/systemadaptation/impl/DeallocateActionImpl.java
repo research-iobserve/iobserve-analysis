@@ -28,7 +28,6 @@ import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
 public class DeallocateActionImpl extends ResourceContainerActionImpl implements DeallocateAction {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     protected DeallocateActionImpl() {
@@ -37,7 +36,6 @@ public class DeallocateActionImpl extends ResourceContainerActionImpl implements
 
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * 
      * @generated
      */
     @Override
