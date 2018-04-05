@@ -32,7 +32,7 @@ public interface AssemblyContextAction extends Action {
      * @return the value of the '<em>Target Allocation Context</em>' reference.
      * @see #setTargetAllocationContext(AllocationContext)
      * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getAssemblyContextAction_TargetAllocationContext()
-     * @model
+     * @model required="true"
      * @generated
      */
     AllocationContext getTargetAllocationContext();

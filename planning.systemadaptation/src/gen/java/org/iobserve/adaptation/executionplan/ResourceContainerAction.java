@@ -32,7 +32,7 @@ public interface ResourceContainerAction extends Action {
      * @return the value of the '<em>Target Resource Container</em>' reference.
      * @see #setTargetResourceContainer(ResourceContainer)
      * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getResourceContainerAction_TargetResourceContainer()
-     * @model
+     * @model required="true"
      * @generated
      */
     ResourceContainer getTargetResourceContainer();

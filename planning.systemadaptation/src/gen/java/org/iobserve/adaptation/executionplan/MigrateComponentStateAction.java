@@ -32,7 +32,7 @@ public interface MigrateComponentStateAction extends AssemblyContextAction {
      * @return the value of the '<em>Source Allocation Context</em>' reference.
      * @see #setSourceAllocationContext(AllocationContext)
      * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getMigrateComponentStateAction_SourceAllocationContext()
-     * @model
+     * @model required="true"
      * @generated
      */
     AllocationContext getSourceAllocationContext();
