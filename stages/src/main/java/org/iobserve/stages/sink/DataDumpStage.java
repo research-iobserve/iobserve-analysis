@@ -55,7 +55,7 @@ public class DataDumpStage extends AbstractConsumerStage<IMonitoringRecord> {
     protected void execute(final IMonitoringRecord record) {
         this.count++;
         this.ctrl.newMonitoringRecord(record);
-        if (this.count % 1000 == 0) {
+        if (this.count % 100000 == 0) {
             DataDumpStage.LOGGER.info("Saved {} records.", this.count);
         }
     }

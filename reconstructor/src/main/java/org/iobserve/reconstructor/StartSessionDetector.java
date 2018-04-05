@@ -51,8 +51,11 @@ public class StartSessionDetector extends AbstractConsumerStage<IMonitoringRecor
             final TraceMetadata traceMetadata = (TraceMetadata) event;
             if (!this.sessionRegister.stream().anyMatch(key -> key.equals(traceMetadata.getSessionId()))) {
                 this.sessionRegister.add(traceMetadata.getSessionId());
-                this.outputPort.send(new SessionStartEvent(traceMetadata.getLoggingTimestamp(),
-                        traceMetadata.getHostname(), traceMetadata.getSessionId()));
+                final SessionStartEvent sessionStartEvent = new SessionStartEvent(traceMetadata.getLoggingTimestamp(),
+                        traceMetadata.getHostname(), traceMetadata.getSessionId());
+                sessionStartEvent.setLoggingTimestamp(traceMetadata.getLoggingTimestamp());
+                this.outputPort.send(sessionStartEvent);
+
             }
         }
 

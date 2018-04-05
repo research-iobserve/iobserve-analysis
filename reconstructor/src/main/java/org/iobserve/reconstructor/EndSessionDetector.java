@@ -16,8 +16,8 @@
 package org.iobserve.reconstructor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import kieker.common.record.IMonitoringRecord;
@@ -28,6 +28,9 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.common.record.SessionEndEvent;
+import org.iobserve.common.record.SessionStartEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Filter collects all events until it receives an EmptyRecord. Then it flushes out all sessions and
@@ -39,100 +42,80 @@ import org.iobserve.common.record.SessionEndEvent;
  */
 public class EndSessionDetector extends AbstractConsumerStage<IMonitoringRecord> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EndSessionDetector.class);
+
+    private static final long SESSION_TIMEOUT = 1000L * 1000L * 1000L * 60L * 60L * 24L;
+
     private final OutputPort<IMonitoringRecord> outputPort = this.createOutputPort(IMonitoringRecord.class);
 
-    private final Map<String, List<IMonitoringRecord>> sessionRecords = new HashMap<>();
-    private final Map<Long, String> traceIdMap = new HashMap<>();
-    private final List<IMonitoringRecord> allRecords = new ArrayList<>();
+    private final Map<Long, TraceEntry> traceIdMap = new HashMap<>();
 
-    private final Map<Long, List<IMonitoringRecord>> stash = new HashMap<>();
+    private final Map<String, SessionEntry> sessionMap = new HashMap<>();
 
     @Override
     protected void execute(final IMonitoringRecord event) throws Exception {
-        if (event instanceof TraceMetadata) {
+        // System.err.println(event.getLoggingTimestamp() + " = " + event.getClass() + ": " +
+        // event.toString());
+        if (event instanceof SessionStartEvent) {
+            this.receiveSessionStartEvent((SessionStartEvent) event);
+        } else if (event instanceof TraceMetadata) {
             this.receiveTraceMetadata((TraceMetadata) event);
         } else if (event instanceof ITraceRecord) {
             this.receiveTraceRecord((ITraceRecord) event);
         }
 
-        this.allRecords.add(event);
+        final long loggingTimeStamp = event.getLoggingTimestamp();
+        this.outputPort.send(event);
+        this.flushSessions(loggingTimeStamp);
+    }
+
+    private void flushSessions(final long loggingTimestamp) {
+        final Collection<SessionEntry> sessions = new ArrayList<>();
+        sessions.addAll(this.sessionMap.values());
+        for (final SessionEntry entry : sessions) {
+            // System.err.println(entry.getTimestamp() + " == " + loggingTimestamp + " "
+            // + (entry.getTimestamp() + EndSessionDetector.SESSION_TIMEOUT - loggingTimestamp));
+            if (entry.getTimestamp() + EndSessionDetector.SESSION_TIMEOUT < loggingTimestamp) {
+                this.outputPort
+                        .send(new SessionEndEvent(entry.getTimestamp(), entry.getHostname(), entry.getSessionId()));
+                this.sessionMap.remove(entry.getSessionId());
+                final Collection<TraceEntry> traces = new ArrayList<>();
+                traces.addAll(this.traceIdMap.values());
+                for (final TraceEntry traceEntry : traces) {
+                    if (traceEntry.getSessionId().equals(entry.getSessionId())) {
+                        this.traceIdMap.remove(traceEntry.getTraceId());
+                    }
+                }
+            }
+        }
     }
 
     @Override
     protected void onTerminating() {
-        this.flushAllRecords();
+        for (final SessionEntry entry : this.sessionMap.values()) {
+            this.outputPort.send(new SessionEndEvent(entry.getTimestamp(), entry.getHostname(), entry.getSessionId()));
+        }
         super.onTerminating();
+    }
+
+    private void receiveSessionStartEvent(final SessionStartEvent event) {
+        this.sessionMap.put(event.getSessionId(), new SessionEntry(event));
     }
 
     private void receiveTraceMetadata(final TraceMetadata traceMetadata) {
         if (this.traceIdMap.get(traceMetadata.getTraceId()) == null) {
-            this.traceIdMap.put(traceMetadata.getTraceId(), traceMetadata.getSessionId());
-
-            final List<IMonitoringRecord> recordList = new ArrayList<>();
-            recordList.add(traceMetadata);
-
-            /** copy stash. */
-            final List<IMonitoringRecord> stashedRecords = this.stash.get(traceMetadata.getTraceId());
-
-            if (stashedRecords != null) {
-                recordList.addAll(stashedRecords);
-                this.stash.remove(traceMetadata.getTraceId());
-            }
-
-            this.sessionRecords.put(traceMetadata.getSessionId(), recordList);
+            this.traceIdMap.put(traceMetadata.getTraceId(), new TraceEntry(traceMetadata));
         }
     }
 
     private void receiveTraceRecord(final ITraceRecord event) {
-        final String sessionId = this.traceIdMap.get(event.getTraceId());
-
-        if (sessionId != null) {
-            this.sessionRecords.get(sessionId).add(event);
+        final TraceEntry metadata = this.traceIdMap.get(event.getTraceId());
+        if (metadata != null) {
+            metadata.setTimestamp(event.getLoggingTimestamp());
+            final SessionEntry sessionEntry = this.sessionMap.get(metadata.getSessionId());
+            sessionEntry.setTimestamp(metadata.getTimestamp());
         } else {
-            /** session and trace did not start yet. Stash element. */
-            final Long traceId = event.getTraceId();
-            List<IMonitoringRecord> stashedRecords = this.stash.get(traceId);
-            if (stashedRecords == null) {
-                stashedRecords = new ArrayList<>();
-            }
-            stashedRecords.add(event);
-
-            this.stash.put(traceId, stashedRecords);
-        }
-
-    }
-
-    private void flushAllRecords() {
-        for (final IMonitoringRecord event : this.allRecords) {
-            if (event instanceof ITraceRecord) {
-                final ITraceRecord traceEvent = (ITraceRecord) event;
-
-                final Pair firstLast = this.getFirstLast(traceEvent);
-
-                this.outputPort.send(event);
-
-                if (firstLast != null) {
-                    if (firstLast.getLast() == traceEvent) {
-                        this.outputPort.send(new SessionEndEvent(firstLast.getLast().getLoggingTimestamp(),
-                                firstLast.getFirst().getHostname(), firstLast.getFirst().getSessionId()));
-                    }
-                }
-            } else {
-                this.outputPort.send(event);
-            }
-        }
-        this.allRecords.clear();
-    }
-
-    private Pair getFirstLast(final ITraceRecord traceEvent) {
-        final String sessionId = this.traceIdMap.get(traceEvent.getTraceId());
-
-        if (sessionId != null) {
-            final List<IMonitoringRecord> records = this.sessionRecords.get(sessionId);
-
-            return new Pair((TraceMetadata) records.get(0), (ITraceRecord) records.get(records.size() - 1));
-        } else {
-            return null;
+            EndSessionDetector.LOGGER.error("Event has no trace {} {}", event.getClass(), event.toString());
         }
     }
 
