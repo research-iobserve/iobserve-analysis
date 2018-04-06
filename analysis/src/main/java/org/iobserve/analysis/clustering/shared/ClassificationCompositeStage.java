@@ -22,13 +22,8 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
-import org.iobserve.analysis.clustering.birch.BirchClassificaton;
-import org.iobserve.analysis.clustering.birch.ILMethodEvalStrategy;
-import org.iobserve.analysis.clustering.birch.model.ICFComparisonStrategy;
 import org.iobserve.analysis.clustering.filter.models.configuration.GetLastXSignatureStrategy;
 import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
-import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetstoreStrategy;
 import org.iobserve.analysis.configurations.ConfigurationKeys;
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
@@ -171,45 +166,33 @@ public class ClassificationCompositeStage extends CompositeStage implements IBeh
             ClassificationCompositeStage.LOGGER.error("Initialization incomplete: No max number of leaf entries specified.");
             throw new ConfigurationException("Initialization incomplete: No max number of leaf entries specified.");
         }
-        
+        ClassificationCompositeStage.LOGGER.debug("Max leaf entries: " + maxLeafEntries);
 		final int expectedNumberOfClusters = configuration.getIntProperty(ConfigurationKeys.EXP_NUM_OF_CLUSTERS, -1);
         if (expectedNumberOfClusters < 0) {
             ClassificationCompositeStage.LOGGER.error("Initialization incomplete: No expected numbers of clusters specified.");
             throw new ConfigurationException("Initialization incomplete: No expected numbers of clusters specified.");
         }
         
-		final boolean useClusterNumberMetric = configuration.getBooleanProperty(ConfigurationKeys.USE_CNM, true);
-		
-        /** Todo: incoperate to config */
-		final IRepresentativeStrategy representativeStrategy = new JPetstoreStrategy();
-		
-		final boolean keepEmptyTransitions = configuration.getBooleanProperty(ConfigurationKeys.KEEP_EMPTY_TRANS, true);
-        
         /** Create remaining stages and connect them */
         final PreprocessingCompositeStage preStage = new PreprocessingCompositeStage(traceMatcher, entryCallMatcher,
                 cleanupRewriter, filterRulesFactory, triggerInterval);
-        final String clusterComparisonStrategyClassName = configuration
-                .getStringProperty(ConfigurationKeys.CLUSTER_METRIC_STRATEGY);
-        ClassificationCompositeStage.LOGGER.error("clusterComparisonStrategyClassName: " + clusterComparisonStrategyClassName);
-        final ICFComparisonStrategy clusterComparisonStrategy = InstantiationFactory
-                .create(ICFComparisonStrategy.class, clusterComparisonStrategyClassName, null);
-        final String lmethodStrategyClassName = configuration
-                .getStringProperty(ConfigurationKeys.LMETHOD_EVAL_STRATEGY);
-        ClassificationCompositeStage.LOGGER.error("lmethodStrategyClassName: " + lmethodStrategyClassName);
-        final ILMethodEvalStrategy evalStrategy = InstantiationFactory
-                .create(ILMethodEvalStrategy.class, lmethodStrategyClassName, null);
-        final BirchClassificaton classificationStage = new BirchClassificaton(keepTime, minCollectionSize, 
-        		representativeStrategy, keepEmptyTransitions, leafThresholdValue, maxLeafSize, maxNodeSize,
-        		maxLeafEntries, expectedNumberOfClusters, useClusterNumberMetric,
-        		clusterComparisonStrategy, evalStrategy);
+
         final BehaviorModelSink sinkStage = new BehaviorModelSink(baseURL, 
         		new GetLastXSignatureStrategy(Integer.MAX_VALUE));
+        
+        final String classificationStageName = configuration
+                .getStringProperty(ConfigurationKeys.CLASS_STAGE);
+        
+        final IClassificationStage classificationStage = InstantiationFactory
+                .create(IClassificationStage.class, classificationStageName, null);
+        classificationStage.setupStage(configuration);
         
         this.eventBasedTraceInputPort = preStage.getTraceInputPort();
         this.sessionEventInputPort = preStage.getSessionEventInputPort();
 
         this.connectPorts(preStage.getSessionOutputPort(), classificationStage.getSessionInputPort());
-        this.connectPorts(preStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
+        /** reconnect once SessionsToInstances filter has been modified */
+//  this.connectPorts(preStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
         this.connectPorts(classificationStage.getOutputPort(), sinkStage.getInputPort());
     }
 

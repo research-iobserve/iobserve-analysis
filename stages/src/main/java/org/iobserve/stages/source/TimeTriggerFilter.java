@@ -27,7 +27,6 @@ import teetime.framework.AbstractProducerStage;
  *
  */
 public class TimeTriggerFilter extends AbstractProducerStage<Long> {
-
     private final long interval;
 
     /**
@@ -38,11 +37,12 @@ public class TimeTriggerFilter extends AbstractProducerStage<Long> {
      */
     public TimeTriggerFilter(final long interval) {
         this.interval = interval;
+        this.declareActive();
     }
 
     @Override
     protected void execute() throws Exception {
-        //Thread.sleep(this.interval);
+        Thread.sleep(this.interval);
         this.outputPort.send(new Date().getTime());
     }
 

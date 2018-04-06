@@ -63,19 +63,21 @@ public class BuildCFTree extends AbstractConsumerStage<Instances> {
     @Override
     protected void execute(final Instances instancesToCluster) {
     	this.instances = instancesToCluster;
-    	
+    	BuildCFTree.LOGGER.debug("Received " + instancesToCluster.numInstances() 
+    	+ " of dimension " + instancesToCluster.numAttributes());
     	if (this.tree == null) {
 			this.tree = new CFTree(this.threshold, this.maxLeafSize, this.maxNodeSize, 
     				instancesToCluster.numAttributes(), this.clusterComparisonStrategy);
 		}
     	   	
     	for (int j = 0; j < instancesToCluster.numInstances(); j++) {
-    		final Double[] vector = new Double[instancesToCluster.numAttributes()];
-    		if (j == 5 || j == 25 || j == 50 || j == 75 || j == 100) {
-    	    	for (int i = 0; i < instancesToCluster.numAttributes(); i++) {
-    	    		vector[i] = instancesToCluster.instance(j).value(i);
-    	    	}	
-    		}
+//    		final Double[] vector = new Double[instancesToCluster.numAttributes()];
+//    		if (j == 5 || j == 25 || j == 50 || j == 75 || j == 100) {
+//    	    	for (int i = 0; i < instancesToCluster.numAttributes(); i++) {
+//    	    		vector[i] = instancesToCluster.instance(j).value(i);
+//    	    		BuildCFTree.LOGGER.debug(instances.attribute(j).toString());
+//    	    	}	
+//    		}
 
     		final ClusteringFeature cf = new ClusteringFeature(instancesToCluster.instance(j));
 	    	this.tree.insert(cf);

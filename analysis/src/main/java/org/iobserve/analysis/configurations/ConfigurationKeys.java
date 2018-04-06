@@ -179,15 +179,19 @@ public final class ConfigurationKeys {
      * Classification pre-processing.
      */
     
-    iobserve.analysis.behavior.xmeans.variance=3
-    		iobserve.analysis.behavior.xmeans.expectedClusters=7
-    
+ 
 	public static final String KEEP_EMPTY_TRANS = ConfigurationKeys.PREFIX + "behavior.preprocess.keepEmpty";
 	
 	public static final String MIN_SIZE = ConfigurationKeys.PREFIX + "behavior.preprocess.minSize";
 	
 	public static final String KEEP_TIME = ConfigurationKeys.PREFIX + "behavior.preprocess.keepTime";
 
+    /**
+     * Classification stage selection.
+     */
+	
+	public static final String CLASS_STAGE = ConfigurationKeys.PREFIX + "behavior.classification";
+	
     /**
      * Xmeans Classification.
      */

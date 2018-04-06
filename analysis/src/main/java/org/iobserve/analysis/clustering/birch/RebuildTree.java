@@ -30,9 +30,11 @@ import org.iobserve.analysis.clustering.birch.model.CFTree;
  */
 public class RebuildTree extends AbstractConsumerStage<CFTree> {
 	private int maxLeafEntries;
-	
     private final OutputPort<CFTree> outputPort = this.createOutputPort();
     
+	/** Constructor for the CFTree rebuilding phase.
+	 * @param maxLeafEntries maximum number of leaf entries allowed.
+	 */
 	public RebuildTree(final int maxLeafEntries) {
 		super();
 		this.maxLeafEntries = maxLeafEntries;
@@ -42,8 +44,8 @@ public class RebuildTree extends AbstractConsumerStage<CFTree> {
 	protected void execute(final CFTree tree) throws Exception {
 
 		if (tree.getNumberOfLeafEntries() > maxLeafEntries) {
-			final double newTheshold = Math.max(tree.getAvgMinimalLeafDistance(), tree.getMergeThreshold() * 1.10);
-            final CFTree newTree = tree.rebuild(newTheshold);
+			final double newThreshold = Math.max(tree.getAvgMinimalLeafDistance(), tree.getMergeThreshold() * 1.10);
+            final CFTree newTree = tree.rebuild(newThreshold);
 			this.execute(newTree);
 		} else {
 			this.outputPort.send(tree);

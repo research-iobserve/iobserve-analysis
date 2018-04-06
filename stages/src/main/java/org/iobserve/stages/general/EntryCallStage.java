@@ -86,7 +86,6 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
     @Override
     protected void execute(final EventBasedTrace event) throws JsonProcessingException, IOException {
     	cnt++;
-    	EntryCallStage.LOGGER.debug(event.toString());
         for (final AbstractTraceEvent traceEvent : event.getTraceEvents()) {
             if (traceEvent instanceof BeforeOperationEvent) {
                 final BeforeOperationEvent beforeEvent = (BeforeOperationEvent) traceEvent;
@@ -170,7 +169,6 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
             final List<String> parameterValues = new ArrayList<>();
 
             if (actualObj instanceof ArrayNode) {
-            	EntryCallStage.LOGGER.debug(actualObj.toString());
                 final ArrayNode values = (ArrayNode) actualObj;
                 final Iterator<JsonNode> valuesIterator = values.elements();
                 while (valuesIterator.hasNext()) {

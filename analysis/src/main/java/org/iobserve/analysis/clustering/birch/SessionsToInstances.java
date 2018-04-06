@@ -29,6 +29,7 @@ import org.iobserve.analysis.clustering.filter.TBehaviorModelPreperation;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelTableGeneration;
 import org.iobserve.analysis.clustering.filter.TInstanceTransformations;
 import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
+import org.iobserve.analysis.clustering.shared.UserSessionCollector;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.session.CollectUserSessionsFilter;
 import org.iobserve.analysis.session.data.UserSession;
@@ -61,8 +62,10 @@ public class SessionsToInstances extends CompositeStage{
         final Distributor<EntryCallSequenceModel> distributor = new Distributor<>(strategy);
 
 		final Merger<Object> merger = new Merger<>(new BlockingBusyWaitingRoundRobinMergerStrategy());
-		final CollectUserSessionsFilter collectUserSessionsFilter = 
-				new CollectUserSessionsFilter(keepTime, minCollectionSize);
+//		final CollectUserSessionsFilter collectUserSessionsFilter = 
+//				new CollectUserSessionsFilter(keepTime, minCollectionSize);
+		
+		final UserSessionCollector collectUserSessionsFilter = new UserSessionCollector(minCollectionSize);
 		
 		final TInstanceTransformations tInstanceTransformations = new TInstanceTransformations(); 
                 
@@ -71,9 +74,11 @@ public class SessionsToInstances extends CompositeStage{
 
         final TBehaviorModelPreperation tBehaviorModelPreperation = new TBehaviorModelPreperation(
         		keepEmptyTransitions);
-
-        this.sessionInputPort = collectUserSessionsFilter.getUserSessionInputPort();
-        this.timerInputPort = collectUserSessionsFilter.getTimeTriggerInputPort();
+        
+        this.timerInputPort = null; 
+        this.sessionInputPort = collectUserSessionsFilter.getInputPort();
+//        this.sessionInputPort = collectUserSessionsFilter.getUserSessionInputPort();
+//        this.timerInputPort = collectUserSessionsFilter.getTimeTriggerInputPort();
         this.outputPort = tInstanceTransformations.getOutputPort();
         
         this.connectPorts(collectUserSessionsFilter.getOutputPort(), distributor.getInputPort());

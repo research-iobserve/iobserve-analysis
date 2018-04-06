@@ -87,26 +87,19 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
 
         } else {
             final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
-            TBehaviorModelPreperation.LOGGER.debug("Executing EntryCallSequenceModel");
-            TBehaviorModelPreperation.LOGGER.debug("userSessions: " + userSessions.size());
             for (final UserSession userSession : userSessions) {
-//            	TBehaviorModelPreperation.LOGGER.debug("Processing UserSession...");
                 final BehaviorModelTable modelTable = this.behaviorModelTable.getClearedCopy(this.keepEmptyTransitions);
                 final List<EntryCallEvent> entryCalls = userSession.getEvents();
-                TBehaviorModelPreperation.LOGGER.debug("entryCalls: " + entryCalls.size());
                 
                 EntryCallEvent lastCall = null;
                 for (final EntryCallEvent eventCall : entryCalls) {
-//                	TBehaviorModelPreperation.LOGGER.debug("Processing EntryCallEvent...");
                     final boolean isAllowed = modelTable.isAllowedSignature(eventCall);
-//                	TBehaviorModelPreperation.LOGGER.debug("Is allowed: " + isAllowed);
 
                     if (lastCall != null && isAllowed) {
                         modelTable.addTransition(lastCall, eventCall);
                         modelTable.addInformation(eventCall);
 
-                    } else if (isAllowed) { // only called at first valid event
-                                            // (condition lastCall == null is not needed
+                    } else if (isAllowed) { 
                         modelTable.addInformation(eventCall);
                     }
 
@@ -114,9 +107,7 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
                 }
                 this.outputPort.send(modelTable);
             }
-
         }
-
     }
 
     /**

@@ -53,6 +53,10 @@ public class TInstanceTransformations extends AbstractConsumerStage<BehaviorMode
 
         } else {
             this.instances.add(behaviorModelTable.toInstance());
+            if (this.instances.numInstances() == 280) {
+                TInstanceTransformations.LOGGER.debug("Sending instances.");
+            	this.outputPort.send(this.instances);
+            }
         }
     }
 
