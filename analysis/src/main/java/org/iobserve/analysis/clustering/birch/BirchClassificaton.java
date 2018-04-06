@@ -19,59 +19,55 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import teetime.stage.basic.merger.Merger;
-import teetime.stage.basic.merger.strategy.BlockingBusyWaitingRoundRobinMergerStrategy;
-import teetime.stage.basic.merger.strategy.IMergerStrategy;
-
 import org.iobserve.analysis.clustering.birch.model.ICFComparisonStrategy;
 import org.iobserve.analysis.clustering.filter.TBehaviorModelCreation;
-import org.iobserve.analysis.clustering.filter.TBehaviorModelPreperation;
-import org.iobserve.analysis.clustering.filter.TBehaviorModelTableGeneration;
-import org.iobserve.analysis.clustering.filter.TEntryCallSequenceFilter;
-import org.iobserve.analysis.clustering.filter.TInstanceTransformations;
 import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.configuration.BehaviorModelConfiguration;
-import org.iobserve.analysis.clustering.filter.models.configuration.GetLastXSignatureStrategy;
 import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.session.CollectUserSessionsFilter;
 import org.iobserve.analysis.session.data.UserSession;
-import org.iobserve.analysis.sink.BehaviorModelSink;
 
-import weka.core.Instances;
 
-/**
- *
+/** This class handles the classification process with the
+ * birch algorithm. Transforms user sessions to behavior
+ * models.
  * @author Melf Lorenzen
+ *
  */
-
 public class BirchClassificaton extends CompositeStage {
    
-    private final InputPort<Object> sessionInputPort;
-    private final InputPort<Object> timerInputPort;
+    private final InputPort<UserSession> sessionInputPort;
+    private final InputPort<Long> timerInputPort;
     
     private final OutputPort<BehaviorModel> outputPort;
-       
+
     /**
-     * constructor.
-     *
-     * @param configuration
-     *            model configuration
+     * constructor for the BirchClassificaton composite stage.
+     * @param keepTime the time interval to keep user sessions
+     * @param minCollectionSize  minimal number of collected user session
+     * @param representativeStrategy representative strategy for behavior model table generation
+     * @param keepEmptyTransitions allows behavior model table generation to keep empty transitions
+	 * @param leafThresholdValue the merge threshold for the underlying cf tree
+	 * @param maxLeafSize the maximum number of entries in a leaf
+	 * @param maxNodeSize the maximum number of entries in a node
+	 * @param maxLeafEntries the maximum number of leaf entries in the underlying cf tree
+	 * @param expectedNumberOfClusters the expected number of clusters in the data
+	 * @param useClusterNumberMetric whether to use the expected number or 
+	 * number calculated by the cluster number metric
+	 * @param clusterComparisonStrategy the cluster comparison strategy 
+	 * @param evalStrategy the strategy for the l-method evaluation graph
      */
     public BirchClassificaton(final long keepTime, final int minCollectionSize, 
     		final IRepresentativeStrategy representativeStrategy, final boolean keepEmptyTransitions,
     		final double leafThresholdValue, final int maxLeafSize, final int maxNodeSize,
-    		final int maxLeafEntries, int expectedNumberOfClusters, boolean useClusterNumberMetric, 
-    		ICFComparisonStrategy clusterComparisonStrategy) {
+    		final int maxLeafEntries, final int expectedNumberOfClusters, final boolean useClusterNumberMetric, 
+    		final ICFComparisonStrategy clusterComparisonStrategy,
+    		final ILMethodEvalStrategy evalStrategy) {
 
-        SessionsToInstances sessionsToInstances = new SessionsToInstances(keepTime, minCollectionSize, 
+        final SessionsToInstances sessionsToInstances = new SessionsToInstances(keepTime, minCollectionSize, 
         		representativeStrategy, keepEmptyTransitions);
-        BirchClustering birchClustering = new BirchClustering(leafThresholdValue, maxLeafSize,
+        final BirchClustering birchClustering = new BirchClustering(leafThresholdValue, maxLeafSize,
         		maxNodeSize, maxLeafEntries, expectedNumberOfClusters, useClusterNumberMetric, 
-        		clusterComparisonStrategy);
-        TBehaviorModelCreation tBehaviorModelCreation = new TBehaviorModelCreation("birch-");   
-
-        
+        		clusterComparisonStrategy, evalStrategy);
+        final TBehaviorModelCreation tBehaviorModelCreation = new TBehaviorModelCreation("birch-");   
         this.sessionInputPort = sessionsToInstances.getSessionInputPort();
         this.timerInputPort = sessionsToInstances.getTimerInputPort();
         this.outputPort = tBehaviorModelCreation.getOutputPort();
@@ -86,11 +82,11 @@ public class BirchClassificaton extends CompositeStage {
      * @return input port
      */
 
-    public InputPort<Object> getSessionInputPort() {
+    public InputPort<UserSession> getSessionInputPort() {
         return this.sessionInputPort;
     }
 
-    public InputPort<Object> getTimerInputPort() {
+    public InputPort<Long> getTimerInputPort() {
         return this.timerInputPort;
     }
     

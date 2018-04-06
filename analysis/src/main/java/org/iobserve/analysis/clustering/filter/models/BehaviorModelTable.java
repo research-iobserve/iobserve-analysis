@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
@@ -132,15 +131,11 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
     @Override
     public boolean isAllowedSignature(final String signature) {
-//    	for(Entry<String, Pair<Integer, AggregatedCallInformation[]>> sig : this.signatures.entrySet())
-//    		BehaviorModelTable.LOGGER.error(sig.toString());
         return this.signatures.containsKey(signature);
     }
 
     @Override
     public void addInformation(final PayloadAwareEntryCallEvent event) {
-//    	BehaviorModelTable.LOGGER.debug("Reached addinformation");
-//    	BehaviorModelTable.LOGGER.debug("Event para length : " + event.getParameters().length);
         final String eventSignature = this.getSignatureFromEvent(event);
         final List<CallInformation> newCallInformations = new ArrayList<>();
 
@@ -148,8 +143,6 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             for (int i = 0; i < event.getParameters().length; i++) {
                 newCallInformations.add(new CallInformation(event.getParameters()[i],
                         this.parameterValueDoubleMapper.mapValue(event.getParameters()[i], event.getValues()[i])));
-                BehaviorModelTable.LOGGER.debug("Adding new CallInformation with para " + 
-                		this.parameterValueDoubleMapper.mapValue(event.getParameters()[i], event.getValues()[i]));
             }
 
             final List<AggregatedCallInformation> aggCallInformations = Arrays

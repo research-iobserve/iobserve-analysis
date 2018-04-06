@@ -13,19 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.clustering.birch.model;
+package org.iobserve.analysis.clustering.birch;
+
+import java.util.List;
+
+import org.iobserve.analysis.clustering.birch.model.ClusteringFeature;
 
 /**
- * This strategy compares clustering features by
- * average inter-cluster distance D2.
  * @author Melf Lorenzen
- *
+ * Metric for the lmethod of the 
+ * ClusterSelection stage based on
+ * the cluster diameter.
  */
-public class CFCompareD2Strategy implements ICFComparisonStrategy {
-	
-	@Override
-	public double getDistance(final ClusteringFeature cf1, final ClusteringFeature cf2) {
-		return cf1.compareD2(cf2);
-	}
+public class DiameterEvalMetric implements ILMethodEvalStrategy {
 
+	@Override
+	public double calculateClusterMetric(final List<ClusteringFeature> cluster) {
+		double sum = 0.0;
+		double cnt = 0.0;
+		
+		for (ClusteringFeature cf : cluster) {
+			sum += (cf.getNumber() * (cf.getNumber() - 1)) * Math.pow(cf.getDiameter(), 2);
+			cnt += (cf.getNumber() * (cf.getNumber() - 1));
+		}
+			
+		return cnt != 0.0 ? sum / cnt : 0;
+	}
 }

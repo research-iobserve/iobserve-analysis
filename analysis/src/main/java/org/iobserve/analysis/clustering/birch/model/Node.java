@@ -62,7 +62,7 @@ public class Node extends AbstractNode {
 
 
 	/**
-	 * Adds new node entry split while checking for 
+	 * Adds new node entry split while checking for. 
 	 * @param origin child node that has been split
 	 * @param split the new child node that has split off from origin	
 	 * @return

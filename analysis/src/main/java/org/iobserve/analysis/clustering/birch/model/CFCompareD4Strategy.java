@@ -16,15 +16,15 @@
 package org.iobserve.analysis.clustering.birch.model;
 /**
  * This strategy compares clustering features by the
- * variance increase distance metric D4
+ * variance increase distance metric D4.
  * @author Melf Lorenzen
  *
  */
 public class CFCompareD4Strategy implements ICFComparisonStrategy{
 
-		@Override
-		public double getDistance(final ClusteringFeature cf1, final ClusteringFeature cf2) {
-			return cf1.compareD4(cf2);
-		}
-
+	@Override
+	public double getDistance(final ClusteringFeature cf1, final ClusteringFeature cf2) {
+		return cf1.compareD4(cf2);
 	}
+
+}

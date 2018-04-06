@@ -39,7 +39,7 @@ import org.iobserve.analysis.session.data.UserSession;
 public class CollectUserSessionsFilter extends AbstractStage {
 
     private final InputPort<UserSession> userSessionInputPort = this.createInputPort();
-    private final InputPort<Long> timeTriggerInputPort = super.createInputPort();
+    private final InputPort<Long> timeTriggerInputPort = this.createInputPort();
 
     private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
 
@@ -60,6 +60,7 @@ public class CollectUserSessionsFilter extends AbstractStage {
     public CollectUserSessionsFilter(final long keepTime, final int minCollectionSize) {
         this.keepTime = keepTime;
         this.minCollectionSize = minCollectionSize;
+        this.declareActive();
     }
 
     @Override

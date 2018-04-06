@@ -91,7 +91,7 @@ public final class ConfigurationKeys {
      */
 
     /** Select clustering filter. */
-    public static final String BEHAVIOR_CLUSTERING = ConfigurationKeys.PREFIX + "behaviour.filter";
+    public static final String BEHAVIOR_CLUSTERING = ConfigurationKeys.PREFIX + "behavior.filter";
 
     /** Set whether a behavior visualization sink shall be created. STRING ARRAY. */
     public static final String BEHAVIOR_CLUSTERING_SINK = ConfigurationKeys.PREFIX + "behavior.sink.visual";
@@ -175,12 +175,31 @@ public final class ConfigurationKeys {
 
     public static final String PCM_MODEL_INIT_DIRECTORY = ConfigurationKeys.PREFIX + "model.pcm.directory.init";
 
+    /**
+     * Classification pre-processing.
+     */
+    
+    iobserve.analysis.behavior.xmeans.variance=3
+    		iobserve.analysis.behavior.xmeans.expectedClusters=7
+    
 	public static final String KEEP_EMPTY_TRANS = ConfigurationKeys.PREFIX + "behavior.preprocess.keepEmpty";
 	
 	public static final String MIN_SIZE = ConfigurationKeys.PREFIX + "behavior.preprocess.minSize";
 	
 	public static final String KEEP_TIME = ConfigurationKeys.PREFIX + "behavior.preprocess.keepTime";
 
+    /**
+     * Xmeans Classification.
+     */
+	
+	public static final String XM_VAR = ConfigurationKeys.PREFIX + "behavior.xmeans.variance";
+	
+	public static final String XM_EXP_CLUS = ConfigurationKeys.PREFIX + "behavior.xmeans.expectedClusters";
+	
+    /**
+     * Birch Classification.
+     */
+	
 	public static final String LEAF_TH = ConfigurationKeys.PREFIX + "behavior.birch.leafThreshold";
 
 	public static final String MAX_LEAF_SIZE = ConfigurationKeys.PREFIX + "behavior.birch.maxLeafSize";
@@ -194,6 +213,9 @@ public final class ConfigurationKeys {
 	public static final String USE_CNM = ConfigurationKeys.PREFIX + "behavior.birch.useClusterNumberMetric";
 
 	public static final String CLUSTER_METRIC_STRATEGY = ConfigurationKeys.PREFIX + "behavior.birch.clusterMetricStrategy";
+
+	public static final String LMETHOD_EVAL_STRATEGY = ConfigurationKeys.PREFIX + "behavior.birch.lmethodEvalStrategy";
+	
 	
 
     /**

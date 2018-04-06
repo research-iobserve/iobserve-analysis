@@ -1,39 +1,49 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.clustering.birch;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.clustering.birch.model.CFTree;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+/**
+ * @author Melf Lorenzen
+ * This stage implements phase 2 
+ * of the birch algorithm. Incoming
+ * tree will be rebuilt with higher 
+ * merge thresholds until they 
+ * reach the target size.
+ */
 public class RebuildTree extends AbstractConsumerStage<CFTree> {
 	private int maxLeafEntries;
 	
     private final OutputPort<CFTree> outputPort = this.createOutputPort();
-    	
-    private static final Logger LOGGER = LoggerFactory.getLogger(RebuildTree.class);
     
-	public RebuildTree(int maxLeafEntries) {
+	public RebuildTree(final int maxLeafEntries) {
 		super();
 		this.maxLeafEntries = maxLeafEntries;
 	}
     
 	@Override
-	protected void execute(CFTree tree) throws Exception {
-		RebuildTree.LOGGER.debug("Following tree up for potential rebuilding");
-		RebuildTree.LOGGER.debug("Dimension: " + tree.getDimension());
-		RebuildTree.LOGGER.debug("Max node entries: " + tree.getNodeSizeConstraint());
-		RebuildTree.LOGGER.debug("Max leaf entries: " + tree.getLeafSizeConstraint());
-		RebuildTree.LOGGER.debug("Merge threshold: " + tree.getMergeThreshold());
-		RebuildTree.LOGGER.debug("Root: " + tree.getRootStringRepresentation());
-		RebuildTree.LOGGER.debug("Leaf entries: " + tree.getNumberOfLeafEntries());
-		if(tree.getNumberOfLeafEntries() > maxLeafEntries) {
-			RebuildTree.LOGGER.debug(tree.getNumberOfLeafEntries() + " entries. Only " + maxLeafEntries + "allowed!");
-			double newTheshold = Math.max(tree.getAvgMinimalLeafDistance(), tree.getMergeThreshold() * 1.10);
-			RebuildTree.LOGGER.debug("Rebuilding tree with threshold = " + newTheshold);
-            CFTree newTree = tree.rebuild(newTheshold);
-			//RebuildTree.LOGGER.debug("Rebuilt tree = " + newTree.toString());
+	protected void execute(final CFTree tree) throws Exception {
+
+		if (tree.getNumberOfLeafEntries() > maxLeafEntries) {
+			final double newTheshold = Math.max(tree.getAvgMinimalLeafDistance(), tree.getMergeThreshold() * 1.10);
+            final CFTree newTree = tree.rebuild(newTheshold);
 			this.execute(newTree);
 		} else {
 			this.outputPort.send(tree);
@@ -44,6 +54,4 @@ public class RebuildTree extends AbstractConsumerStage<CFTree> {
 		return outputPort;
 	}
 
-
-	
 }

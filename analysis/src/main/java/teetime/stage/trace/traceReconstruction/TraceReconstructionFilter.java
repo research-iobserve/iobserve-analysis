@@ -17,10 +17,6 @@ package teetime.stage.trace.traceReconstruction;
 
 import java.util.concurrent.TimeUnit;
 
-import org.iobserve.analysis.configurations.AnalysisConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import kieker.common.record.flow.IFlowRecord;
 
 import teetime.framework.AbstractConsumerStage;
@@ -28,6 +24,8 @@ import teetime.framework.OutputPort;
 import teetime.util.ConcurrentHashMapWithDefault;
 import teetime.util.ISendTraceBuffer;
 import teetime.util.TraceReconstructor;
+
+
 
 /**
  * @author Christian Wulf

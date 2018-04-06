@@ -13,5 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
-package org.iobserve.analysis.clustering.filter;
+/**
+ * This package contains all stages of the birch clustering algorithm
+ */
+package org.iobserve.analysis.clustering.birch;

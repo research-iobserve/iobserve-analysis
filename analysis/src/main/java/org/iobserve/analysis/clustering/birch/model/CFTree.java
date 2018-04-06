@@ -30,6 +30,13 @@ public class CFTree {
 	private AbstractNode root;
 	
 	
+	/** Constructor for the CFTree class.
+	 * @param t the merge threshold for this tree
+	 * @param leafSizeConstraint the maximum number of entries in a leaf
+	 * @param nodeSizeConstraint the maximum number of entries in a node
+	 * @param dimension the dimension of the vectors in this tree
+	 * @param strategy the cluster comparison strategy 
+	 */
 	public CFTree(final double t, final int leafSizeConstraint,
 			final int nodeSizeConstraint, final int dimension, final ICFComparisonStrategy strategy) {
 		this.root = new Leaf(dimension);
@@ -45,6 +52,9 @@ public class CFTree {
 		AbstractNode.mergeThreshold = t;
 	}
 	
+	/** Method to insert a new clustering feature in to this tree.
+	 * @param cf the clustering feature to be inserted
+	 */
 	public void insert(final ClusteringFeature cf) {
 		final Optional<AbstractNode> split = this.root.insert(cf);
 		if (split.isPresent()) {
@@ -117,7 +127,7 @@ public class CFTree {
 	}
 	
 	
-	/** Removes empty nodes along the path
+	/** Removes empty nodes along the path.
 	 * @param path path that needs cleaning
 	 */
 	private void cleanUp(final Path path) {
@@ -135,7 +145,7 @@ public class CFTree {
 		}	
 	}
 
-	/** Adds the the path to the new Tree
+	/** Adds the the path to the new Tree.
 	 * @param path the path to add
 	 */
 	private Path addPath(final Path path) {
@@ -193,7 +203,7 @@ public class CFTree {
 	
 
 	/** Updates the references at leaf level to 
-	 * include their two neighboring leafs
+	 * include their two neighboring leafs.
 	 */
 	public void updateLeafChain() {
 		final Path path = this.getLeftMostPath();
@@ -209,7 +219,7 @@ public class CFTree {
 		}
 	}
 	
-	/** Returns all the trees leaf entries in a list
+	/** Returns all the trees leaf entries in a list.
 	 * @return list of the tree's leaf entries
 	 */
 	public List<ClusteringFeature> getLeafEntries() {
@@ -229,7 +239,7 @@ public class CFTree {
 	}
 	
 	/** Calculates the tree average minimal 
-	 * distance between leaf entries
+	 * distance between leaf entries.
 	 * @return the avg minimal leaf distance
 	 */
 	public double getAvgMinimalLeafDistance() {
@@ -245,6 +255,10 @@ public class CFTree {
 		return addedMinDistance / (cnt * 1.0);
 	}
 	
+	/** Returns the total number of leaf entries
+	 * in this tree.
+	 * @return number of leaf entries
+	 */
 	public int getNumberOfLeafEntries() {
 		Leaf lf = this.getLeftMostPath().getLeaf();
 		int cnt = lf.getSize();

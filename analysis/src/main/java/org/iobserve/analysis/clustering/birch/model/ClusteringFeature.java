@@ -31,12 +31,19 @@ public class ClusteringFeature {
 	private double[] linearSum;
 	private double[] squareSum;
 	
+	/** Constructor for empty clustering feature.
+	 * @param n dimension of the clustering feature
+	 */
 	public ClusteringFeature(final int n) {
 		this.number = 0;
 		this.linearSum = new double[n];
 		this.squareSum = new double[n];
 	}
 	
+	/** Constructor for a clustering feature
+	 * representing an instance vector.
+	 * @param instance the instance to represent.
+	 */
 	public ClusteringFeature(final Instance instance) {
 		this.number = 1;
 		this.linearSum = new double[instance.numAttributes()];
@@ -48,6 +55,11 @@ public class ClusteringFeature {
 	    	}
 	}
 	
+	/** Constructor for clustering feature.
+	 * @param number number of elements in the cluster
+	 * @param linearSum linear sum of the cluster elements
+	 * @param squareSum square sum of the cluster elements
+	 */
 	public ClusteringFeature(final int number, final double[] linearSum, final double[] squareSum) {
 		this.number = number;
 		this.linearSum = linearSum;
@@ -55,6 +67,10 @@ public class ClusteringFeature {
 	}
 	
 	
+	/** Constructor for clustering feature containing
+	 * one vector.
+	 * @param linearSum the vector to base the cf off of
+	 */
 	public ClusteringFeature(final Double[] linearSum) {
 		this.number = 1;
 		
@@ -71,6 +87,11 @@ public class ClusteringFeature {
 	}
 	
 		
+	/** Constructs a new clustering feature from the 
+	 * sum of two clustering features.
+	 * @param cf1 clustering feature to be summed up
+	 * @param cf2 clustering feature to be summed up
+	 */
 	public ClusteringFeature(final ClusteringFeature cf1, final ClusteringFeature cf2) {
 		this.number = cf1.number + cf2.number;
 		
@@ -89,6 +110,10 @@ public class ClusteringFeature {
 		return this.linearSum.length;
 	}
 	
+	
+	/** Adds a clustering feature to this clustering feature.
+	 * @param cf the clustering feature to be added
+	 */
 	public void add(final ClusteringFeature cf) {
 		this.number += cf.number;
 		
@@ -100,11 +125,16 @@ public class ClusteringFeature {
 		}
 	}
 	
+	/** Returns the distance between this
+	 * clustering feature and the given 
+	 * clustering feature.
+	 * @param cf clustering feature to compare to
+	 * @return the distance
+	 */
 	public double compare(final ClusteringFeature cf) {
 		return ClusteringFeature.metric.getDistance(this, cf);
 	}
 	
-	///based on D0 (euclidian distance)
 	double compareD0(final ClusteringFeature cf) {
 		double res = 0;
 		for (int i = 0; i < this.linearSum.length; i++) {
@@ -153,6 +183,10 @@ public class ClusteringFeature {
 		return (this.getDiameter() <= t);
 	}
 	
+	/** Returns the sum of squared errors
+	 * of elements in this cluster.
+	 * @return the sum of squared errors
+	 */
 	public double getSquareSumError() {
 		double sse = 0.0;
 		for (int i = 0; i < this.linearSum.length; i++) {
@@ -162,10 +196,18 @@ public class ClusteringFeature {
 		return sse;
 	}
 	
+	/** Returns the radius of this 
+	 * clustering feature.
+	 * @return the radius
+	 */
 	public double getRadius() {
 		return Math.sqrt(this.getSquareSumError() / this.number);
 	}
 	
+	/** Returns the diameter of this 
+	 * clustering feature.
+	 * @return the diameter
+	 */
 	public double getDiameter() {
 		if (this.number <= 1) {
 			return 0.0;
@@ -182,6 +224,10 @@ public class ClusteringFeature {
 				/ (this.number * (this.number - 1.0)));
 	}
 	
+	/** Returns the centroid of the cluster represented 
+	 *  by this clustering feature.
+	 * @return the centroid
+	 */
 	public double[] getCentroid() {
 		final double[] centroid = new double[this.getDimension()];
 		for (int i = 0; i < centroid.length; i++) {
@@ -198,7 +244,12 @@ public class ClusteringFeature {
 	public static void setMetric(final ICFComparisonStrategy metric) {
 		ClusteringFeature.metric = metric;
 	}
-
+    /*
+     * (non-Javadoc)
+     *
+     * @see java.lang.Object#toString()
+     */
+    @Override
 	public String toString() { 
 		return "[" + this.number + "@" + this.hashCode() + "]";
 	}

@@ -1,20 +1,43 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.clustering.birch;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
 import java.util.TreeMap;
 
-import org.iobserve.analysis.clustering.birch.model.ClusteringFeature;
-import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.session.data.UserSession;
 
 import teetime.framework.AbstractConsumerStage;
-import teetime.framework.AbstractStage;
-import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.clustering.birch.model.ClusteringFeature;
+
 import weka.core.Instance;
 import weka.core.Instances;
 
+/**
+ * @author Melf Lorenzen
+ * Implements the 4. phase of the
+ * birch algorithm. The original
+ * instances are clustered around
+ * the centroids found through
+ * previous clustering.
+ */
 public class Refinement extends AbstractConsumerStage<Object> {
    
     private final OutputPort<Instances> outputPort = this.createOutputPort();
@@ -22,66 +45,39 @@ public class Refinement extends AbstractConsumerStage<Object> {
 	private Instances instances;
 	
     private List<ClusteringFeature> clustering;
-    
-//	@Override
-//	protected void execute(Object object) throws Exception {
-//        if (object instanceof Instances) {
-//            final Instances instances = (Instances) object;
-//            this.instances = instances;
-//
-//        } else if (object instanceof List<?>) {
-//            @SuppressWarnings("unchecked")
-//			final List<ClusteringFeature> clustering = (List<ClusteringFeature>) object;
-//            this.clustering = clustering;
-//        }
-//        
-//        if(this.clustering != null && this.instances != null) {
-//        	instances.delete();
-//        	for(ClusteringFeature cf : this.clustering) {
-//        		instances.add(new Instance(1.0, cf.getCentroid()));
-//        	}
-//        	this.outputPort.send(instances);
-//        }
-//	}
-	
+    	
+	@SuppressWarnings("unchecked")
 	@Override
-	protected void execute(Object object) throws Exception {
+	protected void execute(final Object object) throws Exception {
         if (object instanceof Instances) {
-            final Instances instances = (Instances) object;
-            this.instances = instances;
-
+            this.instances = (Instances) object;
         } else if (object instanceof List<?>) {
-            @SuppressWarnings("unchecked")
-			final List<ClusteringFeature> clustering = (List<ClusteringFeature>) object;
-            this.clustering = clustering;
+            this.clustering = (List<ClusteringFeature>) object;
         }
         
-        if(this.clustering != null && this.instances != null) {
+        if (this.clustering != null && this.instances != null) {
         	refineClustering();
         }
 	}
 	
 	private void refineClustering() {
-		//for every cf in clustering: create new empty cf (Map)
-		HashMap<ClusteringFeature, ClusteringFeature> finalClustering = new HashMap<>();
-		for(ClusteringFeature cf : this.clustering)
+		final Map<ClusteringFeature, ClusteringFeature> finalClustering = new HashMap<>();
+		for (ClusteringFeature cf : this.clustering) {
 			finalClustering.put(cf, new ClusteringFeature(cf.getDimension()));
-		//for every instance:
-		for(int i = 0; i < this.instances.numInstances(); i++) {
-			//calculate cf
-			ClusteringFeature cf = new ClusteringFeature(this.instances.instance(i));
-			//find cfs NN in clustering
-			TreeMap<Double, ClusteringFeature> ranking = new TreeMap<>();
+		}
+		for (int i = 0; i < this.instances.numInstances(); i++) {
+			final ClusteringFeature cf = new ClusteringFeature(this.instances.instance(i));
+			/** find cfs NN in clustering */
+			final NavigableMap<Double, ClusteringFeature> ranking = new TreeMap<>();
 			for (ClusteringFeature centroid : this.clustering) {
 					ranking.put(centroid.compare(cf), centroid);
 			}
-			ClusteringFeature nearestNeighbor = ranking.firstEntry().getValue();
-			//add to correct bucket
+			final ClusteringFeature nearestNeighbor = ranking.firstEntry().getValue();
+			/** add to correct cluster */
 			finalClustering.get(nearestNeighbor).add(cf);
 		}
-		//Send new centroids on in instance format
     	instances.delete();
-    	for(ClusteringFeature cf : finalClustering.values()) {
+    	for (ClusteringFeature cf : finalClustering.values()) {
     		instances.add(new Instance(1.0, cf.getCentroid()));
     	}
     	this.outputPort.send(instances);

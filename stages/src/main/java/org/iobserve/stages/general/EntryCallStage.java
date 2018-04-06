@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 
 import kieker.common.record.flow.trace.AbstractTraceEvent;
 import kieker.common.record.flow.trace.TraceMetadata;
@@ -116,36 +117,7 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
 //            }
     
     
-    private PayloadAwareEntryCallEvent createEntryCall(final TraceMetadata traceMetaData) {
-
-        final BeforeOperationEvent beforeOperationEvent = this.matcher.getBeforeOperationEvent();
-        final AfterOperationEvent afterOperationEvent = this.matcher.getAfterOperationEvent();
-
-        if (beforeOperationEvent instanceof EntryLevelBeforeOperationEvent) {
-            final EntryLevelBeforeOperationEvent entryLevelBeforeEvent = (EntryLevelBeforeOperationEvent) beforeOperationEvent;
-            return new PayloadAwareEntryCallEvent(beforeOperationEvent.getTimestamp(),
-                    afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
-                    beforeOperationEvent.getClassSignature(), traceMetaData.getSessionId(), traceMetaData.getHostname(),
-                    entryLevelBeforeEvent.getParameters(), entryLevelBeforeEvent.getValues(),
-                    entryLevelBeforeEvent.getRequestType());
-        } else {
-            return new PayloadAwareEntryCallEvent(beforeOperationEvent.getTimestamp(),
-                    afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
-                    beforeOperationEvent.getClassSignature(), traceMetaData.getSessionId(), traceMetaData.getHostname(),
-                    new String[0], new String[0], 0);
-        }
-    }
-
-    /**
-     * This method is triggered for every deployment event.
-     *
-     * @param event
-     *            all IFlowRecord like TraceMetadata, BeforeOperationEvent and AfterOperationEvent
-     * @throws IOException
-     * @throws JsonProcessingException
-     */
-//    private PayloadAwareEntryCallEvent createEntryCall(final TraceMetadata traceMetaData)
-//            throws JsonProcessingException, IOException {
+//    private PayloadAwareEntryCallEvent createEntryCall(final TraceMetadata traceMetaData) {
 //
 //        final BeforeOperationEvent beforeOperationEvent = this.matcher.getBeforeOperationEvent();
 //        final AfterOperationEvent afterOperationEvent = this.matcher.getAfterOperationEvent();
@@ -157,43 +129,6 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
 //                    beforeOperationEvent.getClassSignature(), traceMetaData.getSessionId(), traceMetaData.getHostname(),
 //                    entryLevelBeforeEvent.getParameters(), entryLevelBeforeEvent.getValues(),
 //                    entryLevelBeforeEvent.getRequestType());
-//        } else if (afterOperationEvent instanceof ExtendedAfterOperationEvent) {
-//            final ExtendedAfterOperationEvent entryLevelAfterEvent = (ExtendedAfterOperationEvent) afterOperationEvent;
-//
-//            final String parameters = entryLevelAfterEvent.getInformations();
-//
-//            final ObjectMapper mapper = new ObjectMapper();
-//            final JsonNode actualObj = mapper.readTree(parameters);
-//
-//            final List<String> parameterNames = new ArrayList<>();
-//            final List<String> parameterValues = new ArrayList<>();
-//
-//            if (actualObj instanceof ArrayNode) {
-//                final ArrayNode values = (ArrayNode) actualObj;
-//                final Iterator<JsonNode> valuesIterator = values.elements();
-//                while (valuesIterator.hasNext()) {
-//                    final JsonNode entry = valuesIterator.next();
-//                    if (entry instanceof ObjectNode) {
-//                        final ObjectNode objectNode = (ObjectNode) entry;
-//                        final Iterator<String> fieldNames = objectNode.fieldNames();
-//                        String fieldName;
-//                        if (fieldNames.hasNext()) {
-//                            fieldName = fieldNames.next();
-//                            parameterNames.add(objectNode.get(fieldName).textValue());
-//                        }
-//                        if (fieldNames.hasNext()) {
-//                            fieldName = fieldNames.next();
-//                            parameterValues.add(objectNode.get(fieldName).textValue());
-//                        }
-//                    }
-//                }
-//            }
-//
-//            return new PayloadAwareEntryCallEvent(beforeOperationEvent.getTimestamp(),
-//                    afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
-//                    beforeOperationEvent.getClassSignature(), traceMetaData.getSessionId(), traceMetaData.getHostname(),
-//                    parameterNames.toArray(new String[parameterNames.size()]),
-//                    parameterValues.toArray(new String[parameterValues.size()]), 0);
 //        } else {
 //            return new PayloadAwareEntryCallEvent(beforeOperationEvent.getTimestamp(),
 //                    afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
@@ -201,6 +136,73 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
 //                    new String[0], new String[0], 0);
 //        }
 //    }
+
+    /**
+     * This method is triggered for every deployment event.
+     *
+     * @param event
+     *            all IFlowRecord like TraceMetadata, BeforeOperationEvent and AfterOperationEvent
+     * @throws IOException
+     * @throws JsonProcessingException
+     */
+    private PayloadAwareEntryCallEvent createEntryCall(final TraceMetadata traceMetaData)
+            throws JsonProcessingException, IOException {
+
+        final BeforeOperationEvent beforeOperationEvent = this.matcher.getBeforeOperationEvent();
+        final AfterOperationEvent afterOperationEvent = this.matcher.getAfterOperationEvent();
+
+        if (beforeOperationEvent instanceof EntryLevelBeforeOperationEvent) {
+            final EntryLevelBeforeOperationEvent entryLevelBeforeEvent = (EntryLevelBeforeOperationEvent) beforeOperationEvent;
+            return new PayloadAwareEntryCallEvent(beforeOperationEvent.getTimestamp(),
+                    afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
+                    beforeOperationEvent.getClassSignature(), traceMetaData.getSessionId(), traceMetaData.getHostname(),
+                    entryLevelBeforeEvent.getParameters(), entryLevelBeforeEvent.getValues(),
+                    entryLevelBeforeEvent.getRequestType());
+        } else if (afterOperationEvent instanceof ExtendedAfterOperationEvent) {
+            final ExtendedAfterOperationEvent entryLevelAfterEvent = (ExtendedAfterOperationEvent) afterOperationEvent;
+
+            final String parameters = entryLevelAfterEvent.getInformations();
+
+            final ObjectMapper mapper = new ObjectMapper();
+            final JsonNode actualObj = mapper.readTree(parameters);
+
+            final List<String> parameterNames = new ArrayList<>();
+            final List<String> parameterValues = new ArrayList<>();
+
+            if (actualObj instanceof ArrayNode) {
+            	EntryCallStage.LOGGER.debug(actualObj.toString());
+                final ArrayNode values = (ArrayNode) actualObj;
+                final Iterator<JsonNode> valuesIterator = values.elements();
+                while (valuesIterator.hasNext()) {
+                    final JsonNode entry = valuesIterator.next();
+                    if (entry instanceof ObjectNode) {
+                        final ObjectNode objectNode = (ObjectNode) entry;
+                        final Iterator<String> fieldNames = objectNode.fieldNames();
+                        String fieldName;
+                        if (fieldNames.hasNext()) {
+                            fieldName = fieldNames.next();
+                            parameterNames.add(objectNode.get(fieldName).textValue());
+                        }
+                        if (fieldNames.hasNext()) {
+                            fieldName = fieldNames.next();
+                            parameterValues.add(objectNode.get(fieldName).textValue());
+                        }
+                    }
+                }
+            }
+
+            return new PayloadAwareEntryCallEvent(beforeOperationEvent.getTimestamp(),
+                    afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
+                    beforeOperationEvent.getClassSignature(), traceMetaData.getSessionId(), traceMetaData.getHostname(),
+                    parameterNames.toArray(new String[parameterNames.size()]),
+                    parameterValues.toArray(new String[parameterValues.size()]), 0);
+        } else {
+            return new PayloadAwareEntryCallEvent(beforeOperationEvent.getTimestamp(),
+                    afterOperationEvent.getTimestamp(), beforeOperationEvent.getOperationSignature(),
+                    beforeOperationEvent.getClassSignature(), traceMetaData.getSessionId(), traceMetaData.getHostname(),
+                    new String[0], new String[0], 0);
+        }
+    }
     
     /**
      * @return output port

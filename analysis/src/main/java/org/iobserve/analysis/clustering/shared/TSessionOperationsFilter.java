@@ -1,4 +1,3 @@
-
 /***************************************************************************
  * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
  *
@@ -16,14 +15,14 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.shared;
 
-import org.iobserve.analysis.clustering.filter.models.configuration.EntryCallFilterRules;
-import org.iobserve.analysis.session.data.UserSession;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.clustering.filter.models.configuration.EntryCallFilterRules;
+import org.iobserve.analysis.session.data.UserSession;
+
 /**
- * Stage to filter unwanted events from user session
+ * Stage to filter unwanted events from user session.
  * 
  * @author Jannis Kuckei
  *
@@ -33,6 +32,9 @@ public final class TSessionOperationsFilter extends AbstractConsumerStage<UserSe
 
     private final EntryCallFilterRules filter;
 
+    /** Constructor.
+     * @param filter entry call filter
+     */
     public TSessionOperationsFilter(final EntryCallFilterRules filter) {
         super();
         this.filter = filter;

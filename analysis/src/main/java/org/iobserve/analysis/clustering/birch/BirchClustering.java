@@ -1,9 +1,20 @@
+/***************************************************************************
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ***************************************************************************/
 package org.iobserve.analysis.clustering.birch;
 
-import org.iobserve.analysis.clustering.birch.model.ICFComparisonStrategy;
-import org.iobserve.analysis.clustering.filter.TBehaviorModelCreation;
-import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.common.record.ISessionEvent;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
@@ -14,18 +25,38 @@ import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import teetime.stage.basic.merger.Merger;
 import teetime.stage.basic.merger.strategy.BlockingBusyWaitingRoundRobinMergerStrategy;
 import teetime.stage.basic.merger.strategy.IMergerStrategy;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+
+import org.iobserve.analysis.clustering.birch.model.ICFComparisonStrategy;
+
 import weka.core.Instances;
 
+
+/**
+ * @author Melf Lorenzen
+ * Composite Stage consisting of the stages unique to the 
+ * birch clustering algorithm
+ */
 public class BirchClustering extends CompositeStage {
 
     private final InputPort<Instances> inputPort;
     private final OutputPort<Instances> outputPort;
 	
+	/** Constructor for the BirchClustering composite stage.
+	 * @param leafThresholdValue the merge threshold for the underlying cf tree
+	 * @param maxLeafSize the maximum number of entries in a leaf
+	 * @param maxNodeSize the maximum number of entries in a node
+	 * @param maxLeafEntries the maximum number of leaf entries in the underlying cf tree
+	 * @param expectedNumberOfClusters the expected number of clusters in the data
+	 * @param useClusterNumberMetric whether to use the expected number or 
+	 * number calculated by the cluster number metric
+	 * @param clusterComparisonStrategy the cluster comparison strategy 
+	 * @param evalStrategy the strategy for the l-method evaluation graph
+	 */
 	public BirchClustering(final double leafThresholdValue, final int maxLeafSize, 
 			final int maxNodeSize, final int maxLeafEntries, 
-			int expectedNumberOfClusters, boolean useClusterNumberMetric,
-			ICFComparisonStrategy clusterComparisonStrategy) {
+			final int expectedNumberOfClusters, final boolean useClusterNumberMetric,
+			final ICFComparisonStrategy clusterComparisonStrategy,
+			final ILMethodEvalStrategy evalStrategy) {
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         final Distributor<Instances> distributor = new Distributor<>(strategy);
         final IMergerStrategy mergerStrategy = new BlockingBusyWaitingRoundRobinMergerStrategy();
@@ -35,12 +66,11 @@ public class BirchClustering extends CompositeStage {
         final RebuildTree rebuildTree = new RebuildTree(maxLeafEntries);
         final ClusterOnTree clusterOnTree = new ClusterOnTree();
         final ClusterSelection clusterSelection = 
-        		new ClusterSelection(expectedNumberOfClusters, useClusterNumberMetric);
+        		new ClusterSelection(expectedNumberOfClusters, useClusterNumberMetric, evalStrategy);
         final Refinement refinement = new Refinement();
         
         this.inputPort = distributor.getInputPort();
         this.outputPort = refinement.getOutputPort();
-        
         
         this.connectPorts(distributor.getNewOutputPort(), buildCFTree.getInputPort());
         this.connectPorts(buildCFTree.getOutputPort(), rebuildTree.getInputPort());

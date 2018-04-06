@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,5 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
+package org.iobserve.analysis.clustering.birch;
+import java.util.List;
 
-package org.iobserve.analysis.clustering.filter;
+import org.iobserve.analysis.clustering.birch.model.ClusteringFeature;
+
+/**
+ * @author Melf Lorenzen
+ * Metric for the lmethod of the 
+ * ClusterSelection stage based on
+ * the cluster sum of squared erros.
+ */
+public class SseEvalMetric implements ILMethodEvalStrategy{
+
+	@Override
+	public double calculateClusterMetric(final List<ClusteringFeature> cluster) {
+		double sum = 0.0;
+		
+		for (ClusteringFeature cf : cluster) {
+			sum += cf.getSquareSumError();
+		}
+			
+		return sum;
+	}
+
+}

@@ -23,5 +23,10 @@ package org.iobserve.analysis.clustering.birch.model;
  */
 public interface ICFComparisonStrategy {
 
+	/** Returns the distance between two clustering features.
+	 * @param cf1 first clustering feature
+	 * @param cf2 second clustering feature
+	 * @return the distance
+	 */
 	double getDistance(final ClusteringFeature cf1, final ClusteringFeature cf2);
 }
