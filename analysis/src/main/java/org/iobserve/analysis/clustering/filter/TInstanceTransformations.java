@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-
 package org.iobserve.analysis.clustering.filter;
 
 import teetime.framework.AbstractConsumerStage;
@@ -53,10 +52,6 @@ public class TInstanceTransformations extends AbstractConsumerStage<BehaviorMode
 
         } else {
             this.instances.add(behaviorModelTable.toInstance());
-            if (this.instances.numInstances() == 280) {
-                TInstanceTransformations.LOGGER.debug("Sending instances.");
-            	this.outputPort.send(this.instances);
-            }
         }
     }
 

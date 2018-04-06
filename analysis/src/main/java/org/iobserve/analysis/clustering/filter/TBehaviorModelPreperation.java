@@ -87,6 +87,8 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
 
         } else {
             final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
+            TBehaviorModelPreperation.LOGGER.debug("Executing EntryCallSequenceModel");
+            TBehaviorModelPreperation.LOGGER.debug("userSessions: " + userSessions.size());
             for (final UserSession userSession : userSessions) {
                 final BehaviorModelTable modelTable = this.behaviorModelTable.getClearedCopy(this.keepEmptyTransitions);
                 final List<EntryCallEvent> entryCalls = userSession.getEvents();
@@ -94,12 +96,12 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
                 EntryCallEvent lastCall = null;
                 for (final EntryCallEvent eventCall : entryCalls) {
                     final boolean isAllowed = modelTable.isAllowedSignature(eventCall);
-
                     if (lastCall != null && isAllowed) {
                         modelTable.addTransition(lastCall, eventCall);
                         modelTable.addInformation(eventCall);
 
-                    } else if (isAllowed) { 
+                    } else if (isAllowed) { // only called at first valid event
+                                            // (condition lastCall == null is not needed
                         modelTable.addInformation(eventCall);
                     }
 
@@ -107,7 +109,9 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
                 }
                 this.outputPort.send(modelTable);
             }
+
         }
+
     }
 
     /**

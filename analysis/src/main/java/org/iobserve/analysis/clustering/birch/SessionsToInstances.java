@@ -31,7 +31,6 @@ import org.iobserve.analysis.clustering.filter.TInstanceTransformations;
 import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
 import org.iobserve.analysis.clustering.shared.UserSessionCollector;
 import org.iobserve.analysis.data.EntryCallSequenceModel;
-import org.iobserve.analysis.session.CollectUserSessionsFilter;
 import org.iobserve.analysis.session.data.UserSession;
 
 import weka.core.Instances;
@@ -62,6 +61,7 @@ public class SessionsToInstances extends CompositeStage{
         final Distributor<EntryCallSequenceModel> distributor = new Distributor<>(strategy);
 
 		final Merger<Object> merger = new Merger<>(new BlockingBusyWaitingRoundRobinMergerStrategy());
+		/** Reuse once filters have been adapted to use timetrigger */
 //		final CollectUserSessionsFilter collectUserSessionsFilter = 
 //				new CollectUserSessionsFilter(keepTime, minCollectionSize);
 		
@@ -74,9 +74,11 @@ public class SessionsToInstances extends CompositeStage{
 
         final TBehaviorModelPreperation tBehaviorModelPreperation = new TBehaviorModelPreperation(
         		keepEmptyTransitions);
+        final Merger<Long> merger1 = new Merger<>(new BlockingBusyWaitingRoundRobinMergerStrategy());
         
-        this.timerInputPort = null; 
+        this.timerInputPort = merger1.getNewInputPort();
         this.sessionInputPort = collectUserSessionsFilter.getInputPort();
+		/** Reuse once filters have been adapted to use timetrigger */
 //        this.sessionInputPort = collectUserSessionsFilter.getUserSessionInputPort();
 //        this.timerInputPort = collectUserSessionsFilter.getTimeTriggerInputPort();
         this.outputPort = tInstanceTransformations.getOutputPort();

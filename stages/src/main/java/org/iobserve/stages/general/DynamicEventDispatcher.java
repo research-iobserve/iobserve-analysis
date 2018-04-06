@@ -110,7 +110,6 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
         }
     }
 
-
     private OutputPort<? extends Object> selectOutputPort(final IEventMatcher<? extends Object> eventMatcher,
             final Object event) {
         if (eventMatcher.matchEvent(event)) {

@@ -192,7 +192,7 @@ public class ClassificationCompositeStage extends CompositeStage implements IBeh
 
         this.connectPorts(preStage.getSessionOutputPort(), classificationStage.getSessionInputPort());
         /** reconnect once SessionsToInstances filter has been modified */
-//  this.connectPorts(preStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
+    	this.connectPorts(preStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
         this.connectPorts(classificationStage.getOutputPort(), sinkStage.getInputPort());
     }
 

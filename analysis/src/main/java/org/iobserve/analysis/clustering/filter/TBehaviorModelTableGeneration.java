@@ -42,6 +42,7 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
     private final DynamicBehaviorModelTable modelTable;
     private final boolean keepEmptyTransitions;
 
+
     /**
      * constructor
      *
@@ -62,9 +63,9 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
 
     @Override
     protected void execute(final EntryCallSequenceModel entryCallSequenceModel) {
-        final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
-        
+        final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();      
         for (final UserSession userSession : userSessions) {
+            TBehaviorModelTableGeneration.LOGGER.debug("entryCalls: " + userSession.getEvents().size());
             final List<EntryCallEvent> entryCalls = userSession.getEvents();
 
             EntryCallEvent lastCall = null;
@@ -83,10 +84,6 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
                 lastCall = eventCall;
             }
         }
-//        TBehaviorModelTableGeneration.LOGGER.debug("Sending a fixed table");
-//        final BehaviorModelTable fixedTable = this.modelTable
-//                .toClearedFixedSizeBehaviorModelTable(this.keepEmptyTransitions);
-//        this.outputPort.send(fixedTable);
     }
 
     @Override

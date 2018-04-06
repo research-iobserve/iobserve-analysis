@@ -42,14 +42,18 @@ public class RebuildTree extends AbstractConsumerStage<CFTree> {
     
 	@Override
 	protected void execute(final CFTree tree) throws Exception {
-
-		if (tree.getNumberOfLeafEntries() > maxLeafEntries) {
-			final double newThreshold = Math.max(tree.getAvgMinimalLeafDistance(), tree.getMergeThreshold() * 1.10);
-            final CFTree newTree = tree.rebuild(newThreshold);
-			this.execute(newTree);
-		} else {
-			this.outputPort.send(tree);
-		}
+		int noChange = 0;
+		int last = tree.getNumberOfLeafEntries();
+		/** if the number of leaf entries hasnt shrunk for a 100 consecutive
+		 * rebuildings, end this phase anyway */
+		CFTree newTree = tree;
+		while (newTree.getNumberOfLeafEntries() > maxLeafEntries 
+				&& noChange < 100) {
+            newTree = newTree.rebuild(newTree.getAvgMinimalLeafDistance());
+            noChange = last == newTree.getNumberOfLeafEntries() ? (noChange + 1) : 0;
+            last = newTree.getNumberOfLeafEntries();
+		} 
+		this.outputPort.send(newTree);
 	}
 
 	public OutputPort<CFTree> getOutputPort() {
