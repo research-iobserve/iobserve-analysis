@@ -19,15 +19,15 @@ import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.util.Optional;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
 import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
 
 /**
  * @author Reiner Jung

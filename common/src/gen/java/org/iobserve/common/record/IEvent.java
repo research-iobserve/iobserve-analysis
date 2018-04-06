@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.common.record
+package org.iobserve.common.record;
 
-import org.iobserve.common.record.IEvent
+import kieker.common.record.IMonitoringRecord;
 
-@author "Reiner Jung" @since "0.0.2"
-template GeoLocation {
-	short countryCode = 049 // country code ISO				
-		
-}
-
-/** 
- * Certain DNS configuration return different IP addresses
- * for the same host name. Therefore, the hostname may only 
- * describe the logical unit while the IP specifies a concrete
- * server. 	 
+/**
+ * @author Reiner Jung
+ * 
+ * @since 0.0.3
  */
-@author "Reiner Jung" @since "0.0.2"
-event ServerGeoLocation : IEvent, GeoLocation {
-	string hostname
-	string address
+public interface IEvent extends IMonitoringRecord {
+	public long getTimestamp();
+	
 }

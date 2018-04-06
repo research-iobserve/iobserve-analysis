@@ -34,6 +34,8 @@ import org.iobserve.rac.creator.filter.RACWriter;
 import org.iobserve.rac.creator.filter.RecordFilter;
 import org.iobserve.rac.creator.filter.UniqueFilter;
 import org.iobserve.stages.general.DynamicEventDispatcher;
+import org.iobserve.stages.general.IEventMatcher;
+import org.iobserve.stages.general.ImplementsEventMatcher;
 import org.iobserve.stages.source.Dir2RecordsFilter;
 import org.xml.sax.SAXException;
 
@@ -80,8 +82,10 @@ public class ObservationConfiguration extends Configuration {
         /** configure filter. */
         final InitialElementProducer<File> files = new InitialElementProducer<>(inputPath);
         final Dir2RecordsFilter reader = new Dir2RecordsFilter(new ClassNameRegistryRepository());
-        this.eventDispatcher = new DynamicEventDispatcher(true, true, false);
-        this.eventDispatcher.registerOutput(IFlowRecord.class);
+
+        final IEventMatcher<IFlowRecord> flowMatcher = new ImplementsEventMatcher<>(IFlowRecord.class, null);
+
+        this.eventDispatcher = new DynamicEventDispatcher(flowMatcher, true, true, false);
         final RecordFilter filter = new RecordFilter();
         final PcmCorrespondentMethodStage pcmCorrespondentMethodStage = new PcmCorrespondentMethodStage();
         final DoAllFilter doAllfilter = new DoAllFilter(repository, modelMapping);
@@ -94,7 +98,7 @@ public class ObservationConfiguration extends Configuration {
         /** connections. */
         this.connectPorts(files.getOutputPort(), reader.getInputPort());
         this.connectPorts(reader.getOutputPort(), this.eventDispatcher.getInputPort());
-        this.connectPorts(this.eventDispatcher.getOutputPort(IFlowRecord.class), filter.getInputPort());
+        this.connectPorts(flowMatcher.getOutputPort(), filter.getInputPort());
         this.connectPorts(filter.getOutputPort(), pcmCorrespondentMethodStage.getInputPort());
         this.connectPorts(pcmCorrespondentMethodStage.getOutputPort(), doAllfilter.getInputPort());
         this.connectPorts(doAllfilter.getRACOutputPort(), racWriter.getInputPort());

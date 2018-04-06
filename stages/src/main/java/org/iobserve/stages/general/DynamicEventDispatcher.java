@@ -15,13 +15,8 @@
  ***************************************************************************/
 package org.iobserve.stages.general;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-
-import kieker.common.record.IMonitoringRecord;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
@@ -30,41 +25,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Dynamic replacement for a normal record switch.
+ * The DynamicEventDispatcher allows to select specific events from the event stream and send them
+ * to a specific event stream.
  *
  * @author Reiner Jung
  *
  * @since 0.0.3
  */
-public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRecord> {
+public class DynamicEventDispatcher extends AbstractConsumerStage<Object> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicEventDispatcher.class);
 
     private static final int LOOP_COUNT = 1000;
 
-    /** Internal list for class types. */
-    private final List<Class<? extends IMonitoringRecord>> classTypeList = new ArrayList<>();
-
-    /** Internal list output ports. */
-    private final List<OutputPort<? extends IMonitoringRecord>> outputPortList = new ArrayList<>();
-
     private final boolean countEvents;
     private long eventCount;
-    private int sent = 0;
 
     /** internal map to collect unknown record types. */
     private final Map<String, Integer> unknownRecords = new ConcurrentHashMap<>();
-    private final Map<Class<? extends IMonitoringRecord>, Integer> sentPerRecord = new ConcurrentHashMap<>();
 
     private final boolean reportUnknown;
 
     private final boolean outputOther;
 
-    private final OutputPort<IMonitoringRecord> outputOtherPort = this.createOutputPort();
+    private final OutputPort<Object> outputOtherPort = this.createOutputPort();
+
+    private IEventMatcher<? extends Object> rootEventMatcher;
 
     /**
      * Create a new dynamic dispatcher.
      *
+     * @param rootEventMatcher
+     *            first matcher in a sequence of matchers used for this dispatcher
      * @param countEvents
      *            flag to activate event counting
      * @param reportUnknown
@@ -72,36 +64,34 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
      * @param outputOther
      *            provide an output port for events not send to other ports
      */
-    public DynamicEventDispatcher(final boolean countEvents, final boolean reportUnknown, final boolean outputOther) {
+    public DynamicEventDispatcher(final IEventMatcher<? extends Object> rootEventMatcher, final boolean countEvents,
+            final boolean reportUnknown, final boolean outputOther) {
+        this.rootEventMatcher = rootEventMatcher;
+        this.assignPorts(rootEventMatcher);
         this.countEvents = countEvents;
         this.reportUnknown = reportUnknown;
         this.outputOther = outputOther;
     }
 
+    private void assignPorts(final IEventMatcher<? extends Object> eventMatcher) {
+        eventMatcher.setOutputPort(this.createOutputPort());
+        if (eventMatcher.getNextMatcher() != null) {
+            this.assignPorts(eventMatcher.getNextMatcher());
+        }
+    }
+
     @Override
-    protected void execute(final IMonitoringRecord event) throws Exception {
+    protected void execute(final Object event) throws Exception {
         if (this.countEvents) {
             this.eventCount++;
         }
 
-        final OutputPort<IMonitoringRecord> selectedOutputPort = this.selectOutputPort(event.getClass());
+        @SuppressWarnings("unchecked")
+        final OutputPort<Object> selectedOutputPort = (OutputPort<Object>) this.selectOutputPort(this.rootEventMatcher,
+                event);
         if (selectedOutputPort != null) {
-//        	sent++;
-//            DynamicEventDispatcher.LOGGER.debug(this.sentPerRecord.toString());
-//            DynamicEventDispatcher.LOGGER.debug(event.getClass().toString());
-//        	int cnt = 0;
-//            for (Entry<Class<? extends IMonitoringRecord>, Integer> en : this.sentPerRecord.entrySet()) {
-//            	if(en.getKey().isAssignableFrom(event.getClass())) {
-//            		en.setValue(en.getValue() + 1);
-//            		cnt++;
-//            	}
-//                DynamicEventDispatcher.LOGGER.debug(cnt + " matching outputs.");
-//            }
             selectedOutputPort.send(event);
         } else {
-            if (this.outputOther) {
-                this.outputOtherPort.send(event);
-            }
             if (this.reportUnknown) {
                 final String className = event.getClass().getCanonicalName();
                 Integer hits = this.unknownRecords.get(className);
@@ -120,51 +110,21 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private OutputPort<IMonitoringRecord> selectOutputPort(final Class<? extends IMonitoringRecord> clazz) {
-        for (int i = 0; i < this.classTypeList.size(); i++) {
-            final Class<? extends IMonitoringRecord> type = this.classTypeList.get(i);
-            if (type.isAssignableFrom(clazz)) {
-                return (OutputPort<IMonitoringRecord>) this.outputPortList.get(i);
+
+    private OutputPort<? extends Object> selectOutputPort(final IEventMatcher<? extends Object> eventMatcher,
+            final Object event) {
+        if (eventMatcher.matchEvent(event)) {
+            return eventMatcher.getOutputPort();
+        } else {
+            final IEventMatcher<? extends Object> nextMatcher = eventMatcher.getNextMatcher();
+            if (nextMatcher != null) {
+                return this.selectOutputPort(nextMatcher, event);
+            } else if (this.outputOther) {
+                return this.outputOtherPort;
+            } else {
+                return null;
             }
         }
-
-        return null;
-    }
-
-    /**
-     * Register a new type to automatically create a new output port.
-     *
-     * @param type
-     *            record event type
-     */
-    public void registerOutput(final Class<? extends IMonitoringRecord> type) {
-        this.classTypeList.add(type);
-//        this.sentPerRecord.put(type, 0);
-        this.outputPortList.add(this.createOutputPort(type));
-    }
-
-    /**
-     * Return the proper output port for a specific class or interface.
-     *
-     * @param type
-     *            the class or interface used to select the port
-     *
-     * @param <T>
-     *            class or interface type for the corresponding port
-     *
-     * @return returns the output port or null on error
-     */
-    @SuppressWarnings("unchecked")
-    public <T extends IMonitoringRecord> OutputPort<T> getOutputPort(final Class<T> type) {
-        for (int i = 0; i < this.classTypeList.size(); i++) {
-            final Class<? extends IMonitoringRecord> classType = this.classTypeList.get(i);
-            if (classType.equals(type)) {
-                return (OutputPort<T>) this.outputPortList.get(i);
-            }
-        }
-
-        return null;
     }
 
     public long getEventCount() {
@@ -174,9 +134,20 @@ public class DynamicEventDispatcher extends AbstractConsumerStage<IMonitoringRec
     @Override
     public void onTerminating() {
         DynamicEventDispatcher.LOGGER.info("Records processed in total {}.", this.eventCount);
-//        DynamicEventDispatcher.LOGGER.info("Records sent in total {}.", this.sent);
-//        DynamicEventDispatcher.LOGGER.info(this.sentPerRecord.toString());
         super.onTerminating();
+    }
+
+    public void registerOutput(final IEventMatcher<? extends Object> leaveEventMatcher) {
+        leaveEventMatcher.setOutputPort(this.createOutputPort());
+        if (this.rootEventMatcher == null) {
+            this.rootEventMatcher = leaveEventMatcher;
+        } else {
+            IEventMatcher<? extends Object> eventMatcher = this.rootEventMatcher;
+            while (eventMatcher.getNextMatcher() != null) {
+                eventMatcher = eventMatcher.getNextMatcher();
+            }
+            eventMatcher.setNextMatcher(leaveEventMatcher);
+        }
     }
 
 }

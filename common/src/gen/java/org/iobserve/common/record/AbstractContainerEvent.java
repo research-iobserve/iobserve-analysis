@@ -21,7 +21,6 @@ import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 
-import org.iobserve.common.record.IEvent;
 
 /**
  * @author Reiner Jung
@@ -29,38 +28,24 @@ import org.iobserve.common.record.IEvent;
  * 
  * @since 0.0.2
  */
-public abstract class ServletDescriptor extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent {			
+public abstract class AbstractContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {			
 	
 	/** default constants. */
-	public static final String SERVICE = "";
-	public static final String CONTEXT = "";
-	public static final String DEPLOYMENT_ID = "";
-	private static final long serialVersionUID = -4046452426687004817L;
+	public static final String URL = "";
+	private static final long serialVersionUID = 5255447408894554636L;
 	
 		
 	/** property declarations. */
-	private final long timestamp;
-	private final String service;
-	private final String context;
-	private final String deploymentId;
+	private final String url;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
 	 * 
-	 * @param timestamp
-	 *            timestamp
-	 * @param service
-	 *            service
-	 * @param context
-	 *            context
-	 * @param deploymentId
-	 *            deploymentId
+	 * @param url
+	 *            url
 	 */
-	public ServletDescriptor(final long timestamp, final String service, final String context, final String deploymentId) {
-		this.timestamp = timestamp;
-		this.service = service == null?"":service;
-		this.context = context == null?"":context;
-		this.deploymentId = deploymentId == null?"":deploymentId;
+	public AbstractContainerEvent(final String url) {
+		this.url = url == null?"":url;
 	}
 
 
@@ -72,15 +57,12 @@ public abstract class ServletDescriptor extends AbstractMonitoringRecord impleme
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServletDescriptor(IValueDeserializer)} instead.
+	 * @deprecated since 1.13. Use {@link #AbstractContainerEvent(IValueDeserializer)} instead.
 	 */
 	@Deprecated
-	protected ServletDescriptor(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
+	protected AbstractContainerEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.timestamp = (Long) values[0];
-		this.service = (String) values[1];
-		this.context = (String) values[2];
-		this.deploymentId = (String) values[3];
+		this.url = (String) values[0];
 	}
 
 	
@@ -90,11 +72,8 @@ public abstract class ServletDescriptor extends AbstractMonitoringRecord impleme
 	 * @throws RecordInstantiationException 
 	 *            when the record could not be deserialized
 	 */
-	public ServletDescriptor(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		this.timestamp = deserializer.getLong();
-		this.service = deserializer.getString();
-		this.context = deserializer.getString();
-		this.deploymentId = deserializer.getString();
+	public AbstractContainerEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
+		this.url = deserializer.getString();
 	}
 	
 
@@ -124,43 +103,19 @@ public abstract class ServletDescriptor extends AbstractMonitoringRecord impleme
 			return false;
 		}
 		
-		final ServletDescriptor castedRecord = (ServletDescriptor) obj;
+		final AbstractContainerEvent castedRecord = (AbstractContainerEvent) obj;
 		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
 			return false;
 		}
-		if (this.getTimestamp() != castedRecord.getTimestamp()) {
-			return false;
-		}
-		if (!this.getService().equals(castedRecord.getService())) {
-			return false;
-		}
-		if (!this.getContext().equals(castedRecord.getContext())) {
-			return false;
-		}
-		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) {
+		if (!this.getUrl().equals(castedRecord.getUrl())) {
 			return false;
 		}
 		
 		return true;
 	}
 	
-	public final long getTimestamp() {
-		return this.timestamp;
-	}
-	
-	
-	public final String getService() {
-		return this.service;
-	}
-	
-	
-	public final String getContext() {
-		return this.context;
-	}
-	
-	
-	public final String getDeploymentId() {
-		return this.deploymentId;
+	public final String getUrl() {
+		return this.url;
 	}
 	
 }
