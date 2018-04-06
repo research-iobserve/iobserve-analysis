@@ -97,11 +97,14 @@ public class ComposedActionComputationTest {
 
         actualAction = (ReplicateAction) actualOutput.getActions().get(0);
 
-        Assert.assertThat(actualAction.getNewAllocationContext(),
-                Matchers.is(expectedAction.getNewAllocationContext()));
-        Assert.assertThat(actualAction.getResourceContainer(), Matchers.is(expectedAction.getResourceContainer()));
-        Assert.assertThat(actualAction.getSourceAssemblyContext(),
-                Matchers.is(expectedAction.getSourceAssemblyContext()));
+        Assert.assertThat(actualAction.getTargetAllocationContext(),
+                Matchers.is(expectedAction.getTargetAllocationContext()));
+        Assert.assertThat(actualAction.getTargetProvidingAllocationContexts(),
+                Matchers.is(expectedAction.getTargetProvidingAllocationContexts()));
+        Assert.assertThat(actualAction.getTargetRequiringAllocationContexts(),
+                Matchers.is(expectedAction.getTargetRequiringAllocationContexts()));
+        Assert.assertThat(actualAction.getSourceAllocationContext(),
+                Matchers.is(expectedAction.getSourceAllocationContext()));
     }
 
     @Test
@@ -129,11 +132,12 @@ public class ComposedActionComputationTest {
 
         actualAction = (DereplicateAction) actualOutput.getActions().get(0);
 
-        Assert.assertThat(actualAction.getOldAllocationContext(),
-                Matchers.is(expectedAction.getOldAllocationContext()));
-        Assert.assertThat(actualAction.getResourceContainer(), Matchers.is(expectedAction.getResourceContainer()));
-        Assert.assertThat(actualAction.getSourceAssemblyContext(),
-                Matchers.is(expectedAction.getSourceAssemblyContext()));
+        Assert.assertThat(actualAction.getTargetAllocationContext(),
+                Matchers.is(expectedAction.getTargetAllocationContext()));
+        Assert.assertThat(actualAction.getTargetProvidingAllocationContexts(),
+                Matchers.is(expectedAction.getTargetProvidingAllocationContexts()));
+        Assert.assertThat(actualAction.getTargetRequiringAllocationContexts(),
+                Matchers.is(expectedAction.getTargetRequiringAllocationContexts()));
     }
 
     @Test
@@ -164,13 +168,18 @@ public class ComposedActionComputationTest {
 
         actualAction = (MigrateAction) actualOutput.getActions().get(0);
 
-        Assert.assertThat(actualAction.getNewAllocationContext(),
-                Matchers.is(expectedAction.getNewAllocationContext()));
-        Assert.assertThat(actualAction.getResourceContainer(), Matchers.is(expectedAction.getResourceContainer()));
+        Assert.assertThat(actualAction.getTargetAllocationContext(),
+                Matchers.is(expectedAction.getTargetAllocationContext()));
+        Assert.assertThat(actualAction.getTargetProvidingAllocationContexts(),
+                Matchers.is(expectedAction.getTargetProvidingAllocationContexts()));
+        Assert.assertThat(actualAction.getTargetRequiringAllocationContexts(),
+                Matchers.is(expectedAction.getTargetRequiringAllocationContexts()));
         Assert.assertThat(actualAction.getSourceAllocationContext(),
                 Matchers.is(expectedAction.getSourceAllocationContext()));
-        Assert.assertThat(actualAction.getSourceAssemblyContext(),
-                Matchers.is(expectedAction.getSourceAssemblyContext()));
+        Assert.assertThat(actualAction.getSourceProvidingAllocationContexts(),
+                Matchers.is(expectedAction.getSourceProvidingAllocationContexts()));
+        Assert.assertThat(actualAction.getSourceRequiringAllocationContexts(),
+                Matchers.is(expectedAction.getSourceRequiringAllocationContexts()));
     }
 
     @Test
@@ -202,11 +211,14 @@ public class ComposedActionComputationTest {
 
         actualAction = (ChangeRepositoryComponentAction) actualOutput.getActions().get(0);
 
-        Assert.assertThat(actualAction.getNewRepositoryComponent(),
-                Matchers.is(expectedAction.getNewRepositoryComponent()));
-        Assert.assertThat(actualAction.getResourceContainer(), Matchers.is(expectedAction.getResourceContainer()));
-        Assert.assertThat(actualAction.getSourceAssemblyContext(),
-                Matchers.is(expectedAction.getSourceAssemblyContext()));
+        Assert.assertThat(actualAction.getTargetAllocationContext(),
+                Matchers.is(expectedAction.getTargetAllocationContext()));
+        Assert.assertThat(actualAction.getTargetProvidingAllocationContexts(),
+                Matchers.is(expectedAction.getTargetProvidingAllocationContexts()));
+        Assert.assertThat(actualAction.getTargetRequiringAllocationContexts(),
+                Matchers.is(expectedAction.getTargetRequiringAllocationContexts()));
+        Assert.assertThat(actualAction.getSourceAllocationContext(),
+                Matchers.is(expectedAction.getSourceAllocationContext()));
     }
 
     @Test
@@ -234,9 +246,10 @@ public class ComposedActionComputationTest {
 
         actualAction = (AllocateAction) actualOutput.getActions().get(0);
 
-        Assert.assertThat(actualAction.getResourceContainer(), Matchers.is(expectedAction.getResourceContainer()));
-        Assert.assertThat(actualAction.getSourceResourceContainer(),
-                Matchers.is(expectedAction.getSourceResourceContainer()));
+        Assert.assertThat(actualAction.getTargetResourceContainer(),
+                Matchers.is(expectedAction.getTargetResourceContainer()));
+        Assert.assertThat(actualAction.getTargetLinkingResources(),
+                Matchers.is(expectedAction.getTargetLinkingResources()));
     }
 
     @Test
@@ -264,9 +277,10 @@ public class ComposedActionComputationTest {
 
         actualAction = (DeallocateAction) actualOutput.getActions().get(0);
 
-        Assert.assertThat(actualAction.getResourceContainer(), Matchers.is(expectedAction.getResourceContainer()));
-        Assert.assertThat(actualAction.getSourceResourceContainer(),
-                Matchers.is(expectedAction.getSourceResourceContainer()));
+        Assert.assertThat(actualAction.getTargetResourceContainer(),
+                Matchers.is(expectedAction.getTargetResourceContainer()));
+        Assert.assertThat(actualAction.getTargetLinkingResources(),
+                Matchers.is(expectedAction.getTargetLinkingResources()));
     }
 
     private AdaptationData createAdaptationData() throws Exception {

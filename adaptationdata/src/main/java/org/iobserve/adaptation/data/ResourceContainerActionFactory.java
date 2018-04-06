@@ -29,21 +29,58 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
  * this class.
  *
  * @author Philipp Weimann
- * @author Lars Blümke (terminology: "aquire/terminate" -> "(de-)allocate", removal of resource
- *         container replication)
+ * @author Lars Bluemke (Refactoring of system adaptation model: terminology: "aquire/terminate" ->
+ *         "(de-)allocate", removal of resource container replication, changes to sources and
+ *         targets of actions)
  */
 public final class ResourceContainerActionFactory {
 
+    /**
+     * Empty default constructor.
+     */
     private ResourceContainerActionFactory() {
         // private factory constructor
     }
 
-    private static ResourceContainerAction setSourceResourceContainer(final ResourceContainerAction action,
-            final String resourceContainerID) {
-        final ResourceEnvironment resEnvModel = ActionFactory.getRuntimeModels().getResourceEnvironmentModel();
-        final ResourceContainer resourceContainer = ActionFactory.getResourceContainer(resourceContainerID,
-                resEnvModel);
-        action.setSourceResourceContainer(resourceContainer);
+    /**
+     * Initializes the targetResourceContainer and targetLinkingResources of the abstract
+     * {@link ResourceContainerAction} superclass.
+     *
+     * @param action
+     *            the action
+     * @param targetNode
+     *            the action's target node (may be a runtime or a redeployment node)
+     * @param targetResourceEnvironment
+     *            the target resource environment model
+     */
+    private static void initializeResourceContainerAction(final ResourceContainerAction action,
+            final DeploymentNode targetNode, final ResourceEnvironment targetResourceEnvironment) {
+        final ResourceContainer targetResourceContainer = ActionFactory
+                .getResourceContainer(targetNode.getResourceContainerID(), targetResourceEnvironment);
+
+        action.setTargetResourceContainer(targetResourceContainer);
+
+        // target linking resources
+        ActionFactory.getConnectedLinkingResources(targetResourceContainer, targetResourceEnvironment)
+                .forEach(lr -> action.getTargetLinkingResources().add(lr));
+
+    }
+
+    /**
+     * Create an allocate action.
+     *
+     * @param reDeploymentServer
+     *            the node where components can be deployed on
+     * @return the action
+     */
+    public static AllocateAction createAllocateAction(final DeploymentNode reDeploymentServer) {
+        final AllocateAction action = SystemadaptationFactory.eINSTANCE.createAllocateAction();
+        final ResourceEnvironment redeploymentResourceEnvironment = ActionFactory.getRedeploymentModels()
+                .getResourceEnvironmentModel();
+
+        ResourceContainerActionFactory.initializeResourceContainerAction(action, reDeploymentServer,
+                redeploymentResourceEnvironment);
+
         return action;
     }
 
@@ -55,30 +92,12 @@ public final class ResourceContainerActionFactory {
      * @return the action
      */
     public static DeallocateAction createDeallocateAction(final DeploymentNode runtimeServer) {
-        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
-        final DeallocateAction action = factory.createDeallocateAction();
-
-        ResourceContainerActionFactory.setSourceResourceContainer(action, runtimeServer.getResourceContainerID());
-
-        return action;
-    }
-
-    /**
-     * Create an allocate action.
-     *
-     * @param reDeploymentServer
-     *            the node where components can be deployed on
-     * @return the action
-     */
-    public static AllocateAction createAllocateAction(final DeploymentNode reDeploymentServer) {
-        final SystemadaptationFactory factory = SystemadaptationFactory.eINSTANCE;
-        final AllocateAction action = factory.createAllocateAction();
-
-        final ResourceEnvironment reDeplResEnvModel = ActionFactory.getRedeploymentModels()
+        final DeallocateAction action = SystemadaptationFactory.eINSTANCE.createDeallocateAction();
+        final ResourceEnvironment runtimeResourceEnvironment = ActionFactory.getRuntimeModels()
                 .getResourceEnvironmentModel();
-        final ResourceContainer resourceContainer = ActionFactory
-                .getResourceContainer(reDeploymentServer.getResourceContainerID(), reDeplResEnvModel);
-        action.setSourceResourceContainer(resourceContainer);
+
+        ResourceContainerActionFactory.initializeResourceContainerAction(action, runtimeServer,
+                runtimeResourceEnvironment);
 
         return action;
     }
