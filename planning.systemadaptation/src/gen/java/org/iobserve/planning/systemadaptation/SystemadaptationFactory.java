@@ -41,33 +41,6 @@ public interface SystemadaptationFactory extends EFactory {
     SystemAdaptation createSystemAdaptation();
 
     /**
-     * Returns a new object of class '<em>Action</em>'. <!-- begin-user-doc --> <!-- end-user-doc
-     * -->
-     * 
-     * @return a new object of class '<em>Action</em>'.
-     * @generated
-     */
-    Action createAction();
-
-    /**
-     * Returns a new object of class '<em>Assembly Context Action</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Assembly Context Action</em>'.
-     * @generated
-     */
-    AssemblyContextAction createAssemblyContextAction();
-
-    /**
-     * Returns a new object of class '<em>Resource Container Action</em>'.
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @return a new object of class '<em>Resource Container Action</em>'.
-     * @generated
-     */
-    ResourceContainerAction createResourceContainerAction();
-
-    /**
      * Returns a new object of class '<em>Change Repository Component Action</em>'. <!--
      * begin-user-doc --> <!-- end-user-doc -->
      * 

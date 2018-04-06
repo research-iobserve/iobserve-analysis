@@ -20,15 +20,12 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.impl.EFactoryImpl;
 import org.eclipse.emf.ecore.plugin.EcorePlugin;
-import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
-import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
 import org.iobserve.planning.systemadaptation.ReplicateAction;
-import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
 import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
@@ -73,9 +70,6 @@ public class SystemadaptationFactoryImpl extends EFactoryImpl implements Systema
     public EObject create(EClass eClass) {
         switch (eClass.getClassifierID()) {
             case SystemadaptationPackage.SYSTEM_ADAPTATION: return createSystemAdaptation();
-            case SystemadaptationPackage.ACTION: return createAction();
-            case SystemadaptationPackage.ASSEMBLY_CONTEXT_ACTION: return createAssemblyContextAction();
-            case SystemadaptationPackage.RESOURCE_CONTAINER_ACTION: return createResourceContainerAction();
             case SystemadaptationPackage.CHANGE_REPOSITORY_COMPONENT_ACTION: return createChangeRepositoryComponentAction();
             case SystemadaptationPackage.REPLICATE_ACTION: return createReplicateAction();
             case SystemadaptationPackage.DEREPLICATE_ACTION: return createDereplicateAction();
@@ -95,36 +89,6 @@ public class SystemadaptationFactoryImpl extends EFactoryImpl implements Systema
     public SystemAdaptation createSystemAdaptation() {
         SystemAdaptationImpl systemAdaptation = new SystemAdaptationImpl();
         return systemAdaptation;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * @generated
-     */
-    @Override
-    public Action createAction() {
-        ActionImpl action = new ActionImpl();
-        return action;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * @generated
-     */
-    @Override
-    public AssemblyContextAction createAssemblyContextAction() {
-        AssemblyContextActionImpl assemblyContextAction = new AssemblyContextActionImpl();
-        return assemblyContextAction;
-    }
-
-    /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * @generated
-     */
-    @Override
-    public ResourceContainerAction createResourceContainerAction() {
-        ResourceContainerActionImpl resourceContainerAction = new ResourceContainerActionImpl();
-        return resourceContainerAction;
     }
 
     /**

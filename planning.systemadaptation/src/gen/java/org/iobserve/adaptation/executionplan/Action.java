@@ -11,7 +11,7 @@ import org.eclipse.emf.ecore.EObject;
  *
  *
  * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getAction()
- * @model
+ * @model abstract="true"
  * @generated
  */
 public interface Action extends EObject {

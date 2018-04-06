@@ -6,8 +6,9 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="actions" upperBound="-1"
         eType="#//Action" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Action"/>
-  <eClassifiers xsi:type="ecore:EClass" name="AssemblyContextAction" eSuperTypes="#//Action">
+  <eClassifiers xsi:type="ecore:EClass" name="Action" abstract="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AssemblyContextAction" abstract="true"
+      eSuperTypes="#//Action">
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetAllocationContext"
         lowerBound="1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetProvidingAllocationContexts"
@@ -15,7 +16,8 @@
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetRequiringAllocationContexts"
         upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="ResourceContainerAction" eSuperTypes="#//Action">
+  <eClassifiers xsi:type="ecore:EClass" name="ResourceContainerAction" abstract="true"
+      eSuperTypes="#//Action">
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetResourceContainer"
         lowerBound="1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"/>
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetLinkingResources"

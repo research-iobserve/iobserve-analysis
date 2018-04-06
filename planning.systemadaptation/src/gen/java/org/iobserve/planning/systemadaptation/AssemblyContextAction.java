@@ -32,7 +32,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * </ul>
  *
  * @see org.iobserve.planning.systemadaptation.SystemadaptationPackage#getAssemblyContextAction()
- * @model
+ * @model abstract="true"
  * @generated
  */
 public interface AssemblyContextAction extends Action {

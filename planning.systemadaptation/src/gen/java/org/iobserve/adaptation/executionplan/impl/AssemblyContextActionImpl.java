@@ -21,7 +21,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  *
  * @generated
  */
-public class AssemblyContextActionImpl extends ActionImpl implements AssemblyContextAction {
+public abstract class AssemblyContextActionImpl extends ActionImpl implements AssemblyContextAction {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->

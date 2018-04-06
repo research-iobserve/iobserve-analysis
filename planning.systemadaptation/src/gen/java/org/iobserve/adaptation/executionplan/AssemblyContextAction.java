@@ -17,7 +17,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * </ul>
  *
  * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getAssemblyContextAction()
- * @model
+ * @model abstract="true"
  * @generated
  */
 public interface AssemblyContextAction extends Action {

@@ -17,7 +17,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * </ul>
  *
  * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getResourceContainerAction()
- * @model
+ * @model abstract="true"
  * @generated
  */
 public interface ResourceContainerAction extends Action {

@@ -32,7 +32,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * </ul>
  *
  * @see org.iobserve.planning.systemadaptation.SystemadaptationPackage#getResourceContainerAction()
- * @model
+ * @model abstract="true"
  * @generated
  */
 public interface ResourceContainerAction extends Action {

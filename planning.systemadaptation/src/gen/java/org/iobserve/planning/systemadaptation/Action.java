@@ -23,7 +23,7 @@ import org.eclipse.emf.ecore.EObject;
  *
  *
  * @see org.iobserve.planning.systemadaptation.SystemadaptationPackage#getAction()
- * @model
+ * @model abstract="true"
  * @generated
  */
 public interface Action extends EObject {

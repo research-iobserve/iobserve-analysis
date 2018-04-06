@@ -19,7 +19,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  *
  * @generated
  */
-public class ResourceContainerActionImpl extends ActionImpl implements ResourceContainerAction {
+public abstract class ResourceContainerActionImpl extends ActionImpl implements ResourceContainerAction {
     /**
      * <!-- begin-user-doc --> <!-- end-user-doc -->
      * @generated

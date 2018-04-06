@@ -57,9 +57,6 @@ public class ExecutionplanFactoryImpl extends EFactoryImpl implements Executionp
     public EObject create(EClass eClass) {
         switch (eClass.getClassifierID()) {
             case ExecutionplanPackage.EXECUTION_PLAN: return createExecutionPlan();
-            case ExecutionplanPackage.ACTION: return createAction();
-            case ExecutionplanPackage.ASSEMBLY_CONTEXT_ACTION: return createAssemblyContextAction();
-            case ExecutionplanPackage.RESOURCE_CONTAINER_ACTION: return createResourceContainerAction();
             case ExecutionplanPackage.DEPLOY_COMPONENT_ACTION: return createDeployComponentAction();
             case ExecutionplanPackage.UNDEPLOY_COMPONENT_ACTION: return createUndeployComponentAction();
             case ExecutionplanPackage.MIGRATE_COMPONENT_STATE_ACTION: return createMigrateComponentStateAction();
@@ -84,36 +81,6 @@ public class ExecutionplanFactoryImpl extends EFactoryImpl implements Executionp
     public ExecutionPlan createExecutionPlan() {
         ExecutionPlanImpl executionPlan = new ExecutionPlanImpl();
         return executionPlan;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public Action createAction() {
-        ActionImpl action = new ActionImpl();
-        return action;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public AssemblyContextAction createAssemblyContextAction() {
-        AssemblyContextActionImpl assemblyContextAction = new AssemblyContextActionImpl();
-        return assemblyContextAction;
-    }
-
-    /**
-     * <!-- begin-user-doc -->
-     * <!-- end-user-doc -->
-     * @generated
-     */
-    public ResourceContainerAction createResourceContainerAction() {
-        ResourceContainerActionImpl resourceContainerAction = new ResourceContainerActionImpl();
-        return resourceContainerAction;
     }
 
     /**
