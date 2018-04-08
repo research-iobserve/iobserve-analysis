@@ -21,6 +21,8 @@ import java.util.List;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class providing method to convert UserSession to BehaviorModel objects
@@ -29,6 +31,8 @@ import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
  *
  */
 public class UserSessionToBehaviorModelConverter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserSessionToBehaviorModelConverter.class);
+
     public static BehaviorModel convert(final UserSession session) {
         final BehaviorModel model = new BehaviorModel();
 
@@ -36,19 +40,25 @@ public class UserSessionToBehaviorModelConverter {
         final Iterator<EntryCallEvent> iterator = entryCalls.iterator();
 
         // Assume list has at least one element
-        EntryCallNode lastNode = UserSessionToBehaviorModelConverter
-                .createNode((PayloadAwareEntryCallEvent) iterator.next());
-        EntryCallNode currentNode;
+        if (iterator.hasNext()) {
+            EntryCallNode lastNode = UserSessionToBehaviorModelConverter
+                    .createNode((PayloadAwareEntryCallEvent) iterator.next());
+            EntryCallNode currentNode;
 
-        while (iterator.hasNext()) {
-            currentNode = UserSessionToBehaviorModelConverter.createNode((PayloadAwareEntryCallEvent) iterator.next());
+            while (iterator.hasNext()) {
+                currentNode = UserSessionToBehaviorModelConverter
+                        .createNode((PayloadAwareEntryCallEvent) iterator.next());
 
-            model.addNode(currentNode, true);
-            model.addEdge(new EntryCallEdge(lastNode, currentNode), false);
-            lastNode = currentNode;
+                model.addNode(currentNode, true);
+                model.addEdge(new EntryCallEdge(lastNode, currentNode), false);
+                lastNode = currentNode;
+            }
+
+            return model;
+        } else {
+            UserSessionToBehaviorModelConverter.LOGGER.error("Empty user session creates empty model");
+            return model;
         }
-
-        return model;
     }
 
     private static EntryCallNode createNode(final PayloadAwareEntryCallEvent event) {
