@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.execution;
+package org.iobserve.legacyexecution;
 
 import java.util.List;
 
-import org.iobserve.execution.actionscripts.AbstractActionScript;
+import org.iobserve.legacyexecution.actionscripts.AbstractActionScript;
 
 /**
  * Interface for an event listener that is used while executing the adaptation stage.

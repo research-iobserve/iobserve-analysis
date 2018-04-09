@@ -21,8 +21,8 @@ import teetime.framework.Configuration;
 
 import org.iobserve.evaluation.ModelComparer;
 import org.iobserve.evaluation.SystemEvaluation;
-import org.iobserve.execution.AdaptationExecution;
-import org.iobserve.execution.IAdaptationEventListener;
+import org.iobserve.legacyexecution.AdaptationExecution;
+import org.iobserve.legacyexecution.IAdaptationEventListener;
 
 /**
  * Configuration for the stages of the execution service.

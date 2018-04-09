@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.execution;
+package org.iobserve.legacyexecution;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,8 +24,8 @@ import teetime.stage.basic.AbstractTransformation;
 
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.evaluation.SystemEvaluation;
-import org.iobserve.execution.actionscripts.AbstractActionScript;
-import org.iobserve.execution.actionscripts.ActionScriptFactory;
+import org.iobserve.legacyexecution.actionscripts.AbstractActionScript;
+import org.iobserve.legacyexecution.actionscripts.ActionScriptFactory;
 import org.iobserve.planning.systemadaptation.ComposedAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

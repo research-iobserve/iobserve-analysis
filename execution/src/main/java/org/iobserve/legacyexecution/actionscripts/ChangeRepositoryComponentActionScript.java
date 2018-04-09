@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.execution.actionscripts;
+package org.iobserve.legacyexecution.actionscripts;
 
 import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;

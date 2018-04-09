@@ -20,9 +20,9 @@ import java.io.File;
 import teetime.framework.Configuration;
 
 import org.iobserve.adaptation.cli.ModelFileSink;
-import org.iobserve.adaptation.legacystages.AdaptationCalculation;
-import org.iobserve.adaptation.legacystages.AdaptationPlanning;
-import org.iobserve.adaptation.legacystages.SystemAdaptation;
+import org.iobserve.legacyadaptation.AdaptationCalculation;
+import org.iobserve.legacyadaptation.AdaptationPlanning;
+import org.iobserve.legacyadaptation.SystemAdaptation;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 
 /**

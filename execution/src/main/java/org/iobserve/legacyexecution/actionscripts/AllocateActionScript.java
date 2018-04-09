@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.execution.actionscripts;
+package org.iobserve.legacyexecution.actionscripts;
 
 import java.io.File;
 
 import com.google.common.collect.Iterables;
 
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.execution.utils.ModelHelper;
+import org.iobserve.legacyexecution.utils.ModelHelper;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.jclouds.compute.ComputeService;
 import org.jclouds.compute.RunNodesException;
