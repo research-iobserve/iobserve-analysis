@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 Kieker Project (http://kieker-monitoring.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ import org.iobserve.common.record.Privacy;
 
 /**
  * @author Generic Kieker
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
- * @since 1.13
+ * @since 1.14
  */
 public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Privacy {			
 	/** Descriptive definition of the serialization size of the record. */
@@ -141,16 +141,6 @@ public class Privacy_EJBUndeployedEvent extends EJBUndeployedEvent implements Pr
 			this.getCountryCode(),
 		};
 	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getService());
-		stringRegistry.get(this.getContext());
-		stringRegistry.get(this.getDeploymentId());
-	}
-	
 	/**
 	 * {@inheritDoc}
 	 */
