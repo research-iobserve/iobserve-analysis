@@ -15,25 +15,25 @@
  ***************************************************************************/
 package org.iobserve.adaptation.stages;
 
-import teetime.stage.basic.AbstractTransformation;
+import teetime.framework.CompositeStage;
+import teetime.framework.InputPort;
+import teetime.framework.OutputPort;
+import teetime.stage.MultipleInstanceOfFilter;
+import teetime.stage.basic.merger.Merger;
 
-import org.iobserve.adaptation.executionplan.AllocateNodeAction;
-import org.iobserve.adaptation.executionplan.AtomicActionFactory;
-import org.iobserve.adaptation.executionplan.BlockRequestsToComponentAction;
-import org.iobserve.adaptation.executionplan.ConnectComponentAction;
-import org.iobserve.adaptation.executionplan.ConnectNodeAction;
-import org.iobserve.adaptation.executionplan.DeallocateNodeAction;
-import org.iobserve.adaptation.executionplan.DeployComponentAction;
-import org.iobserve.adaptation.executionplan.DisconnectComponentAction;
-import org.iobserve.adaptation.executionplan.DisconnectNodeAction;
+import org.iobserve.adaptation.executionplan.AtomicAction;
 import org.iobserve.adaptation.executionplan.ExecutionPlan;
-import org.iobserve.adaptation.executionplan.ExecutionplanFactory;
-import org.iobserve.adaptation.executionplan.FinishComponentAction;
-import org.iobserve.adaptation.executionplan.MigrateComponentStateAction;
-import org.iobserve.adaptation.executionplan.UndeployComponentAction;
-import org.iobserve.planning.systemadaptation.Action;
+import org.iobserve.adaptation.stages.transformations.AllocateAction2AtomicActions;
+import org.iobserve.adaptation.stages.transformations.AtomicActions2ExecutionPlan;
+import org.iobserve.adaptation.stages.transformations.ChangeComponentAction2AtomicActions;
+import org.iobserve.adaptation.stages.transformations.DeallocateAction2AtomicActions;
+import org.iobserve.adaptation.stages.transformations.DereplicateAction2AtomicActions;
+import org.iobserve.adaptation.stages.transformations.MigrateAction2AtomicActions;
+import org.iobserve.adaptation.stages.transformations.ReplicateAction2AtomicActions;
+import org.iobserve.adaptation.stages.transformations.SystemAdaptationModel2ComposedActions;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
+import org.iobserve.planning.systemadaptation.ComposedAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
@@ -48,184 +48,57 @@ import org.iobserve.planning.systemadaptation.SystemAdaptation;
  * @author Lars Bluemke
  *
  */
-public class AtomicActionComputation extends AbstractTransformation<SystemAdaptation, ExecutionPlan> {
+public class AtomicActionComputation extends CompositeStage {
 
-    @Override
-    protected void execute(final SystemAdaptation systemAdaptationModel) throws Exception {
-        final ExecutionPlan executionPlan = ExecutionplanFactory.eINSTANCE.createExecutionPlan();
+    private final SystemAdaptationModel2ComposedActions systemAdaptationModel2ComposedActions;
+    private final AtomicActions2ExecutionPlan atomicActions2ExecutionPlan;
 
-        for (final Action composedAction : systemAdaptationModel.getActions()) {
-            if (composedAction instanceof ReplicateAction) {
-                this.generateAtomicActions((ReplicateAction) composedAction, executionPlan);
-            } else if (composedAction instanceof DereplicateAction) {
-                this.generateAtomicActions((DereplicateAction) composedAction, executionPlan);
-            } else if (composedAction instanceof MigrateAction) {
-                this.generateAtomicActions((MigrateAction) composedAction, executionPlan);
-            } else if (composedAction instanceof ChangeRepositoryComponentAction) {
-                this.generateAtomicActions((ChangeRepositoryComponentAction) composedAction, executionPlan);
-            } else if (composedAction instanceof AllocateAction) {
-                this.generateAtomicActions((AllocateAction) composedAction, executionPlan);
-            } else if (composedAction instanceof DeallocateAction) {
-                this.generateAtomicActions((DeallocateAction) composedAction, executionPlan);
-            }
-        }
+    public AtomicActionComputation() {
+        final MultipleInstanceOfFilter<ComposedAction> instanceOfFilter = new MultipleInstanceOfFilter<>();
+        final ReplicateAction2AtomicActions replicate2Atomic = new ReplicateAction2AtomicActions();
+        final DereplicateAction2AtomicActions dereplicate2Atomic = new DereplicateAction2AtomicActions();
+        final MigrateAction2AtomicActions migrate2Atomic = new MigrateAction2AtomicActions();
+        final ChangeComponentAction2AtomicActions changeComponent2Atomic = new ChangeComponentAction2AtomicActions();
+        final AllocateAction2AtomicActions allocation2Atomic = new AllocateAction2AtomicActions();
+        final DeallocateAction2AtomicActions deallocation2Atomic = new DeallocateAction2AtomicActions();
+        final Merger<AtomicAction> merger = new Merger<>();
 
-        this.outputPort.send(executionPlan);
+        this.systemAdaptationModel2ComposedActions = new SystemAdaptationModel2ComposedActions();
+        this.atomicActions2ExecutionPlan = new AtomicActions2ExecutionPlan();
+
+        // system adaptation model -> single composed actions
+        this.connectPorts(this.systemAdaptationModel2ComposedActions.getOutputPort(), instanceOfFilter.getInputPort());
+
+        // instanceof filter -> composed to atomic action transformations
+        this.connectPorts(instanceOfFilter.getOutputPortForType(ReplicateAction.class),
+                replicate2Atomic.getInputPort());
+        this.connectPorts(instanceOfFilter.getOutputPortForType(DereplicateAction.class),
+                dereplicate2Atomic.getInputPort());
+        this.connectPorts(instanceOfFilter.getOutputPortForType(MigrateAction.class), migrate2Atomic.getInputPort());
+        this.connectPorts(instanceOfFilter.getOutputPortForType(ChangeRepositoryComponentAction.class),
+                changeComponent2Atomic.getInputPort());
+        this.connectPorts(instanceOfFilter.getOutputPortForType(AllocateAction.class),
+                allocation2Atomic.getInputPort());
+        this.connectPorts(instanceOfFilter.getOutputPortForType(DeallocateAction.class),
+                deallocation2Atomic.getInputPort());
+
+        // composed to atomic action transformations -> merger
+        this.connectPorts(replicate2Atomic.getOutputPort(), merger.getNewInputPort());
+        this.connectPorts(dereplicate2Atomic.getOutputPort(), merger.getNewInputPort());
+        this.connectPorts(migrate2Atomic.getOutputPort(), merger.getNewInputPort());
+        this.connectPorts(changeComponent2Atomic.getOutputPort(), merger.getNewInputPort());
+        this.connectPorts(allocation2Atomic.getOutputPort(), merger.getNewInputPort());
+        this.connectPorts(deallocation2Atomic.getOutputPort(), merger.getNewInputPort());
+
+        // merger -> single atomic actions to execution plan
+        this.connectPorts(merger.getOutputPort(), this.atomicActions2ExecutionPlan.getInputPort());
     }
 
-    private void generateAtomicActions(final ReplicateAction replicateAction, final ExecutionPlan executionPlan) {
-        // Deploy new component instance
-        final DeployComponentAction deployAction = AtomicActionFactory
-                .generateDeployComponentAction(replicateAction.getTargetAllocationContext());
-
-        // Migrate state
-        final MigrateComponentStateAction migrateStateAction = AtomicActionFactory.generateMigrateComponentStateAction(
-                replicateAction.getSourceAllocationContext(), replicateAction.getTargetAllocationContext());
-
-        // Connect replication
-        final ConnectComponentAction connectAction = AtomicActionFactory.generateConnectComponentAction(
-                replicateAction.getTargetAllocationContext(), replicateAction.getTargetProvidingAllocationContexts(),
-                replicateAction.getTargetRequiringAllocationContexts());
-
-        executionPlan.getActions().add(deployAction);
-        executionPlan.getActions().add(migrateStateAction);
-        executionPlan.getActions().add(connectAction);
+    public InputPort<SystemAdaptation> getInputPort() {
+        return this.systemAdaptationModel2ComposedActions.getInputPort();
     }
 
-    private void generateAtomicActions(final DereplicateAction dereplicateAction, final ExecutionPlan executionPlan) {
-        // Block incoming requests
-        final BlockRequestsToComponentAction blockRequestsAction = AtomicActionFactory
-                .generateBlockRequestsToComponentAction(dereplicateAction.getTargetAllocationContext(),
-                        dereplicateAction.getTargetRequiringAllocationContexts());
-
-        // Finish running transactions
-        final FinishComponentAction finishAction = AtomicActionFactory
-                .generateFinishComponentAction(dereplicateAction.getTargetAllocationContext());
-
-        // Disconnect component instance
-        final DisconnectComponentAction disconnectAction = AtomicActionFactory.generateDisconnectComponentAction(
-                dereplicateAction.getTargetAllocationContext(),
-                dereplicateAction.getTargetProvidingAllocationContexts(),
-                dereplicateAction.getTargetRequiringAllocationContexts());
-
-        // Undeploy component instance
-        final UndeployComponentAction undeployAction = AtomicActionFactory
-                .generateUndeployComponentAction(dereplicateAction.getTargetAllocationContext());
-
-        executionPlan.getActions().add(blockRequestsAction);
-        executionPlan.getActions().add(finishAction);
-        executionPlan.getActions().add(disconnectAction);
-        executionPlan.getActions().add(undeployAction);
-    }
-
-    private void generateAtomicActions(final MigrateAction migrateAction, final ExecutionPlan executionPlan) {
-        // Deploy new component instance
-        final DeployComponentAction deployAction = AtomicActionFactory
-                .generateDeployComponentAction(migrateAction.getTargetAllocationContext());
-
-        // Migrate state
-        final MigrateComponentStateAction migrateStateAction = AtomicActionFactory.generateMigrateComponentStateAction(
-                migrateAction.getSourceAllocationContext(), migrateAction.getTargetAllocationContext());
-
-        // Connect replication
-        final ConnectComponentAction connectAction = AtomicActionFactory.generateConnectComponentAction(
-                migrateAction.getTargetAllocationContext(), migrateAction.getTargetProvidingAllocationContexts(),
-                migrateAction.getTargetRequiringAllocationContexts());
-
-        // Block incoming requests
-        final BlockRequestsToComponentAction blockRequestsAction = AtomicActionFactory
-                .generateBlockRequestsToComponentAction(migrateAction.getTargetAllocationContext(),
-                        migrateAction.getTargetRequiringAllocationContexts());
-
-        // Finish running transactions
-        final FinishComponentAction finishAction = AtomicActionFactory
-                .generateFinishComponentAction(migrateAction.getTargetAllocationContext());
-
-        // Disconnect component instance
-        final DisconnectComponentAction disconnectAction = AtomicActionFactory.generateDisconnectComponentAction(
-                migrateAction.getTargetAllocationContext(), migrateAction.getTargetProvidingAllocationContexts(),
-                migrateAction.getTargetRequiringAllocationContexts());
-
-        // Undeploy component instance
-        final UndeployComponentAction undeployAction = AtomicActionFactory
-                .generateUndeployComponentAction(migrateAction.getTargetAllocationContext());
-
-        executionPlan.getActions().add(deployAction);
-        executionPlan.getActions().add(migrateStateAction);
-        executionPlan.getActions().add(connectAction);
-        executionPlan.getActions().add(blockRequestsAction);
-        executionPlan.getActions().add(finishAction);
-        executionPlan.getActions().add(disconnectAction);
-        executionPlan.getActions().add(undeployAction);
-    }
-
-    private void generateAtomicActions(final ChangeRepositoryComponentAction changeComponentAction,
-            final ExecutionPlan executionPlan) {
-        // Deploy new component instance
-        final DeployComponentAction deployAction = AtomicActionFactory
-                .generateDeployComponentAction(changeComponentAction.getTargetAllocationContext());
-
-        // Migrate state
-        final MigrateComponentStateAction migrateStateAction = AtomicActionFactory.generateMigrateComponentStateAction(
-                changeComponentAction.getSourceAllocationContext(), changeComponentAction.getTargetAllocationContext());
-
-        // Connect replication
-        final ConnectComponentAction connectAction = AtomicActionFactory.generateConnectComponentAction(
-                changeComponentAction.getTargetAllocationContext(),
-                changeComponentAction.getTargetProvidingAllocationContexts(),
-                changeComponentAction.getTargetRequiringAllocationContexts());
-
-        // Block incoming requests
-        final BlockRequestsToComponentAction blockRequestsAction = AtomicActionFactory
-                .generateBlockRequestsToComponentAction(changeComponentAction.getTargetAllocationContext(),
-                        changeComponentAction.getTargetRequiringAllocationContexts());
-
-        // Finish running transactions
-        final FinishComponentAction finishAction = AtomicActionFactory
-                .generateFinishComponentAction(changeComponentAction.getTargetAllocationContext());
-
-        // Disconnect component instance
-        final DisconnectComponentAction disconnectAction = AtomicActionFactory.generateDisconnectComponentAction(
-                changeComponentAction.getTargetAllocationContext(),
-                changeComponentAction.getTargetProvidingAllocationContexts(),
-                changeComponentAction.getTargetRequiringAllocationContexts());
-
-        // Undeploy component instance
-        final UndeployComponentAction undeployAction = AtomicActionFactory
-                .generateUndeployComponentAction(changeComponentAction.getTargetAllocationContext());
-
-        executionPlan.getActions().add(deployAction);
-        executionPlan.getActions().add(migrateStateAction);
-        executionPlan.getActions().add(connectAction);
-        executionPlan.getActions().add(blockRequestsAction);
-        executionPlan.getActions().add(finishAction);
-        executionPlan.getActions().add(disconnectAction);
-        executionPlan.getActions().add(undeployAction);
-    }
-
-    private void generateAtomicActions(final AllocateAction allocateAction, final ExecutionPlan executionPlan) {
-        // Allocate Node
-        final AllocateNodeAction allocateNodeAction = AtomicActionFactory
-                .generateAllocateNodeAction(allocateAction.getTargetResourceContainer());
-
-        // Connect Node
-        final ConnectNodeAction connectNodeAction = AtomicActionFactory.generateConnectNodeAction(
-                allocateAction.getTargetResourceContainer(), allocateAction.getTargetLinkingResources());
-
-        executionPlan.getActions().add(allocateNodeAction);
-        executionPlan.getActions().add(connectNodeAction);
-    }
-
-    private void generateAtomicActions(final DeallocateAction deallocateAction, final ExecutionPlan executionPlan) {
-        // Disconnect Node
-        final DisconnectNodeAction disconnectNodeAction = AtomicActionFactory.generateDisonnectNodeAction(
-                deallocateAction.getTargetResourceContainer(), deallocateAction.getTargetLinkingResources());
-
-        // Deallocate Node
-        final DeallocateNodeAction deallocateNodeAction = AtomicActionFactory
-                .generateDeallocateNodeAction(deallocateAction.getTargetResourceContainer());
-
-        executionPlan.getActions().add(disconnectNodeAction);
-        executionPlan.getActions().add(deallocateNodeAction);
+    public OutputPort<ExecutionPlan> getOutputPort() {
+        return this.atomicActions2ExecutionPlan.getOutputPort();
     }
 }
