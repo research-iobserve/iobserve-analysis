@@ -22,7 +22,7 @@ import org.iobserve.model.correspondence.CorrespondentFactory;
  * @author Reiner Jung
  *
  */
-public class CorrespondenceModelDataFactory {
+public final class CorrespondenceModelDataFactory {
 
     public static final String PCM_ENTITY_NAME = "test.org.pcm.entity";
     public static final String PCM_ENTITY_ID = "testPcmEntityId";
@@ -30,6 +30,10 @@ public class CorrespondenceModelDataFactory {
     public static final String PCM_OPERATION_ID = "testPcmOperationId";
 
     public static final Correspondent CORRESPONDENT = CorrespondenceModelDataFactory.createCorrespondent();
+    
+    private CorrespondenceModelDataFactory() {
+		// empty private constructor 
+	}
 
     private static Correspondent createCorrespondent() {
         return CorrespondentFactory.newInstance(CorrespondenceModelDataFactory.PCM_ENTITY_NAME,

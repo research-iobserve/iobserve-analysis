@@ -1,11 +1,11 @@
 /***************************************************************************
- * Copyright 2014 Kieker Project (http://kiekermonitoring.net)
+ * Copyright (C) 2014 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@ package org.iobserve.common.record
 	 
 import kieker.common.record.flow.IEventRecord
 import org.iobserve.common.record.GeoLocation
+import org.iobserve.common.record.IEvent
 	 
 /** 
  * Marker interfaces for deployment and undeployment.	 
@@ -32,7 +33,7 @@ template IUndeployedEvent : IDeploymentChange
  * Event records for PaaS servlet/WAR deployment/undeployment.
  */	 
 @author "Reiner Jung" @since "0.0.2"
-abstract event ServletDescriptor extends AbstractEvent { 
+abstract event ServletDescriptor : IEvent { 
 	string service
 	string context
 	string deploymentId
@@ -47,7 +48,7 @@ event ServletUndeployedEvent extends ServletDescriptor : IUndeployedEvent
  * Event records for PaaS servlet/WAR deployment/undeployment.	 
  */	 
 @author "Reiner Jung" @since "0.0.2"
-abstract event EJBDescriptor extends AbstractEvent { 
+abstract event EJBDescriptor : IEvent { 
 	string service
 	string context
 	string deploymentId

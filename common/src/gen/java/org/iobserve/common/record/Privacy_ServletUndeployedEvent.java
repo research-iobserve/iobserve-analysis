@@ -33,14 +33,14 @@ import org.iobserve.common.record.Privacy;
  */
 public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent implements Privacy {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_STRING // ServletDescriptor.service
 			 + TYPE_SIZE_STRING // ServletDescriptor.context
 			 + TYPE_SIZE_STRING // ServletDescriptor.deploymentId
 			 + TYPE_SIZE_SHORT; // GeoLocation.countryCode
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEventRecord.timestamp
+		long.class, // IEvent.timestamp
 		String.class, // ServletDescriptor.service
 		String.class, // ServletDescriptor.context
 		String.class, // ServletDescriptor.deploymentId

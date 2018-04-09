@@ -17,12 +17,14 @@ package org.iobserve.analysis.deployment;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
 import java.util.List;
 import java.util.Optional;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
+import org.iobserve.common.record.ContainerAllocationEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.model.factory.ResourceEnvironmentModelFactory;
 import org.iobserve.model.provider.neo4j.IModelProvider;
@@ -81,10 +83,17 @@ public final class AllocationStage extends AbstractConsumerStage<IAllocationEven
      *            one allocation event to be processed
      * @throws MalformedURLException
      *             malformed url exception
+     * @throws UnknownObjectException
+     *             in case the allocation event is of an unknown type
      */
     @Override
-    protected void execute(final IAllocationEvent event) throws MalformedURLException {
-        final URL url = new URL(event.toArray()[0].toString());
+    protected void execute(final IAllocationEvent event) throws MalformedURLException, UnknownObjectException {
+        final URL url;
+        if (event instanceof ContainerAllocationEvent) {
+            url = new URL(((ContainerAllocationEvent) event).getUrl());
+        } else {
+            throw new UnknownObjectException(event.getClass() + " is not supported by the allocation filter.");
+        }
         final String hostName = url.getHost();
 
         final Optional<ResourceContainer> resourceContainer = ResourceEnvironmentModelFactory

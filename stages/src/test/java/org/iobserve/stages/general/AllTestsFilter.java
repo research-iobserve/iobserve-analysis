@@ -26,7 +26,7 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  */
 @RunWith(Suite.class) // NOCS test class
-@SuiteClasses({ RecordSwitchTests.class }) // NOCS must be array, api
+@SuiteClasses({ DynamicEventDispatcherTest.class }) // NOCS must be array, api
 public class AllTestsFilter {
 
 }

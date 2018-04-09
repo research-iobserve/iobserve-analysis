@@ -33,13 +33,13 @@ import org.iobserve.common.record.IDeployedEvent;
  */
 public class EJBDeployedEvent extends EJBDescriptor implements IDeployedEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_STRING // EJBDescriptor.service
 			 + TYPE_SIZE_STRING // EJBDescriptor.context
 			 + TYPE_SIZE_STRING; // EJBDescriptor.deploymentId
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEventRecord.timestamp
+		long.class, // IEvent.timestamp
 		String.class, // EJBDescriptor.service
 		String.class, // EJBDescriptor.context
 		String.class, // EJBDescriptor.deploymentId

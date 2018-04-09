@@ -39,6 +39,8 @@ import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -69,6 +71,8 @@ public final class PCMModelHandler {
 
     private static final String QML_DECLARATIONS_MODEL = "qmldeclarations";
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(PCMModelHandler.class);
+
     private Repository repositoryModel;
     private Allocation allocationModel;
     private ResourceEnvironment resourceEnvironmentModel;
@@ -90,6 +94,7 @@ public final class PCMModelHandler {
 
         final File[] files = pcmModelsDirectory.listFiles();
         for (final File nextFile : files) {
+        	LOGGER.debug("Reading model {}", nextFile.toString());
             final String extension = this.getFileExtension(nextFile.getName());
             final URI uri = this.getUri(nextFile);
             if ("repository".equalsIgnoreCase(extension)) {
