@@ -20,8 +20,12 @@ import java.io.File;
 import teetime.framework.Configuration;
 
 import org.iobserve.adaptation.data.stages.AdaptationDataCreator;
+import org.iobserve.adaptation.stages.AtomicActionComputation;
+import org.iobserve.adaptation.stages.ComposedActionComputation;
+import org.iobserve.adaptation.stages.SerializeExecutionPlanStage;
 import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
+import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
 
 /**
  * Configuration for the stages of the adaptation service.
@@ -32,28 +36,42 @@ import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 public class AdaptationConfiguration extends Configuration {
 
     public AdaptationConfiguration(final int runtimeModelInputPort, final int redeploymentModelInputPort,
-            final File runtimeModelDirectory, final File redeploymentModelDirectory) {
+            final File runtimeModelDirectory, final File redeploymentModelDirectory, final File executionPlanURI,
+            final String executionHostname, final int executionInputPort) {
 
         final SingleConnectionTcpReaderStage runtimeModelReader = new SingleConnectionTcpReaderStage(
                 runtimeModelInputPort, runtimeModelDirectory);
         final SingleConnectionTcpReaderStage redeploymentModelReader = new SingleConnectionTcpReaderStage(
                 redeploymentModelInputPort, redeploymentModelDirectory);
-
         final ModelFiles2ModelDirCollectorStage runtimeModelCollector = new ModelFiles2ModelDirCollectorStage();
         final ModelFiles2ModelDirCollectorStage redeploymentModelCollector = new ModelFiles2ModelDirCollectorStage();
-
         final AdaptationDataCreator adaptationDataCreator = new AdaptationDataCreator();
+        final ComposedActionComputation composedActionComputation = new ComposedActionComputation();
+        final AtomicActionComputation atomicActionComputation = new AtomicActionComputation();
+        final SerializeExecutionPlanStage executionPlanSerializer = new SerializeExecutionPlanStage(executionPlanURI);
+        final SingleConnectionTcpWriterStage executionPlanWriter = new SingleConnectionTcpWriterStage(executionHostname,
+                executionInputPort);
 
-        // more filters to come...
-
+        // TCP readers -> model collectors
         this.connectPorts(runtimeModelReader.getOutputPort(), runtimeModelCollector.getInputPort());
         this.connectPorts(redeploymentModelReader.getOutputPort(), redeploymentModelCollector.getInputPort());
+
+        // Model collectors -> adaptation data creation
         this.connectPorts(runtimeModelCollector.getOutputPort(), adaptationDataCreator.getRuntimeModelInputPort());
         this.connectPorts(redeploymentModelCollector.getOutputPort(),
                 adaptationDataCreator.getRedeploymentModelInputPort());
 
-        // to be continued...
+        // Adaptation data creation -> composed action computation
+        this.connectPorts(adaptationDataCreator.getOutputPort(), composedActionComputation.getInputPort());
 
+        // Composed action computation -> atomic action computation (result: execution plan)
+        this.connectPorts(composedActionComputation.getOutputPort(), atomicActionComputation.getInputPort());
+
+        // Serialize execution plan in file
+        this.connectPorts(atomicActionComputation.getOutputPort(), executionPlanSerializer.getInputPort());
+
+        // Send execution plan to execution service
+        this.connectPorts(executionPlanSerializer.getOutputPort(), executionPlanWriter.getInputPort());
     }
 
 }

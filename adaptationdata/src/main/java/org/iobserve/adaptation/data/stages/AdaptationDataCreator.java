@@ -24,7 +24,7 @@ import teetime.framework.OutputPort;
 import org.iobserve.adaptation.data.AdaptationData;
 
 /**
- * Receives directories to the runtime model as well as the redeployment model and initializes the
+ * Receives directories of the runtime model as well as the redeployment model and initializes the
  * adaptation data records needed by the adaptation and the legacy version of the execution.
  *
  * @author Lars Bluemke
