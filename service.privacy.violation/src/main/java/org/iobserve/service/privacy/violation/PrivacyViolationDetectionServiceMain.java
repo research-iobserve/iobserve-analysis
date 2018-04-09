@@ -58,10 +58,16 @@ public final class PrivacyViolationDetectionServiceMain
             "--pcm" }, required = true, description = "PCM model directory.", converter = FileConverter.class)
     private File pcmDirectory;
 
+    @Parameter(names = { "-w",
+            "--warnings" }, required = true, description = "Warnings file.", converter = FileConverter.class)
     private File warningFile;
 
+    @Parameter(names = { "-a",
+            "--alarms" }, required = true, description = "Alarms file.", converter = FileConverter.class)
     private File alarmsFile;
 
+    @Parameter(names = { "-d",
+            "--db-directory" }, required = true, description = "Model database directory.", converter = FileConverter.class)
     private File modelDatabaseDirectory;
 
     /**
@@ -130,7 +136,17 @@ public final class PrivacyViolationDetectionServiceMain
 
     @Override
     protected boolean checkConfiguration(final Configuration configuration, final JCommander commander) {
-        return true;
+        try {
+            return CommandLineParameterEvaluation.checkDirectory(this.modelDatabaseDirectory, "model database",
+                    commander)
+                    && CommandLineParameterEvaluation.checkDirectory(this.alarmsFile.getParentFile(), "alarm location",
+                            commander)
+                    && CommandLineParameterEvaluation.checkDirectory(this.warningFile.getParentFile(),
+                            "warnings location", commander);
+        } catch (final IOException e) {
+            AbstractServiceMain.LOGGER.error("Evaluating command line parameter failed.", e);
+            return false;
+        }
     }
 
 }
