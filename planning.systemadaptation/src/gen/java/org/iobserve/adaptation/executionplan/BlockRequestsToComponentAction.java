@@ -15,7 +15,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.adaptation.executionplan.BlockRequestsToComponentAction#getRequiringAllocationContexts <em>Requiring Allocation Contexts</em>}</li>
+ *   <li>{@link org.iobserve.adaptation.executionplan.BlockRequestsToComponentAction#getTargetRequiringAllocationContexts <em>Target Requiring Allocation Contexts</em>}</li>
  * </ul>
  *
  * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getBlockRequestsToComponentAction()
@@ -25,18 +25,18 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
 public interface BlockRequestsToComponentAction extends AssemblyContextAction {
 
     /**
-     * Returns the value of the '<em><b>Requiring Allocation Contexts</b></em>' reference list.
+     * Returns the value of the '<em><b>Target Requiring Allocation Contexts</b></em>' reference list.
      * The list contents are of type {@link org.palladiosimulator.pcm.allocation.AllocationContext}.
      * <!-- begin-user-doc -->
      * <p>
-     * If the meaning of the '<em>Requiring Allocation Contexts</em>' reference list isn't clear,
+     * If the meaning of the '<em>Target Requiring Allocation Contexts</em>' reference list isn't clear,
      * there really should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
-     * @return the value of the '<em>Requiring Allocation Contexts</em>' reference list.
-     * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getBlockRequestsToComponentAction_RequiringAllocationContexts()
+     * @return the value of the '<em>Target Requiring Allocation Contexts</em>' reference list.
+     * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getBlockRequestsToComponentAction_TargetRequiringAllocationContexts()
      * @model
      * @generated
      */
-    EList<AllocationContext> getRequiringAllocationContexts();
+    EList<AllocationContext> getTargetRequiringAllocationContexts();
 } // BlockRequestsToComponentAction

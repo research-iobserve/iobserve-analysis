@@ -15,8 +15,8 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * The following features are supported:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.adaptation.executionplan.ConnectComponentAction#getProvidingAllocationContexts <em>Providing Allocation Contexts</em>}</li>
- *   <li>{@link org.iobserve.adaptation.executionplan.ConnectComponentAction#getRequiringAllocationContexts <em>Requiring Allocation Contexts</em>}</li>
+ *   <li>{@link org.iobserve.adaptation.executionplan.ConnectComponentAction#getTargetProvidingAllocationContexts <em>Target Providing Allocation Contexts</em>}</li>
+ *   <li>{@link org.iobserve.adaptation.executionplan.ConnectComponentAction#getTargetRequiringAllocationContexts <em>Target Requiring Allocation Contexts</em>}</li>
  * </ul>
  *
  * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getConnectComponentAction()
@@ -25,35 +25,35 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  */
 public interface ConnectComponentAction extends AssemblyContextAction {
     /**
-     * Returns the value of the '<em><b>Providing Allocation Contexts</b></em>' reference list.
+     * Returns the value of the '<em><b>Target Providing Allocation Contexts</b></em>' reference list.
      * The list contents are of type {@link org.palladiosimulator.pcm.allocation.AllocationContext}.
      * <!-- begin-user-doc -->
      * <p>
-     * If the meaning of the '<em>Providing Allocation Contexts</em>' reference list isn't clear,
+     * If the meaning of the '<em>Target Providing Allocation Contexts</em>' reference list isn't clear,
      * there really should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
-     * @return the value of the '<em>Providing Allocation Contexts</em>' reference list.
-     * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getConnectComponentAction_ProvidingAllocationContexts()
+     * @return the value of the '<em>Target Providing Allocation Contexts</em>' reference list.
+     * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getConnectComponentAction_TargetProvidingAllocationContexts()
      * @model
      * @generated
      */
-    EList<AllocationContext> getProvidingAllocationContexts();
+    EList<AllocationContext> getTargetProvidingAllocationContexts();
 
     /**
-     * Returns the value of the '<em><b>Requiring Allocation Contexts</b></em>' reference list.
+     * Returns the value of the '<em><b>Target Requiring Allocation Contexts</b></em>' reference list.
      * The list contents are of type {@link org.palladiosimulator.pcm.allocation.AllocationContext}.
      * <!-- begin-user-doc -->
      * <p>
-     * If the meaning of the '<em>Requiring Allocation Contexts</em>' reference list isn't clear,
+     * If the meaning of the '<em>Target Requiring Allocation Contexts</em>' reference list isn't clear,
      * there really should be more of a description here...
      * </p>
      * <!-- end-user-doc -->
-     * @return the value of the '<em>Requiring Allocation Contexts</em>' reference list.
-     * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getConnectComponentAction_RequiringAllocationContexts()
+     * @return the value of the '<em>Target Requiring Allocation Contexts</em>' reference list.
+     * @see org.iobserve.adaptation.executionplan.ExecutionplanPackage#getConnectComponentAction_TargetRequiringAllocationContexts()
      * @model
      * @generated
      */
-    EList<AllocationContext> getRequiringAllocationContexts();
+    EList<AllocationContext> getTargetRequiringAllocationContexts();
 
 } // ConnectComponentAction

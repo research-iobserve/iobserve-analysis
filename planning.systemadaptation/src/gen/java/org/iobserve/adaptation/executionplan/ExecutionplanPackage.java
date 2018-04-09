@@ -271,22 +271,22 @@ public interface ExecutionplanPackage extends EPackage {
     int CONNECT_COMPONENT_ACTION__TARGET_ALLOCATION_CONTEXT = ASSEMBLY_CONTEXT_ACTION__TARGET_ALLOCATION_CONTEXT;
 
     /**
-     * The feature id for the '<em><b>Providing Allocation Contexts</b></em>' reference list.
+     * The feature id for the '<em><b>Target Providing Allocation Contexts</b></em>' reference list.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int CONNECT_COMPONENT_ACTION__PROVIDING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 0;
+    int CONNECT_COMPONENT_ACTION__TARGET_PROVIDING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 0;
 
     /**
-     * The feature id for the '<em><b>Requiring Allocation Contexts</b></em>' reference list.
+     * The feature id for the '<em><b>Target Requiring Allocation Contexts</b></em>' reference list.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int CONNECT_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 1;
+    int CONNECT_COMPONENT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 1;
 
     /**
      * The number of structural features of the '<em>Connect Component Action</em>' class.
@@ -317,13 +317,13 @@ public interface ExecutionplanPackage extends EPackage {
     int BLOCK_REQUESTS_TO_COMPONENT_ACTION__TARGET_ALLOCATION_CONTEXT = ASSEMBLY_CONTEXT_ACTION__TARGET_ALLOCATION_CONTEXT;
 
     /**
-     * The feature id for the '<em><b>Requiring Allocation Contexts</b></em>' reference list.
+     * The feature id for the '<em><b>Target Requiring Allocation Contexts</b></em>' reference list.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int BLOCK_REQUESTS_TO_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 0;
+    int BLOCK_REQUESTS_TO_COMPONENT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 0;
 
     /**
      * The number of structural features of the '<em>Block Requests To Component Action</em>' class.
@@ -354,22 +354,22 @@ public interface ExecutionplanPackage extends EPackage {
     int DISCONNECT_COMPONENT_ACTION__TARGET_ALLOCATION_CONTEXT = ASSEMBLY_CONTEXT_ACTION__TARGET_ALLOCATION_CONTEXT;
 
     /**
-     * The feature id for the '<em><b>Providing Allocation Contexts</b></em>' reference list.
+     * The feature id for the '<em><b>Target Providing Allocation Contexts</b></em>' reference list.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int DISCONNECT_COMPONENT_ACTION__PROVIDING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 0;
+    int DISCONNECT_COMPONENT_ACTION__TARGET_PROVIDING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 0;
 
     /**
-     * The feature id for the '<em><b>Requiring Allocation Contexts</b></em>' reference list.
+     * The feature id for the '<em><b>Target Requiring Allocation Contexts</b></em>' reference list.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int DISCONNECT_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 1;
+    int DISCONNECT_COMPONENT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 1;
 
     /**
      * The number of structural features of the '<em>Disconnect Component Action</em>' class.
@@ -663,26 +663,26 @@ public interface ExecutionplanPackage extends EPackage {
     EClass getConnectComponentAction();
 
     /**
-     * Returns the meta object for the reference list '{@link org.iobserve.adaptation.executionplan.ConnectComponentAction#getProvidingAllocationContexts <em>Providing Allocation Contexts</em>}'.
+     * Returns the meta object for the reference list '{@link org.iobserve.adaptation.executionplan.ConnectComponentAction#getTargetProvidingAllocationContexts <em>Target Providing Allocation Contexts</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for the reference list '<em>Providing Allocation Contexts</em>'.
-     * @see org.iobserve.adaptation.executionplan.ConnectComponentAction#getProvidingAllocationContexts()
+     * @return the meta object for the reference list '<em>Target Providing Allocation Contexts</em>'.
+     * @see org.iobserve.adaptation.executionplan.ConnectComponentAction#getTargetProvidingAllocationContexts()
      * @see #getConnectComponentAction()
      * @generated
      */
-    EReference getConnectComponentAction_ProvidingAllocationContexts();
+    EReference getConnectComponentAction_TargetProvidingAllocationContexts();
 
     /**
-     * Returns the meta object for the reference list '{@link org.iobserve.adaptation.executionplan.ConnectComponentAction#getRequiringAllocationContexts <em>Requiring Allocation Contexts</em>}'.
+     * Returns the meta object for the reference list '{@link org.iobserve.adaptation.executionplan.ConnectComponentAction#getTargetRequiringAllocationContexts <em>Target Requiring Allocation Contexts</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for the reference list '<em>Requiring Allocation Contexts</em>'.
-     * @see org.iobserve.adaptation.executionplan.ConnectComponentAction#getRequiringAllocationContexts()
+     * @return the meta object for the reference list '<em>Target Requiring Allocation Contexts</em>'.
+     * @see org.iobserve.adaptation.executionplan.ConnectComponentAction#getTargetRequiringAllocationContexts()
      * @see #getConnectComponentAction()
      * @generated
      */
-    EReference getConnectComponentAction_RequiringAllocationContexts();
+    EReference getConnectComponentAction_TargetRequiringAllocationContexts();
 
     /**
      * Returns the meta object for class '{@link org.iobserve.adaptation.executionplan.BlockRequestsToComponentAction <em>Block Requests To Component Action</em>}'.
@@ -695,15 +695,15 @@ public interface ExecutionplanPackage extends EPackage {
     EClass getBlockRequestsToComponentAction();
 
     /**
-     * Returns the meta object for the reference list '{@link org.iobserve.adaptation.executionplan.BlockRequestsToComponentAction#getRequiringAllocationContexts <em>Requiring Allocation Contexts</em>}'.
+     * Returns the meta object for the reference list '{@link org.iobserve.adaptation.executionplan.BlockRequestsToComponentAction#getTargetRequiringAllocationContexts <em>Target Requiring Allocation Contexts</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for the reference list '<em>Requiring Allocation Contexts</em>'.
-     * @see org.iobserve.adaptation.executionplan.BlockRequestsToComponentAction#getRequiringAllocationContexts()
+     * @return the meta object for the reference list '<em>Target Requiring Allocation Contexts</em>'.
+     * @see org.iobserve.adaptation.executionplan.BlockRequestsToComponentAction#getTargetRequiringAllocationContexts()
      * @see #getBlockRequestsToComponentAction()
      * @generated
      */
-    EReference getBlockRequestsToComponentAction_RequiringAllocationContexts();
+    EReference getBlockRequestsToComponentAction_TargetRequiringAllocationContexts();
 
     /**
      * Returns the meta object for class '{@link org.iobserve.adaptation.executionplan.DisconnectComponentAction <em>Disconnect Component Action</em>}'.
@@ -716,26 +716,26 @@ public interface ExecutionplanPackage extends EPackage {
     EClass getDisconnectComponentAction();
 
     /**
-     * Returns the meta object for the reference list '{@link org.iobserve.adaptation.executionplan.DisconnectComponentAction#getProvidingAllocationContexts <em>Providing Allocation Contexts</em>}'.
+     * Returns the meta object for the reference list '{@link org.iobserve.adaptation.executionplan.DisconnectComponentAction#getTargetProvidingAllocationContexts <em>Target Providing Allocation Contexts</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for the reference list '<em>Providing Allocation Contexts</em>'.
-     * @see org.iobserve.adaptation.executionplan.DisconnectComponentAction#getProvidingAllocationContexts()
+     * @return the meta object for the reference list '<em>Target Providing Allocation Contexts</em>'.
+     * @see org.iobserve.adaptation.executionplan.DisconnectComponentAction#getTargetProvidingAllocationContexts()
      * @see #getDisconnectComponentAction()
      * @generated
      */
-    EReference getDisconnectComponentAction_ProvidingAllocationContexts();
+    EReference getDisconnectComponentAction_TargetProvidingAllocationContexts();
 
     /**
-     * Returns the meta object for the reference list '{@link org.iobserve.adaptation.executionplan.DisconnectComponentAction#getRequiringAllocationContexts <em>Requiring Allocation Contexts</em>}'.
+     * Returns the meta object for the reference list '{@link org.iobserve.adaptation.executionplan.DisconnectComponentAction#getTargetRequiringAllocationContexts <em>Target Requiring Allocation Contexts</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for the reference list '<em>Requiring Allocation Contexts</em>'.
-     * @see org.iobserve.adaptation.executionplan.DisconnectComponentAction#getRequiringAllocationContexts()
+     * @return the meta object for the reference list '<em>Target Requiring Allocation Contexts</em>'.
+     * @see org.iobserve.adaptation.executionplan.DisconnectComponentAction#getTargetRequiringAllocationContexts()
      * @see #getDisconnectComponentAction()
      * @generated
      */
-    EReference getDisconnectComponentAction_RequiringAllocationContexts();
+    EReference getDisconnectComponentAction_TargetRequiringAllocationContexts();
 
     /**
      * Returns the meta object for class '{@link org.iobserve.adaptation.executionplan.FinishComponentAction <em>Finish Component Action</em>}'.
@@ -945,20 +945,20 @@ public interface ExecutionplanPackage extends EPackage {
         EClass CONNECT_COMPONENT_ACTION = eINSTANCE.getConnectComponentAction();
 
         /**
-         * The meta object literal for the '<em><b>Providing Allocation Contexts</b></em>' reference list feature.
+         * The meta object literal for the '<em><b>Target Providing Allocation Contexts</b></em>' reference list feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference CONNECT_COMPONENT_ACTION__PROVIDING_ALLOCATION_CONTEXTS = eINSTANCE.getConnectComponentAction_ProvidingAllocationContexts();
+        EReference CONNECT_COMPONENT_ACTION__TARGET_PROVIDING_ALLOCATION_CONTEXTS = eINSTANCE.getConnectComponentAction_TargetProvidingAllocationContexts();
 
         /**
-         * The meta object literal for the '<em><b>Requiring Allocation Contexts</b></em>' reference list feature.
+         * The meta object literal for the '<em><b>Target Requiring Allocation Contexts</b></em>' reference list feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference CONNECT_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS = eINSTANCE.getConnectComponentAction_RequiringAllocationContexts();
+        EReference CONNECT_COMPONENT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS = eINSTANCE.getConnectComponentAction_TargetRequiringAllocationContexts();
 
         /**
          * The meta object literal for the '{@link org.iobserve.adaptation.executionplan.impl.BlockRequestsToComponentActionImpl <em>Block Requests To Component Action</em>}' class.
@@ -971,12 +971,12 @@ public interface ExecutionplanPackage extends EPackage {
         EClass BLOCK_REQUESTS_TO_COMPONENT_ACTION = eINSTANCE.getBlockRequestsToComponentAction();
 
         /**
-         * The meta object literal for the '<em><b>Requiring Allocation Contexts</b></em>' reference list feature.
+         * The meta object literal for the '<em><b>Target Requiring Allocation Contexts</b></em>' reference list feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference BLOCK_REQUESTS_TO_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS = eINSTANCE.getBlockRequestsToComponentAction_RequiringAllocationContexts();
+        EReference BLOCK_REQUESTS_TO_COMPONENT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS = eINSTANCE.getBlockRequestsToComponentAction_TargetRequiringAllocationContexts();
 
         /**
          * The meta object literal for the '{@link org.iobserve.adaptation.executionplan.impl.DisconnectComponentActionImpl <em>Disconnect Component Action</em>}' class.
@@ -989,20 +989,20 @@ public interface ExecutionplanPackage extends EPackage {
         EClass DISCONNECT_COMPONENT_ACTION = eINSTANCE.getDisconnectComponentAction();
 
         /**
-         * The meta object literal for the '<em><b>Providing Allocation Contexts</b></em>' reference list feature.
+         * The meta object literal for the '<em><b>Target Providing Allocation Contexts</b></em>' reference list feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference DISCONNECT_COMPONENT_ACTION__PROVIDING_ALLOCATION_CONTEXTS = eINSTANCE.getDisconnectComponentAction_ProvidingAllocationContexts();
+        EReference DISCONNECT_COMPONENT_ACTION__TARGET_PROVIDING_ALLOCATION_CONTEXTS = eINSTANCE.getDisconnectComponentAction_TargetProvidingAllocationContexts();
 
         /**
-         * The meta object literal for the '<em><b>Requiring Allocation Contexts</b></em>' reference list feature.
+         * The meta object literal for the '<em><b>Target Requiring Allocation Contexts</b></em>' reference list feature.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
          * @generated
          */
-        EReference DISCONNECT_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS = eINSTANCE.getDisconnectComponentAction_RequiringAllocationContexts();
+        EReference DISCONNECT_COMPONENT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS = eINSTANCE.getDisconnectComponentAction_TargetRequiringAllocationContexts();
 
         /**
          * The meta object literal for the '{@link org.iobserve.adaptation.executionplan.impl.FinishComponentActionImpl <em>Finish Component Action</em>}' class.

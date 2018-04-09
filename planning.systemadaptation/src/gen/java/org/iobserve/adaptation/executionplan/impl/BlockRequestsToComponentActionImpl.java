@@ -17,7 +17,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * The following features are implemented:
  * </p>
  * <ul>
- *   <li>{@link org.iobserve.adaptation.executionplan.impl.BlockRequestsToComponentActionImpl#getRequiringAllocationContexts <em>Requiring Allocation Contexts</em>}</li>
+ *   <li>{@link org.iobserve.adaptation.executionplan.impl.BlockRequestsToComponentActionImpl#getTargetRequiringAllocationContexts <em>Target Requiring Allocation Contexts</em>}</li>
  * </ul>
  *
  * @generated
@@ -48,8 +48,8 @@ public class BlockRequestsToComponentActionImpl extends AssemblyContextActionImp
      * @generated
      */
     @SuppressWarnings("unchecked")
-    public EList<AllocationContext> getRequiringAllocationContexts() {
-        return (EList<AllocationContext>)eGet(ExecutionplanPackage.Literals.BLOCK_REQUESTS_TO_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS, true);
+    public EList<AllocationContext> getTargetRequiringAllocationContexts() {
+        return (EList<AllocationContext>)eGet(ExecutionplanPackage.Literals.BLOCK_REQUESTS_TO_COMPONENT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS, true);
     }
 
 } //BlockRequestsToComponentActionImpl

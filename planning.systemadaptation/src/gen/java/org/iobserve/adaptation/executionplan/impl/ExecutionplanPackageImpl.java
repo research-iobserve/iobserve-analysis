@@ -332,7 +332,7 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getConnectComponentAction_ProvidingAllocationContexts() {
+    public EReference getConnectComponentAction_TargetProvidingAllocationContexts() {
         return (EReference)connectComponentActionEClass.getEStructuralFeatures().get(0);
     }
 
@@ -341,7 +341,7 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getConnectComponentAction_RequiringAllocationContexts() {
+    public EReference getConnectComponentAction_TargetRequiringAllocationContexts() {
         return (EReference)connectComponentActionEClass.getEStructuralFeatures().get(1);
     }
 
@@ -359,7 +359,7 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getBlockRequestsToComponentAction_RequiringAllocationContexts() {
+    public EReference getBlockRequestsToComponentAction_TargetRequiringAllocationContexts() {
         return (EReference)blockRequestsToComponentActionEClass.getEStructuralFeatures().get(0);
     }
 
@@ -377,7 +377,7 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getDisconnectComponentAction_ProvidingAllocationContexts() {
+    public EReference getDisconnectComponentAction_TargetProvidingAllocationContexts() {
         return (EReference)disconnectComponentActionEClass.getEStructuralFeatures().get(0);
     }
 
@@ -386,7 +386,7 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
      * <!-- end-user-doc -->
      * @generated
      */
-    public EReference getDisconnectComponentAction_RequiringAllocationContexts() {
+    public EReference getDisconnectComponentAction_TargetRequiringAllocationContexts() {
         return (EReference)disconnectComponentActionEClass.getEStructuralFeatures().get(1);
     }
 
@@ -500,15 +500,15 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
         createEReference(migrateComponentStateActionEClass, MIGRATE_COMPONENT_STATE_ACTION__SOURCE_ALLOCATION_CONTEXT);
 
         connectComponentActionEClass = createEClass(CONNECT_COMPONENT_ACTION);
-        createEReference(connectComponentActionEClass, CONNECT_COMPONENT_ACTION__PROVIDING_ALLOCATION_CONTEXTS);
-        createEReference(connectComponentActionEClass, CONNECT_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS);
+        createEReference(connectComponentActionEClass, CONNECT_COMPONENT_ACTION__TARGET_PROVIDING_ALLOCATION_CONTEXTS);
+        createEReference(connectComponentActionEClass, CONNECT_COMPONENT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS);
 
         blockRequestsToComponentActionEClass = createEClass(BLOCK_REQUESTS_TO_COMPONENT_ACTION);
-        createEReference(blockRequestsToComponentActionEClass, BLOCK_REQUESTS_TO_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS);
+        createEReference(blockRequestsToComponentActionEClass, BLOCK_REQUESTS_TO_COMPONENT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS);
 
         disconnectComponentActionEClass = createEClass(DISCONNECT_COMPONENT_ACTION);
-        createEReference(disconnectComponentActionEClass, DISCONNECT_COMPONENT_ACTION__PROVIDING_ALLOCATION_CONTEXTS);
-        createEReference(disconnectComponentActionEClass, DISCONNECT_COMPONENT_ACTION__REQUIRING_ALLOCATION_CONTEXTS);
+        createEReference(disconnectComponentActionEClass, DISCONNECT_COMPONENT_ACTION__TARGET_PROVIDING_ALLOCATION_CONTEXTS);
+        createEReference(disconnectComponentActionEClass, DISCONNECT_COMPONENT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS);
 
         finishComponentActionEClass = createEClass(FINISH_COMPONENT_ACTION);
 
@@ -589,15 +589,15 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
         initEReference(getMigrateComponentStateAction_SourceAllocationContext(), theAllocationPackage.getAllocationContext(), null, "sourceAllocationContext", null, 1, 1, MigrateComponentStateAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(connectComponentActionEClass, ConnectComponentAction.class, "ConnectComponentAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getConnectComponentAction_ProvidingAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "providingAllocationContexts", null, 0, -1, ConnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEReference(getConnectComponentAction_RequiringAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "requiringAllocationContexts", null, 0, -1, ConnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getConnectComponentAction_TargetProvidingAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "targetProvidingAllocationContexts", null, 0, -1, ConnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getConnectComponentAction_TargetRequiringAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "targetRequiringAllocationContexts", null, 0, -1, ConnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(blockRequestsToComponentActionEClass, BlockRequestsToComponentAction.class, "BlockRequestsToComponentAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getBlockRequestsToComponentAction_RequiringAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "requiringAllocationContexts", null, 0, -1, BlockRequestsToComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getBlockRequestsToComponentAction_TargetRequiringAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "targetRequiringAllocationContexts", null, 0, -1, BlockRequestsToComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(disconnectComponentActionEClass, DisconnectComponentAction.class, "DisconnectComponentAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getDisconnectComponentAction_ProvidingAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "providingAllocationContexts", null, 0, -1, DisconnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
-        initEReference(getDisconnectComponentAction_RequiringAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "requiringAllocationContexts", null, 0, -1, DisconnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getDisconnectComponentAction_TargetProvidingAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "targetProvidingAllocationContexts", null, 0, -1, DisconnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getDisconnectComponentAction_TargetRequiringAllocationContexts(), theAllocationPackage.getAllocationContext(), null, "targetRequiringAllocationContexts", null, 0, -1, DisconnectComponentAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
         initEClass(finishComponentActionEClass, FinishComponentAction.class, "FinishComponentAction", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 

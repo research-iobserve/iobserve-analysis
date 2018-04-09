@@ -23,19 +23,19 @@
         lowerBound="1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ConnectComponentAction" eSuperTypes="#//AssemblyContextAction">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="providingAllocationContexts"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetProvidingAllocationContexts"
         upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="requiringAllocationContexts"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetRequiringAllocationContexts"
         upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="BlockRequestsToComponentAction" eSuperTypes="#//AssemblyContextAction">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="requiringAllocationContexts"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetRequiringAllocationContexts"
         upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="DisconnectComponentAction" eSuperTypes="#//AssemblyContextAction">
-    <eStructuralFeatures xsi:type="ecore:EReference" name="providingAllocationContexts"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetProvidingAllocationContexts"
         upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="requiringAllocationContexts"
+    <eStructuralFeatures xsi:type="ecore:EReference" name="targetRequiringAllocationContexts"
         upperBound="-1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="FinishComponentAction" eSuperTypes="#//AssemblyContextAction"/>
