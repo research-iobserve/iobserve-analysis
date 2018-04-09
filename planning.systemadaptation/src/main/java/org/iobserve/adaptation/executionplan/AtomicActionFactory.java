@@ -17,18 +17,6 @@ package org.iobserve.adaptation.executionplan;
 
 import java.util.List;
 
-import org.iobserve.adaptation.executionplan.AllocateNodeAction;
-import org.iobserve.adaptation.executionplan.BlockRequestsToComponentAction;
-import org.iobserve.adaptation.executionplan.ConnectComponentAction;
-import org.iobserve.adaptation.executionplan.ConnectNodeAction;
-import org.iobserve.adaptation.executionplan.DeallocateNodeAction;
-import org.iobserve.adaptation.executionplan.DeployComponentAction;
-import org.iobserve.adaptation.executionplan.DisconnectComponentAction;
-import org.iobserve.adaptation.executionplan.DisconnectNodeAction;
-import org.iobserve.adaptation.executionplan.ExecutionplanFactory;
-import org.iobserve.adaptation.executionplan.FinishComponentAction;
-import org.iobserve.adaptation.executionplan.MigrateComponentStateAction;
-import org.iobserve.adaptation.executionplan.UndeployComponentAction;
 import org.palladiosimulator.pcm.allocation.AllocationContext;
 import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -145,7 +133,7 @@ public final class AtomicActionFactory {
     }
 
     /**
-     * Generates an action for blocking requests to a component-
+     * Generates an action for blocking requests to a component.
      *
      * @param targetAllocationContext
      *            Allocation context containing the target component's assembly context and resource
@@ -183,7 +171,7 @@ public final class AtomicActionFactory {
 
     /**
      * Generates an action for a node's allocation.
-     * 
+     *
      * @param targetResourceContainer
      *            Resource container to allocate
      * @return The action
@@ -197,7 +185,7 @@ public final class AtomicActionFactory {
 
     /**
      * Generates an action for a node's deallocation.
-     * 
+     *
      * @param targetResourceContainer
      *            Resource container to deallocate
      * @return The action
@@ -210,8 +198,8 @@ public final class AtomicActionFactory {
     }
 
     /**
-     * Generates an action for connecting a node to other nodes
-     * 
+     * Generates an action for connecting a node to other nodes.
+     *
      * @param targetResourceContainer
      *            Resource container to connect
      * @param targetConnectors
@@ -228,8 +216,8 @@ public final class AtomicActionFactory {
     }
 
     /**
-     * Generates an action for disconnecting a node from other nodes
-     * 
+     * Generates an action for disconnecting a node from other nodes.
+     *
      * @param targetResourceContainer
      *            Resource container to disconnect
      * @param targetConnectors

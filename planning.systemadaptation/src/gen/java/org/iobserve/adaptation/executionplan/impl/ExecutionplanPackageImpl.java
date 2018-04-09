@@ -16,9 +16,9 @@ import org.eclipse.emf.ecore.EReference;
 
 import org.eclipse.emf.ecore.impl.EPackageImpl;
 
-import org.iobserve.adaptation.executionplan.Action;
 import org.iobserve.adaptation.executionplan.AllocateNodeAction;
 import org.iobserve.adaptation.executionplan.AssemblyContextAction;
+import org.iobserve.adaptation.executionplan.AtomicAction;
 import org.iobserve.adaptation.executionplan.BlockRequestsToComponentAction;
 import org.iobserve.adaptation.executionplan.ConnectComponentAction;
 import org.iobserve.adaptation.executionplan.ConnectNodeAction;
@@ -37,6 +37,7 @@ import org.iobserve.adaptation.executionplan.UndeployComponentAction;
 import org.palladiosimulator.pcm.PcmPackage;
 
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
+
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
 /**
@@ -58,7 +59,7 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
      * <!-- end-user-doc -->
      * @generated
      */
-    private EClass actionEClass = null;
+    private EClass atomicActionEClass = null;
 
     /**
      * <!-- begin-user-doc -->
@@ -242,8 +243,8 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
      * <!-- end-user-doc -->
      * @generated
      */
-    public EClass getAction() {
-        return actionEClass;
+    public EClass getAtomicAction() {
+        return atomicActionEClass;
     }
 
     /**
@@ -484,7 +485,7 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
         executionPlanEClass = createEClass(EXECUTION_PLAN);
         createEReference(executionPlanEClass, EXECUTION_PLAN__ACTIONS);
 
-        actionEClass = createEClass(ACTION);
+        atomicActionEClass = createEClass(ATOMIC_ACTION);
 
         assemblyContextActionEClass = createEClass(ASSEMBLY_CONTEXT_ACTION);
         createEReference(assemblyContextActionEClass, ASSEMBLY_CONTEXT_ACTION__TARGET_ALLOCATION_CONTEXT);
@@ -555,8 +556,8 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
         // Set bounds for type parameters
 
         // Add supertypes to classes
-        assemblyContextActionEClass.getESuperTypes().add(this.getAction());
-        resourceContainerActionEClass.getESuperTypes().add(this.getAction());
+        assemblyContextActionEClass.getESuperTypes().add(this.getAtomicAction());
+        resourceContainerActionEClass.getESuperTypes().add(this.getAtomicAction());
         deployComponentActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
         undeployComponentActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
         migrateComponentStateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
@@ -571,9 +572,9 @@ public class ExecutionplanPackageImpl extends EPackageImpl implements Executionp
 
         // Initialize classes and features; add operations and parameters
         initEClass(executionPlanEClass, ExecutionPlan.class, "ExecutionPlan", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getExecutionPlan_Actions(), this.getAction(), null, "actions", null, 0, -1, ExecutionPlan.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getExecutionPlan_Actions(), this.getAtomicAction(), null, "actions", null, 0, -1, ExecutionPlan.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        initEClass(actionEClass, Action.class, "Action", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEClass(atomicActionEClass, AtomicAction.class, "AtomicAction", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         initEClass(assemblyContextActionEClass, AssemblyContextAction.class, "AssemblyContextAction", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getAssemblyContextAction_TargetAllocationContext(), theAllocationPackage.getAllocationContext(), null, "targetAllocationContext", null, 1, 1, AssemblyContextAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);

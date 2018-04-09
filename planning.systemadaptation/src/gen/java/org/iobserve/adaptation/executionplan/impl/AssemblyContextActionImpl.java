@@ -3,6 +3,7 @@
 package org.iobserve.adaptation.executionplan.impl;
 
 import org.eclipse.emf.ecore.EClass;
+
 import org.iobserve.adaptation.executionplan.AssemblyContextAction;
 import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
 
@@ -21,7 +22,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  *
  * @generated
  */
-public abstract class AssemblyContextActionImpl extends ActionImpl implements AssemblyContextAction {
+public abstract class AssemblyContextActionImpl extends AtomicActionImpl implements AssemblyContextAction {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->

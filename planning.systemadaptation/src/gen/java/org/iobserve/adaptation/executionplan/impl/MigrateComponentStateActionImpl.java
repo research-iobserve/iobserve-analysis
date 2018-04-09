@@ -3,6 +3,7 @@
 package org.iobserve.adaptation.executionplan.impl;
 
 import org.eclipse.emf.ecore.EClass;
+
 import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
 import org.iobserve.adaptation.executionplan.MigrateComponentStateAction;
 

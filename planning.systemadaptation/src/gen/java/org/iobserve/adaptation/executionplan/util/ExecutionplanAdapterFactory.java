@@ -72,8 +72,8 @@ public class ExecutionplanAdapterFactory extends AdapterFactoryImpl {
                 return createExecutionPlanAdapter();
             }
             @Override
-            public Adapter caseAction(Action object) {
-                return createActionAdapter();
+            public Adapter caseAtomicAction(AtomicAction object) {
+                return createAtomicActionAdapter();
             }
             @Override
             public Adapter caseAssemblyContextAction(AssemblyContextAction object) {
@@ -162,16 +162,16 @@ public class ExecutionplanAdapterFactory extends AdapterFactoryImpl {
     }
 
     /**
-     * Creates a new adapter for an object of class '{@link org.iobserve.adaptation.executionplan.Action <em>Action</em>}'.
+     * Creates a new adapter for an object of class '{@link org.iobserve.adaptation.executionplan.AtomicAction <em>Atomic Action</em>}'.
      * <!-- begin-user-doc -->
      * This default implementation returns null so that we can easily ignore cases;
      * it's useful to ignore a case when inheritance will catch all the cases anyway.
      * <!-- end-user-doc -->
      * @return the new adapter.
-     * @see org.iobserve.adaptation.executionplan.Action
+     * @see org.iobserve.adaptation.executionplan.AtomicAction
      * @generated
      */
-    public Adapter createActionAdapter() {
+    public Adapter createAtomicActionAdapter() {
         return null;
     }
 

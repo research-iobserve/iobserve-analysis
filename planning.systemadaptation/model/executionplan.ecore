@@ -3,16 +3,16 @@
     xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="executionplan" nsURI="http://iobserve.org/ExecutionPlan" nsPrefix="org.iobserve">
   <eClassifiers xsi:type="ecore:EClass" name="ExecutionPlan">
     <eStructuralFeatures xsi:type="ecore:EReference" name="actions" upperBound="-1"
-        eType="#//Action" containment="true"/>
+        eType="#//AtomicAction" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Action" abstract="true"/>
+  <eClassifiers xsi:type="ecore:EClass" name="AtomicAction" abstract="true"/>
   <eClassifiers xsi:type="ecore:EClass" name="AssemblyContextAction" abstract="true"
-      eSuperTypes="#//Action">
+      eSuperTypes="#//AtomicAction">
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetAllocationContext"
         lowerBound="1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//allocation/AllocationContext"/>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="ResourceContainerAction" abstract="true"
-      eSuperTypes="#//Action">
+      eSuperTypes="#//AtomicAction">
     <eStructuralFeatures xsi:type="ecore:EReference" name="targetResourceContainer"
         lowerBound="1" eType="ecore:EClass ../../org.palladiosimulator.pcm/model/pcm.ecore#//resourceenvironment/ResourceContainer"/>
   </eClassifiers>

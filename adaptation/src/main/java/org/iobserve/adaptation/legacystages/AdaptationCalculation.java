@@ -31,7 +31,6 @@ import org.iobserve.adaptation.data.ResourceContainerActionFactory;
 import org.iobserve.adaptation.data.graph.ComponentNode;
 import org.iobserve.adaptation.data.graph.DeploymentNode;
 import org.iobserve.adaptation.data.graph.ModelGraph;
-import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;

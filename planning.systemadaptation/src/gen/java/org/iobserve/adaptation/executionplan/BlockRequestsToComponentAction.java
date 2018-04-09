@@ -3,8 +3,8 @@
 package org.iobserve.adaptation.executionplan;
 
 import org.eclipse.emf.common.util.EList;
-import org.palladiosimulator.pcm.allocation.AllocationContext;
 
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * <!-- begin-user-doc -->
@@ -23,7 +23,6 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * @generated
  */
 public interface BlockRequestsToComponentAction extends AssemblyContextAction {
-
     /**
      * Returns the value of the '<em><b>Target Requiring Allocation Contexts</b></em>' reference list.
      * The list contents are of type {@link org.palladiosimulator.pcm.allocation.AllocationContext}.
@@ -39,4 +38,5 @@ public interface BlockRequestsToComponentAction extends AssemblyContextAction {
      * @generated
      */
     EList<AllocationContext> getTargetRequiringAllocationContexts();
+
 } // BlockRequestsToComponentAction

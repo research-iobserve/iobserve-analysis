@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 import teetime.stage.basic.AbstractTransformation;
 
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
+import org.iobserve.planning.systemadaptation.ComposedAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
@@ -63,7 +63,7 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
 
         this.init(element);
 
-        final List<Action> adaptionSteps = new ArrayList<>();
+        final List<ComposedAction> adaptionSteps = new ArrayList<>();
         adaptionSteps.addAll(this.allocations);
         adaptionSteps.addAll(this.dereplications);
         adaptionSteps.addAll(this.replications);
@@ -93,7 +93,7 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
                 .collect(Collectors.toSet());
     }
 
-    private void printAdaptionSequence(final List<Action> adaptionSteps) {
+    private void printAdaptionSequence(final List<ComposedAction> adaptionSteps) {
         final StringBuilder sb = new StringBuilder(50);
         sb.append("Adaption sequence:\n");
 
@@ -104,7 +104,7 @@ public class AdaptationPlanning extends AbstractTransformation<AdaptationData, A
         SystemAdaptation.LOG.info(sb.toString());
     }
 
-    private String printAction(final Action action) {
+    private String printAction(final ComposedAction action) {
         final StringBuilder sb = new StringBuilder(200);
 
         if (action instanceof AllocateAction) {

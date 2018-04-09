@@ -26,7 +26,7 @@ import org.iobserve.adaptation.data.AdaptationData;
 import org.iobserve.evaluation.SystemEvaluation;
 import org.iobserve.execution.actionscripts.AbstractActionScript;
 import org.iobserve.execution.actionscripts.ActionScriptFactory;
-import org.iobserve.planning.systemadaptation.Action;
+import org.iobserve.planning.systemadaptation.ComposedAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,7 @@ public class AdaptationExecution extends AbstractTransformation<AdaptationData, 
         final ActionScriptFactory actionFactory = new ActionScriptFactory(element);
 
         // TODO Finish, by adding execution. Maybe Async?
-        for (final Action action : element.getExecutionOrder()) {
+        for (final ComposedAction action : element.getExecutionOrder()) {
             final AbstractActionScript script = actionFactory.getExecutionScript(action);
             actionScripts.add(script);
             if (!script.isAutoExecutable()) {

@@ -72,23 +72,23 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
-            case ExecutionplanPackage.ACTION: {
-                Action action = (Action)theEObject;
-                T result = caseAction(action);
+            case ExecutionplanPackage.ATOMIC_ACTION: {
+                AtomicAction atomicAction = (AtomicAction)theEObject;
+                T result = caseAtomicAction(atomicAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
             case ExecutionplanPackage.ASSEMBLY_CONTEXT_ACTION: {
                 AssemblyContextAction assemblyContextAction = (AssemblyContextAction)theEObject;
                 T result = caseAssemblyContextAction(assemblyContextAction);
-                if (result == null) result = caseAction(assemblyContextAction);
+                if (result == null) result = caseAtomicAction(assemblyContextAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
             case ExecutionplanPackage.RESOURCE_CONTAINER_ACTION: {
                 ResourceContainerAction resourceContainerAction = (ResourceContainerAction)theEObject;
                 T result = caseResourceContainerAction(resourceContainerAction);
-                if (result == null) result = caseAction(resourceContainerAction);
+                if (result == null) result = caseAtomicAction(resourceContainerAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -96,7 +96,7 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 DeployComponentAction deployComponentAction = (DeployComponentAction)theEObject;
                 T result = caseDeployComponentAction(deployComponentAction);
                 if (result == null) result = caseAssemblyContextAction(deployComponentAction);
-                if (result == null) result = caseAction(deployComponentAction);
+                if (result == null) result = caseAtomicAction(deployComponentAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -104,7 +104,7 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 UndeployComponentAction undeployComponentAction = (UndeployComponentAction)theEObject;
                 T result = caseUndeployComponentAction(undeployComponentAction);
                 if (result == null) result = caseAssemblyContextAction(undeployComponentAction);
-                if (result == null) result = caseAction(undeployComponentAction);
+                if (result == null) result = caseAtomicAction(undeployComponentAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -112,7 +112,7 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 MigrateComponentStateAction migrateComponentStateAction = (MigrateComponentStateAction)theEObject;
                 T result = caseMigrateComponentStateAction(migrateComponentStateAction);
                 if (result == null) result = caseAssemblyContextAction(migrateComponentStateAction);
-                if (result == null) result = caseAction(migrateComponentStateAction);
+                if (result == null) result = caseAtomicAction(migrateComponentStateAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -120,7 +120,7 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 ConnectComponentAction connectComponentAction = (ConnectComponentAction)theEObject;
                 T result = caseConnectComponentAction(connectComponentAction);
                 if (result == null) result = caseAssemblyContextAction(connectComponentAction);
-                if (result == null) result = caseAction(connectComponentAction);
+                if (result == null) result = caseAtomicAction(connectComponentAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -128,7 +128,7 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 BlockRequestsToComponentAction blockRequestsToComponentAction = (BlockRequestsToComponentAction)theEObject;
                 T result = caseBlockRequestsToComponentAction(blockRequestsToComponentAction);
                 if (result == null) result = caseAssemblyContextAction(blockRequestsToComponentAction);
-                if (result == null) result = caseAction(blockRequestsToComponentAction);
+                if (result == null) result = caseAtomicAction(blockRequestsToComponentAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -136,7 +136,7 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 DisconnectComponentAction disconnectComponentAction = (DisconnectComponentAction)theEObject;
                 T result = caseDisconnectComponentAction(disconnectComponentAction);
                 if (result == null) result = caseAssemblyContextAction(disconnectComponentAction);
-                if (result == null) result = caseAction(disconnectComponentAction);
+                if (result == null) result = caseAtomicAction(disconnectComponentAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -144,7 +144,7 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 FinishComponentAction finishComponentAction = (FinishComponentAction)theEObject;
                 T result = caseFinishComponentAction(finishComponentAction);
                 if (result == null) result = caseAssemblyContextAction(finishComponentAction);
-                if (result == null) result = caseAction(finishComponentAction);
+                if (result == null) result = caseAtomicAction(finishComponentAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -152,7 +152,7 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 AllocateNodeAction allocateNodeAction = (AllocateNodeAction)theEObject;
                 T result = caseAllocateNodeAction(allocateNodeAction);
                 if (result == null) result = caseResourceContainerAction(allocateNodeAction);
-                if (result == null) result = caseAction(allocateNodeAction);
+                if (result == null) result = caseAtomicAction(allocateNodeAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -160,7 +160,7 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 DeallocateNodeAction deallocateNodeAction = (DeallocateNodeAction)theEObject;
                 T result = caseDeallocateNodeAction(deallocateNodeAction);
                 if (result == null) result = caseResourceContainerAction(deallocateNodeAction);
-                if (result == null) result = caseAction(deallocateNodeAction);
+                if (result == null) result = caseAtomicAction(deallocateNodeAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -168,7 +168,7 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 ConnectNodeAction connectNodeAction = (ConnectNodeAction)theEObject;
                 T result = caseConnectNodeAction(connectNodeAction);
                 if (result == null) result = caseResourceContainerAction(connectNodeAction);
-                if (result == null) result = caseAction(connectNodeAction);
+                if (result == null) result = caseAtomicAction(connectNodeAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -176,7 +176,7 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
                 DisconnectNodeAction disconnectNodeAction = (DisconnectNodeAction)theEObject;
                 T result = caseDisconnectNodeAction(disconnectNodeAction);
                 if (result == null) result = caseResourceContainerAction(disconnectNodeAction);
-                if (result == null) result = caseAction(disconnectNodeAction);
+                if (result == null) result = caseAtomicAction(disconnectNodeAction);
                 if (result == null) result = defaultCase(theEObject);
                 return result;
             }
@@ -200,17 +200,17 @@ public class ExecutionplanSwitch<T> extends Switch<T> {
     }
 
     /**
-     * Returns the result of interpreting the object as an instance of '<em>Action</em>'.
+     * Returns the result of interpreting the object as an instance of '<em>Atomic Action</em>'.
      * <!-- begin-user-doc -->
      * This implementation returns null;
      * returning a non-null result will terminate the switch.
      * <!-- end-user-doc -->
      * @param object the target of the switch.
-     * @return the result of interpreting the object as an instance of '<em>Action</em>'.
+     * @return the result of interpreting the object as an instance of '<em>Atomic Action</em>'.
      * @see #doSwitch(org.eclipse.emf.ecore.EObject) doSwitch(EObject)
      * @generated
      */
-    public T caseAction(Action object) {
+    public T caseAtomicAction(AtomicAction object) {
         return null;
     }
 

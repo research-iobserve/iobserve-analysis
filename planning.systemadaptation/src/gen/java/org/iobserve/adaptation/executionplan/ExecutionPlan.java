@@ -25,7 +25,7 @@ import org.eclipse.emf.ecore.EObject;
 public interface ExecutionPlan extends EObject {
     /**
      * Returns the value of the '<em><b>Actions</b></em>' containment reference list.
-     * The list contents are of type {@link org.iobserve.adaptation.executionplan.Action}.
+     * The list contents are of type {@link org.iobserve.adaptation.executionplan.AtomicAction}.
      * <!-- begin-user-doc -->
      * <p>
      * If the meaning of the '<em>Actions</em>' containment reference list isn't clear,
@@ -37,6 +37,6 @@ public interface ExecutionPlan extends EObject {
      * @model containment="true"
      * @generated
      */
-    EList<Action> getActions();
+    EList<AtomicAction> getActions();
 
 } // ExecutionPlan

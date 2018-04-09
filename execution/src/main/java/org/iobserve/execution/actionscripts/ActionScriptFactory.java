@@ -16,9 +16,9 @@
 package org.iobserve.execution.actionscripts;
 
 import org.iobserve.adaptation.data.AdaptationData;
-import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
+import org.iobserve.planning.systemadaptation.ComposedAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
@@ -59,7 +59,7 @@ public class ActionScriptFactory {
      * @throws IllegalArgumentException
      *             if the adaptation action could not be mapped to an execution script
      */
-    public AbstractActionScript getExecutionScript(final Action action) throws IllegalArgumentException {
+    public AbstractActionScript getExecutionScript(final ComposedAction action) throws IllegalArgumentException {
         if (action instanceof ChangeRepositoryComponentAction) {
             return this.createChangeRepositoryComponentActionScript((ChangeRepositoryComponentAction) action);
         } else if (action instanceof ReplicateAction) {

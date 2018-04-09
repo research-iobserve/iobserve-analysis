@@ -3,13 +3,16 @@
 package org.iobserve.adaptation.executionplan.impl;
 
 import org.eclipse.emf.ecore.EClass;
+
 import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
 import org.iobserve.adaptation.executionplan.ResourceContainerAction;
+
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
- * <!-- begin-user-doc --> An implementation of the model object '<em><b>Resource Container
- * Action</b></em>'. <!-- end-user-doc -->
+ * <!-- begin-user-doc -->
+ * An implementation of the model object '<em><b>Resource Container Action</b></em>'.
+ * <!-- end-user-doc -->
  * <p>
  * The following features are implemented:
  * </p>
@@ -19,9 +22,10 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  *
  * @generated
  */
-public abstract class ResourceContainerActionImpl extends ActionImpl implements ResourceContainerAction {
+public abstract class ResourceContainerActionImpl extends AtomicActionImpl implements ResourceContainerAction {
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     protected ResourceContainerActionImpl() {
@@ -29,7 +33,8 @@ public abstract class ResourceContainerActionImpl extends ActionImpl implements 
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     @Override
@@ -38,21 +43,21 @@ public abstract class ResourceContainerActionImpl extends ActionImpl implements 
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public ResourceContainer getTargetResourceContainer() {
         return (ResourceContainer)eGet(ExecutionplanPackage.Literals.RESOURCE_CONTAINER_ACTION__TARGET_RESOURCE_CONTAINER, true);
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public void setTargetResourceContainer(ResourceContainer newTargetResourceContainer) {
         eSet(ExecutionplanPackage.Literals.RESOURCE_CONTAINER_ACTION__TARGET_RESOURCE_CONTAINER, newTargetResourceContainer);
     }
 
-} // ResourceContainerActionImpl
+} //ResourceContainerActionImpl

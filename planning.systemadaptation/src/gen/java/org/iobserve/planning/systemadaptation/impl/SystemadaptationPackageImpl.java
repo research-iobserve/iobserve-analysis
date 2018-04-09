@@ -1,28 +1,25 @@
-/***************************************************************************
- * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ***************************************************************************/
+/**
+ */
 package org.iobserve.planning.systemadaptation.impl;
+
+import de.uka.ipd.sdq.identifier.IdentifierPackage;
+
+import de.uka.ipd.sdq.probfunction.ProbfunctionPackage;
+
+import de.uka.ipd.sdq.stoex.StoexPackage;
+
+import de.uka.ipd.sdq.units.UnitsPackage;
 
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+
 import org.eclipse.emf.ecore.impl.EPackageImpl;
-import org.iobserve.planning.systemadaptation.Action;
+
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
+import org.iobserve.planning.systemadaptation.ComposedAction;
 import org.iobserve.planning.systemadaptation.DeallocateAction;
 import org.iobserve.planning.systemadaptation.DereplicateAction;
 import org.iobserve.planning.systemadaptation.MigrateAction;
@@ -31,76 +28,86 @@ import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 import org.iobserve.planning.systemadaptation.SystemAdaptation;
 import org.iobserve.planning.systemadaptation.SystemadaptationFactory;
 import org.iobserve.planning.systemadaptation.SystemadaptationPackage;
+
 import org.palladiosimulator.pcm.PcmPackage;
+
 import org.palladiosimulator.pcm.allocation.AllocationPackage;
+
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentPackage;
 
-import de.uka.ipd.sdq.identifier.IdentifierPackage;
-import de.uka.ipd.sdq.probfunction.ProbfunctionPackage;
-import de.uka.ipd.sdq.stoex.StoexPackage;
-import de.uka.ipd.sdq.units.UnitsPackage;
-
 /**
- * <!-- begin-user-doc --> An implementation of the model <b>Package</b>. <!-- end-user-doc -->
+ * <!-- begin-user-doc -->
+ * An implementation of the model <b>Package</b>.
+ * <!-- end-user-doc -->
  * @generated
  */
 public class SystemadaptationPackageImpl extends EPackageImpl implements SystemadaptationPackage {
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass systemAdaptationEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    private EClass actionEClass = null;
+    private EClass composedActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass assemblyContextActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass resourceContainerActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass changeRepositoryComponentActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass replicateActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass dereplicateActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass migrateActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass allocateActionEClass = null;
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private EClass deallocateActionEClass = null;
@@ -113,7 +120,8 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
      * factory method {@link #init init()}, which also performs
      * initialization of the package, or returns the registered package,
      * if one already exists.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.eclipse.emf.ecore.EPackage.Registry
      * @see org.iobserve.planning.systemadaptation.SystemadaptationPackage#eNS_URI
      * @see #init()
@@ -124,7 +132,8 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private static boolean isInited = false;
@@ -134,7 +143,8 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
      * 
      * <p>This method is used to initialize {@link SystemadaptationPackage#eINSTANCE} when that field is accessed.
      * Clients should not invoke it directly. Instead, they should simply access that field to obtain the package.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see #eNS_URI
      * @see #createPackageContents()
      * @see #initializePackageContents()
@@ -171,37 +181,37 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EClass getSystemAdaptation() {
         return systemAdaptationEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EReference getSystemAdaptation_Actions() {
         return (EReference)systemAdaptationEClass.getEStructuralFeatures().get(0);
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
-    public EClass getAction() {
-        return actionEClass;
+    public EClass getComposedAction() {
+        return composedActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EClass getAssemblyContextAction() {
         return assemblyContextActionEClass;
     }
@@ -234,10 +244,10 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EClass getResourceContainerAction() {
         return resourceContainerActionEClass;
     }
@@ -261,10 +271,10 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EClass getChangeRepositoryComponentAction() {
         return changeRepositoryComponentActionEClass;
     }
@@ -279,10 +289,10 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EClass getReplicateAction() {
         return replicateActionEClass;
     }
@@ -297,28 +307,28 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EClass getDereplicateAction() {
         return dereplicateActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EClass getMigrateAction() {
         return migrateActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EReference getMigrateAction_SourceAllocationContext() {
         return (EReference)migrateActionEClass.getEStructuralFeatures().get(0);
     }
@@ -342,34 +352,35 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EClass getAllocateAction() {
         return allocateActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public EClass getDeallocateAction() {
         return deallocateActionEClass;
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
-    @Override
     public SystemadaptationFactory getSystemadaptationFactory() {
         return (SystemadaptationFactory)getEFactoryInstance();
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private boolean isCreated = false;
@@ -377,7 +388,8 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     /**
      * Creates the meta-model objects for the package.  This method is
      * guarded to have no affect on any invocation but its first.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     public void createPackageContents() {
@@ -388,7 +400,7 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
         systemAdaptationEClass = createEClass(SYSTEM_ADAPTATION);
         createEReference(systemAdaptationEClass, SYSTEM_ADAPTATION__ACTIONS);
 
-        actionEClass = createEClass(ACTION);
+        composedActionEClass = createEClass(COMPOSED_ACTION);
 
         assemblyContextActionEClass = createEClass(ASSEMBLY_CONTEXT_ACTION);
         createEReference(assemblyContextActionEClass, ASSEMBLY_CONTEXT_ACTION__TARGET_ALLOCATION_CONTEXT);
@@ -418,7 +430,8 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     }
 
     /**
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     private boolean isInitialized = false;
@@ -426,7 +439,8 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
     /**
      * Complete the initialization of the package and its meta-model.  This
      * method is guarded to have no affect on any invocation but its first.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     public void initializePackageContents() {
@@ -447,8 +461,8 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
         // Set bounds for type parameters
 
         // Add supertypes to classes
-        assemblyContextActionEClass.getESuperTypes().add(this.getAction());
-        resourceContainerActionEClass.getESuperTypes().add(this.getAction());
+        assemblyContextActionEClass.getESuperTypes().add(this.getComposedAction());
+        resourceContainerActionEClass.getESuperTypes().add(this.getComposedAction());
         changeRepositoryComponentActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
         replicateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
         dereplicateActionEClass.getESuperTypes().add(this.getAssemblyContextAction());
@@ -458,9 +472,9 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
 
         // Initialize classes and features; add operations and parameters
         initEClass(systemAdaptationEClass, SystemAdaptation.class, "SystemAdaptation", !IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
-        initEReference(getSystemAdaptation_Actions(), this.getAction(), null, "actions", null, 0, -1, SystemAdaptation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
+        initEReference(getSystemAdaptation_Actions(), this.getComposedAction(), null, "actions", null, 0, -1, SystemAdaptation.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, IS_COMPOSITE, !IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
 
-        initEClass(actionEClass, Action.class, "Action", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
+        initEClass(composedActionEClass, ComposedAction.class, "ComposedAction", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
 
         initEClass(assemblyContextActionEClass, AssemblyContextAction.class, "AssemblyContextAction", IS_ABSTRACT, !IS_INTERFACE, IS_GENERATED_INSTANCE_CLASS);
         initEReference(getAssemblyContextAction_TargetAllocationContext(), theAllocationPackage.getAllocationContext(), null, "targetAllocationContext", null, 1, 1, AssemblyContextAction.class, !IS_TRANSIENT, !IS_VOLATILE, IS_CHANGEABLE, !IS_COMPOSITE, IS_RESOLVE_PROXIES, !IS_UNSETTABLE, IS_UNIQUE, !IS_DERIVED, IS_ORDERED);
@@ -492,4 +506,4 @@ public class SystemadaptationPackageImpl extends EPackageImpl implements Systema
         createResource(eNS_URI);
     }
 
-} // SystemadaptationPackageImpl
+} //SystemadaptationPackageImpl

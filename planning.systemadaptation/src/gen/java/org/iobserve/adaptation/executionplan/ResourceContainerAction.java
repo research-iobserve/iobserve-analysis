@@ -20,7 +20,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @model abstract="true"
  * @generated
  */
-public interface ResourceContainerAction extends Action {
+public interface ResourceContainerAction extends AtomicAction {
     /**
      * Returns the value of the '<em><b>Target Resource Container</b></em>' reference.
      * <!-- begin-user-doc -->

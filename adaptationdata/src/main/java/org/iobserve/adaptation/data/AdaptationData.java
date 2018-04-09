@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.iobserve.adaptation.data.graph.ModelGraph;
-import org.iobserve.planning.systemadaptation.Action;
 import org.iobserve.planning.systemadaptation.AssemblyContextAction;
+import org.iobserve.planning.systemadaptation.ComposedAction;
 import org.iobserve.planning.systemadaptation.ResourceContainerAction;
 
 /**
@@ -51,7 +51,7 @@ public class AdaptationData {
     private List<AssemblyContextAction> acActions;
     private List<ResourceContainerAction> rcActions;
 
-    private List<Action> executionOrder;
+    private List<ComposedAction> executionOrder;
 
     private final Set<String> allocatedContexts = new HashSet<>();
     private final Set<String> deallocatedContexts = new HashSet<>();
@@ -159,7 +159,7 @@ public class AdaptationData {
     /**
      * @return the executionOrder
      */
-    public List<Action> getExecutionOrder() {
+    public List<ComposedAction> getExecutionOrder() {
         return this.executionOrder;
     }
 
@@ -167,7 +167,7 @@ public class AdaptationData {
      * @param executionOrder
      *            the executionOrder to set
      */
-    public void setExecutionOrder(final List<Action> executionOrder) {
+    public void setExecutionOrder(final List<ComposedAction> executionOrder) {
         this.executionOrder = executionOrder;
     }
 

@@ -3,8 +3,8 @@
 package org.iobserve.adaptation.executionplan;
 
 import org.eclipse.emf.common.util.EList;
-import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 
+import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
 
 /**
  * <!-- begin-user-doc -->
@@ -23,7 +23,6 @@ import org.palladiosimulator.pcm.resourceenvironment.LinkingResource;
  * @generated
  */
 public interface DisconnectNodeAction extends ResourceContainerAction {
-
     /**
      * Returns the value of the '<em><b>Target Connectors</b></em>' reference list.
      * The list contents are of type {@link org.palladiosimulator.pcm.resourceenvironment.LinkingResource}.
@@ -39,4 +38,5 @@ public interface DisconnectNodeAction extends ResourceContainerAction {
      * @generated
      */
     EList<LinkingResource> getTargetConnectors();
+
 } // DisconnectNodeAction

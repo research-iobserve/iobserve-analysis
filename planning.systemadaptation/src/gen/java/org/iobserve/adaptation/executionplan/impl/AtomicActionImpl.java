@@ -6,23 +6,23 @@ import org.eclipse.emf.ecore.EClass;
 
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
 
-import org.iobserve.adaptation.executionplan.Action;
+import org.iobserve.adaptation.executionplan.AtomicAction;
 import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
 
 /**
  * <!-- begin-user-doc -->
- * An implementation of the model object '<em><b>Action</b></em>'.
+ * An implementation of the model object '<em><b>Atomic Action</b></em>'.
  * <!-- end-user-doc -->
  *
  * @generated
  */
-public abstract class ActionImpl extends MinimalEObjectImpl.Container implements Action {
+public abstract class AtomicActionImpl extends MinimalEObjectImpl.Container implements AtomicAction {
     /**
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      */
-    protected ActionImpl() {
+    protected AtomicActionImpl() {
         super();
     }
 
@@ -33,7 +33,7 @@ public abstract class ActionImpl extends MinimalEObjectImpl.Container implements
      */
     @Override
     protected EClass eStaticClass() {
-        return ExecutionplanPackage.Literals.ACTION;
+        return ExecutionplanPackage.Literals.ATOMIC_ACTION;
     }
 
     /**
@@ -46,4 +46,4 @@ public abstract class ActionImpl extends MinimalEObjectImpl.Container implements
         return 0;
     }
 
-} //ActionImpl
+} //AtomicActionImpl

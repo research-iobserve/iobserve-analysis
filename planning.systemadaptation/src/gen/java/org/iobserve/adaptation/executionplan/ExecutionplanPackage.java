@@ -13,7 +13,6 @@ import org.eclipse.emf.ecore.EReference;
  * <ul>
  *   <li>each class,</li>
  *   <li>each feature of each class,</li>
- *   <li>each operation of each class,</li>
  *   <li>each enum,</li>
  *   <li>and each data type</li>
  * </ul>
@@ -84,23 +83,23 @@ public interface ExecutionplanPackage extends EPackage {
     int EXECUTION_PLAN_FEATURE_COUNT = 1;
 
     /**
-     * The meta object id for the '{@link org.iobserve.adaptation.executionplan.impl.ActionImpl <em>Action</em>}' class.
+     * The meta object id for the '{@link org.iobserve.adaptation.executionplan.impl.AtomicActionImpl <em>Atomic Action</em>}' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @see org.iobserve.adaptation.executionplan.impl.ActionImpl
-     * @see org.iobserve.adaptation.executionplan.impl.ExecutionplanPackageImpl#getAction()
+     * @see org.iobserve.adaptation.executionplan.impl.AtomicActionImpl
+     * @see org.iobserve.adaptation.executionplan.impl.ExecutionplanPackageImpl#getAtomicAction()
      * @generated
      */
-    int ACTION = 1;
+    int ATOMIC_ACTION = 1;
 
     /**
-     * The number of structural features of the '<em>Action</em>' class.
+     * The number of structural features of the '<em>Atomic Action</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int ACTION_FEATURE_COUNT = 0;
+    int ATOMIC_ACTION_FEATURE_COUNT = 0;
 
     /**
      * The meta object id for the '{@link org.iobserve.adaptation.executionplan.impl.AssemblyContextActionImpl <em>Assembly Context Action</em>}' class.
@@ -119,7 +118,7 @@ public interface ExecutionplanPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int ASSEMBLY_CONTEXT_ACTION__TARGET_ALLOCATION_CONTEXT = ACTION_FEATURE_COUNT + 0;
+    int ASSEMBLY_CONTEXT_ACTION__TARGET_ALLOCATION_CONTEXT = ATOMIC_ACTION_FEATURE_COUNT + 0;
 
     /**
      * The number of structural features of the '<em>Assembly Context Action</em>' class.
@@ -128,7 +127,7 @@ public interface ExecutionplanPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT = ACTION_FEATURE_COUNT + 1;
+    int ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT = ATOMIC_ACTION_FEATURE_COUNT + 1;
 
     /**
      * The meta object id for the '{@link org.iobserve.adaptation.executionplan.impl.ResourceContainerActionImpl <em>Resource Container Action</em>}' class.
@@ -147,7 +146,7 @@ public interface ExecutionplanPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int RESOURCE_CONTAINER_ACTION__TARGET_RESOURCE_CONTAINER = ACTION_FEATURE_COUNT + 0;
+    int RESOURCE_CONTAINER_ACTION__TARGET_RESOURCE_CONTAINER = ATOMIC_ACTION_FEATURE_COUNT + 0;
 
     /**
      * The number of structural features of the '<em>Resource Container Action</em>' class.
@@ -156,7 +155,7 @@ public interface ExecutionplanPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int RESOURCE_CONTAINER_ACTION_FEATURE_COUNT = ACTION_FEATURE_COUNT + 1;
+    int RESOURCE_CONTAINER_ACTION_FEATURE_COUNT = ATOMIC_ACTION_FEATURE_COUNT + 1;
 
     /**
      * The meta object id for the '{@link org.iobserve.adaptation.executionplan.impl.DeployComponentActionImpl <em>Deploy Component Action</em>}' class.
@@ -538,6 +537,7 @@ public interface ExecutionplanPackage extends EPackage {
      */
     int DISCONNECT_NODE_ACTION_FEATURE_COUNT = RESOURCE_CONTAINER_ACTION_FEATURE_COUNT + 1;
 
+
     /**
      * Returns the meta object for class '{@link org.iobserve.adaptation.executionplan.ExecutionPlan <em>Execution Plan</em>}'.
      * <!-- begin-user-doc -->
@@ -560,14 +560,14 @@ public interface ExecutionplanPackage extends EPackage {
     EReference getExecutionPlan_Actions();
 
     /**
-     * Returns the meta object for class '{@link org.iobserve.adaptation.executionplan.Action <em>Action</em>}'.
+     * Returns the meta object for class '{@link org.iobserve.adaptation.executionplan.AtomicAction <em>Atomic Action</em>}'.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
-     * @return the meta object for class '<em>Action</em>'.
-     * @see org.iobserve.adaptation.executionplan.Action
+     * @return the meta object for class '<em>Atomic Action</em>'.
+     * @see org.iobserve.adaptation.executionplan.AtomicAction
      * @generated
      */
-    EClass getAction();
+    EClass getAtomicAction();
 
     /**
      * Returns the meta object for class '{@link org.iobserve.adaptation.executionplan.AssemblyContextAction <em>Assembly Context Action</em>}'.
@@ -824,7 +824,6 @@ public interface ExecutionplanPackage extends EPackage {
      * <ul>
      *   <li>each class,</li>
      *   <li>each feature of each class,</li>
-     *   <li>each operation of each class,</li>
      *   <li>each enum,</li>
      *   <li>and each data type</li>
      * </ul>
@@ -851,14 +850,14 @@ public interface ExecutionplanPackage extends EPackage {
         EReference EXECUTION_PLAN__ACTIONS = eINSTANCE.getExecutionPlan_Actions();
 
         /**
-         * The meta object literal for the '{@link org.iobserve.adaptation.executionplan.impl.ActionImpl <em>Action</em>}' class.
+         * The meta object literal for the '{@link org.iobserve.adaptation.executionplan.impl.AtomicActionImpl <em>Atomic Action</em>}' class.
          * <!-- begin-user-doc -->
          * <!-- end-user-doc -->
-         * @see org.iobserve.adaptation.executionplan.impl.ActionImpl
-         * @see org.iobserve.adaptation.executionplan.impl.ExecutionplanPackageImpl#getAction()
+         * @see org.iobserve.adaptation.executionplan.impl.AtomicActionImpl
+         * @see org.iobserve.adaptation.executionplan.impl.ExecutionplanPackageImpl#getAtomicAction()
          * @generated
          */
-        EClass ACTION = eINSTANCE.getAction();
+        EClass ATOMIC_ACTION = eINSTANCE.getAtomicAction();
 
         /**
          * The meta object literal for the '{@link org.iobserve.adaptation.executionplan.impl.AssemblyContextActionImpl <em>Assembly Context Action</em>}' class.

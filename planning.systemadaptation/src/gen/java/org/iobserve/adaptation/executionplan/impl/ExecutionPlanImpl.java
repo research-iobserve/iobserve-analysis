@@ -5,8 +5,10 @@ package org.iobserve.adaptation.executionplan.impl;
 import org.eclipse.emf.common.util.EList;
 
 import org.eclipse.emf.ecore.EClass;
+
 import org.eclipse.emf.ecore.impl.MinimalEObjectImpl;
-import org.iobserve.adaptation.executionplan.Action;
+
+import org.iobserve.adaptation.executionplan.AtomicAction;
 import org.iobserve.adaptation.executionplan.ExecutionPlan;
 import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
 
@@ -59,8 +61,8 @@ public class ExecutionPlanImpl extends MinimalEObjectImpl.Container implements E
      * @generated
      */
     @SuppressWarnings("unchecked")
-    public EList<Action> getActions() {
-        return (EList<Action>)eGet(ExecutionplanPackage.Literals.EXECUTION_PLAN__ACTIONS, true);
+    public EList<AtomicAction> getActions() {
+        return (EList<AtomicAction>)eGet(ExecutionplanPackage.Literals.EXECUTION_PLAN__ACTIONS, true);
     }
 
 } //ExecutionPlanImpl

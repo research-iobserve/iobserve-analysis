@@ -1,18 +1,5 @@
-/***************************************************************************
- * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ***************************************************************************/
+/**
+ */
 package org.iobserve.planning.systemadaptation;
 
 import org.eclipse.emf.ecore.EClass;
@@ -20,13 +7,14 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 
 /**
- * <!-- begin-user-doc --> The <b>Package</b> for the model. It contains accessors for the meta
- * objects to represent
+ * <!-- begin-user-doc -->
+ * The <b>Package</b> for the model.
+ * It contains accessors for the meta objects to represent
  * <ul>
- * <li>each class,</li>
- * <li>each feature of each class,</li>
- * <li>each enum,</li>
- * <li>and each data type</li>
+ *   <li>each class,</li>
+ *   <li>each feature of each class,</li>
+ *   <li>each enum,</li>
+ *   <li>and each data type</li>
  * </ul>
  * <!-- end-user-doc -->
  * @see org.iobserve.planning.systemadaptation.SystemadaptationFactory
@@ -36,35 +24,40 @@ import org.eclipse.emf.ecore.EReference;
 public interface SystemadaptationPackage extends EPackage {
     /**
      * The package name.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     String eNAME = "systemadaptation";
 
     /**
      * The package namespace URI.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     String eNS_URI = "http://iobserve.org/SystemAdaptation";
 
     /**
      * The package namespace name.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     String eNS_PREFIX = "org.iobserve";
 
     /**
      * The singleton instance of the package.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      */
     SystemadaptationPackage eINSTANCE = org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl.init();
 
     /**
      * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.SystemAdaptationImpl <em>System Adaptation</em>}' class.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.iobserve.planning.systemadaptation.impl.SystemAdaptationImpl
      * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getSystemAdaptation()
      * @generated
@@ -72,44 +65,46 @@ public interface SystemadaptationPackage extends EPackage {
     int SYSTEM_ADAPTATION = 0;
 
     /**
-     * The feature id for the '<em><b>Actions</b></em>' containment reference list. <!--
-     * begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The feature id for the '<em><b>Actions</b></em>' containment reference list.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
     int SYSTEM_ADAPTATION__ACTIONS = 0;
 
     /**
-     * The number of structural features of the '<em>System Adaptation</em>' class. <!--
-     * begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The number of structural features of the '<em>System Adaptation</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
     int SYSTEM_ADAPTATION_FEATURE_COUNT = 1;
 
     /**
-     * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.ActionImpl <em>Action</em>}' class.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * @see org.iobserve.planning.systemadaptation.impl.ActionImpl
-     * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getAction()
+     * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.ComposedActionImpl <em>Composed Action</em>}' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @see org.iobserve.planning.systemadaptation.impl.ComposedActionImpl
+     * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getComposedAction()
      * @generated
      */
-    int ACTION = 1;
+    int COMPOSED_ACTION = 1;
 
     /**
-     * The number of structural features of the '<em>Action</em>' class.
+     * The number of structural features of the '<em>Composed Action</em>' class.
      * <!-- begin-user-doc -->
      * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int ACTION_FEATURE_COUNT = 0;
+    int COMPOSED_ACTION_FEATURE_COUNT = 0;
 
     /**
      * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.AssemblyContextActionImpl <em>Assembly Context Action</em>}' class.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.iobserve.planning.systemadaptation.impl.AssemblyContextActionImpl
      * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getAssemblyContextAction()
      * @generated
@@ -123,7 +118,7 @@ public interface SystemadaptationPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int ASSEMBLY_CONTEXT_ACTION__TARGET_ALLOCATION_CONTEXT = ACTION_FEATURE_COUNT + 0;
+    int ASSEMBLY_CONTEXT_ACTION__TARGET_ALLOCATION_CONTEXT = COMPOSED_ACTION_FEATURE_COUNT + 0;
 
     /**
      * The feature id for the '<em><b>Target Providing Allocation Contexts</b></em>' reference list.
@@ -132,7 +127,7 @@ public interface SystemadaptationPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int ASSEMBLY_CONTEXT_ACTION__TARGET_PROVIDING_ALLOCATION_CONTEXTS = ACTION_FEATURE_COUNT + 1;
+    int ASSEMBLY_CONTEXT_ACTION__TARGET_PROVIDING_ALLOCATION_CONTEXTS = COMPOSED_ACTION_FEATURE_COUNT + 1;
 
     /**
      * The feature id for the '<em><b>Target Requiring Allocation Contexts</b></em>' reference list.
@@ -141,20 +136,21 @@ public interface SystemadaptationPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int ASSEMBLY_CONTEXT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS = ACTION_FEATURE_COUNT + 2;
+    int ASSEMBLY_CONTEXT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS = COMPOSED_ACTION_FEATURE_COUNT + 2;
 
     /**
-     * The number of structural features of the '<em>Assembly Context Action</em>' class. <!--
-     * begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The number of structural features of the '<em>Assembly Context Action</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT = ACTION_FEATURE_COUNT + 3;
+    int ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT = COMPOSED_ACTION_FEATURE_COUNT + 3;
 
     /**
      * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.ResourceContainerActionImpl <em>Resource Container Action</em>}' class.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.iobserve.planning.systemadaptation.impl.ResourceContainerActionImpl
      * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getResourceContainerAction()
      * @generated
@@ -168,7 +164,7 @@ public interface SystemadaptationPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int RESOURCE_CONTAINER_ACTION__TARGET_RESOURCE_CONTAINER = ACTION_FEATURE_COUNT + 0;
+    int RESOURCE_CONTAINER_ACTION__TARGET_RESOURCE_CONTAINER = COMPOSED_ACTION_FEATURE_COUNT + 0;
 
     /**
      * The feature id for the '<em><b>Target Linking Resources</b></em>' reference list.
@@ -177,21 +173,21 @@ public interface SystemadaptationPackage extends EPackage {
      * @generated
      * @ordered
      */
-    int RESOURCE_CONTAINER_ACTION__TARGET_LINKING_RESOURCES = ACTION_FEATURE_COUNT + 1;
+    int RESOURCE_CONTAINER_ACTION__TARGET_LINKING_RESOURCES = COMPOSED_ACTION_FEATURE_COUNT + 1;
 
     /**
-     * The number of structural features of the '<em>Resource Container Action</em>' class. <!--
-     * begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The number of structural features of the '<em>Resource Container Action</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
-    int RESOURCE_CONTAINER_ACTION_FEATURE_COUNT = ACTION_FEATURE_COUNT + 2;
+    int RESOURCE_CONTAINER_ACTION_FEATURE_COUNT = COMPOSED_ACTION_FEATURE_COUNT + 2;
 
     /**
      * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.ChangeRepositoryComponentActionImpl <em>Change Repository Component Action</em>}' class.
-     * <!-- begin-user-doc --> <!--
-     * end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.iobserve.planning.systemadaptation.impl.ChangeRepositoryComponentActionImpl
      * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getChangeRepositoryComponentAction()
      * @generated
@@ -236,7 +232,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * The number of structural features of the '<em>Change Repository Component Action</em>' class.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
@@ -244,7 +241,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl <em>Replicate Action</em>}' class.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl
      * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getReplicateAction()
      * @generated
@@ -288,9 +286,9 @@ public interface SystemadaptationPackage extends EPackage {
     int REPLICATE_ACTION__SOURCE_ALLOCATION_CONTEXT = ASSEMBLY_CONTEXT_ACTION_FEATURE_COUNT + 0;
 
     /**
-     * The number of structural features of the '<em>Replicate Action</em>' class. <!--
-     * begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The number of structural features of the '<em>Replicate Action</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
@@ -298,7 +296,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.DereplicateActionImpl <em>Dereplicate Action</em>}' class.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.iobserve.planning.systemadaptation.impl.DereplicateActionImpl
      * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getDereplicateAction()
      * @generated
@@ -333,9 +332,9 @@ public interface SystemadaptationPackage extends EPackage {
     int DEREPLICATE_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS;
 
     /**
-     * The number of structural features of the '<em>Dereplicate Action</em>' class. <!--
-     * begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The number of structural features of the '<em>Dereplicate Action</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
@@ -343,7 +342,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.MigrateActionImpl <em>Migrate Action</em>}' class.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.iobserve.planning.systemadaptation.impl.MigrateActionImpl
      * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getMigrateAction()
      * @generated
@@ -378,9 +378,9 @@ public interface SystemadaptationPackage extends EPackage {
     int MIGRATE_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS = ASSEMBLY_CONTEXT_ACTION__TARGET_REQUIRING_ALLOCATION_CONTEXTS;
 
     /**
-     * The feature id for the '<em><b>Source Allocation Context</b></em>' reference. <!--
-     * begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The feature id for the '<em><b>Source Allocation Context</b></em>' reference.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
@@ -406,8 +406,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * The number of structural features of the '<em>Migrate Action</em>' class.
-     * <!-- begin-user-doc
-     * --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
@@ -415,7 +415,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.AllocateActionImpl <em>Allocate Action</em>}' class.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.iobserve.planning.systemadaptation.impl.AllocateActionImpl
      * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getAllocateAction()
      * @generated
@@ -441,9 +442,9 @@ public interface SystemadaptationPackage extends EPackage {
     int ALLOCATE_ACTION__TARGET_LINKING_RESOURCES = RESOURCE_CONTAINER_ACTION__TARGET_LINKING_RESOURCES;
 
     /**
-     * The number of structural features of the '<em>Allocate Action</em>' class. <!--
-     * begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The number of structural features of the '<em>Allocate Action</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
@@ -451,7 +452,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * The meta object id for the '{@link org.iobserve.planning.systemadaptation.impl.DeallocateActionImpl <em>Deallocate Action</em>}' class.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @see org.iobserve.planning.systemadaptation.impl.DeallocateActionImpl
      * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getDeallocateAction()
      * @generated
@@ -477,17 +479,19 @@ public interface SystemadaptationPackage extends EPackage {
     int DEALLOCATE_ACTION__TARGET_LINKING_RESOURCES = RESOURCE_CONTAINER_ACTION__TARGET_LINKING_RESOURCES;
 
     /**
-     * The number of structural features of the '<em>Deallocate Action</em>' class. <!--
-     * begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * The number of structural features of the '<em>Deallocate Action</em>' class.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @generated
      * @ordered
      */
     int DEALLOCATE_ACTION_FEATURE_COUNT = RESOURCE_CONTAINER_ACTION_FEATURE_COUNT + 0;
 
+
     /**
      * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.SystemAdaptation <em>System Adaptation</em>}'.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the meta object for class '<em>System Adaptation</em>'.
      * @see org.iobserve.planning.systemadaptation.SystemAdaptation
      * @generated
@@ -496,7 +500,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * Returns the meta object for the containment reference list '{@link org.iobserve.planning.systemadaptation.SystemAdaptation#getActions <em>Actions</em>}'.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the meta object for the containment reference list '<em>Actions</em>'.
      * @see org.iobserve.planning.systemadaptation.SystemAdaptation#getActions()
      * @see #getSystemAdaptation()
@@ -505,17 +510,19 @@ public interface SystemadaptationPackage extends EPackage {
     EReference getSystemAdaptation_Actions();
 
     /**
-     * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.Action <em>Action</em>}'.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
-     * @return the meta object for class '<em>Action</em>'.
-     * @see org.iobserve.planning.systemadaptation.Action
+     * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.ComposedAction <em>Composed Action</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
+     * @return the meta object for class '<em>Composed Action</em>'.
+     * @see org.iobserve.planning.systemadaptation.ComposedAction
      * @generated
      */
-    EClass getAction();
+    EClass getComposedAction();
 
     /**
      * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.AssemblyContextAction <em>Assembly Context Action</em>}'.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the meta object for class '<em>Assembly Context Action</em>'.
      * @see org.iobserve.planning.systemadaptation.AssemblyContextAction
      * @generated
@@ -557,7 +564,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.ResourceContainerAction <em>Resource Container Action</em>}'.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the meta object for class '<em>Resource Container Action</em>'.
      * @see org.iobserve.planning.systemadaptation.ResourceContainerAction
      * @generated
@@ -588,7 +596,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction <em>Change Repository Component Action</em>}'.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the meta object for class '<em>Change Repository Component Action</em>'.
      * @see org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction
      * @generated
@@ -608,7 +617,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.ReplicateAction <em>Replicate Action</em>}'.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the meta object for class '<em>Replicate Action</em>'.
      * @see org.iobserve.planning.systemadaptation.ReplicateAction
      * @generated
@@ -628,7 +638,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.DereplicateAction <em>Dereplicate Action</em>}'.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the meta object for class '<em>Dereplicate Action</em>'.
      * @see org.iobserve.planning.systemadaptation.DereplicateAction
      * @generated
@@ -636,10 +647,9 @@ public interface SystemadaptationPackage extends EPackage {
     EClass getDereplicateAction();
 
     /**
-     * Returns the meta object for class
-     * '{@link org.iobserve.planning.systemadaptation.MigrateAction <em>Migrate Action</em>}'. <!--
-     * begin-user-doc --> <!-- end-user-doc -->
-     * 
+     * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.MigrateAction <em>Migrate Action</em>}'.
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the meta object for class '<em>Migrate Action</em>'.
      * @see org.iobserve.planning.systemadaptation.MigrateAction
      * @generated
@@ -648,7 +658,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * Returns the meta object for the reference '{@link org.iobserve.planning.systemadaptation.MigrateAction#getSourceAllocationContext <em>Source Allocation Context</em>}'.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the meta object for the reference '<em>Source Allocation Context</em>'.
      * @see org.iobserve.planning.systemadaptation.MigrateAction#getSourceAllocationContext()
      * @see #getMigrateAction()
@@ -680,7 +691,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.AllocateAction <em>Allocate Action</em>}'.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the meta object for class '<em>Allocate Action</em>'.
      * @see org.iobserve.planning.systemadaptation.AllocateAction
      * @generated
@@ -689,7 +701,8 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * Returns the meta object for class '{@link org.iobserve.planning.systemadaptation.DeallocateAction <em>Deallocate Action</em>}'.
-     * <!-- begin-user-doc --> <!-- end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the meta object for class '<em>Deallocate Action</em>'.
      * @see org.iobserve.planning.systemadaptation.DeallocateAction
      * @generated
@@ -698,20 +711,21 @@ public interface SystemadaptationPackage extends EPackage {
 
     /**
      * Returns the factory that creates the instances of the model.
-     * <!-- begin-user-doc --> <!--
-     * end-user-doc -->
+     * <!-- begin-user-doc -->
+     * <!-- end-user-doc -->
      * @return the factory that creates the instances of the model.
      * @generated
      */
     SystemadaptationFactory getSystemadaptationFactory();
 
     /**
-     * <!-- begin-user-doc --> Defines literals for the meta objects that represent
+     * <!-- begin-user-doc -->
+     * Defines literals for the meta objects that represent
      * <ul>
-     * <li>each class,</li>
-     * <li>each feature of each class,</li>
-     * <li>each enum,</li>
-     * <li>and each data type</li>
+     *   <li>each class,</li>
+     *   <li>each feature of each class,</li>
+     *   <li>each enum,</li>
+     *   <li>and each data type</li>
      * </ul>
      * <!-- end-user-doc -->
      * @generated
@@ -719,7 +733,8 @@ public interface SystemadaptationPackage extends EPackage {
     interface Literals {
         /**
          * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.SystemAdaptationImpl <em>System Adaptation</em>}' class.
-         * <!-- begin-user-doc --> <!-- end-user-doc -->
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
          * @see org.iobserve.planning.systemadaptation.impl.SystemAdaptationImpl
          * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getSystemAdaptation()
          * @generated
@@ -728,23 +743,26 @@ public interface SystemadaptationPackage extends EPackage {
 
         /**
          * The meta object literal for the '<em><b>Actions</b></em>' containment reference list feature.
-         * <!-- begin-user-doc --> <!-- end-user-doc -->
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
          * @generated
          */
         EReference SYSTEM_ADAPTATION__ACTIONS = eINSTANCE.getSystemAdaptation_Actions();
 
         /**
-         * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.ActionImpl <em>Action</em>}' class.
-         * <!-- begin-user-doc --> <!-- end-user-doc -->
-         * @see org.iobserve.planning.systemadaptation.impl.ActionImpl
-         * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getAction()
+         * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.ComposedActionImpl <em>Composed Action</em>}' class.
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
+         * @see org.iobserve.planning.systemadaptation.impl.ComposedActionImpl
+         * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getComposedAction()
          * @generated
          */
-        EClass ACTION = eINSTANCE.getAction();
+        EClass COMPOSED_ACTION = eINSTANCE.getComposedAction();
 
         /**
          * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.AssemblyContextActionImpl <em>Assembly Context Action</em>}' class.
-         * <!-- begin-user-doc --> <!-- end-user-doc -->
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
          * @see org.iobserve.planning.systemadaptation.impl.AssemblyContextActionImpl
          * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getAssemblyContextAction()
          * @generated
@@ -777,7 +795,8 @@ public interface SystemadaptationPackage extends EPackage {
 
         /**
          * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.ResourceContainerActionImpl <em>Resource Container Action</em>}' class.
-         * <!-- begin-user-doc --> <!-- end-user-doc -->
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
          * @see org.iobserve.planning.systemadaptation.impl.ResourceContainerActionImpl
          * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getResourceContainerAction()
          * @generated
@@ -802,8 +821,8 @@ public interface SystemadaptationPackage extends EPackage {
 
         /**
          * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.ChangeRepositoryComponentActionImpl <em>Change Repository Component Action</em>}' class.
-         * <!-- begin-user-doc --> <!--
-         * end-user-doc -->
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
          * @see org.iobserve.planning.systemadaptation.impl.ChangeRepositoryComponentActionImpl
          * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getChangeRepositoryComponentAction()
          * @generated
@@ -820,7 +839,8 @@ public interface SystemadaptationPackage extends EPackage {
 
         /**
          * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl <em>Replicate Action</em>}' class.
-         * <!-- begin-user-doc --> <!-- end-user-doc -->
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
          * @see org.iobserve.planning.systemadaptation.impl.ReplicateActionImpl
          * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getReplicateAction()
          * @generated
@@ -837,7 +857,8 @@ public interface SystemadaptationPackage extends EPackage {
 
         /**
          * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.DereplicateActionImpl <em>Dereplicate Action</em>}' class.
-         * <!-- begin-user-doc --> <!-- end-user-doc -->
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
          * @see org.iobserve.planning.systemadaptation.impl.DereplicateActionImpl
          * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getDereplicateAction()
          * @generated
@@ -846,7 +867,8 @@ public interface SystemadaptationPackage extends EPackage {
 
         /**
          * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.MigrateActionImpl <em>Migrate Action</em>}' class.
-         * <!-- begin-user-doc --> <!-- end-user-doc -->
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
          * @see org.iobserve.planning.systemadaptation.impl.MigrateActionImpl
          * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getMigrateAction()
          * @generated
@@ -855,7 +877,8 @@ public interface SystemadaptationPackage extends EPackage {
 
         /**
          * The meta object literal for the '<em><b>Source Allocation Context</b></em>' reference feature.
-         * <!-- begin-user-doc --> <!-- end-user-doc -->
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
          * @generated
          */
         EReference MIGRATE_ACTION__SOURCE_ALLOCATION_CONTEXT = eINSTANCE.getMigrateAction_SourceAllocationContext();
@@ -878,7 +901,8 @@ public interface SystemadaptationPackage extends EPackage {
 
         /**
          * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.AllocateActionImpl <em>Allocate Action</em>}' class.
-         * <!-- begin-user-doc --> <!-- end-user-doc -->
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
          * @see org.iobserve.planning.systemadaptation.impl.AllocateActionImpl
          * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getAllocateAction()
          * @generated
@@ -887,7 +911,8 @@ public interface SystemadaptationPackage extends EPackage {
 
         /**
          * The meta object literal for the '{@link org.iobserve.planning.systemadaptation.impl.DeallocateActionImpl <em>Deallocate Action</em>}' class.
-         * <!-- begin-user-doc --> <!-- end-user-doc -->
+         * <!-- begin-user-doc -->
+         * <!-- end-user-doc -->
          * @see org.iobserve.planning.systemadaptation.impl.DeallocateActionImpl
          * @see org.iobserve.planning.systemadaptation.impl.SystemadaptationPackageImpl#getDeallocateAction()
          * @generated
@@ -896,4 +921,4 @@ public interface SystemadaptationPackage extends EPackage {
 
     }
 
-} // SystemadaptationPackage
+} //SystemadaptationPackage

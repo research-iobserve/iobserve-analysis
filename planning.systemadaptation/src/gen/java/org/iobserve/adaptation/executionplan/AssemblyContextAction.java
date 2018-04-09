@@ -20,7 +20,7 @@ import org.palladiosimulator.pcm.allocation.AllocationContext;
  * @model abstract="true"
  * @generated
  */
-public interface AssemblyContextAction extends Action {
+public interface AssemblyContextAction extends AtomicAction {
     /**
      * Returns the value of the '<em><b>Target Allocation Context</b></em>' reference.
      * <!-- begin-user-doc -->
