@@ -18,13 +18,11 @@ package org.iobserve.common.record;
 import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
-import kieker.common.record.AbstractMonitoringRecord;
-import kieker.common.record.IMonitoringRecord;
+import kieker.common.record.flow.AbstractEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
-import org.iobserve.common.record.IEvent;
 import org.iobserve.common.record.ISessionEvent;
 
 /**
@@ -33,14 +31,14 @@ import org.iobserve.common.record.ISessionEvent;
  * 
  * @since 0.0.2
  */
-public class SessionStartEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent, ISessionEvent {			
+public class SessionStartEvent extends AbstractEvent implements ISessionEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
 			 + TYPE_SIZE_STRING // ISessionEvent.hostname
 			 + TYPE_SIZE_STRING; // ISessionEvent.sessionId
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEvent.timestamp
+		long.class, // IEventRecord.timestamp
 		String.class, // ISessionEvent.hostname
 		String.class, // ISessionEvent.sessionId
 	};
@@ -48,7 +46,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	/** default constants. */
 	public static final String HOSTNAME = "";
 	public static final String SESSION_ID = "";
-	private static final long serialVersionUID = 8630937685639626967L;
+	private static final long serialVersionUID = 3453809390268343438L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -58,7 +56,6 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	};
 	
 	/** property declarations. */
-	private final long timestamp;
 	private final String hostname;
 	private final String sessionId;
 	
@@ -73,7 +70,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	 *            sessionId
 	 */
 	public SessionStartEvent(final long timestamp, final String hostname, final String sessionId) {
-		this.timestamp = timestamp;
+		super(timestamp);
 		this.hostname = hostname == null?"":hostname;
 		this.sessionId = sessionId == null?"":sessionId;
 	}
@@ -89,8 +86,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	 */
 	@Deprecated
 	public SessionStartEvent(final Object[] values) { // NOPMD (direct store of values)
-		AbstractMonitoringRecord.checkArray(values, TYPES);
-		this.timestamp = (Long) values[0];
+		super(values, TYPES);
 		this.hostname = (String) values[1];
 		this.sessionId = (String) values[2];
 	}
@@ -107,8 +103,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	 */
 	@Deprecated
 	protected SessionStartEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		AbstractMonitoringRecord.checkArray(values, valueTypes);
-		this.timestamp = (Long) values[0];
+		super(values, valueTypes);
 		this.hostname = (String) values[1];
 		this.sessionId = (String) values[2];
 	}
@@ -121,7 +116,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 	 *            when the record could not be deserialized
 	 */
 	public SessionStartEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		this.timestamp = deserializer.getLong();
+		super(deserializer);
 		this.hostname = deserializer.getString();
 		this.sessionId = deserializer.getString();
 	}
@@ -217,11 +212,6 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IMoni
 		
 		return true;
 	}
-	
-	public final long getTimestamp() {
-		return this.timestamp;
-	}
-	
 	
 	public final String getHostname() {
 		return this.hostname;
