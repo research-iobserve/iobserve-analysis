@@ -34,9 +34,11 @@ import org.iobserve.planning.systemadaptation.SystemAdaptation;
 public class ComposedActionComputationTestConfig extends Configuration {
 
     public ComposedActionComputationTestConfig(final InitialElementProducer<AdaptationData> producer,
+            final ComposedActionFactoryInitialization actionFactoryInitializer,
             final ComposedActionComputation composedActionComputation,
             final CollectorSink<SystemAdaptation> collector) {
-        this.connectPorts(producer.getOutputPort(), composedActionComputation.getInputPort());
+        this.connectPorts(producer.getOutputPort(), actionFactoryInitializer.getInputPort());
+        this.connectPorts(actionFactoryInitializer.getOutputPort(), composedActionComputation.getInputPort());
         this.connectPorts(composedActionComputation.getOutputPort(), collector.getInputPort());
     }
 }

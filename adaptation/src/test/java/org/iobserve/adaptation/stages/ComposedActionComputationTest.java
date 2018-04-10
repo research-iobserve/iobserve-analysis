@@ -50,7 +50,7 @@ import org.junit.Test;
  */
 public class ComposedActionComputationTest {
 
-    private ComposedActionComputation composedActionComputation;
+    private ComposedActionFactoryInitialization actionFactoryInitializer;
     private AdaptationTestModel runtimeModel;
     private AdaptationTestModel redeploymentModel;
 
@@ -66,7 +66,8 @@ public class ComposedActionComputationTest {
         this.runtimeModel = new AdaptationTestModel();
         this.redeploymentModel = (AdaptationTestModel) this.runtimeModel.getCopyWithSameIds();
 
-        this.composedActionComputation = new ComposedActionComputation(this.runtimeModel, this.redeploymentModel);
+        this.actionFactoryInitializer = new ComposedActionFactoryInitialization(this.runtimeModel,
+                this.redeploymentModel);
     }
 
     @Test
@@ -325,9 +326,10 @@ public class ComposedActionComputationTest {
 
     private SystemAdaptation executeStage(final AdaptationData adaptationData) {
         final InitialElementProducer<AdaptationData> producer = new InitialElementProducer<>(adaptationData);
+        final ComposedActionComputation composedActionComputation = new ComposedActionComputation();
         final CollectorSink<SystemAdaptation> collector = new CollectorSink<>();
         final ComposedActionComputationTestConfig configuration = new ComposedActionComputationTestConfig(producer,
-                this.composedActionComputation, collector);
+                this.actionFactoryInitializer, composedActionComputation, collector);
         final Execution<ComposedActionComputationTestConfig> execution = new Execution<>(configuration);
 
         execution.executeBlocking();
