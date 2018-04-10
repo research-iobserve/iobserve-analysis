@@ -22,6 +22,7 @@ import teetime.framework.Configuration;
 import org.iobserve.adaptation.data.stages.AdaptationDataCreator;
 import org.iobserve.adaptation.stages.AtomicActionComputation;
 import org.iobserve.adaptation.stages.ComposedActionComputation;
+import org.iobserve.adaptation.stages.ComposedActionFactoryInitialization;
 import org.iobserve.adaptation.stages.SerializeExecutionPlanStage;
 import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
@@ -46,6 +47,7 @@ public class AdaptationConfiguration extends Configuration {
         final ModelFiles2ModelDirCollectorStage runtimeModelCollector = new ModelFiles2ModelDirCollectorStage();
         final ModelFiles2ModelDirCollectorStage redeploymentModelCollector = new ModelFiles2ModelDirCollectorStage();
         final AdaptationDataCreator adaptationDataCreator = new AdaptationDataCreator();
+        final ComposedActionFactoryInitialization actionFactoryInitializer = new ComposedActionFactoryInitialization();
         final ComposedActionComputation composedActionComputation = new ComposedActionComputation();
         final AtomicActionComputation atomicActionComputation = new AtomicActionComputation();
         final SerializeExecutionPlanStage executionPlanSerializer = new SerializeExecutionPlanStage(executionPlanURI);
@@ -61,8 +63,11 @@ public class AdaptationConfiguration extends Configuration {
         this.connectPorts(redeploymentModelCollector.getOutputPort(),
                 adaptationDataCreator.getRedeploymentModelInputPort());
 
-        // Adaptation data creation -> composed action computation
-        this.connectPorts(adaptationDataCreator.getOutputPort(), composedActionComputation.getInputPort());
+        // Adaptation data creation -> action factory initialization
+        this.connectPorts(adaptationDataCreator.getOutputPort(), actionFactoryInitializer.getInputPort());
+
+        // Action factory initialization -> composed action computation
+        this.connectPorts(actionFactoryInitializer.getOutputPort(), composedActionComputation.getInputPort());
 
         // Composed action computation -> atomic action computation (result: execution plan)
         this.connectPorts(composedActionComputation.getOutputPort(), atomicActionComputation.getInputPort());
