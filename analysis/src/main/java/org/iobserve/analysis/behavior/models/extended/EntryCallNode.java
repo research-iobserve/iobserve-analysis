@@ -97,14 +97,14 @@ public class EntryCallNode {
      * Finds call information with a specific signature and parameter and returns an
      * Optional of it
      *
-     * @param signature
+     * @param operationSignature
      *            The signature of the call information
      * @param parameter
      *            The parameter of the call information
      * @return Returns an Optional of the search result
      */
-    public Optional<CallInformation> findCallInformation(final String signature, final String parameter) {
-        final CallInformation result = this.entryCallInformation.get(signature + parameter);
+    public Optional<CallInformation> findCallInformation(final String operationSignature, final String parameter) {
+        final CallInformation result = this.entryCallInformation.get(operationSignature + parameter);
         return Optional.ofNullable(result);
     }
 

@@ -43,11 +43,13 @@ public class GroupingBehaviorStage extends AbstractConsumerStage<Double[][]> {
     private Double[][] vectors;
 
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param similarityRadius
+     * @param structureSimilarityRadius
      *            The similarity radius specifies how similar two model's vectors have to be to get
      *            aggregated into the same group
+     * @param parameterSimilarityRadius
+     *            radius to which extend values are considered similar
      */
     public GroupingBehaviorStage(final double structureSimilarityRadius, final double parameterSimilarityRadius) {
         super();
@@ -88,7 +90,7 @@ public class GroupingBehaviorStage extends AbstractConsumerStage<Double[][]> {
     }
 
     /**
-     * Finds the first matching group similar enough for the supplied vector
+     * Finds the first matching group similar enough for the supplied vector.
      *
      * @param vector
      *            The vector to find a group for
@@ -114,7 +116,7 @@ public class GroupingBehaviorStage extends AbstractConsumerStage<Double[][]> {
     }
 
     /**
-     * Checks if two vectors are considered similar
+     * Checks if two vectors are considered similar.
      *
      * @param a
      *

@@ -20,16 +20,61 @@ import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
 import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 
 /**
- * Structure distance function for behavior models
+ * Structure distance function for behavior models.
  *
  * @author Jannis Kuckei
  *
  */
 public class GeneralStructureMetric implements IStructureMetricStrategy {
+
     @Override
     public double getDistance(final BehaviorModel a, final BehaviorModel b) {
-        /** Calculate node distance */
 
+        /** Calculate edge distance */
+
+        // Return average of edge/node distance
+        return (this.calculateEdgeDistance(a, b) + this.caclulateNodeDistance(a, b)) / 2;
+    }
+
+    /**
+     * Calculate edge distance.
+     *
+     * @param a
+     *            first model
+     * @param b
+     *            second model
+     */
+    private double calculateEdgeDistance(final BehaviorModel a, final BehaviorModel b) {
+        // Get amount of shared egdges, count an edge with edge number n as n individual
+        // edges
+        double edgesInA = 0;
+        double edgesInB = 0;
+        double sharedEdges = 0;
+        for (final EntryCallEdge edgeA : a.getEdges()) {
+            edgesInA += edgeA.getCalls();
+            for (final EntryCallEdge edgeB : b.getEdges()) {
+                edgesInB += edgeB.getCalls();
+                if (edgeA.equals(edgeB)) {
+                    sharedEdges += Math.min(edgeA.getCalls(), edgeB.getCalls());
+                    break; // There cannot be multiple edge instances with the same source and
+                           // target nodes
+                           // in a model
+                }
+            }
+        }
+
+        return (edgesInA + edgesInB - sharedEdges) / (edgesInA + edgesInB);
+    }
+
+    /**
+     * Calculate node distance.
+     *
+     * @param a
+     *            first model
+     * @param b
+     *            second model
+     */
+    private double caclulateNodeDistance(final BehaviorModel a, final BehaviorModel b) {
         // Get amount of shared nodes
         double sharedNodes = 0;
         for (final EntryCallNode nodeA : a.getNodes()) {
@@ -42,29 +87,7 @@ public class GeneralStructureMetric implements IStructureMetricStrategy {
         }
         final double nodesInA = a.getNodes().length;
         final double nodesInB = b.getNodes().length;
-        final double nodeDistance = ((nodesInA + nodesInB) - sharedNodes) / (nodesInA + nodesInB);
 
-        /** Calculate edge distance */
-        // Get amount of shared egdges, count an edge with edge number n as n individual
-        // edges
-        double edgesInA = 0;
-        double edgesInB = 0;
-        double sharedEdges = 0;
-        for (final EntryCallEdge edgeA : a.getEdges()) {
-            edgesInA += edgeA.getCalls();
-            for (final EntryCallEdge edgeB : b.getEdges()) {
-                edgesInB += edgeB.getCalls();
-                if (edgeA.equals(edgeB)) {
-                    sharedEdges += Math.min(edgeA.getCalls(), edgeB.getCalls());
-                    break; // There cannot be multiple edge instances with the same source and target nodes
-                           // in a model
-                }
-            }
-        }
-
-        final double edgeDistance = ((edgesInA + edgesInB) - sharedEdges) / (edgesInA + edgesInB);
-
-        // Return average of edge/node distance
-        return (edgeDistance + nodeDistance) / 2;
+        return (nodesInA + nodesInB - sharedNodes) / (nodesInA + nodesInB);
     }
 }

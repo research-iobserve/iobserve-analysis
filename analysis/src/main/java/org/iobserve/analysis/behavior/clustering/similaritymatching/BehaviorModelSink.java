@@ -19,15 +19,15 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
-import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import teetime.framework.AbstractConsumerStage;
+
+import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Writes a behavior model into a file.
@@ -59,7 +59,7 @@ public class BehaviorModelSink extends AbstractConsumerStage<BehaviorModel> {
     @Override
     protected void execute(final BehaviorModel model) throws IOException {
         final String filename = this.baseUrl + model.getName() + ".txt";
-        // BehaviorModelSink.LOGGER.info("Write models to {}", filename);
+        BehaviorModelSink.LOGGER.info("Write models to {}", filename);
         final FileWriter fw = new FileWriter(filename);
         final BufferedWriter bw = new BufferedWriter(fw);
         this.objectMapper.enable(SerializationFeature.INDENT_OUTPUT);

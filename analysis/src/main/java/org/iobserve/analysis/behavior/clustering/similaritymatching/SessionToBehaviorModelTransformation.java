@@ -13,11 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.behavior.models.extended;
+package org.iobserve.analysis.behavior.clustering.similaritymatching;
 
 import java.util.Iterator;
 import java.util.List;
 
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
@@ -25,15 +32,33 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Class providing method to convert UserSession to BehaviorModel objects
+ * Converts all arriving user sessions into behavior models.
  *
  * @author Jannis Kuckei
  *
  */
-public class UserSessionToBehaviorModelConverter {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserSessionToBehaviorModelConverter.class);
+public class SessionToBehaviorModelTransformation extends AbstractConsumerStage<UserSession> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SessionToBehaviorModelTransformation.class);
 
-    public static BehaviorModel convert(final UserSession session) {
+    private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
+
+    @Override
+    public void execute(final UserSession session) {
+        this.outputPort.send(this.convert(session));
+    }
+
+    public OutputPort<BehaviorModel> getOutputPort() {
+        return this.outputPort;
+    }
+
+    /**
+     * Convert a user session into a behavior model.
+     *
+     * @param session
+     *            user session
+     * @return returns a behavior model
+     */
+    public BehaviorModel convert(final UserSession session) {
         final BehaviorModel model = new BehaviorModel();
 
         final List<EntryCallEvent> entryCalls = session.getEvents();
@@ -41,13 +66,11 @@ public class UserSessionToBehaviorModelConverter {
 
         // Assume list has at least one element
         if (iterator.hasNext()) {
-            EntryCallNode lastNode = UserSessionToBehaviorModelConverter
-                    .createNode((PayloadAwareEntryCallEvent) iterator.next());
+            EntryCallNode lastNode = this.createNode((PayloadAwareEntryCallEvent) iterator.next());
             EntryCallNode currentNode;
 
             while (iterator.hasNext()) {
-                currentNode = UserSessionToBehaviorModelConverter
-                        .createNode((PayloadAwareEntryCallEvent) iterator.next());
+                currentNode = this.createNode((PayloadAwareEntryCallEvent) iterator.next());
 
                 model.addNode(currentNode, true);
                 model.addEdge(new EntryCallEdge(lastNode, currentNode), false);
@@ -56,12 +79,12 @@ public class UserSessionToBehaviorModelConverter {
 
             return model;
         } else {
-            UserSessionToBehaviorModelConverter.LOGGER.error("Empty user session creates empty model");
+            SessionToBehaviorModelTransformation.LOGGER.error("Empty user session creates empty model");
             return model;
         }
     }
 
-    private static EntryCallNode createNode(final PayloadAwareEntryCallEvent event) {
+    private EntryCallNode createNode(final PayloadAwareEntryCallEvent event) {
         final String signature = event.getOperationSignature();
         final EntryCallNode node = new EntryCallNode(signature);
 

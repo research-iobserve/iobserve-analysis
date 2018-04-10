@@ -49,6 +49,11 @@ public class BinaryFile2RecordFilter extends AbstractConsumerStage<File> {
     private ClassNameRegistryRepository classNameRegistryRepository;
 
     /**
+     * Create a binary data to record filter.
+     *
+     * @param classNameRegistryRepository
+     *            string registry
+     *
      * @since 1.10
      */
     public BinaryFile2RecordFilter(final ClassNameRegistryRepository classNameRegistryRepository) {

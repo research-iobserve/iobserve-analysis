@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.configurations;
+package org.iobserve.analysis;
 
 import org.iobserve.analysis.behavior.clustering.similaritymatching.IClassificationStage;
 import org.iobserve.analysis.behavior.clustering.similaritymatching.IModelGenerationStrategy;
@@ -43,8 +43,7 @@ public final class ConfigurationKeys {
     public static final String CONTAINER_MANAGEMENT = ConfigurationKeys.PREFIX + "container.management.analysis";
 
     /**
-     * Set whether container management visualization sinks shall be created. STRING
-     * ARRAY
+     * Set whether container management visualization sinks shall be created. STRING ARRAY
      */
     public static final String CONTAINER_MANAGEMENT_SINK = ConfigurationKeys.PREFIX + "container.management.sink";
 
@@ -98,7 +97,7 @@ public final class ConfigurationKeys {
     public static final String BEHAVIOR_CLUSTERING = ConfigurationKeys.PREFIX + "behaviour.filter";
 
     /** Set whether a behavior visualization sink shall be created. STRING ARRAY. */
-    public static final String BEHAVIOR_CLUSTERING_SINK = ConfigurationKeys.PREFIX + "behavior.sink.visual";
+    public static final String BEHAVIOR_CLUSTERING_SINK = ConfigurationKeys.PREFIX + "behavior.sink";
 
     /** poepke approach. */
     public static final String BEHAVIOR_VISUALIZATION_URL = ConfigurationKeys.PREFIX + "behavior.visualizationUrl";
@@ -123,8 +122,7 @@ public final class ConfigurationKeys {
             + ITraceSignatureCleanupRewriter.class.getSimpleName();
 
     /**
-     * Set entry call filter rules factory required for TSessionOperationsFilter.
-     * STRING
+     * Set entry call filter rules factory required for TSessionOperationsFilter. STRING
      */
     public static final String ENTRY_CALL_FILTER_RULES_FACTORY = ConfigurationKeys.PREFIX + "behavior."
             + IModelGenerationFilterFactory.class.getSimpleName();
@@ -133,56 +131,65 @@ public final class ConfigurationKeys {
     public static final String TRIGGER_INTERVAL = ConfigurationKeys.PREFIX + "behavior." + "triggerInterval";
 
     /**
-     * Set classification stage (IClassificationStage) used in
-     * BehaviorCompositeStage STRING
+     * Set classification stage (IClassificationStage) used in BehaviorCompositeStage STRING.
      */
     public static final String CLASSIFICATION_STAGE = ConfigurationKeys.PREFIX + "behavior."
             + IClassificationStage.class.getSimpleName();
 
     /**
-     * Set behaviour model sink base url to configure file writing directory STRING
+     * Set behaviour model sink base url to configure file writing directory STRING.
      */
     public static final String SINK_BASE_URL = ConfigurationKeys.PREFIX + "behavior.sink.baseUrl";
 
     /**
-     * Specific to Similarity Matching
+     * Specific to Similarity Matching.
      */
 
     /**
-     * Set parameter metric strategy STRING
+     * Set parameter metric strategy STRING.
      */
     public static final String SIM_MATCH_PARAMETER_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
             + IParameterMetric.class.getSimpleName();
 
     /**
-     * Set structure metric strategy STRING
+     * Set structure metric strategy STRING.
      */
     public static final String SIM_MATCH_STRUCTURE_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
             + IStructureMetricStrategy.class.getSimpleName();
 
     /**
-     * Set model generation strategy STRING
+     * Set model generation strategy STRING.
      */
     public static final String SIM_MATCH_MODEL_STRATEGY = ConfigurationKeys.PREFIX + "behavior.sm."
             + IModelGenerationStrategy.class.getSimpleName();
 
     /**
-     * Set parameter similarity radius DOUBLE
+     * Set parameter similarity radius DOUBLE.
      */
     public static final String SIM_MATCH_RADIUS_PARAMS = ConfigurationKeys.PREFIX + "behavior.sm.parameters.radius";
 
     /**
-     * Set structure similarity radius DOUBLE
+     * Set structure similarity radius DOUBLE.
      */
     public static final String SIM_MATCH_RADIUS_STRUCTURE = ConfigurationKeys.PREFIX + "behavior.sm.structure.radius";
+
+    public static final String SINGLE_EVENT_MODE = ConfigurationKeys.PREFIX + "singleEventMode";
 
     /**
      * Model.
      */
 
-    public static final String PCM_MODEL_DB_DIRECTORY = ConfigurationKeys.PREFIX + "model.pcm.directory.db";
+    public static final String PCM_MODEL_DB_DIRECTORY = ConfigurationKeys.PREFIX + "model.pcm.databaseDirectory";
 
-    public static final String PCM_MODEL_INIT_DIRECTORY = ConfigurationKeys.PREFIX + "model.pcm.directory.init";
+    public static final String PCM_MODEL_INIT_DIRECTORY = ConfigurationKeys.PREFIX
+            + "model.pcm.initializationDirectory";
+
+    public static final String PCM_FEATURE = ConfigurationKeys.PREFIX + "model.pcm";
+
+    public static final String CONTAINER_MANAGEMENT_VISUALIZATION_FEATURE = ConfigurationKeys.PREFIX
+            + "containerManagement.visualization";
+
+    public static final String SYSTEM_ID = ConfigurationKeys.PREFIX + "systemId";
 
     /**
      * Factory, do not instantiate.

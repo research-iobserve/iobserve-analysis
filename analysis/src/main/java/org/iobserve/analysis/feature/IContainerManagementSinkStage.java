@@ -15,10 +15,13 @@
  ***************************************************************************/
 package org.iobserve.analysis.feature;
 
+import kieker.common.configuration.Configuration;
+
 import teetime.framework.InputPort;
 
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
@@ -27,7 +30,10 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
  * @author Reiner Jung
  *
  */
-public interface IContainerManagementSinksStage {
+public interface IContainerManagementSinkStage {
+
+    public Class<?>[] SIGNATURE = { Configuration.class, IModelProvider.class, IModelProvider.class,
+            IModelProvider.class, IModelProvider.class };
 
     /**
      *

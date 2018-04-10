@@ -13,26 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.behavior.clustering.similaritymatching;
-
-import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
-
-/**
- * Represents a distance function between two behavior models based on their general structure.
- *
- * @author Jannis Kuckei
- *
- */
-public interface IStructureMetricStrategy {
-
-    /**
-     * Compute the distance between two models.
-     *
-     * @param a
-     *            first model
-     * @param b
-     *            second model
-     * @return returns the distance between both models
-     */
-    public double getDistance(BehaviorModel a, BehaviorModel b);
-}
+package org.iobserve.analysis.behavior.models.extended;

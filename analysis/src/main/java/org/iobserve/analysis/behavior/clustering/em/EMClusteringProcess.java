@@ -19,7 +19,6 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.behavior.IDensitityClustering;
 import org.iobserve.analysis.behavior.filter.ClusterMerger;
 import org.iobserve.analysis.behavior.filter.DensityClusteringStage;
 

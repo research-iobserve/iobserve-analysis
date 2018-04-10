@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.behavior;
+package org.iobserve.analysis.behavior.clustering.em;
 
 import java.util.List;
 import java.util.Map;
 
 import org.eclipse.net4j.util.collection.Pair;
+import org.iobserve.analysis.behavior.IClustering;
 
 import weka.core.Instance;
 import weka.core.Instances;

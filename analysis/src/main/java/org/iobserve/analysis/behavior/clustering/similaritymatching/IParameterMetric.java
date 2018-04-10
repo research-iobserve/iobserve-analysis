@@ -18,12 +18,21 @@ package org.iobserve.analysis.behavior.clustering.similaritymatching;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 
 /**
- * Represents a distance function between behavior models based on their
- * call-parameters
- * 
+ * Represents a distance function between behavior models based on their call-parameters.
+ *
  * @author Jannis Kuckei
  *
  */
 public interface IParameterMetric {
+
+    /**
+     * Get distance between two behavior models.
+     *
+     * @param a
+     *            first model
+     * @param b
+     *            second model
+     * @return returns the distance
+     */
     public double getDistance(BehaviorModel a, BehaviorModel b);
 }

@@ -23,8 +23,8 @@ import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
+import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.analysis.behavior.models.data.configuration.IModelGenerationFilterFactory;
-import org.iobserve.analysis.configurations.ConfigurationKeys;
 import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.analysis.session.SessionAcceptanceFilter;
 import org.iobserve.analysis.session.data.UserSession;
@@ -42,7 +42,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Pre-processes monitoring records into user sessions and also provides a timer stage to generate
- * signals at regular intervals
+ * signals at regular intervals.
  *
  * @author Jannis Kuckei
  *
@@ -52,11 +52,10 @@ public class PreprocessingCompositeStage extends CompositeStage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PreprocessingCompositeStage.class);
 
-    private final InputPort<EventBasedTrace> traceInputPort;
-    private final InputPort<ISessionEvent> sessionEventInputPort;
-
-    private final OutputPort<UserSession> sessionOutputPort;
-    private final OutputPort<Long> timerOutputPort;
+    private final TimeTriggerFilter sessionCollectionTimer;
+    private final UserSessionOperationCleanupStage sessionOperationsFilter;
+    private final EntryCallStage entryCallStage;
+    private final EntryCallSequence entryCallSequence;
 
     /**
      * Create the preprocessing stage.
@@ -64,14 +63,25 @@ public class PreprocessingCompositeStage extends CompositeStage {
      * @param configuration
      *            containing all configuration parameters
      * @throws ConfigurationException
+     *             on errors in configuration
      */
     public PreprocessingCompositeStage(final Configuration configuration) throws ConfigurationException {
+        /**
+         * Create Clock. Default value of -1 was selected because the method getLongProperty states
+         * it will return "null" if no value was specified, but long is a primitive type ...
+         */
+        final Long triggerInterval = configuration.getLongProperty(ConfigurationKeys.TRIGGER_INTERVAL, -1);
+        if (triggerInterval < 0) {
+            PreprocessingCompositeStage.LOGGER.error("Initialization incomplete: No time trigger interval specified.");
+            throw new ConfigurationException("Initialization incomplete: No time trigger interval specified.");
+        }
+
         /** For EntryCallStage. */
-        final IEntryCallTraceMatcher traceMatcher = this.createFromConfiguration(IEntryCallTraceMatcher.class, configuration,
-                ConfigurationKeys.TRACE_MATCHER, "No trace matcher specified.");
+        final IEntryCallTraceMatcher traceMatcher = this.createFromConfiguration(IEntryCallTraceMatcher.class,
+                configuration, ConfigurationKeys.TRACE_MATCHER, "No trace matcher specified.");
         /** For SessionAcceptanceFilter. */
-        final IEntryCallAcceptanceMatcher entryCallMatcher = this.createFromConfiguration(IEntryCallAcceptanceMatcher.class,
-                configuration, ConfigurationKeys.ENTRY_CALL_ACCEPTANCE_MATCHER,
+        final IEntryCallAcceptanceMatcher entryCallMatcher = this.createFromConfiguration(
+                IEntryCallAcceptanceMatcher.class, configuration, ConfigurationKeys.ENTRY_CALL_ACCEPTANCE_MATCHER,
                 "No entry call acceptance matcher specified.");
 
         /** For TraceOperationsCleanupFilter */
@@ -84,43 +94,29 @@ public class PreprocessingCompositeStage extends CompositeStage {
                 IModelGenerationFilterFactory.class, configuration, ConfigurationKeys.ENTRY_CALL_FILTER_RULES_FACTORY,
                 "No entry call filter rules factory specified.");
 
-        /**
-         * Create Clock. Default value of -1 was selected because the method getLongProperty states
-         * it will return "null" if no value was specified, but long is a primitive type ...
-         */
-        final Long triggerInterval = configuration.getLongProperty(ConfigurationKeys.TRIGGER_INTERVAL, -1);
-        if (triggerInterval < 0) {
-            PreprocessingCompositeStage.LOGGER.error("Initialization incomplete: No time trigger interval specified.");
-            throw new ConfigurationException("Initialization incomplete: No time trigger interval specified.");
-        }
+        /** multi or single event mode. */
+        final boolean singleEventMode = configuration.getBooleanProperty(ConfigurationKeys.SINGLE_EVENT_MODE, false);
 
-        /** -- configuration -- */
+        /** -- create stages. -- */
         /** Create EntryCallStage */
-        final EntryCallStage entryCallStage = new EntryCallStage(traceMatcher);
+        this.entryCallStage = new EntryCallStage(traceMatcher);
         /** Create EntryCallSequence */
-        final EntryCallSequence entryCallSequence = new EntryCallSequence();
+        this.entryCallSequence = new EntryCallSequence();
         /** Create SessionAcceptanceFilter */
         final SessionAcceptanceFilter sessionAcceptanceFilter = new SessionAcceptanceFilter(entryCallMatcher);
         /** Create TraceOperationsCleanupFilter */
         final TraceOperationCleanupFilter traceOperationCleanupFilter = new TraceOperationCleanupFilter(
                 cleanupRewriter);
         /** Create UserSessionOperationsFilter */
-        final UserSessionOperationCleanupStage sessionOperationsFilter = new UserSessionOperationCleanupStage(
-                filterRulesFactory.createFilter());
+        this.sessionOperationsFilter = new UserSessionOperationCleanupStage(filterRulesFactory.createFilter());
         /** Create Clock */
-        final TimeTriggerFilter sessionCollectionTimer = new TimeTriggerFilter(triggerInterval);
+        this.sessionCollectionTimer = new TimeTriggerFilter(triggerInterval, singleEventMode);
 
         /** Connect all ports */
-        this.traceInputPort = entryCallStage.getInputPort();
-        this.sessionEventInputPort = entryCallSequence.getSessionEventInputPort();
-
-        this.connectPorts(entryCallStage.getOutputPort(), entryCallSequence.getEntryCallInputPort());
-        this.connectPorts(entryCallSequence.getUserSessionOutputPort(), sessionAcceptanceFilter.getInputPort());
+        this.connectPorts(this.entryCallStage.getOutputPort(), this.entryCallSequence.getEntryCallInputPort());
+        this.connectPorts(this.entryCallSequence.getUserSessionOutputPort(), sessionAcceptanceFilter.getInputPort());
         this.connectPorts(sessionAcceptanceFilter.getOutputPort(), traceOperationCleanupFilter.getInputPort());
-        this.connectPorts(traceOperationCleanupFilter.getOutputPort(), sessionOperationsFilter.getInputPort());
-
-        this.sessionOutputPort = sessionOperationsFilter.getOutputPort();
-        this.timerOutputPort = sessionCollectionTimer.getOutputPort();
+        this.connectPorts(traceOperationCleanupFilter.getOutputPort(), this.sessionOperationsFilter.getInputPort());
     }
 
     private <T> T createFromConfiguration(final Class<T> clazz, final Configuration configuration, final String key,
@@ -134,18 +130,18 @@ public class PreprocessingCompositeStage extends CompositeStage {
     }
 
     public InputPort<EventBasedTrace> getTraceInputPort() {
-        return this.traceInputPort;
+        return this.entryCallStage.getInputPort();
     }
 
     public InputPort<ISessionEvent> getSessionEventInputPort() {
-        return this.sessionEventInputPort;
+        return this.entryCallSequence.getSessionEventInputPort();
     }
 
     public OutputPort<UserSession> getSessionOutputPort() {
-        return this.sessionOutputPort;
+        return this.sessionOperationsFilter.getOutputPort();
     }
 
     public OutputPort<Long> getTimerOutputPort() {
-        return this.timerOutputPort;
+        return this.sessionCollectionTimer.getOutputPort();
     }
 }

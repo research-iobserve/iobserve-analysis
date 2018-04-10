@@ -21,7 +21,8 @@ import teetime.framework.AbstractProducerStage;
 
 /**
  * This approach will not provide exact intervals, as thread switches and other effects will add to
- * the interval.
+ * the interval length. The send message contain the number of milliseconds since January 1, 1970,
+ * 00:00:00 GMT represented by this date.
  *
  * @author Reiner Jung
  *
@@ -30,22 +31,32 @@ public class TimeTriggerFilter extends AbstractProducerStage<Long> {
 
     private final long interval;
 
+    private final boolean singleEventMode;
+
     /**
      * Create a time trigger filter with an trigger interval in milliseconds.
      *
      * @param interval
      *            the trigger interval
+     * @param singleEventMode
+     *            create only one time stamp event after interval milli seconds
      */
-    public TimeTriggerFilter(final long interval) {
+    public TimeTriggerFilter(final long interval, final boolean singleEventMode) {
         this.interval = interval;
+        this.singleEventMode = singleEventMode;
     }
 
-    // TODO: Generalize for experiments (continuous execution vs. sending a single signal and
-    // terminating)
     @Override
     protected void execute() throws Exception {
-        Thread.sleep(this.interval);
-        this.outputPort.send(new Date().getTime());
+        if (this.singleEventMode) {
+            Thread.sleep(this.interval);
+            this.outputPort.send(new Date().getTime());
+        } else {
+            while (!this.shouldBeTerminated()) {
+                Thread.sleep(this.interval);
+                this.outputPort.send(new Date().getTime());
+            }
+        }
         this.workCompleted();
     }
 

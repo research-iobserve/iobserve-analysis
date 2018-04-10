@@ -41,7 +41,7 @@ public class ModelGenerationTransformation extends AbstractStage {
     private Integer[][] groups;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param modelGenerationStrategy
      *            A strategy that generates a representative model from an array of models

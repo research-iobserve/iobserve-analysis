@@ -22,7 +22,7 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.eclipse.net4j.util.collection.Pair;
-import org.iobserve.analysis.behavior.IDensitityClustering;
+import org.iobserve.analysis.behavior.clustering.em.IDensitityClustering;
 
 import weka.core.Instance;
 import weka.core.Instances;

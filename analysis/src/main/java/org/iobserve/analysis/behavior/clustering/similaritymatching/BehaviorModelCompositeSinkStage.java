@@ -21,17 +21,18 @@ import teetime.framework.InputPort;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 
 /**
- * Composite stage that writes an array of behavior models into files
- * 
+ * Composite stage that writes an array of behavior models into files.
+ *
  * @author Jannis Kuckei
  *
  */
 public class BehaviorModelCompositeSinkStage extends CompositeStage {
-    InputPort<BehaviorModel[]> inputPort;
+
+    private final InputPort<BehaviorModel[]> inputPort;
 
     /**
-     * Constructor
-     * 
+     * Constructor.
+     *
      * @param baseURL
      *            Location where to write the files
      */

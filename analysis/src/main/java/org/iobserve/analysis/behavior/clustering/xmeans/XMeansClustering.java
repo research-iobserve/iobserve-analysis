@@ -18,7 +18,6 @@ package org.iobserve.analysis.behavior.clustering.xmeans;
 import java.util.Optional;
 import java.util.Random;
 
-import org.iobserve.analysis.behavior.IVectorQuantizationClustering;
 import org.iobserve.analysis.behavior.karlsruhe.data.ClusteringMetrics;
 import org.iobserve.analysis.behavior.karlsruhe.data.ClusteringResults;
 import org.slf4j.Logger;

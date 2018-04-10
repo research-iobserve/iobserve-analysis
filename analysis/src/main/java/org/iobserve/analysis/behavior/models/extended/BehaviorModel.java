@@ -28,11 +28,12 @@ import java.util.Optional;
  */
 public class BehaviorModel {
     /**
-     * Edges are stored in a map where they key is the signature of the source and
-     * target, separated by the following string (models can later be stored as
-     * JSON, this is for readability reasons)
+     * Edges are stored in a map where they key is the signature of the source and target, separated
+     * by the following string (models can later be stored as JSON, this is for readability
+     * reasons).
      */
-    private static String EDGE_KEY_SEPARATOR = "->";
+    private static final String EDGE_KEY_SEPARATOR = "->";
+
     /** unique name to identify the model. */
     private String name;
     /** all nodes of the behavior graph. */
@@ -70,8 +71,7 @@ public class BehaviorModel {
      * @param edge
      *            the edge to be added to the model
      * @param mergeNodes
-     *            If true, will merge already existing nodes. Otherwise, it will
-     *            ignore them.
+     *            If true, will merge already existing nodes. Otherwise, it will ignore them.
      */
     public void addEdge(final EntryCallEdge edge, final boolean mergeNodes) {
         final String key = edge.getSource().getSignature() + BehaviorModel.EDGE_KEY_SEPARATOR
@@ -96,10 +96,9 @@ public class BehaviorModel {
      * @param node
      *            node
      * @param merge
-     *            If true, will merge call information with already existing node.
-     *            If false, will have no side effects.
-     * @return input node if no node with the same signature is added, merged node
-     *         else
+     *            If true, will merge call information with already existing node. If false, will
+     *            have no side effects.
+     * @return input node if no node with the same signature is added, merged node else
      */
     public EntryCallNode addNode(final EntryCallNode node, final boolean merge) {
         final String key = node.getSignature();
@@ -117,7 +116,7 @@ public class BehaviorModel {
     }
 
     /**
-     * Finds a node with a specific signature and returns an Optional of it
+     * Finds a node with a specific signature and returns an Optional of it.
      *
      * @param signature
      *            The signature of the node to find
@@ -129,8 +128,8 @@ public class BehaviorModel {
     }
 
     /**
-     * Finds an edge using the signature of its source and target node and returns
-     * an Optional of it
+     * Finds an edge using the signature of its source and target node and returns an Optional of
+     * it.
      *
      * @param sourceSignature
      *            The signature of the edge's source node

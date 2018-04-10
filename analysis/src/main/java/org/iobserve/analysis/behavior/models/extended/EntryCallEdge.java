@@ -123,11 +123,11 @@ public class EntryCallEdge {
     /**
      * add calls to the edge.
      *
-     * @param calls
+     * @param additionalCalls
      *            calls
      */
-    public void addCalls(final double calls) {
-        this.calls = this.calls + calls;
+    public void addCalls(final double additionalCalls) {
+        this.calls = this.calls + additionalCalls;
         this.calls = this.calls < 0 ? 0 : this.calls;
     }
 

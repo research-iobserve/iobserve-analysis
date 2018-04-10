@@ -23,7 +23,7 @@ import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
 import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 
 /**
- * Represents the intersection model generation strategy
+ * Represents the intersection model generation strategy.
  *
  * @author Jannis Kuckei
  *

@@ -18,11 +18,19 @@ package org.iobserve.analysis.behavior.clustering.similaritymatching;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 
 /**
- * Interface for a strategy to generate a representative model from many models
- * 
+ * Interface for a strategy to generate a representative model from many models.
+ *
  * @author Jannis Kuckei
  *
  */
 public interface IModelGenerationStrategy {
+
+    /**
+     * Generate one model based on a set of input models.
+     *
+     * @param models
+     *            set of models
+     * @return the generated model
+     */
     public BehaviorModel generateModel(final BehaviorModel[] models);
 }

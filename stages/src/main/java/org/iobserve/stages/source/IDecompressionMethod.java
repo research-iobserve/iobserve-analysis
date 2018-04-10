@@ -27,5 +27,16 @@ import java.io.IOException;
  */
 public interface IDecompressionMethod {
 
+    /**
+     * Create a decompressing data stream for the given file.
+     *
+     * @param inputFile
+     *            the input file to be decompressed
+     * @param bufferSize
+     *            the buffer size
+     * @return a data input stream for the reader
+     * @throws IOException
+     *             when the creation of the stram fails
+     */
     DataInputStream decompressFile(final File inputFile, final int bufferSize) throws IOException;
 }

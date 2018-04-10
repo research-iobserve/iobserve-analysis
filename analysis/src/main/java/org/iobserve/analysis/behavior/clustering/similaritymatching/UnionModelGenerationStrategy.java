@@ -23,7 +23,7 @@ import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
 import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 
 /**
- * Generates representative models by joining them together
+ * Generates representative models by joining them together.
  *
  * @author Jannis Kuckei
  *

@@ -22,8 +22,8 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
-import org.iobserve.analysis.configurations.ConfigurationKeys;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.general.ConfigurationException;
@@ -31,9 +31,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * This stage performs Similarity Matching when configured properly
+ * This stage performs Similarity Matching when configured properly.
  *
- * @author J
+ * @author Jannis
  *
  */
 @ReceiveUnfilteredConfiguration
@@ -45,9 +45,10 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
     private final OutputPort<BehaviorModel[]> outputPort;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param configuration
+     *            configuration for the similarity stage
      *
      * @throws ConfigurationException
      *             Throws an exception if configuration lacks parameters
@@ -103,7 +104,7 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
         }
 
         /** Create individual stages */
-        final SessionToModelTransformation sessionToModel = new SessionToModelTransformation();
+        final SessionToBehaviorModelTransformation sessionToModel = new SessionToBehaviorModelTransformation();
         final VectorizationStage vectorization = new VectorizationStage(structureMetric, parameterMetric);
         vectorization.declareActive();
         final GroupingBehaviorStage groupingStage = new GroupingBehaviorStage(structureSimilarityRadius,

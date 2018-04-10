@@ -21,9 +21,8 @@ import teetime.framework.OutputPort;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 
 /**
- * Stage that accepts an array of behavior models and sends them to its output
- * port individually
- * 
+ * Stage that accepts an array of behavior models and sends them to its output port individually.
+ *
  * @author Jannis Kuckei
  *
  */

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.configurations;
+package org.iobserve.analysis;
 
 import kieker.common.record.flow.IFlowRecord;
 
@@ -31,7 +31,7 @@ import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
-import org.iobserve.analysis.feature.IContainerManagementSinksStage;
+import org.iobserve.analysis.feature.IContainerManagementSinkStage;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
@@ -125,11 +125,6 @@ public class AnalysisConfiguration extends Configuration {
         }
     }
 
-    public AnalysisConfiguration(final kieker.common.configuration.Configuration configuration)
-            throws ConfigurationException {
-        this(configuration, null, null, null, null, null, null);
-    }
-
     /**
      * Create all stages necessary for the container management.
      *
@@ -139,6 +134,7 @@ public class AnalysisConfiguration extends Configuration {
      * @param allocationModelProvider
      * @param systemModelProvider
      * @param correspondenceModelProvider
+     *
      * @throws ConfigurationException
      *             when configuration fails
      */
@@ -183,7 +179,8 @@ public class AnalysisConfiguration extends Configuration {
             this.connectPorts(undeployedEventMatcher.getOutputPort(), this.undeploymentStage.getUndeployedInputPort());
 
             /** dependent features. */
-            this.createContainerManagementSink(configuration);
+            this.createContainerManagementSink(configuration, resourceEnvironmentModelProvider, allocationModelProvider,
+                    systemModelProvider, correspondenceModelProvider);
         }
 
     }
@@ -193,16 +190,23 @@ public class AnalysisConfiguration extends Configuration {
      *
      * @param configuration
      *            configuration object
+     * @param resourceEnvironmentModelProvider
+     * @param allocationModelProvider
+     * @param systemModelProvider
+     * @param correspondenceModelProvider
+     *
      * @throws ConfigurationException
      *             when configuration fails
      */
-    private void createContainerManagementSink(final kieker.common.configuration.Configuration configuration)
-            throws ConfigurationException {
+    private void createContainerManagementSink(final kieker.common.configuration.Configuration configuration,
+            final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
+            final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
+            final ICorrespondence correspondenceModelProvider) throws ConfigurationException {
         final String[] containerManagementSinks = configuration
                 .getStringArrayProperty(ConfigurationKeys.CONTAINER_MANAGEMENT_SINK, AnalysisConfiguration.DELIMETER);
         if (containerManagementSinks.length == 1) {
-            final IContainerManagementSinksStage containerManagementSinksStage = InstantiationFactory
-                    .createWithConfiguration(IContainerManagementSinksStage.class, containerManagementSinks[0],
+            final IContainerManagementSinkStage containerManagementSinksStage = InstantiationFactory
+                    .createWithConfiguration(IContainerManagementSinkStage.class, containerManagementSinks[0],
                             configuration);
             /** connect ports. */
             this.connectPorts(this.allocationStage.getAllocationNotifyOutputPort(),
@@ -234,9 +238,10 @@ public class AnalysisConfiguration extends Configuration {
 
             /** Create and connect sinks. */
             for (final String containerManagementSink : containerManagementSinks) {
-                final IContainerManagementSinksStage containerManagementSinksStage = InstantiationFactory
-                        .createWithConfiguration(IContainerManagementSinksStage.class, containerManagementSink,
-                                configuration);
+                final IContainerManagementSinkStage containerManagementSinksStage = InstantiationFactory.create(
+                        IContainerManagementSinkStage.class, containerManagementSink,
+                        IContainerManagementSinkStage.SIGNATURE, configuration, resourceEnvironmentModelProvider,
+                        allocationModelProvider, systemModelProvider);
                 /** connect ports. */
                 this.connectPorts(allocationDistributor.getNewOutputPort(),
                         containerManagementSinksStage.getAllocationInputPort());

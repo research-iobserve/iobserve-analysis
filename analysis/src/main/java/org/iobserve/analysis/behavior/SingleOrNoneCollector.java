@@ -25,7 +25,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * Collector for one or none element streams. Throws a exeption if the stream has to many elements.
+ * Collector for one or none element streams. Throws a exception if the stream has to many elements.
  *
  * @author Christoph Dornieden
  *

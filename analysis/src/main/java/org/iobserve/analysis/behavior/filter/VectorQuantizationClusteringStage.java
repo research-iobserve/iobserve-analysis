@@ -20,7 +20,7 @@ import java.util.Optional;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.behavior.IVectorQuantizationClustering;
+import org.iobserve.analysis.behavior.clustering.xmeans.IVectorQuantizationClustering;
 import org.iobserve.analysis.behavior.karlsruhe.data.ClusteringResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

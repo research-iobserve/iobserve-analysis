@@ -18,7 +18,6 @@ package org.iobserve.analysis.behavior.clustering.em;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 
-import org.iobserve.analysis.behavior.ExpectationMaximizationClustering;
 import org.iobserve.analysis.behavior.filter.BehaviorModelCreationStage;
 import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
 import org.iobserve.analysis.sink.AbstractModelOutputSink;

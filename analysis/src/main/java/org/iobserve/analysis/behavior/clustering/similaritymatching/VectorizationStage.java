@@ -46,19 +46,18 @@ public class VectorizationStage extends AbstractStage {
     private List<BehaviorModel> models = new ArrayList<>();
     private List<List<Double>> distanceVectors = new ArrayList<>();
 
-    private double maximumStructureDistance = 0;
-    private double maximumParameterDistance = 0;
+    private double maximumStructureDistance;
+    private double maximumParameterDistance;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param structureMetric
      *            General distance function based on structure of the behavior model
      * @param parameterMetric
      *            Distance function based on call-parameters of behavior model
      */
-    public VectorizationStage(final IStructureMetricStrategy structureMetric,
-            final IParameterMetric parameterMetric) {
+    public VectorizationStage(final IStructureMetricStrategy structureMetric, final IParameterMetric parameterMetric) {
         super();
 
         this.structureMetric = structureMetric;
@@ -101,7 +100,7 @@ public class VectorizationStage extends AbstractStage {
     }
 
     /**
-     * Clears inner state of stage to prepare for new models arriving
+     * Clears inner state of stage to prepare for new models arriving.
      */
     private void clearModels() {
         this.models = new ArrayList<>();
@@ -111,7 +110,7 @@ public class VectorizationStage extends AbstractStage {
     }
 
     /**
-     * Generates similarity vector for model relative to all currently stored models
+     * Generates similarity vector for model relative to all currently stored models.
      *
      * @param newModel
      *            The model for which the vector is generated

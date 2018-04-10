@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis;
+package org.iobserve.analysis.sink;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
+import org.iobserve.analysis.AnalysisMain;
 import org.iobserve.analysis.service.util.Changelog;
 import org.iobserve.analysis.service.util.SendHttpRequest;
 import org.iobserve.analysis.sink.landscape.CommunicationInstanceService;

@@ -22,7 +22,7 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
-import org.iobserve.analysis.configurations.ConfigurationKeys;
+import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
@@ -38,8 +38,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 @ReceiveUnfilteredConfiguration
-public class BehaviorCompositeStage extends CompositeStage implements IBehaviorCompositeStage {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorCompositeStage.class);
+public class SimilarityBehaviorCompositeStage extends CompositeStage implements IBehaviorCompositeStage {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimilarityBehaviorCompositeStage.class);
 
     private final PreprocessingCompositeStage preprocessingCompositeStage;
 
@@ -51,13 +51,13 @@ public class BehaviorCompositeStage extends CompositeStage implements IBehaviorC
      * @throws ConfigurationException
      *             on errors with the configuration
      */
-    public BehaviorCompositeStage(final Configuration configuration) throws ConfigurationException {
+    public SimilarityBehaviorCompositeStage(final Configuration configuration) throws ConfigurationException {
         /** Instantiate configurable objects/properties for stages */
 
         /** Get base URL for BehaviourModelSink */
         final String baseURL = configuration.getStringProperty(ConfigurationKeys.SINK_BASE_URL);
         if (baseURL.isEmpty()) {
-            BehaviorCompositeStage.LOGGER.error("Initialization incomplete: No sink base URL specified.");
+            SimilarityBehaviorCompositeStage.LOGGER.error("Initialization incomplete: No sink base URL specified.");
             throw new ConfigurationException("Initialization incomplete: No sink base URL specified.");
         }
 
@@ -65,7 +65,7 @@ public class BehaviorCompositeStage extends CompositeStage implements IBehaviorC
         final String classificationStageClassName = configuration
                 .getStringProperty(ConfigurationKeys.CLASSIFICATION_STAGE);
         if (classificationStageClassName.isEmpty()) {
-            BehaviorCompositeStage.LOGGER.error("Initialization incomplete: No classification stage specified.");
+            SimilarityBehaviorCompositeStage.LOGGER.error("Initialization incomplete: No classification stage specified.");
             throw new ConfigurationException("Initialization incomplete: No classification stage specified.");
         }
         final IClassificationStage classificationStage = InstantiationFactory

@@ -16,7 +16,7 @@
 package org.iobserve.analysis.behavior.models.extended;
 
 /**
- * Represents single and multiple call information
+ * Represents single and multiple call information.
  *
  * @author Jannis Kuckei
  *
@@ -65,7 +65,7 @@ public class CallInformation {
     }
 
     public boolean hasSameParameters(final CallInformation c) {
-        return (this.informationSignature == c.informationSignature)
-                && (this.informationParameter == c.informationParameter);
+        return this.informationSignature == c.informationSignature
+                && this.informationParameter == c.informationParameter;
     }
 }

@@ -60,11 +60,31 @@ public class HackedRecordFromBinaryFileCreator {
 
     private final ByteBuffer buffer;
 
+    /**
+     * Create a new record from binary file creator.
+     *
+     * @param classNameRegistryRepository
+     *            class and string registry
+     */
     public HackedRecordFromBinaryFileCreator(final ClassNameRegistryRepository classNameRegistryRepository) {
         this.classNameRegistryRepository = classNameRegistryRepository;
         this.buffer = ByteBuffer.allocate(1024000);
     }
 
+    /**
+     * Create records from binary files.
+     *
+     * @param binaryFile
+     *            binary file input, only used for logging info
+     * @param inputStream
+     *            data stream
+     * @param outputPort
+     *            filter output port
+     * @throws IOException
+     *             on io errors during reading
+     * @throws MonitoringRecordException
+     *             on deserialization issues
+     */
     public void createRecordsFromBinaryFile(final File binaryFile, final DataInputStream inputStream,
             final OutputPort<IMonitoringRecord> outputPort) throws IOException, MonitoringRecordException {
 

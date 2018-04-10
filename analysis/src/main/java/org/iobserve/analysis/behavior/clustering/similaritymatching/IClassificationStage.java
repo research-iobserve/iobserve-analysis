@@ -15,23 +15,39 @@
  ***************************************************************************/
 package org.iobserve.analysis.behavior.clustering.similaritymatching;
 
-import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
-import org.iobserve.analysis.session.data.UserSession;
-
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.session.data.UserSession;
+
 /**
- * Generalises stages that aggregate user sessions based on a timer and generate
- * behavior models for them
- * 
+ * Generalizes stages that aggregate user sessions based on a timer and generate behavior models for
+ * them.
+ *
  * @author Jannis Kuckei
  *
  */
 public interface IClassificationStage {
+
+    /**
+     * Input port for user sessions.
+     *
+     * @return returns the proper port
+     */
     InputPort<UserSession> getSessionInputPort();
 
+    /**
+     * Timer input port.
+     *
+     * @return returns the timer input port
+     */
     InputPort<Long> getTimerInputPort();
 
+    /**
+     * Array of model outputs port.
+     *
+     * @return returns model output port
+     */
     OutputPort<BehaviorModel[]> getOutputPort();
 }

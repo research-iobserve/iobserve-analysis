@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.behavior.models.data.configuration;
 
-import org.iobserve.analysis.behavior.IVectorQuantizationClustering;
+import org.iobserve.analysis.behavior.clustering.xmeans.IVectorQuantizationClustering;
 import org.iobserve.analysis.behavior.clustering.xmeans.XMeansClustering;
 import org.iobserve.analysis.systems.jpetstore.JPetstoreRepresentativeStrategy;
 

@@ -14,29 +14,3 @@
  * limitations under the License.
  ***************************************************************************/
 package org.iobserve.analysis.behavior.clustering.similaritymatching;
-
-import teetime.framework.AbstractConsumerStage;
-import teetime.framework.OutputPort;
-
-import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
-import org.iobserve.analysis.behavior.models.extended.UserSessionToBehaviorModelConverter;
-import org.iobserve.analysis.session.data.UserSession;
-
-/**
- * Converts all arriving user sessions into behaviour models.
- *
- * @author Jannis Kuckei
- *
- */
-public class SessionToModelTransformation extends AbstractConsumerStage<UserSession> {
-    private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
-
-    @Override
-    public void execute(final UserSession session) {
-        this.outputPort.send(UserSessionToBehaviorModelConverter.convert(session));
-    }
-
-    public OutputPort<BehaviorModel> getOutputPort() {
-        return this.outputPort;
-    }
-}
