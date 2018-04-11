@@ -1,19 +1,19 @@
-/**
- * Copyright (C) 2015 Christian Wulf, Nelson Tavares de Sousa (http://teetime-framework.github.io)
+/***************************************************************************
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *         http://www.apache.org/licenses/LICENSE-2.0
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
-package teetime.stage.trace.traceReconstruction;
+ ***************************************************************************/
+package org.iobserve.stages.data.trace;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
  * The TraceBuffer is synchronized to prevent problems with concurrent access.
  *
  * @author Jan Waller
+ * @author Reiner Jung
  */
 public final class EventBasedTrace {
 
@@ -54,21 +55,21 @@ public final class EventBasedTrace {
         // default empty constructor
     }
 
+    /**
+     * Insert event into trace.
+     *
+     * @param event
+     *            the event to be inserted
+     */
     public void insertEvent(final AbstractTraceEvent event) {
-        final long myTraceId = event.getTraceId();
         synchronized (this) {
-            if (this.traceId == -1) {
-                this.traceId = myTraceId;
-            } else if (this.traceId != myTraceId) {
-                EventBasedTrace.LOGGER.error("Invalid traceId! Expected: " + this.traceId + " but found: " + myTraceId
-                        + " in event " + event.toString());
-                this.damaged = true;
-            }
+            this.checkTraceId(event);
 
             final int orderIndex = event.getOrderIndex();
             if (orderIndex > this.maxOrderIndex) {
                 this.maxOrderIndex = orderIndex;
             }
+            /** interpret trace event. */
             if (event instanceof BeforeOperationEvent) {
                 if (orderIndex == 0) {
                     this.closeable = true;
@@ -79,31 +80,53 @@ public final class EventBasedTrace {
             } else if (event instanceof AfterOperationFailedEvent) {
                 this.openEvents--;
             }
-
+            /** append event. */
             this.events.add(event);
         }
     }
 
-    public void setTrace(final TraceMetadata traceMetaData) {
-        final long myTraceId = traceMetaData.getTraceId();
+    private void checkTraceId(final AbstractTraceEvent event) {
+        final long eventTraceId = event.getTraceId();
+        if (this.traceId == -1) {
+            this.traceId = eventTraceId;
+        } else if (this.traceId != eventTraceId) {
+            EventBasedTrace.LOGGER.error("Invalid traceId! Expected: {} but found: {} in event {}", this.traceId,
+                    eventTraceId, event.toString());
+            this.damaged = true;
+        }
+    }
+
+    /**
+     * Set the trace metadata.
+     *
+     * @param newTraceMetaData
+     *            the trace metadata object
+     */
+    public void setTrace(final TraceMetadata newTraceMetaData) {
+        final long myTraceId = newTraceMetaData.getTraceId();
         synchronized (this) {
             if (this.traceId == -1) {
                 this.traceId = myTraceId;
             } else if (this.traceId != myTraceId) {
-                EventBasedTrace.LOGGER.error("Invalid traceId! Expected: " + this.traceId + " but found: " + myTraceId
-                        + " in trace " + traceMetaData.toString());
+                EventBasedTrace.LOGGER.error("Invalid traceId! Expected: {} but found: {} in trace {}", this.traceId,
+                        myTraceId, newTraceMetaData.toString());
                 this.damaged = true;
             }
 
             if (this.traceMetaData == null) {
-                this.traceMetaData = traceMetaData;
+                this.traceMetaData = newTraceMetaData;
             } else {
-                EventBasedTrace.LOGGER.error("Duplicate Trace entry for traceId " + myTraceId);
+                EventBasedTrace.LOGGER.error("Duplicate Trace entry for traceId {}", myTraceId);
                 this.damaged = true;
             }
         }
     }
 
+    /**
+     * Checks whether the trace is complete.
+     *
+     * @return returns true for complete traces
+     */
     public boolean isFinished() {
         synchronized (this) {
             return this.closeable && !this.isInvalid();
@@ -111,14 +134,13 @@ public final class EventBasedTrace {
     }
 
     /**
-     * Indicates if the trace is invalid, i.e., damaged in some way.
+     * Checks whether the trace is not complete or broken.
      *
-     * @return true for invalid traces
+     * @return returns true for incomplete or broken traces
      */
     public boolean isInvalid() {
         synchronized (this) {
-            return this.traceMetaData == null || this.damaged || this.openEvents != 0
-                    || this.maxOrderIndex + 1 != this.events.size() || this.events.isEmpty();
+            return this.traceMetaData == null || this.damaged || this.openEvents != 0 || this.events.isEmpty();
         }
     }
 

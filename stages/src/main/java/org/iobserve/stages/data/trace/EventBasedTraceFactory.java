@@ -13,33 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.feature;
-
-import teetime.framework.InputPort;
-
-import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.stages.data.trace.EventBasedTrace;
+package org.iobserve.stages.data.trace;
 
 /**
- * Generic interface for behavior analysis.
+ * Copied from deprecated teetime code.
  *
  * @author Reiner Jung
  *
  */
-public interface IBehaviorCompositeStage {
+public final class EventBasedTraceFactory implements IValueFactory<EventBasedTrace> {
 
-    /**
-     * get event based traces.
-     *
-     * @return returns the trace port
-     */
-    InputPort<EventBasedTrace> getEventBasedTracePort();
+    public static final EventBasedTraceFactory INSTANCE = new EventBasedTraceFactory();
 
-    /**
-     * get session input port.
-     *
-     * @return returns session input port.
-     */
-    InputPort<ISessionEvent> getSessionEventInputPort();
+    private EventBasedTraceFactory() {
+    }
 
+    @Override
+    public EventBasedTrace create() {
+        return new EventBasedTrace();
+    }
 }

@@ -10,10 +10,7 @@ dependencies {
 
 	compile 'org.codehaus.mojo:exec-maven-plugin:1.2'
 	compile 'net.sourceforge.teetime:teetime:3.0-SNAPSHOT'
-	
-	// TODO this dependency must be removed when Kieker has switched to teetime
-	compile 'net.sourceforge.teetime-stages:teetime-stages:3.0-SNAPSHOT'
-	
+		
 	compile 'net.kieker-monitoring:kieker:1.14-SNAPSHOT'
 	
 	compile 'org.tukaani:xz:1.6'

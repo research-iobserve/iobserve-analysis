@@ -20,7 +20,6 @@ import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 import org.iobserve.analysis.behavior.clustering.em.UserSessionModelAggregator;
 import org.iobserve.analysis.behavior.clustering.similaritymatching.PreprocessingCompositeStage;
@@ -32,6 +31,7 @@ import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreati
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
+import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.ConfigurationException;
 
 /**

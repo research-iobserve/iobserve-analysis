@@ -20,12 +20,12 @@ import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
+import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +65,8 @@ public class SimilarityBehaviorCompositeStage extends CompositeStage implements 
         final String classificationStageClassName = configuration
                 .getStringProperty(ConfigurationKeys.CLASSIFICATION_STAGE);
         if (classificationStageClassName.isEmpty()) {
-            SimilarityBehaviorCompositeStage.LOGGER.error("Initialization incomplete: No classification stage specified.");
+            SimilarityBehaviorCompositeStage.LOGGER
+                    .error("Initialization incomplete: No classification stage specified.");
             throw new ConfigurationException("Initialization incomplete: No classification stage specified.");
         }
         final IClassificationStage classificationStage = InstantiationFactory

@@ -21,8 +21,6 @@ import teetime.framework.Configuration;
 import teetime.framework.OutputPort;
 import teetime.stage.basic.distributor.Distributor;
 import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
-import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeallocationStage;
@@ -42,6 +40,7 @@ import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.source.ISourceCompositeStage;
+import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.IEventMatcher;
@@ -272,9 +271,9 @@ public class AnalysisConfiguration extends Configuration {
             final TraceReconstructionCompositeStage traceReconstructionStage = new TraceReconstructionCompositeStage(
                     configuration);
 
-            OutputPort<EventBasedTrace> behaviorClusteringEventBasedTracePort = traceReconstructionStage
+            final OutputPort<EventBasedTrace> behaviorClusteringEventBasedTracePort = traceReconstructionStage
                     .getTraceValidOutputPort();
-            OutputPort<EventBasedTrace> dataFlowEventBasedTracePort = traceReconstructionStage
+            final OutputPort<EventBasedTrace> dataFlowEventBasedTracePort = traceReconstructionStage
                     .getTraceValidOutputPort();
 
             /** Connect ports. */
@@ -283,19 +282,21 @@ public class AnalysisConfiguration extends Configuration {
             this.connectPorts(flowRecordMatcher.getOutputPort(), traceReconstructionStage.getInputPort());
 
             /** Include distributor to support tow simultaneous sinks. */
-            if (configuration.getBooleanProperty(ConfigurationKeys.DATA_FLOW, false)
-                    && !configuration.getStringProperty(ConfigurationKeys.BEHAVIOR_CLUSTERING).isEmpty()) {
-                final IDistributorStrategy strategy = new CopyByReferenceStrategy();
-                final Distributor<EventBasedTrace> distributor = new Distributor<>(strategy);
-                this.connectPorts(traceReconstructionStage.getTraceValidOutputPort(), distributor.getInputPort());
-
-                behaviorClusteringEventBasedTracePort = distributor.getNewOutputPort();
-                dataFlowEventBasedTracePort = distributor.getNewOutputPort();
-            }
+            // if (configuration.getBooleanProperty(ConfigurationKeys.DATA_FLOW, false)
+            // && !configuration.getStringProperty(ConfigurationKeys.BEHAVIOR_CLUSTERING).isEmpty())
+            // {
+            // final IDistributorStrategy strategy = new CopyByReferenceStrategy();
+            // final Distributor<EventBasedTrace> distributor = new Distributor<>(strategy);
+            // this.connectPorts(traceReconstructionStage.getTraceValidOutputPort(),
+            // distributor.getInputPort());
+            //
+            // behaviorClusteringEventBasedTracePort = distributor.getNewOutputPort();
+            // dataFlowEventBasedTracePort = distributor.getNewOutputPort();
+            // }
 
             /** Initialize depending features. */
-            this.behaviorClustering(configuration, behaviorClusteringEventBasedTracePort);
-            this.dataflow(configuration, dataFlowEventBasedTracePort);
+            // this.behaviorClustering(configuration, behaviorClusteringEventBasedTracePort);
+            // this.dataflow(configuration, dataFlowEventBasedTracePort);
         }
     }
 
@@ -326,12 +327,13 @@ public class AnalysisConfiguration extends Configuration {
             final OutputPort<EventBasedTrace> eventBasedTraceOutputPort) throws ConfigurationException {
         final String behaviorClustringClassName = configuration
                 .getStringProperty(ConfigurationKeys.BEHAVIOR_CLUSTERING);
-        if (!behaviorClustringClassName.isEmpty()) {
+        if (!behaviorClustringClassName.isEmpty() && false) {
             final IBehaviorCompositeStage behavior = InstantiationFactory
                     .createWithConfiguration(IBehaviorCompositeStage.class, behaviorClustringClassName, configuration);
 
             final IEventMatcher<ISessionEvent> sessionMatcher = new ImplementsEventMatcher<>(ISessionEvent.class, null);
             this.eventDispatcher.registerOutput(sessionMatcher);
+
             this.connectPorts(eventBasedTraceOutputPort, behavior.getEventBasedTracePort());
             this.connectPorts(sessionMatcher.getOutputPort(), behavior.getSessionEventInputPort());
 

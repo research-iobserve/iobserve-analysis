@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package teetime.stage.trace.traceReconstruction;
+package org.iobserve.analysis.traces.traceReconstruction;
 
 import java.util.concurrent.TimeUnit;
 
@@ -21,9 +21,11 @@ import kieker.common.record.flow.IFlowRecord;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
-import teetime.util.ConcurrentHashMapWithDefault;
-import teetime.util.ISendTraceBuffer;
-import teetime.util.TraceReconstructor;
+
+import org.iobserve.stages.data.trace.ConcurrentHashMapWithCreate;
+import org.iobserve.stages.data.trace.EventBasedTrace;
+import org.iobserve.utility.trace.ISendTraceBuffer;
+import org.iobserve.utility.trace.TraceReconstructor;
 
 /**
  * @author Christian Wulf
@@ -45,12 +47,12 @@ public class TraceReconstructionFilter extends AbstractConsumerStage<IFlowRecord
     /**
      * Reconstruct traces filter.
      *
-     * @param traceId2trace
+     * @param traceId2traceMap
      *            trace id to trace map
      */
-    public TraceReconstructionFilter(final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceId2trace) {
+    public TraceReconstructionFilter(final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceId2traceMap) {
         super();
-        this.reconstructor = new TraceReconstructor(traceId2trace, this);
+        this.reconstructor = new TraceReconstructor(traceId2traceMap, this);
     }
 
     @Override
@@ -66,10 +68,10 @@ public class TraceReconstructionFilter extends AbstractConsumerStage<IFlowRecord
     }
 
     @Override
-    public void sendTraceBuffer(final EventBasedTrace traceBufferList) {
-        final OutputPort<EventBasedTrace> outputPort = traceBufferList.isInvalid() ? this.traceInvalidOutputPort
+    public void sendTraceBuffer(final EventBasedTrace eventBasedTrace) {
+        final OutputPort<EventBasedTrace> outputPort = eventBasedTrace.isInvalid() ? this.traceInvalidOutputPort
                 : this.traceValidOutputPort;
-        outputPort.send(traceBufferList);
+        outputPort.send(eventBasedTrace);
     }
 
     public TimeUnit getTimeunit() {

@@ -24,6 +24,7 @@ import java.nio.CharBuffer;
 
 import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistry;
 import kieker.analysisteetime.plugin.reader.filesystem.className.ClassNameRegistryRepository;
+import kieker.analysisteetime.plugin.reader.filesystem.util.MappingException;
 import kieker.common.exception.MonitoringRecordException;
 import kieker.common.exception.UnknownRecordTypeException;
 import kieker.common.record.IMonitoringRecord;
@@ -32,7 +33,6 @@ import kieker.common.record.factory.IRecordFactory;
 import kieker.common.record.io.TextValueDeserializer;
 
 import teetime.stage.basic.AbstractTransformation;
-import teetime.stage.util.MappingException;
 
 /**
  * Read a dat file and output records.

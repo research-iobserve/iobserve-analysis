@@ -21,7 +21,6 @@ import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.analysis.behavior.models.data.configuration.IModelGenerationFilterFactory;
@@ -33,6 +32,7 @@ import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
 import org.iobserve.analysis.traces.TraceOperationCleanupFilter;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
+import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;

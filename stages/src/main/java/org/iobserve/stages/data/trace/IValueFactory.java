@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright (C) 2018 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,33 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.analysis.feature;
-
-import teetime.framework.InputPort;
-
-import org.iobserve.common.record.ISessionEvent;
-import org.iobserve.stages.data.trace.EventBasedTrace;
+package org.iobserve.stages.data.trace;
 
 /**
- * Generic interface for behavior analysis.
+ * @author Christian Wulf
  *
- * @author Reiner Jung
- *
+ * @since 1.10
  */
-public interface IBehaviorCompositeStage {
+public interface IValueFactory<T> {
 
     /**
-     * get event based traces.
+     * Create a new instance of the type <code>T</code>.
      *
-     * @return returns the trace port
+     * @since 1.10
      */
-    InputPort<EventBasedTrace> getEventBasedTracePort();
-
-    /**
-     * get session input port.
-     *
-     * @return returns session input port.
-     */
-    InputPort<ISessionEvent> getSessionEventInputPort();
-
+    public T create();
 }
