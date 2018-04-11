@@ -29,7 +29,7 @@ import org.iobserve.model.provider.file.ExecutionPlanHandler;
  * @author Lars Bluemke
  *
  */
-public class SerializeExecutionPlanStage extends AbstractTransformation<ExecutionPlan, File> {
+public class ExecutionPlanSerialization extends AbstractTransformation<ExecutionPlan, File> {
 
     private final File executionPlanURI;
 
@@ -39,7 +39,7 @@ public class SerializeExecutionPlanStage extends AbstractTransformation<Executio
      * @param executionPlanURI
      *            URI for execution plan
      */
-    public SerializeExecutionPlanStage(final File executionPlanURI) {
+    public ExecutionPlanSerialization(final File executionPlanURI) {
         this.executionPlanURI = executionPlanURI;
     }
 

@@ -15,7 +15,8 @@
  ***************************************************************************/
 package org.iobserve.adaptation.stages.transformations;
 
-import teetime.stage.basic.AbstractTransformation;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.iobserve.adaptation.executionplan.AtomicAction;
 import org.iobserve.adaptation.executionplan.AtomicActionFactory;
@@ -27,17 +28,21 @@ import org.iobserve.planning.systemadaptation.DeallocateAction;
  * @author Lars Bluemke
  *
  */
-public class DeallocateAction2AtomicActions extends AbstractTransformation<DeallocateAction, AtomicAction> {
+public class DeallocateAction2AtomicActions implements IComposed2AtomicAction<DeallocateAction> {
 
     @Override
-    protected void execute(final DeallocateAction deallocateAction) throws Exception {
+    public List<AtomicAction> transform(final DeallocateAction deallocateAction) {
+        final List<AtomicAction> atomicActions = new ArrayList<>();
+
         // Disconnect Node
-        this.outputPort.send(AtomicActionFactory.generateDisonnectNodeAction(
-                deallocateAction.getTargetResourceContainer(), deallocateAction.getTargetLinkingResources()));
+        atomicActions.add(AtomicActionFactory.generateDisonnectNodeAction(deallocateAction.getTargetResourceContainer(),
+                deallocateAction.getTargetLinkingResources()));
 
         // Deallocate Node
-        this.outputPort
-                .send(AtomicActionFactory.generateDeallocateNodeAction(deallocateAction.getTargetResourceContainer()));
+        atomicActions
+                .add(AtomicActionFactory.generateDeallocateNodeAction(deallocateAction.getTargetResourceContainer()));
+
+        return atomicActions;
     }
 
 }

@@ -15,7 +15,8 @@
  ***************************************************************************/
 package org.iobserve.adaptation.stages.transformations;
 
-import teetime.stage.basic.AbstractTransformation;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.iobserve.adaptation.executionplan.AtomicAction;
 import org.iobserve.adaptation.executionplan.AtomicActionFactory;
@@ -27,39 +28,43 @@ import org.iobserve.planning.systemadaptation.MigrateAction;
  * @author Lars Bluemke
  *
  */
-public class MigrateAction2AtomicActions extends AbstractTransformation<MigrateAction, AtomicAction> {
+public class MigrateAction2AtomicActions implements IComposed2AtomicAction<MigrateAction> {
 
     @Override
-    protected void execute(final MigrateAction migrateAction) throws Exception {
+    public List<AtomicAction> transform(final MigrateAction migrateAction) {
+        final List<AtomicAction> atomicActions = new ArrayList<>();
+
         // Deploy new component instance
-        this.outputPort
-                .send(AtomicActionFactory.generateDeployComponentAction(migrateAction.getTargetAllocationContext()));
+        atomicActions
+                .add(AtomicActionFactory.generateDeployComponentAction(migrateAction.getTargetAllocationContext()));
 
         // Migrate state
-        this.outputPort.send(AtomicActionFactory.generateMigrateComponentStateAction(
+        atomicActions.add(AtomicActionFactory.generateMigrateComponentStateAction(
                 migrateAction.getSourceAllocationContext(), migrateAction.getTargetAllocationContext()));
 
         // Connect replication
-        this.outputPort.send(AtomicActionFactory.generateConnectComponentAction(
-                migrateAction.getTargetAllocationContext(), migrateAction.getTargetProvidingAllocationContexts(),
+        atomicActions.add(AtomicActionFactory.generateConnectComponentAction(migrateAction.getTargetAllocationContext(),
+                migrateAction.getTargetProvidingAllocationContexts(),
                 migrateAction.getTargetRequiringAllocationContexts()));
 
         // Block incoming requests
-        this.outputPort.send(AtomicActionFactory.generateBlockRequestsToComponentAction(
+        atomicActions.add(AtomicActionFactory.generateBlockRequestsToComponentAction(
                 migrateAction.getTargetAllocationContext(), migrateAction.getTargetRequiringAllocationContexts()));
 
         // Finish running transactions
-        this.outputPort
-                .send(AtomicActionFactory.generateFinishComponentAction(migrateAction.getTargetAllocationContext()));
+        atomicActions
+                .add(AtomicActionFactory.generateFinishComponentAction(migrateAction.getTargetAllocationContext()));
 
         // Disconnect component instance
-        this.outputPort.send(AtomicActionFactory.generateDisconnectComponentAction(
+        atomicActions.add(AtomicActionFactory.generateDisconnectComponentAction(
                 migrateAction.getTargetAllocationContext(), migrateAction.getTargetProvidingAllocationContexts(),
                 migrateAction.getTargetRequiringAllocationContexts()));
 
         // Undeploy component instance
-        this.outputPort
-                .send(AtomicActionFactory.generateUndeployComponentAction(migrateAction.getTargetAllocationContext()));
+        atomicActions
+                .add(AtomicActionFactory.generateUndeployComponentAction(migrateAction.getTargetAllocationContext()));
+
+        return atomicActions;
     }
 
 }

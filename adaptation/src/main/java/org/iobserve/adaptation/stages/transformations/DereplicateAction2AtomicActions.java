@@ -15,7 +15,8 @@
  ***************************************************************************/
 package org.iobserve.adaptation.stages.transformations;
 
-import teetime.stage.basic.AbstractTransformation;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.iobserve.adaptation.executionplan.AtomicAction;
 import org.iobserve.adaptation.executionplan.AtomicActionFactory;
@@ -27,29 +28,32 @@ import org.iobserve.planning.systemadaptation.DereplicateAction;
  * @author Lars Bluemke
  *
  */
-public class DereplicateAction2AtomicActions extends AbstractTransformation<DereplicateAction, AtomicAction> {
+public class DereplicateAction2AtomicActions implements IComposed2AtomicAction<DereplicateAction> {
 
     @Override
-    protected void execute(final DereplicateAction dereplicateAction) throws Exception {
+    public List<AtomicAction> transform(final DereplicateAction dereplicateAction) {
+        final List<AtomicAction> atomicActions = new ArrayList<>();
+
         // Block incoming requests
-        this.outputPort.send(AtomicActionFactory.generateBlockRequestsToComponentAction(
+        atomicActions.add(AtomicActionFactory.generateBlockRequestsToComponentAction(
                 dereplicateAction.getTargetAllocationContext(),
                 dereplicateAction.getTargetRequiringAllocationContexts()));
 
         // Finish running transactions
-        this.outputPort.send(
-                AtomicActionFactory.generateFinishComponentAction(dereplicateAction.getTargetAllocationContext()));
+        atomicActions
+                .add(AtomicActionFactory.generateFinishComponentAction(dereplicateAction.getTargetAllocationContext()));
 
         // Disconnect component instance
-        this.outputPort.send(
+        atomicActions.add(
                 AtomicActionFactory.generateDisconnectComponentAction(dereplicateAction.getTargetAllocationContext(),
                         dereplicateAction.getTargetProvidingAllocationContexts(),
                         dereplicateAction.getTargetRequiringAllocationContexts()));
 
         // Undeploy component instance
-        this.outputPort.send(
+        atomicActions.add(
                 AtomicActionFactory.generateUndeployComponentAction(dereplicateAction.getTargetAllocationContext()));
 
+        return atomicActions;
     }
 
 }

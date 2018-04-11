@@ -13,23 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.model.provider.file;
+package org.iobserve.adaptation.stages.transformations;
 
-import org.eclipse.emf.ecore.EPackage;
-import org.iobserve.adaptation.executionplan.ExecutionPlan;
-import org.iobserve.adaptation.executionplan.ExecutionplanPackage;
+import java.util.List;
+
+import org.iobserve.adaptation.executionplan.AtomicAction;
+import org.iobserve.planning.systemadaptation.ComposedAction;
 
 /**
- * Model handler to provide the {@link ExecutionPlan}.
+ * Interface for transformation processors which transform composed to atomic adaptation actions.
  *
  * @author Lars Bluemke
  *
  */
-public class ExecutionPlanHandler extends AbstractModelHandler<ExecutionPlan> {
+public interface IComposed2AtomicAction<T extends ComposedAction> {
 
-    @Override
-    protected EPackage getPackage() {
-        return ExecutionplanPackage.eINSTANCE;
-    }
-
+    /**
+     * Returns a list of the atomic actions which are necessary to execute a composed action.
+     *
+     * @param composedAction
+     *            The composed action
+     * @return The atomic actions
+     */
+    public List<AtomicAction> transform(T composedAction);
 }

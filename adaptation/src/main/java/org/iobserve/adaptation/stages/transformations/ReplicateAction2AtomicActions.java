@@ -15,7 +15,8 @@
  ***************************************************************************/
 package org.iobserve.adaptation.stages.transformations;
 
-import teetime.stage.basic.AbstractTransformation;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.iobserve.adaptation.executionplan.AtomicAction;
 import org.iobserve.adaptation.executionplan.AtomicActionFactory;
@@ -27,22 +28,26 @@ import org.iobserve.planning.systemadaptation.ReplicateAction;
  * @author Lars Bluemke
  *
  */
-public class ReplicateAction2AtomicActions extends AbstractTransformation<ReplicateAction, AtomicAction> {
+public class ReplicateAction2AtomicActions implements IComposed2AtomicAction<ReplicateAction> {
 
     @Override
-    protected void execute(final ReplicateAction replicateAction) throws Exception {
+    public List<AtomicAction> transform(final ReplicateAction replicateAction) {
+        final List<AtomicAction> atomicActions = new ArrayList<>();
+
         // Deploy new component instance
-        this.outputPort
-                .send(AtomicActionFactory.generateDeployComponentAction(replicateAction.getTargetAllocationContext()));
+        atomicActions
+                .add(AtomicActionFactory.generateDeployComponentAction(replicateAction.getTargetAllocationContext()));
 
         // Migrate state
-        this.outputPort.send(AtomicActionFactory.generateMigrateComponentStateAction(
+        atomicActions.add(AtomicActionFactory.generateMigrateComponentStateAction(
                 replicateAction.getSourceAllocationContext(), replicateAction.getTargetAllocationContext()));
 
         // Connect replication
-        this.outputPort.send(AtomicActionFactory.generateConnectComponentAction(
+        atomicActions.add(AtomicActionFactory.generateConnectComponentAction(
                 replicateAction.getTargetAllocationContext(), replicateAction.getTargetProvidingAllocationContexts(),
                 replicateAction.getTargetRequiringAllocationContexts()));
+
+        return atomicActions;
     }
 
 }

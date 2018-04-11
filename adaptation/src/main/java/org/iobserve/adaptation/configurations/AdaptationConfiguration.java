@@ -23,7 +23,7 @@ import org.iobserve.adaptation.data.stages.AdaptationDataCreator;
 import org.iobserve.adaptation.stages.AtomicActionComputation;
 import org.iobserve.adaptation.stages.ComposedActionComputation;
 import org.iobserve.adaptation.stages.ComposedActionFactoryInitialization;
-import org.iobserve.adaptation.stages.SerializeExecutionPlanStage;
+import org.iobserve.adaptation.stages.ExecutionPlanSerialization;
 import org.iobserve.stages.model.ModelFiles2ModelDirCollectorStage;
 import org.iobserve.stages.source.SingleConnectionTcpReaderStage;
 import org.iobserve.stages.source.SingleConnectionTcpWriterStage;
@@ -50,7 +50,7 @@ public class AdaptationConfiguration extends Configuration {
         final ComposedActionFactoryInitialization actionFactoryInitializer = new ComposedActionFactoryInitialization();
         final ComposedActionComputation composedActionComputation = new ComposedActionComputation();
         final AtomicActionComputation atomicActionComputation = new AtomicActionComputation();
-        final SerializeExecutionPlanStage executionPlanSerializer = new SerializeExecutionPlanStage(executionPlanURI);
+        final ExecutionPlanSerialization executionPlanSerializer = new ExecutionPlanSerialization(executionPlanURI);
         final SingleConnectionTcpWriterStage executionPlanWriter = new SingleConnectionTcpWriterStage(executionHostname,
                 executionInputPort);
 

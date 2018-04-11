@@ -15,7 +15,8 @@
  ***************************************************************************/
 package org.iobserve.adaptation.stages.transformations;
 
-import teetime.stage.basic.AbstractTransformation;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.iobserve.adaptation.executionplan.AtomicAction;
 import org.iobserve.adaptation.executionplan.AtomicActionFactory;
@@ -27,44 +28,47 @@ import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
  * @author Lars Bluemke
  *
  */
-public class ChangeComponentAction2AtomicActions
-        extends AbstractTransformation<ChangeRepositoryComponentAction, AtomicAction> {
+public class ChangeComponentAction2AtomicActions implements IComposed2AtomicAction<ChangeRepositoryComponentAction> {
 
     @Override
-    protected void execute(final ChangeRepositoryComponentAction changeComponentAction) throws Exception {
+    public List<AtomicAction> transform(final ChangeRepositoryComponentAction changeComponentAction) {
+        final List<AtomicAction> atomicActions = new ArrayList<>();
+
         // Deploy new component instance
-        this.outputPort.send(
+        atomicActions.add(
                 AtomicActionFactory.generateDeployComponentAction(changeComponentAction.getTargetAllocationContext()));
 
         // Migrate state
-        this.outputPort.send(AtomicActionFactory.generateMigrateComponentStateAction(
+        atomicActions.add(AtomicActionFactory.generateMigrateComponentStateAction(
                 changeComponentAction.getSourceAllocationContext(),
                 changeComponentAction.getTargetAllocationContext()));
 
         // Connect replication
-        this.outputPort.send(
+        atomicActions.add(
                 AtomicActionFactory.generateConnectComponentAction(changeComponentAction.getTargetAllocationContext(),
                         changeComponentAction.getTargetProvidingAllocationContexts(),
                         changeComponentAction.getTargetRequiringAllocationContexts()));
 
         // Block incoming requests
-        this.outputPort.send(AtomicActionFactory.generateBlockRequestsToComponentAction(
+        atomicActions.add(AtomicActionFactory.generateBlockRequestsToComponentAction(
                 changeComponentAction.getTargetAllocationContext(),
                 changeComponentAction.getTargetRequiringAllocationContexts()));
 
         // Finish running transactions
-        this.outputPort.send(
+        atomicActions.add(
                 AtomicActionFactory.generateFinishComponentAction(changeComponentAction.getTargetAllocationContext()));
 
         // Disconnect component instance
-        this.outputPort.send(AtomicActionFactory.generateDisconnectComponentAction(
+        atomicActions.add(AtomicActionFactory.generateDisconnectComponentAction(
                 changeComponentAction.getTargetAllocationContext(),
                 changeComponentAction.getTargetProvidingAllocationContexts(),
                 changeComponentAction.getTargetRequiringAllocationContexts()));
 
         // Undeploy component instance
-        this.outputPort.send(AtomicActionFactory
+        atomicActions.add(AtomicActionFactory
                 .generateUndeployComponentAction(changeComponentAction.getTargetAllocationContext()));
+
+        return atomicActions;
     }
 
 }

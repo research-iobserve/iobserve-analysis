@@ -15,7 +15,8 @@
  ***************************************************************************/
 package org.iobserve.adaptation.stages.transformations;
 
-import teetime.stage.basic.AbstractTransformation;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.iobserve.adaptation.executionplan.AtomicAction;
 import org.iobserve.adaptation.executionplan.AtomicActionFactory;
@@ -27,17 +28,20 @@ import org.iobserve.planning.systemadaptation.AllocateAction;
  * @author Lars Bluemke
  *
  */
-public class AllocateAction2AtomicActions extends AbstractTransformation<AllocateAction, AtomicAction> {
+public class AllocateAction2AtomicActions implements IComposed2AtomicAction<AllocateAction> {
 
     @Override
-    protected void execute(final AllocateAction allocateAction) throws Exception {
+    public List<AtomicAction> transform(final AllocateAction allocateAction) {
+        final List<AtomicAction> atomicActions = new ArrayList<>();
+
         // Allocate Node
-        this.outputPort
-                .send(AtomicActionFactory.generateAllocateNodeAction(allocateAction.getTargetResourceContainer()));
+        atomicActions.add(AtomicActionFactory.generateAllocateNodeAction(allocateAction.getTargetResourceContainer()));
 
         // Connect Node
-        this.outputPort.send(AtomicActionFactory.generateConnectNodeAction(allocateAction.getTargetResourceContainer(),
+        atomicActions.add(AtomicActionFactory.generateConnectNodeAction(allocateAction.getTargetResourceContainer(),
                 allocateAction.getTargetLinkingResources()));
+
+        return atomicActions;
     }
 
 }
