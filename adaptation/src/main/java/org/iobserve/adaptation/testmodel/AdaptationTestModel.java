@@ -289,40 +289,40 @@ public class AdaptationTestModel {
     }
 
     /**
-     * Replicate component instance b11 to rc2 (creating b12 instance there).
+     * Replicate component instance B1 to RC2 (creating B2 instance there).
      */
-    public void replicateCompB11ToRc2() {
+    public void replicateCompB1ToRc2() {
         this.system.getAssemblyContexts__ComposedStructure().add(this.acxtB2);
         this.system.getConnectors__ComposedStructure().add(this.aconnAB2);
         this.allocation.getAllocationContexts_Allocation().add(this.alcxtB2Rc2);
     }
 
     /**
-     * Dereplicate component instance b12 from rc2.
+     * Dereplicate component instance B2 from RC2.
      */
-    public void dereplicateCompB12fromRc2() {
+    public void dereplicateCompB2fromRc2() {
         this.system.getAssemblyContexts__ComposedStructure().remove(this.acxtB2);
         this.system.getConnectors__ComposedStructure().remove(this.aconnAB2);
         this.allocation.getAllocationContexts_Allocation().remove(this.alcxtB2Rc2);
     }
 
     /**
-     * Migrate allocation context b11 from rc1 to rc2.
+     * Migrate allocation context B1 from RC1 to RC2.
      */
     public void migrateCompB1ToRc2() {
-        this.alcxtB1Rc1.setEntityName("alcxt_b11rc2");
+        this.alcxtB1Rc1.setEntityName("alcxt_b1rc2");
         this.alcxtB1Rc1.setResourceContainer_AllocationContext(this.rc2);
     }
 
     /**
-     * Replace component instance of b1 with equivalent of b2.
+     * Replace component instance of Bx with equivalent of By.
      */
     public void changeRepositoryCompBxToCompBy() {
         this.acxtB1.setEncapsulatedComponent__AssemblyContext(this.compBy);
     }
 
     /**
-     * Allocate resource container rc3.
+     * Allocate resource container RC3.
      */
     public void allocateResourceContainerR3() {
         this.resEnvironment.getResourceContainer_ResourceEnvironment().add(this.rc3);
@@ -332,7 +332,7 @@ public class AdaptationTestModel {
     }
 
     /**
-     * Deallocate resource container rc3.
+     * Deallocate resource container RC3.
      */
     public void deallocateResourceContainerR3() {
         this.resEnvironment.getResourceContainer_ResourceEnvironment().remove(this.rc3);

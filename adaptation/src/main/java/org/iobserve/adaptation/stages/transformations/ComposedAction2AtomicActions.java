@@ -17,9 +17,12 @@ package org.iobserve.adaptation.stages.transformations;
 
 import java.util.List;
 
+import teetime.framework.InputPort;
+import teetime.framework.signal.ISignal;
 import teetime.stage.basic.AbstractTransformation;
 
 import org.iobserve.adaptation.executionplan.AtomicAction;
+import org.iobserve.adaptation.stages.signal.AllActionsSentSignal;
 import org.iobserve.planning.systemadaptation.AllocateAction;
 import org.iobserve.planning.systemadaptation.ChangeRepositoryComponentAction;
 import org.iobserve.planning.systemadaptation.ComposedAction;
@@ -33,17 +36,17 @@ import org.iobserve.planning.systemadaptation.ReplicateAction;
  * @author Lars Bluemke
  *
  */
-public class ComposedAction2AtomicActions extends AbstractTransformation<ComposedAction, AtomicAction> {
+public class ComposedAction2AtomicActions extends AbstractTransformation<ComposedAction, AtomicAction> { // NOPMD
 
-    IComposed2AtomicAction<ReplicateAction> replicationTransformer = new ReplicateAction2AtomicActions();
-    IComposed2AtomicAction<DereplicateAction> dereplicationTransformer = new DereplicateAction2AtomicActions();
-    IComposed2AtomicAction<MigrateAction> migrationTransformer = new MigrateAction2AtomicActions();
-    IComposed2AtomicAction<ChangeRepositoryComponentAction> changeComponentTransformer = new ChangeComponentAction2AtomicActions();
-    IComposed2AtomicAction<AllocateAction> allocationTransformer = new AllocateAction2AtomicActions();
-    IComposed2AtomicAction<DeallocateAction> deallocationTransformer = new DeallocateAction2AtomicActions();
+    private final IComposed2AtomicAction<ReplicateAction> replicationTransformer = new ReplicateAction2AtomicActions();
+    private final IComposed2AtomicAction<DereplicateAction> dereplicationTransformer = new DereplicateAction2AtomicActions();
+    private final IComposed2AtomicAction<MigrateAction> migrationTransformer = new MigrateAction2AtomicActions();
+    private final IComposed2AtomicAction<ChangeRepositoryComponentAction> changeComponentTransformer = new ChangeComponentAction2AtomicActions();
+    private final IComposed2AtomicAction<AllocateAction> allocationTransformer = new AllocateAction2AtomicActions();
+    private final IComposed2AtomicAction<DeallocateAction> deallocationTransformer = new DeallocateAction2AtomicActions();
 
     @Override
-    protected void execute(final ComposedAction composedAction) throws Exception {
+    protected void execute(final ComposedAction composedAction) throws Exception { // NOPMD
         List<AtomicAction> atomicActions = null;
 
         if (composedAction instanceof ReplicateAction) {
@@ -60,8 +63,17 @@ public class ComposedAction2AtomicActions extends AbstractTransformation<Compose
             atomicActions = this.deallocationTransformer.transform((DeallocateAction) composedAction);
         }
 
-        for (final AtomicAction a : atomicActions) {
-            this.outputPort.send(a);
+        for (final AtomicAction atomicAction : atomicActions) {
+            this.outputPort.send(atomicAction);
+        }
+    }
+
+    @Override
+    public void onSignal(final ISignal signal, final InputPort<?> inputPort) {
+        if (signal instanceof AllActionsSentSignal) {
+            this.outputPort.sendSignal(signal);
+        } else {
+            super.onSignal(signal, inputPort);
         }
     }
 

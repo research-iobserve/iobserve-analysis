@@ -80,7 +80,7 @@ public class ComposedActionComputationTest {
         final ReplicateAction expectedAction;
 
         // Perform replication
-        this.redeploymentModel.replicateCompB11ToRc2();
+        this.redeploymentModel.replicateCompB1ToRc2();
         adaptationData = this.createAdaptationData();
 
         // Create expected output
@@ -117,7 +117,7 @@ public class ComposedActionComputationTest {
         final DereplicateAction expectedAction;
 
         // Perform dereplication (simulated by replicating a component in the runtime model)
-        this.runtimeModel.replicateCompB11ToRc2();
+        this.runtimeModel.replicateCompB1ToRc2();
         adaptationData = this.createAdaptationData();
 
         // Create expected output

@@ -14,26 +14,3 @@
  * limitations under the License.
  ***************************************************************************/
 package org.iobserve.adaptation.stages.transformations;
-
-import java.util.List;
-
-import org.iobserve.adaptation.executionplan.AtomicAction;
-import org.iobserve.planning.systemadaptation.ComposedAction;
-
-/**
- * Interface for transformation processors which transform composed to atomic adaptation actions.
- *
- * @author Lars Bluemke
- *
- */
-public interface IComposed2AtomicAction<T extends ComposedAction> {
-
-    /**
-     * Returns a list of the atomic actions which are necessary to execute a composed action.
-     *
-     * @param composedAction
-     *            The composed action
-     * @return The atomic actions
-     */
-    List<AtomicAction> transform(T composedAction);
-}
