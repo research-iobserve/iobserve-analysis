@@ -56,6 +56,23 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
     public SimilarityMatchingStage(final Configuration configuration) throws ConfigurationException {
         /** Instantiate configurable objects/properties */
 
+        /** For TGroupingStage */
+        final double parameterSimilarityRadius = configuration
+                .getDoubleProperty(ConfigurationKeys.SIM_MATCH_RADIUS_PARAMS, -1);
+        if (parameterSimilarityRadius < 0) {
+            SimilarityMatchingStage.LOGGER
+                    .error("Initialization incomplete: No parameter similarity radius specified.");
+            throw new ConfigurationException("Initialization incomplete: No parameter similarity radius specified.");
+        }
+
+        final double structureSimilarityRadius = configuration
+                .getDoubleProperty(ConfigurationKeys.SIM_MATCH_RADIUS_STRUCTURE, -1);
+        if (structureSimilarityRadius < 0) {
+            SimilarityMatchingStage.LOGGER
+                    .error("Initialization incomplete: No structure similarity radius specified.");
+            throw new ConfigurationException("Initialization incomplete: No structure similarity radius specified.");
+        }
+
         /** For TVectorization */
         final String structureMetricClassName = configuration
                 .getStringProperty(ConfigurationKeys.SIM_MATCH_STRUCTURE_STRATEGY);
@@ -85,23 +102,6 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
         }
         final IModelGenerationStrategy modelGenerationStrategy = InstantiationFactory
                 .create(IModelGenerationStrategy.class, modelStrategyClassName, null);
-
-        /** For TGroupingStage */
-        final double parameterSimilarityRadius = configuration
-                .getDoubleProperty(ConfigurationKeys.SIM_MATCH_RADIUS_PARAMS, -1);
-        if (parameterSimilarityRadius < 0) {
-            SimilarityMatchingStage.LOGGER
-                    .error("Initialization incomplete: No parameter similarity radius specified.");
-            throw new ConfigurationException("Initialization incomplete: No parameter similarity radius specified.");
-        }
-
-        final double structureSimilarityRadius = configuration
-                .getDoubleProperty(ConfigurationKeys.SIM_MATCH_RADIUS_STRUCTURE, -1);
-        if (structureSimilarityRadius < 0) {
-            SimilarityMatchingStage.LOGGER
-                    .error("Initialization incomplete: No structure similarity radius specified.");
-            throw new ConfigurationException("Initialization incomplete: No structure similarity radius specified.");
-        }
 
         /** Create individual stages */
         final SessionToBehaviorModelTransformation sessionToModel = new SessionToBehaviorModelTransformation();

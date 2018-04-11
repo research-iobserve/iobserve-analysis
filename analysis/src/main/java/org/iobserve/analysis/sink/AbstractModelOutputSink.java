@@ -27,6 +27,6 @@ import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
  * @author Christoph Dornieden
  *
  */
-public abstract class AbstractModelOutputSink extends AbstractConsumerStage<BehaviorModel> {
+public abstract class AbstractModelOutputSink extends AbstractConsumerStage<BehaviorModel> { // NOPMD
 
 }

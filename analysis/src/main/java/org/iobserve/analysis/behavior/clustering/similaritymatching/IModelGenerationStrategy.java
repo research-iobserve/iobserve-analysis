@@ -32,5 +32,5 @@ public interface IModelGenerationStrategy {
      *            set of models
      * @return the generated model
      */
-    public BehaviorModel generateModel(final BehaviorModel[] models);
+    BehaviorModel generateModel(final BehaviorModel[] models);
 }
