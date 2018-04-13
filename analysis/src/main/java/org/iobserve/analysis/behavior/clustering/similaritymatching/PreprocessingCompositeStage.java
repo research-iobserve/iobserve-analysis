@@ -21,6 +21,9 @@ import kieker.monitoring.core.controller.ReceiveUnfilteredConfiguration;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
+import teetime.stage.basic.distributor.Distributor;
+import teetime.stage.basic.distributor.strategy.CopyByReferenceStrategy;
+import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 
 import org.iobserve.analysis.ConfigurationKeys;
 import org.iobserve.analysis.behavior.models.data.configuration.IModelGenerationFilterFactory;
@@ -36,7 +39,8 @@ import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.ConfigurationException;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
-import org.iobserve.stages.source.TimeTriggerFilter;
+import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
+import org.iobserve.stages.source.SynthesizedTimeTriggerStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,7 +56,7 @@ public class PreprocessingCompositeStage extends CompositeStage {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PreprocessingCompositeStage.class);
 
-    private final TimeTriggerFilter sessionCollectionTimer;
+    private final SynthesizedTimeTriggerStage sessionCollectionTimer;
     private final UserSessionOperationCleanupStage sessionOperationsFilter;
     private final EntryCallStage entryCallStage;
     private final EntryCallSequence entryCallSequence;
@@ -109,11 +113,18 @@ public class PreprocessingCompositeStage extends CompositeStage {
                 cleanupRewriter);
         /** Create UserSessionOperationsFilter */
         this.sessionOperationsFilter = new UserSessionOperationCleanupStage(filterRulesFactory.createFilter());
+
         /** Create Clock */
-        this.sessionCollectionTimer = new TimeTriggerFilter(triggerInterval, singleEventMode);
+        // TODO the following code snippet uses a synthesized clock
+        this.sessionCollectionTimer = new SynthesizedTimeTriggerStage(triggerInterval);
+        // new TimeTriggerStage(triggerInterval, singleEventMode);
+        final IDistributorStrategy strategy = new CopyByReferenceStrategy();
+        final Distributor<PayloadAwareEntryCallEvent> distributor = new Distributor<>(strategy);
+        this.connectPorts(this.entryCallStage.getOutputPort(), distributor.getInputPort());
+        this.connectPorts(distributor.getNewOutputPort(), this.sessionCollectionTimer.getInputPort());
 
         /** Connect all ports */
-        this.connectPorts(this.entryCallStage.getOutputPort(), this.entryCallSequence.getEntryCallInputPort());
+        this.connectPorts(distributor.getNewOutputPort(), this.entryCallSequence.getEntryCallInputPort());
         this.connectPorts(this.entryCallSequence.getUserSessionOutputPort(), sessionAcceptanceFilter.getInputPort());
         this.connectPorts(sessionAcceptanceFilter.getOutputPort(), traceOperationCleanupFilter.getInputPort());
         this.connectPorts(traceOperationCleanupFilter.getOutputPort(), this.sessionOperationsFilter.getInputPort());

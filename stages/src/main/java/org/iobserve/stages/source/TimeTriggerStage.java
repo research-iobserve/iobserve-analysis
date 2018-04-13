@@ -30,9 +30,9 @@ import org.slf4j.LoggerFactory;
  * @author Reiner Jung
  *
  */
-public class TimeTriggerFilter extends AbstractProducerStage<Long> {
+public class TimeTriggerStage extends AbstractProducerStage<Long> implements IPeriodicalTriggerStage {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TimeTriggerFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TimeTriggerStage.class);
 
     private final long interval;
 
@@ -46,16 +46,16 @@ public class TimeTriggerFilter extends AbstractProducerStage<Long> {
      * @param singleEventMode
      *            create only one time stamp event after interval milliseconds
      */
-    public TimeTriggerFilter(final long interval, final boolean singleEventMode) {
+    public TimeTriggerStage(final long interval, final boolean singleEventMode) {
         this.interval = interval;
         this.singleEventMode = singleEventMode;
     }
 
     @Override
     protected void execute() throws Exception {
-        TimeTriggerFilter.LOGGER.debug("Interval length in {} ms", this.interval);
+        TimeTriggerStage.LOGGER.debug("Interval length in {} ms", this.interval);
         if (this.singleEventMode) {
-            TimeTriggerFilter.LOGGER.info("Single event timer.");
+            TimeTriggerStage.LOGGER.info("Single event timer.");
             Thread.sleep(this.interval);
             this.outputPort.send(new Date().getTime());
         } else {
@@ -63,7 +63,7 @@ public class TimeTriggerFilter extends AbstractProducerStage<Long> {
                 Thread.sleep(this.interval);
                 final long timestamp = new Date().getTime();
                 this.outputPort.send(timestamp);
-                TimeTriggerFilter.LOGGER.debug("Time trigger sends {} ms", timestamp);
+                TimeTriggerStage.LOGGER.debug("Time trigger sends {} ms", timestamp);
             }
         }
         this.workCompleted();
