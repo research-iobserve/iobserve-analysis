@@ -253,24 +253,6 @@ public class DynamicEventDispatcherTest { // NOCS test
     }
 
     /**
-     * Check whether all session events are found.
-     */
-    @Test
-    public void checkSesionEventDetection() {
-        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(this.kiekerMetadataMatcher, true,
-                true, false);
-
-        final List<ISessionEvent> localSessionEventRecords = new ArrayList<>();
-
-        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).and()
-                .receive(localSessionEventRecords).from(this.sessionMatcher.getOutputPort()).start();
-
-        Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(this.inputRecords.size()));
-        Assert.assertEquals("Wrong number of session events", this.sessionEventRecords.size(),
-                localSessionEventRecords.size());
-    }
-
-    /**
      * Check whether all undeployment events are found.
      */
     @Test
@@ -325,25 +307,6 @@ public class DynamicEventDispatcherTest { // NOCS test
     }
 
     /**
-     * Check whether all flow records are found.
-     */
-    @Test
-    public void checkFlowRecordsDetection() {
-        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(this.kiekerMetadataMatcher, true,
-                true, false);
-
-        final List<IFlowRecord> localFlowRecords = new ArrayList<>();
-
-        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).and()
-                .receive(localFlowRecords).from(this.flowMatcher.getOutputPort()).start();
-
-        Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(this.inputRecords.size()));
-        Assert.assertEquals("Mismatch in flow events.",
-                this.flowRecords.size() - 1 /** not matching TraceMetadata. */
-                , localFlowRecords.size());
-    }
-
-    /**
      * Check whether all trace metadata records are found.
      */
     @Test
@@ -359,53 +322,6 @@ public class DynamicEventDispatcherTest { // NOCS test
         Assert.assertThat((int) eventDispatcher.getEventCount(), Is.is(this.inputRecords.size()));
         Assert.assertEquals("Wrong number of trace metadata", this.traceMetadataRecords.size(),
                 localTraceMetadataRecords.size());
-    }
-
-    /**
-     * Check whether all kieker metadata records are ignored. Needs to check all ports for
-     * KiekerMetadataRecord and record count.
-     */
-    @Test
-    public void checkKiekerMetadataAndOtherRecordsIgnored() {
-        final DynamicEventDispatcher eventDispatcher = new DynamicEventDispatcher(this.kiekerMetadataMatcher, true,
-                true, false);
-
-        final List<IDeallocationEvent> localDeallocationRecords = new ArrayList<>();
-        final List<IAllocationEvent> localAllocationRecords = new ArrayList<>();
-        final List<IDeployedEvent> localDeploymentRecords = new ArrayList<>();
-        final List<IUndeployedEvent> localUndeploymentRecords = new ArrayList<>();
-        final List<IFlowRecord> localFlowRecords = new ArrayList<>();
-        final List<ISessionEvent> localSessionEventRecords = new ArrayList<>();
-        final List<TraceMetadata> localTraceMetadataRecords = new ArrayList<>();
-
-        StageTester.test(eventDispatcher).and().send(this.inputRecords).to(eventDispatcher.getInputPort()).and()
-                .receive(localDeallocationRecords).from(this.deallocationEventMatcher.getOutputPort()).and()
-                .receive(localAllocationRecords).from(this.allocationEventMatcher.getOutputPort()).and()
-                .receive(localDeploymentRecords).from(this.deployedEventMatcher.getOutputPort()).and()
-                .receive(localUndeploymentRecords).from(this.undeployedEventMatcher.getOutputPort()).and()
-                .receive(localFlowRecords).from(this.flowMatcher.getOutputPort()).and()
-                .receive(localSessionEventRecords).from(this.sessionMatcher.getOutputPort()).and()
-                .receive(localTraceMetadataRecords).from(this.traceMetadataMatcher.getOutputPort()).start();
-        /** Got all records. */
-        Assert.assertEquals("Number of records did not match", eventDispatcher.getEventCount(),
-                this.inputRecords.size());
-        /** Test completeness of output. */
-
-        Assert.assertEquals("Wrong number of deallocations", this.deallocationRecords.size(),
-                localDeallocationRecords.size());
-        Assert.assertEquals("Wrong number of allocations", this.allocationRecords.size(),
-                localAllocationRecords.size());
-        Assert.assertEquals("Wrong number of deployments", this.deploymentRecords.size(),
-                localDeploymentRecords.size());
-        Assert.assertEquals("Wrong number of undeployments", this.undeploymentRecords.size(),
-                localUndeploymentRecords.size());
-        Assert.assertEquals("Wrong number of flow records",
-                this.flowRecords.size() - 1 /* TraceMetadata goes to a different port. */, localFlowRecords.size());
-        Assert.assertEquals("Wrong number of session events", this.sessionEventRecords.size(),
-                localSessionEventRecords.size());
-        Assert.assertEquals("Wrong number of trace metadata", this.traceMetadataRecords.size(),
-                localTraceMetadataRecords.size());
-
     }
 
 }

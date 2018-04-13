@@ -37,7 +37,7 @@ public class PCMDeployedEvent {
      * @param service
      *            the service on which the component is deployed
      * @param correspondent
-     *            the corresponding elemen in the PCM
+     *            the corresponding element in the PCM
      * @param url
      *            the service URL
      * @param countryCode
