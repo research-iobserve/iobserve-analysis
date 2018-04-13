@@ -22,9 +22,9 @@ import java.io.IOException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import org.iobserve.analysis.clustering.filter.TBehaviorModelVisualization;
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.configuration.ISignatureCreationStrategy;
+import org.iobserve.analysis.behavior.filter.BehaviorModelVisualizationStage;
+import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
+import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  */
 public class BehaviorModelSink extends AbstractModelOutputSink {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TBehaviorModelVisualization.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BehaviorModelVisualizationStage.class);
 
     private final ObjectMapper objectMapper;
 

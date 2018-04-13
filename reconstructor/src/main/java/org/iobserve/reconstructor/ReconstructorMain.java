@@ -55,7 +55,7 @@ public final class ReconstructorMain extends AbstractServiceMain<ReconstructorCo
      *            arguments are ignored
      */
     public static void main(final String[] args) {
-        new ReconstructorMain().run("Collector", "collector", args);
+        new ReconstructorMain().run("Reconstructor", "reconstructor", args);
     }
 
     @Override

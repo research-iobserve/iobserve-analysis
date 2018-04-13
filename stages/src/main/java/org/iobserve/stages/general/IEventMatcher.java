@@ -66,7 +66,9 @@ public interface IEventMatcher<T> {
      *
      * @param leaveEventMatcher
      *            one matcher or a chain of matchers
+     * @throws ConfigurationException
+     *             when setting a sub matcher has no effect
      */
-    void setNextMatcher(IEventMatcher<? extends Object> leaveEventMatcher);
+    void setNextMatcher(IEventMatcher<? extends Object> leaveEventMatcher) throws ConfigurationException;
 
 }

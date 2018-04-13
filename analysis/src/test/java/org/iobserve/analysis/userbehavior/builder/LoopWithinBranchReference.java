@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -89,7 +89,7 @@ public final class LoopWithinBranchReference {
         final int lengthOfBranchSequence = TestHelper.getRandomInteger(2, 1);
         final int countOfLoop = TestHelper.getRandomInteger(3, 2);
 
-        final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
+        final UserSessionCollectionModel entryCallSequenceModel = new UserSessionCollectionModel(
                 TestHelper.getUserSessions(numberOfConcurrentUsers));
         final ReferenceElements referenceElements = new ReferenceElements();
 
@@ -170,7 +170,7 @@ public final class LoopWithinBranchReference {
      * @return
      */
     private static int createLoop(final List<Integer> branchTransitionCounter, final int startTime, final int callIndex,
-            final int loopIndex, final EntryCallSequenceModel entryCallSequenceModel, final int lengthOfBranchSequence,
+            final int loopIndex, final UserSessionCollectionModel entryCallSequenceModel, final int lengthOfBranchSequence,
             final int countOfLoop, final int i) {
         int entryTime = startTime;
         final int countOfBranchTransition = branchTransitionCounter.get(callIndex) + 1;
