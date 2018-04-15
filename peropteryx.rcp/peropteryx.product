@@ -50,7 +50,7 @@
       <plugin id="de.uka.ipd.sdq.featuremodel.edit"/>
       <plugin id="de.uka.ipd.sdq.identifier"/>
       <plugin id="de.uka.ipd.sdq.identifier.edit"/>
-      <plugin id="de.uka.ipd.sdq.pcm.codegen.m2m"/>
+      <?<plugin id="de.uka.ipd.sdq.pcm.codegen.m2m"/>?>
       <plugin id="de.uka.ipd.sdq.pcm.codegen.simucom"/>
       <plugin id="de.uka.ipd.sdq.pcm.cost"/>
       <plugin id="de.uka.ipd.sdq.pcm.designdecision"/>
@@ -106,7 +106,7 @@
       <plugin id="org.apache.commons.jxpath"/>
       <plugin id="org.apache.commons.lang"/>
       <plugin id="org.apache.commons.logging"/>
-      <plugin id="org.apache.commons.logging.fragment" fragment="true"/>
+      <?<plugin id="org.apache.commons.logging.fragment" fragment="true"/>?>
       <plugin id="org.apache.commons.math"/>
       <plugin id="org.apache.felix.gogo.command"/>
       <plugin id="org.apache.felix.gogo.runtime"/>

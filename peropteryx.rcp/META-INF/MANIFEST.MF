@@ -4,7 +4,7 @@ Bundle-ManifestVersion: 2
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-SymbolicName: peropteryx.rcp;singleton:=true
 Bundle-Vendor: iObserve
-Bundle-Version: 0.0.3.I201804111559
+Bundle-Version: 0.0.3.I201804131945
 Export-Package: org.iobserve.peropteryx.rcp;uses:="org.eclipse.core.ru
  ntime,org.eclipse.debug.core,org.eclipse.equinox.app,org.osgi.framewo
  rk";version="0.0.3"
