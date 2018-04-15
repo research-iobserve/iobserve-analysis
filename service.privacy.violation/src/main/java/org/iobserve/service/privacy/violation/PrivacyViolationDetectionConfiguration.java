@@ -34,6 +34,7 @@ import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.privacy.privacy.PrivacyModel;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.filter.AlarmAnalysis;
 import org.iobserve.service.privacy.violation.filter.AlarmSink;
@@ -92,7 +93,8 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
     public PrivacyViolationDetectionConfiguration(final int inputPort, final List<ConnectionData> outputs,
             final ICorrespondence rac, final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
             final ModelProvider<Allocation> allocationModelProvider, final ModelProvider<System> systemModelProvider,
-            final File warningFile, final File alarmFile) throws IOException {
+            final ModelProvider<PrivacyModel> privacyModelProvider, final File warningFile, final File alarmFile)
+            throws IOException {
 
         final kieker.common.configuration.Configuration configuration = new kieker.common.configuration.Configuration();
 
