@@ -67,7 +67,7 @@ public class GraphLoader {
      *            Name of root directory for a certain graph type
      * @return The the model graph
      */
-    private Graph cloneNewModelGraphVersion(final String graphTypeDirName) {
+    private <T> Graph<T> cloneNewModelGraphVersion(final Class<T> clazz, final String graphTypeDirName) {
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
         final int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
         final File newGraphDir = new File(graphTypeDir,
@@ -84,7 +84,7 @@ public class GraphLoader {
             }
         }
 
-        return new Graph(newGraphDir);
+        return new Graph<T>(newGraphDir);
     }
 
     /**
@@ -93,8 +93,8 @@ public class GraphLoader {
      *
      * @return The allocation model graph
      */
-    public Graph cloneNewAllocationModelGraphVersion() {
-        return this.cloneNewModelGraphVersion(GraphLoader.ALLOCATION_GRAPH_DIR);
+    public Graph<Allocation> cloneNewAllocationModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(Allocation.class, GraphLoader.ALLOCATION_GRAPH_DIR);
     }
 
     /**
@@ -103,8 +103,8 @@ public class GraphLoader {
      *
      * @return The repository model graph
      */
-    public Graph cloneNewRepositoryModelGraphVersion() {
-        return this.cloneNewModelGraphVersion(GraphLoader.REPOSITORY_GRAPH_DIR);
+    public Graph<Repository> cloneNewRepositoryModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(Repository.class, GraphLoader.REPOSITORY_GRAPH_DIR);
     }
 
     /**
@@ -113,8 +113,8 @@ public class GraphLoader {
      *
      * @return The resourceEnvironment model graph
      */
-    public Graph cloneNewResourceEnvironmentModelGraphVersion() {
-        return this.cloneNewModelGraphVersion(GraphLoader.RESOURCEENVIRONMENT_GRAPH_DIR);
+    public Graph<ResourceEnvironment> cloneNewResourceEnvironmentModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(ResourceEnvironment.class, GraphLoader.RESOURCEENVIRONMENT_GRAPH_DIR);
     }
 
     /**
@@ -123,8 +123,8 @@ public class GraphLoader {
      *
      * @return The system model graph
      */
-    public Graph cloneNewSystemModelGraphVersion() {
-        return this.cloneNewModelGraphVersion(GraphLoader.SYSTEM_GRAPH_DIR);
+    public Graph<System> cloneNewSystemModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(System.class, GraphLoader.SYSTEM_GRAPH_DIR);
     }
 
     /**
@@ -133,8 +133,18 @@ public class GraphLoader {
      *
      * @return The usage model graph
      */
-    public Graph cloneNewUsageModelGraphVersion() {
-        return this.cloneNewModelGraphVersion(GraphLoader.USAGE_GRAPH_DIR);
+    public Graph<UsageModel> cloneNewUsageModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(UsageModel.class, GraphLoader.USAGE_GRAPH_DIR);
+    }
+
+    /**
+     * Clones and returns a new version from the current newest version of the privacy model graph.
+     * If there is none yet an empty graph is returned.
+     *
+     * @return The privacy model graph
+     */
+    public Graph<PrivacyModel> cloneNewPrivacyModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(PrivacyModel.class, GraphLoader.PRIVACY_MODEL_GRAPH_DIR);
     }
 
     /**
@@ -144,7 +154,7 @@ public class GraphLoader {
      *            Name of root directory for a certain graph type
      * @return The model graph
      */
-    private Graph createModelGraphVersion(final String graphTypeDirName) {
+    private <T> Graph<T> createModelGraphVersion(final Class<T> clazz, final String graphTypeDirName) {
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
         int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
 
@@ -152,7 +162,7 @@ public class GraphLoader {
             maxVersionNumber = 1; // no version at all so far
         }
 
-        return new Graph(new File(graphTypeDir, graphTypeDirName + GraphLoader.VERSION_PREFIX + maxVersionNumber));
+        return new Graph<T>(new File(graphTypeDir, graphTypeDirName + GraphLoader.VERSION_PREFIX + maxVersionNumber));
     }
 
     /**
@@ -161,8 +171,8 @@ public class GraphLoader {
      *
      * @return The allocation model graph
      */
-    public Graph createAllocationModelGraph() {
-        return this.createModelGraphVersion(GraphLoader.ALLOCATION_GRAPH_DIR);
+    public Graph<Allocation> createAllocationModelGraph() {
+        return this.createModelGraphVersion(Allocation.class, GraphLoader.ALLOCATION_GRAPH_DIR);
     }
 
     /**
@@ -171,8 +181,8 @@ public class GraphLoader {
      *
      * @return The repository model graph
      */
-    public Graph createRepositoryModelGraph() {
-        return this.createModelGraphVersion(GraphLoader.REPOSITORY_GRAPH_DIR);
+    public Graph<Repository> createRepositoryModelGraph() {
+        return this.createModelGraphVersion(Repository.class, GraphLoader.REPOSITORY_GRAPH_DIR);
     }
 
     /**
@@ -181,8 +191,8 @@ public class GraphLoader {
      *
      * @return The resourceEnvironment model graph
      */
-    public Graph createResourceEnvironmentModelGraph() {
-        return this.createModelGraphVersion(GraphLoader.RESOURCEENVIRONMENT_GRAPH_DIR);
+    public Graph<ResourceEnvironment> createResourceEnvironmentModelGraph() {
+        return this.createModelGraphVersion(ResourceEnvironment.class, GraphLoader.RESOURCEENVIRONMENT_GRAPH_DIR);
     }
 
     /**
@@ -191,8 +201,8 @@ public class GraphLoader {
      *
      * @return The system model graph
      */
-    public Graph createSystemModelGraph() {
-        return this.createModelGraphVersion(GraphLoader.SYSTEM_GRAPH_DIR);
+    public Graph<System> createSystemModelGraph() {
+        return this.createModelGraphVersion(System.class, GraphLoader.SYSTEM_GRAPH_DIR);
     }
 
     /**
@@ -201,8 +211,18 @@ public class GraphLoader {
      *
      * @return The usage model graph
      */
-    public Graph createUsageModelGraph() {
-        return this.createModelGraphVersion(GraphLoader.USAGE_GRAPH_DIR);
+    public Graph<UsageModel> createUsageModelGraph() {
+        return this.createModelGraphVersion(UsageModel.class, GraphLoader.USAGE_GRAPH_DIR);
+    }
+
+    /**
+     * Returns the newest version of the privacy model graph. If there is none yet an empty graph is
+     * returned.
+     *
+     * @return The privacy model graph
+     */
+    public Graph<PrivacyModel> createPrivacyModelGraph() {
+        return this.createModelGraphVersion(PrivacyModel.class, GraphLoader.PRIVACY_MODEL_GRAPH_DIR);
     }
 
     /**
@@ -213,8 +233,8 @@ public class GraphLoader {
      *            The allocation model
      * @return The allocation model graph
      */
-    public Graph initializeAllocationModelGraph(final Allocation allocationModel) {
-        final Graph graph = this.createAllocationModelGraph();
+    public Graph<Allocation> initializeAllocationModelGraph(final Allocation allocationModel) {
+        final Graph<Allocation> graph = this.createAllocationModelGraph();
         final ModelProvider<Allocation> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(allocationModel);
@@ -231,8 +251,8 @@ public class GraphLoader {
      *            The repository model
      * @return The repository model graph
      */
-    public Graph initializeRepositoryModelGraph(final Repository repositoryModel) {
-        final Graph graph = this.createRepositoryModelGraph();
+    public Graph<Repository> initializeRepositoryModelGraph(final Repository repositoryModel) {
+        final Graph<Repository> graph = this.createRepositoryModelGraph();
         final ModelProvider<Repository> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(repositoryModel);
@@ -249,8 +269,9 @@ public class GraphLoader {
      *            The resource environment model
      * @return The resource environment model graph
      */
-    public Graph initializeResourceEnvironmentModelGraph(final ResourceEnvironment resourceEnvironmentModel) {
-        final Graph graph = this.createResourceEnvironmentModelGraph();
+    public Graph<ResourceEnvironment> initializeResourceEnvironmentModelGraph(
+            final ResourceEnvironment resourceEnvironmentModel) {
+        final Graph<ResourceEnvironment> graph = this.createResourceEnvironmentModelGraph();
         final ModelProvider<ResourceEnvironment> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(resourceEnvironmentModel);
@@ -267,8 +288,8 @@ public class GraphLoader {
      *            The system model
      * @return The system model graph
      */
-    public Graph initializeSystemModelGraph(final System systemModel) {
-        final Graph graph = this.createSystemModelGraph();
+    public Graph<System> initializeSystemModelGraph(final System systemModel) {
+        final Graph<System> graph = this.createSystemModelGraph();
         final ModelProvider<System> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(systemModel);
@@ -285,8 +306,8 @@ public class GraphLoader {
      *            The usage model
      * @return The usage model graph
      */
-    public Graph initializeUsageModelGraph(final UsageModel usageModel) {
-        final Graph graph = this.createUsageModelGraph();
+    public Graph<UsageModel> initializeUsageModelGraph(final UsageModel usageModel) {
+        final Graph<UsageModel> graph = this.createUsageModelGraph();
         final ModelProvider<UsageModel> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(usageModel);
@@ -302,8 +323,8 @@ public class GraphLoader {
      * @param privacyModel
      * @return
      */
-    public Graph initializePrivacyModelGraph(final PrivacyModel privacyModel) {
-        final Graph graph = this.createUsageModelGraph();
+    public Graph<PrivacyModel> initializePrivacyModelGraph(final PrivacyModel privacyModel) {
+        final Graph<PrivacyModel> graph = this.createPrivacyModelGraph();
         final ModelProvider<PrivacyModel> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(privacyModel);
