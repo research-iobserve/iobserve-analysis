@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
 /**
@@ -59,7 +60,7 @@ public class AllocationVisualizationStageTest {
 
     /** test parameters for stage under test. */
     @Mock
-    private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
+    private ModelProvider<ResourceEnvironment, ResourceContainer> mockedResourceContainerModelProvider;
 
     /** input events. */
     private final List<ResourceContainer> inputEvents = new ArrayList<>();

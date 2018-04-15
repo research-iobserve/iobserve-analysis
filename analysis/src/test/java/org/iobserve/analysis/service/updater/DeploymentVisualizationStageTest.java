@@ -34,9 +34,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
 /**
@@ -68,9 +70,9 @@ public class DeploymentVisualizationStageTest { // NOCS test
     private DeploymentVisualizationStage deploymentVisualizationStage;
 
     @Mock
-    private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
+    private ModelProvider<ResourceEnvironment, ResourceContainer> mockedResourceContainerModelProvider;
     @Mock
-    private ModelProvider<AssemblyContext> mockedAssemblyContextModelProvider;
+    private ModelProvider<Allocation, AssemblyContext> mockedAssemblyContextModelProvider;
     @Mock
     private ICorrespondence mockedCorrespondenceModel;
 

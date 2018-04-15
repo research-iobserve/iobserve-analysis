@@ -30,9 +30,9 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class DataFlowDetectionStage extends AbstractConsumerStage<PCMEntryCallEvent> {
 
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
-    private final ModelProvider<System> systemModelGraphProvider;
-    private final ModelProvider<Allocation> allocationModelGraphProvider;
+    private final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final ModelProvider<System, System> systemModelGraphProvider;
+    private final ModelProvider<Allocation, Allocation> allocationModelGraphProvider;
     private final OutputPort<?> outputPort = this.createOutputPort(Object.class); // TODO define
                                                                                   // better
                                                                                   // data type
@@ -47,9 +47,9 @@ public class DataFlowDetectionStage extends AbstractConsumerStage<PCMEntryCallEv
      * @param resourceEnvironmentModelGraphProvider
      *            resource environment model provider
      */
-    public DataFlowDetectionStage(final ModelProvider<Allocation> allocationModelGraphProvider,
-            final ModelProvider<System> systemModelGraphProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
+    public DataFlowDetectionStage(final ModelProvider<Allocation, Allocation> allocationModelGraphProvider,
+            final ModelProvider<System, System> systemModelGraphProvider,
+            final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;

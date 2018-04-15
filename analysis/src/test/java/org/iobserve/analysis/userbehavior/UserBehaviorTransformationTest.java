@@ -73,8 +73,8 @@ public final class UserBehaviorTransformationTest {
 
         final ICorrespondence correspondenceModel = null; // TODO load that model
         final GraphLoader graphLoader = new GraphLoader(null); // TODO fix location
-        final Graph graph = graphLoader.createRepositoryModelGraph();
-        final ModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(graph);
+        final Graph<Repository> graph = graphLoader.createModelGraph(Repository.class);
+        final ModelProvider<Repository, Repository> repositoryModelProvider = new ModelProvider<>(graph);
         final RepositoryLookupModelProvider repositoryLookupModel = new RepositoryLookupModelProvider(
                 repositoryModelProvider.readRootComponent(Repository.class));
 

@@ -53,11 +53,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Lars Bluemke
  *
+ * @param <R>
+ *            Type of the model graph root element
  * @param <T>
  *            Type of the model's or submodel's root component
  * @since 0.0.2
  */
-public class ModelProvider<T extends EObject> implements IModelProvider<T> {
+public class ModelProvider<R extends EObject, T extends EObject> implements IModelProvider<T> {
 
     protected static final String EMF_URI = "emfUri";
     protected static final String REF_POS = "refPos";
@@ -73,7 +75,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
     private static final String DELETE = "delete";
     private static final String VISITED = "visited";
 
-    private final Graph graph;
+    private final Graph<R> graph;
 
     /**
      * Creates a new model provider.
@@ -81,7 +83,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      * @param graph
      *            The neo4j graph database
      */
-    public ModelProvider(final Graph graph) {
+    public ModelProvider(final Graph<R> graph) {
         this.graph = graph;
     }
 
@@ -109,27 +111,11 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *
      * @return The cloned graph
      */
-    public Graph cloneNewGraphVersion(final Class<T> clazz) {
+    public Graph<T> cloneNewGraphVersion(final Class<T> clazz) {
         final File baseDirectory = this.graph.getGraphDirectory().getParentFile().getParentFile();
         final GraphLoader graphLoader = new GraphLoader(baseDirectory);
 
-        if (clazz.equals(Allocation.class)) {
-            return graphLoader.cloneNewAllocationModelGraphVersion();
-        } else if (clazz.equals(Repository.class)) {
-            return graphLoader.cloneNewRepositoryModelGraphVersion();
-        } else if (clazz.equals(ResourceEnvironment.class)) {
-            return graphLoader.cloneNewResourceEnvironmentModelGraphVersion();
-        } else if (clazz.equals(System.class)) {
-            return graphLoader.cloneNewSystemModelGraphVersion();
-        } else if (clazz.equals(UsageModel.class)) {
-            return graphLoader.cloneNewUsageModelGraphVersion();
-        } else {
-            if (ModelProvider.LOGGER.isWarnEnabled()) {
-                ModelProvider.LOGGER.warn("Passed type of createNewGraphVersion(final Class<T> clazz) "
-                        + "has to be one of Allocation, Repository, ResourceEnvironment, System or UsageModel!");
-            }
-            return null;
-        }
+        return graphLoader.cloneNewModelGraphVersion(clazz);
     }
 
     /*
@@ -177,7 +163,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                     }
 
                 } else {
-                    if (refObject != null && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
+                    if ((refObject != null) && (ref.isContainment() || ModelProviderUtil.isDatatype(ref, refObject))) {
                         this.getAllContainmentsAndDatatypes((EObject) refObject, containmentsAndDatatypes);
                     }
                 }
@@ -214,7 +200,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
         } else if (component instanceof PrimitiveDataType) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
                     ((PrimitiveDataType) component).getType().name());
-        } else if (component instanceof UsageModel || component instanceof ResourceEnvironment) {
+        } else if ((component instanceof UsageModel) || (component instanceof ResourceEnvironment)) {
             final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                     .findNodes(Label.label(component.eClass().getName()));
             if (nodes.hasNext()) {
@@ -711,7 +697,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
                 this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
             }
-        } else if (component instanceof ResourceEnvironment || component instanceof UsageModel) {
+        } else if ((component instanceof ResourceEnvironment) || (component instanceof UsageModel)) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
                 final ResourceIterator<Node> nodes = this.graph.getGraphDatabaseService()
                         .findNodes(Label.label(clazz.getSimpleName()));
@@ -1053,7 +1039,7 @@ public class ModelProvider<T extends EObject> implements IModelProvider<T> {
      *
      * @return The graph
      */
-    public Graph getGraph() {
+    public Graph<R> getGraph() {
         return this.graph;
     }
 }

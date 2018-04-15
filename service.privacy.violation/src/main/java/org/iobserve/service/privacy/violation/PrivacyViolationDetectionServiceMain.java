@@ -111,12 +111,12 @@ public final class PrivacyViolationDetectionServiceMain
                 .initializePrivacyModelGraph(modelHandler.getPrivacyModel());
 
         /** model provider. */
-        final ModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
-        final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
-        final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
+        final ModelProvider<Repository, Repository> repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
+        final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
+        final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentGraph);
-        final ModelProvider<System> systemModelProvider = new ModelProvider<>(systemGraph);
-        final ModelProvider<PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph);
+        final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemGraph);
+        final ModelProvider<PrivacyModel, PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph);
 
         try {
             return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs,

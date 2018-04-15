@@ -49,7 +49,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
     /** reference to the correspondence model. */
     private final ICorrespondence correspondenceModel;
     /** usage model provider. */
-    private final ModelProvider<UsageModel> usageModelProvider;
+    private final ModelProvider<UsageModel, UsageModel> usageModelProvider;
 
     private final int varianceOfUserGroups;
 
@@ -79,7 +79,7 @@ public final class TEntryEventSequence extends AbstractConsumerStage<UserSession
      *            type of workload
      */
     public TEntryEventSequence(final ICorrespondence correspondenceModel,
-            final ModelProvider<UsageModel> usageModelProvider,
+            final ModelProvider<UsageModel, UsageModel> usageModelProvider,
             final RepositoryLookupModelProvider repositoryLookupModel, final int varianceOfUserGroups,
             final int thinkTime, final boolean closedWorkload) {
         this.correspondenceModel = correspondenceModel;

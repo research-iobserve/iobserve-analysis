@@ -53,7 +53,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class AllocationResourceContainerTest {
 
     /** mocks. */
-    private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static ModelProvider<ResourceEnvironment, ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
 
     /** stage under test. */
     private AllocationStage allocationStage;
