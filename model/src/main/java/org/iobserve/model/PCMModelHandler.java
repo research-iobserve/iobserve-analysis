@@ -24,10 +24,12 @@ import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 import org.eclipse.emf.common.util.URI;
 import org.iobserve.model.correspondence.CorrespondeceModelFactory;
 import org.iobserve.model.correspondence.ICorrespondence;
+import org.iobserve.model.privacy.privacy.PrivacyModel;
 import org.iobserve.model.provider.file.AllocationModelHandler;
 import org.iobserve.model.provider.file.CloudProfileModelHandler;
 import org.iobserve.model.provider.file.CostModelHandler;
 import org.iobserve.model.provider.file.DesignDecisionModelHandler;
+import org.iobserve.model.provider.file.PrivacyModelHandler;
 import org.iobserve.model.provider.file.QMLDeclarationsModelHandler;
 import org.iobserve.model.provider.file.RepositoryModelHandler;
 import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
@@ -71,7 +73,9 @@ public final class PCMModelHandler {
 
     private static final String QML_DECLARATIONS_MODEL = "qmldeclarations";
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PCMModelHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PCMModelHandler.class);
+
+    private static final String PRIVACY_MODEL = "privacy";
 
     private Repository repositoryModel;
     private Allocation allocationModel;
@@ -84,6 +88,8 @@ public final class PCMModelHandler {
     private DecisionSpace designDecisionModel;
     private QMLDeclarations qmlDeclarationsModel;
 
+    private PrivacyModel privacyModel;
+
     /**
      * Create model provider.
      *
@@ -94,7 +100,7 @@ public final class PCMModelHandler {
 
         final File[] files = pcmModelsDirectory.listFiles();
         for (final File nextFile : files) {
-        	LOGGER.debug("Reading model {}", nextFile.toString());
+            PCMModelHandler.LOGGER.debug("Reading model {}", nextFile.toString());
             final String extension = this.getFileExtension(nextFile.getName());
             final URI uri = this.getUri(nextFile);
             if ("repository".equalsIgnoreCase(extension)) {
@@ -118,6 +124,8 @@ public final class PCMModelHandler {
                 this.designDecisionModel = new DesignDecisionModelHandler().load(uri);
             } else if (PCMModelHandler.QML_DECLARATIONS_MODEL.equalsIgnoreCase(extension)) {
                 this.qmlDeclarationsModel = new QMLDeclarationsModelHandler().load(uri);
+            } else if (PCMModelHandler.PRIVACY_MODEL.equalsIgnoreCase(extension)) {
+                this.privacyModel = new PrivacyModelHandler().load(uri);
             }
 
         }
@@ -194,6 +202,14 @@ public final class PCMModelHandler {
     }
 
     /**
+     * @return PrivacyModel
+     */
+    public PrivacyModel getPrivacyModel() {
+        // TODO Auto-generated method stub
+        return this.privacyModel;
+    }
+
+    /**
      * Saves all currently available models in this provider into the snapshot location.
      *
      * @param fileLocationURI
@@ -218,6 +234,8 @@ public final class PCMModelHandler {
                 this.usageModel);
         new QMLDeclarationsModelHandler().save(
                 fileLocationURI.appendFileExtension(PCMModelHandler.QML_DECLARATIONS_MODEL), this.qmlDeclarationsModel);
+        new PrivacyModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.PRIVACY_MODEL),
+                this.privacyModel);
     }
 
     /**
@@ -241,4 +259,5 @@ public final class PCMModelHandler {
     private URI getUri(final File file) {
         return URI.createFileURI(file.getAbsolutePath());
     }
+
 }

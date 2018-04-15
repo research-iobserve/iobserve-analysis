@@ -28,6 +28,7 @@ import com.beust.jcommander.converters.IntegerConverter;
 import kieker.common.configuration.Configuration;
 
 import org.iobserve.model.PCMModelHandler;
+import org.iobserve.model.privacy.privacy.PrivacyModel;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -100,16 +101,18 @@ public final class PrivacyViolationDetectionServiceMain
         final Graph resourceEnvironmentGraph = graphLoader
                 .initializeResourceEnvironmentModelGraph(modelHandler.getResourceEnvironmentModel());
         final Graph systemGraph = graphLoader.initializeSystemModelGraph(modelHandler.getSystemModel());
+        final Graph privacyModelGraph = graphLoader.initializePrivacyModelGraph(modelHandler.getPrivacyModel());
 
         final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
         final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentGraph);
         final ModelProvider<System> systemModelProvider = new ModelProvider<>(systemGraph);
+        final ModelProvider<PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph);
 
         try {
             return new PrivacyViolationDetectionConfiguration(this.inputPort, this.outputs,
                     modelHandler.getCorrespondenceModel(), resourceEnvironmentModelProvider, allocationModelProvider,
-                    systemModelProvider, this.warningFile, this.alarmsFile);
+                    systemModelProvider, privacyModelProvider, this.warningFile, this.alarmsFile);
         } catch (final IOException e) {
             throw new ConfigurationException(e);
         }

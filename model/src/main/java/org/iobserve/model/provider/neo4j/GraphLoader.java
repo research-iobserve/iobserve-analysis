@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.codehaus.plexus.util.FileUtils;
+import org.iobserve.model.privacy.privacy.PrivacyModel;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -43,6 +44,7 @@ public class GraphLoader {
     private static final String RESOURCEENVIRONMENT_GRAPH_DIR = "resourceenvironmentmodel";
     private static final String SYSTEM_GRAPH_DIR = "systemmodel";
     private static final String USAGE_GRAPH_DIR = "usagemodel";
+    private static final String PRIVACY_MODEL_GRAPH_DIR = "privacymodel";
 
     private final File baseDirectory;
 
@@ -288,6 +290,23 @@ public class GraphLoader {
         final ModelProvider<UsageModel> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(usageModel);
+        graph.getGraphDatabaseService().shutdown();
+
+        return graph;
+    }
+
+    /**
+     * Initializes the newest version of the privacy model graph with the given model. Overwrites a
+     * potential exisiting graph in the database directory of this loader.
+     *
+     * @param privacyModel
+     * @return
+     */
+    public Graph initializePrivacyModelGraph(final PrivacyModel privacyModel) {
+        final Graph graph = this.createUsageModelGraph();
+        final ModelProvider<PrivacyModel> provider = new ModelProvider<>(graph);
+        provider.clearGraph();
+        provider.createComponent(privacyModel);
         graph.getGraphDatabaseService().shutdown();
 
         return graph;
