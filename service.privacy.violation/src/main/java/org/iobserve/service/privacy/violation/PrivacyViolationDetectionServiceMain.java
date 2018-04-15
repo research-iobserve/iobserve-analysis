@@ -36,6 +36,7 @@ import org.iobserve.service.AbstractServiceMain;
 import org.iobserve.service.CommandLineParameterEvaluation;
 import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
@@ -91,18 +92,26 @@ public final class PrivacyViolationDetectionServiceMain
     @Override
     protected PrivacyViolationDetectionConfiguration createConfiguration(final Configuration configuration)
             throws ConfigurationException {
+
         /** load models. */
         final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
-        final Graph allocationModelGraph = graphLoader
+        /** graphs. */
+        final Graph<Repository> repositoryModelGraph = graphLoader
+                .initializeRepositoryModelGraph(modelHandler.getRepositoryModel());
+
+        final Graph<Allocation> allocationModelGraph = graphLoader
                 .initializeAllocationModelGraph(modelHandler.getAllocationModel());
 
-        final Graph resourceEnvironmentGraph = graphLoader
+        final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
                 .initializeResourceEnvironmentModelGraph(modelHandler.getResourceEnvironmentModel());
-        final Graph systemGraph = graphLoader.initializeSystemModelGraph(modelHandler.getSystemModel());
-        final Graph privacyModelGraph = graphLoader.initializePrivacyModelGraph(modelHandler.getPrivacyModel());
+        final Graph<System> systemGraph = graphLoader.initializeSystemModelGraph(modelHandler.getSystemModel());
+        final Graph<PrivacyModel> privacyModelGraph = graphLoader
+                .initializePrivacyModelGraph(modelHandler.getPrivacyModel());
 
+        /** model provider. */
+        final ModelProvider<Repository> repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
         final ModelProvider<Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
         final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentGraph);
