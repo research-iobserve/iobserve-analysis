@@ -36,6 +36,7 @@ import org.iobserve.stages.general.ConfigurationException;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
+import org.palladiosimulator.pcm.system.System;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
@@ -133,14 +134,16 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
             /** initialize neo4j graphs. */
             final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
-            Graph repositoryModelGraph = graphLoader
+            Graph<Repository> repositoryModelGraph = graphLoader
                     .initializeRepositoryModelGraph(modelFileHandler.getRepositoryModel());
-            Graph resourceEnvironmentGraph = graphLoader
+            Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
                     .initializeResourceEnvironmentModelGraph(modelFileHandler.getResourceEnvironmentModel());
-            Graph allocationModelGraph = graphLoader
+            Graph<Allocation> allocationModelGraph = graphLoader
                     .initializeAllocationModelGraph(modelFileHandler.getAllocationModel());
-            Graph systemModelGraph = graphLoader.initializeSystemModelGraph(modelFileHandler.getSystemModel());
-            Graph usageModelGraph = graphLoader.initializeUsageModelGraph(modelFileHandler.getUsageModel());
+            Graph<System> systemModelGraph = graphLoader.initializeSystemModelGraph(modelFileHandler.getSystemModel());
+            Graph<UsageModel> usageModelGraph = graphLoader.initializeUsageModelGraph(modelFileHandler.getUsageModel());
+
+            // TODO the first initialization and then the second creation looks weird.
 
             /** load neo4j graphs. */
             repositoryModelGraph = graphLoader.createRepositoryModelGraph();
