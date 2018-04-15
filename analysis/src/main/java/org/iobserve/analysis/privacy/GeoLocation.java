@@ -34,7 +34,7 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPri
  */
 public class GeoLocation extends AbstractConsumerStage<PCMDeployedEvent> {
 
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
+    private final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider;
 
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
@@ -44,7 +44,7 @@ public class GeoLocation extends AbstractConsumerStage<PCMDeployedEvent> {
      * @param resourceEnvironmentModelProvider
      *            the corresponding resource environment
      */
-    public GeoLocation(final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider) {
+    public GeoLocation(final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider) {
         this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
     }
 
@@ -57,7 +57,7 @@ public class GeoLocation extends AbstractConsumerStage<PCMDeployedEvent> {
 
         for (final ResourceContainer resContainer : resContainers) {
             if (resContainer.getEntityName().equals(element.getService())
-                    && resContainer instanceof ResourceContainerPrivacy) {
+                    && (resContainer instanceof ResourceContainerPrivacy)) {
 
                 final ResourceContainerPrivacy resContainerPrivacy = (ResourceContainerPrivacy) resContainer;
                 final int geolocation = resContainerPrivacy.getGeolocation();

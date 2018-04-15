@@ -35,9 +35,9 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class PrivacyWarner extends AbstractStage {
 
-    private final ModelProvider<Allocation> allocationModelGraphProvider;
-    private final ModelProvider<System> systemModelGraphProvider;
-    private final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider;
+    private final ModelProvider<Allocation, Allocation> allocationModelGraphProvider;
+    private final ModelProvider<System, System> systemModelGraphProvider;
+    private final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelGraphProvider;
 
     private final InputPort<PCMDeployedEvent> deployedInputPort = this.createInputPort(PCMDeployedEvent.class);
     private final InputPort<PCMUndeployedEvent> undeployedInputPort = this.createInputPort(PCMUndeployedEvent.class);
@@ -55,9 +55,9 @@ public class PrivacyWarner extends AbstractStage {
      * @param resourceEnvironmentModelGraphProvider
      *            resource environment model provider
      */
-    public PrivacyWarner(final ModelProvider<Allocation> allocationModelGraphProvider,
-            final ModelProvider<System> systemModelGraphProvider,
-            final ModelProvider<ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
+    public PrivacyWarner(final ModelProvider<Allocation, Allocation> allocationModelGraphProvider,
+            final ModelProvider<System, System> systemModelGraphProvider,
+            final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelGraphProvider) {
         this.allocationModelGraphProvider = allocationModelGraphProvider;
         this.systemModelGraphProvider = systemModelGraphProvider;
         this.resourceEnvironmentModelGraphProvider = resourceEnvironmentModelGraphProvider;

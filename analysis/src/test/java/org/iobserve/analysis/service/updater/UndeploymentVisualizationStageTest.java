@@ -34,9 +34,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
+import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceenvironmentFactory;
 
 /**
@@ -69,11 +71,11 @@ public class UndeploymentVisualizationStageTest { // NOCS test NOPMD too many fi
     private UndeploymentVisualizationStage undeploymentVisualizationStage;
 
     @Mock
-    private ModelProvider<ResourceContainer> mockedResourceContainerModelProvider;
+    private ModelProvider<ResourceEnvironment, ResourceContainer> mockedResourceContainerModelProvider;
     @Mock
-    private ModelProvider<AssemblyContext> mockedAssemblyContextModelProvider;
+    private ModelProvider<Allocation, AssemblyContext> mockedAssemblyContextModelProvider;
     @Mock
-    private ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
+    private ModelProvider<org.palladiosimulator.pcm.system.System, org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
     @Mock
     private ICorrespondence mockedCorrespondenceModel;
 

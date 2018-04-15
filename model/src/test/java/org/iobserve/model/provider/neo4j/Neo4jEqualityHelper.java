@@ -41,8 +41,6 @@ public class Neo4jEqualityHelper extends EqualityHelper {
 
     /**
      * Create Neo4JEqualityHelper.
-     *
-     * TODO is this an architecture issue?
      */
     public Neo4jEqualityHelper() {
         // empty default constructor

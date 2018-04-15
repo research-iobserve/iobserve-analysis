@@ -91,10 +91,12 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
      *             when files cannot be opened
      */
     public PrivacyViolationDetectionConfiguration(final int inputPort, final List<ConnectionData> outputs,
-            final ICorrespondence rac, final ModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider,
-            final ModelProvider<Allocation> allocationModelProvider, final ModelProvider<System> systemModelProvider,
-            final ModelProvider<PrivacyModel> privacyModelProvider, final File warningFile, final File alarmFile)
-            throws IOException {
+            final ICorrespondence rac,
+            final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider,
+            final ModelProvider<Allocation, Allocation> allocationModelProvider,
+            final ModelProvider<System, System> systemModelProvider,
+            final ModelProvider<PrivacyModel, PrivacyModel> privacyModelProvider, final File warningFile,
+            final File alarmFile) throws IOException {
 
         final kieker.common.configuration.Configuration configuration = new kieker.common.configuration.Configuration();
 

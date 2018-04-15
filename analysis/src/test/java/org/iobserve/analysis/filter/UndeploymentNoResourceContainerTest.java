@@ -64,11 +64,11 @@ public class UndeploymentNoResourceContainerTest {
 
     /** mocks. */
     @Mock
-    private static ModelProvider<org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
+    private static ModelProvider<org.palladiosimulator.pcm.system.System, org.palladiosimulator.pcm.system.System> mockedSystemModelGraphProvider;
     @Mock
-    private static ModelProvider<ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
+    private static ModelProvider<ResourceEnvironment, ResourceEnvironment> mockedResourceEnvironmentModelGraphProvider;
     @Mock
-    private static ModelProvider<Allocation> mockedAllocationModelGraphProvider;
+    private static ModelProvider<Allocation, Allocation> mockedAllocationModelGraphProvider;
     @Mock
     private static ICorrespondence mockedCorrespondence;
 

@@ -146,11 +146,11 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
             // TODO the first initialization and then the second creation looks weird.
 
             /** load neo4j graphs. */
-            repositoryModelGraph = graphLoader.createRepositoryModelGraph();
-            resourceEnvironmentGraph = graphLoader.createResourceEnvironmentModelGraph();
-            allocationModelGraph = graphLoader.createAllocationModelGraph();
-            systemModelGraph = graphLoader.createSystemModelGraph();
-            usageModelGraph = graphLoader.createUsageModelGraph();
+            repositoryModelGraph = graphLoader.createModelGraph(Repository.class);
+            resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceEnvironment.class);
+            allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
+            systemModelGraph = graphLoader.createModelGraph(System.class);
+            usageModelGraph = graphLoader.createModelGraph(UsageModel.class);
 
             /** new graphModelProvider. */
             repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
