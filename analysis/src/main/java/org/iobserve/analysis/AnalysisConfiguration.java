@@ -278,11 +278,6 @@ public class AnalysisConfiguration extends Configuration {
                     .getTraceValidOutputPort();
 
             /** Connect ports. */
-//            this.eventDispatcher.registerOutput(ISessionEvent.class);
-//            this.eventDispatcher.registerOutput(IFlowRecord.class);
-//            this.connectPorts(this.eventDispatcher.getOutputPort(IFlowRecord.class),
-//                    traceReconstructionStage.getInputPort());
-
             final IEventMatcher<IFlowRecord> flowRecordMatcher = new ImplementsEventMatcher<>(IFlowRecord.class, null);
             this.eventDispatcher.registerOutput(flowRecordMatcher);
             this.connectPorts(flowRecordMatcher.getOutputPort(), traceReconstructionStage.getInputPort());

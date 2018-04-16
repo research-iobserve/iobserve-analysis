@@ -24,7 +24,7 @@ import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import teetime.stage.basic.merger.Merger;
 import teetime.stage.basic.merger.strategy.BlockingBusyWaitingRoundRobinMergerStrategy;
 
-import org.iobserve.analysis.behavior.filter.BehaviorModelPreperation;
+import org.iobserve.analysis.behavior.filter.BehaviorModelPreparation;
 import org.iobserve.analysis.behavior.filter.BehaviorModelTableGenerationStage;
 import org.iobserve.analysis.behavior.filter.CreateWekaInstancesStage;
 import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
@@ -76,7 +76,7 @@ public class SessionsToInstances extends CompositeStage {
         final BehaviorModelTableGenerationStage tBehaviorModelTableGeneration = new BehaviorModelTableGenerationStage(
                 representativeStrategy, keepEmptyTransitions);
 
-        final BehaviorModelPreperation tBehaviorModelPreperation = new BehaviorModelPreperation(keepEmptyTransitions);
+        final BehaviorModelPreparation tBehaviorModelPreperation = new BehaviorModelPreparation(keepEmptyTransitions);
         final Merger<Long> merger1 = new Merger<>(new BlockingBusyWaitingRoundRobinMergerStrategy());
 
         this.timerInputPort = merger1.getNewInputPort();

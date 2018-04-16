@@ -40,14 +40,19 @@ public class ModelGenerationTransformation extends AbstractStage {
     private BehaviorModel[] models;
     private Integer[][] groups;
 
+    private final String prefix;
+
     /**
      * Constructor.
      *
      * @param modelGenerationStrategy
      *            A strategy that generates a representative model from an array of models
+     * @param prefix
+     *            behavior model prefix
      */
-    public ModelGenerationTransformation(final IModelGenerationStrategy modelGenerationStrategy) {
+    public ModelGenerationTransformation(final IModelGenerationStrategy modelGenerationStrategy, final String prefix) {
         this.modelGenerationStrategy = modelGenerationStrategy;
+        this.prefix = prefix;
     }
 
     @Override
@@ -78,7 +83,7 @@ public class ModelGenerationTransformation extends AbstractStage {
 
             /** Find representative model with strategy */
             representativeModels[i] = this.modelGenerationStrategy.generateModel(groupModels);
-            representativeModels[i].setName("model_" + i);
+            representativeModels[i].setName(this.prefix + "_model_" + i);
         }
 
         this.outputPort.send(representativeModels);

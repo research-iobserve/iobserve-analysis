@@ -40,49 +40,55 @@ public class BuildCFTree extends AbstractConsumerStage<Instances> {
     private CFTree tree;
     private Instances instances;
     private final OutputPort<CFTree> outputPort = this.createOutputPort();
-	private double threshold;
-    private int maxLeafSize;
-    private int maxNodeSize;
-    private ICFComparisonStrategy clusterComparisonStrategy;
+    private final double threshold;
+    private final int maxLeafSize;
+    private final int maxNodeSize;
+    private final ICFComparisonStrategy clusterComparisonStrategy;
 
-    /** Constructor for the BuildCFTree stage of the birch algorithm.
-	 * @param threshold the merge threshold for the underlying cf tree
-	 * @param maxLeafSize the maximum number of entries in a leaf
-	 * @param maxNodeSize the maximum number of entries in a node
-	 * @param clusterComparisonStrategy the cluster comparison strategy 
+    /**
+     * Constructor for the BuildCFTree stage of the birch algorithm.
+     *
+     * @param threshold
+     *            the merge threshold for the underlying cf tree
+     * @param maxLeafSize
+     *            the maximum number of entries in a leaf
+     * @param maxNodeSize
+     *            the maximum number of entries in a node
+     * @param clusterComparisonStrategy
+     *            the cluster comparison strategy
      */
     public BuildCFTree(final double threshold, final int maxLeafSize, final int maxNodeSize,
-    		final ICFComparisonStrategy clusterComparisonStrategy) {
-		super();
-		this.threshold = threshold;
-		this.maxLeafSize = maxLeafSize;
-		this.maxNodeSize = maxNodeSize;
-		this.clusterComparisonStrategy = clusterComparisonStrategy;
-	}
+            final ICFComparisonStrategy clusterComparisonStrategy) {
+        super();
+        this.threshold = threshold;
+        this.maxLeafSize = maxLeafSize;
+        this.maxNodeSize = maxNodeSize;
+        this.clusterComparisonStrategy = clusterComparisonStrategy;
+    }
 
     @Override
     protected void execute(final Instances instancesToCluster) {
-    	this.instances = instancesToCluster;
-    	BuildCFTree.LOGGER.debug("Received " + instancesToCluster.numInstances() 
-    	+ " of dimension " + instancesToCluster.numAttributes());
-    	if (this.tree == null) {
-			this.tree = new CFTree(this.threshold, this.maxLeafSize, this.maxNodeSize, 
-    				instancesToCluster.numAttributes(), this.clusterComparisonStrategy);
-		}
-    	   	
-    	for (int j = 0; j < instancesToCluster.numInstances(); j++) {
-//    		final Double[] vector = new Double[instancesToCluster.numAttributes()];
-//    		if (j == 5 || j == 25 || j == 50 || j == 75 || j == 100) {
-//    	    	for (int i = 0; i < instancesToCluster.numAttributes(); i++) {
-//    	    		vector[i] = instancesToCluster.instance(j).value(i);
-//    	    		BuildCFTree.LOGGER.debug(instances.attribute(j).toString());
-//    	    	}	
-//    		}
+        this.instances = instancesToCluster;
+        BuildCFTree.LOGGER.debug("Received {} of dimension {}", instancesToCluster.numInstances(),
+                instancesToCluster.numAttributes());
+        if (this.tree == null) {
+            this.tree = new CFTree(this.threshold, this.maxLeafSize, this.maxNodeSize,
+                    instancesToCluster.numAttributes(), this.clusterComparisonStrategy);
+        }
 
-    		final ClusteringFeature cf = new ClusteringFeature(instancesToCluster.instance(j));
-	    	this.tree.insert(cf);
-    	}
-    	this.tree.updateLeafChain();
+        for (int j = 0; j < instancesToCluster.numInstances(); j++) {
+            // final Double[] vector = new Double[instancesToCluster.numAttributes()];
+            // if (j == 5 || j == 25 || j == 50 || j == 75 || j == 100) {
+            // for (int i = 0; i < instancesToCluster.numAttributes(); i++) {
+            // vector[i] = instancesToCluster.instance(j).value(i);
+            // BuildCFTree.LOGGER.debug(instances.attribute(j).toString());
+            // }
+            // }
+
+            final ClusteringFeature cf = new ClusteringFeature(instancesToCluster.instance(j));
+            this.tree.insert(cf);
+        }
+        this.tree.updateLeafChain();
     }
 
     /*
@@ -93,11 +99,11 @@ public class BuildCFTree extends AbstractConsumerStage<Instances> {
     @Override
     public void onTerminating() {
         if (this.instances == null) {
-        	BuildCFTree.LOGGER.error("No instances created!");
+            BuildCFTree.LOGGER.error("No instances created!");
         } else {
             this.outputPort.send(this.tree);
         }
-        //BuildCFTree.LOGGER.debug(this.tree.toString());
+        // BuildCFTree.LOGGER.debug(this.tree.toString());
         super.onTerminating();
     }
 

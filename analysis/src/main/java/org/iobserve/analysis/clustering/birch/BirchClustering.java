@@ -15,7 +15,6 @@
  ***************************************************************************/
 package org.iobserve.analysis.clustering.birch;
 
-
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
@@ -30,48 +29,55 @@ import org.iobserve.analysis.clustering.birch.model.ICFComparisonStrategy;
 
 import weka.core.Instances;
 
-
 /**
+ * Composite Stage consisting of the stages unique to the birch clustering algorithm.
+ *
  * @author Melf Lorenzen
- * Composite Stage consisting of the stages unique to the 
- * birch clustering algorithm
  */
 public class BirchClustering extends CompositeStage {
 
     private final InputPort<Instances> inputPort;
     private final OutputPort<Instances> outputPort;
-	
-	/** Constructor for the BirchClustering composite stage.
-	 * @param leafThresholdValue the merge threshold for the underlying cf tree
-	 * @param maxLeafSize the maximum number of entries in a leaf
-	 * @param maxNodeSize the maximum number of entries in a node
-	 * @param maxLeafEntries the maximum number of leaf entries in the underlying cf tree
-	 * @param expectedNumberOfClusters the expected number of clusters in the data
-	 * @param useClusterNumberMetric whether to use the expected number or 
-	 * number calculated by the cluster number metric
-	 * @param clusterComparisonStrategy the cluster comparison strategy 
-	 * @param evalStrategy the strategy for the l-method evaluation graph
-	 */
-	public BirchClustering(final double leafThresholdValue, final int maxLeafSize, 
-			final int maxNodeSize, final int maxLeafEntries, 
-			final int expectedNumberOfClusters, final boolean useClusterNumberMetric,
-			final ICFComparisonStrategy clusterComparisonStrategy,
-			final ILMethodEvalStrategy evalStrategy) {
+
+    /**
+     * Constructor for the BirchClustering composite stage.
+     * 
+     * @param leafThresholdValue
+     *            the merge threshold for the underlying cf tree
+     * @param maxLeafSize
+     *            the maximum number of entries in a leaf
+     * @param maxNodeSize
+     *            the maximum number of entries in a node
+     * @param maxLeafEntries
+     *            the maximum number of leaf entries in the underlying cf tree
+     * @param expectedNumberOfClusters
+     *            the expected number of clusters in the data
+     * @param useClusterNumberMetric
+     *            whether to use the expected number or number calculated by the cluster number
+     *            metric
+     * @param clusterComparisonStrategy
+     *            the cluster comparison strategy
+     * @param evalStrategy
+     *            the strategy for the l-method evaluation graph
+     */
+    public BirchClustering(final double leafThresholdValue, final int maxLeafSize, final int maxNodeSize,
+            final int maxLeafEntries, final int expectedNumberOfClusters, final boolean useClusterNumberMetric,
+            final ICFComparisonStrategy clusterComparisonStrategy, final ILMethodEvalStrategy evalStrategy) {
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         final Distributor<Instances> distributor = new Distributor<>(strategy);
         final IMergerStrategy mergerStrategy = new BlockingBusyWaitingRoundRobinMergerStrategy();
         final Merger<Object> merger = new Merger<>(mergerStrategy);
-        final BuildCFTree buildCFTree = new BuildCFTree(leafThresholdValue, maxLeafSize, 
-        		maxNodeSize, clusterComparisonStrategy);
+        final BuildCFTree buildCFTree = new BuildCFTree(leafThresholdValue, maxLeafSize, maxNodeSize,
+                clusterComparisonStrategy);
         final RebuildTree rebuildTree = new RebuildTree(maxLeafEntries);
         final ClusterOnTree clusterOnTree = new ClusterOnTree();
-        final ClusterSelection clusterSelection = 
-        		new ClusterSelection(expectedNumberOfClusters, useClusterNumberMetric, evalStrategy);
+        final ClusterSelection clusterSelection = new ClusterSelection(expectedNumberOfClusters, useClusterNumberMetric,
+                evalStrategy);
         final Refinement refinement = new Refinement();
-        
+
         this.inputPort = distributor.getInputPort();
         this.outputPort = refinement.getOutputPort();
-        
+
         this.connectPorts(distributor.getNewOutputPort(), buildCFTree.getInputPort());
         this.connectPorts(buildCFTree.getOutputPort(), rebuildTree.getInputPort());
         this.connectPorts(rebuildTree.getOutputPort(), clusterOnTree.getInputPort());
@@ -79,12 +85,12 @@ public class BirchClustering extends CompositeStage {
         this.connectPorts(clusterSelection.getOutputPort(), merger.getNewInputPort());
         this.connectPorts(distributor.getNewOutputPort(), merger.getNewInputPort());
         this.connectPorts(merger.getOutputPort(), refinement.getInputPort());
-	}
+    }
 
     public InputPort<Instances> getInputPort() {
         return this.inputPort;
     }
-	
+
     public OutputPort<Instances> getOutputPort() {
         return this.outputPort;
     }

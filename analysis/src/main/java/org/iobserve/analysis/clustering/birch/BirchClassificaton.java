@@ -67,17 +67,17 @@ public class BirchClassificaton extends CompositeStage implements IClassificatio
 
         final boolean useClusterNumberMetric = configuration.getBooleanProperty(ConfigurationKeys.USE_CNM, true);
 
-        /** Todo: incoperate to config */
+        /** TODO incorporate into configuration */
         final IRepresentativeStrategy representativeStrategy = new JPetstoreRepresentativeStrategy();
 
         final String clusterComparisonStrategyClassName = configuration
                 .getStringProperty(ConfigurationKeys.CLUSTER_METRIC_STRATEGY);
-        BirchClassificaton.LOGGER.error("clusterComparisonStrategyClassName: " + clusterComparisonStrategyClassName);
+        BirchClassificaton.LOGGER.error("clusterComparisonStrategyClassName: {}", clusterComparisonStrategyClassName);
         final ICFComparisonStrategy clusterComparisonStrategy = InstantiationFactory.create(ICFComparisonStrategy.class,
                 clusterComparisonStrategyClassName, null);
         final String lmethodStrategyClassName = configuration
                 .getStringProperty(ConfigurationKeys.LMETHOD_EVAL_STRATEGY);
-        BirchClassificaton.LOGGER.error("lmethodStrategyClassName: " + lmethodStrategyClassName);
+        BirchClassificaton.LOGGER.error("lmethodStrategyClassName: {}", lmethodStrategyClassName);
         final ILMethodEvalStrategy evalStrategy = InstantiationFactory.create(ILMethodEvalStrategy.class,
                 lmethodStrategyClassName, null);
 

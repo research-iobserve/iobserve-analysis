@@ -67,7 +67,7 @@ public final class BehaviorModelTableGenerationStage extends AbstractConsumerSta
         final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
 
         for (final UserSession userSession : userSessions) {
-            BehaviorModelTableGenerationStage.LOGGER.debug("entryCalls: " + userSession.getEvents().size());
+            BehaviorModelTableGenerationStage.LOGGER.debug("entryCalls: {}", userSession.getEvents().size());
             final List<EntryCallEvent> entryCalls = userSession.getEvents();
 
             EntryCallEvent lastCall = null;

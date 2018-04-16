@@ -14,27 +14,26 @@
  * limitations under the License.
  ***************************************************************************/
 package org.iobserve.analysis.clustering.birch;
+
 import java.util.List;
 
 import org.iobserve.analysis.clustering.birch.model.ClusteringFeature;
 
 /**
- * @author Melf Lorenzen
- * Metric for the lmethod of the 
- * ClusterSelection stage based on
- * the cluster sum of squared erros.
+ * @author Melf Lorenzen Metric for the lmethod of the ClusterSelection stage based on the cluster
+ *         sum of squared erros.
  */
-public class SseEvalMetric implements ILMethodEvalStrategy{
+public class SseEvalMetric implements ILMethodEvalStrategy {
 
-	@Override
-	public double calculateClusterMetric(final List<ClusteringFeature> cluster) {
-		double sum = 0.0;
-		
-		for (ClusteringFeature cf : cluster) {
-			sum += cf.getSquareSumError();
-		}
-			
-		return sum;
-	}
+    @Override
+    public double calculateClusterMetric(final List<ClusteringFeature> cluster) {
+        double sum = 0.0;
+
+        for (final ClusteringFeature cf : cluster) {
+            sum += cf.getSquareSumError();
+        }
+
+        return sum;
+    }
 
 }

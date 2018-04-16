@@ -42,6 +42,18 @@ public class SessionToBehaviorModelTransformation extends AbstractConsumerStage<
 
     private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
 
+    private final String prefix;
+
+    /**
+     * Create a behavior model from a session filter.
+     *
+     * @param prefix
+     *            name prefix for all models
+     */
+    public SessionToBehaviorModelTransformation(final String prefix) {
+        this.prefix = prefix;
+    }
+
     @Override
     public void execute(final UserSession session) {
         this.outputPort.send(this.convert(session));
@@ -60,6 +72,7 @@ public class SessionToBehaviorModelTransformation extends AbstractConsumerStage<
      */
     public BehaviorModel convert(final UserSession session) {
         final BehaviorModel model = new BehaviorModel();
+        model.setName(this.prefix);
 
         final List<EntryCallEvent> entryCalls = session.getEvents();
         final Iterator<EntryCallEvent> iterator = entryCalls.iterator();

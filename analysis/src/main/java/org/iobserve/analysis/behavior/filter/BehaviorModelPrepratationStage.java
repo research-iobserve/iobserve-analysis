@@ -32,15 +32,16 @@ import org.iobserve.analysis.data.UserSessionCollectionModel;
 import weka.core.Instances;
 
 /**
+ * Model preparation for EM and X-Means. Converts
  *
  * @author Christoph Dornieden
  */
 
-public class BehaviorModelPrepratation extends CompositeStage {
+public class BehaviorModelPrepratationStage extends CompositeStage {
 
     private final SessionOperationCleanupFilter sessionOperationCleanupFilter;
 
-    private final CreateWekaInstancesStage tInstanceTransformations;
+    private final CreateWekaInstancesStage createWekaInstancesStage;
 
     /**
      * Setup model preparation steps. Used with EM and XMeans.
@@ -52,7 +53,7 @@ public class BehaviorModelPrepratation extends CompositeStage {
      * @param keepEmptyTransitions
      *            keep transitions which are empty
      */
-    public BehaviorModelPrepratation(final EntryCallFilterRules entryCallFilterRules,
+    public BehaviorModelPrepratationStage(final EntryCallFilterRules entryCallFilterRules,
             final IRepresentativeStrategy representativeStrategy, final boolean keepEmptyTransitions) {
         this.sessionOperationCleanupFilter = new SessionOperationCleanupFilter(entryCallFilterRules);
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
@@ -64,9 +65,9 @@ public class BehaviorModelPrepratation extends CompositeStage {
         final BehaviorModelTableGenerationStage tBehaviorModelTableGeneration = new BehaviorModelTableGenerationStage(
                 representativeStrategy, keepEmptyTransitions);
 
-        final BehaviorModelPreperation tBehaviorModelPreperation = new BehaviorModelPreperation(keepEmptyTransitions);
+        final BehaviorModelPreparation behaviorModelPreparation = new BehaviorModelPreparation(keepEmptyTransitions);
 
-        this.tInstanceTransformations = new CreateWekaInstancesStage();
+        this.createWekaInstancesStage = new CreateWekaInstancesStage();
 
         this.connectPorts(this.sessionOperationCleanupFilter.getOutputPort(), distributor.getInputPort());
         this.connectPorts(distributor.getNewOutputPort(), tBehaviorModelTableGeneration.getInputPort());
@@ -74,8 +75,8 @@ public class BehaviorModelPrepratation extends CompositeStage {
 
         this.connectPorts(tBehaviorModelTableGeneration.getOutputPort(), merger.getNewInputPort());
 
-        this.connectPorts(merger.getOutputPort(), tBehaviorModelPreperation.getInputPort());
-        this.connectPorts(tBehaviorModelPreperation.getOutputPort(), this.tInstanceTransformations.getInputPort());
+        this.connectPorts(merger.getOutputPort(), behaviorModelPreparation.getInputPort());
+        this.connectPorts(behaviorModelPreparation.getOutputPort(), this.createWekaInstancesStage.getInputPort());
 
     }
 
@@ -94,7 +95,7 @@ public class BehaviorModelPrepratation extends CompositeStage {
      * @return outputPort
      */
     public OutputPort<Instances> getOutputPort() {
-        return this.tInstanceTransformations.getOutputPort();
+        return this.createWekaInstancesStage.getOutputPort();
     }
 
 }

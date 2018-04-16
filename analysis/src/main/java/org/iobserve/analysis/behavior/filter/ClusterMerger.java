@@ -71,7 +71,10 @@ public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<
                 result.add(instance);
             }
         }
-        //this.printInstances(result);
+
+        if (ClusterMerger.LOGGER.isDebugEnabled()) {
+            this.printInstances(result);
+        }
         this.outputPort.send(result);
     }
 
@@ -81,15 +84,13 @@ public class ClusterMerger extends AbstractConsumerStage<Map<Integer, List<Pair<
 
     private void printInstances(final Instances instances) {
         for (int i = 0; i < instances.numInstances(); i++) {
-            String logString = "";
-            logString += "***************************";
-            logString += "Cluster " + i;
-            logString += "***************************";
+            ClusterMerger.LOGGER.debug("***************************");
+            ClusterMerger.LOGGER.debug("Cluster {}", i);
+            ClusterMerger.LOGGER.debug("***************************");
             final Instance instance = instances.instance(i);
             for (int a = 0; a < instance.numAttributes(); a++) {
-                logString += instances.attribute(a).name() + " : " + instance.value(a);
+                ClusterMerger.LOGGER.debug("{} : {}", instances.attribute(a).name(), instance.value(a));
             }
-            ClusterMerger.LOGGER.info(logString);
         }
     }
 }

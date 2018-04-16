@@ -69,6 +69,8 @@ public class VectorizationStage extends AbstractStage {
         final BehaviorModel model = this.modelInputPort.receive();
         final Long timestamp = this.timerInputPort.receive();
 
+        // VectorizationStage.LOGGER.debug("time {}", timestamp);
+
         if (model != null) {
             this.vectorizeModel(model);
             this.models.add(model);

@@ -103,14 +103,16 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
         final IModelGenerationStrategy modelGenerationStrategy = InstantiationFactory
                 .create(IModelGenerationStrategy.class, modelStrategyClassName, null);
 
+        final String prefix = "similarity";
+
         /** Create individual stages */
-        final SessionToBehaviorModelTransformation sessionToModel = new SessionToBehaviorModelTransformation();
+        final SessionToBehaviorModelTransformation sessionToModel = new SessionToBehaviorModelTransformation(prefix);
         final VectorizationStage vectorization = new VectorizationStage(structureMetric, parameterMetric);
         vectorization.declareActive();
         final GroupingBehaviorStage groupingStage = new GroupingBehaviorStage(structureSimilarityRadius,
                 parameterSimilarityRadius);
-        final ModelGenerationTransformation modelGeneration = new ModelGenerationTransformation(
-                modelGenerationStrategy);
+        final ModelGenerationTransformation modelGeneration = new ModelGenerationTransformation(modelGenerationStrategy,
+                prefix);
         modelGeneration.declareActive();
 
         /** Connect ports */

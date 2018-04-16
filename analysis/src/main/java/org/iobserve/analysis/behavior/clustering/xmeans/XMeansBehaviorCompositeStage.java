@@ -23,7 +23,7 @@ import teetime.framework.InputPort;
 
 import org.iobserve.analysis.behavior.clustering.em.UserSessionModelAggregator;
 import org.iobserve.analysis.behavior.clustering.similaritymatching.PreprocessingCompositeStage;
-import org.iobserve.analysis.behavior.filter.BehaviorModelPrepratation;
+import org.iobserve.analysis.behavior.filter.BehaviorModelPrepratationStage;
 import org.iobserve.analysis.behavior.models.data.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.behavior.models.data.configuration.GetLastXSignatureStrategy;
 import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
@@ -78,7 +78,7 @@ public class XMeansBehaviorCompositeStage extends CompositeStage implements IBeh
 
         final UserSessionModelAggregator userSessionModelAggregator = new UserSessionModelAggregator();
 
-        final BehaviorModelPrepratation behaviorModelPreparation = new BehaviorModelPrepratation(modelGenerationFilter,
+        final BehaviorModelPrepratationStage behaviorModelPreparation = new BehaviorModelPrepratationStage(modelGenerationFilter,
                 representativeStrategy, keepEmptyTransitions);
 
         /** aggregation setup. */
