@@ -22,7 +22,7 @@ import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class CollectUserSessionsFilter extends AbstractStage {
     private final InputPort<UserSession> userSessionInputPort = this.createInputPort();
     private final InputPort<Long> timeTriggerInputPort = this.createInputPort();
 
-    private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
+    private final OutputPort<UserSessionCollectionModel> outputPort = this.createOutputPort();
 
     private final List<UserSession> userSessions = new ArrayList<>();
 
@@ -77,7 +77,7 @@ public class CollectUserSessionsFilter extends AbstractStage {
         final Long triggerTime = this.timeTriggerInputPort.receive();
         if (triggerTime != null) {
             /** collect all sessions. */
-            final EntryCallSequenceModel model = new EntryCallSequenceModel(this.userSessions);
+            final UserSessionCollectionModel model = new UserSessionCollectionModel(this.userSessions);
             /** remove expired sessions. */
             if (this.userSessions.size() > this.minCollectionSize) {
                 for (int i = 0; this.userSessions.size() > i; i++) {
@@ -99,7 +99,7 @@ public class CollectUserSessionsFilter extends AbstractStage {
         return this.timeTriggerInputPort;
     }
 
-    public OutputPort<EntryCallSequenceModel> getOutputPort() {
+    public OutputPort<UserSessionCollectionModel> getOutputPort() {
         return this.outputPort;
     }
 

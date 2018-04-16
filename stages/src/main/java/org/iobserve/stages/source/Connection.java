@@ -21,9 +21,8 @@ import java.nio.channels.SocketChannel;
 import kieker.common.record.io.BinaryValueDeserializer;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.util.registry.IRegistry;
-
-import teetime.stage.io.network.util.GetValueAdapter;
-import teetime.stage.io.network.util.ReaderRegistry;
+import kieker.common.util.registry.reader.GetValueAdapter;
+import kieker.common.util.registry.reader.ReaderRegistry;
 
 /**
  * Represents one connection to read records from.

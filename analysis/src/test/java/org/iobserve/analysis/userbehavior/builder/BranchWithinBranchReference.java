@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -85,7 +85,7 @@ public final class BranchWithinBranchReference {
         final int numberOfTransitionsOfInteriorBranches = TestHelper.getRandomInteger(3, 2);
         final int numberOfConcurrentUsers = TestHelper.getRandomInteger(200, 10 * numberOfTransitionsOfExteriorBranch);
 
-        final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
+        final UserSessionCollectionModel entryCallSequenceModel = new UserSessionCollectionModel(
                 TestHelper.getUserSessions(numberOfConcurrentUsers));
 
         final ReferenceElements referenceElements = new ReferenceElements();
@@ -126,7 +126,7 @@ public final class BranchWithinBranchReference {
     private static void createUserSessions(final List<Integer> branchTransitionCounter,
             final List<List<Integer>> listOfbranchTransitionCounterInterior,
             final int numberOfTransitionsOfExteriorBranch, final int numberOfTransitionsOfInteriorBranches,
-            final EntryCallSequenceModel entryCallSequenceModel) {
+            final UserSessionCollectionModel entryCallSequenceModel) {
         boolean areAllBranchesVisited = true;
 
         do {
@@ -311,7 +311,7 @@ public final class BranchWithinBranchReference {
      * @return
      */
     private static int createBranch(final List<Integer> branchTransitionCounter, final int entryTime,
-            final EntryCallSequenceModel entryCallSequenceModel, final int numberOfTransitionsOfInteriorBranches,
+            final UserSessionCollectionModel entryCallSequenceModel, final int numberOfTransitionsOfInteriorBranches,
             final List<List<Integer>> listOfbranchTransitionCounterInterior, final int userSessionIndex,
             final int operationId) {
         final int countOfBranchTransition = branchTransitionCounter.get(operationId) + 1;
@@ -360,7 +360,7 @@ public final class BranchWithinBranchReference {
      *            list of iterators
      */
     private static int createEntryCallEventForBranch(final int index, final int iteratorId, final int branchDecisioner,
-            final int signatureId, final EntryCallSequenceModel entryCallSequenceModel, final int entryTime,
+            final int signatureId, final UserSessionCollectionModel entryCallSequenceModel, final int entryTime,
             final List<List<Integer>> listOfbranchTransitionCounterInterior) {
         final int countOfBranchTransition = listOfbranchTransitionCounterInterior.get(iteratorId).get(branchDecisioner)
                 + 1;

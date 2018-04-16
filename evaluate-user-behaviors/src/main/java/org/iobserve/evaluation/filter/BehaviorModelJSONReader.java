@@ -18,17 +18,17 @@ package org.iobserve.evaluation.filter;
 import java.io.File;
 import java.util.Iterator;
 
-import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
-import org.iobserve.analysis.clustering.behaviormodels.CallInformation;
-import org.iobserve.analysis.clustering.behaviormodels.EntryCallEdge;
-import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import teetime.framework.AbstractProducerStage;
+
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 
 /**
  * Read a JSON serialized behavior model.
@@ -54,7 +54,6 @@ public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel
     protected void execute() throws Exception {
         final ObjectMapper mapper = new ObjectMapper();
 
-        final BehaviorModel model = new BehaviorModel();
         /** Have to read the model by hand */
         final JsonNode tree = mapper.readTree(this.inputFile);
         if (!(tree instanceof ObjectNode)) {
@@ -62,7 +61,9 @@ public class BehaviorModelJSONReader extends AbstractProducerStage<BehaviorModel
         }
         final ObjectNode modelNode = (ObjectNode) tree;
 
-        // Read name
+        final BehaviorModel model = new BehaviorModel();
+
+        /** Read name. */
         final JsonNode name = modelNode.get("name");
         if (name.isTextual()) {
             model.setName(name.textValue());

@@ -20,42 +20,44 @@ import kieker.common.configuration.Configuration;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
+import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.ConfigurationException;
 
-
 /**
- * Generalises stages that aggregate user sessions based on a timer and generate
- * behavior models for them.
- * 
+ * Generalises stages that aggregate user sessions based on a timer and generate behavior models for
+ * them.
+ *
  * @author Jannis Kuckei
  * @author Melf Lorenzen
  *
  */
 public interface IClassificationStage {
-	
-	/** Sets up the classification stage
-	 * with respect to the configuration.
-	 * @param configuration the configuration object
-	 * for the classification stage
-	 * @throws ConfigurationException if the configuration does not contain all
-     * necessary keys
-	 */
-	void setupStage(final Configuration configuration) throws ConfigurationException;
-	
+
+    /**
+     * Sets up the classification stage with respect to the configuration.
+     * 
+     * @param configuration
+     *            the configuration object for the classification stage
+     * @throws ConfigurationException
+     *             if the configuration does not contain all necessary keys
+     */
+    void setupStage(final Configuration configuration) throws ConfigurationException;
+
     /**
      * get matching input port for the UserSession.
      *
      * @return input port
      */
     InputPort<UserSession> getSessionInputPort();
+
     /**
      * get matching input port for the timer signal.
      *
      * @return input port
      */
     InputPort<Long> getTimerInputPort();
+
     /**
      * get suitable output port.
      *

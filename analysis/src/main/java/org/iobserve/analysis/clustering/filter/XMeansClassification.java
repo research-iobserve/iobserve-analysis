@@ -21,129 +21,105 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.clustering.XMeansClustering;
+import org.iobserve.analysis.ConfigurationKeys;
+import org.iobserve.analysis.behavior.clustering.xmeans.XMeansClustering;
+import org.iobserve.analysis.behavior.filter.BehaviorModelCreationStage;
+import org.iobserve.analysis.behavior.filter.VectorQuantizationClusteringStage;
+import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
+import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
 import org.iobserve.analysis.clustering.birch.SessionsToInstances;
-import org.iobserve.analysis.clustering.filter.models.BehaviorModel;
-import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.clustering.filter.models.configuration.examples.JPetstoreStrategy;
 import org.iobserve.analysis.clustering.shared.IClassificationStage;
-import org.iobserve.analysis.configurations.ConfigurationKeys;
 import org.iobserve.analysis.session.data.UserSession;
+import org.iobserve.analysis.systems.jpetstore.JPetstoreRepresentativeStrategy;
 import org.iobserve.stages.general.ConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import weka.core.ManhattanDistance;
 
-/** This class handles the classification process with the
- * xmeans algorithm. Transforms user sessions to behavior
- * models.
+/**
+ * This class handles the classification process with the xmeans algorithm. Transforms user sessions
+ * to behavior models.
+ *
  * @author Melf Lorenzen
  */
-public class XMeansClassification  extends CompositeStage implements IClassificationStage {
-        private static final Logger LOGGER = LoggerFactory.getLogger(XMeansClassification.class);
-	    private InputPort<UserSession> sessionInputPort;
-	    private InputPort<Long> timerInputPort;
-	    
-	    private OutputPort<BehaviorModel> outputPort;
-	       
-//	     /** constructor for the EM Classificaton composite stage.
-//	     * @param keepTime the time interval to keep user sessions
-//	     * @param minCollectionSize  minimal number of collected user session
-//	     * @param representativeStrategy representative strategy for behavior model table generation
-//	     * @param keepEmptyTransitions allows behavior model table generation to keep empty transitions
-//	     * @param variance variance of the expected user groups  *   
-//	     * @param distanceMetric distance Metric for clustering           
-//	     */
-//	    public XMeansClassification(final long keepTime, final int minCollectionSize, 
-//	    		final IRepresentativeStrategy representativeStrategy, final boolean keepEmptyTransitions,
-//	    		final int variance, final int expectedClusters) {
-//
-//	        final SessionsToInstances sessionsToInstances = new SessionsToInstances(keepTime, minCollectionSize, 
-//	        		representativeStrategy, keepEmptyTransitions);
-//	        final TVectorQuantizationClustering tVectorQuantizationClustering = new 
-//	        		TVectorQuantizationClustering(new XMeansClustering(variance, expectedClusters, 
-//	        				new ManhattanDistance()));
-//	        final TBehaviorModelCreation tBehaviorModelCreation = new TBehaviorModelCreation("xmeans-");   
-//
-//	        
-//	        this.sessionInputPort = sessionsToInstances.getSessionInputPort();
-//	        this.timerInputPort = sessionsToInstances.getTimerInputPort();
-//	        this.outputPort = tBehaviorModelCreation.getOutputPort();
-//	        
-//	        this.connectPorts(sessionsToInstances.getOutputPort(), tVectorQuantizationClustering.getInputPort());
-//	        this.connectPorts(tVectorQuantizationClustering.getOutputPort(), tBehaviorModelCreation.getInputPort());
-//	    }
-	    
-		@Override
-		public void setupStage(final Configuration configuration) throws ConfigurationException {
-	        /** Get keep time for user sessions*/
-	        final long keepTime = configuration.getLongProperty(ConfigurationKeys.KEEP_TIME, -1);
-	        if (keepTime < 0) {
-	        	XMeansClassification.LOGGER.error("Initialization incomplete: No keep time interval specified.");
-	            throw new ConfigurationException("Initialization incomplete: No keep time interval specified.");
-	        }
-	        
-	        final int minCollectionSize = configuration.getIntProperty(ConfigurationKeys.MIN_SIZE, -1);
-	        if (minCollectionSize < 0) {
-	        	XMeansClassification.LOGGER.error("Initialization incomplete: No min size for user sessions specified.");
-	            throw new ConfigurationException("Initialization incomplete: No min size for user sessions specified.");
-	        }
-	        
-	        final int variance = configuration.getIntProperty(ConfigurationKeys.XM_VAR, -1);
-	        if (variance < 0) {
-	        	XMeansClassification.LOGGER.error("Initialization incomplete: No variance for xmeans specified.");
-	            throw new ConfigurationException("Initialization incomplete: No variance for xmeans specified.");
-	        }
-	        
-	        final int expectedClusters = configuration.getIntProperty(ConfigurationKeys.XM_EXP_CLUS, -1);
-	        if (expectedClusters < 0) {
-	        	XMeansClassification.LOGGER.error("Initialization incomplete: No number of expected clusters specified.");
-	            throw new ConfigurationException("Initialization incomplete: No number of expected clusters specified.");
-	        }
-	        
-	        final boolean keepEmptyTransitions = configuration.getBooleanProperty(ConfigurationKeys.KEEP_EMPTY_TRANS, true);
-	        
-	        /** Todo: incoperate to config */
-			final IRepresentativeStrategy representativeStrategy = new JPetstoreStrategy();
-			
-	        final SessionsToInstances sessionsToInstances = new SessionsToInstances(keepTime, minCollectionSize, 
-	        		representativeStrategy, keepEmptyTransitions);
-	        final TVectorQuantizationClustering tVectorQuantizationClustering = new 
-	        		TVectorQuantizationClustering(new XMeansClustering(variance, expectedClusters, 
-	        				new ManhattanDistance()));
-	        final TBehaviorModelCreation tBehaviorModelCreation = new TBehaviorModelCreation("xmeans-");  
-    
-	        this.sessionInputPort = sessionsToInstances.getSessionInputPort();
-	        this.timerInputPort = sessionsToInstances.getTimerInputPort();
-	        this.outputPort = tBehaviorModelCreation.getOutputPort();
-	        
-	        this.connectPorts(sessionsToInstances.getOutputPort(), tVectorQuantizationClustering.getInputPort());
-	        this.connectPorts(tVectorQuantizationClustering.getOutputPort(), tBehaviorModelCreation.getInputPort());
-		}
-	    
-	    /**
-	     * get matching input port.
-	     *
-	     * @return input port
-	     */
+public class XMeansClassification extends CompositeStage implements IClassificationStage {
+    private static final Logger LOGGER = LoggerFactory.getLogger(XMeansClassification.class);
+    private InputPort<UserSession> sessionInputPort;
+    private InputPort<Long> timerInputPort;
 
-	    public InputPort<UserSession> getSessionInputPort() {
-	        return this.sessionInputPort;
-	    }
+    private OutputPort<BehaviorModel> outputPort;
 
-	    public InputPort<Long> getTimerInputPort() {
-	        return this.timerInputPort;
-	    }
-	    
-	    /**
-	     * get suitable output port.
-	     *
-	     * @return outputPort
-	     */
-	    public OutputPort<BehaviorModel> getOutputPort() {
-	        return this.outputPort;
-	    }
+    @Override
+    public void setupStage(final Configuration configuration) throws ConfigurationException {
+        /** Get keep time for user sessions */
+        final long keepTime = configuration.getLongProperty(ConfigurationKeys.KEEP_TIME, -1);
+        if (keepTime < 0) {
+            XMeansClassification.LOGGER.error("Initialization incomplete: No keep time interval specified.");
+            throw new ConfigurationException("Initialization incomplete: No keep time interval specified.");
+        }
 
-	}
+        final int minCollectionSize = configuration.getIntProperty(ConfigurationKeys.MIN_SIZE, -1);
+        if (minCollectionSize < 0) {
+            XMeansClassification.LOGGER.error("Initialization incomplete: No min size for user sessions specified.");
+            throw new ConfigurationException("Initialization incomplete: No min size for user sessions specified.");
+        }
+
+        final int variance = configuration.getIntProperty(ConfigurationKeys.XM_VAR, -1);
+        if (variance < 0) {
+            XMeansClassification.LOGGER.error("Initialization incomplete: No variance for xmeans specified.");
+            throw new ConfigurationException("Initialization incomplete: No variance for xmeans specified.");
+        }
+
+        final int expectedClusters = configuration.getIntProperty(ConfigurationKeys.XM_EXP_CLUS, -1);
+        if (expectedClusters < 0) {
+            XMeansClassification.LOGGER.error("Initialization incomplete: No number of expected clusters specified.");
+            throw new ConfigurationException("Initialization incomplete: No number of expected clusters specified.");
+        }
+
+        final boolean keepEmptyTransitions = configuration.getBooleanProperty(ConfigurationKeys.KEEP_EMPTY_TRANS, true);
+
+        /** Todo: incoperate to config */
+        final IRepresentativeStrategy representativeStrategy = new JPetstoreRepresentativeStrategy();
+
+        final SessionsToInstances sessionsToInstances = new SessionsToInstances(keepTime, minCollectionSize,
+                representativeStrategy, keepEmptyTransitions);
+        final VectorQuantizationClusteringStage tVectorQuantizationClustering = new VectorQuantizationClusteringStage(
+                new XMeansClustering(variance, expectedClusters, new ManhattanDistance()));
+        final BehaviorModelCreationStage tBehaviorModelCreation = new BehaviorModelCreationStage("xmeans-");
+
+        this.sessionInputPort = sessionsToInstances.getSessionInputPort();
+        this.timerInputPort = sessionsToInstances.getTimerInputPort();
+        this.outputPort = tBehaviorModelCreation.getOutputPort();
+
+        this.connectPorts(sessionsToInstances.getOutputPort(), tVectorQuantizationClustering.getInputPort());
+        this.connectPorts(tVectorQuantizationClustering.getOutputPort(), tBehaviorModelCreation.getInputPort());
+    }
+
+    /**
+     * get matching input port.
+     *
+     * @return input port
+     */
+
+    @Override
+    public InputPort<UserSession> getSessionInputPort() {
+        return this.sessionInputPort;
+    }
+
+    @Override
+    public InputPort<Long> getTimerInputPort() {
+        return this.timerInputPort;
+    }
+
+    /**
+     * get suitable output port.
+     *
+     * @return outputPort
+     */
+    @Override
+    public OutputPort<BehaviorModel> getOutputPort() {
+        return this.outputPort;
+    }
+
+}

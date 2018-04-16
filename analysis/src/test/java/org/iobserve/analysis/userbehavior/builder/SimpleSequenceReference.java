@@ -21,7 +21,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
@@ -88,7 +88,7 @@ public final class SimpleSequenceReference {
         final int numberOfUsersSessions = TestHelper.getRandomInteger(200, 1);
         final int numberOfCalls = TestHelper.getRandomInteger(5, 1);
 
-        final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
+        final UserSessionCollectionModel entryCallSequenceModel = new UserSessionCollectionModel(
                 TestHelper.getUserSessions(numberOfUsersSessions));
         final ReferenceElements referenceElements = new ReferenceElements();
 

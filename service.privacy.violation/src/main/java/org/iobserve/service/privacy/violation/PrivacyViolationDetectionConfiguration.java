@@ -22,16 +22,13 @@ import java.util.List;
 import kieker.common.record.flow.IFlowRecord;
 
 import teetime.framework.Configuration;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
-import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
-import teetime.util.ConcurrentHashMapWithDefault;
 
 import org.iobserve.analysis.deployment.AllocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
 import org.iobserve.analysis.privacy.GeoLocation;
 import org.iobserve.analysis.systems.jpetstore.JPetStoreCallTraceMatcher;
+import org.iobserve.analysis.traces.traceReconstruction.TraceReconstructionFilter;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
@@ -47,6 +44,9 @@ import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
 import org.iobserve.service.privacy.violation.filter.ProbeController;
 import org.iobserve.service.privacy.violation.filter.ProbeMapper;
 import org.iobserve.service.privacy.violation.filter.WarnSink;
+import org.iobserve.stages.data.trace.ConcurrentHashMapWithCreate;
+import org.iobserve.stages.data.trace.EventBasedTrace;
+import org.iobserve.stages.data.trace.EventBasedTraceFactory;
 import org.iobserve.stages.general.DynamicEventDispatcher;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEventMatcher;
@@ -130,7 +130,7 @@ public class PrivacyViolationDetectionConfiguration extends Configuration {
         final PrivacyWarner privacyWarner = new PrivacyWarner(allocationModelProvider, systemModelProvider,
                 resourceEnvironmentModelProvider);
 
-        final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<>(
+        final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithCreate<>(
                 EventBasedTraceFactory.INSTANCE);
         final TraceReconstructionFilter traceReconstructionFilter = new TraceReconstructionFilter(traceBuffer);
 

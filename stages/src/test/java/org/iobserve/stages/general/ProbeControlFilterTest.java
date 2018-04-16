@@ -103,7 +103,7 @@ public class ProbeControlFilterTest {
         StageTester.test(this.probeControlFilter).and().send(input).to(this.probeControlFilter.getInputPort()).and()
                 .receive(output).from(this.probeControlFilter.getOutputPort()).start();
 
-        Assert.assertTrue(output.size() == 0);
+        Assert.assertTrue(output.isEmpty());
     }
 
     /**

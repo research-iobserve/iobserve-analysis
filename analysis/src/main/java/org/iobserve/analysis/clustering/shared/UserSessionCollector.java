@@ -21,68 +21,64 @@ import java.util.List;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
-* The collect user sessions filter collects incoming user sessions and sends the collection as an
-* model to the next stage based on a time trigger. Therefore, the stage has two input ports
-* userSessionInputPort and timeTriggerInputPort, and one output port. The collection to be send
-* includes all UserSessions (exitTime) older an interval (keepTime) or at least the last
-* (minCollectionSize) UserSessions.
-*
-* @author Melf Lorenzen
-*
-* @since 0.0.2
-*/
+ * The collect user sessions filter collects incoming user sessions and sends the collection as an
+ * model to the next stage based on a time trigger. Therefore, the stage has two input ports
+ * userSessionInputPort and timeTriggerInputPort, and one output port. The collection to be send
+ * includes all UserSessions (exitTime) older an interval (keepTime) or at least the last
+ * (minCollectionSize) UserSessions.
+ *
+ * @author Melf Lorenzen
+ *
+ * @since 0.0.2
+ */
 public class UserSessionCollector extends AbstractConsumerStage<UserSession> {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(UserSessionCollector.class);
-	
-   private final OutputPort<EntryCallSequenceModel> outputPort = this.createOutputPort();
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserSessionCollector.class);
 
-   private final List<UserSession> userSessions = new ArrayList<>();
+    private final OutputPort<UserSessionCollectionModel> outputPort = this.createOutputPort();
 
-   private final int minCollectionSize;
+    private final List<UserSession> userSessions = new ArrayList<>();
 
-   /**
-    * Collect user sessions and send them based on an external time trigger to an aggegation and
-    * clustering stage.
-    *
-    * @param keepTime
-    *            the time interval to keep user sessions
-    * @param minCollectionSize
-    *            minimal number of collected user session
-    */
-   public UserSessionCollector(final int minCollectionSize) {
-       this.minCollectionSize = minCollectionSize;
-   }
+    private final int minCollectionSize;
 
-	@Override
-	protected void execute(final UserSession userSession) throws Exception {
-           this.userSessions.add(userSession);
-	}
-      
-   
-   @Override
-   public void onTerminating() {
-   	UserSessionCollector.LOGGER.debug("Received " + this.userSessions.size() + " !");
-   	/** collect all sessions. */
-       final EntryCallSequenceModel model = new EntryCallSequenceModel(this.userSessions);
+    /**
+     * Collect user sessions and send them based on an external time trigger to an aggegation and
+     * clustering stage.
+     *
+     * @param keepTime
+     *            the time interval to keep user sessions
+     * @param minCollectionSize
+     *            minimal number of collected user session
+     */
+    public UserSessionCollector(final int minCollectionSize) {
+        this.minCollectionSize = minCollectionSize;
+    }
 
-       if (this.userSessions.size() > this.minCollectionSize) {
-    	   this.outputPort.send(model);
-	   }
-       super.onTerminating();
-   }
-   
-   
-   public OutputPort<EntryCallSequenceModel> getOutputPort() {
-       return this.outputPort;
-   }
+    @Override
+    protected void execute(final UserSession userSession) throws Exception {
+        this.userSessions.add(userSession);
+    }
 
+    @Override
+    public void onTerminating() {
+        UserSessionCollector.LOGGER.debug("Received " + this.userSessions.size() + " !");
+        /** collect all sessions. */
+        final UserSessionCollectionModel model = new UserSessionCollectionModel(this.userSessions);
+
+        if (this.userSessions.size() > this.minCollectionSize) {
+            this.outputPort.send(model);
+        }
+        super.onTerminating();
+    }
+
+    public OutputPort<UserSessionCollectionModel> getOutputPort() {
+        return this.outputPort;
+    }
 
 }
-

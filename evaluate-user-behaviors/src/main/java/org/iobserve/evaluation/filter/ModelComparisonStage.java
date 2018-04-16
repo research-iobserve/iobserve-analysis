@@ -1,5 +1,5 @@
 /***************************************************************************
-3 * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
+ * Copyright (C) 2017 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.iobserve.analysis.clustering.behaviormodels.BehaviorModel;
-import org.iobserve.analysis.clustering.behaviormodels.CallInformation;
-import org.iobserve.analysis.clustering.behaviormodels.EntryCallEdge;
-import org.iobserve.analysis.clustering.behaviormodels.EntryCallNode;
-import org.iobserve.evaluation.data.ComparisonResult;
-import org.iobserve.evaluation.data.NodeDifference;
-
 import teetime.framework.AbstractStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
+import org.iobserve.evaluation.data.ComparisonResult;
+import org.iobserve.evaluation.data.NodeDifference;
 
 /**
  * Compare two behavior models and compute their differences.
@@ -74,7 +74,7 @@ public class ModelComparisonStage extends AbstractStage {
             this.testModel = this.testModelInputPort.receive();
         }
         /** We still have to check both, as there could be nothing a both ports. */
-        if ((this.referenceModel != null) && (this.testModel != null)) {
+        if (this.referenceModel != null && this.testModel != null) {
             final ComparisonResult result = new ComparisonResult();
 
             result.getBaselineNodes().addAll(Arrays.asList(this.referenceModel.getNodes()));
@@ -139,8 +139,8 @@ public class ModelComparisonStage extends AbstractStage {
             result.setAdditionalEdgeCount(additionalEdgeCount);
 
             /** Forget models after processing to be able to process the next elements. */
-            this.referenceModel = null;
-            this.testModel = null;
+            this.referenceModel = null; // NOPMD necessary to forget data
+            this.testModel = null; // NOPMD necessary to forget data
 
             /** Add baseline and testModelNodes */
 

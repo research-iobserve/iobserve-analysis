@@ -18,7 +18,7 @@ package org.iobserve.analysis.systems.jpetstore;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.iobserve.analysis.clustering.filter.models.IParameterValueDoubleMapper;
+import org.iobserve.analysis.behavior.models.data.IParameterValueDoubleMapper;
 
 /**
  * This class maps parameter values to numbers reflecting the dissimilarity of the elements. The

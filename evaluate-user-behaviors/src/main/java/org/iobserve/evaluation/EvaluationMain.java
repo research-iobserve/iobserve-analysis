@@ -20,20 +20,21 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.iobserve.service.AbstractServiceMain;
-import org.iobserve.stages.general.ConfigurationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.converters.FileConverter;
 
 import kieker.common.configuration.Configuration;
+
 import teetime.framework.ExecutionException;
 
+import org.iobserve.service.AbstractServiceMain;
+import org.iobserve.stages.general.ConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
- * Collector main class.
+ * User behavior evaluation main class.
  *
  * @author Reiner Jung
  */
@@ -72,8 +73,7 @@ public final class EvaluationMain extends AbstractServiceMain<EvaluationConfigur
         } catch (final ExecutionException ex) {
             final Map<Thread, List<Exception>> exceptions = ex.getThrownExceptions();
             for (final Thread th : exceptions.keySet()) {
-                EvaluationMain.LOGGER
-                        .error("Exception in thread " + th.getName() + ": " + exceptions.get(th).toString());
+                EvaluationMain.LOGGER.error("Exception in thread {}: {}", th.getName(), exceptions.get(th).toString());
             }
         }
     }
@@ -121,7 +121,7 @@ public final class EvaluationMain extends AbstractServiceMain<EvaluationConfigur
 
     @Override
     protected void shutdownService() {
-
+        // nothing special to do
     }
 
 }

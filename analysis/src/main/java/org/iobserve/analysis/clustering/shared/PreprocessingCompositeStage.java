@@ -18,10 +18,9 @@ package org.iobserve.analysis.clustering.shared;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
-import org.iobserve.analysis.clustering.filter.models.configuration.EntryCallFilterRules;
-import org.iobserve.analysis.clustering.filter.models.configuration.IModelGenerationFilterFactory;
+import org.iobserve.analysis.behavior.models.data.configuration.EntryCallFilterRules;
+import org.iobserve.analysis.behavior.models.data.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.analysis.session.SessionAcceptanceFilter;
 import org.iobserve.analysis.session.data.UserSession;
@@ -29,15 +28,14 @@ import org.iobserve.analysis.traces.EntryCallSequence;
 import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
 import org.iobserve.analysis.traces.TraceOperationCleanupFilter;
 import org.iobserve.common.record.ISessionEvent;
+import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.EntryCallStage;
 import org.iobserve.stages.general.IEntryCallTraceMatcher;
-import org.iobserve.stages.source.TimeTriggerFilter;
-
-
+import org.iobserve.stages.source.TimeTriggerStage;
 
 /**
- * Pre-processes monitoring records into user sessions and also provides a timer
- * stage to generate signals at regular intervals.
+ * Pre-processes monitoring records into user sessions and also provides a timer stage to generate
+ * signals at regular intervals.
  *
  * @author Jannis Kuckei
  *
@@ -51,12 +49,17 @@ public class PreprocessingCompositeStage extends CompositeStage {
 
     /**
      * Constructor.
-     * 
-     * @param traceMatcher entry call stage trace matcher
-     * @param entryCallMatcher session acceptance filter entry call matcher 
-     * @param cleanupRewriter trace operation cleanup writer
-     * @param filterRulesFactory filter rules factory
-     * @param triggerInterval interval in which the next stage is triggered
+     *
+     * @param traceMatcher
+     *            entry call stage trace matcher
+     * @param entryCallMatcher
+     *            session acceptance filter entry call matcher
+     * @param cleanupRewriter
+     *            trace operation cleanup writer
+     * @param filterRulesFactory
+     *            filter rules factory
+     * @param triggerInterval
+     *            interval in which the next stage is triggered
      */
     public PreprocessingCompositeStage(final IEntryCallTraceMatcher traceMatcher,
             final IEntryCallAcceptanceMatcher entryCallMatcher, final ITraceSignatureCleanupRewriter cleanupRewriter,
@@ -73,9 +76,9 @@ public class PreprocessingCompositeStage extends CompositeStage {
                 cleanupRewriter);
         /** Create UserSessionOperationsFilter */
         final TSessionOperationsFilter sessionOperationsFilter = new TSessionOperationsFilter(
-        		new EntryCallFilterRules(false).addFilterRule(".*"));
+                new EntryCallFilterRules(false).addFilterRule(".*"));
         /** Create Clock */
-        final TimeTriggerFilter sessionCollectionTimer = new TimeTriggerFilter(triggerInterval);
+        final TimeTriggerStage sessionCollectionTimer = new TimeTriggerStage(triggerInterval, false);
         /** Connect all ports */
         this.traceInputPort = entryCallStage.getInputPort();
         this.sessionEventInputPort = entryCallSequence.getSessionEventInputPort();

@@ -21,7 +21,6 @@ import kieker.common.exception.RecordInstantiationException;
 import org.iobserve.common.record.AbstractContainerEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IDeallocationEvent;
 
