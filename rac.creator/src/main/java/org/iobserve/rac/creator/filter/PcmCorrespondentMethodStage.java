@@ -23,7 +23,7 @@ import kieker.common.record.flow.trace.operation.AbstractOperationEvent;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
+import org.iobserve.model.protocom.PcmCorrespondentMethod;
 import org.iobserve.rac.creator.data.ClassAndMethod;
 
 /**
@@ -36,6 +36,9 @@ public class PcmCorrespondentMethodStage extends AbstractConsumerStage<AbstractO
 
     private final OutputPort<ClassAndMethod> outputPort = this.createOutputPort();
 
+    /**
+     * Create a PCM correspondent method stage.
+     */
     public PcmCorrespondentMethodStage() {
         // empty default constructor
     }

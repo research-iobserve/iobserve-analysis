@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.analysis.configurations;
 
+import kieker.common.record.flow.IFlowRecord;
+
 import teetime.framework.Configuration;
 import teetime.framework.OutputPort;
 import teetime.stage.basic.distributor.Distributor;
@@ -23,6 +25,7 @@ import teetime.stage.basic.distributor.strategy.IDistributorStrategy;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
 
 import org.iobserve.analysis.deployment.AllocationStage;
+import org.iobserve.analysis.deployment.DeallocationStage;
 import org.iobserve.analysis.deployment.DeploymentCompositeStage;
 import org.iobserve.analysis.deployment.UndeploymentCompositeStage;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
@@ -30,12 +33,19 @@ import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
 import org.iobserve.analysis.feature.IContainerManagementSinksStage;
 import org.iobserve.analysis.traces.TraceReconstructionCompositeStage;
+import org.iobserve.common.record.IAllocationEvent;
+import org.iobserve.common.record.IDeallocationEvent;
+import org.iobserve.common.record.IDeployedEvent;
+import org.iobserve.common.record.ISessionEvent;
+import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.service.source.ISourceCompositeStage;
 import org.iobserve.stages.general.ConfigurationException;
-import org.iobserve.stages.general.RecordSwitch;
+import org.iobserve.stages.general.DynamicEventDispatcher;
+import org.iobserve.stages.general.IEventMatcher;
+import org.iobserve.stages.general.ImplementsEventMatcher;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
@@ -59,13 +69,15 @@ public class AnalysisConfiguration extends Configuration {
 
     private static final String DELIMETER = ",";
 
-    private final RecordSwitch recordSwitch;
-
     private AllocationStage allocationStage;
 
     private DeploymentCompositeStage deploymentStage;
 
     private UndeploymentCompositeStage undeploymentStage;
+
+    private final DynamicEventDispatcher eventDispatcher;
+
+    private DeallocationStage deallocationStage;
 
     /**
      * Create an analysis configuration, configured by a configuration object.
@@ -93,7 +105,7 @@ public class AnalysisConfiguration extends Configuration {
             final IModelProvider<Allocation> allocationModelProvider, final IModelProvider<System> systemModelProvider,
             final IModelProvider<UsageModel> usageModelProvider, final ICorrespondence correspondenceModelProvider)
             throws ConfigurationException {
-        this.recordSwitch = new RecordSwitch();
+        this.eventDispatcher = new DynamicEventDispatcher(null, true, true, false);
 
         /** Source stage. */
         final String sourceClassName = configuration.getStringProperty(ConfigurationKeys.SOURCE);
@@ -101,7 +113,7 @@ public class AnalysisConfiguration extends Configuration {
             final ISourceCompositeStage sourceCompositeStage = InstantiationFactory
                     .createWithConfiguration(ISourceCompositeStage.class, sourceClassName, configuration);
 
-            this.connectPorts(sourceCompositeStage.getOutputPort(), this.recordSwitch.getInputPort());
+            this.connectPorts(sourceCompositeStage.getOutputPort(), this.eventDispatcher.getInputPort());
 
             this.containerManagement(configuration, resourceEnvironmentModelProvider, allocationModelProvider,
                     systemModelProvider, correspondenceModelProvider);
@@ -131,31 +143,39 @@ public class AnalysisConfiguration extends Configuration {
             final ICorrespondence correspondenceModelProvider) throws ConfigurationException {
         if (configuration.getBooleanProperty(ConfigurationKeys.CONTAINER_MANAGEMENT, false)) {
 
-            // Initiate stages and connect their ports according to toggle settings.
             /** allocation. */
             this.allocationStage = new AllocationStage(resourceEnvironmentModelProvider);
+            final IEventMatcher<IAllocationEvent> allocationMatcher = new ImplementsEventMatcher<>(
+                    IAllocationEvent.class, null);
             /** connect ports. */
-            this.connectPorts(this.recordSwitch.getAllocationOutputPort(), this.allocationStage.getInputPort());
+            this.eventDispatcher.registerOutput(allocationMatcher);
+            this.connectPorts(allocationMatcher.getOutputPort(), this.allocationStage.getInputPort());
+
+            /** deallocation. */
+            this.deallocationStage = new DeallocationStage(resourceEnvironmentModelProvider);
+            /** connect ports. */
+            final IEventMatcher<IDeallocationEvent> deallocationMatcher = new ImplementsEventMatcher<>(
+                    IDeallocationEvent.class, null);
+            this.eventDispatcher.registerOutput(deallocationMatcher);
+            this.connectPorts(deallocationMatcher.getOutputPort(), this.deallocationStage.getInputPort());
 
             /** deployment. */
+            final IEventMatcher<IDeployedEvent> deployedEventMatcher = new ImplementsEventMatcher<>(
+                    IDeployedEvent.class, null);
+            this.eventDispatcher.registerOutput(deployedEventMatcher);
             this.deploymentStage = new DeploymentCompositeStage(resourceEnvironmentModelProvider,
                     allocationModelProvider, systemModelProvider, correspondenceModelProvider);
             /** connect ports. */
-            this.connectPorts(this.recordSwitch.getDeployedOutputPort(), this.deploymentStage.getDeployedInputPort());
+            this.connectPorts(deployedEventMatcher.getOutputPort(), this.deploymentStage.getDeployedInputPort());
 
             /** undeployment. */
+            final IEventMatcher<IUndeployedEvent> undeployedEventMatcher = new ImplementsEventMatcher<>(
+                    IUndeployedEvent.class, null);
+            this.eventDispatcher.registerOutput(undeployedEventMatcher);
             this.undeploymentStage = new UndeploymentCompositeStage(resourceEnvironmentModelProvider,
                     allocationModelProvider, systemModelProvider, correspondenceModelProvider);
             /** connect ports. */
-            this.connectPorts(this.recordSwitch.getUndeployedOutputPort(),
-                    this.undeploymentStage.getUndeployedInputPort());
-
-            /** deallocation. */
-            // this.deallocationStage = new DeallocationStage(resourceEnvironmentModelProvider);
-            // TODO missing
-            /** connect ports. */
-            // this.connectPorts(this.recordSwitch.getDeallocationOutputPort(),
-            // this.deallocationStage.getInputPort(targetPort));
+            this.connectPorts(undeployedEventMatcher.getOutputPort(), this.undeploymentStage.getUndeployedInputPort());
 
             /** dependent features. */
             this.createContainerManagementSink(configuration);
@@ -182,8 +202,8 @@ public class AnalysisConfiguration extends Configuration {
             /** connect ports. */
             this.connectPorts(this.allocationStage.getAllocationNotifyOutputPort(),
                     containerManagementSinksStage.getAllocationInputPort());
-            // this.connectPorts(this.deallocation.getAllocationNotifyOutputPort(),
-            // containerManagementSinksStage.getDeallocationInputPort());
+            this.connectPorts(this.deallocationStage.getDeallocationNotifyOutputPort(),
+                    containerManagementSinksStage.getDeallocationInputPort());
             this.connectPorts(this.deploymentStage.getDeployedOutputPort(),
                     containerManagementSinksStage.getDeployedInputPort());
             this.connectPorts(this.undeploymentStage.getUndeployedOutputPort(),
@@ -192,8 +212,8 @@ public class AnalysisConfiguration extends Configuration {
             /** In case of multiple outputs, we require distributors. */
             final Distributor<ResourceContainer> allocationDistributor = new Distributor<>(
                     new CopyByReferenceStrategy());
-            // final Distributor<ResourceContainer> deallocationDistributor = new Distributor<>(
-            // new CopyByReferenceStrategy());
+            final Distributor<ResourceContainer> deallocationDistributor = new Distributor<>(
+                    new CopyByReferenceStrategy());
             final Distributor<PCMDeployedEvent> deploymentDistributor = new Distributor<>(
                     new CopyByReferenceStrategy());
             final Distributor<PCMUndeployedEvent> undeploymentDistributor = new Distributor<>(
@@ -202,8 +222,8 @@ public class AnalysisConfiguration extends Configuration {
             /** link distributor to container management. */
             this.connectPorts(this.allocationStage.getAllocationNotifyOutputPort(),
                     allocationDistributor.getInputPort());
-            // this.connectPorts(this.deallocation.getAllocationNotifyOutputPort(),
-            // allocationDistributor.getInputPort());
+            this.connectPorts(this.deallocationStage.getDeallocationNotifyOutputPort(),
+                    deallocationDistributor.getInputPort());
             this.connectPorts(this.deploymentStage.getDeployedOutputPort(), deploymentDistributor.getInputPort());
             this.connectPorts(this.undeploymentStage.getUndeployedOutputPort(), undeploymentDistributor.getInputPort());
 
@@ -215,8 +235,8 @@ public class AnalysisConfiguration extends Configuration {
                 /** connect ports. */
                 this.connectPorts(allocationDistributor.getNewOutputPort(),
                         containerManagementSinksStage.getAllocationInputPort());
-                // this.connectPorts(deallocationDistributor.getNewOutputPort(),
-                // containerManagementSinksStage.getDeallocationInputPort());
+                this.connectPorts(deallocationDistributor.getNewOutputPort(),
+                        containerManagementSinksStage.getDeallocationInputPort());
                 this.connectPorts(deploymentDistributor.getNewOutputPort(),
                         containerManagementSinksStage.getDeployedInputPort());
                 this.connectPorts(undeploymentDistributor.getNewOutputPort(),
@@ -248,7 +268,14 @@ public class AnalysisConfiguration extends Configuration {
                     .getTraceValidOutputPort();
 
             /** Connect ports. */
-            this.connectPorts(this.recordSwitch.getFlowOutputPort(), traceReconstructionStage.getInputPort());
+//            this.eventDispatcher.registerOutput(ISessionEvent.class);
+//            this.eventDispatcher.registerOutput(IFlowRecord.class);
+//            this.connectPorts(this.eventDispatcher.getOutputPort(IFlowRecord.class),
+//                    traceReconstructionStage.getInputPort());
+
+            final IEventMatcher<IFlowRecord> flowRecordMatcher = new ImplementsEventMatcher<>(IFlowRecord.class, null);
+            this.eventDispatcher.registerOutput(flowRecordMatcher);
+            this.connectPorts(flowRecordMatcher.getOutputPort(), traceReconstructionStage.getInputPort());
 
             /** Include distributor to support tow simultaneous sinks. */
             if (configuration.getBooleanProperty(ConfigurationKeys.DATA_FLOW, false)
@@ -297,8 +324,12 @@ public class AnalysisConfiguration extends Configuration {
         if (!behaviorClustringClassName.isEmpty()) {
             final IBehaviorCompositeStage behavior = InstantiationFactory
                     .createWithConfiguration(IBehaviorCompositeStage.class, behaviorClustringClassName, configuration);
+
+            final IEventMatcher<ISessionEvent> sessionMatcher = new ImplementsEventMatcher<>(ISessionEvent.class, null);
+            this.eventDispatcher.registerOutput(sessionMatcher);
+
             this.connectPorts(eventBasedTraceOutputPort, behavior.getEventBasedTracePort());
-            this.connectPorts(this.recordSwitch.getSessionEventOutputPort(), behavior.getSessionEventInputPort());
+            this.connectPorts(sessionMatcher.getOutputPort(), behavior.getSessionEventInputPort());
 
             if (configuration.getBooleanProperty(ConfigurationKeys.BEHAVIOR_CLUSTERING_SINK)) {
                 // TODO needs visualization trigger
@@ -313,7 +344,7 @@ public class AnalysisConfiguration extends Configuration {
         }
     }
 
-    public RecordSwitch getRecordSwitch() {
-        return this.recordSwitch;
+    public DynamicEventDispatcher getEventDispatcher() {
+        return this.eventDispatcher;
     }
 }

@@ -29,10 +29,8 @@ import org.iobserve.stages.general.data.EntryCallEvent;
  *
  */
 public class SessionAcceptanceFilter extends AbstractConsumerStage<UserSession> {
-
     private final OutputPort<UserSession> outputPort = this.createOutputPort();
     private final IEntryCallAcceptanceMatcher matcher;
-
     /**
      * Create an acceptance filter with an external matcher.
      *
@@ -50,7 +48,6 @@ public class SessionAcceptanceFilter extends AbstractConsumerStage<UserSession> 
                 return;
             }
         }
-
         this.outputPort.send(session);
     }
 

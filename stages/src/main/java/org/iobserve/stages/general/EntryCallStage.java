@@ -20,10 +20,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
-import org.iobserve.common.record.ExtendedAfterOperationEvent;
-import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,9 +30,16 @@ import kieker.common.record.flow.trace.AbstractTraceEvent;
 import kieker.common.record.flow.trace.TraceMetadata;
 import kieker.common.record.flow.trace.operation.AfterOperationEvent;
 import kieker.common.record.flow.trace.operation.BeforeOperationEvent;
+
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 import teetime.stage.trace.traceReconstruction.EventBasedTrace;
+
+import org.iobserve.common.record.EntryLevelBeforeOperationEvent;
+import org.iobserve.common.record.ExtendedAfterOperationEvent;
+import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 //TODO: this filter must be reworked to support plain and extended records, Maybe code from earlier versions can be useful.
 
@@ -58,6 +61,10 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
     /** output port. */
     private final OutputPort<PayloadAwareEntryCallEvent> outputPort = this.createOutputPort();
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(EntryCallStage.class);
+    private int cnt = 0;
+    private int se = 0;
+
     /**
      * Entry call filter.
      *
@@ -78,11 +85,13 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
      */
     @Override
     protected void execute(final EventBasedTrace event) throws JsonProcessingException, IOException {
+        this.cnt++; // addition
         for (final AbstractTraceEvent traceEvent : event.getTraceEvents()) {
             if (traceEvent instanceof BeforeOperationEvent) {
                 final BeforeOperationEvent beforeEvent = (BeforeOperationEvent) traceEvent;
 
                 if (this.matcher.stateMatch(event, beforeEvent)) {
+                    this.se++;
                     this.outputPort.send(this.createEntryCall(event.getTraceMetaData()));
                     return;
                 }
@@ -90,6 +99,14 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
         }
     }
 
+    /**
+     * This method is triggered for every deployment event.
+     *
+     * @param event
+     *            all IFlowRecord like TraceMetadata, BeforeOperationEvent and AfterOperationEvent
+     * @throws IOException
+     * @throws JsonProcessingException
+     */
     private PayloadAwareEntryCallEvent createEntryCall(final TraceMetadata traceMetaData)
             throws JsonProcessingException, IOException {
 
@@ -153,6 +170,15 @@ public class EntryCallStage extends AbstractConsumerStage<EventBasedTrace> {
      */
     public OutputPort<PayloadAwareEntryCallEvent> getOutputPort() {
         return this.outputPort;
+    }
+
+    @Override
+    public void onTerminating() {
+        EntryCallStage.LOGGER.debug("Received " + this.cnt + " traces.");
+        EntryCallStage.LOGGER.debug("Sent " + this.se + " PAECEs.");
+        // EntryCallSequence.LOGGER.debug("About to send " + this.sessions.size() + " user
+        // sessions.");
+        super.onTerminating();
     }
 
 }

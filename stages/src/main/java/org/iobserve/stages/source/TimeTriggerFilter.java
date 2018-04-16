@@ -27,7 +27,6 @@ import teetime.framework.AbstractProducerStage;
  *
  */
 public class TimeTriggerFilter extends AbstractProducerStage<Long> {
-
     private final long interval;
 
     /**
@@ -38,6 +37,7 @@ public class TimeTriggerFilter extends AbstractProducerStage<Long> {
      */
     public TimeTriggerFilter(final long interval) {
         this.interval = interval;
+        this.declareActive();
     }
 
     // TODO: Generalize for experiments (continuous execution vs. sending a single signal and

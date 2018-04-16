@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,32 +27,29 @@ import org.iobserve.common.record.Privacy;
 
 /**
  * @author Generic Kieker
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
- * @since 1.13
+ * @since 1.14
  */
-public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privacy {
-	private static final long serialVersionUID = 3364660760163783830L;
-
+public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privacy {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_STRING // EJBDescriptor.service
 			 + TYPE_SIZE_STRING // EJBDescriptor.context
 			 + TYPE_SIZE_STRING // EJBDescriptor.deploymentId
-			 + TYPE_SIZE_SHORT // GeoLocation.countryCode
-	;
+			 + TYPE_SIZE_SHORT; // GeoLocation.countryCode
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEventRecord.timestamp
+		long.class, // IEvent.timestamp
 		String.class, // EJBDescriptor.service
 		String.class, // EJBDescriptor.context
 		String.class, // EJBDescriptor.deploymentId
 		short.class, // GeoLocation.countryCode
 	};
 	
-	
 	/** default constants. */
 	public static final short COUNTRY_CODE = 49;
+	private static final long serialVersionUID = 3364660760163783830L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -121,6 +118,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public Privacy_EJBDeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
@@ -140,17 +138,8 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 			this.getService(),
 			this.getContext(),
 			this.getDeploymentId(),
-			this.getCountryCode()
+			this.getCountryCode(),
 		};
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getService());
-		stringRegistry.get(this.getContext());
-		stringRegistry.get(this.getDeploymentId());
 	}
 	/**
 	 * {@inheritDoc}
@@ -164,6 +153,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 		serializer.putString(this.getDeploymentId());
 		serializer.putShort(this.getCountryCode());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -204,17 +194,36 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final Privacy_EJBDeployedEvent castedRecord = (Privacy_EJBDeployedEvent) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (!this.getService().equals(castedRecord.getService())) return false;
-		if (!this.getContext().equals(castedRecord.getContext())) return false;
-		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
-		if (this.getCountryCode() != castedRecord.getCountryCode()) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (this.getTimestamp() != castedRecord.getTimestamp()) {
+			return false;
+		}
+		if (!this.getService().equals(castedRecord.getService())) {
+			return false;
+		}
+		if (!this.getContext().equals(castedRecord.getContext())) {
+			return false;
+		}
+		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) {
+			return false;
+		}
+		if (this.getCountryCode() != castedRecord.getCountryCode()) {
+			return false;
+		}
+		
 		return true;
 	}
 	

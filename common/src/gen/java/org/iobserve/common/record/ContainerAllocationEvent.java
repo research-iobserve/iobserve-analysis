@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.iobserve.common.record;
 import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
-import org.iobserve.common.record.ContainerEvent;
+import org.iobserve.common.record.AbstractContainerEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
@@ -27,22 +27,19 @@ import org.iobserve.common.record.IAllocationEvent;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
  * @since 0.0.2
  */
-public class ContainerAllocationEvent extends ContainerEvent implements IAllocationEvent {
-	private static final long serialVersionUID = -6028448119522385906L;
-
+public class ContainerAllocationEvent extends AbstractContainerEvent implements IAllocationEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_STRING // ContainerEvent.url
-	;
+	public static final int SIZE = TYPE_SIZE_STRING; // AbstractContainerEvent.url
 	
 	public static final Class<?>[] TYPES = {
-		String.class, // ContainerEvent.url
+		String.class, // AbstractContainerEvent.url
 	};
 	
-	
+	private static final long serialVersionUID = -6028448119522385906L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -94,6 +91,7 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public ContainerAllocationEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
@@ -108,15 +106,8 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	@Deprecated
 	public Object[] toArray() {
 		return new Object[] {
-			this.getUrl()
+			this.getUrl(),
 		};
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getUrl());
 	}
 	/**
 	 * {@inheritDoc}
@@ -126,6 +117,7 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 		//super.serialize(serializer);
 		serializer.putString(this.getUrl());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -166,13 +158,24 @@ public class ContainerAllocationEvent extends ContainerEvent implements IAllocat
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final ContainerAllocationEvent castedRecord = (ContainerAllocationEvent) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (!this.getUrl().equals(castedRecord.getUrl())) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (!this.getUrl().equals(castedRecord.getUrl())) {
+			return false;
+		}
+		
 		return true;
 	}
 	

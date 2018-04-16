@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,41 +18,40 @@ package org.iobserve.common.record;
 import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
-import kieker.common.record.flow.AbstractEvent;
+import kieker.common.record.AbstractMonitoringRecord;
+import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
 import kieker.common.util.registry.IRegistry;
 
+import org.iobserve.common.record.IEvent;
 import org.iobserve.common.record.GeoLocation;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
  * @since 0.0.2
  */
-public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
-	private static final long serialVersionUID = -9109740651531232541L;
-
+public class ServerGeoLocation extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent, GeoLocation {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_LONG // IEventRecord.timestamp
+	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_SHORT // GeoLocation.countryCode
 			 + TYPE_SIZE_STRING // ServerGeoLocation.hostname
-			 + TYPE_SIZE_STRING // ServerGeoLocation.address
-	;
+			 + TYPE_SIZE_STRING; // ServerGeoLocation.address
 	
 	public static final Class<?>[] TYPES = {
-		long.class, // IEventRecord.timestamp
+		long.class, // IEvent.timestamp
 		short.class, // GeoLocation.countryCode
 		String.class, // ServerGeoLocation.hostname
 		String.class, // ServerGeoLocation.address
 	};
 	
-	
 	/** default constants. */
 	public static final short COUNTRY_CODE = 49;
 	public static final String HOSTNAME = "";
 	public static final String ADDRESS = "";
+	private static final long serialVersionUID = -8861531009608180516L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -63,6 +62,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	};
 	
 	/** property declarations. */
+	private final long timestamp;
 	private final short countryCode;
 	private final String hostname;
 	private final String address;
@@ -80,7 +80,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 *            address
 	 */
 	public ServerGeoLocation(final long timestamp, final short countryCode, final String hostname, final String address) {
-		super(timestamp);
+		this.timestamp = timestamp;
 		this.countryCode = countryCode;
 		this.hostname = hostname == null?"":hostname;
 		this.address = address == null?"":address;
@@ -97,7 +97,8 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 */
 	@Deprecated
 	public ServerGeoLocation(final Object[] values) { // NOPMD (direct store of values)
-		super(values, TYPES);
+		AbstractMonitoringRecord.checkArray(values, TYPES);
+		this.timestamp = (Long) values[0];
 		this.countryCode = (Short) values[1];
 		this.hostname = (String) values[2];
 		this.address = (String) values[3];
@@ -115,7 +116,8 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 */
 	@Deprecated
 	protected ServerGeoLocation(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		super(values, valueTypes);
+		AbstractMonitoringRecord.checkArray(values, valueTypes);
+		this.timestamp = (Long) values[0];
 		this.countryCode = (Short) values[1];
 		this.hostname = (String) values[2];
 		this.address = (String) values[3];
@@ -126,9 +128,10 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public ServerGeoLocation(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		super(deserializer);
+		this.timestamp = deserializer.getLong();
 		this.countryCode = deserializer.getShort();
 		this.hostname = deserializer.getString();
 		this.address = deserializer.getString();
@@ -146,16 +149,8 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 			this.getTimestamp(),
 			this.getCountryCode(),
 			this.getHostname(),
-			this.getAddress()
+			this.getAddress(),
 		};
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getHostname());
-		stringRegistry.get(this.getAddress());
 	}
 	/**
 	 * {@inheritDoc}
@@ -168,6 +163,7 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 		serializer.putString(this.getHostname());
 		serializer.putString(this.getAddress());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -208,18 +204,40 @@ public class ServerGeoLocation extends AbstractEvent implements GeoLocation {
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final ServerGeoLocation castedRecord = (ServerGeoLocation) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (this.getCountryCode() != castedRecord.getCountryCode()) return false;
-		if (!this.getHostname().equals(castedRecord.getHostname())) return false;
-		if (!this.getAddress().equals(castedRecord.getAddress())) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (this.getTimestamp() != castedRecord.getTimestamp()) {
+			return false;
+		}
+		if (this.getCountryCode() != castedRecord.getCountryCode()) {
+			return false;
+		}
+		if (!this.getHostname().equals(castedRecord.getHostname())) {
+			return false;
+		}
+		if (!this.getAddress().equals(castedRecord.getAddress())) {
+			return false;
+		}
+		
 		return true;
 	}
+	
+	public final long getTimestamp() {
+		return this.timestamp;
+	}
+	
 	
 	public final short getCountryCode() {
 		return this.countryCode;

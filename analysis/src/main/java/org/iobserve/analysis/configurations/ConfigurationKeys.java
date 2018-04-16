@@ -43,8 +43,7 @@ public final class ConfigurationKeys {
     public static final String CONTAINER_MANAGEMENT = ConfigurationKeys.PREFIX + "container.management.analysis";
 
     /**
-     * Set whether container management visualization sinks shall be created. STRING
-     * ARRAY
+     * Set whether container management visualization sinks shall be created. STRING ARRAY
      */
     public static final String CONTAINER_MANAGEMENT_SINK = ConfigurationKeys.PREFIX + "container.management.sink";
 
@@ -95,7 +94,7 @@ public final class ConfigurationKeys {
      */
 
     /** Select clustering filter. */
-    public static final String BEHAVIOR_CLUSTERING = ConfigurationKeys.PREFIX + "behaviour.filter";
+    public static final String BEHAVIOR_CLUSTERING = ConfigurationKeys.PREFIX + "behavior.filter";
 
     /** Set whether a behavior visualization sink shall be created. STRING ARRAY. */
     public static final String BEHAVIOR_CLUSTERING_SINK = ConfigurationKeys.PREFIX + "behavior.sink.visual";
@@ -123,8 +122,7 @@ public final class ConfigurationKeys {
             + ITraceSignatureCleanupRewriter.class.getSimpleName();
 
     /**
-     * Set entry call filter rules factory required for TSessionOperationsFilter.
-     * STRING
+     * Set entry call filter rules factory required for TSessionOperationsFilter. STRING
      */
     public static final String ENTRY_CALL_FILTER_RULES_FACTORY = ConfigurationKeys.PREFIX + "behavior."
             + IModelGenerationFilterFactory.class.getSimpleName();
@@ -133,8 +131,7 @@ public final class ConfigurationKeys {
     public static final String TRIGGER_INTERVAL = ConfigurationKeys.PREFIX + "behavior." + "triggerInterval";
 
     /**
-     * Set classification stage (IClassificationStage) used in
-     * BehaviorCompositeStage STRING
+     * Set classification stage (IClassificationStage) used in BehaviorCompositeStage STRING
      */
     public static final String CLASSIFICATION_STAGE = ConfigurationKeys.PREFIX + "behavior."
             + IClassificationStage.class.getSimpleName();
@@ -177,12 +174,63 @@ public final class ConfigurationKeys {
     public static final String SIM_MATCH_RADIUS_STRUCTURE = ConfigurationKeys.PREFIX + "behavior.sm.structure.radius";
 
     /**
+     * Set similarity radius DOUBLE
+     */
+    public static final String SIM_MATCH_RADIUS = ConfigurationKeys.PREFIX + "behavior.sm.radius";
+
+    /**
      * Model.
      */
 
     public static final String PCM_MODEL_DB_DIRECTORY = ConfigurationKeys.PREFIX + "model.pcm.directory.db";
 
     public static final String PCM_MODEL_INIT_DIRECTORY = ConfigurationKeys.PREFIX + "model.pcm.directory.init";
+
+    /**
+     * Classification pre-processing.
+     */
+
+    public static final String KEEP_EMPTY_TRANS = ConfigurationKeys.PREFIX + "behavior.preprocess.keepEmpty";
+
+    public static final String MIN_SIZE = ConfigurationKeys.PREFIX + "behavior.preprocess.minSize";
+
+    public static final String KEEP_TIME = ConfigurationKeys.PREFIX + "behavior.preprocess.keepTime";
+
+    /**
+     * Classification stage selection.
+     */
+
+    public static final String CLASS_STAGE = ConfigurationKeys.PREFIX + "behavior.classification";
+
+    /**
+     * Xmeans Classification.
+     */
+
+    public static final String XM_VAR = ConfigurationKeys.PREFIX + "behavior.xmeans.variance";
+
+    public static final String XM_EXP_CLUS = ConfigurationKeys.PREFIX + "behavior.xmeans.expectedClusters";
+
+    /**
+     * Birch Classification.
+     */
+
+    public static final String LEAF_TH = ConfigurationKeys.PREFIX + "behavior.birch.leafThreshold";
+
+    public static final String MAX_LEAF_SIZE = ConfigurationKeys.PREFIX + "behavior.birch.maxLeafSize";
+
+    public static final String MAX_NODE_SIZE = ConfigurationKeys.PREFIX + "behavior.birch.maxNodeSize";
+
+    public static final String MAX_LEAF_ENTRIES = ConfigurationKeys.PREFIX + "behavior.birch.maxLeafEntries";
+
+    public static final String EXP_NUM_OF_CLUSTERS = ConfigurationKeys.PREFIX
+            + "behavior.birch.expectedNumberOfClusters";
+
+    public static final String USE_CNM = ConfigurationKeys.PREFIX + "behavior.birch.useClusterNumberMetric";
+
+    public static final String CLUSTER_METRIC_STRATEGY = ConfigurationKeys.PREFIX
+            + "behavior.birch.clusterMetricStrategy";
+
+    public static final String LMETHOD_EVAL_STRATEGY = ConfigurationKeys.PREFIX + "behavior.birch.lmethodEvalStrategy";
 
     /**
      * Factory, do not instantiate.

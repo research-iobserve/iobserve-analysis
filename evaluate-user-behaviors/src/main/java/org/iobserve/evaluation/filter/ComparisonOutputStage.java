@@ -104,7 +104,7 @@ public class ComparisonOutputStage extends AbstractConsumerStage<ComparisonResul
                 + result.getAdditionalEdgeCount() + "\n");
         writer.write("Node differences:\n");
         for (final NodeDifference difference : result.getNodeDifferences()) {
-            writer.write("\tNode" + difference.getReferenceNode().getSignature() + "\n");
+            writer.write("\tNode " + difference.getReferenceNode().getSignature() + "\n");
             writer.write("\t\tMissing");
             String separator = "=";
             for (final CallInformation callInformation : difference.getMissingInformation()) {

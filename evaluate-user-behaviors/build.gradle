@@ -16,8 +16,6 @@ dependencies {
 
 	compile project(":analysis") // behavior model data
 	compile project(":service")
-
-	testCompile "junit:junit:4.12"
 }
 
 // SHADOW

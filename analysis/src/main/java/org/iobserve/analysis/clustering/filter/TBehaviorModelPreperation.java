@@ -60,6 +60,7 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
     @Override
     protected void execute(final Object object) {
         if (object instanceof EntryCallSequenceModel) {
+        	TBehaviorModelPreperation.LOGGER.debug("Got an EntryCallSequenceModel");
             final EntryCallSequenceModel entryCallSequenceModel = (EntryCallSequenceModel) object;
             this.executeEntryCallSequenceModel(entryCallSequenceModel);
 
@@ -86,16 +87,15 @@ public final class TBehaviorModelPreperation extends AbstractConsumerStage<Objec
 
         } else {
             final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
-
+            TBehaviorModelPreperation.LOGGER.debug("Executing EntryCallSequenceModel");
+            TBehaviorModelPreperation.LOGGER.debug("userSessions: " + userSessions.size());
             for (final UserSession userSession : userSessions) {
                 final BehaviorModelTable modelTable = this.behaviorModelTable.getClearedCopy(this.keepEmptyTransitions);
                 final List<EntryCallEvent> entryCalls = userSession.getEvents();
-
+                
                 EntryCallEvent lastCall = null;
                 for (final EntryCallEvent eventCall : entryCalls) {
-
                     final boolean isAllowed = modelTable.isAllowedSignature(eventCall);
-
                     if (lastCall != null && isAllowed) {
                         modelTable.addTransition(lastCall, eventCall);
                         modelTable.addInformation(eventCall);

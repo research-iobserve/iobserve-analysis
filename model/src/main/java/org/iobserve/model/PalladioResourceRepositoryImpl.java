@@ -33,10 +33,10 @@ import org.palladiosimulator.pcm.resourcetype.SchedulingPolicy;
  */
 public class PalladioResourceRepositoryImpl implements IPalladioResourceRepository {
 
-    private static final String CPU = "CPU";
-    private static final String LAN = "LAN";
-    private static final String HDD = "HDD";
-    private static final String DELAY = "DELAY";
+    private static final String CPU_RESOURCE = "CPU";
+    private static final String LAN_RESOURCE = "LAN";
+    private static final String HDD_RESOURCE = "HDD";
+    private static final String DELAY_RESOURCE = "DELAY";
 
     private static final String POLICY_DELAY = "Delay";
     private static final String POLICY_FCFS = "First-Come-First-Serve";
@@ -58,41 +58,41 @@ public class PalladioResourceRepositoryImpl implements IPalladioResourceReposito
     }
 
     @Override
-    public ProcessingResourceType cpu() {
-        return (ProcessingResourceType) this.getResourceTypeByName(PalladioResourceRepositoryImpl.CPU);
+    public ProcessingResourceType cpu() throws ModelHandlingErrorException {
+        return (ProcessingResourceType) this.getResourceTypeByName(PalladioResourceRepositoryImpl.CPU_RESOURCE);
     }
 
     @Override
-    public ProcessingResourceType hdd() {
-        return (ProcessingResourceType) this.getResourceTypeByName(PalladioResourceRepositoryImpl.HDD);
+    public ProcessingResourceType hdd() throws ModelHandlingErrorException {
+        return (ProcessingResourceType) this.getResourceTypeByName(PalladioResourceRepositoryImpl.HDD_RESOURCE);
     }
 
     @Override
-    public ProcessingResourceType delay() {
-        return (ProcessingResourceType) this.getResourceTypeByName(PalladioResourceRepositoryImpl.DELAY);
+    public ProcessingResourceType delay() throws ModelHandlingErrorException {
+        return (ProcessingResourceType) this.getResourceTypeByName(PalladioResourceRepositoryImpl.DELAY_RESOURCE);
     }
 
     @Override
-    public CommunicationLinkResourceType lan() {
-        return (CommunicationLinkResourceType) this.getResourceTypeByName(PalladioResourceRepositoryImpl.LAN);
+    public CommunicationLinkResourceType lan() throws ModelHandlingErrorException {
+        return (CommunicationLinkResourceType) this.getResourceTypeByName(PalladioResourceRepositoryImpl.LAN_RESOURCE);
     }
 
     @Override
-    public SchedulingPolicy policyDelay() {
+    public SchedulingPolicy policyDelay() throws ModelHandlingErrorException {
         return this.getSchedulingPolicyByName(PalladioResourceRepositoryImpl.POLICY_DELAY);
     }
 
     @Override
-    public SchedulingPolicy policyProcessorSharing() {
+    public SchedulingPolicy policyProcessorSharing() throws ModelHandlingErrorException {
         return this.getSchedulingPolicyByName(PalladioResourceRepositoryImpl.POLICY_PROCESSOR_SHARING);
     }
 
     @Override
-    public SchedulingPolicy policyFCFS() {
+    public SchedulingPolicy policyFCFS() throws ModelHandlingErrorException {
         return this.getSchedulingPolicyByName(PalladioResourceRepositoryImpl.POLICY_FCFS);
     }
 
-    private Entity getResourceTypeByName(final String entityName) {
+    private Entity getResourceTypeByName(final String entityName) throws ModelHandlingErrorException {
         if (!this.resourceTypes.containsKey(entityName)) {
             for (final ResourceType type : this.repository.getAvailableResourceTypes_ResourceRepository()) {
                 if (type.getEntityName().equals(entityName)) {
@@ -101,13 +101,13 @@ public class PalladioResourceRepositoryImpl implements IPalladioResourceReposito
                 }
             }
             if (!this.resourceTypes.containsKey(entityName)) {
-                throw new RuntimeException(String.format("Could not find resource type '%s'", entityName));
+                throw new ModelHandlingErrorException(String.format("Could not find resource type '%s'", entityName));
             }
         }
         return this.resourceTypes.get(entityName);
     }
 
-    private SchedulingPolicy getSchedulingPolicyByName(final String policyName) {
+    private SchedulingPolicy getSchedulingPolicyByName(final String policyName) throws ModelHandlingErrorException {
         if (!this.schedulingPolicies.containsKey(policyName)) {
             for (final SchedulingPolicy type : this.repository.getSchedulingPolicies__ResourceRepository()) {
                 if (type.getEntityName().equals(policyName)) {
@@ -116,7 +116,8 @@ public class PalladioResourceRepositoryImpl implements IPalladioResourceReposito
                 }
             }
             if (!this.schedulingPolicies.containsKey(policyName)) {
-                throw new RuntimeException(String.format("Could not find scheduling policy '%s'", policyName));
+                throw new ModelHandlingErrorException(
+                        String.format("Could not find scheduling policy '%s'", policyName));
             }
         }
         return this.schedulingPolicies.get(policyName);

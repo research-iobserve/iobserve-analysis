@@ -26,6 +26,8 @@ import org.iobserve.analysis.clustering.filter.models.configuration.IRepresentat
 import org.iobserve.analysis.data.EntryCallSequenceModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.stages.general.data.EntryCallEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * auxiliary filter to generate the base of the BehaviorModelTable.
@@ -34,11 +36,12 @@ import org.iobserve.stages.general.data.EntryCallEvent;
  *
  */
 public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<EntryCallSequenceModel> {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(TBehaviorModelTableGeneration.class);
     private final OutputPort<BehaviorModelTable> outputPort = this.createOutputPort();
 
     private final DynamicBehaviorModelTable modelTable;
     private final boolean keepEmptyTransitions;
+
 
     /**
      * constructor
@@ -60,10 +63,9 @@ public final class TBehaviorModelTableGeneration extends AbstractConsumerStage<E
 
     @Override
     protected void execute(final EntryCallSequenceModel entryCallSequenceModel) {
-        final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
-
+        final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();      
         for (final UserSession userSession : userSessions) {
-
+            TBehaviorModelTableGeneration.LOGGER.debug("entryCalls: " + userSession.getEvents().size());
             final List<EntryCallEvent> entryCalls = userSession.getEvents();
 
             EntryCallEvent lastCall = null;

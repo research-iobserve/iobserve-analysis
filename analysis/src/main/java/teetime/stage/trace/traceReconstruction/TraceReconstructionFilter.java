@@ -32,77 +32,84 @@ import teetime.util.TraceReconstructor;
  */
 public class TraceReconstructionFilter extends AbstractConsumerStage<IFlowRecord> implements ISendTraceBuffer {
 
-	private final OutputPort<EventBasedTrace> traceValidOutputPort = this.createOutputPort();
-	private final OutputPort<EventBasedTrace> traceInvalidOutputPort = this.createOutputPort();
+    private final OutputPort<EventBasedTrace> traceValidOutputPort = this.createOutputPort();
+    private final OutputPort<EventBasedTrace> traceInvalidOutputPort = this.createOutputPort();
 
-	private TimeUnit timeunit;
-	private long maxTraceDuration = Long.MAX_VALUE;
-	private long maxTraceTimeout = Long.MAX_VALUE;
-	private long maxEncounteredLoggingTimestamp = -1;
+    private TimeUnit timeunit;
+    private long maxTraceDuration = Long.MAX_VALUE;
+    private long maxTraceTimeout = Long.MAX_VALUE;
+    private long maxEncounteredLoggingTimestamp = -1;
 
-	private final TraceReconstructor reconstructor;
+    private final TraceReconstructor reconstructor;
 
-	public TraceReconstructionFilter(final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceId2trace) {
-		super();
-		this.reconstructor = new TraceReconstructor(traceId2trace, this);
-	}
+    /**
+     * Reconstruct traces filter.
+     *
+     * @param traceId2trace
+     *            trace id to trace map
+     */
+    public TraceReconstructionFilter(final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceId2trace) {
+        super();
+        this.reconstructor = new TraceReconstructor(traceId2trace, this);
+    }
 
-	@Override
-	protected void execute(final IFlowRecord element) {
-		reconstructor.execute(element);
-	}
+    @Override
+    protected void execute(final IFlowRecord element) {
+        this.reconstructor.execute(element);
+    }
 
-	@Override
-	public void onTerminating() {
-		reconstructor.terminate();
+    @Override
+    public void onTerminating() {
+        this.reconstructor.terminate();
 
-		super.onTerminating();
-	}
+        super.onTerminating();
+    }
 
-	@Override
-	public void sendTraceBuffer(final EventBasedTrace traceBufferList) {
-		OutputPort<EventBasedTrace> outputPort = (traceBufferList.isInvalid()) ? this.traceInvalidOutputPort : this.traceValidOutputPort;
-		outputPort.send(traceBufferList);
-	}
+    @Override
+    public void sendTraceBuffer(final EventBasedTrace traceBufferList) {
+        final OutputPort<EventBasedTrace> outputPort = traceBufferList.isInvalid() ? this.traceInvalidOutputPort
+                : this.traceValidOutputPort;
+        outputPort.send(traceBufferList);
+    }
 
-	public TimeUnit getTimeunit() {
-		return this.timeunit;
-	}
+    public TimeUnit getTimeunit() {
+        return this.timeunit;
+    }
 
-	public void setTimeunit(final TimeUnit timeunit) {
-		this.timeunit = timeunit;
-	}
+    public void setTimeunit(final TimeUnit timeunit) {
+        this.timeunit = timeunit;
+    }
 
-	public long getMaxTraceDuration() {
-		return this.maxTraceDuration;
-	}
+    public long getMaxTraceDuration() {
+        return this.maxTraceDuration;
+    }
 
-	public void setMaxTraceDuration(final long maxTraceDuration) {
-		this.maxTraceDuration = maxTraceDuration;
-	}
+    public void setMaxTraceDuration(final long maxTraceDuration) {
+        this.maxTraceDuration = maxTraceDuration;
+    }
 
-	public long getMaxTraceTimeout() {
-		return this.maxTraceTimeout;
-	}
+    public long getMaxTraceTimeout() {
+        return this.maxTraceTimeout;
+    }
 
-	public void setMaxTraceTimeout(final long maxTraceTimeout) {
-		this.maxTraceTimeout = maxTraceTimeout;
-	}
+    public void setMaxTraceTimeout(final long maxTraceTimeout) {
+        this.maxTraceTimeout = maxTraceTimeout;
+    }
 
-	public long getMaxEncounteredLoggingTimestamp() {
-		return this.maxEncounteredLoggingTimestamp;
-	}
+    public long getMaxEncounteredLoggingTimestamp() {
+        return this.maxEncounteredLoggingTimestamp;
+    }
 
-	public void setMaxEncounteredLoggingTimestamp(final long maxEncounteredLoggingTimestamp) {
-		this.maxEncounteredLoggingTimestamp = maxEncounteredLoggingTimestamp;
-	}
+    public void setMaxEncounteredLoggingTimestamp(final long maxEncounteredLoggingTimestamp) {
+        this.maxEncounteredLoggingTimestamp = maxEncounteredLoggingTimestamp;
+    }
 
-	public OutputPort<EventBasedTrace> getTraceValidOutputPort() {
-		return this.traceValidOutputPort;
-	}
+    public OutputPort<EventBasedTrace> getTraceValidOutputPort() {
+        return this.traceValidOutputPort;
+    }
 
-	public OutputPort<EventBasedTrace> getTraceInvalidOutputPort() {
-		return this.traceInvalidOutputPort;
-	}
+    public OutputPort<EventBasedTrace> getTraceInvalidOutputPort() {
+        return this.traceInvalidOutputPort;
+    }
 
 }

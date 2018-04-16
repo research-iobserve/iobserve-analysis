@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.rac.creator.data;
 
-import org.iobserve.analysis.protocom.PcmCorrespondentMethod;
+import org.iobserve.model.protocom.PcmCorrespondentMethod;
 
 /**
  * We must pass method and class signature in one event. Therefore, this class bundles the class

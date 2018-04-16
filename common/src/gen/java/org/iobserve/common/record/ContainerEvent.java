@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,15 @@ import kieker.common.record.io.IValueDeserializer;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
  * @since 0.0.2
  */
-public abstract class ContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {
-	private static final long serialVersionUID = -2037622396753518154L;
-
-	
+public abstract class ContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {			
 	
 	/** default constants. */
 	public static final String URL = "";
+	private static final long serialVersionUID = -2037622396753518154L;
 	
 		
 	/** property declarations. */
@@ -72,6 +70,7 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public ContainerEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		this.url = deserializer.getString();
@@ -94,13 +93,24 @@ public abstract class ContainerEvent extends AbstractMonitoringRecord implements
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final ContainerEvent castedRecord = (ContainerEvent) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (!this.getUrl().equals(castedRecord.getUrl())) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (!this.getUrl().equals(castedRecord.getUrl())) {
+			return false;
+		}
+		
 		return true;
 	}
 	

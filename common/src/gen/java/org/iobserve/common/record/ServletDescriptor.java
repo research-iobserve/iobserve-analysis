@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,28 +17,29 @@ package org.iobserve.common.record;
 
 
 import kieker.common.exception.RecordInstantiationException;
-import kieker.common.record.flow.AbstractEvent;
+import kieker.common.record.AbstractMonitoringRecord;
+import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 
+import org.iobserve.common.record.IEvent;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
  * @since 0.0.2
  */
-public abstract class ServletDescriptor extends AbstractEvent  {
-	private static final long serialVersionUID = -468514807414704775L;
-
-	
+public abstract class ServletDescriptor extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent {			
 	
 	/** default constants. */
 	public static final String SERVICE = "";
 	public static final String CONTEXT = "";
 	public static final String DEPLOYMENT_ID = "";
+	private static final long serialVersionUID = -4046452426687004817L;
 	
 		
 	/** property declarations. */
+	private final long timestamp;
 	private final String service;
 	private final String context;
 	private final String deploymentId;
@@ -56,7 +57,7 @@ public abstract class ServletDescriptor extends AbstractEvent  {
 	 *            deploymentId
 	 */
 	public ServletDescriptor(final long timestamp, final String service, final String context, final String deploymentId) {
-		super(timestamp);
+		this.timestamp = timestamp;
 		this.service = service == null?"":service;
 		this.context = context == null?"":context;
 		this.deploymentId = deploymentId == null?"":deploymentId;
@@ -75,7 +76,8 @@ public abstract class ServletDescriptor extends AbstractEvent  {
 	 */
 	@Deprecated
 	protected ServletDescriptor(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
-		super(values, valueTypes);
+		AbstractMonitoringRecord.checkArray(values, valueTypes);
+		this.timestamp = (Long) values[0];
 		this.service = (String) values[1];
 		this.context = (String) values[2];
 		this.deploymentId = (String) values[3];
@@ -86,9 +88,10 @@ public abstract class ServletDescriptor extends AbstractEvent  {
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public ServletDescriptor(final IValueDeserializer deserializer) throws RecordInstantiationException {
-		super(deserializer);
+		this.timestamp = deserializer.getLong();
 		this.service = deserializer.getString();
 		this.context = deserializer.getString();
 		this.deploymentId = deserializer.getString();
@@ -111,18 +114,40 @@ public abstract class ServletDescriptor extends AbstractEvent  {
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final ServletDescriptor castedRecord = (ServletDescriptor) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (this.getTimestamp() != castedRecord.getTimestamp()) return false;
-		if (!this.getService().equals(castedRecord.getService())) return false;
-		if (!this.getContext().equals(castedRecord.getContext())) return false;
-		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (this.getTimestamp() != castedRecord.getTimestamp()) {
+			return false;
+		}
+		if (!this.getService().equals(castedRecord.getService())) {
+			return false;
+		}
+		if (!this.getContext().equals(castedRecord.getContext())) {
+			return false;
+		}
+		if (!this.getDeploymentId().equals(castedRecord.getDeploymentId())) {
+			return false;
+		}
+		
 		return true;
 	}
+	
+	public final long getTimestamp() {
+		return this.timestamp;
+	}
+	
 	
 	public final String getService() {
 		return this.service;

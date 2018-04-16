@@ -1,5 +1,5 @@
 /***************************************************************************
- * Copyright 2018 iObserve Project (http://iobserve-devops.net)
+ * Copyright 2018 iObserve Project (https://www.iobserve-devops.net)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,19 +29,16 @@ import kieker.common.record.flow.IFlowRecord;
 
 /**
  * @author Reiner Jung
- * API compatibility: Kieker 1.13.0
+ * API compatibility: Kieker 1.14.0
  * 
  * @since 0.0.2
  */
-public class ServletTraceHelper extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ITraceHelper, IFlowRecord {
-	private static final long serialVersionUID = 2363353535794190244L;
-
+public class ServletTraceHelper extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ITraceHelper, IFlowRecord {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // ITraceHelper.traceId
 			 + TYPE_SIZE_STRING // ITraceHelper.host
 			 + TYPE_SIZE_INT // ITraceHelper.port
-			 + TYPE_SIZE_STRING // ServletTraceHelper.requestURI
-	;
+			 + TYPE_SIZE_STRING; // ServletTraceHelper.requestURI
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // ITraceHelper.traceId
@@ -50,10 +47,10 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		String.class, // ServletTraceHelper.requestURI
 	};
 	
-	
 	/** default constants. */
 	public static final String HOST = "";
 	public static final String REQUEST_URI = "";
+	private static final long serialVersionUID = 2363353535794190244L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -130,6 +127,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	 * @param deserializer
 	 *            The deserializer to use
 	 * @throws RecordInstantiationException 
+	 *            when the record could not be deserialized
 	 */
 	public ServletTraceHelper(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		this.traceId = deserializer.getLong();
@@ -150,16 +148,8 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 			this.getTraceId(),
 			this.getHost(),
 			this.getPort(),
-			this.getRequestURI()
+			this.getRequestURI(),
 		};
-	}
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void registerStrings(final IRegistry<String> stringRegistry) {	// NOPMD (generated code)
-		stringRegistry.get(this.getHost());
-		stringRegistry.get(this.getRequestURI());
 	}
 	/**
 	 * {@inheritDoc}
@@ -172,6 +162,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 		serializer.putInt(this.getPort());
 		serializer.putString(this.getRequestURI());
 	}
+	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -212,16 +203,33 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements IMon
 	 */
 	@Override
 	public boolean equals(final Object obj) {
-		if (obj == null) return false;
-		if (obj == this) return true;
-		if (obj.getClass() != this.getClass()) return false;
+		if (obj == null) {
+			return false;
+		}
+		if (obj == this) {
+			return true;
+		}
+		if (obj.getClass() != this.getClass()) {
+			return false;
+		}
 		
 		final ServletTraceHelper castedRecord = (ServletTraceHelper) obj;
-		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) return false;
-		if (this.getTraceId() != castedRecord.getTraceId()) return false;
-		if (!this.getHost().equals(castedRecord.getHost())) return false;
-		if (this.getPort() != castedRecord.getPort()) return false;
-		if (!this.getRequestURI().equals(castedRecord.getRequestURI())) return false;
+		if (this.getLoggingTimestamp() != castedRecord.getLoggingTimestamp()) {
+			return false;
+		}
+		if (this.getTraceId() != castedRecord.getTraceId()) {
+			return false;
+		}
+		if (!this.getHost().equals(castedRecord.getHost())) {
+			return false;
+		}
+		if (this.getPort() != castedRecord.getPort()) {
+			return false;
+		}
+		if (!this.getRequestURI().equals(castedRecord.getRequestURI())) {
+			return false;
+		}
+		
 		return true;
 	}
 	

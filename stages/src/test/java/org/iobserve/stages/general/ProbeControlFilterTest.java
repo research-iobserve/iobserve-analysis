@@ -42,7 +42,8 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ProbeControlFilterTest {
-    private static final Logger LOG = LoggerFactory.getLogger(ProbeControlFilterTest.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProbeControlFilterTest.class);
 
     private static final int BUFFER_SIZE = 65535;
 
@@ -65,7 +66,7 @@ public class ProbeControlFilterTest {
      * Setup the test.
      */
     @Before
-    public void testSetup() {
+    public void setUp() {
         synchronized (this) {
             final IRecordReceivedListener listener = new IRecordReceivedListener() {
 
@@ -78,7 +79,7 @@ public class ProbeControlFilterTest {
             ProbeControlFilterTest.port++;
 
             this.tcpReader = new SingleSocketRecordReader(ProbeControlFilterTest.port,
-                    ProbeControlFilterTest.BUFFER_SIZE, ProbeControlFilterTest.LOG, listener);
+                    ProbeControlFilterTest.BUFFER_SIZE, ProbeControlFilterTest.LOGGER, listener);
             new Thread(this.tcpReader).start();
 
             this.probeControlFilter = new ProbeControlFilter();
@@ -90,7 +91,7 @@ public class ProbeControlFilterTest {
      */
     @Test
     public void getValidControlEventTest() {
-        final String ip = "127.0.0.1";
+        final String ip = "127.0.0.1"; // NOPMD localhost is required here
         final String hostname = "test.host";
         final AbstractTcpControlEvent controlEvent = new TcpActivationControlEvent(ip, ProbeControlFilterTest.port,
                 hostname, ProbeControlFilterTest.PATTERN);
@@ -110,7 +111,7 @@ public class ProbeControlFilterTest {
      */
     @Test(timeout = 300)
     public void getInvalidControlEventTest() {
-        final String ip = "1.2.3.4";
+        final String ip = "1.2.3.4"; // NOPMD fake ip as string is necessary
         final String hostname = "test.host";
         final AbstractTcpControlEvent controlEvent = new TcpActivationControlEvent(ip, ProbeControlFilterTest.port,
                 hostname, ProbeControlFilterTest.PATTERN);

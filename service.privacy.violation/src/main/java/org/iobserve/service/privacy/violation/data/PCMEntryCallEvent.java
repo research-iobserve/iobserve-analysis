@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.service.privacy.violation.data;
 
-import org.iobserve.analysis.protocom.PcmEntity;
+import org.iobserve.model.protocom.PcmEntity;
 
 /**
  * @author Reiner Jung

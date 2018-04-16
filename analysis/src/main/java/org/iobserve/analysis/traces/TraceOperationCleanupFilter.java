@@ -15,11 +15,11 @@
  ***************************************************************************/
 package org.iobserve.analysis.traces;
 
-import org.iobserve.analysis.session.data.UserSession;
-import org.iobserve.stages.general.data.EntryCallEvent;
-
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
+
+import org.iobserve.analysis.session.data.UserSession;
+import org.iobserve.stages.general.data.EntryCallEvent;
 
 /**
  * Cleanup filter to rewrite class and operation signatures.
