@@ -34,7 +34,7 @@ import weka.core.Instances;
  *
  * @author Melf Lorenzen
  */
-public class BirchClustering extends CompositeStage {
+public class BirchClusteringStage extends CompositeStage {
 
     private final InputPort<Instances> inputPort;
     private final OutputPort<Instances> outputPort;
@@ -60,14 +60,14 @@ public class BirchClustering extends CompositeStage {
      * @param evalStrategy
      *            the strategy for the l-method evaluation graph
      */
-    public BirchClustering(final double leafThresholdValue, final int maxLeafSize, final int maxNodeSize,
+    public BirchClusteringStage(final double leafThresholdValue, final int maxLeafSize, final int maxNodeSize,
             final int maxLeafEntries, final int expectedNumberOfClusters, final boolean useClusterNumberMetric,
             final ICFComparisonStrategy clusterComparisonStrategy, final ILMethodEvalStrategy evalStrategy) {
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
         final Distributor<Instances> distributor = new Distributor<>(strategy);
         final IMergerStrategy mergerStrategy = new BlockingBusyWaitingRoundRobinMergerStrategy();
         final Merger<Object> merger = new Merger<>(mergerStrategy);
-        final BuildCFTree buildCFTree = new BuildCFTree(leafThresholdValue, maxLeafSize, maxNodeSize,
+        final BuildCFTreeStage buildCFTree = new BuildCFTreeStage(leafThresholdValue, maxLeafSize, maxNodeSize,
                 clusterComparisonStrategy);
         final RebuildTree rebuildTree = new RebuildTree(maxLeafEntries);
         final ClusterOnTree clusterOnTree = new ClusterOnTree();

@@ -35,8 +35,8 @@ import weka.core.Instances;
  *
  */
 
-public class BuildCFTree extends AbstractConsumerStage<Instances> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(BuildCFTree.class);
+public class BuildCFTreeStage extends AbstractConsumerStage<Instances> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(BuildCFTreeStage.class);
     private CFTree tree;
     private Instances instances;
     private final OutputPort<CFTree> outputPort = this.createOutputPort();
@@ -57,7 +57,7 @@ public class BuildCFTree extends AbstractConsumerStage<Instances> {
      * @param clusterComparisonStrategy
      *            the cluster comparison strategy
      */
-    public BuildCFTree(final double threshold, final int maxLeafSize, final int maxNodeSize,
+    public BuildCFTreeStage(final double threshold, final int maxLeafSize, final int maxNodeSize,
             final ICFComparisonStrategy clusterComparisonStrategy) {
         super();
         this.threshold = threshold;
@@ -69,7 +69,7 @@ public class BuildCFTree extends AbstractConsumerStage<Instances> {
     @Override
     protected void execute(final Instances instancesToCluster) {
         this.instances = instancesToCluster;
-        BuildCFTree.LOGGER.debug("Received {} of dimension {}", instancesToCluster.numInstances(),
+        BuildCFTreeStage.LOGGER.debug("Received {} of dimension {}", instancesToCluster.numInstances(),
                 instancesToCluster.numAttributes());
         if (this.tree == null) {
             this.tree = new CFTree(this.threshold, this.maxLeafSize, this.maxNodeSize,
@@ -99,11 +99,11 @@ public class BuildCFTree extends AbstractConsumerStage<Instances> {
     @Override
     public void onTerminating() {
         if (this.instances == null) {
-            BuildCFTree.LOGGER.error("No instances created!");
+            BuildCFTreeStage.LOGGER.error("No instances created!");
         } else {
+            BuildCFTreeStage.LOGGER.debug(this.tree.toString());
             this.outputPort.send(this.tree);
         }
-        // BuildCFTree.LOGGER.debug(this.tree.toString());
         super.onTerminating();
     }
 

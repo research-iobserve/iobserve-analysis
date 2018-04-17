@@ -145,7 +145,8 @@ public class JPetStoreParameterValueDoubleMapper implements IParameterValueDoubl
         if (values != null) {
             return values.get(value);
         } else {
-            return 100000000000d; // TODO this is a temporary measure
+            return 100000000000d; // TODO this is a temporary measure to handle parameters which are
+                                  // not in the map
         }
     }
 

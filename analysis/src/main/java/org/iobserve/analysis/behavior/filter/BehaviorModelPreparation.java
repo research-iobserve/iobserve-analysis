@@ -82,17 +82,17 @@ public final class BehaviorModelPreparation extends AbstractConsumerStage<Object
     /**
      * Execute case object instanceof EntryCallSequenceModel.
      *
-     * @param entryCallSequenceModel
+     * @param userSessionCollectionModel
      *            entryCallSequenceModel
      */
-    private void executeEntryCallSequenceModel(final UserSessionCollectionModel entryCallSequenceModel) {
+    private void executeEntryCallSequenceModel(final UserSessionCollectionModel userSessionCollectionModel) {
 
         if (this.behaviorModelTable == null) {
-            this.sequenceModelCache.add(entryCallSequenceModel);
+            this.sequenceModelCache.add(userSessionCollectionModel);
 
         } else {
-            final List<UserSession> userSessions = entryCallSequenceModel.getUserSessions();
-            BehaviorModelPreparation.LOGGER.debug("Executing EntryCallSequenceModel");
+            final List<UserSession> userSessions = userSessionCollectionModel.getUserSessions();
+            BehaviorModelPreparation.LOGGER.debug("Executing {}", userSessionCollectionModel.getClass());
             BehaviorModelPreparation.LOGGER.debug("userSessions: {}", userSessions.size());
             for (final UserSession userSession : userSessions) {
                 final BehaviorModelTable modelTable = this.behaviorModelTable.getClearedCopy(this.keepEmptyTransitions);

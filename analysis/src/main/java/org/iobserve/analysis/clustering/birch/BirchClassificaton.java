@@ -111,19 +111,19 @@ public class BirchClassificaton extends CompositeStage implements IClassificatio
             throw new ConfigurationException("Initialization incomplete: No expected numbers of clusters specified.");
         }
 
-        final SessionsToInstances sessionsToInstances = new SessionsToInstances(keepTime, minCollectionSize,
+        final SessionsToInstancesStage sessionsToInstancesStage = new SessionsToInstancesStage(keepTime, minCollectionSize,
                 representativeStrategy, keepEmptyTransitions);
-        final BirchClustering birchClustering = new BirchClustering(leafThresholdValue, maxLeafSize, maxNodeSize,
+        final BirchClusteringStage birchClustering = new BirchClusteringStage(leafThresholdValue, maxLeafSize, maxNodeSize,
                 maxLeafEntries, expectedNumberOfClusters, useClusterNumberMetric, clusterComparisonStrategy,
                 evalStrategy);
-        final BehaviorModelCreationStage tBehaviorModelCreation = new BehaviorModelCreationStage("birch-");
+        final BehaviorModelCreationStage behaviorModelCreationStage = new BehaviorModelCreationStage("birch-");
 
-        this.sessionInputPort = sessionsToInstances.getSessionInputPort();
-        this.timerInputPort = sessionsToInstances.getTimerInputPort();
-        this.outputPort = tBehaviorModelCreation.getOutputPort();
+        this.sessionInputPort = sessionsToInstancesStage.getSessionInputPort();
+        this.timerInputPort = sessionsToInstancesStage.getTimerInputPort();
+        this.outputPort = behaviorModelCreationStage.getOutputPort();
 
-        this.connectPorts(sessionsToInstances.getOutputPort(), birchClustering.getInputPort());
-        this.connectPorts(birchClustering.getOutputPort(), tBehaviorModelCreation.getInputPort());
+        this.connectPorts(sessionsToInstancesStage.getOutputPort(), birchClustering.getInputPort());
+        this.connectPorts(birchClustering.getOutputPort(), behaviorModelCreationStage.getInputPort());
     }
 
     /**

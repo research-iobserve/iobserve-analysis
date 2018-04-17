@@ -172,7 +172,7 @@ public class ClassificationCompositeStage extends CompositeStage implements IBeh
         }
 
         /** Create remaining stages and connect them */
-        final PreprocessingCompositeStage preStage = new PreprocessingCompositeStage(traceMatcher, entryCallMatcher,
+        final PreprocessingCompositeStage preprocessingStage = new PreprocessingCompositeStage(traceMatcher, entryCallMatcher,
                 cleanupRewriter, filterRulesFactory, triggerInterval);
 
         final BehaviorModelSink sinkStage = new BehaviorModelSink(baseURL,
@@ -184,12 +184,12 @@ public class ClassificationCompositeStage extends CompositeStage implements IBeh
                 classificationStageName, null);
         classificationStage.setupStage(configuration);
 
-        this.eventBasedTraceInputPort = preStage.getTraceInputPort();
-        this.sessionEventInputPort = preStage.getSessionEventInputPort();
+        this.eventBasedTraceInputPort = preprocessingStage.getTraceInputPort();
+        this.sessionEventInputPort = preprocessingStage.getSessionEventInputPort();
 
-        this.connectPorts(preStage.getSessionOutputPort(), classificationStage.getSessionInputPort());
+        this.connectPorts(preprocessingStage.getSessionOutputPort(), classificationStage.getSessionInputPort());
         /** reconnect once SessionsToInstances filter has been modified */
-        this.connectPorts(preStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
+        this.connectPorts(preprocessingStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
         this.connectPorts(classificationStage.getOutputPort(), sinkStage.getInputPort());
     }
 

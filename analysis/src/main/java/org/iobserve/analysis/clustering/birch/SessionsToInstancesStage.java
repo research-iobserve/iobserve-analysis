@@ -38,7 +38,7 @@ import weka.core.Instances;
  * @author Melf Lorenzen
  *
  */
-public class SessionsToInstances extends CompositeStage {
+public class SessionsToInstancesStage extends CompositeStage {
 
     private final InputPort<UserSession> sessionInputPort;
 
@@ -58,7 +58,7 @@ public class SessionsToInstances extends CompositeStage {
      * @param keepEmptyTransitions
      *            allows behavior model table generation to keep empty transitions
      */
-    public SessionsToInstances(final long keepTime, final int minCollectionSize,
+    public SessionsToInstancesStage(final long keepTime, final int minCollectionSize,
             final IRepresentativeStrategy representativeStrategy, final boolean keepEmptyTransitions) {
 
         final IDistributorStrategy strategy = new CopyByReferenceStrategy();
@@ -73,10 +73,10 @@ public class SessionsToInstances extends CompositeStage {
 
         final CreateWekaInstancesStage tInstanceTransformations = new CreateWekaInstancesStage();
 
-        final BehaviorModelTableGenerationStage tBehaviorModelTableGeneration = new BehaviorModelTableGenerationStage(
+        final BehaviorModelTableGenerationStage behaviorModelTableGenerationStage = new BehaviorModelTableGenerationStage(
                 representativeStrategy, keepEmptyTransitions);
 
-        final BehaviorModelPreparation tBehaviorModelPreperation = new BehaviorModelPreparation(keepEmptyTransitions);
+        final BehaviorModelPreparation behaviorModelPreperation = new BehaviorModelPreparation(keepEmptyTransitions);
         final Merger<Long> merger1 = new Merger<>(new BlockingBusyWaitingRoundRobinMergerStrategy());
 
         this.timerInputPort = merger1.getNewInputPort();
@@ -87,13 +87,13 @@ public class SessionsToInstances extends CompositeStage {
         this.outputPort = tInstanceTransformations.getOutputPort();
 
         this.connectPorts(collectUserSessionsFilter.getOutputPort(), distributor.getInputPort());
-        this.connectPorts(distributor.getNewOutputPort(), tBehaviorModelTableGeneration.getInputPort());
+        this.connectPorts(distributor.getNewOutputPort(), behaviorModelTableGenerationStage.getInputPort());
         this.connectPorts(distributor.getNewOutputPort(), merger.getNewInputPort());
 
-        this.connectPorts(tBehaviorModelTableGeneration.getOutputPort(), merger.getNewInputPort());
+        this.connectPorts(behaviorModelTableGenerationStage.getOutputPort(), merger.getNewInputPort());
 
-        this.connectPorts(merger.getOutputPort(), tBehaviorModelPreperation.getInputPort());
-        this.connectPorts(tBehaviorModelPreperation.getOutputPort(), tInstanceTransformations.getInputPort());
+        this.connectPorts(merger.getOutputPort(), behaviorModelPreperation.getInputPort());
+        this.connectPorts(behaviorModelPreperation.getOutputPort(), tInstanceTransformations.getInputPort());
     }
 
     public InputPort<Long> getTimerInputPort() {

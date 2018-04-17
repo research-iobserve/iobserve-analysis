@@ -27,7 +27,7 @@ import org.iobserve.analysis.behavior.filter.BehaviorModelCreationStage;
 import org.iobserve.analysis.behavior.filter.VectorQuantizationClusteringStage;
 import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
 import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.clustering.birch.SessionsToInstances;
+import org.iobserve.analysis.clustering.birch.SessionsToInstancesStage;
 import org.iobserve.analysis.clustering.shared.IClassificationStage;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.analysis.systems.jpetstore.JPetstoreRepresentativeStrategy;
@@ -82,7 +82,7 @@ public class XMeansClassification extends CompositeStage implements IClassificat
         /** Todo: incoperate to config */
         final IRepresentativeStrategy representativeStrategy = new JPetstoreRepresentativeStrategy();
 
-        final SessionsToInstances sessionsToInstances = new SessionsToInstances(keepTime, minCollectionSize,
+        final SessionsToInstancesStage sessionsToInstances = new SessionsToInstancesStage(keepTime, minCollectionSize,
                 representativeStrategy, keepEmptyTransitions);
         final VectorQuantizationClusteringStage tVectorQuantizationClustering = new VectorQuantizationClusteringStage(
                 new XMeansClustering(variance, expectedClusters, new ManhattanDistance()));

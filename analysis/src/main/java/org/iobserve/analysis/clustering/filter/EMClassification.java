@@ -27,7 +27,7 @@ import org.iobserve.analysis.behavior.clustering.em.ExpectationMaximizationClust
 import org.iobserve.analysis.behavior.filter.BehaviorModelCreationStage;
 import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
 import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.clustering.birch.SessionsToInstances;
+import org.iobserve.analysis.clustering.birch.SessionsToInstancesStage;
 import org.iobserve.analysis.clustering.shared.IClassificationStage;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.analysis.systems.jpetstore.JPetstoreRepresentativeStrategy;
@@ -68,7 +68,7 @@ public class EMClassification extends CompositeStage implements IClassificationS
         /** Todo: incoperate to config */
         final IRepresentativeStrategy representativeStrategy = new JPetstoreRepresentativeStrategy();
 
-        final SessionsToInstances sessionsToInstances = new SessionsToInstances(keepTime, minCollectionSize,
+        final SessionsToInstancesStage sessionsToInstances = new SessionsToInstancesStage(keepTime, minCollectionSize,
                 representativeStrategy, keepEmptyTransitions);
         final EMClusteringProcess tVectorQuantizationClustering = new EMClusteringProcess(
                 new ExpectationMaximizationClustering());
