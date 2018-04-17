@@ -22,13 +22,13 @@ import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.ConfigurationKeys;
+import org.iobserve.analysis.behavior.clustering.birch.SessionsToInstancesStage;
 import org.iobserve.analysis.behavior.clustering.xmeans.XMeansClustering;
 import org.iobserve.analysis.behavior.filter.BehaviorModelCreationStage;
+import org.iobserve.analysis.behavior.filter.IClassificationStage;
 import org.iobserve.analysis.behavior.filter.VectorQuantizationClusteringStage;
-import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
 import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.clustering.birch.SessionsToInstancesStage;
-import org.iobserve.analysis.clustering.shared.IClassificationStage;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.analysis.systems.jpetstore.JPetstoreRepresentativeStrategy;
 import org.iobserve.stages.general.ConfigurationException;
@@ -42,16 +42,18 @@ import weka.core.ManhattanDistance;
  * to behavior models.
  *
  * @author Melf Lorenzen
+ *
+ * @deprecated must be integrated with the existing Xmeans setup
  */
+@Deprecated
 public class XMeansClassification extends CompositeStage implements IClassificationStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(XMeansClassification.class);
-    private InputPort<UserSession> sessionInputPort;
-    private InputPort<Long> timerInputPort;
+    private final InputPort<UserSession> sessionInputPort;
+    private final InputPort<Long> timerInputPort;
 
-    private OutputPort<BehaviorModel> outputPort;
+    private final OutputPort<BehaviorModel> outputPort;
 
-    @Override
-    public void setupStage(final Configuration configuration) throws ConfigurationException {
+    public XMeansClassification(final Configuration configuration) throws ConfigurationException {
         /** Get keep time for user sessions */
         final long keepTime = configuration.getLongProperty(ConfigurationKeys.KEEP_TIME, -1);
         if (keepTime < 0) {

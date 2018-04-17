@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.behavior.models.data.configuration;
 
-import org.iobserve.analysis.behavior.models.basic.EntryCallNode;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 
 /**
  * interface for the creation strategy of a signature from a {@link EntryCallNode}.

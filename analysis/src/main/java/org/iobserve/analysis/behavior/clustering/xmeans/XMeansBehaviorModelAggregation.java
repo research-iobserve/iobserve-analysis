@@ -21,7 +21,7 @@ import teetime.framework.InputPort;
 import org.iobserve.analysis.behavior.filter.BehaviorModelCreationStage;
 import org.iobserve.analysis.behavior.filter.VectorQuantizationClusteringStage;
 import org.iobserve.analysis.behavior.models.data.configuration.ISignatureCreationStrategy;
-import org.iobserve.analysis.sink.AbstractModelOutputSink;
+import org.iobserve.analysis.sink.AbstractBehaviorModelOutputSink;
 import org.iobserve.analysis.sink.BehaviorModelSink;
 
 import weka.core.Instances;
@@ -52,16 +52,16 @@ public class XMeansBehaviorModelAggregation extends CompositeStage {
     public XMeansBehaviorModelAggregation(final String namePrefix, final String visualizationUrl,
             final ISignatureCreationStrategy signatureCreationStrategy, final int expectedUserGroups,
             final int variance) {
-        final BehaviorModelCreationStage tBehaviorModelCreation = new BehaviorModelCreationStage(namePrefix);
+        final BehaviorModelCreationStage behaviorModelCreationStage = new BehaviorModelCreationStage(namePrefix);
 
         this.clustering = new VectorQuantizationClusteringStage(
                 new XMeansClustering(expectedUserGroups, variance, new ManhattanDistance()));
-        this.connectPorts(this.clustering.getOutputPort(), tBehaviorModelCreation.getInputPort());
+        this.connectPorts(this.clustering.getOutputPort(), behaviorModelCreationStage.getInputPort());
 
         /** visualization integration. */
-        final AbstractModelOutputSink tIObserveUBM = new BehaviorModelSink(visualizationUrl, signatureCreationStrategy);
+        final AbstractBehaviorModelOutputSink tIObserveUBM = new BehaviorModelSink(visualizationUrl, signatureCreationStrategy);
 
-        this.connectPorts(tBehaviorModelCreation.getOutputPort(), tIObserveUBM.getInputPort());
+        this.connectPorts(behaviorModelCreationStage.getOutputPort(), tIObserveUBM.getInputPort());
     }
 
     /**

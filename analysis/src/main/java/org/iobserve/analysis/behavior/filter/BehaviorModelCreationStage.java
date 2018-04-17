@@ -22,11 +22,11 @@ import java.util.regex.Pattern;
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
-import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
-import org.iobserve.analysis.behavior.models.basic.CallInformation;
-import org.iobserve.analysis.behavior.models.basic.EntryCallEdge;
-import org.iobserve.analysis.behavior.models.basic.EntryCallNode;
 import org.iobserve.analysis.behavior.models.data.AbstractBehaviorModelTable;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 
 import weka.core.Attribute;
 import weka.core.Instance;
@@ -41,7 +41,7 @@ import weka.core.Instances;
 public class BehaviorModelCreationStage extends AbstractConsumerStage<Instances> {
     private final String namePrefix;
 
-    private final OutputPort<BehaviorModel> outputPort = this.createOutputPort();
+    private final OutputPort<BehaviorModel> outputPort = this.createOutputPort(BehaviorModel.class);
 
     /**
      * Constructor for the behavior model creation filter.
@@ -96,14 +96,14 @@ public class BehaviorModelCreationStage extends AbstractConsumerStage<Instances>
                 final Optional<EntryCallEdge> edge = this.createEdge(attributeName, attributeValue);
 
                 if (edge.isPresent()) {
-                    behaviorModel.addEdge(edge.get());
+                    behaviorModel.addEdge(edge.get(), true);
                 }
 
             } else if (this.matchNode(attributeName)) {
                 final Optional<EntryCallNode> node = this.createNode(attributeName, attributeValue);
 
                 if (node.isPresent()) {
-                    behaviorModel.addNode(node.get());
+                    behaviorModel.addNode(node.get(), true);
                 }
             }
         }
@@ -199,9 +199,9 @@ public class BehaviorModelCreationStage extends AbstractConsumerStage<Instances>
 
         if (signatures.length == 2) {
             final EntryCallNode node = new EntryCallNode(signatures[0]);
-            final CallInformation callInformation = new CallInformation(signatures[1], value);
+            final CallInformation callInformation = new CallInformation(signatures[1], value.toString());
 
-            node.getEntryCallInformation().add(callInformation);
+            node.mergeCallInformation(callInformation);
 
             return Optional.of(node);
         } else {

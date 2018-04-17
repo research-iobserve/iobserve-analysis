@@ -25,9 +25,9 @@ import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.behavior.SingleOrNoneCollector;
-import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
-import org.iobserve.analysis.behavior.models.basic.EntryCallEdge;
-import org.iobserve.analysis.behavior.models.basic.EntryCallNode;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 import org.palladiosimulator.pcm.usagemodel.AbstractUserAction;
 import org.palladiosimulator.pcm.usagemodel.Branch;
 import org.palladiosimulator.pcm.usagemodel.BranchTransition;
@@ -40,7 +40,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
 import org.palladiosimulator.pcm.usagemodel.UsageScenario;
 
 /**
- * Transforms an entryCallSequenceModel to an UBM UI compatible JSON and sends it to the UBM UI.
+ * Transforms an Palladio UsageModel to an UBM UI compatible JSON and sends it to the UBM UI.
  *
  * @author Christoph Dornieden
  *
@@ -119,11 +119,13 @@ public class UsageModelToBehaviorModelStage extends AbstractConsumerStage<UsageM
 
             final EntryLevelSystemCall entryLevelSystemCall = (EntryLevelSystemCall) action;
             final EntryCallNode entryCallNode = this.createEntryCallNode(entryLevelSystemCall);
-            behaviorModel.addNode(entryCallNode);
+            behaviorModel.addNode(entryCallNode, true);
 
             if (optPreviousNodes.isPresent()) {
-                optPreviousNodes.get().keySet().stream().map(previousNode -> new EntryCallEdge(previousNode,
-                        entryCallNode, optPreviousNodes.get().get(previousNode))).forEach(behaviorModel::addEdge);
+                optPreviousNodes.get().keySet().stream()
+                        .map(previousNode -> new EntryCallEdge(previousNode, entryCallNode,
+                                optPreviousNodes.get().get(previousNode)))
+                        .forEach(node -> behaviorModel.addEdge(node, true));
             }
             endNodes.put(entryCallNode, 1.0);
             return this.traverseAction(behaviorModel, Optional.of(endNodes), action.getSuccessor());
@@ -168,10 +170,10 @@ public class UsageModelToBehaviorModelStage extends AbstractConsumerStage<UsageM
 
         if (loopStart.isPresent()) {
             final Map<EntryCallNode, Double> endNodes = new HashMap<>();
-            final Optional<EntryCallNode> entryCallNode = behaviorModel.findNode(loopStart.get());
+            final Optional<EntryCallNode> entryCallNode = behaviorModel.findNode(loopStart.get().getSignature());
             loopEnds.keySet().stream()
                     .map(loopEnd -> new EntryCallEdge(loopEnd, entryCallNode.get(), loopEnds.get(loopEnd)))
-                    .forEach(behaviorModel::addEdge);
+                    .forEach(node -> behaviorModel.addEdge(node, true));
             endNodes.put(entryCallNode.get(), 1.0);
             return this.traverseAction(behaviorModel, Optional.of(endNodes), loop.getSuccessor());
         }

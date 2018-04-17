@@ -22,8 +22,8 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 
 import org.iobserve.analysis.behavior.clustering.em.UserSessionModelAggregator;
-import org.iobserve.analysis.behavior.clustering.similaritymatching.PreprocessingCompositeStage;
 import org.iobserve.analysis.behavior.filter.BehaviorModelPrepratationStage;
+import org.iobserve.analysis.behavior.filter.UserSessionGeneratorCompositeStage;
 import org.iobserve.analysis.behavior.models.data.configuration.EntryCallFilterRules;
 import org.iobserve.analysis.behavior.models.data.configuration.GetLastXSignatureStrategy;
 import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
@@ -55,7 +55,7 @@ public class XMeansBehaviorCompositeStage extends CompositeStage implements IBeh
 
     private static final String EXPECTED_USER_GROUPS = XMeansBehaviorCompositeStage.PREFIX + "expectedUserGroups";
 
-    private final PreprocessingCompositeStage preprocessingStage;
+    private final UserSessionGeneratorCompositeStage userSessionGeneratorCompositeStage;
 
     /**
      * Create the X-means behavior clustering composite stage.
@@ -74,7 +74,7 @@ public class XMeansBehaviorCompositeStage extends CompositeStage implements IBeh
                 .create(IRepresentativeStrategy.class, representativeStrategyClassName, null);
         final boolean keepEmptyTransitions = true;
 
-        this.preprocessingStage = new PreprocessingCompositeStage(configuration);
+        this.userSessionGeneratorCompositeStage = new UserSessionGeneratorCompositeStage(configuration);
 
         final UserSessionModelAggregator userSessionModelAggregator = new UserSessionModelAggregator();
 
@@ -91,9 +91,9 @@ public class XMeansBehaviorCompositeStage extends CompositeStage implements IBeh
         final XMeansBehaviorModelAggregation behaviorModelAggregation = new XMeansBehaviorModelAggregation(namePrefix,
                 visualizationUrl, signatureCreationStrategy, expectedUserGroups, variance);
 
-        this.connectPorts(this.preprocessingStage.getSessionOutputPort(),
+        this.connectPorts(this.userSessionGeneratorCompositeStage.getSessionOutputPort(),
                 userSessionModelAggregator.getUserSessionInputPort());
-        this.connectPorts(this.preprocessingStage.getTimerOutputPort(),
+        this.connectPorts(this.userSessionGeneratorCompositeStage.getTimerOutputPort(),
                 userSessionModelAggregator.getTimeTriggerInputPort());
         this.connectPorts(userSessionModelAggregator.getOutputPort(), behaviorModelPreparation.getInputPort());
         this.connectPorts(behaviorModelPreparation.getOutputPort(), behaviorModelAggregation.getInputPort());
@@ -105,8 +105,8 @@ public class XMeansBehaviorCompositeStage extends CompositeStage implements IBeh
      * @see org.iobserve.analysis.feature.IBehaviorCompositeStage#getEventBasedTracePort()
      */
     @Override
-    public InputPort<EventBasedTrace> getEventBasedTracePort() {
-        return this.preprocessingStage.getTraceInputPort();
+    public InputPort<EventBasedTrace> getEventBasedTraceInputPort() {
+        return this.userSessionGeneratorCompositeStage.getTraceInputPort();
     }
 
     /*
@@ -116,7 +116,7 @@ public class XMeansBehaviorCompositeStage extends CompositeStage implements IBeh
      */
     @Override
     public InputPort<ISessionEvent> getSessionEventInputPort() {
-        return this.preprocessingStage.getSessionEventInputPort();
+        return this.userSessionGeneratorCompositeStage.getSessionEventInputPort();
     }
 
 }

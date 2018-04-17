@@ -25,7 +25,7 @@ import java.util.Optional;
 
 import org.apache.commons.math3.util.Pair;
 import org.iobserve.analysis.behavior.SingleOrNoneCollector;
-import org.iobserve.analysis.behavior.models.basic.CallInformation;
+import org.iobserve.analysis.behavior.models.extended.CallInformation;
 import org.iobserve.stages.general.data.EntryCallEvent;
 import org.iobserve.stages.general.data.PayloadAwareEntryCallEvent;
 import org.slf4j.Logger;
@@ -40,6 +40,9 @@ import weka.core.Instances;
  * table representation of a behavior model.
  *
  * @author Christoph Dornieden
+ *
+ *         TODO rework filter, presently some values are handled as strings due to other behavior
+ *         model.
  *
  */
 
@@ -142,8 +145,8 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
 
         try {
             for (int i = 0; i < event.getParameters().length; i++) {
-                newCallInformations.add(new CallInformation(event.getParameters()[i],
-                        this.parameterValueDoubleMapper.mapValue(event.getParameters()[i], event.getValues()[i])));
+                newCallInformations.add(new CallInformation(event.getParameters()[i], String.valueOf(
+                        this.parameterValueDoubleMapper.mapValue(event.getParameters()[i], event.getValues()[i]))));
             }
 
             final List<AggregatedCallInformation> aggCallInformations = Arrays
@@ -255,8 +258,8 @@ public class BehaviorModelTable extends AbstractBehaviorModelTable {
             }
         }
 
-        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond())
-                .forEach(callInformation -> attValues.add(callInformation.getRepresentativeCode())));
+        this.signatures.values().stream().forEach(pair -> Arrays.stream(pair.getSecond()).forEach(
+                callInformation -> attValues.add(Double.parseDouble(callInformation.getRepresentativeValue()))));
 
         final double[] attArray = new double[attValues.size()];
 

@@ -22,13 +22,13 @@ import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.ConfigurationKeys;
+import org.iobserve.analysis.behavior.clustering.birch.SessionsToInstancesStage;
 import org.iobserve.analysis.behavior.clustering.em.EMClusteringProcess;
 import org.iobserve.analysis.behavior.clustering.em.ExpectationMaximizationClustering;
 import org.iobserve.analysis.behavior.filter.BehaviorModelCreationStage;
-import org.iobserve.analysis.behavior.models.basic.BehaviorModel;
+import org.iobserve.analysis.behavior.filter.IClassificationStage;
 import org.iobserve.analysis.behavior.models.data.configuration.IRepresentativeStrategy;
-import org.iobserve.analysis.clustering.birch.SessionsToInstancesStage;
-import org.iobserve.analysis.clustering.shared.IClassificationStage;
+import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.analysis.systems.jpetstore.JPetstoreRepresentativeStrategy;
 import org.iobserve.stages.general.ConfigurationException;
@@ -41,15 +41,16 @@ import org.slf4j.LoggerFactory;
  *
  * @author Melf Lorenzen
  *
+ * @deprecated must be integrated with the actual EM clustering setup.
  */
+@Deprecated
 public class EMClassification extends CompositeStage implements IClassificationStage {
     private static final Logger LOGGER = LoggerFactory.getLogger(EMClassification.class);
-    private InputPort<UserSession> sessionInputPort;
-    private InputPort<Long> timerInputPort;
-    private OutputPort<BehaviorModel> outputPort;
+    private final InputPort<UserSession> sessionInputPort;
+    private final InputPort<Long> timerInputPort;
+    private final OutputPort<BehaviorModel> outputPort;
 
-    @Override
-    public void setupStage(final Configuration configuration) throws ConfigurationException {
+    public EMClassification(final Configuration configuration) throws ConfigurationException {
         /** Get keep time for user sessions */
         final long keepTime = configuration.getLongProperty(ConfigurationKeys.KEEP_TIME, -1);
         if (keepTime < 0) {
@@ -72,14 +73,14 @@ public class EMClassification extends CompositeStage implements IClassificationS
                 representativeStrategy, keepEmptyTransitions);
         final EMClusteringProcess tVectorQuantizationClustering = new EMClusteringProcess(
                 new ExpectationMaximizationClustering());
-        final BehaviorModelCreationStage tBehaviorModelCreation = new BehaviorModelCreationStage("EM-");
+        final BehaviorModelCreationStage behaviorModelCreationStage = new BehaviorModelCreationStage("EM-");
 
         this.sessionInputPort = sessionsToInstances.getSessionInputPort();
         this.timerInputPort = sessionsToInstances.getTimerInputPort();
-        this.outputPort = tBehaviorModelCreation.getOutputPort();
+        this.outputPort = behaviorModelCreationStage.getOutputPort();
 
         this.connectPorts(sessionsToInstances.getOutputPort(), tVectorQuantizationClustering.getInputPort());
-        this.connectPorts(tVectorQuantizationClustering.getOutputPort(), tBehaviorModelCreation.getInputPort());
+        this.connectPorts(tVectorQuantizationClustering.getOutputPort(), behaviorModelCreationStage.getInputPort());
     }
 
     /**
@@ -87,7 +88,6 @@ public class EMClassification extends CompositeStage implements IClassificationS
      *
      * @return input port
      */
-
     @Override
     public InputPort<UserSession> getSessionInputPort() {
         return this.sessionInputPort;

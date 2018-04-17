@@ -22,17 +22,15 @@ import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 
 import org.iobserve.analysis.ConfigurationKeys;
+import org.iobserve.analysis.behavior.filter.IClassificationStage;
+import org.iobserve.analysis.behavior.filter.UserSessionGeneratorCompositeStage;
 import org.iobserve.analysis.behavior.models.data.configuration.GetLastXSignatureStrategy;
-import org.iobserve.analysis.behavior.models.data.configuration.IModelGenerationFilterFactory;
 import org.iobserve.analysis.feature.IBehaviorCompositeStage;
-import org.iobserve.analysis.session.IEntryCallAcceptanceMatcher;
 import org.iobserve.analysis.sink.BehaviorModelSink;
-import org.iobserve.analysis.traces.ITraceSignatureCleanupRewriter;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.data.trace.EventBasedTrace;
 import org.iobserve.stages.general.ConfigurationException;
-import org.iobserve.stages.general.IEntryCallTraceMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +49,8 @@ public class ClassificationCompositeStage extends CompositeStage implements IBeh
     private final InputPort<ISessionEvent> sessionEventInputPort;
 
     /**
+     * Create a classification composite stage.
+     *
      * @param configuration
      *            configuration object for birch classification
      * @throws ConfigurationException
@@ -58,48 +58,6 @@ public class ClassificationCompositeStage extends CompositeStage implements IBeh
      */
     public ClassificationCompositeStage(final Configuration configuration) throws ConfigurationException {
         /** Instantiate configurable objects/properties for stages */
-
-        /** For EntryCallStage */
-        final String traceMatcherClassName = configuration.getStringProperty(ConfigurationKeys.TRACE_MATCHER);
-        if (traceMatcherClassName.isEmpty()) {
-            ClassificationCompositeStage.LOGGER.error("Initialization incomplete: No trace matcher specified.");
-            throw new ConfigurationException("Initialization incomplete: No trace matcher specified.");
-        }
-        final IEntryCallTraceMatcher traceMatcher = InstantiationFactory.create(IEntryCallTraceMatcher.class,
-                traceMatcherClassName, null);
-
-        /** For SessionAcceptanceFilter */
-        final String entryCallMatcherClassName = configuration
-                .getStringProperty(ConfigurationKeys.ENTRY_CALL_ACCEPTANCE_MATCHER);
-        if (entryCallMatcherClassName.isEmpty()) {
-            ClassificationCompositeStage.LOGGER
-                    .error("Initialization incomplete: No entry call acceptance matcher specified.");
-            throw new ConfigurationException("Initialization incomplete: No entry call acceptance matcher specified.");
-        }
-        final IEntryCallAcceptanceMatcher entryCallMatcher = InstantiationFactory
-                .create(IEntryCallAcceptanceMatcher.class, entryCallMatcherClassName, null);
-
-        /** For TraceOperationsCleanupFilter */
-        final String cleanupRewriterClassName = configuration.getStringProperty(ConfigurationKeys.CLEANUP_REWRITER);
-        if (cleanupRewriterClassName.isEmpty()) {
-            ClassificationCompositeStage.LOGGER
-                    .error("Initialization incomplete: No signature cleanup rewriter specified.");
-            throw new ConfigurationException("Initialization incomplete: No signature cleanup rewriter specified.");
-        }
-        final ITraceSignatureCleanupRewriter cleanupRewriter = InstantiationFactory
-                .create(ITraceSignatureCleanupRewriter.class, cleanupRewriterClassName, null);
-
-        /** For TSessionOperationsFilter */
-        final String entryCallFilterFactoryClassName = configuration
-                .getStringProperty(ConfigurationKeys.ENTRY_CALL_FILTER_RULES_FACTORY);
-        if (entryCallFilterFactoryClassName.isEmpty()) {
-            ClassificationCompositeStage.LOGGER
-                    .error("Initialization incomplete: No entry call filter rules factory specified.");
-            throw new ConfigurationException(
-                    "Initialization incomplete: No entry call filter rules factory specified.");
-        }
-        final IModelGenerationFilterFactory filterRulesFactory = InstantiationFactory
-                .create(IModelGenerationFilterFactory.class, entryCallFilterFactoryClassName, null);
 
         /**
          * Create Clock. Default value of -1 was selected because the method getLongProperty states
@@ -172,29 +130,28 @@ public class ClassificationCompositeStage extends CompositeStage implements IBeh
         }
 
         /** Create remaining stages and connect them */
-        final PreprocessingCompositeStage preprocessingStage = new PreprocessingCompositeStage(traceMatcher, entryCallMatcher,
-                cleanupRewriter, filterRulesFactory, triggerInterval);
+        final UserSessionGeneratorCompositeStage userSessionGeneratorCompositeStage = new UserSessionGeneratorCompositeStage(
+                configuration);
 
-        final BehaviorModelSink sinkStage = new BehaviorModelSink(baseURL,
+        final BehaviorModelSink behaviorModelSinkStage = new BehaviorModelSink(baseURL,
                 new GetLastXSignatureStrategy(Integer.MAX_VALUE));
 
         final String classificationStageName = configuration.getStringProperty(ConfigurationKeys.CLASS_STAGE);
 
-        final IClassificationStage classificationStage = InstantiationFactory.create(IClassificationStage.class,
-                classificationStageName, null);
-        classificationStage.setupStage(configuration);
+        final IClassificationStage classificationStage = InstantiationFactory
+                .createWithConfiguration(IClassificationStage.class, classificationStageName, configuration);
 
-        this.eventBasedTraceInputPort = preprocessingStage.getTraceInputPort();
-        this.sessionEventInputPort = preprocessingStage.getSessionEventInputPort();
+        this.eventBasedTraceInputPort = userSessionGeneratorCompositeStage.getTraceInputPort();
+        this.sessionEventInputPort = userSessionGeneratorCompositeStage.getSessionEventInputPort();
 
-        this.connectPorts(preprocessingStage.getSessionOutputPort(), classificationStage.getSessionInputPort());
+        this.connectPorts(userSessionGeneratorCompositeStage.getSessionOutputPort(), classificationStage.getSessionInputPort());
         /** reconnect once SessionsToInstances filter has been modified */
-        this.connectPorts(preprocessingStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
-        this.connectPorts(classificationStage.getOutputPort(), sinkStage.getInputPort());
+        this.connectPorts(userSessionGeneratorCompositeStage.getTimerOutputPort(), classificationStage.getTimerInputPort());
+        this.connectPorts(classificationStage.getOutputPort(), behaviorModelSinkStage.getInputPort());
     }
 
     @Override
-    public InputPort<EventBasedTrace> getEventBasedTracePort() {
+    public InputPort<EventBasedTrace> getEventBasedTraceInputPort() {
         return this.eventBasedTraceInputPort;
     }
 

@@ -62,18 +62,20 @@ public class BehaviorModelPrepratationStage extends CompositeStage {
         final IMergerStrategy mergerStrategy = new BlockingBusyWaitingRoundRobinMergerStrategy();
         final Merger<Object> merger = new Merger<>(mergerStrategy);
 
-        final BehaviorModelTableGenerationStage tBehaviorModelTableGeneration = new BehaviorModelTableGenerationStage(
+        final BehaviorModelTableGenerationStage behaviorModelTableGenerationStage = new BehaviorModelTableGenerationStage(
                 representativeStrategy, keepEmptyTransitions);
 
         final BehaviorModelPreparation behaviorModelPreparation = new BehaviorModelPreparation(keepEmptyTransitions);
 
         this.createWekaInstancesStage = new CreateWekaInstancesStage();
 
+        /** connect ports. */
+
         this.connectPorts(this.sessionOperationCleanupFilter.getOutputPort(), distributor.getInputPort());
-        this.connectPorts(distributor.getNewOutputPort(), tBehaviorModelTableGeneration.getInputPort());
+        this.connectPorts(distributor.getNewOutputPort(), behaviorModelTableGenerationStage.getInputPort());
         this.connectPorts(distributor.getNewOutputPort(), merger.getNewInputPort());
 
-        this.connectPorts(tBehaviorModelTableGeneration.getOutputPort(), merger.getNewInputPort());
+        this.connectPorts(behaviorModelTableGenerationStage.getOutputPort(), merger.getNewInputPort());
 
         this.connectPorts(merger.getOutputPort(), behaviorModelPreparation.getInputPort());
         this.connectPorts(behaviorModelPreparation.getOutputPort(), this.createWekaInstancesStage.getInputPort());

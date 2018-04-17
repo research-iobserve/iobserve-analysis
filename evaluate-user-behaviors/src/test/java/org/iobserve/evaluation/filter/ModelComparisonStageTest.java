@@ -16,7 +16,6 @@
 package org.iobserve.evaluation.filter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -60,8 +59,8 @@ public class ModelComparisonStageTest { // NOCS no constructor for tests
     public void setUp() {
         this.expectedResult.setAdditionalEdgeCount(1);
         this.expectedResult.getAdditionalNodes().add(this.nodeDtest);
-        this.expectedResult.getBaselineEdges().addAll(Arrays.asList(this.referenceModel.getEdges()));
-        this.expectedResult.getBaselineNodes().addAll(Arrays.asList(this.referenceModel.getNodes()));
+        this.expectedResult.getBaselineEdges().addAll(this.referenceModel.getEdges());
+        this.expectedResult.getBaselineNodes().addAll(this.referenceModel.getNodes());
         this.expectedResult.setMissingEdgeCount(1);
         this.expectedResult.getMissingNodes().add(this.nodeC);
 
@@ -77,8 +76,8 @@ public class ModelComparisonStageTest { // NOCS no constructor for tests
         this.expectedResult.getNodeDifferences().add(nodeDiff);
 
         this.expectedResult.getSimilarNodes().add(this.nodeB);
-        this.expectedResult.getTestModelEdges().addAll(Arrays.asList(this.testModel.getEdges()));
-        this.expectedResult.getTestModelNodes().addAll(Arrays.asList(this.testModel.getNodes()));
+        this.expectedResult.getTestModelEdges().addAll(this.testModel.getEdges());
+        this.expectedResult.getTestModelNodes().addAll(this.testModel.getNodes());
     }
 
     private BehaviorModel createTestModel() {

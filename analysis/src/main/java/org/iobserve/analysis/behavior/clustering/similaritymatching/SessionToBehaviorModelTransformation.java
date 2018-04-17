@@ -104,7 +104,7 @@ public class SessionToBehaviorModelTransformation extends AbstractConsumerStage<
         final String[] parameters = event.getParameters();
         final String[] values = event.getValues();
         for (int i = 0; i < parameters.length; i++) {
-            node.mergeInformation(new CallInformation(parameters[i], values[i]));
+            node.mergeCallInformation(new CallInformation(parameters[i], values[i]));
         }
 
         return node;

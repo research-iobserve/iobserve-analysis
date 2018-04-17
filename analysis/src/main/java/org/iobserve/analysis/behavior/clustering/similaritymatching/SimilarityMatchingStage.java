@@ -23,10 +23,12 @@ import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.ConfigurationKeys;
+import org.iobserve.analysis.behavior.filter.IClassificationStage;
 import org.iobserve.analysis.behavior.models.extended.BehaviorModel;
 import org.iobserve.analysis.session.data.UserSession;
 import org.iobserve.service.InstantiationFactory;
 import org.iobserve.stages.general.ConfigurationException;
+import org.iobserve.stages.general.DecollectorStage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +44,7 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
 
     private final InputPort<UserSession> sessionInputPort;
     private final InputPort<Long> timerInputPort;
-    private final OutputPort<BehaviorModel[]> outputPort;
+    private final OutputPort<BehaviorModel> outputPort;
 
     /**
      * Constructor.
@@ -106,23 +108,26 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
         final String prefix = "similarity";
 
         /** Create individual stages */
-        final SessionToBehaviorModelTransformation sessionToModel = new SessionToBehaviorModelTransformation(prefix);
-        final VectorizationStage vectorization = new VectorizationStage(structureMetric, parameterMetric);
-        vectorization.declareActive();
+        final SessionToBehaviorModelTransformation sessionToBehaviorModelTransformation = new SessionToBehaviorModelTransformation(
+                prefix);
+        final VectorizationStage vectorizationStage = new VectorizationStage(structureMetric, parameterMetric);
+        vectorizationStage.declareActive();
         final GroupingBehaviorStage groupingStage = new GroupingBehaviorStage(structureSimilarityRadius,
                 parameterSimilarityRadius);
-        final ModelGenerationTransformation modelGeneration = new ModelGenerationTransformation(modelGenerationStrategy,
-                prefix);
-        modelGeneration.declareActive();
+        final ModelGenerationTransformation modelGenerationTransformation = new ModelGenerationTransformation(
+                modelGenerationStrategy, prefix);
+        modelGenerationTransformation.declareActive();
+        final DecollectorStage<BehaviorModel> decollectorStage = new DecollectorStage<>();
 
         /** Connect ports */
-        this.sessionInputPort = sessionToModel.getInputPort();
-        this.timerInputPort = vectorization.getTimerInputPort();
-        this.connectPorts(sessionToModel.getOutputPort(), vectorization.getModelInputPort());
-        this.connectPorts(vectorization.getVectorsOutputPort(), groupingStage.getInputPort());
-        this.connectPorts(groupingStage.getOutputPort(), modelGeneration.getGroupsInputPort());
-        this.connectPorts(vectorization.getModelsOutputPort(), modelGeneration.getModelsInputPort());
-        this.outputPort = modelGeneration.getOutputPort();
+        this.sessionInputPort = sessionToBehaviorModelTransformation.getInputPort();
+        this.timerInputPort = vectorizationStage.getTimerInputPort();
+        this.connectPorts(sessionToBehaviorModelTransformation.getOutputPort(), vectorizationStage.getModelInputPort());
+        this.connectPorts(vectorizationStage.getVectorsOutputPort(), groupingStage.getInputPort());
+        this.connectPorts(groupingStage.getOutputPort(), modelGenerationTransformation.getGroupsInputPort());
+        this.connectPorts(vectorizationStage.getModelsOutputPort(), modelGenerationTransformation.getModelsInputPort());
+        this.connectPorts(modelGenerationTransformation.getOutputPort(), decollectorStage.getInputPort());
+        this.outputPort = decollectorStage.getOutputPort();
     }
 
     @Override
@@ -136,7 +141,7 @@ public class SimilarityMatchingStage extends CompositeStage implements IClassifi
     }
 
     @Override
-    public OutputPort<BehaviorModel[]> getOutputPort() {
+    public OutputPort<BehaviorModel> getOutputPort() {
         return this.outputPort;
     }
 }
