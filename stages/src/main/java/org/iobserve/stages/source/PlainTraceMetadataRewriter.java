@@ -37,7 +37,7 @@ import teetime.framework.OutputPort;
  */
 public class PlainTraceMetadataRewriter implements ITraceMetadataRewriter {
 
-    private volatile long traceId = 0;
+    private volatile long traceId;
     private final Map<String, Map<Long, TraceMetadata>> metadatamap = new HashMap<>();
 
     /**
@@ -85,7 +85,8 @@ public class PlainTraceMetadataRewriter implements ITraceMetadataRewriter {
 
                 outputPort.send(record);
             }
-        } else if (record instanceof KiekerMetadataRecord) { // NOCS ignore metadata record
+        } else if (record instanceof KiekerMetadataRecord) { // NOCS NOPMD explicitly ignore
+                                                             // metadata record
             /** ignore metadata record. */
         } else {
             /** pass all records unmodified, which are not trace records. */

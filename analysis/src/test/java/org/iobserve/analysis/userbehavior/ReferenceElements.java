@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.userbehavior;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
@@ -26,7 +26,7 @@ import org.palladiosimulator.pcm.usagemodel.UsageModel;
  */
 public class ReferenceElements {
 
-    private EntryCallSequenceModel entryCallSequenceModel;
+    private UserSessionCollectionModel entryCallSequenceModel;
     private UsageModel usageModel;
     private long meanInterArrivalTime;
     private int meanConcurrentUserSessions;
@@ -37,11 +37,11 @@ public class ReferenceElements {
     public ReferenceElements() {
     }
 
-    public EntryCallSequenceModel getEntryCallSequenceModel() {
+    public UserSessionCollectionModel getEntryCallSequenceModel() {
         return this.entryCallSequenceModel;
     }
 
-    public void setEntryCallSequenceModel(final EntryCallSequenceModel entryCallSequenceModel) {
+    public void setEntryCallSequenceModel(final UserSessionCollectionModel entryCallSequenceModel) {
         this.entryCallSequenceModel = entryCallSequenceModel;
     }
 

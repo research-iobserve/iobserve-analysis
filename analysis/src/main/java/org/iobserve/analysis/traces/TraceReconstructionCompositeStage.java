@@ -21,18 +21,17 @@ import kieker.common.record.flow.IFlowRecord;
 import teetime.framework.CompositeStage;
 import teetime.framework.InputPort;
 import teetime.framework.OutputPort;
-import teetime.stage.trace.traceReconstruction.EventBasedTrace;
-import teetime.stage.trace.traceReconstruction.EventBasedTraceFactory;
-import teetime.stage.trace.traceReconstruction.TraceReconstructionFilter;
-import teetime.util.ConcurrentHashMapWithDefault;
 
 import org.iobserve.analysis.feature.ITraceCompositeStage;
+import org.iobserve.analysis.traces.traceReconstruction.TraceReconstructionFilter;
+import org.iobserve.stages.data.trace.ConcurrentHashMapWithCreate;
+import org.iobserve.stages.data.trace.EventBasedTrace;
+import org.iobserve.stages.data.trace.EventBasedTraceFactory;
 
 /**
  * Composite stage to encapsulate trace reconstruction.
  *
- * Note: Currently this mainly serves the necessity to follow the general concept of feature-based
- * modularization.
+ * Note: This composite stage only exists to be able to express all features as composite stages.
  *
  * @author Reiner Jung
  *
@@ -40,6 +39,7 @@ import org.iobserve.analysis.feature.ITraceCompositeStage;
 public class TraceReconstructionCompositeStage extends CompositeStage implements ITraceCompositeStage {
 
     private final TraceReconstructionFilter traceReconstructionFilter;
+    private final TranslateCallOperationEventsStage translateCallOperationEventsStage;
 
     /**
      * Create a trace reconstruction composite stage.
@@ -48,14 +48,18 @@ public class TraceReconstructionCompositeStage extends CompositeStage implements
      *            configuration object
      */
     public TraceReconstructionCompositeStage(final Configuration configuration) {
-        final ConcurrentHashMapWithDefault<Long, EventBasedTrace> traceBuffer = new ConcurrentHashMapWithDefault<>(
+        final ConcurrentHashMapWithCreate<Long, EventBasedTrace> traceMap = new ConcurrentHashMapWithCreate<>(
                 EventBasedTraceFactory.INSTANCE);
 
-        this.traceReconstructionFilter = new TraceReconstructionFilter(traceBuffer);
+        this.translateCallOperationEventsStage = new TranslateCallOperationEventsStage();
+        this.traceReconstructionFilter = new TraceReconstructionFilter(traceMap);
+
+        this.connectPorts(this.translateCallOperationEventsStage.getOutputPort(),
+                this.traceReconstructionFilter.getInputPort());
     }
 
     public InputPort<IFlowRecord> getInputPort() {
-        return this.traceReconstructionFilter.getInputPort();
+        return this.translateCallOperationEventsStage.getInputPort();
     }
 
     public OutputPort<EventBasedTrace> getTraceValidOutputPort() {

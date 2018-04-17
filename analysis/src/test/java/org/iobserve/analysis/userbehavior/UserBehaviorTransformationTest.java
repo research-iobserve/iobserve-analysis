@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.iobserve.analysis.behavior.karlsruhe.UserBehaviorTransformation;
 import org.iobserve.analysis.userbehavior.builder.SimpleSequenceReference;
 import org.iobserve.model.correspondence.ICorrespondence;
 import org.iobserve.model.provider.RepositoryLookupModelProvider;

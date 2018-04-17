@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.iobserve.analysis.data.EntryCallSequenceModel;
+import org.iobserve.analysis.data.UserSessionCollectionModel;
 import org.iobserve.analysis.userbehavior.ReferenceElements;
 import org.iobserve.analysis.userbehavior.ReferenceUsageModelBuilder;
 import org.iobserve.analysis.userbehavior.TestHelper;
@@ -82,7 +82,7 @@ public final class SimpleBranchReference {
         final int numberOfBranchTransitions = TestHelper.getRandomInteger(5, 2);
         final int numberOfConcurrentUsers = TestHelper.getRandomInteger(200, 10 * numberOfBranchTransitions);
 
-        final EntryCallSequenceModel entryCallSequenceModel = new EntryCallSequenceModel(
+        final UserSessionCollectionModel entryCallSequenceModel = new UserSessionCollectionModel(
                 TestHelper.getUserSessions(numberOfConcurrentUsers));
 
         // In the following the reference usage model is created
@@ -180,7 +180,7 @@ public final class SimpleBranchReference {
      *
      * @return list of branch transition counter
      */
-    private static List<Integer> computeBranchTransitions(final EntryCallSequenceModel entryCallSequenceModel,
+    private static List<Integer> computeBranchTransitions(final UserSessionCollectionModel entryCallSequenceModel,
             final Branch branch, final int numberOfBranchTransitions) {
 
         final List<Integer> branchTransitionCounter = new ArrayList<>();
@@ -245,7 +245,7 @@ public final class SimpleBranchReference {
      *             when the file is written
      */
     private static ReferenceElements saveReferenceElements(final UsageModel usageModel,
-            final String referenceModelFileName, final EntryCallSequenceModel entryCallSequenceModel)
+            final String referenceModelFileName, final UserSessionCollectionModel entryCallSequenceModel)
             throws IOException {
         final ReferenceElements referenceElements = new ReferenceElements();
 
@@ -265,7 +265,7 @@ public final class SimpleBranchReference {
      * @param loopCount
      */
     private static void sequenceConstructor(final List<Integer> branchTransitionCounter, final int index,
-            final EntryCallSequenceModel entryCallSequenceModel, final int loopCount, final int start, final int end) {
+            final UserSessionCollectionModel entryCallSequenceModel, final int loopCount, final int start, final int end) {
         final int countOfBranchTransition = branchTransitionCounter.get(index) + 1;
         branchTransitionCounter.set(index, countOfBranchTransition);
         final EntryCallEvent entryCallEvent = new EntryCallEvent(1, 2,

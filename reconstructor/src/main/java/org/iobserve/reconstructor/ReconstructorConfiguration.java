@@ -45,13 +45,16 @@ public class ReconstructorConfiguration extends Configuration {
             throws ConfigurationException {
         final ISourceCompositeStage sourceStage = SourceStageFactory.createSourceCompositeStage(configuration);
 
+        final FixTraceMetadata fixTraceMetadata = new FixTraceMetadata();
+
         final StartSessionDetector startSessionDetector = new StartSessionDetector();
 
         final EndSessionDetector endSessionDetector = new EndSessionDetector();
 
         this.consumer = new DataDumpStage(configuration);
 
-        this.connectPorts(sourceStage.getOutputPort(), startSessionDetector.getInputPort());
+        this.connectPorts(sourceStage.getOutputPort(), fixTraceMetadata.getInputPort());
+        this.connectPorts(fixTraceMetadata.getOutputPort(), startSessionDetector.getInputPort());
         this.connectPorts(startSessionDetector.getOutputPort(), endSessionDetector.getInputPort());
         this.connectPorts(endSessionDetector.getOutputPort(), this.consumer.getInputPort());
     }

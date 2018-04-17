@@ -18,8 +18,8 @@ package org.iobserve.evaluation.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.iobserve.analysis.clustering.filter.models.EntryCallEdge;
-import org.iobserve.analysis.clustering.filter.models.EntryCallNode;
+import org.iobserve.analysis.behavior.models.extended.EntryCallEdge;
+import org.iobserve.analysis.behavior.models.extended.EntryCallNode;
 
 /**
  * @author Reiner Jung
