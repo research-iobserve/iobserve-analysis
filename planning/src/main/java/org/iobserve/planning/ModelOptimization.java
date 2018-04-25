@@ -17,19 +17,27 @@ package org.iobserve.planning;
 
 import java.io.File;
 
-import teetime.stage.basic.AbstractTransformation;
+import teetime.framework.AbstractConsumerStage;
+import teetime.framework.OutputPort;
+
+import org.apache.commons.io.FileUtils;
+import org.iobserve.planning.peropteryx.ExecutionWrapper;
 
 /**
  * This class creates potential migration candidates via PerOpteryx. The class is OS independent.
  *
  * @author Philipp Weimann
  */
-public class ModelOptimization extends AbstractTransformation<File, File> {
+public class ModelOptimization extends AbstractConsumerStage<File> {
 
-    // private static final int EXEC_SUCCESS = 0;
+    private static final int EXEC_SUCCESS = 0;
+    private static final String REDEPLOYMENT_MODEL_FOLDER = "redeploymentModel";
 
-    // private final File perOpteryxDir;
-    // private final File lqnsDir;
+    private final OutputPort<File> runtimeModelOutputPort = this.createOutputPort();
+    private final OutputPort<File> redeploymentModelOutputPort = this.createOutputPort();
+
+    private final File perOpteryxDir;
+    private final File lqnsDir;
 
     /**
      * Creates a new model Optimization stage. The location of executables of PerOpteryx and the
@@ -41,30 +49,38 @@ public class ModelOptimization extends AbstractTransformation<File, File> {
      *            directory for layered queuing networks
      */
     public ModelOptimization(final File perOpteryxDir, final File lqnsDir) {
-        // this.perOpteryxDir = perOpteryxDir;
-        // this.lqnsDir = lqnsDir;
+        this.perOpteryxDir = perOpteryxDir;
+        this.lqnsDir = lqnsDir;
     }
 
     @Override
-    protected void execute(final File modelDirectory) throws Exception {
+    protected void execute(final File runtimeModelDirectory) throws Exception {
+        final File redeploymentModelDirectory = new File(runtimeModelDirectory.getAbsolutePath(),
+                ModelOptimization.REDEPLOYMENT_MODEL_FOLDER);
+        final ExecutionWrapper exec = new ExecutionWrapper(redeploymentModelDirectory, this.perOpteryxDir,
+                this.lqnsDir);
 
-        // final int result = 2; // exec.startModelGeneration();
-        //
-        // if (result != ModelOptimization.EXEC_SUCCESS) {
-        // // adaptationData.setReDeploymentURI(URI.createFileURI(
-        // //
-        // "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\processedModel\\PerOpteryx_results\\costOptimalModel"));
-        // throw new RuntimeException("PerOpteryx exited with error code " + result);
-        // // String uriString =
-        // // "C:\\GitRepositorys\\iobserve-analysis\\analysis\\res\\working_dir\\snapshot\\Test";
-        //
-        // // adaptationData.setReDeploymentURI(URI.createFileURI(uriString));
-        // }
+        // Create directory for redeployment model
+        FileUtils.copyDirectory(runtimeModelDirectory, redeploymentModelDirectory);
 
-        // Execute PerOpteryx here
+        // Execute PerOpteryx (On first start there may occur a NullPointerException for unknown
+        // reasons - start twice here?)
+        final int result = exec.startModelGeneration();
 
-        // dead code.. what was the purpose?
-        this.outputPort.send(modelDirectory);
+        if (result != ModelOptimization.EXEC_SUCCESS) {
+            throw new RuntimeException("PerOpteryx exited with error code " + result);
+        } else {
+            this.runtimeModelOutputPort.send(runtimeModelDirectory);
+            this.redeploymentModelOutputPort.send(redeploymentModelDirectory);
+        }
+    }
+
+    public OutputPort<File> getRuntimeModelOutputPort() {
+        return this.runtimeModelOutputPort;
+    }
+
+    public OutputPort<File> getRedeploymentModelOutputPort() {
+        return this.redeploymentModelOutputPort;
     }
 
 }

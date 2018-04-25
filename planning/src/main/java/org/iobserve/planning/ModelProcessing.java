@@ -25,18 +25,12 @@ import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 
 import teetime.stage.basic.AbstractFilter;
 
+import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.personality.plexus.lifecycle.phase.InitializationException;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.util.EcoreUtil;
-import org.iobserve.model.IPCMModelHandler;
 import org.iobserve.model.ModelHandlingErrorException;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.factory.DesignDecisionModelFactory;
-import org.iobserve.model.provider.file.AllocationModelHandler;
-import org.iobserve.model.provider.file.CostModelHandler;
-import org.iobserve.model.provider.file.DesignDecisionModelHandler;
-import org.iobserve.model.provider.file.ResourceEnvironmentModelHandler;
-import org.iobserve.model.snapshot.SnapshotBuilder;
 import org.iobserve.planning.data.AllocationGroup;
 import org.iobserve.planning.data.AllocationGroupsContainer;
 import org.iobserve.planning.utils.ModelHelper;
@@ -79,7 +73,7 @@ public class ModelProcessing extends AbstractFilter<File> {
     private ResourceEnvironment resourceEnvironmentModel;
     private DecisionSpace decisionModel;
 
-    private URI processedModelDir;
+    private File processedModelDir;
 
     /**
      * Performs the actual model transformation.
@@ -107,7 +101,7 @@ public class ModelProcessing extends AbstractFilter<File> {
         this.clearUnneededElements();
         this.rebuildEnvironment();
 
-        this.outputPort.send(new File(this.processedModelDir.path()));
+        this.outputPort.send(this.processedModelDir);
     }
 
     private void initModelTransformation(final File originalModelDirectory)
@@ -116,18 +110,12 @@ public class ModelProcessing extends AbstractFilter<File> {
         PCMModelHandler processedModelHandler;
         DecisionSpace decisionSpace;
 
-        final URI originalModelDirectoryUri = URI.createFileURI(originalModelDirectory.getAbsolutePath());
-
         originalModelHandler = new PCMModelHandler(originalModelDirectory);
-        this.processedModelDir = originalModelDirectoryUri.appendSegment(ModelProcessing.PROCESSED_MODEL_FOLDER);
+        this.processedModelDir = new File(originalModelDirectory, ModelProcessing.PROCESSED_MODEL_FOLDER);
 
-        SnapshotBuilder.setBaseSnapshotURI(originalModelDirectoryUri);
+        FileUtils.copyDirectory(originalModelDirectory, this.processedModelDir);
 
-        final SnapshotBuilder snapshotBuilder = new SnapshotBuilder(ModelProcessing.PROCESSED_MODEL_FOLDER,
-                originalModelHandler);
-        snapshotBuilder.createSnapshot();
-
-        processedModelHandler = new PCMModelHandler(new File(this.processedModelDir.toFileString()));
+        processedModelHandler = new PCMModelHandler(this.processedModelDir);
 
         this.allocationModel = processedModelHandler.getAllocationModel();
         this.cloudProfileModel = processedModelHandler.getCloudProfileModel();
@@ -176,16 +164,18 @@ public class ModelProcessing extends AbstractFilter<File> {
     }
 
     private void saveModels() {
-        new DesignDecisionModelHandler().save(
-                this.processedModelDir.appendFileExtension(IPCMModelHandler.DESIGN_DECISION_SUFFIX),
-                this.decisionModel);
-        new AllocationModelHandler().save(
-                this.processedModelDir.appendFileExtension(IPCMModelHandler.ALLOCATION_SUFFIX), this.allocationModel);
-        new CostModelHandler().save(this.processedModelDir.appendFileExtension(IPCMModelHandler.COST_SUFFIX),
-                this.costModel);
-        new ResourceEnvironmentModelHandler().save(
-                this.processedModelDir.appendFileExtension(IPCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX),
-                this.resourceEnvironmentModel);
+        // new DesignDecisionModelHandler().save(
+        // this.processedModelDir.appendFileExtension(IPCMModelHandler.DESIGN_DECISION_SUFFIX),
+        // this.decisionModel);
+        // new AllocationModelHandler().save(
+        // this.processedModelDir.appendFileExtension(IPCMModelHandler.ALLOCATION_SUFFIX),
+        // this.allocationModel);
+        // new
+        // CostModelHandler().save(this.processedModelDir.appendFileExtension(IPCMModelHandler.COST_SUFFIX),
+        // this.costModel);
+        // new ResourceEnvironmentModelHandler().save(
+        // this.processedModelDir.appendFileExtension(IPCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX),
+        // this.resourceEnvironmentModel);
     }
 
     private void createResourcesAndReplicationDegrees(final DecisionSpace decisionSpace,

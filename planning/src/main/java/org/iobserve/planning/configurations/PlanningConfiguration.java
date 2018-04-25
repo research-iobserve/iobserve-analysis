@@ -51,35 +51,42 @@ public class PlanningConfiguration extends Configuration {
      *            Input port of adaptation service
      */
     public PlanningConfiguration(final int planningInputPort, final File modelDirectory, final File perOpteryxHeadless,
-            final File lqnsDir, final String adaptationHostname, final int adaptationInputPort) {
+            final File lqnsDir, final String adaptationHostname, final int adaptationRuntimeModelInputPort,
+            final int adaptationRedeploymentModelInputPort) {
 
         final SingleConnectionTcpReaderStage tcpReader;
         final ModelFiles2ModelDirCollectorStage modelFilesCollector;
         final ModelProcessing modelPreProcessor;
         final ModelOptimization modelOptimizer;
-        final ModelDir2ModelFilesStage modelDir2ModelFiles;
-        final SingleConnectionTcpWriterStage tcpWriter;
+        final ModelDir2ModelFilesStage runtimeModelDir2ModelFiles;
+        final ModelDir2ModelFilesStage redeploymentModelDir2ModelFiles;
+        final SingleConnectionTcpWriterStage runtimeTcpWriter;
+        final SingleConnectionTcpWriterStage redeploymentTcpWriter;
 
         tcpReader = new SingleConnectionTcpReaderStage(planningInputPort, modelDirectory);
         modelFilesCollector = new ModelFiles2ModelDirCollectorStage();
         modelPreProcessor = new ModelProcessing();
 
-        // Only removed for debugging
-        // if ((perOpteryxHeadless != null) && (lqnsDir != null)) {
-        modelOptimizer = new ModelOptimization(perOpteryxHeadless, lqnsDir);
-        // } else {
-        // throw new IllegalArgumentException(
-        // "Failed to initialize ModelProcessing. Path to PerOpteryx or LQN solver must not be
-        // null!");
-        // }
+        if ((perOpteryxHeadless != null) && (lqnsDir != null)) {
+            modelOptimizer = new ModelOptimization(perOpteryxHeadless, lqnsDir);
+        } else {
+            throw new IllegalArgumentException(
+                    "Failed to initialize ModelProcessing. Path to PerOpteryx or LQN solver must not be null!");
+        }
 
-        modelDir2ModelFiles = new ModelDir2ModelFilesStage();
-        tcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname, adaptationInputPort);
+        runtimeModelDir2ModelFiles = new ModelDir2ModelFilesStage();
+        redeploymentModelDir2ModelFiles = new ModelDir2ModelFilesStage();
+        runtimeTcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname, adaptationRuntimeModelInputPort);
+        redeploymentTcpWriter = new SingleConnectionTcpWriterStage(adaptationHostname,
+                adaptationRedeploymentModelInputPort);
 
         this.connectPorts(tcpReader.getOutputPort(), modelFilesCollector.getInputPort());
         this.connectPorts(modelFilesCollector.getOutputPort(), modelPreProcessor.getInputPort());
         this.connectPorts(modelPreProcessor.getOutputPort(), modelOptimizer.getInputPort());
-        this.connectPorts(modelOptimizer.getOutputPort(), modelDir2ModelFiles.getInputPort());
-        this.connectPorts(modelDir2ModelFiles.getOutputPort(), tcpWriter.getInputPort());
+        this.connectPorts(modelOptimizer.getRuntimeModelOutputPort(), runtimeModelDir2ModelFiles.getInputPort());
+        this.connectPorts(modelOptimizer.getRedeploymentModelOutputPort(),
+                redeploymentModelDir2ModelFiles.getInputPort());
+        this.connectPorts(runtimeModelDir2ModelFiles.getOutputPort(), runtimeTcpWriter.getInputPort());
+        this.connectPorts(redeploymentModelDir2ModelFiles.getOutputPort(), redeploymentTcpWriter.getInputPort());
     }
 }

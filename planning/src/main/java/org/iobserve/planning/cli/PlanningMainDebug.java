@@ -15,64 +15,26 @@
  ***************************************************************************/
 package org.iobserve.planning.cli;
 
-import java.io.File;
-
-import teetime.framework.Configuration;
 import teetime.framework.Execution;
 
-import org.iobserve.planning.configurations.PlanningConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.iobserve.planning.configurations.PlanningConfigurationDebug;
 
 /**
- * Main class for iObserve's adaptation service.
+ * Debug main.
  *
  * @author Lars Bluemke
  *
  */
 public class PlanningMainDebug {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PlanningMainDebug.class);
-
-    private static final int PLANNING_INPUT_PORT = 12349;
-    private static final String ADAPTATION_HOST_NAME = "localhost";
-    private static final int ADAPTATION_INPUT_PORT = 12346;
-
-    private static final File MODEL_DIR = new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/working-dir-planning");
-    private static final File PO_HEADLESS_DIR = new File(
-            "/Users/LarsBlumke/Documents/CAU/Masterarbeit/imaginaryPath/PO");
-    private static final File LQNS_DIR = new File("/Users/LarsBlumke/Documents/CAU/Masterarbeit/imaginaryPath/LQNS");
-
     public static void main(final String[] args) {
-        new PlanningMainDebug().run();
+        final Execution<PlanningConfigurationDebug> execution = new Execution<>(new PlanningConfigurationDebug());
 
-    }
-
-    private void run() {
-        final Execution<PlanningConfiguration> execution = new Execution<>(
-                new PlanningConfiguration(PlanningMainDebug.PLANNING_INPUT_PORT, PlanningMainDebug.MODEL_DIR,
-                        PlanningMainDebug.PO_HEADLESS_DIR, PlanningMainDebug.LQNS_DIR,
-                        PlanningMainDebug.ADAPTATION_HOST_NAME, PlanningMainDebug.ADAPTATION_INPUT_PORT));
-
-        this.shutdownHook(execution);
-
-        PlanningMainDebug.LOG.debug("Running Adaptation");
+        System.out.println("Running Planning");
 
         execution.executeBlocking();
 
-        PlanningMainDebug.LOG.debug("Done");
-    }
-
-    private <R extends Configuration> void shutdownHook(final Execution<R> execution) {
-        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (execution) {
-                    execution.abortEventually();
-                }
-            }
-        }));
-
+        System.out.println("Done");
     }
 
 }
