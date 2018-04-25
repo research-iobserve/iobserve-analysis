@@ -65,20 +65,33 @@ public class PrivacyWarner extends AbstractStage {
 
     @Override
     protected void execute() throws Exception {
+        java.lang.System.out.print("Execution started");
         final Warnings warnings = new Warnings();
-
         final PCMDeployedEvent deployedEvent = this.deployedInputPort.receive();
         final PCMUndeployedEvent undeployedEvent = this.undeployedInputPort.receive();
-
+        this.createAnalysisGraph();
         if (deployedEvent != null) {
             // TODO generate warnings after the last deployment
-        } else if (undeployedEvent != null) {
+            java.lang.System.out.print("Received Deployment");
+            java.lang.System.out.print("CountryCode: " + deployedEvent.getCountryCode());
+            java.lang.System.out.print("Service: " + deployedEvent.getService());
+        }
+        if (undeployedEvent != null) {
             // TODO generate warnings after the last undeployment
+            java.lang.System.out.print("Received undeployment");
         }
 
         this.probesOutputPort.send(warnings);
 
         this.warningsOutputPort.send(warnings);
+    }
+
+    private void createAnalysisGraph() {
+        java.lang.System.out.print("Starting creation of Analysis Graph");
+        if (this.allocationModelGraphProvider.getGraph().getGraphDatabaseService().isAvailable(500)) {
+            java.lang.System.out.print(this.allocationModelGraphProvider.readComponentByType(Allocation.class));
+        }
+
     }
 
     public OutputPort<Warnings> getProbesOutputPort() {
