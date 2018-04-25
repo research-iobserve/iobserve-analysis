@@ -25,8 +25,11 @@ import org.iobserve.planning.systemadaptation.ComposedAction;
  *
  * @author Lars Bluemke
  *
+ * @param <T>
+ *            Subtypes of {@link ComposedAction}
+ *
  */
-public interface IComposed2AtomicAction<T extends ComposedAction> {
+interface IComposed2AtomicAction<T extends ComposedAction> {
 
     /**
      * Returns a list of the atomic actions which are necessary to execute a composed action.

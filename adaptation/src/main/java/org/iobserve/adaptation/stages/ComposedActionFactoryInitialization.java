@@ -23,6 +23,13 @@ import org.iobserve.adaptation.testmodel.AdaptationTestModel;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.PCMModelHandlerMockup;
 
+/**
+ * Initializes the {@link ActionFactory} for composed actions with runtime and redeployment model
+ * handlers.
+ * 
+ * @author Lars Bluemke
+ *
+ */
 public class ComposedActionFactoryInitialization extends AbstractFilter<AdaptationData> {
 
     private final boolean isTestRun;
