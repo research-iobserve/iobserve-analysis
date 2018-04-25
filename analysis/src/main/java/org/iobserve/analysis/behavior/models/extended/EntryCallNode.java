@@ -63,8 +63,7 @@ public class EntryCallNode {
     }
 
     /**
-     * adds call information with signatures not present in the entry call
-     * information set.
+     * adds call information with signatures not present in the entry call information set.
      *
      * @param callInformations
      *            callInformations
@@ -76,8 +75,7 @@ public class EntryCallNode {
     }
 
     /**
-     * adds a call information with a signature not present in the entry call
-     * information set.
+     * adds a call information with a signature not present in the entry call information set.
      *
      * @param callInformation
      *            callInformation
@@ -94,8 +92,7 @@ public class EntryCallNode {
     }
 
     /**
-     * Finds call information with a specific signature and parameter and returns an
-     * Optional of it
+     * Finds call information with a specific signature and parameter and returns an Optional of it
      *
      * @param operationSignature
      *            The signature of the call information
@@ -113,7 +110,7 @@ public class EntryCallNode {
      *
      * @see java.lang.Object#equals(java.lang.Object)
      */
-    @Override
+    @Override // NOCS
     public boolean equals(final Object obj) {
         if (obj instanceof EntryCallNode) {
             // compare signatures

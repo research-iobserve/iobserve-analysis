@@ -18,9 +18,10 @@ package org.iobserve.common.record;
 import java.nio.BufferOverflowException;
 
 import kieker.common.exception.RecordInstantiationException;
-import org.iobserve.common.record.AbstractContainerEvent;
+import org.iobserve.common.record.ContainerEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
+import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IAllocationEvent;
 
@@ -30,12 +31,12 @@ import org.iobserve.common.record.IAllocationEvent;
  * 
  * @since 0.0.2
  */
-public class ContainerAllocationEvent extends AbstractContainerEvent implements IAllocationEvent {			
+public class ContainerAllocationEvent extends ContainerEvent implements IAllocationEvent {			
 	/** Descriptive definition of the serialization size of the record. */
-	public static final int SIZE = TYPE_SIZE_STRING; // AbstractContainerEvent.url
+	public static final int SIZE = TYPE_SIZE_STRING; // ContainerEvent.url
 	
 	public static final Class<?>[] TYPES = {
-		String.class, // AbstractContainerEvent.url
+		String.class, // ContainerEvent.url
 	};
 	
 	private static final long serialVersionUID = -6028448119522385906L;
