@@ -27,7 +27,7 @@ import org.palladiosimulator.pcm.system.System;
 
 /**
  * Model level controller for probes. The filter receives a list of warnings and computes a list of
- * probe activation and deactivations. Therefore, it requires internal knowledge of previous probe
+ * probe activation and deactivation. Therefore, it requires internal knowledge of previous probe
  * activations.
  *
  * @author Reiner Jung -- initial
