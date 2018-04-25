@@ -55,7 +55,7 @@ public final class PCMModelHandler implements IPCMModelHandler {
 
     private static final String QML_DECLARATIONS_MODEL = "qmldeclarations";
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(PCMModelHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(PCMModelHandler.class);
 
     private Repository repositoryModel;
     private Allocation allocationModel;
@@ -78,27 +78,27 @@ public final class PCMModelHandler implements IPCMModelHandler {
 
         final File[] files = pcmModelsDirectory.listFiles();
         for (final File nextFile : files) {
-        	LOGGER.debug("Reading model {}", nextFile.toString());
+            PCMModelHandler.LOGGER.debug("Reading model {}", nextFile.toString());
             final String extension = this.getFileExtension(nextFile.getName());
             final URI uri = this.getUri(nextFile);
             if ("repository".equalsIgnoreCase(extension)) {
                 this.repositoryModel = new RepositoryModelHandler().load(uri);
-            } else if (PCMModelHandler.ALLOCATION_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (IPCMModelHandler.ALLOCATION_SUFFIX.equalsIgnoreCase(extension)) {
                 this.allocationModel = new AllocationModelHandler().load(uri);
-            } else if (PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (IPCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX.equalsIgnoreCase(extension)) {
                 this.resourceEnvironmentModel = new ResourceEnvironmentModelHandler().load(uri);
-            } else if (PCMModelHandler.SYSTEM_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (IPCMModelHandler.SYSTEM_SUFFIX.equalsIgnoreCase(extension)) {
                 this.systemModel = new SystemModelHandler().load(uri);
-            } else if (PCMModelHandler.USAGE_MODEL_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (IPCMModelHandler.USAGE_MODEL_SUFFIX.equalsIgnoreCase(extension)) {
                 this.usageModel = new UsageModelHandler().load(uri);
             } else if (PCMModelHandler.CORRESPONDENCE_SUFFIX.equalsIgnoreCase(extension)) {
                 this.correspondenceModel = CorrespondeceModelFactory.INSTANCE
                         .createCorrespondenceModel(nextFile.getAbsolutePath());
-            } else if (PCMModelHandler.CLOUD_PROFILE_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (IPCMModelHandler.CLOUD_PROFILE_SUFFIX.equalsIgnoreCase(extension)) {
                 this.cloudProfileModel = new CloudProfileModelHandler().load(uri);
-            } else if (PCMModelHandler.COST_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (IPCMModelHandler.COST_SUFFIX.equalsIgnoreCase(extension)) {
                 this.costModel = new CostModelHandler().load(uri);
-            } else if (PCMModelHandler.DESIGN_DECISION_SUFFIX.equalsIgnoreCase(extension)) {
+            } else if (IPCMModelHandler.DESIGN_DECISION_SUFFIX.equalsIgnoreCase(extension)) {
                 this.designDecisionModel = new DesignDecisionModelHandler().load(uri);
             } else if (PCMModelHandler.QML_DECLARATIONS_MODEL.equalsIgnoreCase(extension)) {
                 this.qmlDeclarationsModel = new QMLDeclarationsModelHandler().load(uri);
@@ -107,7 +107,9 @@ public final class PCMModelHandler implements IPCMModelHandler {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.model.IPCMModelHandler#getAllocationModel()
      */
     @Override
@@ -115,7 +117,9 @@ public final class PCMModelHandler implements IPCMModelHandler {
         return this.allocationModel;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.model.IPCMModelHandler#getResourceEnvironmentModel()
      */
     @Override
@@ -123,7 +127,9 @@ public final class PCMModelHandler implements IPCMModelHandler {
         return this.resourceEnvironmentModel;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.model.IPCMModelHandler#getSystemModel()
      */
     @Override
@@ -131,7 +137,9 @@ public final class PCMModelHandler implements IPCMModelHandler {
         return this.systemModel;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.model.IPCMModelHandler#getUsageModel()
      */
     @Override
@@ -139,7 +147,9 @@ public final class PCMModelHandler implements IPCMModelHandler {
         return this.usageModel;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.model.IPCMModelHandler#getCorrespondenceModel()
      */
     @Override
@@ -147,7 +157,9 @@ public final class PCMModelHandler implements IPCMModelHandler {
         return this.correspondenceModel;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.model.IPCMModelHandler#getRepositoryModel()
      */
     @Override
@@ -155,7 +167,9 @@ public final class PCMModelHandler implements IPCMModelHandler {
         return this.repositoryModel;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.model.IPCMModelHandler#getCloudProfileModel()
      */
     @Override
@@ -163,7 +177,9 @@ public final class PCMModelHandler implements IPCMModelHandler {
         return this.cloudProfileModel;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.model.IPCMModelHandler#getCostModel()
      */
     @Override
@@ -171,7 +187,9 @@ public final class PCMModelHandler implements IPCMModelHandler {
         return this.costModel;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.model.IPCMModelHandler#getDesignDecisionModel()
      */
     @Override
@@ -179,7 +197,9 @@ public final class PCMModelHandler implements IPCMModelHandler {
         return this.designDecisionModel;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.model.IPCMModelHandler#getQMLDeclarationsModel()
      */
     @Override
@@ -187,29 +207,60 @@ public final class PCMModelHandler implements IPCMModelHandler {
         return this.qmlDeclarationsModel;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     *
      * @see org.iobserve.model.IPCMModelHandler#save(org.eclipse.emf.common.util.URI)
      */
     @Override
     public void save(final URI fileLocationURI) {
-        new AllocationModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.ALLOCATION_SUFFIX),
-                this.allocationModel);
-        new CloudProfileModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.CLOUD_PROFILE_SUFFIX),
-                this.cloudProfileModel);
-        new CostModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.COST_SUFFIX), this.costModel);
-        new DesignDecisionModelHandler().save(
-                fileLocationURI.appendFileExtension(PCMModelHandler.DESIGN_DECISION_SUFFIX), this.designDecisionModel);
-        new RepositoryModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.REPOSITORY_SUFFIX),
-                this.repositoryModel);
-        new ResourceEnvironmentModelHandler().save(
-                fileLocationURI.appendFileExtension(PCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX),
-                this.resourceEnvironmentModel);
-        new SystemModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.SYSTEM_SUFFIX),
-                this.systemModel);
-        new UsageModelHandler().save(fileLocationURI.appendFileExtension(PCMModelHandler.USAGE_MODEL_SUFFIX),
-                this.usageModel);
-        new QMLDeclarationsModelHandler().save(
-                fileLocationURI.appendFileExtension(PCMModelHandler.QML_DECLARATIONS_MODEL), this.qmlDeclarationsModel);
+        if (this.allocationModel != null) {
+            new AllocationModelHandler().save(fileLocationURI.appendFileExtension(IPCMModelHandler.ALLOCATION_SUFFIX),
+                    this.allocationModel);
+        }
+
+        if (this.cloudProfileModel != null) {
+            new CloudProfileModelHandler().save(
+                    fileLocationURI.appendFileExtension(IPCMModelHandler.CLOUD_PROFILE_SUFFIX), this.cloudProfileModel);
+        }
+
+        if (this.costModel != null) {
+            new CostModelHandler().save(fileLocationURI.appendFileExtension(IPCMModelHandler.COST_SUFFIX),
+                    this.costModel);
+        }
+
+        if (this.designDecisionModel != null) {
+            new DesignDecisionModelHandler().save(
+                    fileLocationURI.appendFileExtension(IPCMModelHandler.DESIGN_DECISION_SUFFIX),
+                    this.designDecisionModel);
+        }
+
+        if (this.repositoryModel != null) {
+            new RepositoryModelHandler().save(fileLocationURI.appendFileExtension(IPCMModelHandler.REPOSITORY_SUFFIX),
+                    this.repositoryModel);
+        }
+
+        if (this.resourceEnvironmentModel != null) {
+            new ResourceEnvironmentModelHandler().save(
+                    fileLocationURI.appendFileExtension(IPCMModelHandler.RESOURCE_ENVIRONMENT_SUFFIX),
+                    this.resourceEnvironmentModel);
+        }
+
+        if (this.systemModel != null) {
+            new SystemModelHandler().save(fileLocationURI.appendFileExtension(IPCMModelHandler.SYSTEM_SUFFIX),
+                    this.systemModel);
+        }
+
+        if (this.usageModel != null) {
+            new UsageModelHandler().save(fileLocationURI.appendFileExtension(IPCMModelHandler.USAGE_MODEL_SUFFIX),
+                    this.usageModel);
+        }
+
+        if (this.qmlDeclarationsModel != null) {
+            new QMLDeclarationsModelHandler().save(
+                    fileLocationURI.appendFileExtension(PCMModelHandler.QML_DECLARATIONS_MODEL),
+                    this.qmlDeclarationsModel);
+        }
     }
 
     /**
