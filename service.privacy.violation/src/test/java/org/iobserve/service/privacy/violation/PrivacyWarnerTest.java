@@ -38,7 +38,7 @@ import org.palladiosimulator.pcm.system.System;
  */
 public class PrivacyWarnerTest {
     private final File pcmDirectory = new File(
-            "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore/pcm/JPetStore");
+            "/home/reiner/Projects/iObserve/experiments/distributed-jpetstore-experiment/pcm/JPetStore");
 
     private final File modelDatabaseDirectory = new File(
             "/home/reiner/Projects/iObserve/experiments/jss-privacy-experiment/db");
@@ -50,13 +50,18 @@ public class PrivacyWarnerTest {
         final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
-        final Graph<Allocation> allocationModelGraph = graphLoader
-                .initializeAllocationModelGraph(modelHandler.getAllocationModel());
+        /** graphs. */
+        graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel());
+        graphLoader.initializeModelGraph(ResourceEnvironment.class, modelHandler.getResourceEnvironmentModel());
+        graphLoader.initializeModelGraph(System.class, modelHandler.getSystemModel());
 
+        /** load neo4j graphs. */
         final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
-                .initializeResourceEnvironmentModelGraph(modelHandler.getResourceEnvironmentModel());
-        final Graph<System> systemGraph = graphLoader.initializeSystemModelGraph(modelHandler.getSystemModel());
+                .createModelGraph(ResourceEnvironment.class);
+        final Graph<Allocation> allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
+        final Graph<System> systemGraph = graphLoader.createModelGraph(System.class);
 
+        /** model provider. */
         final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentGraph);

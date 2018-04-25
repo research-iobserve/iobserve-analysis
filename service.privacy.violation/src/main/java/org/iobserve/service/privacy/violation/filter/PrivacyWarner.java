@@ -88,10 +88,7 @@ public class PrivacyWarner extends AbstractStage {
 
     private void createAnalysisGraph() {
         java.lang.System.out.print("Starting creation of Analysis Graph");
-        if (this.allocationModelGraphProvider.getGraph().getGraphDatabaseService().isAvailable(500)) {
-            java.lang.System.out.print(this.allocationModelGraphProvider.readComponentByType(Allocation.class));
-        }
-
+        java.lang.System.out.print(this.allocationModelGraphProvider.readComponentByType(Allocation.class));
     }
 
     public OutputPort<Warnings> getProbesOutputPort() {

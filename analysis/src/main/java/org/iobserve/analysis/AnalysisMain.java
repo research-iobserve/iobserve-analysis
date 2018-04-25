@@ -121,7 +121,7 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
         IModelProvider<Repository> repositoryModelProvider = null;
         IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider = null;
         IModelProvider<Allocation> allocationModelProvider = null;
-        IModelProvider<org.palladiosimulator.pcm.system.System> systemModelProvider = null;
+        IModelProvider<System> systemModelProvider = null;
         IModelProvider<UsageModel> usageModelProvider = null;
         ICorrespondence correspondenceModel = null;
 
@@ -134,23 +134,19 @@ public final class AnalysisMain extends AbstractServiceMain<AnalysisConfiguratio
             /** initialize neo4j graphs. */
             final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
-            Graph<Repository> repositoryModelGraph = graphLoader
-                    .initializeRepositoryModelGraph(modelFileHandler.getRepositoryModel());
-            Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
-                    .initializeResourceEnvironmentModelGraph(modelFileHandler.getResourceEnvironmentModel());
-            Graph<Allocation> allocationModelGraph = graphLoader
-                    .initializeAllocationModelGraph(modelFileHandler.getAllocationModel());
-            Graph<System> systemModelGraph = graphLoader.initializeSystemModelGraph(modelFileHandler.getSystemModel());
-            Graph<UsageModel> usageModelGraph = graphLoader.initializeUsageModelGraph(modelFileHandler.getUsageModel());
-
-            // TODO the first initialization and then the second creation looks weird.
+            graphLoader.initializeModelGraph(Repository.class, modelFileHandler.getRepositoryModel());
+            graphLoader.initializeModelGraph(ResourceEnvironment.class, modelFileHandler.getResourceEnvironmentModel());
+            graphLoader.initializeModelGraph(Allocation.class, modelFileHandler.getAllocationModel());
+            graphLoader.initializeModelGraph(System.class, modelFileHandler.getSystemModel());
+            graphLoader.initializeModelGraph(UsageModel.class, modelFileHandler.getUsageModel());
 
             /** load neo4j graphs. */
-            repositoryModelGraph = graphLoader.createModelGraph(Repository.class);
-            resourceEnvironmentGraph = graphLoader.createModelGraph(ResourceEnvironment.class);
-            allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
-            systemModelGraph = graphLoader.createModelGraph(System.class);
-            usageModelGraph = graphLoader.createModelGraph(UsageModel.class);
+            final Graph<Repository> repositoryModelGraph = graphLoader.createModelGraph(Repository.class);
+            final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
+                    .createModelGraph(ResourceEnvironment.class);
+            final Graph<Allocation> allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
+            final Graph<System> systemModelGraph = graphLoader.createModelGraph(System.class);
+            final Graph<UsageModel> usageModelGraph = graphLoader.createModelGraph(UsageModel.class);
 
             /** new graphModelProvider. */
             repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
