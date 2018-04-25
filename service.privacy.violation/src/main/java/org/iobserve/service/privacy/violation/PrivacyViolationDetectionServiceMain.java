@@ -139,7 +139,7 @@ public final class PrivacyViolationDetectionServiceMain
 
     @Override
     protected void shutdownService() {
-
+        // empty, no special shutdown required
     }
 
     @Override

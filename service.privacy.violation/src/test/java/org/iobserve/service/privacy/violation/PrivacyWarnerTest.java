@@ -16,9 +16,12 @@
 package org.iobserve.service.privacy.violation;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import teetime.framework.test.StageTester;
 
+import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
 import org.iobserve.model.PCMModelHandler;
 import org.iobserve.model.correspondence.CorrespondentFactory;
@@ -26,6 +29,8 @@ import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
 import org.iobserve.service.privacy.violation.filter.PrivacyWarner;
+import org.iobserve.stages.data.Warnings;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.palladiosimulator.pcm.allocation.Allocation;
@@ -45,6 +50,9 @@ public class PrivacyWarnerTest {
 
     private PrivacyWarner pw;
 
+    /**
+     * Initialize database.
+     */
     @Before
     public void initializePW() {
         final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
@@ -71,12 +79,19 @@ public class PrivacyWarnerTest {
 
     }
 
+    /**
+     * Test run component.
+     */
     @Test
     public void testPW() {
         final PCMDeployedEvent pcmdpe = new PCMDeployedEvent("TestService",
                 CorrespondentFactory.newInstance("Testname", "TestID", "Testmethode", "TestmethodenID"),
-                "http://Test.test", (short) 5);
-        StageTester.test(this.pw).and().send(pcmdpe).to(this.pw.getDeployedInputPort()).and().start();
+                "http://Test.test", (short) 5); // NOPMD short type is used in framework
+
+        final List<Warnings> results = new ArrayList<>();
+        StageTester.test(this.pw).and().send(pcmdpe).to(this.pw.getDeployedInputPort()).and().receive(results)
+                .from(this.pw.getWarningsOutputPort()).and().start();
+        Assert.assertThat("No warning generated", false, Is.is(results.isEmpty()));
     }
 
 }
