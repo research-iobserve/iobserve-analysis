@@ -79,7 +79,7 @@ public class GraphLoader {
             }
         }
 
-        return new Graph<T>(newGraphDir);
+        return new Graph<>(newGraphDir);
     }
 
     /**
@@ -145,11 +145,13 @@ public class GraphLoader {
     /**
      * Helper method for getting graphs: Returns the newest version of the model graph.
      *
-     * @param graphTypeDirName
-     *            Name of root directory for a certain graph type
+     * @param clazz
+     *            class type used to define the name of root directory for a certain graph type
+     * @param <T>
+     *            model type
      * @return The model graph
      */
-    public <T> Graph<T> createModelGraph(final Class<T> clazz) {
+    public <T extends EObject> Graph<T> createModelGraph(final Class<T> clazz) {
         final String graphTypeDirName = clazz.getCanonicalName();
         final File graphTypeDir = new File(this.baseDirectory, graphTypeDirName);
         int maxVersionNumber = GraphLoaderUtil.getMaxVersionNumber(graphTypeDir.listFiles());
@@ -158,135 +160,26 @@ public class GraphLoader {
             maxVersionNumber = 1; // no version at all so far
         }
 
-        return new Graph<T>(new File(graphTypeDir, graphTypeDirName + GraphLoader.VERSION_PREFIX + maxVersionNumber));
-    }
-
-    /**
-     * Initializes the newest version of the allocation model graph with the given model. Overwrites
-     * a possibly existing graph in the database directory of this loader.
-     *
-     * @param allocationModel
-     *            The allocation model
-     * @return The allocation model graph
-     */
-    public Graph<Allocation> initializeAllocationModelGraph(final Allocation allocationModel) {
-        final Graph<Allocation> graph = this.createModelGraph(Allocation.class);
-        final ModelProvider<Allocation, Allocation> provider = new ModelProvider<>(graph);
-        provider.clearGraph();
-        provider.createComponent(allocationModel);
-        graph.getGraphDatabaseService().shutdown();
-
-        return graph;
-    }
-
-    /**
-     * Initializes the newest version of the repository model graph with the given model. Overwrites
-     * a possibly existing graph in the database directory of this loader.
-     *
-     * @param repositoryModel
-     *            The repository model
-     * @return The repository model graph
-     */
-    public Graph<Repository> initializeRepositoryModelGraph(final Repository repositoryModel) {
-        final Graph<Repository> graph = this.createModelGraph(Repository.class);
-        final ModelProvider<Repository, Repository> provider = new ModelProvider<>(graph);
-        provider.clearGraph();
-        provider.createComponent(repositoryModel);
-        graph.getGraphDatabaseService().shutdown();
-
-        return graph;
-    }
-
-    /**
-     * Initializes the newest version of the resource environment model graph with the given model.
-     * Overwrites a possibly existing graph in the database directory of this loader.
-     *
-     * @param resourceEnvironmentModel
-     *            The resource environment model
-     * @return The resource environment model graph
-     */
-    public Graph<ResourceEnvironment> initializeResourceEnvironmentModelGraph(
-            final ResourceEnvironment resourceEnvironmentModel) {
-        final Graph<ResourceEnvironment> graph = this.createModelGraph(ResourceEnvironment.class);
-        final ModelProvider<ResourceEnvironment, ResourceEnvironment> provider = new ModelProvider<>(graph);
-        provider.clearGraph();
-        provider.createComponent(resourceEnvironmentModel);
-        graph.getGraphDatabaseService().shutdown();
-
-        return graph;
-    }
-
-    /**
-     * Initializes the newest version of the system model graph with the given model. Overwrites a
-     * possibly existing graph in the database directory of this loader.
-     *
-     * @param systemModel
-     *            The system model
-     * @return The system model graph
-     */
-    public Graph<System> initializeSystemModelGraph(final System systemModel) {
-        final Graph<System> graph = this.createModelGraph(System.class);
-        final ModelProvider<System, System> provider = new ModelProvider<>(graph);
-        provider.clearGraph();
-        provider.createComponent(systemModel);
-        graph.getGraphDatabaseService().shutdown();
-
-        return graph;
-    }
-
-    /**
-     * Initializes the newest version of the usage model graph with the given model. Overwrites a
-     * possibly existing graph in the database directory of this loader.
-     *
-     * @param usageModel
-     *            The usage model
-     * @return The usage model graph
-     */
-    public Graph<UsageModel> initializeUsageModelGraph(final UsageModel usageModel) {
-        final Graph<UsageModel> graph = this.createModelGraph(UsageModel.class);
-        final ModelProvider<UsageModel, UsageModel> provider = new ModelProvider<>(graph);
-        provider.clearGraph();
-        provider.createComponent(usageModel);
-        graph.getGraphDatabaseService().shutdown();
-
-        return graph;
-    }
-
-    /**
-     * Initializes the newest version of the privacy model graph with the given model. Overwrites a
-     * potential existing graph in the database directory of this loader.
-     *
-     * @param privacyModel
-     * @return
-     */
-    public Graph<PrivacyModel> initializePrivacyModelGraph(final PrivacyModel privacyModel) {
-        final Graph<PrivacyModel> graph = this.createModelGraph(PrivacyModel.class);
-        final ModelProvider<PrivacyModel, PrivacyModel> provider = new ModelProvider<>(graph);
-        provider.clearGraph();
-        provider.createComponent(privacyModel);
-        graph.getGraphDatabaseService().shutdown();
-
-        return graph;
+        return new Graph<>(new File(graphTypeDir, graphTypeDirName + GraphLoader.VERSION_PREFIX + maxVersionNumber));
     }
 
     /**
      * Initializes the newest version of a model graph with the given model. Overwrites a potential
      * existing graph in the database directory of this loader.
      *
+     * @param clazz
+     *            class type of the model
      * @param model
      *            the model to use for initialization
      * @param <V>
      *            the type of the root element
-     * @return a model graph
      */
-    public <V extends EObject> Graph<V> initializeModelGraph(final Class<V> clazz, final V model) {
+    public <V extends EObject> void initializeModelGraph(final Class<V> clazz, final V model) {
         final Graph<V> graph = this.createModelGraph(clazz);
         final ModelProvider<V, V> provider = new ModelProvider<>(graph);
         provider.clearGraph();
         provider.createComponent(model);
         graph.getGraphDatabaseService().shutdown();
-
-        return graph;
     }
 
 }

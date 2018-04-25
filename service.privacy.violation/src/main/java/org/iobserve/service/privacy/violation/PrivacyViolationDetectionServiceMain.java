@@ -39,6 +39,7 @@ import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.usagemodel.UsageModel;
 
 /**
  * Collector main class.
@@ -97,25 +98,25 @@ public final class PrivacyViolationDetectionServiceMain
         final PCMModelHandler modelHandler = new PCMModelHandler(this.pcmDirectory);
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
-        /** graphs. */
-        final Graph<Repository> repositoryModelGraph = graphLoader
-                .initializeRepositoryModelGraph(modelHandler.getRepositoryModel());
+        /** initialize database. */
+        graphLoader.initializeModelGraph(Repository.class, modelHandler.getRepositoryModel());
+        graphLoader.initializeModelGraph(ResourceEnvironment.class, modelHandler.getResourceEnvironmentModel());
+        graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel());
+        graphLoader.initializeModelGraph(System.class, modelHandler.getSystemModel());
+        graphLoader.initializeModelGraph(UsageModel.class, modelHandler.getUsageModel());
 
-        final Graph<Allocation> allocationModelGraph = graphLoader
-                .initializeAllocationModelGraph(modelHandler.getAllocationModel());
-
+        /** load neo4j graphs. */
         final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
-                .initializeResourceEnvironmentModelGraph(modelHandler.getResourceEnvironmentModel());
-        final Graph<System> systemGraph = graphLoader.initializeSystemModelGraph(modelHandler.getSystemModel());
-        final Graph<PrivacyModel> privacyModelGraph = graphLoader
-                .initializePrivacyModelGraph(modelHandler.getPrivacyModel());
+                .createModelGraph(ResourceEnvironment.class);
+        final Graph<Allocation> allocationModelGraph = graphLoader.createModelGraph(Allocation.class);
+        final Graph<System> systemModelGraph = graphLoader.createModelGraph(System.class);
+        final Graph<PrivacyModel> privacyModelGraph = graphLoader.createModelGraph(PrivacyModel.class);
 
         /** model provider. */
-        final ModelProvider<Repository, Repository> repositoryModelProvider = new ModelProvider<>(repositoryModelGraph);
         final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
                 resourceEnvironmentGraph);
-        final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemGraph);
+        final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemModelGraph);
         final ModelProvider<PrivacyModel, PrivacyModel> privacyModelProvider = new ModelProvider<>(privacyModelGraph);
 
         try {
