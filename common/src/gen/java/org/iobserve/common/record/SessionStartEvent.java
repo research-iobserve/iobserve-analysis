@@ -22,7 +22,6 @@ import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.IEvent;
 import org.iobserve.common.record.ISessionEvent;
@@ -33,7 +32,7 @@ import org.iobserve.common.record.ISessionEvent;
  * 
  * @since 0.0.2
  */
-public class SessionStartEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent, ISessionEvent {			
+public class SessionStartEvent extends AbstractMonitoringRecord implements IEvent, ISessionEvent {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_STRING // ISessionEvent.hostname

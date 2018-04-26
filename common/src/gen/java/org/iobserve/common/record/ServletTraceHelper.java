@@ -22,7 +22,6 @@ import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.ITraceHelper;
 import kieker.common.record.flow.IFlowRecord;
@@ -33,7 +32,7 @@ import kieker.common.record.flow.IFlowRecord;
  * 
  * @since 0.0.2
  */
-public class ServletTraceHelper extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ITraceHelper, IFlowRecord {			
+public class ServletTraceHelper extends AbstractMonitoringRecord implements ITraceHelper, IFlowRecord {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // ITraceHelper.traceId
 			 + TYPE_SIZE_STRING // ITraceHelper.host

@@ -22,7 +22,6 @@ import kieker.common.record.AbstractMonitoringRecord;
 import kieker.common.record.IMonitoringRecord;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 
 /**
@@ -31,7 +30,7 @@ import kieker.common.util.registry.IRegistry;
  * 
  * @since 0.0.2
  */
-public class EntryCallEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {			
+public class EntryCallEvent extends AbstractMonitoringRecord  {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // EntryCallEvent.entryTime
 			 + TYPE_SIZE_LONG // EntryCallEvent.exitTime
