@@ -29,7 +29,7 @@ import org.iobserve.common.record.IEvent;
  * 
  * @since 0.0.2
  */
-public abstract class ServletDescriptor extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent {			
+public abstract class ServletDescriptor extends AbstractMonitoringRecord implements IEvent {			
 	
 	/** default constants. */
 	public static final String SERVICE = "";

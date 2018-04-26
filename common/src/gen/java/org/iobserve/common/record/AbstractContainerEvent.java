@@ -28,7 +28,7 @@ import kieker.common.record.io.IValueDeserializer;
  * 
  * @since 0.0.2
  */
-public abstract class AbstractContainerEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory {			
+public abstract class AbstractContainerEvent extends AbstractMonitoringRecord  {			
 	
 	/** default constants. */
 	public static final String URL = "";

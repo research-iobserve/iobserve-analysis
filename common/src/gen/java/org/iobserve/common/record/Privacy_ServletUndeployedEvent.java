@@ -21,7 +21,6 @@ import kieker.common.exception.RecordInstantiationException;
 import org.iobserve.common.record.ServletUndeployedEvent;
 import kieker.common.record.io.IValueDeserializer;
 import kieker.common.record.io.IValueSerializer;
-import kieker.common.util.registry.IRegistry;
 
 import org.iobserve.common.record.Privacy;
 
@@ -47,8 +46,6 @@ public class Privacy_ServletUndeployedEvent extends ServletUndeployedEvent imple
 		short.class, // GeoLocation.countryCode
 	};
 	
-	/** default constants. */
-	public static final short COUNTRY_CODE = 49;
 	private static final long serialVersionUID = -8429938424094273587L;
 	
 	/** property name array. */

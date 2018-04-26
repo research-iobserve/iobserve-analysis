@@ -17,10 +17,17 @@ package org.iobserve.common.record
 
 import org.iobserve.common.record.IEvent
 
-@author "Reiner Jung" @since "0.0.2"
+// TODO cannot be used until a fix of enumerations in java kieker
+//@author "Reiner Jung" @since "0.0.3"
+//enum ISOCountryCode {
+//	GERMANY = 276,
+//	USA = 840
+//}
+
+@author "Reiner Jung" @since "0.0.3"
 template GeoLocation {
-	short countryCode = 049 // country code ISO				
-		
+	// ISOCountryCode countryCode
+	short countryCode
 }
 
 /** 
