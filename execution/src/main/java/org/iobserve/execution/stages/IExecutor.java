@@ -13,33 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.execution.stages.kubernetes;
+package org.iobserve.execution.stages;
 
-import org.iobserve.adaptation.executionplan.DeployComponentAction;
-import org.iobserve.execution.stages.AbstractDeploymentStage;
+import org.iobserve.adaptation.executionplan.AtomicAction;
 
 /**
- * Deployment via kubernetes.
+ * Interface for action executors.
  *
  * @author Lars Bluemke
  *
+ * @param <T>
+ *            Subtypes of {@link AtomicAction}
  */
-public class KubernetesDeploymentStage extends AbstractDeploymentStage {
+public interface IExecutor<T extends AtomicAction> {
 
-    @Override
-    protected void execute(final DeployComponentAction deployComponentAction) throws Exception {
-        // Supported client library
-        // final ApiClient client = Config.defaultClient();
-        // Configuration.setDefaultApiClient(client);
-        //
-        // final CoreV1Api api = new CoreV1Api();
-
-        // Fabric8 community client library
-        // KubernetesClient client = new DefaultKubernetesClient();
-        // Pod pod = new Pod();
-        // pod.
-        // client.pods().create(item);
-
-    }
-
+    public void execute(T action);
 }

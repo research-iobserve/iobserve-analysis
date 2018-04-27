@@ -13,23 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.execution.stages;
+package org.iobserve.execution.stages.kubernetes;
 
-import teetime.framework.AbstractConsumerStage;
+import org.iobserve.adaptation.executionplan.DeployComponentAction;
+import org.iobserve.execution.stages.IExecutor;
 
-import org.iobserve.adaptation.executionplan.AtomicAction;
+import io.fabric8.kubernetes.client.KubernetesClient;
 
 /**
- * Executes the incoming actions in the order they arrive.
+ * Deployment via kubernetes.
  *
  * @author Lars Bluemke
  *
  */
-public class Execution extends AbstractConsumerStage<AtomicAction> {
+public class KubernetesDeploymentExecutor extends AbstractKubernetesExecutor
+        implements IExecutor<DeployComponentAction> {
+
+    public KubernetesDeploymentExecutor(final String ip, final String port) {
+        super(ip, port);
+    }
+
+    KubernetesClient kubernetes = this.getConnection();
 
     @Override
-    protected void execute(final AtomicAction action) throws Exception {
+    public void execute(final DeployComponentAction deployComponentAction) {
 
+        // Fabric8 community client library
+        // KubernetesClient client = new DefaultKubernetesClient();
+        // Pod pod = new Pod();
+        // pod.
+        // client.pods().create(item);
     }
 
 }

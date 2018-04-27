@@ -13,20 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ***************************************************************************/
-package org.iobserve.execution.stages;
+package org.iobserve.execution.stages.kubernetes;
 
-import teetime.framework.AbstractConsumerStage;
-
-import org.iobserve.adaptation.executionplan.DeployComponentAction;
+import io.fabric8.kubernetes.client.Config;
+import io.fabric8.kubernetes.client.ConfigBuilder;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
 
 /**
- * Abstract class for deployments.
- * 
+ *
  * @author Lars Bluemke
  *
  */
-public abstract class AbstractDeploymentStage extends AbstractConsumerStage<DeployComponentAction> {
+public abstract class AbstractKubernetesExecutor {
+    private final String ip;
+    private final String port;
 
-    @Override
-    protected abstract void execute(final DeployComponentAction deployComponentAction) throws Exception;
+    public AbstractKubernetesExecutor(final String ip, final String port) {
+        this.ip = ip;
+        this.port = port;
+    }
+
+    public KubernetesClient getConnection() {
+        final String masterUrl = "http://" + this.ip + ":" + this.port;
+        final Config config = new ConfigBuilder().withMasterUrl(masterUrl).build();
+        final KubernetesClient kubernetes = new DefaultKubernetesClient(config);
+        return kubernetes;
+    }
+
 }
