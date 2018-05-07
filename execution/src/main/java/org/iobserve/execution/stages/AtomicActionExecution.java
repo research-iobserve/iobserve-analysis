@@ -102,27 +102,27 @@ public class AtomicActionExecution extends AbstractConsumerStage<AtomicAction> {
 
     @Override
     protected void execute(final AtomicAction atomicAction) throws Exception {
-        if (atomicAction instanceof DeployComponentAction) {
+        if ((this.deploymentExecutor != null) && (atomicAction instanceof DeployComponentAction)) {
             this.deploymentExecutor.execute((DeployComponentAction) atomicAction);
-        } else if (atomicAction instanceof UndeployComponentAction) {
+        } else if ((this.undeploymentExecutor != null) && (atomicAction instanceof UndeployComponentAction)) {
             this.undeploymentExecutor.execute((UndeployComponentAction) atomicAction);
-        } else if (atomicAction instanceof MigrateComponentStateAction) {
+        } else if ((this.stateMigrationExecutor != null) && (atomicAction instanceof MigrateComponentStateAction)) {
             this.stateMigrationExecutor.execute((MigrateComponentStateAction) atomicAction);
-        } else if (atomicAction instanceof ConnectComponentAction) {
+        } else if ((this.connectionExecutor != null) && (atomicAction instanceof ConnectComponentAction)) {
             this.connectionExecutor.execute((ConnectComponentAction) atomicAction);
-        } else if (atomicAction instanceof BlockRequestsToComponentAction) {
+        } else if ((this.requestBlockingExecutor != null) && (atomicAction instanceof BlockRequestsToComponentAction)) {
             this.requestBlockingExecutor.execute((BlockRequestsToComponentAction) atomicAction);
-        } else if (atomicAction instanceof DisconnectComponentAction) {
+        } else if ((this.disconnectionExecutor != null) && (atomicAction instanceof DisconnectComponentAction)) {
             this.disconnectionExecutor.execute((DisconnectComponentAction) atomicAction);
-        } else if (atomicAction instanceof FinishComponentAction) {
+        } else if ((this.finishingExecutor != null) && (atomicAction instanceof FinishComponentAction)) {
             this.finishingExecutor.execute((FinishComponentAction) atomicAction);
-        } else if (atomicAction instanceof AllocateNodeAction) {
+        } else if ((this.nodeAllocationExecutor != null) && (atomicAction instanceof AllocateNodeAction)) {
             this.nodeAllocationExecutor.execute((AllocateNodeAction) atomicAction);
-        } else if (atomicAction instanceof DeallocateNodeAction) {
+        } else if ((this.nodeDeallocationExecutor != null) && (atomicAction instanceof DeallocateNodeAction)) {
             this.nodeDeallocationExecutor.execute((DeallocateNodeAction) atomicAction);
-        } else if (atomicAction instanceof ConnectNodeAction) {
+        } else if ((this.nodeConnectionExecutor != null) && (atomicAction instanceof ConnectNodeAction)) {
             this.nodeConnectionExecutor.execute((ConnectNodeAction) atomicAction);
-        } else if (atomicAction instanceof DisconnectNodeAction) {
+        } else if ((this.nodeDisconnectionExecutor != null) && (atomicAction instanceof DisconnectNodeAction)) {
             this.nodeDisconnectionExecutor.execute((DisconnectNodeAction) atomicAction);
         }
     }
