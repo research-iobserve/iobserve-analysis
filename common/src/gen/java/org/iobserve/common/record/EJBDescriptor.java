@@ -29,7 +29,7 @@ import org.iobserve.common.record.IEvent;
  * 
  * @since 0.0.2
  */
-public abstract class EJBDescriptor extends AbstractMonitoringRecord implements IEvent {			
+public abstract class EJBDescriptor extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent {			
 	
 	/** default constants. */
 	public static final String SERVICE = "";
@@ -72,7 +72,7 @@ public abstract class EJBDescriptor extends AbstractMonitoringRecord implements 
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #EJBDescriptor(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected EJBDescriptor(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -101,7 +101,7 @@ public abstract class EJBDescriptor extends AbstractMonitoringRecord implements 
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated

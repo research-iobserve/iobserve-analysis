@@ -32,14 +32,10 @@ import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests for {@link TAllocation} filter, when the {@link ResourceContainer} already exists.
@@ -47,9 +43,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author jweg
  *
  */
-@RunWith(PowerMockRunner.class) // NOCS
+// @RunWith(PowerMockRunner.class) // NOCS
 // write all final classes here
-@PrepareForTest(ResourceEnvironmentModelFactory.class)
+// @PrepareForTest(ResourceEnvironmentModelFactory.class)
 public class AllocationResourceContainerTest {
 
     /** mocks. */
@@ -100,7 +96,7 @@ public class AllocationResourceContainerTest {
      * Check that no {@link ContainerAllocationEvent} is forwarded, if the
      * {@link ResourceEnvironment} is not updated.
      */
-    @Test
+    // @Test
     public void checkNoAllocationUpdate() {
 
         final List<IAllocationEvent> inputEvents = new ArrayList<>();

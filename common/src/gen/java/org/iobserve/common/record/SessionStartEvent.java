@@ -32,7 +32,7 @@ import org.iobserve.common.record.ISessionEvent;
  * 
  * @since 0.0.2
  */
-public class SessionStartEvent extends AbstractMonitoringRecord implements IEvent, ISessionEvent {			
+public class SessionStartEvent extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, IEvent, ISessionEvent {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // IEvent.timestamp
 			 + TYPE_SIZE_STRING // ISessionEvent.hostname
@@ -84,7 +84,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IEven
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #SessionStartEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public SessionStartEvent(final Object[] values) { // NOPMD (direct store of values)
@@ -102,7 +102,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IEven
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #SessionStartEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected SessionStartEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -128,7 +128,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IEven
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -177,7 +177,7 @@ public class SessionStartEvent extends AbstractMonitoringRecord implements IEven
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated

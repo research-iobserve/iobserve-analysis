@@ -32,7 +32,7 @@ import kieker.common.record.flow.IFlowRecord;
  * 
  * @since 0.0.2
  */
-public class ServletTraceHelper extends AbstractMonitoringRecord implements ITraceHelper, IFlowRecord {			
+public class ServletTraceHelper extends AbstractMonitoringRecord implements IMonitoringRecord.Factory, IMonitoringRecord.BinaryFactory, ITraceHelper, IFlowRecord {			
 	/** Descriptive definition of the serialization size of the record. */
 	public static final int SIZE = TYPE_SIZE_LONG // ITraceHelper.traceId
 			 + TYPE_SIZE_STRING // ITraceHelper.host
@@ -91,7 +91,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements ITra
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServletTraceHelper(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public ServletTraceHelper(final Object[] values) { // NOPMD (direct store of values)
@@ -110,7 +110,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements ITra
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServletTraceHelper(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected ServletTraceHelper(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -138,7 +138,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements ITra
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -189,7 +189,7 @@ public class ServletTraceHelper extends AbstractMonitoringRecord implements ITra
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated

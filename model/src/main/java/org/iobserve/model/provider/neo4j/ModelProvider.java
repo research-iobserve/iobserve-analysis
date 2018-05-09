@@ -61,13 +61,16 @@ import org.slf4j.LoggerFactory;
  */
 public class ModelProvider<R extends EObject, T extends EObject> implements IModelProvider<T> {
 
+    /** TODO these should be moved elsewhere. */
+    public static final String PCM_ENTITY_NAME = "entityName";
+    public static final String PCM_ID = "id";
+    public static final String IMPLEMENTATION_ID = "implementationId";
+
     protected static final String EMF_URI = "emfUri";
     protected static final String REF_POS = "refPos";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelProvider.class);
 
-    private static final String ENTITY_NAME = "entityName";
-    private static final String ID = "id";
     private static final String REF_NAME = "refName";
     private static final String TYPE = "type";
 
@@ -76,6 +79,8 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
     private static final String VISITED = "visited";
 
     private final Graph<R> graph;
+    private final String nameLabel;
+    private final String idLabel;
 
     /**
      * Creates a new model provider.
@@ -83,8 +88,10 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
      * @param graph
      *            The neo4j graph database
      */
-    public ModelProvider(final Graph<R> graph) {
+    public ModelProvider(final Graph<R> graph, final String nameLabel, final String idLabel) {
         this.graph = graph;
+        this.nameLabel = nameLabel;
+        this.idLabel = idLabel;
     }
 
     /**
@@ -196,7 +203,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
         // Check if node has already been created
         final EAttribute idAttr = component.eClass().getEIDAttribute();
         if (idAttr != null) {
-            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, component.eGet(idAttr));
+            node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, component.eGet(idAttr));
         } else if (component instanceof PrimitiveDataType) {
             node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.TYPE,
                     ((PrimitiveDataType) component).getType().name());
@@ -302,7 +309,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
         EObject component = null;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(node, new HashSet<Node>());
             component = this.readNodes(node, containmentsAndDatatypes, new HashMap<Node, EObject>());
             tx.success();
@@ -343,7 +350,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
             final ResourceIterator<Node> nodesIter = this.graph.getGraphDatabaseService().findNodes(label,
-                    ModelProvider.ENTITY_NAME, entityName);
+                    this.nameLabel, entityName);
 
             while (nodesIter.hasNext()) {
                 final Node node = nodesIter.next();
@@ -531,7 +538,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
 
             while (nodes.hasNext()) {
                 final Node n = nodes.next();
-                ids.add(n.getProperty(ModelProvider.ID).toString());
+                ids.add(n.getProperty(this.idLabel).toString());
             }
 
             tx.success();
@@ -614,7 +621,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
         EObject component = null;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             final Iterator<Relationship> inRels = node
                     .getRelationships(Direction.INCOMING, PcmRelationshipType.CONTAINS).iterator();
 
@@ -661,7 +668,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
         final Label label = Label.label(clazz.getSimpleName());
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             for (final Relationship inRel : node.getRelationships(Direction.INCOMING, PcmRelationshipType.REFERENCES)) {
                 final Node startNode = inRel.getStartNode();
                 final Set<Node> containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(startNode,
@@ -693,7 +700,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
 
         if (idAttr != null) {
             try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-                node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, component.eGet(idAttr));
+                node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, component.eGet(idAttr));
                 containmentsAndDatatypes = this.getAllContainmentsAndDatatypes(component, new HashSet<>());
                 this.updateNodes(component, node, containmentsAndDatatypes, new HashSet<EObject>());
                 tx.success();
@@ -836,7 +843,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
         final Label label = Label.label(clazz.getSimpleName());
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            final Node node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            final Node node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             if (node != null) {
                 this.deleteComponentNodes(node);
             }
@@ -881,7 +888,7 @@ public class ModelProvider<R extends EObject, T extends EObject> implements IMod
         final Node node;
 
         try (Transaction tx = this.graph.getGraphDatabaseService().beginTx()) {
-            node = this.graph.getGraphDatabaseService().findNode(label, ModelProvider.ID, id);
+            node = this.graph.getGraphDatabaseService().findNode(label, this.idLabel, id);
             this.deleteComponentAndDatatypeNodes(node, forceDelete);
             tx.success();
         }

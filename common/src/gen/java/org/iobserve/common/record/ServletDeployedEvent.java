@@ -78,7 +78,7 @@ public class ServletDeployedEvent extends ServletDescriptor implements IDeployed
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServletDeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public ServletDeployedEvent(final Object[] values) { // NOPMD (direct store of values)
@@ -93,7 +93,7 @@ public class ServletDeployedEvent extends ServletDescriptor implements IDeployed
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #ServletDeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected ServletDeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
@@ -114,7 +114,7 @@ public class ServletDeployedEvent extends ServletDescriptor implements IDeployed
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -165,7 +165,7 @@ public class ServletDeployedEvent extends ServletDescriptor implements IDeployed
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated

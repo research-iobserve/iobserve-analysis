@@ -16,8 +16,8 @@
 package org.iobserve.model.provider.file;
 
 import org.eclipse.emf.ecore.EPackage;
-import org.iobserve.model.privacy.privacy.PrivacyModel;
-import org.iobserve.model.privacy.privacy.PrivacyPackage;
+import org.iobserve.model.privacy.PrivacyModel;
+import org.iobserve.model.privacy.PrivacyPackage;
 import org.palladiosimulator.pcm.system.System;
 
 /**

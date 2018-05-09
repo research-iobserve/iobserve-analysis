@@ -36,17 +36,17 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 			 + TYPE_SIZE_STRING // EJBDescriptor.service
 			 + TYPE_SIZE_STRING // EJBDescriptor.context
 			 + TYPE_SIZE_STRING // EJBDescriptor.deploymentId
-			 + TYPE_SIZE_SHORT; // GeoLocation.countryCode
+			 + TYPE_SIZE_INT; // GeoLocation.countryCode
 	
 	public static final Class<?>[] TYPES = {
 		long.class, // IEvent.timestamp
 		String.class, // EJBDescriptor.service
 		String.class, // EJBDescriptor.context
 		String.class, // EJBDescriptor.deploymentId
-		short.class, // GeoLocation.countryCode
+		ISOCountryCode.class, // GeoLocation.countryCode
 	};
 	
-	private static final long serialVersionUID = 3364660760163783830L;
+	private static final long serialVersionUID = -7074940532684326000L;
 	
 	/** property name array. */
 	private static final String[] PROPERTY_NAMES = {
@@ -58,7 +58,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	};
 	
 	/** property declarations. */
-	private final short countryCode;
+	private final ISOCountryCode countryCode;
 	
 	/**
 	 * Creates a new instance of this class using the given parameters.
@@ -74,7 +74,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	 * @param countryCode
 	 *            countryCode
 	 */
-	public Privacy_EJBDeployedEvent(final long timestamp, final String service, final String context, final String deploymentId, final short countryCode) {
+	public Privacy_EJBDeployedEvent(final long timestamp, final String service, final String context, final String deploymentId, final ISOCountryCode countryCode) {
 		super(timestamp, service, context, deploymentId);
 		this.countryCode = countryCode;
 	}
@@ -86,12 +86,12 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	 * @param values
 	 *            The values for the record.
 	 *
-	 * @deprecated since 1.13. Use {@link #Privacy_EJBDeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	public Privacy_EJBDeployedEvent(final Object[] values) { // NOPMD (direct store of values)
 		super(values, TYPES);
-		this.countryCode = (Short) values[4];
+		this.countryCode = (ISOCountryCode) values[4];
 	}
 
 	/**
@@ -102,12 +102,12 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	 * @param valueTypes
 	 *            The types of the elements in the first array.
 	 *
-	 * @deprecated since 1.13. Use {@link #Privacy_EJBDeployedEvent(IValueDeserializer)} instead.
+	 * @deprecated to be removed 1.15
 	 */
 	@Deprecated
 	protected Privacy_EJBDeployedEvent(final Object[] values, final Class<?>[] valueTypes) { // NOPMD (values stored directly)
 		super(values, valueTypes);
-		this.countryCode = (Short) values[4];
+		this.countryCode = (ISOCountryCode) values[4];
 	}
 
 	
@@ -119,13 +119,13 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	 */
 	public Privacy_EJBDeployedEvent(final IValueDeserializer deserializer) throws RecordInstantiationException {
 		super(deserializer);
-		this.countryCode = deserializer.getShort();
+		this.countryCode = deserializer.getEnumeration(ISOCountryCode.class);
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated since 1.13. Use {@link #serialize(IValueSerializer)} with an array serializer instead.
+	 * @deprecated to be removed in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -148,7 +148,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 		serializer.putString(this.getService());
 		serializer.putString(this.getContext());
 		serializer.putString(this.getDeploymentId());
-		serializer.putShort(this.getCountryCode());
+		serializer.putInt(this.getCountryCode().ordinal());
 	}
 	
 	/**
@@ -178,7 +178,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * @deprecated This record uses the {@link kieker.common.record.IMonitoringRecord.Factory} mechanism. Hence, this method is not implemented.
+	 * @deprecated to be rmeoved in 1.15
 	 */
 	@Override
 	@Deprecated
@@ -224,7 +224,7 @@ public class Privacy_EJBDeployedEvent extends EJBDeployedEvent implements Privac
 		return true;
 	}
 	
-	public final short getCountryCode() {
+	public final ISOCountryCode getCountryCode() {
 		return this.countryCode;
 	}
 	

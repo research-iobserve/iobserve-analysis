@@ -22,11 +22,12 @@ import de.uka.ipd.sdq.pcm.cost.CostRepository;
 import de.uka.ipd.sdq.pcm.designdecision.DecisionSpace;
 
 import org.eclipse.emf.common.util.URI;
-import org.iobserve.model.correspondence.CorrespondeceModelFactory;
+import org.iobserve.model.correspondence.CorrespondenceModel;
 import org.iobserve.model.correspondence.ICorrespondence;
-import org.iobserve.model.privacy.privacy.PrivacyModel;
+import org.iobserve.model.privacy.PrivacyModel;
 import org.iobserve.model.provider.file.AllocationModelHandler;
 import org.iobserve.model.provider.file.CloudProfileModelHandler;
+import org.iobserve.model.provider.file.CorrespondenceModelHandler;
 import org.iobserve.model.provider.file.CostModelHandler;
 import org.iobserve.model.provider.file.DesignDecisionModelHandler;
 import org.iobserve.model.provider.file.PrivacyModelHandler;
@@ -82,7 +83,7 @@ public final class PCMModelHandler {
     private ResourceEnvironment resourceEnvironmentModel;
     private System systemModel;
     private UsageModel usageModel;
-    private ICorrespondence correspondenceModel;
+    private CorrespondenceModel correspondenceModel;
     private CloudProfile cloudProfileModel;
     private CostRepository costModel;
     private DecisionSpace designDecisionModel;
@@ -114,8 +115,7 @@ public final class PCMModelHandler {
             } else if (PCMModelHandler.USAGE_MODEL_SUFFIX.equalsIgnoreCase(extension)) {
                 this.usageModel = new UsageModelHandler().load(uri);
             } else if (PCMModelHandler.CORRESPONDENCE_SUFFIX.equalsIgnoreCase(extension)) {
-                this.correspondenceModel = CorrespondeceModelFactory.INSTANCE
-                        .createCorrespondenceModel(nextFile.getAbsolutePath());
+                this.correspondenceModel = new CorrespondenceModelHandler().load(uri);
             } else if (PCMModelHandler.CLOUD_PROFILE_SUFFIX.equalsIgnoreCase(extension)) {
                 this.cloudProfileModel = new CloudProfileModelHandler().load(uri);
             } else if (PCMModelHandler.COST_SUFFIX.equalsIgnoreCase(extension)) {
@@ -162,7 +162,7 @@ public final class PCMModelHandler {
     /**
      * @return correspondence model
      */
-    public ICorrespondence getCorrespondenceModel() {
+    public CorrespondenceModel getCorrespondenceModel() {
         return this.correspondenceModel;
     }
 
@@ -205,7 +205,6 @@ public final class PCMModelHandler {
      * @return PrivacyModel
      */
     public PrivacyModel getPrivacyModel() {
-        // TODO Auto-generated method stub
         return this.privacyModel;
     }
 

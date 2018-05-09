@@ -1,13 +1,13 @@
 /**
  */
-package org.iobserve.model.privacy.privacy.util;
+package org.iobserve.model.privacy.util;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 
 import org.eclipse.emf.ecore.util.Switch;
 
-import org.iobserve.model.privacy.privacy.*;
+import org.iobserve.model.privacy.*;
 
 /**
  * <!-- begin-user-doc -->
@@ -19,7 +19,7 @@ import org.iobserve.model.privacy.privacy.*;
  * until a non-null result is returned,
  * which is the result of the switch.
  * <!-- end-user-doc -->
- * @see org.iobserve.model.privacy.privacy.PrivacyPackage
+ * @see org.iobserve.model.privacy.PrivacyPackage
  * @generated
  */
 public class PrivacySwitch<T> extends Switch<T> {
