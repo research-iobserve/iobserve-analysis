@@ -15,7 +15,7 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment.data;
 
-import org.iobserve.model.correspondence.Correspondent;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 
 /**
@@ -25,7 +25,7 @@ import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 public class PCMUndeployedEvent {
 
     private final String service;
-    private final Correspondent correspondent;
+    private final AssemblyContext assemblyContext;
     private ResourceContainer resourceContainer;
 
     /**
@@ -33,20 +33,20 @@ public class PCMUndeployedEvent {
      *
      * @param service
      *            the deployed service
-     * @param correspondent
+     * @param assemblyContext
      *            the correspondent for the component to be removed
      */
-    public PCMUndeployedEvent(final String service, final Correspondent correspondent) {
+    public PCMUndeployedEvent(final String service, final AssemblyContext assemblyContext) {
         this.service = service;
-        this.correspondent = correspondent;
+        this.assemblyContext = assemblyContext;
     }
 
     public final String getService() {
         return this.service;
     }
 
-    public final Correspondent getCorrespondent() {
-        return this.correspondent;
+    public final AssemblyContext getAssemblyContext() {
+        return this.assemblyContext;
     }
 
     public void setResourceContainer(final ResourceContainer resourceContainer) {

@@ -15,6 +15,8 @@
  ***************************************************************************/
 package org.iobserve.monitoring.sampler.geolocation;
 
+import org.iobserve.common.record.ISOCountryCode;
+
 /**
  * ToDo .
  *
@@ -29,5 +31,5 @@ public interface ICountryInvestigator {
      * @return the country encoded as ISO-3166.
      *         {@linkplain https://de.wikipedia.org/wiki/ISO-3166-1-Kodierliste}
      */
-    short getServerGeoLocationCountry(); // NOPMD short is necessary here
+    ISOCountryCode getServerGeoLocationCountry();
 }

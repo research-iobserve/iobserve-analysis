@@ -20,7 +20,7 @@ import teetime.framework.OutputPort;
 
 import org.eclipse.emf.common.util.EList;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
-import org.iobserve.model.provider.neo4j.ModelProvider;
+import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPrivacy;
@@ -34,7 +34,7 @@ import org.palladiosimulator.pcm.resourceenvironmentprivacy.ResourceContainerPri
  */
 public class GeoLocation extends AbstractConsumerStage<PCMDeployedEvent> {
 
-    private final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider;
+    private final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider;
 
     private final OutputPort<PCMDeployedEvent> outputPort = this.createOutputPort();
 
@@ -44,7 +44,7 @@ public class GeoLocation extends AbstractConsumerStage<PCMDeployedEvent> {
      * @param resourceEnvironmentModelProvider
      *            the corresponding resource environment
      */
-    public GeoLocation(final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider) {
+    public GeoLocation(final IModelProvider<ResourceEnvironment> resourceEnvironmentModelProvider) {
         this.resourceEnvironmentModelProvider = resourceEnvironmentModelProvider;
     }
 
@@ -57,14 +57,15 @@ public class GeoLocation extends AbstractConsumerStage<PCMDeployedEvent> {
 
         for (final ResourceContainer resContainer : resContainers) {
             if (resContainer.getEntityName().equals(element.getService())
-                    && (resContainer instanceof ResourceContainerPrivacy)) {
+                    && resContainer instanceof ResourceContainerPrivacy) {
 
                 final ResourceContainerPrivacy resContainerPrivacy = (ResourceContainerPrivacy) resContainer;
                 final int geolocation = resContainerPrivacy.getGeolocation();
-                if (geolocation != element.getCountryCode()) {
-                    resContainerPrivacy.setGeolocation(element.getCountryCode());
-                    this.outputPort.send(element);
-                }
+                // TODO wait for update to Kieker 1.15 snapshot and then reactive code snippet
+                // if (geolocation != element.getCountryCode().getValue()) {
+                // resContainerPrivacy.setGeolocation(element.getCountryCode().getValue());
+                // this.outputPort.send(element);
+                // }
                 break;
             }
         }

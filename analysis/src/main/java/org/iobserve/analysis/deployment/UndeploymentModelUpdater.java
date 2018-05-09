@@ -15,19 +15,15 @@
  ***************************************************************************/
 package org.iobserve.analysis.deployment;
 
-import java.util.Optional;
+import java.util.List;
 
 import teetime.framework.AbstractConsumerStage;
 import teetime.framework.OutputPort;
 
 import org.iobserve.analysis.deployment.data.PCMUndeployedEvent;
-import org.iobserve.model.factory.AllocationModelFactory;
-import org.iobserve.model.factory.SystemModelFactory;
 import org.iobserve.model.provider.neo4j.IModelProvider;
 import org.palladiosimulator.pcm.allocation.Allocation;
-import org.palladiosimulator.pcm.core.composition.AssemblyContext;
-import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
-import org.palladiosimulator.pcm.system.System;
+import org.palladiosimulator.pcm.allocation.AllocationContext;
 
 /**
  * This class contains the transformation for updating the PCM allocation model with respect to
@@ -44,7 +40,7 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
     /** reference to allocation model provider. */
     private final IModelProvider<Allocation> allocationModelGraphProvider;
     /** reference to system model provider. */
-    private final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider;
+    private final IModelProvider<AllocationContext> allocationContextModelGraphProvider;
 
     private final OutputPort<PCMUndeployedEvent> outputPort = this.createOutputPort();
 
@@ -54,13 +50,13 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      *
      * @param allocationModelGraphProvider
      *            allocation model access
-     * @param systemModelGraphProvider
+     * @param allocationContextModelGraphProvider
      *            system model access
      */
     public UndeploymentModelUpdater(final IModelProvider<Allocation> allocationModelGraphProvider,
-            final IModelProvider<org.palladiosimulator.pcm.system.System> systemModelGraphProvider) {
+            final IModelProvider<AllocationContext> allocationContextModelGraphProvider) {
         this.allocationModelGraphProvider = allocationModelGraphProvider;
-        this.systemModelGraphProvider = systemModelGraphProvider;
+        this.allocationContextModelGraphProvider = allocationContextModelGraphProvider;
     }
 
     /**
@@ -71,39 +67,22 @@ public final class UndeploymentModelUpdater extends AbstractConsumerStage<PCMUnd
      */
     @Override
     protected void execute(final PCMUndeployedEvent event) {
-        // get the model entity name
-        final String entityName = event.getCorrespondent().getPcmEntityName();
+        final String allocationContextName = event.getAssemblyContext().getEntityName() + " : "
+                + event.getResourceContainer().getEntityName();
 
-        // build the assembly context name
-        final String assemblyContextName = entityName + "_" + event.getService();
+        final List<AllocationContext> allocationContexts = this.allocationContextModelGraphProvider
+                .readOnlyComponentByName(AllocationContext.class, allocationContextName);
 
-        final ResourceContainer resourceContainer = event.getResourceContainer();
-
-        // get assembly context by name or create it if necessary.
-        final System system = this.systemModelGraphProvider
-                .readOnlyRootComponent(org.palladiosimulator.pcm.system.System.class);
-        final Optional<AssemblyContext> optAssemblyContext = SystemModelFactory.getAssemblyContextByName(system,
-                assemblyContextName);
-
-        if (optAssemblyContext.isPresent()) {
-            // update the allocation graph
-            final Allocation allocationModel = this.allocationModelGraphProvider
-                    .readOnlyRootComponent(Allocation.class);
-            AllocationModelFactory.removeAllocationContext(allocationModel, resourceContainer,
-                    optAssemblyContext.get());
-            this.allocationModelGraphProvider.updateComponent(Allocation.class, allocationModel);
-
-            // signal allocation update
+        if (allocationContexts.size() == 1) {
+            final AllocationContext allocationContext = allocationContexts.get(0);
+            this.allocationContextModelGraphProvider.deleteComponent(AllocationContext.class,
+                    allocationContext.getId());
             this.outputPort.send(event);
+        } else if (allocationContexts.size() > 1) {
+            this.logger.error("Undeployment failed: More than one allocation found for allocation {}",
+                    allocationContextName);
         } else {
-            if (resourceContainer != null) {
-                this.logger.warn("AssemblyContext " + assemblyContextName + " for " + resourceContainer.getEntityName()
-                        + " not found! \n");
-            } else {
-                this.logger.warn(
-                        "AssemblyContext " + assemblyContextName + " not found and no resource container specified.\n");
-            }
-
+            this.logger.error("Undeployment failed: No allocation found for allocation {}", allocationContextName);
         }
     }
 

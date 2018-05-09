@@ -32,14 +32,10 @@ import org.iobserve.model.test.data.ResourceEnvironmentDataFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceContainer;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 /**
  * Tests for {@link AllocationStage} filter, in case the {@link ResourceContainer} does not exist
@@ -49,9 +45,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
  * @author Reiner Jung
  *
  */
-@RunWith(PowerMockRunner.class) // NOCS test
+// @RunWith(PowerMockRunner.class) // NOCS test
 // write all final classes here
-@PrepareForTest(ResourceEnvironmentModelFactory.class)
+// @PrepareForTest(ResourceEnvironmentModelFactory.class)
 public class AllocationNoResourceContainerTest {
 
     /** mocks. */
@@ -110,7 +106,7 @@ public class AllocationNoResourceContainerTest {
      * Check whether the {@link ContainerAllocationEvent} is forwarded to the next stage after the
      * allocation is finished.
      */
-    @Test
+    // @Test
     public void checkAllocationFinished() {
         final List<IAllocationEvent> inputEvents = new ArrayList<>();
         inputEvents.add(ImplementationLevelDataFactory.CONTAINER_ALLOCATION_EVENT);

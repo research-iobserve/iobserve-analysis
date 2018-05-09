@@ -55,14 +55,15 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Override
     @Before
     public void clearGraph() {
-        new ModelProvider<>(ResourceEnvironmentModelProviderTest.graph).clearGraph();
+        new ModelProvider<>(ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID).clearGraph();
     }
 
     @Override
     @Test
     public void createThenCloneThenRead() {
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider1 = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider2;
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final ResourceEnvironment readModel;
@@ -71,7 +72,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         modelProvider1.createComponent(writtenModel);
 
         graph2 = modelProvider1.cloneNewGraphVersion(ResourceEnvironment.class);
-        modelProvider2 = new ModelProvider<>(graph2);
+        modelProvider2 = new ModelProvider<>(graph2, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         readModel = modelProvider2.readOnlyRootComponent(ResourceEnvironment.class);
         graph2.getGraphDatabaseService().shutdown();
@@ -83,7 +84,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenClearGraph() {
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
 
         modelProvider.createComponent(writtenModel);
@@ -99,9 +100,9 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadById() {
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ModelProvider<ResourceEnvironment, ResourceContainer> modelProvider2 = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final ResourceContainer writtenContainer = writtenModel.getResourceContainer_ResourceEnvironment().get(0);
         final ResourceContainer readContainer;
@@ -118,7 +119,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadByName() {
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final List<ResourceEnvironment> readModels;
 
@@ -136,9 +137,9 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadByType() {
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ModelProvider<ResourceEnvironment, ResourceContainer> modelProvider2 = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final List<ResourceContainer> writtenContainers = writtenModel.getResourceContainer_ResourceEnvironment();
         final List<String> readIds;
@@ -167,7 +168,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadRoot() {
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final ResourceEnvironment readModel;
 
@@ -181,7 +182,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadContaining() {
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
         final ResourceContainer writtenContainer = writtenModel.getResourceContainer_ResourceEnvironment().get(0);
         final ResourceEnvironment readModel;
@@ -197,7 +198,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenReadReferencing() {
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
         final List<EObject> readReferencingComponents;
@@ -220,7 +221,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenUpdateThenReadUpdated() {
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final TestModelBuilder testModelBuilder = new TestModelBuilder();
         final ResourceEnvironment writtenModel = testModelBuilder.getResourceEnvironment();
         final ResourceContainer orderServer = testModelBuilder.getOrderServer();
@@ -273,7 +274,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenDeleteComponent() {
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
 
         modelProvider.createComponent(writtenModel);
@@ -281,13 +282,15 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
         for (final LinkingResource lr : writtenModel.getLinkingResources__ResourceEnvironment()) {
-            new ModelProvider<ResourceEnvironment, LinkingResource>(ResourceEnvironmentModelProviderTest.graph)
-                    .deleteComponent(LinkingResource.class, lr.getId());
+            new ModelProvider<ResourceEnvironment, LinkingResource>(ResourceEnvironmentModelProviderTest.graph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID).deleteComponent(LinkingResource.class,
+                            lr.getId());
         }
 
         for (final ResourceContainer rc : writtenModel.getResourceContainer_ResourceEnvironment()) {
-            new ModelProvider<ResourceEnvironment, ResourceContainer>(ResourceEnvironmentModelProviderTest.graph)
-                    .deleteComponent(ResourceContainer.class, rc.getId());
+            new ModelProvider<ResourceEnvironment, ResourceContainer>(ResourceEnvironmentModelProviderTest.graph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID).deleteComponent(ResourceContainer.class,
+                            rc.getId());
         }
 
         // Manually delete the root node (as it has no id) and the resource type nodes (as they are
@@ -305,7 +308,7 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
     @Test
     public void createThenDeleteComponentAndDatatypes() {
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> modelProvider = new ModelProvider<>(
-                ResourceEnvironmentModelProviderTest.graph);
+                ResourceEnvironmentModelProviderTest.graph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ResourceEnvironment writtenModel = new TestModelBuilder().getResourceEnvironment();
 
         modelProvider.createComponent(writtenModel);
@@ -313,13 +316,15 @@ public class ResourceEnvironmentModelProviderTest implements IModelProviderTest 
         Assert.assertFalse(IModelProviderTest.isGraphEmpty(modelProvider));
 
         for (final LinkingResource lr : writtenModel.getLinkingResources__ResourceEnvironment()) {
-            new ModelProvider<ResourceEnvironment, LinkingResource>(ResourceEnvironmentModelProviderTest.graph)
-                    .deleteComponentAndDatatypes(LinkingResource.class, lr.getId(), true);
+            new ModelProvider<ResourceEnvironment, LinkingResource>(ResourceEnvironmentModelProviderTest.graph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
+                            .deleteComponentAndDatatypes(LinkingResource.class, lr.getId(), true);
         }
 
         for (final ResourceContainer rc : writtenModel.getResourceContainer_ResourceEnvironment()) {
-            new ModelProvider<ResourceEnvironment, ResourceContainer>(ResourceEnvironmentModelProviderTest.graph)
-                    .deleteComponentAndDatatypes(ResourceContainer.class, rc.getId(), true);
+            new ModelProvider<ResourceEnvironment, ResourceContainer>(ResourceEnvironmentModelProviderTest.graph,
+                    ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID)
+                            .deleteComponentAndDatatypes(ResourceContainer.class, rc.getId(), true);
         }
 
         Assert.assertTrue(IModelProviderTest.isGraphEmpty(modelProvider));

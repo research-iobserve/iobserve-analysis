@@ -36,6 +36,7 @@ import org.iobserve.common.record.EJBUndeployedEvent;
 import org.iobserve.common.record.IAllocationEvent;
 import org.iobserve.common.record.IDeallocationEvent;
 import org.iobserve.common.record.IDeployedEvent;
+import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.common.record.ISessionEvent;
 import org.iobserve.common.record.IUndeployedEvent;
 import org.iobserve.common.record.ServerGeoLocation;
@@ -63,7 +64,7 @@ public class DynamicEventDispatcherTest { // NOCS test
     private static final String CONTEXT = "/path/test";
     private static final String DEPLOYMENT_ID = "service-01";
     private static final String ADDRESS = "192.168.1.2"; // NOPMD
-    private static final short COUNTRY_CODE = 49; // NOPMD
+    private static final ISOCountryCode COUNTRY_CODE = ISOCountryCode.GERMANY;
     private static final String URL = "http://" + DynamicEventDispatcherTest.HOSTNAME + "/"
             + DynamicEventDispatcherTest.CONTEXT;
     private static final int ORDER_INDEX = 0;

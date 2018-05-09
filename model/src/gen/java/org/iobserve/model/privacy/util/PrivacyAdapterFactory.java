@@ -1,6 +1,6 @@
 /**
  */
-package org.iobserve.model.privacy.privacy.util;
+package org.iobserve.model.privacy.util;
 
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notifier;
@@ -9,14 +9,14 @@ import org.eclipse.emf.common.notify.impl.AdapterFactoryImpl;
 
 import org.eclipse.emf.ecore.EObject;
 
-import org.iobserve.model.privacy.privacy.*;
+import org.iobserve.model.privacy.*;
 
 /**
  * <!-- begin-user-doc -->
  * The <b>Adapter Factory</b> for the model.
  * It provides an adapter <code>createXXX</code> method for each class of the model.
  * <!-- end-user-doc -->
- * @see org.iobserve.model.privacy.privacy.PrivacyPackage
+ * @see org.iobserve.model.privacy.PrivacyPackage
  * @generated
  */
 public class PrivacyAdapterFactory extends AdapterFactoryImpl {
@@ -100,13 +100,13 @@ public class PrivacyAdapterFactory extends AdapterFactoryImpl {
 
 
     /**
-     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.privacy.PrivacyModel <em>Model</em>}'.
+     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.PrivacyModel <em>Model</em>}'.
      * <!-- begin-user-doc -->
      * This default implementation returns null so that we can easily ignore cases;
      * it's useful to ignore a case when inheritance will catch all the cases anyway.
      * <!-- end-user-doc -->
      * @return the new adapter.
-     * @see org.iobserve.model.privacy.privacy.PrivacyModel
+     * @see org.iobserve.model.privacy.PrivacyModel
      * @generated
      */
     public Adapter createPrivacyModelAdapter() {
@@ -114,13 +114,13 @@ public class PrivacyAdapterFactory extends AdapterFactoryImpl {
     }
 
     /**
-     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.privacy.GeoLocation <em>Geo Location</em>}'.
+     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.GeoLocation <em>Geo Location</em>}'.
      * <!-- begin-user-doc -->
      * This default implementation returns null so that we can easily ignore cases;
      * it's useful to ignore a case when inheritance will catch all the cases anyway.
      * <!-- end-user-doc -->
      * @return the new adapter.
-     * @see org.iobserve.model.privacy.privacy.GeoLocation
+     * @see org.iobserve.model.privacy.GeoLocation
      * @generated
      */
     public Adapter createGeoLocationAdapter() {
@@ -128,13 +128,13 @@ public class PrivacyAdapterFactory extends AdapterFactoryImpl {
     }
 
     /**
-     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.privacy.ParameterPrivacy <em>Parameter Privacy</em>}'.
+     * Creates a new adapter for an object of class '{@link org.iobserve.model.privacy.ParameterPrivacy <em>Parameter Privacy</em>}'.
      * <!-- begin-user-doc -->
      * This default implementation returns null so that we can easily ignore cases;
      * it's useful to ignore a case when inheritance will catch all the cases anyway.
      * <!-- end-user-doc -->
      * @return the new adapter.
-     * @see org.iobserve.model.privacy.privacy.ParameterPrivacy
+     * @see org.iobserve.model.privacy.ParameterPrivacy
      * @generated
      */
     public Adapter createParameterPrivacyAdapter() {

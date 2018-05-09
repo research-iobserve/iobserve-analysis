@@ -23,8 +23,8 @@ import teetime.framework.test.StageTester;
 
 import org.hamcrest.core.Is;
 import org.iobserve.analysis.deployment.data.PCMDeployedEvent;
+import org.iobserve.common.record.ISOCountryCode;
 import org.iobserve.model.PCMModelHandler;
-import org.iobserve.model.correspondence.CorrespondentFactory;
 import org.iobserve.model.provider.neo4j.Graph;
 import org.iobserve.model.provider.neo4j.GraphLoader;
 import org.iobserve.model.provider.neo4j.ModelProvider;
@@ -34,6 +34,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.palladiosimulator.pcm.allocation.Allocation;
+import org.palladiosimulator.pcm.core.composition.AssemblyContext;
+import org.palladiosimulator.pcm.core.composition.CompositionFactory;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
 import org.palladiosimulator.pcm.system.System;
 
@@ -59,9 +61,12 @@ public class PrivacyWarnerTest {
         final GraphLoader graphLoader = new GraphLoader(this.modelDatabaseDirectory);
 
         /** graphs. */
-        graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel());
-        graphLoader.initializeModelGraph(ResourceEnvironment.class, modelHandler.getResourceEnvironmentModel());
-        graphLoader.initializeModelGraph(System.class, modelHandler.getSystemModel());
+        graphLoader.initializeModelGraph(Allocation.class, modelHandler.getAllocationModel(),
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        graphLoader.initializeModelGraph(ResourceEnvironment.class, modelHandler.getResourceEnvironmentModel(),
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        graphLoader.initializeModelGraph(System.class, modelHandler.getSystemModel(), ModelProvider.PCM_ENTITY_NAME,
+                ModelProvider.PCM_ID);
 
         /** load neo4j graphs. */
         final Graph<ResourceEnvironment> resourceEnvironmentGraph = graphLoader
@@ -70,10 +75,12 @@ public class PrivacyWarnerTest {
         final Graph<System> systemGraph = graphLoader.createModelGraph(System.class);
 
         /** model provider. */
-        final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph);
+        final ModelProvider<Allocation, Allocation> allocationModelProvider = new ModelProvider<>(allocationModelGraph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
         final ModelProvider<ResourceEnvironment, ResourceEnvironment> resourceEnvironmentModelProvider = new ModelProvider<>(
-                resourceEnvironmentGraph);
-        final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemGraph);
+                resourceEnvironmentGraph, ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
+        final ModelProvider<System, System> systemModelProvider = new ModelProvider<>(systemGraph,
+                ModelProvider.PCM_ENTITY_NAME, ModelProvider.PCM_ID);
 
         this.pw = new PrivacyWarner(allocationModelProvider, systemModelProvider, resourceEnvironmentModelProvider);
 
@@ -84,9 +91,10 @@ public class PrivacyWarnerTest {
      */
     @Test
     public void testPW() {
-        final PCMDeployedEvent pcmdpe = new PCMDeployedEvent("TestService",
-                CorrespondentFactory.newInstance("Testname", "TestID", "Testmethode", "TestmethodenID"),
-                "http://Test.test", (short) 5); // NOPMD short type is used in framework
+        final AssemblyContext assemblyContext = CompositionFactory.eINSTANCE.createAssemblyContext();
+        assemblyContext.setEntityName("EntityName");
+        final PCMDeployedEvent pcmdpe = new PCMDeployedEvent("TestService", assemblyContext, "http://Test.test",
+                ISOCountryCode.EVIL_EMPIRE);
 
         final List<Warnings> results = new ArrayList<>();
         StageTester.test(this.pw).and().send(pcmdpe).to(this.pw.getDeployedInputPort()).and().receive(results)

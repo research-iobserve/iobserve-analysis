@@ -6,7 +6,7 @@
     complianceLevel="8.0" copyrightFields="false" usedGenPackages="../../../../de.uka.ipd.sdq.identifier/model/identifier.genmodel#//identifier ../../../../org.palladiosimulator.pcm/model/pcm.genmodel#//pcm ../../../../de.uka.ipd.sdq.probfunction/model/ProbabilityFunction.genmodel#//probfunction ../../../../de.uka.ipd.sdq.stoex/model/stoex.genmodel#//stoex ../../../../de.uka.ipd.sdq.units/model/Units.genmodel#//units"
     operationReflection="true" importOrganizing="true">
   <foreignModel>PrivacyModel.ecore</foreignModel>
-  <genPackages prefix="Privacy" basePackage="org.iobserve.model.privacy" disposableProviderFactory="true"
+  <genPackages prefix="Privacy" basePackage="org.iobserve.model" disposableProviderFactory="true"
       ecorePackage="PrivacyModel.ecore#/" publicationLocation="">
     <genEnums typeSafeEnumCompatible="false" ecoreEnum="PrivacyModel.ecore#//EDataPrivacyLevel">
       <genEnumLiterals ecoreEnumLiteral="PrivacyModel.ecore#//EDataPrivacyLevel/anonymous"/>

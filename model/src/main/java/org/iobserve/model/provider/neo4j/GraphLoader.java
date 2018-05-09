@@ -20,7 +20,8 @@ import java.io.IOException;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.eclipse.emf.ecore.EObject;
-import org.iobserve.model.privacy.privacy.PrivacyModel;
+import org.iobserve.model.correspondence.CorrespondenceModel;
+import org.iobserve.model.privacy.PrivacyModel;
 import org.palladiosimulator.pcm.allocation.Allocation;
 import org.palladiosimulator.pcm.repository.Repository;
 import org.palladiosimulator.pcm.resourceenvironment.ResourceEnvironment;
@@ -57,8 +58,10 @@ public class GraphLoader {
      * Helper method for cloning: Clones and returns a new version from the current newest version
      * of the model graph.
      *
-     * @param graphTypeDirName
-     *            Name of root directory for a certain graph type
+     * @param clazz
+     *            Type for the cloned model
+     * @param <T>
+     *            graph type
      * @return The the model graph
      */
     public <T> Graph<T> cloneNewModelGraphVersion(final Class<T> clazz) {
@@ -143,6 +146,16 @@ public class GraphLoader {
     }
 
     /**
+     * Clones and returns a new version from the current newest version of the correspondence model
+     * graph. If there is none yet an empty graph is returned.
+     *
+     * @return The privacy model graph
+     */
+    public Graph<CorrespondenceModel> cloneNewEorrespondenceModelGraphVersion() {
+        return this.cloneNewModelGraphVersion(CorrespondenceModel.class);
+    }
+
+    /**
      * Helper method for getting graphs: Returns the newest version of the model graph.
      *
      * @param clazz
@@ -171,12 +184,17 @@ public class GraphLoader {
      *            class type of the model
      * @param model
      *            the model to use for initialization
+     * @param nameLabel
+     *            label for the name attribute in the DB and model
+     * @param idLabel
+     *            label for the id attribute in the DB and model
      * @param <V>
      *            the type of the root element
      */
-    public <V extends EObject> void initializeModelGraph(final Class<V> clazz, final V model) {
+    public <V extends EObject> void initializeModelGraph(final Class<V> clazz, final V model, final String nameLabel,
+            final String idLabel) {
         final Graph<V> graph = this.createModelGraph(clazz);
-        final ModelProvider<V, V> provider = new ModelProvider<>(graph);
+        final ModelProvider<V, V> provider = new ModelProvider<>(graph, nameLabel, idLabel);
         provider.clearGraph();
         provider.createComponent(model);
         graph.getGraphDatabaseService().shutdown();
