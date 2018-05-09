@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 /**
- * Undeployment via kubernetes.
+ * Undeployment with kubernetes.
  *
  * @author Lars Bluemke
  *
